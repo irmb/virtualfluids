@@ -108,7 +108,7 @@ void CumulantK17LBMKernelUnified::calculate(int step)
         muForcingX2.DefineVar("dt", &muDeltaT);
         muForcingX3.DefineVar("dt", &muDeltaT);
 
-        muNu = (1.0 / 3.0) * (1.0 / collFactor - 1.0 / 2.0);
+        muNu = (c1o1 / c3o1) * (c1o1 / collFactor - c1o1 / c2o1);
 
         muForcingX1.DefineVar("nu", &muNu);
         muForcingX2.DefineVar("nu", &muNu);
@@ -201,7 +201,7 @@ void CumulantK17LBMKernelUnified::calculate(int step)
                     real mfbbb = (*this->restDistributions)(x1, x2, x3);
 
                     
-                    real forces[3] = {0., 0., 0.};
+                    real forces[3] = { c0o1, c0o1, c0o1 };
                     if (withForcing)
                     {
                         muX1 = static_cast<real>(x1 - 1 + ix1 * maxX1);

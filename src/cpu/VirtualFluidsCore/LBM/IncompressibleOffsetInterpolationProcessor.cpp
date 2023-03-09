@@ -37,22 +37,24 @@ void IncompressibleOffsetInterpolationProcessor::setOffsets(real xoff, real yoff
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
+    using namespace vf::lbm::constant;
+
    setOffsets(xoff, yoff, zoff);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5);
-   calcInterpolatedNode(icellF.BSW, omegaF, -0.25, -0.25, -0.25, calcPressBSW(), -1, -1, -1);
-   calcInterpolatedNode(icellF.BNE, omegaF,  0.25,  0.25, -0.25, calcPressBNE(),  1,  1, -1);
-   calcInterpolatedNode(icellF.TNW, omegaF, -0.25,  0.25,  0.25, calcPressTNW(), -1,  1,  1);
-   calcInterpolatedNode(icellF.TSE, omegaF,  0.25, -0.25,  0.25, calcPressTSE(),  1, -1,  1);
-   calcInterpolatedNode(icellF.BNW, omegaF, -0.25,  0.25, -0.25, calcPressBNW(), -1,  1, -1);
-   calcInterpolatedNode(icellF.BSE, omegaF,  0.25, -0.25, -0.25, calcPressBSE(),  1, -1, -1);
-   calcInterpolatedNode(icellF.TSW, omegaF, -0.25, -0.25,  0.25, calcPressTSW(), -1, -1,  1);
-   calcInterpolatedNode(icellF.TNE, omegaF,  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
+   calcInterpolatedCoefficiets(icellC, omegaC, c1o2);
+   calcInterpolatedNode(icellF.BSW, omegaF, -c1o4, -c1o4, -c1o4, calcPressBSW(), -c1o1, -c1o1, -c1o1);
+   calcInterpolatedNode(icellF.BNE, omegaF,  c1o4,  c1o4, -c1o4, calcPressBNE(),  c1o1,  c1o1, -c1o1);
+   calcInterpolatedNode(icellF.TNW, omegaF, -c1o4,  c1o4,  c1o4, calcPressTNW(), -c1o1,  c1o1,  c1o1);
+   calcInterpolatedNode(icellF.TSE, omegaF,  c1o4, -c1o4,  c1o4, calcPressTSE(),  c1o1, -c1o1,  c1o1);
+   calcInterpolatedNode(icellF.BNW, omegaF, -c1o4,  c1o4, -c1o4, calcPressBNW(), -c1o1,  c1o1, -c1o1);
+   calcInterpolatedNode(icellF.BSE, omegaF,  c1o4, -c1o4, -c1o4, calcPressBSE(),  c1o1, -c1o1, -c1o1);
+   calcInterpolatedNode(icellF.TSW, omegaF, -c1o4, -c1o4,  c1o4, calcPressTSW(), -c1o1, -c1o1,  c1o1);
+   calcInterpolatedNode(icellF.TNE, omegaF,  c1o4,  c1o4,  c1o4, calcPressTNE(),  c1o1,  c1o1,  c1o1);
 }
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
-   calcInterpolatedCoefficiets(icellF, omegaF, 2.0);
+   calcInterpolatedCoefficiets(icellF, omegaF, vf::lbm::constant::c2o1);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -61,11 +63,12 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const real* const f
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
+   using namespace vf::lbm::constant;
 
    //UBLOG(logINFO,"D3Q27System::DIR_M0M  = " << D3Q27System::DIR_M0M);
    //UBLOG(logINFO,"BW  = " << BW);;
 
-   real rho = 0.0;
+   real rho = c0o1;
    D3Q27System::calcIncompMacroscopicValues(f,rho,vx1,vx2,vx3);
    
    //////////////////////////////////////////////////////////////////////////
@@ -83,12 +86,12 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const real* const f
    //press = D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
    press = rho; //interpolate rho!
 
-   kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
-   kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))-(vx2*vx3));
-   kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
-   kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
-   //kxxMzz = -3./2.*omega*(((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[DIR_P00])-(f[B]+f[T])))-(vx1*vx1-vx3*vx3));
+   kxy   = -c3o1*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
+   kyz   = -c3o1*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))-(vx2*vx3));
+   kxz   = -c3o1*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))-(vx1*vx3));
+   kxxMyy = -c3o1/c2o1*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
+   kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
+   //kxxMzz = -c3o1/c2o1*omega*(((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[DIR_P00])-(f[B]+f[T])))-(vx1*vx1-vx3*vx3));
 
    //UBLOG(logINFO, "t1 = "<<(((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[DIR_P00])-(f[B]+f[T])));
    //UBLOG(logINFO, "kxxMzz = "<<kxxMzz);
@@ -103,6 +106,8 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const real* const f
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
 {
+    using namespace vf::lbm::constant;
+
    real        vx1_SWT,vx2_SWT,vx3_SWT;
    real        vx1_NWT,vx2_NWT,vx3_NWT;
    real        vx1_NET,vx2_NET,vx3_NET;
@@ -197,109 +202,109 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
       kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_SET + kxxMyyFromfcNEQ_SWB + kxxMyyFromfcNEQ_SWT -
       kxxMzzFromfcNEQ_NEB - kxxMzzFromfcNEQ_NET + kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_NWT -
       kxxMzzFromfcNEQ_SEB - kxxMzzFromfcNEQ_SET + kxxMzzFromfcNEQ_SWB + kxxMzzFromfcNEQ_SWT -
-      2.*kxyFromfcNEQ_NEB - 2.*kxyFromfcNEQ_NET - 2.*kxyFromfcNEQ_NWB - 2.*kxyFromfcNEQ_NWT +
-      2.*kxyFromfcNEQ_SEB + 2.*kxyFromfcNEQ_SET + 2.*kxyFromfcNEQ_SWB + 2.*kxyFromfcNEQ_SWT +
-      2.*kxzFromfcNEQ_NEB - 2.*kxzFromfcNEQ_NET + 2.*kxzFromfcNEQ_NWB - 2.*kxzFromfcNEQ_NWT +
-      2.*kxzFromfcNEQ_SEB - 2.*kxzFromfcNEQ_SET + 2.*kxzFromfcNEQ_SWB - 2.*kxzFromfcNEQ_SWT +
-      8.*vx1_NEB + 8.*vx1_NET + 8.*vx1_NWB + 8.*vx1_NWT + 8.*vx1_SEB +
-      8.*vx1_SET + 8.*vx1_SWB + 8.*vx1_SWT + 2.*vx2_NEB + 2.*vx2_NET -
-      2.*vx2_NWB - 2.*vx2_NWT - 2.*vx2_SEB - 2.*vx2_SET + 2.*vx2_SWB +
-      2.*vx2_SWT - 2.*vx3_NEB + 2.*vx3_NET + 2.*vx3_NWB - 2.*vx3_NWT -
-      2.*vx3_SEB + 2.*vx3_SET + 2.*vx3_SWB - 2.*vx3_SWT)/64.;
-   b0 = (2.*kxxMyyFromfcNEQ_NEB + 2.*kxxMyyFromfcNEQ_NET + 2.*kxxMyyFromfcNEQ_NWB + 2.*kxxMyyFromfcNEQ_NWT -
-      2.*kxxMyyFromfcNEQ_SEB - 2.*kxxMyyFromfcNEQ_SET - 2.*kxxMyyFromfcNEQ_SWB - 2.*kxxMyyFromfcNEQ_SWT -
+      c2o1*kxyFromfcNEQ_NEB - c2o1*kxyFromfcNEQ_NET - c2o1*kxyFromfcNEQ_NWB - c2o1*kxyFromfcNEQ_NWT +
+      c2o1*kxyFromfcNEQ_SEB + c2o1*kxyFromfcNEQ_SET + c2o1*kxyFromfcNEQ_SWB + c2o1*kxyFromfcNEQ_SWT +
+      c2o1*kxzFromfcNEQ_NEB - c2o1*kxzFromfcNEQ_NET + c2o1*kxzFromfcNEQ_NWB - c2o1*kxzFromfcNEQ_NWT +
+      c2o1*kxzFromfcNEQ_SEB - c2o1*kxzFromfcNEQ_SET + c2o1*kxzFromfcNEQ_SWB - c2o1*kxzFromfcNEQ_SWT +
+      c8o1*vx1_NEB + c8o1*vx1_NET + c8o1*vx1_NWB + c8o1*vx1_NWT + c8o1*vx1_SEB +
+      c8o1*vx1_SET + c8o1*vx1_SWB + c8o1*vx1_SWT + c2o1*vx2_NEB + c2o1*vx2_NET -
+      c2o1*vx2_NWB - c2o1*vx2_NWT - c2o1*vx2_SEB - c2o1*vx2_SET + c2o1*vx2_SWB +
+      c2o1*vx2_SWT - c2o1*vx3_NEB + c2o1*vx3_NET + c2o1*vx3_NWB - c2o1*vx3_NWT -
+      c2o1*vx3_SEB + c2o1*vx3_SET + c2o1*vx3_SWB - c2o1*vx3_SWT)/c64o1;
+   b0 = (c2o1*kxxMyyFromfcNEQ_NEB + c2o1*kxxMyyFromfcNEQ_NET + c2o1*kxxMyyFromfcNEQ_NWB + c2o1*kxxMyyFromfcNEQ_NWT -
+      c2o1*kxxMyyFromfcNEQ_SEB - c2o1*kxxMyyFromfcNEQ_SET - c2o1*kxxMyyFromfcNEQ_SWB - c2o1*kxxMyyFromfcNEQ_SWT -
       kxxMzzFromfcNEQ_NEB - kxxMzzFromfcNEQ_NET - kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NWT +
       kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_SET + kxxMzzFromfcNEQ_SWB + kxxMzzFromfcNEQ_SWT -
-      2.*kxyFromfcNEQ_NEB - 2.*kxyFromfcNEQ_NET + 2.*kxyFromfcNEQ_NWB + 2.*kxyFromfcNEQ_NWT -
-      2.*kxyFromfcNEQ_SEB - 2.*kxyFromfcNEQ_SET + 2.*kxyFromfcNEQ_SWB + 2.*kxyFromfcNEQ_SWT +
-      2.*kyzFromfcNEQ_NEB - 2.*kyzFromfcNEQ_NET + 2.*kyzFromfcNEQ_NWB - 2.*kyzFromfcNEQ_NWT +
-      2.*kyzFromfcNEQ_SEB - 2.*kyzFromfcNEQ_SET + 2.*kyzFromfcNEQ_SWB - 2.*kyzFromfcNEQ_SWT +
-      2.*vx1_NEB + 2.*vx1_NET - 2.*vx1_NWB - 2.*vx1_NWT -
-      2.*vx1_SEB - 2.*vx1_SET + 2.*vx1_SWB + 2.*vx1_SWT +
-      8.*vx2_NEB + 8.*vx2_NET + 8.*vx2_NWB + 8.*vx2_NWT +
-      8.*vx2_SEB + 8.*vx2_SET + 8.*vx2_SWB + 8.*vx2_SWT -
-      2.*vx3_NEB + 2.*vx3_NET - 2.*vx3_NWB + 2.*vx3_NWT +
-      2.*vx3_SEB - 2.*vx3_SET + 2.*vx3_SWB - 2.*vx3_SWT)/64.;
+      c2o1*kxyFromfcNEQ_NEB - c2o1*kxyFromfcNEQ_NET + c2o1*kxyFromfcNEQ_NWB + c2o1*kxyFromfcNEQ_NWT -
+      c2o1*kxyFromfcNEQ_SEB - c2o1*kxyFromfcNEQ_SET + c2o1*kxyFromfcNEQ_SWB + c2o1*kxyFromfcNEQ_SWT +
+      c2o1*kyzFromfcNEQ_NEB - c2o1*kyzFromfcNEQ_NET + c2o1*kyzFromfcNEQ_NWB - c2o1*kyzFromfcNEQ_NWT +
+      c2o1*kyzFromfcNEQ_SEB - c2o1*kyzFromfcNEQ_SET + c2o1*kyzFromfcNEQ_SWB - c2o1*kyzFromfcNEQ_SWT +
+      c2o1*vx1_NEB + c2o1*vx1_NET - c2o1*vx1_NWB - c2o1*vx1_NWT -
+      c2o1*vx1_SEB - c2o1*vx1_SET + c2o1*vx1_SWB + c2o1*vx1_SWT +
+      c8o1*vx2_NEB + c8o1*vx2_NET + c8o1*vx2_NWB + c8o1*vx2_NWT +
+      c8o1*vx2_SEB + c8o1*vx2_SET + c8o1*vx2_SWB + c8o1*vx2_SWT -
+      c2o1*vx3_NEB + c2o1*vx3_NET - c2o1*vx3_NWB + c2o1*vx3_NWT +
+      c2o1*vx3_SEB - c2o1*vx3_SET + c2o1*vx3_SWB - c2o1*vx3_SWT)/c64o1;
    c0 = (kxxMyyFromfcNEQ_NEB - kxxMyyFromfcNEQ_NET + kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_NWT +
       kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_SET + kxxMyyFromfcNEQ_SWB - kxxMyyFromfcNEQ_SWT -
-      2.*kxxMzzFromfcNEQ_NEB + 2.*kxxMzzFromfcNEQ_NET - 2.*kxxMzzFromfcNEQ_NWB + 2.*kxxMzzFromfcNEQ_NWT -
-      2.*kxxMzzFromfcNEQ_SEB + 2.*kxxMzzFromfcNEQ_SET - 2.*kxxMzzFromfcNEQ_SWB + 2.*kxxMzzFromfcNEQ_SWT -
-      2.*kxzFromfcNEQ_NEB - 2.*kxzFromfcNEQ_NET + 2.*kxzFromfcNEQ_NWB + 2.*kxzFromfcNEQ_NWT -
-      2.*kxzFromfcNEQ_SEB - 2.*kxzFromfcNEQ_SET + 2.*kxzFromfcNEQ_SWB + 2.*kxzFromfcNEQ_SWT -
-      2.*kyzFromfcNEQ_NEB - 2.*kyzFromfcNEQ_NET - 2.*kyzFromfcNEQ_NWB - 2.*kyzFromfcNEQ_NWT +
-      2.*kyzFromfcNEQ_SEB + 2.*kyzFromfcNEQ_SET + 2.*kyzFromfcNEQ_SWB + 2.*kyzFromfcNEQ_SWT -
-      2.*vx1_NEB + 2.*vx1_NET + 2.*vx1_NWB - 2.*vx1_NWT -
-      2.*vx1_SEB + 2.*vx1_SET + 2.*vx1_SWB - 2.*vx1_SWT -
-      2.*vx2_NEB + 2.*vx2_NET - 2.*vx2_NWB + 2.*vx2_NWT +
-      2.*vx2_SEB - 2.*vx2_SET + 2.*vx2_SWB - 2.*vx2_SWT +
-      8.*vx3_NEB + 8.*vx3_NET + 8.*vx3_NWB + 8.*vx3_NWT +
-      8.*vx3_SEB + 8.*vx3_SET + 8.*vx3_SWB + 8.*vx3_SWT)/64.;
-   ax = (vx1_NEB + vx1_NET - vx1_NWB - vx1_NWT + vx1_SEB + vx1_SET - vx1_SWB - vx1_SWT)/4.;
-   bx = (vx2_NEB + vx2_NET - vx2_NWB - vx2_NWT + vx2_SEB + vx2_SET - vx2_SWB - vx2_SWT)/4.;
-   cx = (vx3_NEB + vx3_NET - vx3_NWB - vx3_NWT + vx3_SEB + vx3_SET - vx3_SWB - vx3_SWT)/4.;
+      c2o1*kxxMzzFromfcNEQ_NEB + c2o1*kxxMzzFromfcNEQ_NET - c2o1*kxxMzzFromfcNEQ_NWB + c2o1*kxxMzzFromfcNEQ_NWT -
+      c2o1*kxxMzzFromfcNEQ_SEB + c2o1*kxxMzzFromfcNEQ_SET - c2o1*kxxMzzFromfcNEQ_SWB + c2o1*kxxMzzFromfcNEQ_SWT -
+      c2o1*kxzFromfcNEQ_NEB - c2o1*kxzFromfcNEQ_NET + c2o1*kxzFromfcNEQ_NWB + c2o1*kxzFromfcNEQ_NWT -
+      c2o1*kxzFromfcNEQ_SEB - c2o1*kxzFromfcNEQ_SET + c2o1*kxzFromfcNEQ_SWB + c2o1*kxzFromfcNEQ_SWT -
+      c2o1*kyzFromfcNEQ_NEB - c2o1*kyzFromfcNEQ_NET - c2o1*kyzFromfcNEQ_NWB - c2o1*kyzFromfcNEQ_NWT +
+      c2o1*kyzFromfcNEQ_SEB + c2o1*kyzFromfcNEQ_SET + c2o1*kyzFromfcNEQ_SWB + c2o1*kyzFromfcNEQ_SWT -
+      c2o1*vx1_NEB + c2o1*vx1_NET + c2o1*vx1_NWB - c2o1*vx1_NWT -
+      c2o1*vx1_SEB + c2o1*vx1_SET + c2o1*vx1_SWB - c2o1*vx1_SWT -
+      c2o1*vx2_NEB + c2o1*vx2_NET - c2o1*vx2_NWB + c2o1*vx2_NWT +
+      c2o1*vx2_SEB - c2o1*vx2_SET + c2o1*vx2_SWB - c2o1*vx2_SWT +
+      c8o1*vx3_NEB + c8o1*vx3_NET + c8o1*vx3_NWB + c8o1*vx3_NWT +
+      c8o1*vx3_SEB + c8o1*vx3_SET + c8o1*vx3_SWB + c8o1*vx3_SWT)/c64o1;
+   ax = (vx1_NEB + vx1_NET - vx1_NWB - vx1_NWT + vx1_SEB + vx1_SET - vx1_SWB - vx1_SWT)/c4o1;
+   bx = (vx2_NEB + vx2_NET - vx2_NWB - vx2_NWT + vx2_SEB + vx2_SET - vx2_SWB - vx2_SWT)/c4o1;
+   cx = (vx3_NEB + vx3_NET - vx3_NWB - vx3_NWT + vx3_SEB + vx3_SET - vx3_SWB - vx3_SWT)/c4o1;
    axx= (kxxMyyFromfcNEQ_NEB + kxxMyyFromfcNEQ_NET - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_NWT +
       kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_SET - kxxMyyFromfcNEQ_SWB - kxxMyyFromfcNEQ_SWT +
       kxxMzzFromfcNEQ_NEB + kxxMzzFromfcNEQ_NET - kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NWT +
       kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_SET - kxxMzzFromfcNEQ_SWB - kxxMzzFromfcNEQ_SWT +
-      2.*vx2_NEB + 2.*vx2_NET - 2.*vx2_NWB - 2.*vx2_NWT -
-      2.*vx2_SEB - 2.*vx2_SET + 2.*vx2_SWB + 2.*vx2_SWT -
-      2.*vx3_NEB + 2.*vx3_NET + 2.*vx3_NWB - 2.*vx3_NWT -
-      2.*vx3_SEB + 2.*vx3_SET + 2.*vx3_SWB - 2.*vx3_SWT)/16.;
+      c2o1*vx2_NEB + c2o1*vx2_NET - c2o1*vx2_NWB - c2o1*vx2_NWT -
+      c2o1*vx2_SEB - c2o1*vx2_SET + c2o1*vx2_SWB + c2o1*vx2_SWT -
+      c2o1*vx3_NEB + c2o1*vx3_NET + c2o1*vx3_NWB - c2o1*vx3_NWT -
+      c2o1*vx3_SEB + c2o1*vx3_SET + c2o1*vx3_SWB - c2o1*vx3_SWT)/c16o1;
    bxx= (kxyFromfcNEQ_NEB + kxyFromfcNEQ_NET - kxyFromfcNEQ_NWB - kxyFromfcNEQ_NWT +
       kxyFromfcNEQ_SEB + kxyFromfcNEQ_SET - kxyFromfcNEQ_SWB - kxyFromfcNEQ_SWT -
-      2.*vx1_NEB - 2.*vx1_NET + 2.*vx1_NWB + 2.*vx1_NWT +
-      2.*vx1_SEB + 2.*vx1_SET - 2.*vx1_SWB - 2.*vx1_SWT)/8.;
+      c2o1*vx1_NEB - c2o1*vx1_NET + c2o1*vx1_NWB + c2o1*vx1_NWT +
+      c2o1*vx1_SEB + c2o1*vx1_SET - c2o1*vx1_SWB - c2o1*vx1_SWT)/c8o1;
    cxx= (kxzFromfcNEQ_NEB + kxzFromfcNEQ_NET - kxzFromfcNEQ_NWB - kxzFromfcNEQ_NWT +
       kxzFromfcNEQ_SEB + kxzFromfcNEQ_SET - kxzFromfcNEQ_SWB - kxzFromfcNEQ_SWT +
-      2.*vx1_NEB - 2.*vx1_NET - 2.*vx1_NWB + 2.*vx1_NWT +
-      2.*vx1_SEB - 2.*vx1_SET - 2.*vx1_SWB + 2.*vx1_SWT)/8.;
-   ay = (vx1_NEB + vx1_NET + vx1_NWB + vx1_NWT - vx1_SEB - vx1_SET - vx1_SWB - vx1_SWT)/4.;
-   by = (vx2_NEB + vx2_NET + vx2_NWB + vx2_NWT - vx2_SEB - vx2_SET - vx2_SWB - vx2_SWT)/4.;
-   cy = (vx3_NEB + vx3_NET + vx3_NWB + vx3_NWT - vx3_SEB - vx3_SET - vx3_SWB - vx3_SWT)/4.;
+      c2o1*vx1_NEB - c2o1*vx1_NET - c2o1*vx1_NWB + c2o1*vx1_NWT +
+      c2o1*vx1_SEB - c2o1*vx1_SET - c2o1*vx1_SWB + c2o1*vx1_SWT)/c8o1;
+   ay = (vx1_NEB + vx1_NET + vx1_NWB + vx1_NWT - vx1_SEB - vx1_SET - vx1_SWB - vx1_SWT)/c4o1;
+   by = (vx2_NEB + vx2_NET + vx2_NWB + vx2_NWT - vx2_SEB - vx2_SET - vx2_SWB - vx2_SWT)/c4o1;
+   cy = (vx3_NEB + vx3_NET + vx3_NWB + vx3_NWT - vx3_SEB - vx3_SET - vx3_SWB - vx3_SWT)/c4o1;
    ayy= (kxyFromfcNEQ_NEB + kxyFromfcNEQ_NET + kxyFromfcNEQ_NWB + kxyFromfcNEQ_NWT -
       kxyFromfcNEQ_SEB - kxyFromfcNEQ_SET - kxyFromfcNEQ_SWB - kxyFromfcNEQ_SWT -
-      2.*vx2_NEB - 2.*vx2_NET + 2.*vx2_NWB + 2.*vx2_NWT +
-      2.*vx2_SEB + 2.*vx2_SET - 2.*vx2_SWB - 2.*vx2_SWT)/8.;
-   byy= (-2.*kxxMyyFromfcNEQ_NEB - 2.*kxxMyyFromfcNEQ_NET - 2.*kxxMyyFromfcNEQ_NWB - 2.*kxxMyyFromfcNEQ_NWT +
-      2.*kxxMyyFromfcNEQ_SEB + 2.*kxxMyyFromfcNEQ_SET + 2.*kxxMyyFromfcNEQ_SWB + 2.*kxxMyyFromfcNEQ_SWT +
+      c2o1*vx2_NEB - c2o1*vx2_NET + c2o1*vx2_NWB + c2o1*vx2_NWT +
+      c2o1*vx2_SEB + c2o1*vx2_SET - c2o1*vx2_SWB - c2o1*vx2_SWT)/c8o1;
+   byy= (-c2o1*kxxMyyFromfcNEQ_NEB - c2o1*kxxMyyFromfcNEQ_NET - c2o1*kxxMyyFromfcNEQ_NWB - c2o1*kxxMyyFromfcNEQ_NWT +
+      c2o1*kxxMyyFromfcNEQ_SEB + c2o1*kxxMyyFromfcNEQ_SET + c2o1*kxxMyyFromfcNEQ_SWB + c2o1*kxxMyyFromfcNEQ_SWT +
       kxxMzzFromfcNEQ_NEB + kxxMzzFromfcNEQ_NET + kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_NWT -
       kxxMzzFromfcNEQ_SEB - kxxMzzFromfcNEQ_SET - kxxMzzFromfcNEQ_SWB - kxxMzzFromfcNEQ_SWT +
-      2.*vx1_NEB + 2.*vx1_NET - 2.*vx1_NWB - 2.*vx1_NWT -
-      2.*vx1_SEB - 2.*vx1_SET + 2.*vx1_SWB + 2.*vx1_SWT -
-      2.*vx3_NEB + 2.*vx3_NET - 2.*vx3_NWB + 2.*vx3_NWT +
-      2.*vx3_SEB - 2.*vx3_SET + 2.*vx3_SWB - 2.*vx3_SWT)/16.;
+      c2o1*vx1_NEB + c2o1*vx1_NET - c2o1*vx1_NWB - c2o1*vx1_NWT -
+      c2o1*vx1_SEB - c2o1*vx1_SET + c2o1*vx1_SWB + c2o1*vx1_SWT -
+      c2o1*vx3_NEB + c2o1*vx3_NET - c2o1*vx3_NWB + c2o1*vx3_NWT +
+      c2o1*vx3_SEB - c2o1*vx3_SET + c2o1*vx3_SWB - c2o1*vx3_SWT)/c16o1;
    cyy= (kyzFromfcNEQ_NEB + kyzFromfcNEQ_NET + kyzFromfcNEQ_NWB + kyzFromfcNEQ_NWT -
       kyzFromfcNEQ_SEB - kyzFromfcNEQ_SET - kyzFromfcNEQ_SWB - kyzFromfcNEQ_SWT +
-      2.*vx2_NEB - 2.*vx2_NET + 2.*vx2_NWB - 2.*vx2_NWT -
-      2.*vx2_SEB + 2.*vx2_SET - 2.*vx2_SWB + 2.*vx2_SWT)/8.;
-   az = (-vx1_NEB + vx1_NET - vx1_NWB + vx1_NWT - vx1_SEB + vx1_SET - vx1_SWB + vx1_SWT)/4.;
-   bz = (-vx2_NEB + vx2_NET - vx2_NWB + vx2_NWT - vx2_SEB + vx2_SET - vx2_SWB + vx2_SWT)/4.;
-   cz = (-vx3_NEB + vx3_NET - vx3_NWB + vx3_NWT - vx3_SEB + vx3_SET - vx3_SWB + vx3_SWT)/4.;
+      c2o1*vx2_NEB - c2o1*vx2_NET + c2o1*vx2_NWB - c2o1*vx2_NWT -
+      c2o1*vx2_SEB + c2o1*vx2_SET - c2o1*vx2_SWB + c2o1*vx2_SWT)/c8o1;
+   az = (-vx1_NEB + vx1_NET - vx1_NWB + vx1_NWT - vx1_SEB + vx1_SET - vx1_SWB + vx1_SWT)/c4o1;
+   bz = (-vx2_NEB + vx2_NET - vx2_NWB + vx2_NWT - vx2_SEB + vx2_SET - vx2_SWB + vx2_SWT)/c4o1;
+   cz = (-vx3_NEB + vx3_NET - vx3_NWB + vx3_NWT - vx3_SEB + vx3_SET - vx3_SWB + vx3_SWT)/c4o1;
    azz= (-kxzFromfcNEQ_NEB + kxzFromfcNEQ_NET - kxzFromfcNEQ_NWB + kxzFromfcNEQ_NWT -
       kxzFromfcNEQ_SEB + kxzFromfcNEQ_SET - kxzFromfcNEQ_SWB + kxzFromfcNEQ_SWT +
-      2.*vx3_NEB - 2.*vx3_NET - 2.*vx3_NWB + 2.*vx3_NWT +
-      2.*vx3_SEB - 2.*vx3_SET - 2.*vx3_SWB + 2.*vx3_SWT)/8.;
+      c2o1*vx3_NEB - c2o1*vx3_NET - c2o1*vx3_NWB + c2o1*vx3_NWT +
+      c2o1*vx3_SEB - c2o1*vx3_SET - c2o1*vx3_SWB + c2o1*vx3_SWT)/c8o1;
    bzz= (-kyzFromfcNEQ_NEB + kyzFromfcNEQ_NET - kyzFromfcNEQ_NWB + kyzFromfcNEQ_NWT -
       kyzFromfcNEQ_SEB + kyzFromfcNEQ_SET - kyzFromfcNEQ_SWB + kyzFromfcNEQ_SWT +
-      2.*vx3_NEB - 2.*vx3_NET + 2.*vx3_NWB - 2.*vx3_NWT -
-      2.*vx3_SEB + 2.*vx3_SET - 2.*vx3_SWB + 2.*vx3_SWT)/8.;
+      c2o1*vx3_NEB - c2o1*vx3_NET + c2o1*vx3_NWB - c2o1*vx3_NWT -
+      c2o1*vx3_SEB + c2o1*vx3_SET - c2o1*vx3_SWB + c2o1*vx3_SWT)/c8o1;
    czz= (-kxxMyyFromfcNEQ_NEB + kxxMyyFromfcNEQ_NET - kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NWT -
       kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_SET - kxxMyyFromfcNEQ_SWB + kxxMyyFromfcNEQ_SWT +
-      2.*kxxMzzFromfcNEQ_NEB - 2.*kxxMzzFromfcNEQ_NET + 2.*kxxMzzFromfcNEQ_NWB - 2.*kxxMzzFromfcNEQ_NWT +
-      2.*kxxMzzFromfcNEQ_SEB - 2.*kxxMzzFromfcNEQ_SET + 2.*kxxMzzFromfcNEQ_SWB - 2.*kxxMzzFromfcNEQ_SWT -
-      2.*vx1_NEB + 2.*vx1_NET + 2.*vx1_NWB - 2.*vx1_NWT -
-      2.*vx1_SEB + 2.*vx1_SET + 2.*vx1_SWB - 2.*vx1_SWT -
-      2.*vx2_NEB + 2.*vx2_NET - 2.*vx2_NWB + 2.*vx2_NWT +
-      2.*vx2_SEB - 2.*vx2_SET + 2.*vx2_SWB - 2.*vx2_SWT)/16.;
-   axy= (vx1_NEB + vx1_NET - vx1_NWB - vx1_NWT - vx1_SEB - vx1_SET + vx1_SWB + vx1_SWT)/2.;
-   bxy= (vx2_NEB + vx2_NET - vx2_NWB - vx2_NWT - vx2_SEB - vx2_SET + vx2_SWB + vx2_SWT)/2.;
-   cxy= (vx3_NEB + vx3_NET - vx3_NWB - vx3_NWT - vx3_SEB - vx3_SET + vx3_SWB + vx3_SWT)/2.;
-   axz= (-vx1_NEB + vx1_NET + vx1_NWB - vx1_NWT - vx1_SEB + vx1_SET + vx1_SWB - vx1_SWT)/2.;
-   bxz= (-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT - vx2_SEB + vx2_SET + vx2_SWB - vx2_SWT)/2.;
-   cxz= (-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT - vx3_SEB + vx3_SET + vx3_SWB - vx3_SWT)/2.;
-   ayz= (-vx1_NEB + vx1_NET - vx1_NWB + vx1_NWT + vx1_SEB - vx1_SET + vx1_SWB - vx1_SWT)/2.;
-   byz= (-vx2_NEB + vx2_NET - vx2_NWB + vx2_NWT + vx2_SEB - vx2_SET + vx2_SWB - vx2_SWT)/2.;
-   cyz= (-vx3_NEB + vx3_NET - vx3_NWB + vx3_NWT + vx3_SEB - vx3_SET + vx3_SWB - vx3_SWT)/2.;
+      c2o1*kxxMzzFromfcNEQ_NEB - c2o1*kxxMzzFromfcNEQ_NET + c2o1*kxxMzzFromfcNEQ_NWB - c2o1*kxxMzzFromfcNEQ_NWT +
+      c2o1*kxxMzzFromfcNEQ_SEB - c2o1*kxxMzzFromfcNEQ_SET + c2o1*kxxMzzFromfcNEQ_SWB - c2o1*kxxMzzFromfcNEQ_SWT -
+      c2o1*vx1_NEB + c2o1*vx1_NET + c2o1*vx1_NWB - c2o1*vx1_NWT -
+      c2o1*vx1_SEB + c2o1*vx1_SET + c2o1*vx1_SWB - c2o1*vx1_SWT -
+      c2o1*vx2_NEB + c2o1*vx2_NET - c2o1*vx2_NWB + c2o1*vx2_NWT +
+      c2o1*vx2_SEB - c2o1*vx2_SET + c2o1*vx2_SWB - c2o1*vx2_SWT)/c16o1;
+   axy= (vx1_NEB + vx1_NET - vx1_NWB - vx1_NWT - vx1_SEB - vx1_SET + vx1_SWB + vx1_SWT)/c2o1;
+   bxy= (vx2_NEB + vx2_NET - vx2_NWB - vx2_NWT - vx2_SEB - vx2_SET + vx2_SWB + vx2_SWT)/c2o1;
+   cxy= (vx3_NEB + vx3_NET - vx3_NWB - vx3_NWT - vx3_SEB - vx3_SET + vx3_SWB + vx3_SWT)/c2o1;
+   axz= (-vx1_NEB + vx1_NET + vx1_NWB - vx1_NWT - vx1_SEB + vx1_SET + vx1_SWB - vx1_SWT)/c2o1;
+   bxz= (-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT - vx2_SEB + vx2_SET + vx2_SWB - vx2_SWT)/c2o1;
+   cxz= (-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT - vx3_SEB + vx3_SET + vx3_SWB - vx3_SWT)/c2o1;
+   ayz= (-vx1_NEB + vx1_NET - vx1_NWB + vx1_NWT + vx1_SEB - vx1_SET + vx1_SWB - vx1_SWT)/c2o1;
+   byz= (-vx2_NEB + vx2_NET - vx2_NWB + vx2_NWT + vx2_SEB - vx2_SET + vx2_SWB - vx2_SWT)/c2o1;
+   cyz= (-vx3_NEB + vx3_NET - vx3_NWB + vx3_NWT + vx3_SEB - vx3_SET + vx3_SWB - vx3_SWT)/c2o1;
    axyz=-vx1_NEB + vx1_NET + vx1_NWB - vx1_NWT + vx1_SEB - vx1_SET - vx1_SWB + vx1_SWT;
    bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
    cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
@@ -351,7 +356,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
    //                  kxxMzzFromfcNEQ_NWT+
    //                  kxxMzzFromfcNEQ_NET+
    //                  kxxMzzFromfcNEQ_NEB)*c1o8-(ax-cz);
-   kxyAverage       =0;//(kxyFromfcNEQ_SWB+
+   kxyAverage       = c0o1;//(kxyFromfcNEQ_SWB+
                     //kxyFromfcNEQ_SWT+
                     //kxyFromfcNEQ_SET+
                     //kxyFromfcNEQ_SEB+
@@ -359,7 +364,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
                     //kxyFromfcNEQ_NWT+
                     //kxyFromfcNEQ_NET+
                     //kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-   kyzAverage       =0;//(kyzFromfcNEQ_SWB+
+   kyzAverage       = c0o1;//(kyzFromfcNEQ_SWB+
                        //kyzFromfcNEQ_SWT+
                        //kyzFromfcNEQ_SET+
                        //kyzFromfcNEQ_SEB+
@@ -367,7 +372,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
                        //kyzFromfcNEQ_NWT+
                        //kyzFromfcNEQ_NET+
                        //kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-   kxzAverage       =0;//(kxzFromfcNEQ_SWB+
+   kxzAverage       = c0o1;//(kxzFromfcNEQ_SWB+
                        //kxzFromfcNEQ_SWT+
                        //kxzFromfcNEQ_SET+
                        //kxzFromfcNEQ_SEB+
@@ -375,7 +380,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
                        //kxzFromfcNEQ_NWT+
                        //kxzFromfcNEQ_NET+
                        //kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-   kxxMyyAverage    =0;//(kxxMyyFromfcNEQ_SWB+
+   kxxMyyAverage    = c0o1;//(kxxMyyFromfcNEQ_SWB+
                        //kxxMyyFromfcNEQ_SWT+
                        //kxxMyyFromfcNEQ_SET+
                        //kxxMyyFromfcNEQ_SEB+
@@ -383,7 +388,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
                        //kxxMyyFromfcNEQ_NWT+
                        //kxxMyyFromfcNEQ_NET+
                        //kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-   kxxMzzAverage    =0;//(kxxMzzFromfcNEQ_SWB+
+   kxxMzzAverage    = c0o1;//(kxxMzzFromfcNEQ_SWB+
                        //kxxMzzFromfcNEQ_SWT+
                        //kxxMzzFromfcNEQ_SET+
                        //kxxMzzFromfcNEQ_SEB+
@@ -397,17 +402,17 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
    //
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    a0 = a0 + xoff * ax + yoff * ay + zoff * az + xoff_sq * axx + yoff_sq * ayy + zoff_sq * azz + xoff*yoff*axy + xoff*zoff*axz + yoff*zoff*ayz + xoff*yoff*zoff*axyz ;
-   ax = ax + 2. * xoff * axx + yoff * axy + zoff * axz + yoff*zoff*axyz;
-   ay = ay + 2. * yoff * ayy + xoff * axy + zoff * ayz + xoff*zoff*axyz;
-   az = az + 2. * zoff * azz + xoff * axz + yoff * ayz + xoff*yoff*axyz;
+   ax = ax + c2o1 * xoff * axx + yoff * axy + zoff * axz + yoff*zoff*axyz;
+   ay = ay + c2o1 * yoff * ayy + xoff * axy + zoff * ayz + xoff*zoff*axyz;
+   az = az + c2o1 * zoff * azz + xoff * axz + yoff * ayz + xoff*yoff*axyz;
    b0 = b0 + xoff * bx + yoff * by + zoff * bz + xoff_sq * bxx + yoff_sq * byy + zoff_sq * bzz + xoff*yoff*bxy + xoff*zoff*bxz + yoff*zoff*byz + xoff*yoff*zoff*bxyz;
-   bx = bx + 2. * xoff * bxx + yoff * bxy + zoff * bxz + yoff*zoff*bxyz;
-   by = by + 2. * yoff * byy + xoff * bxy + zoff * byz + xoff*zoff*bxyz;
-   bz = bz + 2. * zoff * bzz + xoff * bxz + yoff * byz + xoff*yoff*bxyz;
+   bx = bx + c2o1 * xoff * bxx + yoff * bxy + zoff * bxz + yoff*zoff*bxyz;
+   by = by + c2o1 * yoff * byy + xoff * bxy + zoff * byz + xoff*zoff*bxyz;
+   bz = bz + c2o1 * zoff * bzz + xoff * bxz + yoff * byz + xoff*yoff*bxyz;
    c0 = c0 + xoff * cx + yoff * cy + zoff * cz + xoff_sq * cxx + yoff_sq * cyy + zoff_sq * czz + xoff*yoff*cxy + xoff*zoff*cxz + yoff*zoff*cyz + xoff*yoff*zoff*cxyz;
-   cx = cx + 2. * xoff * cxx + yoff * cxy + zoff * cxz + yoff*zoff*cxyz;
-   cy = cy + 2. * yoff * cyy + xoff * cxy + zoff * cyz + xoff*zoff*cxyz;
-   cz = cz + 2. * zoff * czz + xoff * cxz + yoff * cyz + xoff*yoff*cxyz;
+   cx = cx + c2o1 * xoff * cxx + yoff * cxy + zoff * cxz + yoff*zoff*cxyz;
+   cy = cy + c2o1 * yoff * cyy + xoff * cxy + zoff * cyz + xoff*zoff*cxyz;
+   cz = cz + c2o1 * zoff * czz + xoff * cxz + yoff * cyz + xoff*yoff*cxyz;
    axy= axy + zoff*axyz;
    axz= axz + yoff*axyz;
    ayz= ayz + xoff*axyz;
@@ -421,121 +426,122 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
 
    const real o = omega;
 
-   f_E = eps_new*((2*(-2*ax + by + cz-kxxMzzAverage-kxxMyyAverage))/(27.*o));
-   f_N = eps_new*((2*(ax - 2*by + cz+2*kxxMyyAverage-kxxMzzAverage))/(27.*o));
-   f_T = eps_new*((2*(ax + by - 2*cz-kxxMyyAverage+2*kxxMzzAverage))/(27.*o));
-   f_NE = eps_new*(-(ax + 3*ay + 3*bx + by - 2*cz+2*kxxMyyAverage-kxxMyyAverage+3*kxyAverage)/(54.*o));
-   f_SE = eps_new*(-(ax - 3*ay - 3*bx + by - 2*cz+2*kxxMyyAverage-kxxMyyAverage-3*kxyAverage)/(54.*o));
-   f_TE = eps_new*(-(ax + 3*az - 2*by + 3*cx + cz+2*kxxMyyAverage-kxxMzzAverage+3*kxzAverage)/(54.*o));
-   f_BE = eps_new*(-(ax - 3*az - 2*by - 3*cx + cz+2*kxxMyyAverage-kxxMzzAverage-3*kxzAverage)/(54.*o));
-   f_TN = eps_new*(-(-2*ax + by + 3*bz + 3*cy + cz-kxxMyyAverage-kxxMzzAverage+3*kyzAverage)/(54.*o));
-   f_BN = eps_new*(-(-2*ax + by - 3*bz - 3*cy + cz-kxxMyyAverage-kxxMzzAverage-3*kyzAverage)/(54.*o));
+   f_E = eps_new*((c2o1*(-c2o1*ax + by + cz-kxxMzzAverage-kxxMyyAverage))/(c27o1*o));
+   f_N = eps_new*((c2o1*(ax - c2o1*by + cz+c2o1*kxxMyyAverage-kxxMzzAverage))/(c27o1*o));
+   f_T = eps_new*((c2o1*(ax + by - c2o1*cz-kxxMyyAverage+c2o1*kxxMzzAverage))/(c27o1*o));
+   f_NE = eps_new*(-(ax + c3o1*ay + c3o1*bx + by - c2o1*cz+c2o1*kxxMyyAverage-kxxMyyAverage+c3o1*kxyAverage)/(c54o1*o));
+   f_SE = eps_new*(-(ax - c3o1*ay - c3o1*bx + by - c2o1*cz+c2o1*kxxMyyAverage-kxxMyyAverage-c3o1*kxyAverage)/(c54o1*o));
+   f_TE = eps_new*(-(ax + c3o1*az - c2o1*by + c3o1*cx + cz+c2o1*kxxMyyAverage-kxxMzzAverage+c3o1*kxzAverage)/(c54o1*o));
+   f_BE = eps_new*(-(ax - c3o1*az - c2o1*by - c3o1*cx + cz+c2o1*kxxMyyAverage-kxxMzzAverage-c3o1*kxzAverage)/(c54o1*o));
+   f_TN = eps_new*(-(-c2o1*ax + by + c3o1*bz + c3o1*cy + cz-kxxMyyAverage-kxxMzzAverage+c3o1*kyzAverage)/(c54o1*o));
+   f_BN = eps_new*(-(-c2o1*ax + by - c3o1*bz - c3o1*cy + cz-kxxMyyAverage-kxxMzzAverage-c3o1*kyzAverage)/(c54o1*o));
    f_ZERO = 0.;
-   f_TNE = eps_new*(-(ay + az + bx + bz + cx + cy+kxyAverage+kxzAverage+kyzAverage)/(72.*o));
-   f_TSW = eps_new*((-ay + az - bx + bz + cx + cy-kxyAverage+kxzAverage+kyzAverage)/(72.*o));
-   f_TSE = eps_new*((ay - az + bx + bz - cx + cy+kxyAverage-kxzAverage+kyzAverage)/(72.*o));
-   f_TNW = eps_new*((ay + az + bx - bz + cx - cy+kxyAverage+kxzAverage-kyzAverage)/(72.*o));
+   f_TNE = eps_new*(-(ay + az + bx + bz + cx + cy+kxyAverage+kxzAverage+kyzAverage)/(c72o1*o));
+   f_TSW = eps_new*((-ay + az - bx + bz + cx + cy-kxyAverage+kxzAverage+kyzAverage)/(c72o1*o));
+   f_TSE = eps_new*((ay - az + bx + bz - cx + cy+kxyAverage-kxzAverage+kyzAverage)/(c72o1*o));
+   f_TNW = eps_new*((ay + az + bx - bz + cx - cy+kxyAverage+kxzAverage-kyzAverage)/(c72o1*o));
 
-   x_E = 0.25*eps_new*((2*(-4*axx + bxy + cxz))/(27.*o));
-   x_N = 0.25*eps_new*((2*(2*axx - 2*bxy + cxz))/(27.*o));
-   x_T = 0.25*eps_new*((2*(2*axx + bxy - 2*cxz))/(27.*o));
-   x_NE = 0.25*eps_new*(-((2*axx + 3*axy + 6*bxx + bxy - 2*cxz))/(54.*o));
-   x_SE = 0.25*eps_new*(-((2*axx - 3*axy - 6*bxx + bxy - 2*cxz))/(54.*o));
-   x_TE = 0.25*eps_new*(-((2*axx + 3*axz - 2*bxy + 6*cxx + cxz))/(54.*o));
-   x_BE = 0.25*eps_new*(-((2*axx - 3*axz - 2*bxy - 6*cxx + cxz))/(54.*o));
-   x_TN = 0.25*eps_new*(-((-4*axx + bxy + 3*bxz + 3*cxy + cxz))/(54.*o));
-   x_BN = 0.25*eps_new*(-((-4*axx + bxy - 3*bxz - 3*cxy + cxz))/(54.*o));
+   x_E = 0.25*eps_new*((c2o1*(-c4o1*axx + bxy + cxz))/(c27o1*o));
+   x_N = 0.25*eps_new*((c2o1*(c2o1*axx - c2o1*bxy + cxz))/(c27o1*o));
+   x_T = 0.25*eps_new*((c2o1*(c2o1*axx + bxy - c2o1*cxz))/(c27o1*o));
+   x_NE = 0.25*eps_new*(-((c2o1*axx + c3o1*axy + c6o1*bxx + bxy - c2o1*cxz))/(c54o1*o));
+   x_SE = 0.25*eps_new*(-((c2o1*axx - c3o1*axy - c6o1*bxx + bxy - c2o1*cxz))/(c54o1*o));
+   x_TE = 0.25*eps_new*(-((c2o1*axx + c3o1*axz - c2o1*bxy + c6o1*cxx + cxz))/(c54o1*o));
+   x_BE = 0.25*eps_new*(-((c2o1*axx - c3o1*axz - c2o1*bxy - c6o1*cxx + cxz))/(c54o1*o));
+   x_TN = 0.25*eps_new*(-((-c4o1*axx + bxy + c3o1*bxz + c3o1*cxy + cxz))/(c54o1*o));
+   x_BN = 0.25*eps_new*(-((-c4o1*axx + bxy - c3o1*bxz - c3o1*cxy + cxz))/(c54o1*o));
    x_ZERO = 0.;
-   x_TNE = 0.25*eps_new*(-((axy + axz + 2*bxx + bxz + 2*cxx + cxy))/(72.*o));
-   x_TSW = 0.25*eps_new*(((-axy + axz - 2*bxx + bxz + 2*cxx + cxy))/(72.*o));
-   x_TSE = 0.25*eps_new*(((axy - axz + 2*bxx + bxz - 2*cxx + cxy))/(72.*o));
-   x_TNW = 0.25*eps_new*(((axy + axz + 2*bxx - bxz + 2*cxx - cxy))/(72.*o));
+   x_TNE = 0.25*eps_new*(-((axy + axz + c2o1*bxx + bxz + c2o1*cxx + cxy))/(c72o1*o));
+   x_TSW = 0.25*eps_new*(((-axy + axz - c2o1*bxx + bxz + c2o1*cxx + cxy))/(c72o1*o));
+   x_TSE = 0.25*eps_new*(((axy - axz + c2o1*bxx + bxz - c2o1*cxx + cxy))/(c72o1*o));
+   x_TNW = 0.25*eps_new*(((axy + axz + c2o1*bxx - bxz + c2o1*cxx - cxy))/(c72o1*o));
 
-   y_E = 0.25*eps_new*(2*(-2*axy + 2*byy + cyz))/(27.*o);
-   y_N = 0.25*eps_new*(2*(axy - 4*byy + cyz))/(27.*o);
-   y_T = 0.25*eps_new*(2*(axy + 2*byy - 2*cyz))/(27.*o);
-   y_NE = 0.25*eps_new*(-((axy + 6*ayy + 3*bxy + 2*byy - 2*cyz))/(54.*o));
-   y_SE = 0.25*eps_new*(-((axy - 6*ayy - 3*bxy + 2*byy - 2*cyz))/(54.*o));
-   y_TE = 0.25*eps_new*(-((axy + 3*ayz - 4*byy + 3*cxy + cyz))/(54.*o));
-   y_BE = 0.25*eps_new*(-((axy - 3*ayz - 4*byy - 3*cxy + cyz))/(54.*o));
-   y_TN = 0.25*eps_new*(-((-2*axy + 2*byy + 3*byz + 6*cyy + cyz))/(54.*o));
-   y_BN = 0.25*eps_new*(-((-2*axy + 2*byy - 3*byz - 6*cyy + cyz))/(54.*o));
+   y_E = 0.25*eps_new*(c2o1*(-c2o1*axy + c2o1*byy + cyz))/(c27o1*o);
+   y_N = 0.25*eps_new*(c2o1*(axy - c4o1*byy + cyz))/(c27o1*o);
+   y_T = 0.25*eps_new*(c2o1*(axy + c2o1*byy - c2o1*cyz))/(c27o1*o);
+   y_NE = 0.25*eps_new*(-((axy + c6o1*ayy + c3o1*bxy + c2o1*byy - c2o1*cyz))/(c54o1*o));
+   y_SE = 0.25*eps_new*(-((axy - c6o1*ayy - c3o1*bxy + c2o1*byy - c2o1*cyz))/(c54o1*o));
+   y_TE = 0.25*eps_new*(-((axy + c3o1*ayz - c4o1*byy + c3o1*cxy + cyz))/(c54o1*o));
+   y_BE = 0.25*eps_new*(-((axy - c3o1*ayz - c4o1*byy - c3o1*cxy + cyz))/(c54o1*o));
+   y_TN = 0.25*eps_new*(-((-c2o1*axy + c2o1*byy + c3o1*byz + c6o1*cyy + cyz))/(c54o1*o));
+   y_BN = 0.25*eps_new*(-((-c2o1*axy + c2o1*byy - c3o1*byz - c6o1*cyy + cyz))/(c54o1*o));
    y_ZERO = 0.;
-   y_TNE = 0.25*eps_new*(-((2*ayy + ayz + bxy + byz + cxy + 2*cyy))/(72.*o));
-   y_TSW = 0.25*eps_new*(((-2*ayy + ayz - bxy + byz + cxy + 2*cyy))/(72.*o));
-   y_TSE = 0.25*eps_new*(((2*ayy - ayz + bxy + byz - cxy + 2*cyy))/(72.*o));
-   y_TNW = 0.25*eps_new*(((2*ayy + ayz + bxy - byz + cxy - 2*cyy))/(72.*o));
+   y_TNE = 0.25*eps_new*(-((c2o1*ayy + ayz + bxy + byz + cxy + c2o1*cyy))/(c72o1*o));
+   y_TSW = 0.25*eps_new*(((-c2o1*ayy + ayz - bxy + byz + cxy + c2o1*cyy))/(c72o1*o));
+   y_TSE = 0.25*eps_new*(((c2o1*ayy - ayz + bxy + byz - cxy + c2o1*cyy))/(c72o1*o));
+   y_TNW = 0.25*eps_new*(((c2o1*ayy + ayz + bxy - byz + cxy - c2o1*cyy))/(c72o1*o));
 
-   z_E = 0.25*eps_new*((2*(-2*axz + byz + 2*czz))/(27.*o));
-   z_N = 0.25*eps_new*((2*(axz - 2*byz + 2*czz))/(27.*o));
-   z_T = 0.25*eps_new*((2*(axz + byz - 4*czz))/(27.*o));
-   z_NE = 0.25*eps_new*(-((axz + 3*ayz + 3*bxz + byz - 4*czz))/(54.*o));
-   z_SE = 0.25*eps_new*(-((axz - 3*ayz - 3*bxz + byz - 4*czz))/(54.*o));
-   z_TE = 0.25*eps_new*(-((axz + 6*azz - 2*byz + 3*cxz + 2*czz))/(54.*o));
-   z_BE = 0.25*eps_new*(-((axz - 6*azz - 2*byz - 3*cxz + 2*czz))/(54.*o));
-   z_TN = 0.25*eps_new*(-((-2*axz + byz + 6*bzz + 3*cyz + 2*czz))/(54.*o));
-   z_BN = 0.25*eps_new*(-((-2*axz + byz - 6*bzz - 3*cyz + 2*czz))/(54.*o));
+   z_E = 0.25*eps_new*((c2o1*(-c2o1*axz + byz + c2o1*czz))/(c27o1*o));
+   z_N = 0.25*eps_new*((c2o1*(axz - c2o1*byz + c2o1*czz))/(c27o1*o));
+   z_T = 0.25*eps_new*((c2o1*(axz + byz - c4o1*czz))/(c27o1*o));
+   z_NE = 0.25*eps_new*(-((axz + c3o1*ayz + c3o1*bxz + byz - c4o1*czz))/(c54o1*o));
+   z_SE = 0.25*eps_new*(-((axz - c3o1*ayz - c3o1*bxz + byz - c4o1*czz))/(c54o1*o));
+   z_TE = 0.25*eps_new*(-((axz + c6o1*azz - c2o1*byz + c3o1*cxz + c2o1*czz))/(c54o1*o));
+   z_BE = 0.25*eps_new*(-((axz - c6o1*azz - c2o1*byz - c3o1*cxz + c2o1*czz))/(c54o1*o));
+   z_TN = 0.25*eps_new*(-((-c2o1*axz + byz + c6o1*bzz + c3o1*cyz + c2o1*czz))/(c54o1*o));
+   z_BN = 0.25*eps_new*(-((-c2o1*axz + byz - c6o1*bzz - c3o1*cyz + c2o1*czz))/(c54o1*o));
    z_ZERO = 0.;
-   z_TNE = 0.25*eps_new*(-((ayz + 2*azz + bxz + 2*bzz + cxz + cyz))/(72.*o));
-   z_TSW = 0.25*eps_new*(((-ayz + 2*azz - bxz + 2*bzz + cxz + cyz))/(72.*o));
-   z_TSE = 0.25*eps_new*(((ayz - 2*azz + bxz + 2*bzz - cxz + cyz))/(72.*o));
-   z_TNW = 0.25*eps_new*(((ayz + 2*azz + bxz - 2*bzz + cxz - cyz))/(72.*o));
+   z_TNE = 0.25*eps_new*(-((ayz + c2o1*azz + bxz + c2o1*bzz + cxz + cyz))/(c72o1*o));
+   z_TSW = 0.25*eps_new*(((-ayz + c2o1*azz - bxz + c2o1*bzz + cxz + cyz))/(c72o1*o));
+   z_TSE = 0.25*eps_new*(((ayz - c2o1*azz + bxz + c2o1*bzz - cxz + cyz))/(c72o1*o));
+   z_TNW = 0.25*eps_new*(((ayz + c2o1*azz + bxz - c2o1*bzz + cxz - cyz))/(c72o1*o));
 
-   xy_E   =   0.0625*eps_new *((                       2.*cxyz)/(27.*o));
-   xy_N   =   0.0625*eps_new *((                       2.*cxyz)/(27.*o));
-   xy_T   = -(0.0625*eps_new *((                       4.*cxyz)/(27.*o)));
-   xy_NE  =   0.0625*eps_new *(                            cxyz /(27.*o));
-   xy_SE  =   0.0625*eps_new *(                            cxyz /(27.*o));
-   xy_TE  = -(0.0625*eps_new *(( 3.*axyz            +     cxyz)/(54.*o)));
-   xy_BE  = -(0.0625*eps_new *((-3.*axyz            +     cxyz)/(54.*o)));
-   xy_TN  = -(0.0625*eps_new *((            3.*bxyz +     cxyz)/(54.*o)));
-   xy_BN  = -(0.0625*eps_new *((          - 3.*bxyz +     cxyz)/(54.*o)));
-   //xy_ZERO=   0.0625*eps_new;
-   xy_TNE = -(0.0625*eps_new *((     axyz +     bxyz           )/(72.*o)));
-   xy_TSW =   0.0625*eps_new *((     axyz +     bxyz           )/(72.*o));
-   xy_TSE =   0.0625*eps_new *((-    axyz +     bxyz           )/(72.*o));
-   xy_TNW =   0.0625*eps_new *((     axyz -     bxyz           )/(72.*o));
+   xy_E   =   c1o16*eps_new *((                       c2o1*cxyz)/(c27o1*o));
+   xy_N   =   c1o16*eps_new *((                       c2o1*cxyz)/(c27o1*o));
+   xy_T   = -(c1o16*eps_new *((                       c4o1*cxyz)/(c27o1*o)));
+   xy_NE  =   c1o16*eps_new *(                            cxyz /(c27o1*o));
+   xy_SE  =   c1o16*eps_new *(                            cxyz /(c27o1*o));
+   xy_TE  = -(c1o16*eps_new *(( c3o1*axyz            +     cxyz)/(c54o1*o)));
+   xy_BE  = -(c1o16*eps_new *((-c3o1*axyz            +     cxyz)/(c54o1*o)));
+   xy_TN  = -(c1o16*eps_new *((            c3o1*bxyz +     cxyz)/(c54o1*o)));
+   xy_BN  = -(c1o16*eps_new *((          - c3o1*bxyz +     cxyz)/(c54o1*o)));
+   //xy_ZERO=   c1o16*eps_new;
+   xy_TNE = -(c1o16*eps_new *((     axyz +     bxyz           )/(c72o1*o)));
+   xy_TSW =   c1o16*eps_new *((     axyz +     bxyz           )/(c72o1*o));
+   xy_TSE =   c1o16*eps_new *((-    axyz +     bxyz           )/(c72o1*o));
+   xy_TNW =   c1o16*eps_new *((     axyz -     bxyz           )/(c72o1*o));
 
-   xz_E   =   0.0625*eps_new *((            2.*bxyz           )/(27.*o));
-   xz_N   = -(0.0625*eps_new *((            4.*bxyz           )/(27.*o)));
-   xz_T   =   0.0625*eps_new *((            2.*bxyz           )/(27.*o));
-   xz_NE  = -(0.0625*eps_new *(( 3.*axyz +     bxyz           )/(54.*o)));
-   xz_SE  = -(0.0625*eps_new *((-3.*axyz +     bxyz           )/(54.*o)));
-   xz_TE  =   0.0625*eps_new *((                bxyz           )/(27.*o));
-   xz_BE  =   0.0625*eps_new *((                bxyz           )/(27.*o));
-   xz_TN  = -(0.0625*eps_new *((                bxyz + 3.*cxyz)/(54.*o)));
-   xz_BN  = -(0.0625*eps_new *((                bxyz - 3.*cxyz)/(54.*o)));
-   //xz_ZERO=   0.0625*eps_new;
-   xz_TNE = -(0.0625*eps_new *((     axyz            +     cxyz)/(72.*o)));
-   xz_TSW =   0.0625*eps_new *((-    axyz            +     cxyz)/(72.*o));
-   xz_TSE =   0.0625*eps_new *((     axyz            +     cxyz)/(72.*o));
-   xz_TNW =   0.0625*eps_new *((     axyz            -     cxyz)/(72.*o));
+   xz_E   =   c1o16*eps_new *((            c2o1*bxyz           )/(c27o1*o));
+   xz_N   = -(c1o16*eps_new *((            c4o1*bxyz           )/(c27o1*o)));
+   xz_T   =   c1o16*eps_new *((            c2o1*bxyz           )/(c27o1*o));
+   xz_NE  = -(c1o16*eps_new *(( c3o1*axyz +     bxyz           )/(c54o1*o)));
+   xz_SE  = -(c1o16*eps_new *((-c3o1*axyz +     bxyz           )/(c54o1*o)));
+   xz_TE  =   c1o16*eps_new *((                bxyz           )/(c27o1*o));
+   xz_BE  =   c1o16*eps_new *((                bxyz           )/(c27o1*o));
+   xz_TN  = -(c1o16*eps_new *((                bxyz + c3o1*cxyz)/(c54o1*o)));
+   xz_BN  = -(c1o16*eps_new *((                bxyz - c3o1*cxyz)/(c54o1*o)));
+   //xz_ZERO=   c1o16*eps_new;
+   xz_TNE = -(c1o16*eps_new *((     axyz            +     cxyz)/(c72o1*o)));
+   xz_TSW =   c1o16*eps_new *((-    axyz            +     cxyz)/(c72o1*o));
+   xz_TSE =   c1o16*eps_new *((     axyz            +     cxyz)/(c72o1*o));
+   xz_TNW =   c1o16*eps_new *((     axyz            -     cxyz)/(c72o1*o));
 
-   yz_E   = -(0.0625*eps_new *(( 4.*axyz                      )/(27.*o)));
-   yz_N   =   0.0625*eps_new *(( 2.*axyz                      )/(27.*o));
-   yz_T   =   0.0625*eps_new *(( 2.*axyz                      )/(27.*o));
-   yz_NE  = -(0.0625*eps_new *((     axyz + 3.*bxyz           )/(54.*o)));
-   yz_SE  = -(0.0625*eps_new *((     axyz - 3.*bxyz           )/(54.*o)));
-   yz_TE  = -(0.0625*eps_new *((     axyz            + 3.*cxyz)/(54.*o)));
-   yz_BE  = -(0.0625*eps_new *((     axyz            - 3.*cxyz)/(54.*o)));
-   yz_TN  =   0.0625*eps_new *((     axyz                      )/(27.*o));
-   yz_BN  =   0.0625*eps_new *((     axyz                      )/(27.*o));
-   //yz_ZERO=   0.0625*eps_new;
-   yz_TNE = -(0.0625*eps_new *((                bxyz +     cxyz)/(72.*o)));
-   yz_TSW =   0.0625*eps_new *((          -     bxyz +     cxyz)/(72.*o));
-   yz_TSE =   0.0625*eps_new *((                bxyz -     cxyz)/(72.*o));
-   yz_TNW =   0.0625*eps_new *((                bxyz +     cxyz)/(72.*o));
+   yz_E   = -(c1o16*eps_new *(( c4o1*axyz                      )/(c27o1*o)));
+   yz_N   =   c1o16*eps_new *(( c2o1*axyz                      )/(c27o1*o));
+   yz_T   =   c1o16*eps_new *(( c2o1*axyz                      )/(c27o1*o));
+   yz_NE  = -(c1o16*eps_new *((     axyz + c3o1*bxyz           )/(c54o1*o)));
+   yz_SE  = -(c1o16*eps_new *((     axyz - c3o1*bxyz           )/(c54o1*o)));
+   yz_TE  = -(c1o16*eps_new *((     axyz            + c3o1*cxyz)/(c54o1*o)));
+   yz_BE  = -(c1o16*eps_new *((     axyz            - c3o1*cxyz)/(c54o1*o)));
+   yz_TN  =   c1o16*eps_new *((     axyz                      )/(c27o1*o));
+   yz_BN  =   c1o16*eps_new *((     axyz                      )/(c27o1*o));
+   //yz_ZERO=   c1o16*eps_new;
+   yz_TNE = -(c1o16*eps_new *((                bxyz +     cxyz)/(c72o1*o)));
+   yz_TSW =   c1o16*eps_new *((          -     bxyz +     cxyz)/(c72o1*o));
+   yz_TSE =   c1o16*eps_new *((                bxyz -     cxyz)/(c72o1*o));
+   yz_TNW =   c1o16*eps_new *((                bxyz +     cxyz)/(c72o1*o));
 }
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(real* f, real  /*omega*/, real  /*x*/, real  /*y*/, real  /*z*/, real press, real xs, real ys, real zs)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
+   using namespace vf::lbm::constant;
 
    real rho  = press ;//+ (2.*axx*x+axy*y+axz*z+axyz*y*z+ax + 2.*byy*y+bxy*x+byz*z+bxyz*x*z+by + 2.*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
-   real vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
-   real vx2  = b0 + 0.25*( xs*bx + ys*by + zs*bz) + 0.0625*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + 0.015625*(xs*ys*zs*bxyz);
-   real vx3  = c0 + 0.25*( xs*cx + ys*cy + zs*cz) + 0.0625*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + 0.015625*(xs*ys*zs*cxyz);
+   real vx1  = a0 + c1o4*( xs*ax + ys*ay + zs*az) + c1o16*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + c1o64*(xs*ys*zs*axyz);
+   real vx2  = b0 + c1o4*( xs*bx + ys*by + zs*bz) + c1o16*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + c1o64*(xs*ys*zs*bxyz);
+   real vx3  = c0 + c1o4*( xs*cx + ys*cy + zs*cz) + c1o16*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + c1o64*(xs*ys*zs*cxyz);
 
    //////////////////////////////////////////////////////////////////////////
    //DRAFT
@@ -577,105 +583,121 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(real* f, r
 //Position SWB -0.25, -0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBSW()
 {
-   return   press_SWT * (0.140625 + 0.1875 * xoff + 0.1875 * yoff - 0.5625 * zoff) +
-      press_NWT * (0.046875 + 0.0625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
-      press_SET * (0.046875 - 0.1875 * xoff + 0.0625 * yoff - 0.1875 * zoff) +
-      press_NET * (0.015625 - 0.0625 * xoff - 0.0625 * yoff - 0.0625 * zoff) +
-      press_NEB * (0.046875 - 0.1875 * xoff - 0.1875 * yoff + 0.0625 * zoff) +
-      press_NWB * (0.140625 + 0.1875 * xoff - 0.5625 * yoff + 0.1875 * zoff) +
-      press_SEB * (0.140625 - 0.5625 * xoff + 0.1875 * yoff + 0.1875 * zoff) +
-      press_SWB * (0.421875 + 0.5625 * xoff + 0.5625 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_SWT * (c9o64 + c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
+      press_NWT * (c3o64 + c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
+      press_SET * (c3o64 - c3o16 * xoff + c1o16 * yoff - c3o16 * zoff) +
+      press_NET * (c1o64 - c1o16 * xoff - c1o16 * yoff - c1o16 * zoff) +
+      press_NEB * (c3o64 - c3o16 * xoff - c3o16 * yoff + c1o16 * zoff) +
+      press_NWB * (c9o64 + c3o16 * xoff - c9o16 * yoff + c3o16 * zoff) +
+      press_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) +
+      press_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWT -0.25, -0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTSW()
 {
-   return   press_SWT * (0.421875 + 0.5625 * xoff + 0.5625 * yoff - 0.5625 * zoff) +
-      press_NWT * (0.140625 + 0.1875 * xoff - 0.5625 * yoff - 0.1875 * zoff) +
-      press_SET * (0.140625 - 0.5625 * xoff + 0.1875 * yoff - 0.1875 * zoff) +
-      press_NET * (0.046875 - 0.1875 * xoff - 0.1875 * yoff - 0.0625 * zoff) +
-      press_NEB * (0.015625 - 0.0625 * xoff - 0.0625 * yoff + 0.0625 * zoff) +
-      press_NWB * (0.046875 + 0.0625 * xoff - 0.1875 * yoff + 0.1875 * zoff) +
-      press_SEB * (0.046875 - 0.1875 * xoff + 0.0625 * yoff + 0.1875 * zoff) +
-      press_SWB * (0.140625 + 0.1875 * xoff + 0.1875 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_SWT * (c27o64 + c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
+      press_NWT * (c9o64 + c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
+      press_SET * (c9o64 - c9o16 * xoff + c3o16 * yoff - c3o16 * zoff) +
+      press_NET * (c3o64 - c3o16 * xoff - c3o16 * yoff - c1o16 * zoff) +
+      press_NEB * (c1o64 - c1o16 * xoff - c1o16 * yoff + c1o16 * zoff) +
+      press_NWB * (c3o64 + c1o16 * xoff - c3o16 * yoff + c3o16 * zoff) +
+      press_SEB * (c3o64 - c3o16 * xoff + c1o16 * yoff + c3o16 * zoff) +
+      press_SWB * (c9o64 + c3o16 * xoff + c3o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SET 0.25, -0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTSE()
 {
-   return   press_SET * (0.421875 - 0.5625 * xoff + 0.5625 * yoff - 0.5625 * zoff) +
-      press_NET * (0.140625 - 0.1875 * xoff - 0.5625 * yoff - 0.1875 * zoff) +
-      press_SWT * (0.140625 + 0.5625 * xoff + 0.1875 * yoff - 0.1875 * zoff) +
-      press_NWT * (0.046875 + 0.1875 * xoff - 0.1875 * yoff - 0.0625 * zoff) +
-      press_NWB * (0.015625 + 0.0625 * xoff - 0.0625 * yoff + 0.0625 * zoff) +
-      press_NEB * (0.046875 - 0.0625 * xoff - 0.1875 * yoff + 0.1875 * zoff) +
-      press_SWB * (0.046875 + 0.1875 * xoff + 0.0625 * yoff + 0.1875 * zoff) +
-      press_SEB * (0.140625 - 0.1875 * xoff + 0.1875 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_SET * (c27o64 - c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
+      press_NET * (c9o64 - c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
+      press_SWT * (c9o64 + c9o16 * xoff + c3o16 * yoff - c3o16 * zoff) +
+      press_NWT * (c3o64 + c3o16 * xoff - c3o16 * yoff - c1o16 * zoff) +
+      press_NWB * (c1o64 + c1o16 * xoff - c1o16 * yoff + c1o16 * zoff) +
+      press_NEB * (c3o64 - c1o16 * xoff - c3o16 * yoff + c3o16 * zoff) +
+      press_SWB * (c3o64 + c3o16 * xoff + c1o16 * yoff + c3o16 * zoff) +
+      press_SEB * (c9o64 - c3o16 * xoff + c3o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SEB 0.25, -0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBSE()
 {
-   return   press_SET * (0.140625 - 0.1875 * xoff + 0.1875 * yoff - 0.5625 * zoff) +
-      press_NET * (0.046875 - 0.0625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
-      press_SWT * (0.046875 + 0.1875 * xoff + 0.0625 * yoff - 0.1875 * zoff) +
-      press_NWT * (0.015625 + 0.0625 * xoff - 0.0625 * yoff - 0.0625 * zoff) +
-      press_NWB * (0.046875 + 0.1875 * xoff - 0.1875 * yoff + 0.0625 * zoff) +
-      press_NEB * (0.140625 - 0.1875 * xoff - 0.5625 * yoff + 0.1875 * zoff) +
-      press_SWB * (0.140625 + 0.5625 * xoff + 0.1875 * yoff + 0.1875 * zoff) +
-      press_SEB * (0.421875 - 0.5625 * xoff + 0.5625 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_SET * (c9o64 - c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
+      press_NET * (c3o64 - c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
+      press_SWT * (c3o64 + c3o16 * xoff + c1o16 * yoff - c3o16 * zoff) +
+      press_NWT * (c1o64 + c1o16 * xoff - c1o16 * yoff - c1o16 * zoff) +
+      press_NWB * (c3o64 + c3o16 * xoff - c3o16 * yoff + c1o16 * zoff) +
+      press_NEB * (c9o64 - c3o16 * xoff - c9o16 * yoff + c3o16 * zoff) +
+      press_SWB * (c9o64 + c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) +
+      press_SEB * (c27o64 - c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWB -0.25, 0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBNW()
 {
-   return   press_NWT * (0.140625 + 0.1875 * xoff - 0.1875 * yoff - 0.5625 * zoff) +
-      press_NET * (0.046875 - 0.1875 * xoff - 0.0625 * yoff - 0.1875 * zoff) +
-      press_SWT * (0.046875 + 0.0625 * xoff + 0.1875 * yoff - 0.1875 * zoff) +
-      press_SET * (0.015625 - 0.0625 * xoff + 0.0625 * yoff - 0.0625 * zoff) +
-      press_SEB * (0.046875 - 0.1875 * xoff + 0.1875 * yoff + 0.0625 * zoff) +
-      press_NEB * (0.140625 - 0.5625 * xoff - 0.1875 * yoff + 0.1875 * zoff) +
-      press_SWB * (0.140625 + 0.1875 * xoff + 0.5625 * yoff + 0.1875 * zoff) +
-      press_NWB * (0.421875 + 0.5625 * xoff - 0.5625 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_NWT * (c9o64 + c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
+      press_NET * (c3o64 - c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
+      press_SWT * (c3o64 + c1o16 * xoff + c3o16 * yoff - c3o16 * zoff) +
+      press_SET * (c1o64 - c1o16 * xoff + c1o16 * yoff - c1o16 * zoff) +
+      press_SEB * (c3o64 - c3o16 * xoff + c3o16 * yoff + c1o16 * zoff) +
+      press_NEB * (c9o64 - c9o16 * xoff - c3o16 * yoff + c3o16 * zoff) +
+      press_SWB * (c9o64 + c3o16 * xoff + c9o16 * yoff + c3o16 * zoff) +
+      press_NWB * (c27o64 + c9o16 * xoff - c9o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWT -0.25, 0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTNW()
 {
-   return   press_NWT * (0.421875 + 0.5625 * xoff - 0.5625 * yoff - 0.5625 * zoff) +
-      press_NET * (0.140625 - 0.5625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
-      press_SWT * (0.140625 + 0.1875 * xoff + 0.5625 * yoff - 0.1875 * zoff) +
-      press_SET * (0.046875 - 0.1875 * xoff + 0.1875 * yoff - 0.0625 * zoff) +
-      press_SEB * (0.015625 - 0.0625 * xoff + 0.0625 * yoff + 0.0625 * zoff) +
-      press_NEB * (0.046875 - 0.1875 * xoff - 0.0625 * yoff + 0.1875 * zoff) +
-      press_SWB * (0.046875 + 0.0625 * xoff + 0.1875 * yoff + 0.1875 * zoff) +
-      press_NWB * (0.140625 + 0.1875 * xoff - 0.1875 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_NWT * (c27o64 + c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
+      press_NET * (c9o64 - c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
+      press_SWT * (c9o64 + c3o16 * xoff + c9o16 * yoff - c3o16 * zoff) +
+      press_SET * (c3o64 - c3o16 * xoff + c3o16 * yoff - c1o16 * zoff) +
+      press_SEB * (c1o64 - c1o16 * xoff + c1o16 * yoff + c1o16 * zoff) +
+      press_NEB * (c3o64 - c3o16 * xoff - c1o16 * yoff + c3o16 * zoff) +
+      press_SWB * (c3o64 + c1o16 * xoff + c3o16 * yoff + c3o16 * zoff) +
+      press_NWB * (c9o64 + c3o16 * xoff - c3o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NET 0.25, 0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTNE()
 {
-   return   press_NET * (0.421875 - 0.5625 * xoff - 0.5625 * yoff - 0.5625 * zoff) +
-      press_NWT * (0.140625 + 0.5625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
-      press_SET * (0.140625 - 0.1875 * xoff + 0.5625 * yoff - 0.1875 * zoff) +
-      press_SWT * (0.046875 + 0.1875 * xoff + 0.1875 * yoff - 0.0625 * zoff) +
-      press_SWB * (0.015625 + 0.0625 * xoff + 0.0625 * yoff + 0.0625 * zoff) +
-      press_NWB * (0.046875 + 0.1875 * xoff - 0.0625 * yoff + 0.1875 * zoff) +
-      press_SEB * (0.046875 - 0.0625 * xoff + 0.1875 * yoff + 0.1875 * zoff) +
-      press_NEB * (0.140625 - 0.1875 * xoff - 0.1875 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_NET * (c27o64 - c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
+      press_NWT * (c9o64 + c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
+      press_SET * (c9o64 - c3o16 * xoff + c9o16 * yoff - c3o16 * zoff) +
+      press_SWT * (c3o64 + c3o16 * xoff + c3o16 * yoff - c1o16 * zoff) +
+      press_SWB * (c1o64 + c1o16 * xoff + c1o16 * yoff + c1o16 * zoff) +
+      press_NWB * (c3o64 + c3o16 * xoff - c1o16 * yoff + c3o16 * zoff) +
+      press_SEB * (c3o64 - c1o16 * xoff + c3o16 * yoff + c3o16 * zoff) +
+      press_NEB * (c9o64 - c3o16 * xoff - c3o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NEB 0.25, 0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBNE()
 {
-   return   press_NET * (0.140625 - 0.1875 * xoff - 0.1875 * yoff - 0.5625 * zoff) +
-      press_NWT * (0.046875 + 0.1875 * xoff - 0.0625 * yoff - 0.1875 * zoff) +
-      press_SET * (0.046875 - 0.0625 * xoff + 0.1875 * yoff - 0.1875 * zoff) +
-      press_SWT * (0.015625 + 0.0625 * xoff + 0.0625 * yoff - 0.0625 * zoff) +
-      press_SWB * (0.046875 + 0.1875 * xoff + 0.1875 * yoff + 0.0625 * zoff) +
-      press_NWB * (0.140625 + 0.5625 * xoff - 0.1875 * yoff + 0.1875 * zoff) +
-      press_SEB * (0.140625 - 0.1875 * xoff + 0.5625 * yoff + 0.1875 * zoff) +
-      press_NEB * (0.421875 - 0.5625 * xoff - 0.5625 * yoff + 0.5625 * zoff);
+    using namespace vf::lbm::constant;
+
+   return   press_NET * (c9o64 - c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
+      press_NWT * (c3o64 + c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
+      press_SET * (c3o64 - c1o16 * xoff + c3o16 * yoff - c3o16 * zoff) +
+      press_SWT * (c1o64 + c1o16 * xoff + c1o16 * yoff - c1o16 * zoff) +
+      press_SWB * (c3o64 + c3o16 * xoff + c3o16 * yoff + c1o16 * zoff) +
+      press_NWB * (c9o64 + c9o16 * xoff - c3o16 * yoff + c3o16 * zoff) +
+      press_SEB * (c9o64 - c3o16 * xoff + c9o16 * yoff + c3o16 * zoff) +
+      press_NEB * (c27o64 - c9o16 * xoff - c9o16 * yoff + c9o16 * zoff);
 }
 //////////////////////////////////////////////////////////////////////////
 //Position C 0.0, 0.0, 0.0
@@ -683,15 +705,16 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(real* f,
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
+   using namespace vf::lbm::constant;
 
-   real press  =  press_NET * (0.125 - 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
-      press_NWT * (0.125 + 0.25 * xoff - 0.25 * yoff - 0.25 * zoff) +
-      press_SET * (0.125 - 0.25 * xoff + 0.25 * yoff - 0.25 * zoff) +
-      press_SWT * (0.125 + 0.25 * xoff + 0.25 * yoff - 0.25 * zoff) +
-      press_NEB * (0.125 - 0.25 * xoff - 0.25 * yoff + 0.25 * zoff) +
-      press_NWB * (0.125 + 0.25 * xoff - 0.25 * yoff + 0.25 * zoff) +
-      press_SEB * (0.125 - 0.25 * xoff + 0.25 * yoff + 0.25 * zoff) +
-      press_SWB * (0.125 + 0.25 * xoff + 0.25 * yoff + 0.25 * zoff);
+   real press  =  press_NET * (c4o32 - c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
+      press_NWT * (c4o32 + c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
+      press_SET * (c4o32 - c1o4 * xoff + c1o4 * yoff - c1o4 * zoff) +
+      press_SWT * (c4o32 + c1o4 * xoff + c1o4 * yoff - c1o4 * zoff) +
+      press_NEB * (c4o32 - c1o4 * xoff - c1o4 * yoff + c1o4 * zoff) +
+      press_NWB * (c4o32 + c1o4 * xoff - c1o4 * yoff + c1o4 * zoff) +
+      press_SEB * (c4o32 - c1o4 * xoff + c1o4 * yoff + c1o4 * zoff) +
+      press_SWB * (c4o32 + c1o4 * xoff + c1o4 * yoff + c1o4 * zoff);
    real vx1  = a0;
    real vx2  = b0;
    real vx3  = c0;
@@ -706,7 +729,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(real* f,
    real feq[ENDF+1];
    D3Q27System::calcIncompFeq(feq,rho,vx1,vx2,vx3);
 
-   real eps_new = 2.;
+   real eps_new = c2o1;
    real o  = omega;
 //   LBMReal op = 1.;
 
@@ -725,20 +748,20 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(real* f,
    //f_TSE  = - eps_new *((az + cx)/(36.*o)) - f_TNE;
    //f_TNW  = - eps_new *((bz + cy)/(36.*o)) - f_TNE;
 
-   f_E = eps_new*((2*(-2*ax + by + cz-kxxMzzAverage-kxxMyyAverage))/(27.*o));
-   f_N = eps_new*((2*(ax - 2*by + cz+2*kxxMyyAverage-kxxMzzAverage))/(27.*o));
-   f_T = eps_new*((2*(ax + by - 2*cz-kxxMyyAverage+2*kxxMzzAverage))/(27.*o));
-   f_NE = eps_new*(-(ax + 3*ay + 3*bx + by - 2*cz+2*kxxMyyAverage-kxxMyyAverage+3*kxyAverage)/(54.*o));
-   f_SE = eps_new*(-(ax - 3*ay - 3*bx + by - 2*cz+2*kxxMyyAverage-kxxMyyAverage-3*kxyAverage)/(54.*o));
-   f_TE = eps_new*(-(ax + 3*az - 2*by + 3*cx + cz+2*kxxMyyAverage-kxxMzzAverage+3*kxzAverage)/(54.*o));
-   f_BE = eps_new*(-(ax - 3*az - 2*by - 3*cx + cz+2*kxxMyyAverage-kxxMzzAverage-3*kxzAverage)/(54.*o));
-   f_TN = eps_new*(-(-2*ax + by + 3*bz + 3*cy + cz-kxxMyyAverage-kxxMzzAverage+3*kyzAverage)/(54.*o));
-   f_BN = eps_new*(-(-2*ax + by - 3*bz - 3*cy + cz-kxxMyyAverage-kxxMzzAverage-3*kyzAverage)/(54.*o));
-   f_ZERO = 0.;
-   f_TNE = eps_new*(-(ay + az + bx + bz + cx + cy+kxyAverage+kxzAverage+kyzAverage)/(72.*o));
-   f_TSW = eps_new*((-ay + az - bx + bz + cx + cy-kxyAverage+kxzAverage+kyzAverage)/(72.*o));
-   f_TSE = eps_new*((ay - az + bx + bz - cx + cy+kxyAverage-kxzAverage+kyzAverage)/(72.*o));
-   f_TNW = eps_new*((ay + az + bx - bz + cx - cy+kxyAverage+kxzAverage-kyzAverage)/(72.*o));
+   f_E = eps_new*((c2o1*(-c2o1*ax + by + cz-kxxMzzAverage-kxxMyyAverage))/(c27o1*o));
+   f_N = eps_new*((c2o1*(ax - c2o1*by + cz+c2o1*kxxMyyAverage-kxxMzzAverage))/(c27o1*o));
+   f_T = eps_new*((c2o1*(ax + by - c2o1*cz-kxxMyyAverage+c2o1*kxxMzzAverage))/(c27o1*o));
+   f_NE = eps_new*(-(ax + c3o1*ay + c3o1*bx + by - c2o1*cz+c2o1*kxxMyyAverage-kxxMyyAverage+c3o1*kxyAverage)/(c54o1*o));
+   f_SE = eps_new*(-(ax - c3o1*ay - c3o1*bx + by - c2o1*cz+c2o1*kxxMyyAverage-kxxMyyAverage-c3o1*kxyAverage)/(c54o1*o));
+   f_TE = eps_new*(-(ax + c3o1*az - c2o1*by + c3o1*cx + cz+c2o1*kxxMyyAverage-kxxMzzAverage+c3o1*kxzAverage)/(c54o1*o));
+   f_BE = eps_new*(-(ax - c3o1*az - c2o1*by - c3o1*cx + cz+c2o1*kxxMyyAverage-kxxMzzAverage-c3o1*kxzAverage)/(c54o1*o));
+   f_TN = eps_new*(-(-c2o1*ax + by + c3o1*bz + c3o1*cy + cz-kxxMyyAverage-kxxMzzAverage+c3o1*kyzAverage)/(c54o1*o));
+   f_BN = eps_new*(-(-c2o1*ax + by - c3o1*bz - c3o1*cy + cz-kxxMyyAverage-kxxMzzAverage-c3o1*kyzAverage)/(c54o1*o));
+   f_ZERO = c0o1;
+   f_TNE = eps_new*(-(ay + az + bx + bz + cx + cy+kxyAverage+kxzAverage+kyzAverage)/(c72o1*o));
+   f_TSW = eps_new*((-ay + az - bx + bz + cx + cy-kxyAverage+kxzAverage+kyzAverage)/(c72o1*o));
+   f_TSE = eps_new*((ay - az + bx + bz - cx + cy+kxyAverage-kxzAverage+kyzAverage)/(c72o1*o));
+   f_TNW = eps_new*((ay + az + bx - bz + cx - cy+kxyAverage+kxzAverage-kyzAverage)/(c72o1*o));
 
    f[DIR_P00]    = f_E    + feq[DIR_P00];
    f[DIR_M00]    = f_E    + feq[DIR_M00];
@@ -778,10 +801,12 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedVelocity(real x
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
 {
-	tauxx=ax+2*axx*x+axy*y+axz*z+axyz*y*z;
-	tauyy=by+2*byy*y+bxy*x+byz*z+bxyz*x*z;
-	tauzz=cz+2*czz*z+cxz*x+cyz*y+cxyz*x*y;
-	tauxy=0.5*((ay+2.0*ayy*y+axy*x+ayz*z+axyz*x*z)+(bx+2.0*bxx*x+bxy*y+bxz*z+bxyz*y*z));
-	tauxz=0.5*((az+2.0*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+2.0*cxx*x+cxy*y+cxz*z+cxyz*y*z));
-	tauyz=0.5*((bz+2.0*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+2.0*cyy*y+cxy*x+cyz*z+cxyz*x*z));
+    using namespace vf::lbm::constant;
+
+	tauxx=ax+c2o1*axx*x+axy*y+axz*z+axyz*y*z;
+	tauyy=by+c2o1*byy*y+bxy*x+byz*z+bxyz*x*z;
+	tauzz=cz+c2o1*czz*z+cxz*x+cyz*y+cxyz*x*y;
+	tauxy=c1o2*((ay+c2o1*ayy*y+axy*x+ayz*z+axyz*x*z)+(bx+c2o1*bxx*x+bxy*y+bxz*z+bxyz*y*z));
+	tauxz=c1o2*((az+c2o1*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+c2o1*cxx*x+cxy*y+cxz*z+cxyz*y*z));
+	tauyz=c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
 }

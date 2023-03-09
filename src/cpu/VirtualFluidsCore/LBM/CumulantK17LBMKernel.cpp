@@ -104,7 +104,7 @@ void CumulantK17LBMKernel::calculate(int step)
         muForcingX2.DefineVar("dt", &muDeltaT);
         muForcingX3.DefineVar("dt", &muDeltaT);
 
-        muNu = (1.0 / 3.0) * (1.0 / collFactor - 1.0 / 2.0);
+        muNu = (c1o1 / c3o1) * (c1o1 / collFactor - c1o1 / c2o1);
 
         muForcingX1.DefineVar("nu", &muNu);
         muForcingX2.DefineVar("nu", &muNu);

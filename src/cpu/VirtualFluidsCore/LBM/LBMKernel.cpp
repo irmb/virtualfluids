@@ -111,7 +111,9 @@ void LBMKernel::setForcingX3(const std::string &muParserString)
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::checkFunction(mu::Parser fct)
 {
-    real x1 = 1.0, x2 = 1.0, x3 = 1.0, dt = 1.0, nue = 1.0, rho = 1.0;
+    using namespace vf::lbm::constant;
+
+    real x1 = c1o1, x2 = c1o1, x3 = c1o1, dt = c1o1, nue = c1o1, rho = c1o1;
     fct.DefineVar("x1", &x1);
     fct.DefineVar("x2", &x2);
     fct.DefineVar("x3", &x3);

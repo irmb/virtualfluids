@@ -16,8 +16,8 @@ using namespace vf::lbm::constant;
 CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderViscosityLBMKernel()
 {
    this->compressible = true;
-   this->bulkViscosity = 0;
-   this->OxxPyyPzz = 1.0;
+   this->bulkViscosity = vf::lbm::constant::c0o1;
+   this->OxxPyyPzz = vf::lbm::constant::c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulant4thOrderViscosityLBMKernel::~CompressibleCumulant4thOrderViscosityLBMKernel(void)
@@ -77,7 +77,7 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
       muForcingX2.DefineVar("dt", &muDeltaT);
       muForcingX3.DefineVar("dt", &muDeltaT);
 
-      muNu = (1.0/3.0)*(1.0/collFactor - 1.0/2.0);
+      muNu = (c1o1/c3o1)*(c1o1/collFactor - c1o1/c2o1);
 
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
@@ -110,16 +110,16 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
    //LBMReal OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
    //LBMReal OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
    //LBMReal Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);
-   real OxyyPxzz  = 8.0*(omega-2.0)*(OxxPyyPzz*(3.0*omega-1.0)-5.0*omega)/(8.0*(5.0-2.0*omega)*omega+OxxPyyPzz*(8.0+omega*(9.0*omega-26.0)));
-   real OxyyMxzz  = 8.0*(omega-2.0)*(omega+OxxPyyPzz*(3.0*omega-7.0))/(OxxPyyPzz*(56.0-42.0*omega+9.0*omega*omega)-8.0*omega);
-   real Oxyz      = 24.0*(omega-2.0)*(4.0*omega*omega+omega*OxxPyyPzz*(18.0-13.0*omega)+OxxPyyPzz*OxxPyyPzz*(2.0+omega*(6.0*omega-11.0)))/(16.0*omega*omega*(omega-6.0)-2.0*omega*OxxPyyPzz*(216.0+5.0*omega*(9.0*omega-46.0))+OxxPyyPzz*OxxPyyPzz*(omega*(3.0*omega-10.0)*(15.0*omega-28.0)-48.0));
+   real OxyyPxzz  = c8o1*(omega-c2o1)*(OxxPyyPzz*(c3o1*omega-c1o1)-c5o1*omega)/(c8o1 *(c5o1-c2o1*omega)*omega+OxxPyyPzz*(c8o1+omega*(c9o1*omega-c26o1)));
+   real OxyyMxzz  = c8o1*(omega-c2o1)*(omega+OxxPyyPzz*(c3o1*omega-c7o1))/(OxxPyyPzz*(c56o1-c42o1*omega+c9o1*omega*omega)-c8o1*omega);
+   real Oxyz      = c24o1*(omega-c2o1)*(c4o1*omega*omega+omega*OxxPyyPzz*(c18o1-c13o1*omega)+OxxPyyPzz*OxxPyyPzz*(c2o1+omega*(c6o1*omega-c11o1)))/(c16o1*omega*omega*(omega-c6o1)-c2o1*omega*OxxPyyPzz*(c216o1+c5o1*omega*(c9o1*omega-c46o1))+OxxPyyPzz*OxxPyyPzz*(omega*(c3o1*omega-c10o1)*(c15o1*omega-c28o1)-c48o1));
 
    //LBMReal A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
    //LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
 
-   real A = (4.0*omega*omega+2.0*omega*OxxPyyPzz*(omega-6.0)+OxxPyyPzz*OxxPyyPzz*(omega*(10.0-3.0*omega)-4.0))/((omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   real A = (c4o1*omega*omega+c2o1*omega*OxxPyyPzz*(omega-c6o1)+OxxPyyPzz*OxxPyyPzz*(omega*(c10o1-c3o1*omega)-c4o1))/((omega-OxxPyyPzz)*(OxxPyyPzz*(c2o1+c3o1*omega)-c8o1*omega));
    //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::DIR_00M' )
-   real B = (4.0*omega*OxxPyyPzz*(9.0*omega-16.0)-4.0*omega*omega-2.0*OxxPyyPzz*OxxPyyPzz*(2.0+9.0*omega*(omega-2.0)))/(3.0*(omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   real B = (c4o1*omega*OxxPyyPzz*(c9o1*omega-c16o1)-c4o1*omega*omega-c2o1*OxxPyyPzz*OxxPyyPzz*(c2o1+c9o1*omega*(omega-c2o1)))/(c3o1*(omega-OxxPyyPzz)*(OxxPyyPzz*(c2o1+c3o1*omega)-c8o1*omega));
 
    for (int x3 = minX3; x3 < maxX3; x3++)
    {
@@ -213,9 +213,9 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                   forcingX2 = muForcingX2.Eval();
                   forcingX3 = muForcingX3.Eval();
 
-                  vvx += forcingX1*deltaT*0.5; // X
-                  vvy += forcingX2*deltaT*0.5; // Y
-                  vvz += forcingX3*deltaT*0.5; // Z
+                  vvx += forcingX1*deltaT*c1o2; // X
+                  vvy += forcingX2*deltaT*c1o2; // Y
+                  vvz += forcingX3*deltaT*c1o2; // Z
                }
                ///////////////////////////////////////////////////////////////////////////////////////////               
          ////////////////////////////////////////////////////////////////////////////////////
@@ -230,9 +230,9 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
                vz2 = vvz*vvz;
                ////////////////////////////////////////////////////////////////////////////////////
                real wadjust;
-               real qudricLimitP = 0.01;// * 0.0001f;
-               real qudricLimitM = 0.01;// * 0.0001f;
-               real qudricLimitD = 0.01;// * 0.001f;
+               real qudricLimitP = c1o100;// * 0.0001f;
+               real qudricLimitM = c1o100;// * 0.0001f;
+               real qudricLimitD = c1o100;// * 0.001f;
                //LBMReal s9 = minusomega;
                //test
                //s9 = 0.;

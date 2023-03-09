@@ -74,38 +74,38 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, r
             case DIR_P00:
                muX1 = (real)(x1 + ix1 * maxX1);
                if (muX1 >= (sizeX - sizeSP) / deltaT)
-                  spongeFactor = (sizeX - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
-               else spongeFactor = 1.0;
+                  spongeFactor = (sizeX - (muX1 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
+               else spongeFactor = c1o1;
                break;
             case DIR_M00:
                muX1 = (real)(x1 + ix1 * maxX1);
                if (muX1 <= sizeSP / deltaT)
-                  spongeFactor = (sizeSP - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
-               else spongeFactor = 1.0;
+                  spongeFactor = (sizeSP - (muX1 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
+               else spongeFactor = c1o1;
                break;
             case DIR_0P0:
                muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 >= (sizeX - sizeSP) / deltaT)
-                  spongeFactor = (sizeX - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
-               else spongeFactor = 1.0;
+                  spongeFactor = (sizeX - (muX2 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
+               else spongeFactor = c1o1;
                break;
             case DIR_0M0:
                muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 <= sizeSP / deltaT)
-                  spongeFactor = (sizeSP - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
-               else spongeFactor = 1.0;
+                  spongeFactor = (sizeSP - (muX2 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
+               else spongeFactor = c1o1;
                break;
             case DIR_00P:
                muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 >= (sizeX - sizeSP) / deltaT)
-                  spongeFactor = (sizeX - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
-               else spongeFactor = 1.0;
+                  spongeFactor = (sizeX - (muX3 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
+               else spongeFactor = c1o1;
                break;
             case DIR_00M:
                muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 <= sizeSP / deltaT)
-                  spongeFactor = (sizeSP - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
-               else spongeFactor = 1.0;
+                  spongeFactor = (sizeSP - (muX3 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
+               else spongeFactor = c1o1;
                break;
             default: throw UbException(UB_EXARGS, "unknown dir");
             }
@@ -134,10 +134,10 @@ SPtr<LBMKernel> IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 1.0;
+      dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = c1o1;
       break;
    case MAGIC:
-      dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = c2o1 +(-collFactor);
       break;
    }
 
@@ -169,7 +169,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
    //   muForcingX2.DefineVar("dx",&muDeltaT);
    //   muForcingX3.DefineVar("dx",&muDeltaT);
 
-   //   muNu = (1.0/3.0)*(1.0/collFactor - 1.0/2.0);
+   //   muNu = (1.0/3.0)*(1.0/collFactor - 1.0/c2o10);
 
    //   muForcingX1.DefineVar("nu",&muNu);
    //   muForcingX2.DefineVar("nu",&muNu);
@@ -352,7 +352,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                m2=mfbba+mfbbc;
                m0+=m1+m2;
                m0+=mfbbb; //hat gefehlt
-               oMdrho = 1. - (oMdrho + m0);
+               oMdrho = c1o1 - (oMdrho + m0);
 
                real vx2;
                real vy2;
@@ -362,7 +362,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                vz2=vvz*vvz;
                ////////////////////////////////////////////////////////////////////////////////////
                real wadjust;
-               real qudricLimit = 0.01;
+               real qudricLimit = c1o100;
                ////////////////////////////////////////////////////////////////////////////////////
                //Hin
                ////////////////////////////////////////////////////////////////////////////////////
@@ -375,7 +375,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaaa = m0;
                m0   += c1o36 * oMdrho;   
                mfaab = m1 -        m0 * vvz;
-               mfaac = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfaac = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaba  + mfabc;
                m1    = mfabc  - mfaba;
@@ -383,7 +383,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaba = m0;
                m0   += c1o9 * oMdrho;
                mfabb = m1 -        m0 * vvz;
-               mfabc = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfabc = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaca  + mfacc;
                m1    = mfacc  - mfaca;
@@ -391,7 +391,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaca = m0;
                m0   += c1o36 * oMdrho;
                mfacb = m1 -        m0 * vvz;
-               mfacc = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfacc = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfbaa + mfbac;
@@ -400,7 +400,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfbaa = m0;
                m0   += c1o9 * oMdrho;
                mfbab = m1 -        m0 * vvz;
-               mfbac = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfbac = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfbba  + mfbbc;
                m1    = mfbbc  - mfbba;
@@ -408,7 +408,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfbba = m0;
                m0   += c4o9 * oMdrho;
                mfbbb = m1 -        m0 * vvz;
-               mfbbc = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfbbc = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfbca  + mfbcc;
                m1    = mfbcc  - mfbca;
@@ -416,7 +416,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfbca = m0;
                m0   += c1o9 * oMdrho;
                mfbcb = m1 -        m0 * vvz;
-               mfbcc = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfbcc = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfcaa + mfcac;
@@ -425,7 +425,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfcaa = m0;
                m0   += c1o36 * oMdrho;
                mfcab = m1 -        m0 * vvz;
-               mfcac = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfcac = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfcba  + mfcbc;
                m1    = mfcbc  - mfcba;
@@ -433,7 +433,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfcba = m0;
                m0   += c1o9 * oMdrho;
                mfcbb = m1 -        m0 * vvz;
-               mfcbc = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfcbc = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfcca  + mfccc;
                m1    = mfccc  - mfcca;
@@ -441,7 +441,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfcca = m0;
                m0   += c1o36 * oMdrho;
                mfccb = m1 -        m0 * vvz;
-               mfccc = m2 - 2. *   m1 * vvz + vz2 * m0;
+               mfccc = m2 - c2o1 *   m1 * vvz + vz2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                // mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -453,14 +453,14 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaaa = m0;
                m0   += c1o6 * oMdrho;
                mfaba = m1 -        m0 * vvy;
-               mfaca = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfaca = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaab  + mfacb;
                m1    = mfacb  - mfaab;
                m0    = m2          + mfabb;
                mfaab = m0;
                mfabb = m1 -        m0 * vvy;
-               mfacb = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfacb = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaac  + mfacc;
                m1    = mfacc  - mfaac;
@@ -468,7 +468,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaac = m0;
                m0   += c1o18 * oMdrho;
                mfabc = m1 -        m0 * vvy;
-               mfacc = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfacc = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfbaa + mfbca;
@@ -477,14 +477,14 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfbaa = m0;
                m0   += c2o3 * oMdrho;
                mfbba = m1 -        m0 * vvy;
-               mfbca = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfbca = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfbab  + mfbcb;
                m1    = mfbcb  - mfbab;
                m0    = m2          + mfbbb;
                mfbab = m0;
                mfbbb = m1 -        m0 * vvy;
-               mfbcb = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfbcb = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfbac  + mfbcc;
                m1    = mfbcc  - mfbac;
@@ -492,7 +492,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfbac = m0;
                m0   += c2o9 * oMdrho;
                mfbbc = m1 -        m0 * vvy;
-               mfbcc = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfbcc = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfcaa + mfcca;
@@ -501,14 +501,14 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfcaa = m0;
                m0   += c1o6 * oMdrho;
                mfcba = m1 -        m0 * vvy;
-               mfcca = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfcca = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfcab  + mfccb;
                m1    = mfccb  - mfcab;
                m0    = m2          + mfcbb;
                mfcab = m0;
                mfcbb = m1 -        m0 * vvy;
-               mfccb = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfccb = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfcac  + mfccc;
                m1    = mfccc  - mfcac;
@@ -516,7 +516,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfcac = m0;
                m0   += c1o18 * oMdrho;
                mfcbc = m1 -        m0 * vvy;
-               mfccc = m2 - 2. *   m1 * vvy + vy2 * m0;
+               mfccc = m2 - c2o1 *   m1 * vvy + vy2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                // mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9            Konditionieren
@@ -526,16 +526,16 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                m1    = mfcaa - mfaaa;
                m0    = m2          + mfbaa;
                mfaaa = m0;
-               m0   += 1. * oMdrho;
+               m0   += c1o1 * oMdrho;
                mfbaa = m1 -        m0 * vvx;
-               mfcaa = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcaa = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaba  + mfcba;
                m1    = mfcba  - mfaba;
                m0    = m2          + mfbba;
                mfaba = m0;
                mfbba = m1 -        m0 * vvx;
-               mfcba = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcba = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaca  + mfcca;
                m1    = mfcca  - mfaca;
@@ -543,7 +543,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaca = m0;
                m0   += c1o3 * oMdrho;
                mfbca = m1 -        m0 * vvx;
-               mfcca = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcca = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaab + mfcab;
@@ -551,21 +551,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                m0    = m2          + mfbab;
                mfaab = m0;
                mfbab = m1 -        m0 * vvx;
-               mfcab = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcab = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfabb  + mfcbb;
                m1    = mfcbb  - mfabb;
                m0    = m2          + mfbbb;
                mfabb = m0;
                mfbbb = m1 -        m0 * vvx;
-               mfcbb = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcbb = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfacb  + mfccb;
                m1    = mfccb  - mfacb;
                m0    = m2          + mfbcb;
                mfacb = m0;
                mfbcb = m1 -        m0 * vvx;
-               mfccb = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfccb = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfaac + mfcac;
@@ -574,14 +574,14 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfaac = m0;
                m0   += c1o3 * oMdrho;
                mfbac = m1 -        m0 * vvx;
-               mfcac = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcac = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfabc  + mfcbc;
                m1    = mfcbc  - mfabc;
                m0    = m2          + mfbbc;
                mfabc = m0;
                mfbbc = m1 -        m0 * vvx;
-               mfcbc = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfcbc = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                m2    = mfacc  + mfccc;
                m1    = mfccc  - mfacc;
@@ -589,42 +589,42 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                mfacc = m0;
                m0   += c1o9 * oMdrho;
                mfbcc = m1 -        m0 * vvx;
-               mfccc = m2 - 2. *   m1 * vvx + vx2 * m0;
+               mfccc = m2 - c2o1 *   m1 * vvx + vx2 * m0;
                ////////////////////////////////////////////////////////////////////////////////////
                // Cumulants
                ////////////////////////////////////////////////////////////////////////////////////
-               real OxxPyyPzz = 1.;
-               real OxyyPxzz  = 1.;//-s9;//2+s9;//
-               //real OxyyMxzz  = 1.;//2+s9;//
-               real O4        = 1.;
-               real O5        = 1.;
-               real O6        = 1.;
+               real OxxPyyPzz = c1o1;
+               real OxyyPxzz  = c1o1;//-s9;//2+s9;//
+               //real OxyyMxzz  = c1o1;//2+s9;//
+               real O4        = c1o1;
+               real O5        = c1o1;
+               real O6        = c1o1;
 
-               //Cum 4.
-               real CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab);
-               real CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb);
-               real CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb);
+               //Cum c4o1
+               real CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + c2o1 * mfbba * mfbab);
+               real CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + c2o1 * mfbba * mfabb);
+               real CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + c2o1 * mfbab * mfabb);
 
-               real CUMcca = mfcca - (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
-               real CUMcac = mfcac - (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
-               real CUMacc = mfacc - (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               real CUMcca = mfcca - (mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               real CUMcac = mfcac - (mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               real CUMacc = mfacc - (mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
 
                //Cum 5.
-               real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-               real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-               real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+               real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+               real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+               real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
                //Cum 6.
-               real CUMccc = mfccc  +((-4. *  mfbbb * mfbbb 
+               real CUMccc = mfccc  +((-c4o1 *  mfbbb * mfbbb 
                   -       (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-                  -  4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-                  -  2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
-                  +( 4. * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-                  +  2. * (mfcaa * mfaca * mfaac)
-                  + 16. *  mfbba * mfbab * mfabb)
+                  -  c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+                  -  c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
+                  +( c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+                  +  c2o1 * (mfcaa * mfaca * mfaac)
+                  + c16o1 *  mfbba * mfbab * mfabb)
                   - c1o3* (mfacc + mfcac + mfcca) * oMdrho  -c1o9*oMdrho*oMdrho
-                  - c1o9* (mfcaa + mfaca + mfaac) * oMdrho*(1.-2.* oMdrho)- c1o27* oMdrho * oMdrho*(-2.* oMdrho)
-                  +( 2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+                  - c1o9* (mfcaa + mfaca + mfaac) * oMdrho*(c1o1-c2o1* oMdrho)- c1o27* oMdrho * oMdrho*(-c2o1* oMdrho)
+                  +( c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
                   +       (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3*oMdrho) +c1o27*oMdrho;
 
                //2.
@@ -638,9 +638,9 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                real dzuz = dxux + collFactor * c3o2 * mxxMzz;
 
                //relax
-               mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-               mxxMyy    += collFactor * (-mxxMyy) - 3. * (1. - c1o2 * collFactor) * (vx2 * dxux - vy2 * dyuy);
-               mxxMzz    += collFactor * (-mxxMzz) - 3. * (1. - c1o2 * collFactor) * (vx2 * dxux - vz2 * dzuz);
+               mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+               mxxMyy    += collFactor * (-mxxMyy) - c3o1 * (c1o1 - c1o2 * collFactor) * (vx2 * dxux - vy2 * dyuy);
+               mxxMzz    += collFactor * (-mxxMzz) - c3o1 * (c1o1 - c1o2 * collFactor) * (vx2 * dxux - vz2 * dzuz);
 
                mfabb     += collFactor * (-mfabb);
                mfbab     += collFactor * (-mfbab);
@@ -648,8 +648,8 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
 
                // linear combinations back
                mfcaa = c1o3 * (       mxxMyy +      mxxMzz + mxxPyyPzz);
-               mfaca = c1o3 * (-2. *  mxxMyy +      mxxMzz + mxxPyyPzz);
-               mfaac = c1o3 * (       mxxMyy - 2. * mxxMzz + mxxPyyPzz);
+               mfaca = c1o3 * (-c2o1 *  mxxMyy +      mxxMzz + mxxPyyPzz);
+               mfaac = c1o3 * (       mxxMyy - c2o1 * mxxMzz + mxxPyyPzz);
 
                //3.
                // linear combinations
@@ -663,19 +663,19 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                real mxyyMxzz = mfbca - mfbac;
 
                //relax
-               wadjust    = OxyyMxzz+(1.-OxyyMxzz)*fabs(mfbbb)/(fabs(mfbbb)+qudricLimit);
+               wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*fabs(mfbbb)/(fabs(mfbbb)+qudricLimit);
                mfbbb     += wadjust * (-mfbbb);
-               wadjust    = OxyyPxzz+(1.-OxyyPxzz)*fabs(mxxyPyzz)/(fabs(mxxyPyzz)+qudricLimit);
+               wadjust    = OxyyPxzz+(c1o1-OxyyPxzz)*fabs(mxxyPyzz)/(fabs(mxxyPyzz)+qudricLimit);
                mxxyPyzz  += wadjust * (-mxxyPyzz);
-               wadjust    = OxyyMxzz+(1.-OxyyMxzz)*fabs(mxxyMyzz)/(fabs(mxxyMyzz)+qudricLimit);
+               wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*fabs(mxxyMyzz)/(fabs(mxxyMyzz)+qudricLimit);
                mxxyMyzz  += wadjust * (-mxxyMyzz);
-               wadjust    = OxyyPxzz+(1.-OxyyPxzz)*fabs(mxxzPyyz)/(fabs(mxxzPyyz)+qudricLimit);
+               wadjust    = OxyyPxzz+(c1o1-OxyyPxzz)*fabs(mxxzPyyz)/(fabs(mxxzPyyz)+qudricLimit);
                mxxzPyyz  += wadjust * (-mxxzPyyz);
-               wadjust    = OxyyMxzz+(1.-OxyyMxzz)*fabs(mxxzMyyz)/(fabs(mxxzMyyz)+qudricLimit);
+               wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*fabs(mxxzMyyz)/(fabs(mxxzMyyz)+qudricLimit);
                mxxzMyyz  += wadjust * (-mxxzMyyz);
-               wadjust    = OxyyPxzz+(1.-OxyyPxzz)*fabs(mxyyPxzz)/(fabs(mxyyPxzz)+qudricLimit);
+               wadjust    = OxyyPxzz+(c1o1-OxyyPxzz)*fabs(mxyyPxzz)/(fabs(mxyyPxzz)+qudricLimit);
                mxyyPxzz  += wadjust * (-mxyyPxzz);
-               wadjust    = OxyyMxzz+(1.-OxyyMxzz)*fabs(mxyyMxzz)/(fabs(mxyyMxzz)+qudricLimit);
+               wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*fabs(mxyyMxzz)/(fabs(mxyyMxzz)+qudricLimit);
                mxyyMxzz  += wadjust * (-mxyyMxzz);
 
                // linear combinations back
@@ -705,30 +705,30 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
 
                //back cumulants to central moments
                //4.
-               mfcbb = CUMcbb + ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab);
-               mfbcb = CUMbcb + ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb);
-               mfbbc = CUMbbc + ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb);
+               mfcbb = CUMcbb + ((mfcaa + c1o3 * oMdrho) * mfabb + c2o1 * mfbba * mfbab);
+               mfbcb = CUMbcb + ((mfaca + c1o3 * oMdrho) * mfbab + c2o1 * mfbba * mfabb);
+               mfbbc = CUMbbc + ((mfaac + c1o3 * oMdrho) * mfbba + c2o1 * mfbab * mfabb);
 
-               mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
-               mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
-               mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               mfcca = CUMcca + (mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               mfcac = CUMcac + (mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               mfacc = CUMacc + (mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
 
                //5.
-               mfbcc = CUMbcc + (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) * oMdrho;
-               mfcbc = CUMcbc + (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc) * oMdrho;
-               mfccb = CUMccb + (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) * oMdrho;
+               mfbcc = CUMbcc + (mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) * oMdrho;
+               mfcbc = CUMcbc + (mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc) * oMdrho;
+               mfccb = CUMccb + (mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) * oMdrho;
 
                //6.
-               mfccc = CUMccc  -((-4. *  mfbbb * mfbbb 
+               mfccc = CUMccc  -((-c4o1 *  mfbbb * mfbbb 
                   -       (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-                  -  4. * (mfabb * mfcbb + mfbac * mfbca + mfbba * mfbbc)
-                  -  2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
-                  +( 4. * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-                  +  2. * (mfcaa * mfaca * mfaac)
-                  + 16. *  mfbba * mfbab * mfabb)
+                  -  c4o1 * (mfabb * mfcbb + mfbac * mfbca + mfbba * mfbbc)
+                  -  c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
+                  +( c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+                  +  c2o1 * (mfcaa * mfaca * mfaac)
+                  + c16o1 *  mfbba * mfbab * mfabb)
                   - c1o3* (mfacc + mfcac + mfcca) * oMdrho  -c1o9*oMdrho*oMdrho
-                  - c1o9* (mfcaa + mfaca + mfaac) * oMdrho*(1.-2.* oMdrho)- c1o27* oMdrho * oMdrho*(-2.* oMdrho)
-                  +( 2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+                  - c1o9* (mfcaa + mfaca + mfaac) * oMdrho*(c1o1-c2o1* oMdrho)- c1o27* oMdrho * oMdrho*(-c2o1* oMdrho)
+                  +( c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
                   +       (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3*oMdrho) -c1o27*oMdrho;
 
                ////////////////////////////////////////////////////////////////////////////////////
@@ -744,22 +744,22 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                //mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
                ////////////////////////////////////////////////////////////////////////////////////
                // Z - Dir
-               m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + 1. * oMdrho) * (     vz2 - vvz) * c1o2;
-               m1 = -mfaac        - 2. * mfaab *  vvz         +  mfaaa                * (1. - vz2)              - 1. * oMdrho * vz2;
-               m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + 1. * oMdrho) * (     vz2 + vvz) * c1o2;
+               m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + c1o1 * oMdrho) * (     vz2 - vvz) * c1o2;
+               m1 = -mfaac        - c2o1 * mfaab *  vvz         +  mfaaa                * (c1o1 - vz2)              - c1o1 * oMdrho * vz2;
+               m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + c1o1 * oMdrho) * (     vz2 + vvz) * c1o2;
                mfaaa = m0;
                mfaab = m1;
                mfaac = m2;
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfabc * c1o2 +      mfabb * (vvz - c1o2) + mfaba * (     vz2 - vvz) * c1o2;
-               m1 = -mfabc        - 2. * mfabb *  vvz         + mfaba * (1. - vz2);
+               m1 = -mfabc        - c2o1 * mfabb *  vvz         + mfaba * (c1o1 - vz2);
                m2 =  mfabc * c1o2 +      mfabb * (vvz + c1o2) + mfaba * (     vz2 + vvz) * c1o2;
                mfaba = m0;
                mfabb = m1;
                mfabc = m2;
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfacc * c1o2 +      mfacb * (vvz - c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2;
-               m1 = -mfacc        - 2. * mfacb *  vvz         +  mfaca                  * (1. - vz2)              - c1o3 * oMdrho * vz2;
+               m1 = -mfacc        - c2o1 * mfacb *  vvz         +  mfaca                  * (c1o1 - vz2)              - c1o3 * oMdrho * vz2;
                m2 =  mfacc * c1o2 +      mfacb * (vvz + c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
                mfaca = m0;
                mfacb = m1;
@@ -767,21 +767,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfbac * c1o2 +      mfbab * (vvz - c1o2) + mfbaa * (     vz2 - vvz) * c1o2;
-               m1 = -mfbac        - 2. * mfbab *  vvz         + mfbaa * (1. - vz2);
+               m1 = -mfbac        - c2o1 * mfbab *  vvz         + mfbaa * (c1o1 - vz2);
                m2 =  mfbac * c1o2 +      mfbab * (vvz + c1o2) + mfbaa * (     vz2 + vvz) * c1o2;
                mfbaa = m0;
                mfbab = m1;
                mfbac = m2;
                /////////b//////////////////////////////////////////////////////////////////////////
                m0 =  mfbbc * c1o2 +      mfbbb * (vvz - c1o2) + mfbba * (     vz2 - vvz) * c1o2;
-               m1 = -mfbbc        - 2. * mfbbb *  vvz         + mfbba * (1. - vz2);
+               m1 = -mfbbc        - c2o1 * mfbbb *  vvz         + mfbba * (c1o1 - vz2);
                m2 =  mfbbc * c1o2 +      mfbbb * (vvz + c1o2) + mfbba * (     vz2 + vvz) * c1o2;
                mfbba = m0;
                mfbbb = m1;
                mfbbc = m2;
                /////////b//////////////////////////////////////////////////////////////////////////
                m0 =  mfbcc * c1o2 +      mfbcb * (vvz - c1o2) + mfbca * (     vz2 - vvz) * c1o2;
-               m1 = -mfbcc        - 2. * mfbcb *  vvz         + mfbca * (1. - vz2);
+               m1 = -mfbcc        - c2o1 * mfbcb *  vvz         + mfbca * (c1o1 - vz2);
                m2 =  mfbcc * c1o2 +      mfbcb * (vvz + c1o2) + mfbca * (     vz2 + vvz) * c1o2;
                mfbca = m0;
                mfbcb = m1;
@@ -789,21 +789,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfcac * c1o2 +      mfcab * (vvz - c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2;
-               m1 = -mfcac        - 2. * mfcab *  vvz         +  mfcaa                  * (1. - vz2)              - c1o3 * oMdrho * vz2;
+               m1 = -mfcac        - c2o1 * mfcab *  vvz         +  mfcaa                  * (c1o1 - vz2)              - c1o3 * oMdrho * vz2;
                m2 =  mfcac * c1o2 +      mfcab * (vvz + c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
                mfcaa = m0;
                mfcab = m1;
                mfcac = m2;
                /////////c//////////////////////////////////////////////////////////////////////////
                m0 =  mfcbc * c1o2 +      mfcbb * (vvz - c1o2) + mfcba * (     vz2 - vvz) * c1o2;
-               m1 = -mfcbc        - 2. * mfcbb *  vvz         + mfcba * (1. - vz2);
+               m1 = -mfcbc        - c2o1 * mfcbb *  vvz         + mfcba * (c1o1 - vz2);
                m2 =  mfcbc * c1o2 +      mfcbb * (vvz + c1o2) + mfcba * (     vz2 + vvz) * c1o2;
                mfcba = m0;
                mfcbb = m1;
                mfcbc = m2;
                /////////c//////////////////////////////////////////////////////////////////////////
                m0 =  mfccc * c1o2 +      mfccb * (vvz - c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 - vvz) * c1o2;
-               m1 = -mfccc        - 2. * mfccb *  vvz         +  mfcca                  * (1. - vz2)              - c1o9 * oMdrho * vz2;
+               m1 = -mfccc        - c2o1 * mfccb *  vvz         +  mfcca                  * (c1o1 - vz2)              - c1o9 * oMdrho * vz2;
                m2 =  mfccc * c1o2 +      mfccb * (vvz + c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 + vvz) * c1o2;
                mfcca = m0;
                mfccb = m1;
@@ -814,21 +814,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                // Y - Dir
                m0 =  mfaca * c1o2 +      mfaba * (vvy - c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2;
-               m1 = -mfaca        - 2. * mfaba *  vvy         +  mfaaa                  * (1. - vy2)              - c1o6 * oMdrho * vy2;
+               m1 = -mfaca        - c2o1 * mfaba *  vvy         +  mfaaa                  * (c1o1 - vy2)              - c1o6 * oMdrho * vy2;
                m2 =  mfaca * c1o2 +      mfaba * (vvy + c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
                mfaaa = m0;
                mfaba = m1;
                mfaca = m2;
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfacb * c1o2 +      mfabb * (vvy - c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 - vvy) * c1o2;
-               m1 = -mfacb        - 2. * mfabb *  vvy         +  mfaab                  * (1. - vy2)              - c2o3 * oMdrho * vy2;
+               m1 = -mfacb        - c2o1 * mfabb *  vvy         +  mfaab                  * (c1o1 - vy2)              - c2o3 * oMdrho * vy2;
                m2 =  mfacb * c1o2 +      mfabb * (vvy + c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 + vvy) * c1o2;
                mfaab = m0;
                mfabb = m1;
                mfacb = m2;
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfacc * c1o2 +      mfabc * (vvy - c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2;
-               m1 = -mfacc        - 2. * mfabc *  vvy         +  mfaac                  * (1. - vy2)              - c1o6 * oMdrho * vy2;
+               m1 = -mfacc        - c2o1 * mfabc *  vvy         +  mfaac                  * (c1o1 - vy2)              - c1o6 * oMdrho * vy2;
                m2 =  mfacc * c1o2 +      mfabc * (vvy + c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
                mfaac = m0;
                mfabc = m1;
@@ -836,21 +836,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfbca * c1o2 +      mfbba * (vvy - c1o2) + mfbaa * (     vy2 - vvy) * c1o2;
-               m1 = -mfbca        - 2. * mfbba *  vvy         + mfbaa * (1. - vy2);
+               m1 = -mfbca        - c2o1 * mfbba *  vvy         + mfbaa * (c1o1 - vy2);
                m2 =  mfbca * c1o2 +      mfbba * (vvy + c1o2) + mfbaa * (     vy2 + vvy) * c1o2;
                mfbaa = m0;
                mfbba = m1;
                mfbca = m2;
                /////////b//////////////////////////////////////////////////////////////////////////
                m0 =  mfbcb * c1o2 +      mfbbb * (vvy - c1o2) + mfbab * (     vy2 - vvy) * c1o2;
-               m1 = -mfbcb        - 2. * mfbbb *  vvy         + mfbab * (1. - vy2);
+               m1 = -mfbcb        - c2o1 * mfbbb *  vvy         + mfbab * (c1o1 - vy2);
                m2 =  mfbcb * c1o2 +      mfbbb * (vvy + c1o2) + mfbab * (     vy2 + vvy) * c1o2;
                mfbab = m0;
                mfbbb = m1;
                mfbcb = m2;
                /////////b//////////////////////////////////////////////////////////////////////////
                m0 =  mfbcc * c1o2 +      mfbbc * (vvy - c1o2) + mfbac * (     vy2 - vvy) * c1o2;
-               m1 = -mfbcc        - 2. * mfbbc *  vvy         + mfbac * (1. - vy2);
+               m1 = -mfbcc        - c2o1 * mfbbc *  vvy         + mfbac * (c1o1 - vy2);
                m2 =  mfbcc * c1o2 +      mfbbc * (vvy + c1o2) + mfbac * (     vy2 + vvy) * c1o2;
                mfbac = m0;
                mfbbc = m1;
@@ -858,21 +858,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfcca * c1o2 +      mfcba * (vvy - c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2;
-               m1 = -mfcca        - 2. * mfcba *  vvy         +  mfcaa                   * (1. - vy2)              - c1o18 * oMdrho * vy2;
+               m1 = -mfcca        - c2o1 * mfcba *  vvy         +  mfcaa                   * (c1o1 - vy2)              - c1o18 * oMdrho * vy2;
                m2 =  mfcca * c1o2 +      mfcba * (vvy + c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
                mfcaa = m0;
                mfcba = m1;
                mfcca = m2;
                /////////c//////////////////////////////////////////////////////////////////////////
                m0 =  mfccb * c1o2 +      mfcbb * (vvy - c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 - vvy) * c1o2;
-               m1 = -mfccb        - 2. * mfcbb *  vvy         +  mfcab                  * (1. - vy2)              - c2o9 * oMdrho * vy2;
+               m1 = -mfccb        - c2o1 * mfcbb *  vvy         +  mfcab                  * (c1o1 - vy2)              - c2o9 * oMdrho * vy2;
                m2 =  mfccb * c1o2 +      mfcbb * (vvy + c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 + vvy) * c1o2;
                mfcab = m0;
                mfcbb = m1;
                mfccb = m2;
                /////////c//////////////////////////////////////////////////////////////////////////
                m0 =  mfccc * c1o2 +      mfcbc * (vvy - c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2;
-               m1 = -mfccc        - 2. * mfcbc *  vvy         +  mfcac                   * (1. - vy2)              - c1o18 * oMdrho * vy2;
+               m1 = -mfccc        - c2o1 * mfcbc *  vvy         +  mfcac                   * (c1o1 - vy2)              - c1o18 * oMdrho * vy2;
                m2 =  mfccc * c1o2 +      mfcbc * (vvy + c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
                mfcac = m0;
                mfcbc = m1;
@@ -883,21 +883,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                // X - Dir
                m0 =  mfcaa * c1o2 +      mfbaa * (vvx - c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcaa        - 2. * mfbaa *  vvx         +  mfaaa                   * (1. - vx2)              - c1o36 * oMdrho * vx2;
+               m1 = -mfcaa        - c2o1 * mfbaa *  vvx         +  mfaaa                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2;
                m2 =  mfcaa * c1o2 +      mfbaa * (vvx + c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfaaa = m0;
                mfbaa = m1;
                mfcaa = m2;
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfcba * c1o2 +      mfbba * (vvx - c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcba        - 2. * mfbba *  vvx         +  mfaba                  * (1. - vx2)              - c1o9 * oMdrho * vx2;
+               m1 = -mfcba        - c2o1 * mfbba *  vvx         +  mfaba                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2;
                m2 =  mfcba * c1o2 +      mfbba * (vvx + c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfaba = m0;
                mfbba = m1;
                mfcba = m2;
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfcca * c1o2 +      mfbca * (vvx - c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcca        - 2. * mfbca *  vvx         +  mfaca                   * (1. - vx2)              - c1o36 * oMdrho * vx2;
+               m1 = -mfcca        - c2o1 * mfbca *  vvx         +  mfaca                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2;
                m2 =  mfcca * c1o2 +      mfbca * (vvx + c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfaca = m0;
                mfbca = m1;
@@ -905,21 +905,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfcab * c1o2 +      mfbab * (vvx - c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcab        - 2. * mfbab *  vvx         +  mfaab                  * (1. - vx2)              - c1o9 * oMdrho * vx2;
+               m1 = -mfcab        - c2o1 * mfbab *  vvx         +  mfaab                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2;
                m2 =  mfcab * c1o2 +      mfbab * (vvx + c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfaab = m0;
                mfbab = m1;
                mfcab = m2;
                ///////////b////////////////////////////////////////////////////////////////////////
                m0 =  mfcbb * c1o2 +      mfbbb * (vvx - c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcbb        - 2. * mfbbb *  vvx         +  mfabb                  * (1. - vx2)              - c4o9 * oMdrho * vx2;
+               m1 = -mfcbb        - c2o1 * mfbbb *  vvx         +  mfabb                  * (c1o1 - vx2)              - c4o9 * oMdrho * vx2;
                m2 =  mfcbb * c1o2 +      mfbbb * (vvx + c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfabb = m0;
                mfbbb = m1;
                mfcbb = m2;
                ///////////b////////////////////////////////////////////////////////////////////////
                m0 =  mfccb * c1o2 +      mfbcb * (vvx - c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfccb        - 2. * mfbcb *  vvx         +  mfacb                  * (1. - vx2)              - c1o9 * oMdrho * vx2;
+               m1 = -mfccb        - c2o1 * mfbcb *  vvx         +  mfacb                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2;
                m2 =  mfccb * c1o2 +      mfbcb * (vvx + c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfacb = m0;
                mfbcb = m1;
@@ -927,21 +927,21 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                ////////////////////////////////////////////////////////////////////////////////////
                m0 =  mfcac * c1o2 +      mfbac * (vvx - c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcac        - 2. * mfbac *  vvx         +  mfaac                   * (1. - vx2)              - c1o36 * oMdrho * vx2;
+               m1 = -mfcac        - c2o1 * mfbac *  vvx         +  mfaac                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2;
                m2 =  mfcac * c1o2 +      mfbac * (vvx + c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfaac = m0;
                mfbac = m1;
                mfcac = m2;
                ///////////c////////////////////////////////////////////////////////////////////////
                m0 =  mfcbc * c1o2 +      mfbbc * (vvx - c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfcbc        - 2. * mfbbc *  vvx         +  mfabc                  * (1. - vx2)              - c1o9 * oMdrho * vx2;
+               m1 = -mfcbc        - c2o1 * mfbbc *  vvx         +  mfabc                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2;
                m2 =  mfcbc * c1o2 +      mfbbc * (vvx + c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfabc = m0;
                mfbbc = m1;
                mfcbc = m2;
                ///////////c////////////////////////////////////////////////////////////////////////
                m0 =  mfccc * c1o2 +      mfbcc * (vvx - c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2;
-               m1 = -mfccc        - 2. * mfbcc *  vvx         +  mfacc                   * (1. - vx2)              - c1o36 * oMdrho * vx2;
+               m1 = -mfccc        - c2o1 * mfbcc *  vvx         +  mfacc                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2;
                m2 =  mfccc * c1o2 +      mfbcc * (vvx + c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
                mfacc = m0;
                mfbcc = m1;
