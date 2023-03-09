@@ -44,16 +44,16 @@ NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
     if (comm->getProcessID() == comm->getRoot()) {
         timer.resetAndStart();
 
-        double nop          = comm->getNumberOfProcesses();
+        real nop          = comm->getNumberOfProcesses();
         int minInitLevel    = grid->getCoarsestInitializedLevel();
         int maxInitLevel    = grid->getFinestInitializedLevel();
         UbTupleInt3 blocknx = grid->getBlockNX();
-        double nod          = (double)(val<1>(blocknx)) * (double)(val<2>(blocknx)) * (double)(val<3>(blocknx));
+        real nod          = (real)(val<1>(blocknx)) * (real)(val<2>(blocknx)) * (real)(val<3>(blocknx));
         nup                 = 0;
 
         for (int level = minInitLevel; level <= maxInitLevel; level++) {
             int nob = grid->getNumberOfBlocks(level);
-            nup_t += (double)(1 << level) * nob * nod;
+            nup_t += (real)(1 << level) * nob * nod;
         }
         nup = nup_t / nop;
     }
@@ -61,19 +61,19 @@ NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
 //////////////////////////////////////////////////////////////////////////
 NUPSCounterCoProcessor::~NUPSCounterCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void NUPSCounterCoProcessor::process(double step)
+void NUPSCounterCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
 }
 //////////////////////////////////////////////////////////////////////////
-void NUPSCounterCoProcessor::collectData(double step)
+void NUPSCounterCoProcessor::collectData(real step)
 {
     if (comm->getProcessID() == comm->getRoot()) {
-        double time   = timer.stop();
-        double nups_t = nup_t * (step - nupsStep) / time;
-        double nups   = nup * (step - nupsStep) / time;
-        double tnups  = nups / (double)numOfThreads;
+        real time   = timer.stop();
+        real nups_t = nup_t * (step - nupsStep) / time;
+        real nups   = nup * (step - nupsStep) / time;
+        real tnups  = nups / (real)numOfThreads;
         UBLOG(logINFO, "Calculation step = " << step);
         UBLOG(logINFO, "Total performance = " << nups_t << " NUPS");
         UBLOG(logINFO, "Performance per process = " << nups << " NUPS");

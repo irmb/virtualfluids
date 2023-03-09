@@ -60,12 +60,12 @@ public:
                            std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteBlocksCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //! Collect data for VTK-file
     //! \param step is a time step
-    void collectData(double step);
+    void collectData(real step);
 
     std::string path;
     WbWriter *writer;

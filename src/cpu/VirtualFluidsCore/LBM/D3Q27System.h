@@ -38,9 +38,13 @@
 #include <string>
 #include <iostream>
 
+#include "lbm/constants/D3Q27.h"
 #include "LBMSystem.h"
 #include "UbException.h"
 #include "UbMath.h"
+#include "lbm/constants/NumericConstants.h"
+
+//using namespace vf::lbm::dir;
 
 //! \brief namespace for global system-functions
 namespace D3Q27System
@@ -53,15 +57,15 @@ static const int FENDDIR   = 26; // D3Q27
 static const int STARTF = 0;
 static const int ENDF   = 26; // D3Q27
 
-static const int STARTDIR = 1; //0
+//static const int STARTDIR = 1; //0
 static const int ENDDIR   = 26;//26 // all geometric directions
 
 extern const int DX1[ENDDIR + 1];
 extern const int DX2[ENDDIR + 1];
 extern const int DX3[ENDDIR + 1];
-extern const double WEIGTH[ENDDIR + 1];
+extern const real WEIGTH[ENDDIR + 1];
 
-extern const double cNorm[3][ENDDIR];
+extern const real cNorm[3][ENDDIR];
 
 static const int MINLEVEL = 0;
 static const int MAXLEVEL = 25;
@@ -126,60 +130,60 @@ extern const int EX3[ENDDIR + 1];
 //static constexpr int BSE = 25;
 //static constexpr int BSW = 26;
 
-static constexpr int DIR_000 = 0;
-static constexpr int DIR_P00 = 1;
-static constexpr int DIR_M00 = 2;
-static constexpr int DIR_0P0 = 3;
-static constexpr int DIR_0M0 = 4;
-static constexpr int DIR_00P = 5;
-static constexpr int DIR_00M = 6;
-static constexpr int DIR_PP0 = 7;
-static constexpr int DIR_MM0 = 8;
-static constexpr int DIR_PM0 = 9;
-static constexpr int DIR_MP0 = 10;
-static constexpr int DIR_P0P = 11;
-static constexpr int DIR_M0M = 12;
-static constexpr int DIR_P0M = 13;
-static constexpr int DIR_M0P = 14;
-static constexpr int DIR_0PP = 15;
-static constexpr int DIR_0MM = 16;
-static constexpr int DIR_0PM = 17;
-static constexpr int DIR_0MP = 18;
-static constexpr int DIR_PPP = 19;
-static constexpr int DIR_MPP = 20;
-static constexpr int DIR_PMP = 21;
-static constexpr int DIR_MMP = 22;
-static constexpr int DIR_PPM = 23;
-static constexpr int DIR_MPM = 24;
-static constexpr int DIR_PMM = 25;
-static constexpr int DIR_MMM = 26;
+//static constexpr int DIR_000 = 0;
+//static constexpr int DIR_P00 = 1;
+//static constexpr int DIR_M00 = 2;
+//static constexpr int DIR_0P0 = 3;
+//static constexpr int DIR_0M0 = 4;
+//static constexpr int DIR_00P = 5;
+//static constexpr int DIR_00M = 6;
+//static constexpr int DIR_PP0 = 7;
+//static constexpr int DIR_MM0 = 8;
+//static constexpr int DIR_PM0 = 9;
+//static constexpr int DIR_MP0 = 10;
+//static constexpr int DIR_P0P = 11;
+//static constexpr int DIR_M0M = 12;
+//static constexpr int DIR_P0M = 13;
+//static constexpr int DIR_M0P = 14;
+//static constexpr int DIR_0PP = 15;
+//static constexpr int DIR_0MM = 16;
+//static constexpr int DIR_0PM = 17;
+//static constexpr int DIR_0MP = 18;
+//static constexpr int DIR_PPP = 19;
+//static constexpr int DIR_MPP = 20;
+//static constexpr int DIR_PMP = 21;
+//static constexpr int DIR_MMP = 22;
+//static constexpr int DIR_PPM = 23;
+//static constexpr int DIR_MPM = 24;
+//static constexpr int DIR_PMM = 25;
+//static constexpr int DIR_MMM = 26;
 
-static constexpr int INV_P00 = DIR_M00;
-static constexpr int INV_M00 = DIR_P00;
-static constexpr int INV_0P0 = DIR_0M0;
-static constexpr int INV_0M0 = DIR_0P0;
-static constexpr int INV_00P = DIR_00M;
-static constexpr int INV_00M = DIR_00P;
-static constexpr int INV_PP0 = DIR_MM0;
-static constexpr int INV_MM0 = DIR_PP0;
-static constexpr int INV_PM0 = DIR_MP0;
-static constexpr int INV_MP0 = DIR_PM0;
-static constexpr int INV_P0P = DIR_M0M;
-static constexpr int INV_M0M = DIR_P0P;
-static constexpr int INV_P0M = DIR_M0P;
-static constexpr int INV_M0P = DIR_P0M;
-static constexpr int INV_0PP = DIR_0MM;
-static constexpr int INV_0MM = DIR_0PP;
-static constexpr int INV_0PM = DIR_0MP;
-static constexpr int INV_0MP = DIR_0PM;
-static constexpr int INV_PPP = DIR_MMM;
-static constexpr int INV_MPP = DIR_PMM;
-static constexpr int INV_PMP = DIR_MPM;
-static constexpr int INV_MMP = DIR_PPM;
-static constexpr int INV_PPM = DIR_MMP;
-static constexpr int INV_MPM = DIR_PMP;
-static constexpr int INV_PMM = DIR_MPP;
-static constexpr int INV_MMM = DIR_PPP;
+//static constexpr int INV_P00 = DIR_M00;
+//static constexpr int INV_M00 = DIR_P00;
+//static constexpr int INV_0P0 = DIR_0M0;
+//static constexpr int INV_0M0 = DIR_0P0;
+//static constexpr int INV_00P = DIR_00M;
+//static constexpr int INV_00M = DIR_00P;
+//static constexpr int INV_PP0 = DIR_MM0;
+//static constexpr int INV_MM0 = DIR_PP0;
+//static constexpr int INV_PM0 = DIR_MP0;
+//static constexpr int INV_MP0 = DIR_PM0;
+//static constexpr int INV_P0P = DIR_M0M;
+//static constexpr int INV_M0M = DIR_P0P;
+//static constexpr int INV_P0M = DIR_M0P;
+//static constexpr int INV_M0P = DIR_P0M;
+//static constexpr int INV_0PP = DIR_0MM;
+//static constexpr int INV_0MM = DIR_0PP;
+//static constexpr int INV_0PM = DIR_0MP;
+//static constexpr int INV_0MP = DIR_0PM;
+//static constexpr int INV_PPP = DIR_MMM;
+//static constexpr int INV_MPP = DIR_PMM;
+//static constexpr int INV_PMP = DIR_MPM;
+//static constexpr int INV_MMP = DIR_PPM;
+//static constexpr int INV_PPM = DIR_MMP;
+//static constexpr int INV_MPM = DIR_PMP;
+//static constexpr int INV_PMM = DIR_MPP;
+//static constexpr int INV_MMM = DIR_PPP;
 
 extern const int INVDIR[ENDDIR + 1];
 
@@ -213,6 +217,8 @@ static const int ET_BNE = 12;
 //////////////////////////////////////////////////////////////////////////
 inline std::string getDirectionString(int direction)
 {
+    using namespace vf::lbm::dir;
+
     switch (direction) {
         case DIR_P00:
             return "E";
@@ -273,109 +279,111 @@ inline std::string getDirectionString(int direction)
 //////////////////////////////////////////////////////////////////////////
 static inline void setNeighborCoordinatesForDirection(int &x1, int &x2, int &x3, const int &direction)
 {
+    using namespace vf::lbm::dir;
+
     switch (direction) {
-        case D3Q27System::DIR_P00:
+        case DIR_P00:
             x1++;
             break;
-        case D3Q27System::DIR_0P0:
+        case DIR_0P0:
             x2++;
             break;
-        case D3Q27System::DIR_00P:
+        case DIR_00P:
             x3++;
             break;
-        case D3Q27System::DIR_M00:
+        case DIR_M00:
             x1--;
             break;
-        case D3Q27System::DIR_0M0:
+        case DIR_0M0:
             x2--;
             break;
-        case D3Q27System::DIR_00M:
+        case DIR_00M:
             x3--;
             break;
-        case D3Q27System::DIR_PP0:
+        case DIR_PP0:
             x1++;
             x2++;
             break;
-        case D3Q27System::DIR_MP0:
+        case DIR_MP0:
             x1--;
             x2++;
             break;
-        case D3Q27System::DIR_MM0:
-            x1--;
-            x2--;
-            break;
-        case D3Q27System::DIR_PM0:
-            x1++;
-            x2--;
-            break;
-        case D3Q27System::DIR_P0P:
-            x1++;
-            x3++;
-            break;
-        case D3Q27System::DIR_M0M:
-            x1--;
-            x3--;
-            break;
-        case D3Q27System::DIR_P0M:
-            x1++;
-            x3--;
-            break;
-        case D3Q27System::DIR_M0P:
-            x1--;
-            x3++;
-            break;
-        case D3Q27System::DIR_0PP:
-            x2++;
-            x3++;
-            break;
-        case D3Q27System::DIR_0MM:
-            x2--;
-            x3--;
-            break;
-        case D3Q27System::DIR_0PM:
-            x2++;
-            x3--;
-            break;
-        case D3Q27System::DIR_0MP:
-            x2--;
-            x3++;
-            break;
-        case D3Q27System::DIR_PPP:
-            x1++;
-            x2++;
-            x3++;
-            break;
-        case D3Q27System::DIR_MPP:
-            x1--;
-            x2++;
-            x3++;
-            break;
-        case D3Q27System::DIR_PMP:
-            x1++;
-            x2--;
-            x3++;
-            break;
-        case D3Q27System::DIR_MMP:
+        case DIR_MM0:
             x1--;
             x2--;
+            break;
+        case DIR_PM0:
+            x1++;
+            x2--;
+            break;
+        case DIR_P0P:
+            x1++;
             x3++;
             break;
-        case D3Q27System::DIR_PPM:
-            x1++;
-            x2++;
-            x3--;
-            break;
-        case D3Q27System::DIR_MPM:
+        case DIR_M0M:
             x1--;
-            x2++;
             x3--;
             break;
-        case D3Q27System::DIR_PMM:
+        case DIR_P0M:
             x1++;
+            x3--;
+            break;
+        case DIR_M0P:
+            x1--;
+            x3++;
+            break;
+        case DIR_0PP:
+            x2++;
+            x3++;
+            break;
+        case DIR_0MM:
             x2--;
             x3--;
             break;
-        case D3Q27System::DIR_MMM:
+        case DIR_0PM:
+            x2++;
+            x3--;
+            break;
+        case DIR_0MP:
+            x2--;
+            x3++;
+            break;
+        case DIR_PPP:
+            x1++;
+            x2++;
+            x3++;
+            break;
+        case DIR_MPP:
+            x1--;
+            x2++;
+            x3++;
+            break;
+        case DIR_PMP:
+            x1++;
+            x2--;
+            x3++;
+            break;
+        case DIR_MMP:
+            x1--;
+            x2--;
+            x3++;
+            break;
+        case DIR_PPM:
+            x1++;
+            x2++;
+            x3--;
+            break;
+        case DIR_MPM:
+            x1--;
+            x2++;
+            x3--;
+            break;
+        case DIR_PMM:
+            x1++;
+            x2--;
+            x3--;
+            break;
+        case DIR_MMM:
             x1--;
             x2--;
             x3--;
@@ -388,88 +396,108 @@ static inline void setNeighborCoordinatesForDirection(int &x1, int &x2, int &x3,
 //////////////////////////////////////////////////////////////////////////
 // MACROSCOPIC VALUES
 /*=====================================================================*/
-LBMReal getDensity(const LBMReal *const &f /*[27]*/);
+real getDensity(const real *const &f /*[27]*/);
 /*=====================================================================*/
-static LBMReal getPressure(const LBMReal *const &f /*[27]*/) { return REAL_CAST(UbMath::c1o3) * getDensity(f); }
+static real getPressure(const real *const &f /*[27]*/) { return REAL_CAST(vf::lbm::constant::c1o3) * getDensity(f); }
 /*=====================================================================*/
-LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/);
+real getIncompVelocityX1(const real *const &f /*[27]*/);
 /*=====================================================================*/
-LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/);
+real getIncompVelocityX2(const real *const &f /*[27]*/);
 /*=====================================================================*/
-LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/);
+real getIncompVelocityX3(const real *const &f /*[27]*/);
 
 
 /*=====================================================================*/
-static void calcDensity(const LBMReal *const &f /*[27]*/, LBMReal &rho)
+static void calcDensity(const real *const &f /*[27]*/, real &rho)
 {
+    using namespace vf::lbm::dir;
+
     rho = ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
           (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
            ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
           ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000];
 }
 /*=====================================================================*/
-static void calcIncompVelocityX1(const LBMReal *const &f /*[27]*/, LBMReal &vx1)
+static void calcIncompVelocityX1(const real *const &f /*[27]*/, real &vx1)
 {
+    using namespace vf::lbm::dir;
+
     vx1 = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00]));
 }
 /*=====================================================================*/
-static void calcIncompVelocityX2(const LBMReal *const &f /*[27]*/, LBMReal &vx2)
+static void calcIncompVelocityX2(const real *const &f /*[27]*/, real &vx2)
 {
+    using namespace vf::lbm::dir;
+
     vx2 = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
            (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_0P0] - f[DIR_0M0]));
 }
 /*=====================================================================*/
-static void calcIncompVelocityX3(const LBMReal *const &f /*[27]*/, LBMReal &vx3)
+static void calcIncompVelocityX3(const real *const &f /*[27]*/, real &vx3)
 {
+    using namespace vf::lbm::dir;
+
     vx3 = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
            (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[DIR_00P] - f[DIR_00M]));
 }
 /*=====================================================================*/
-static LBMReal getCompVelocityX1(const LBMReal *const &f /*[27]*/)
+static real getCompVelocityX1(const real *const &f /*[27]*/)
 {
+    using namespace vf::lbm::dir;
+
     return ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
             (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00])) /
            getDensity(f);
 }
 /*=====================================================================*/
-static LBMReal getCompVelocityX2(const LBMReal *const &f /*[27]*/)
+static real getCompVelocityX2(const real *const &f /*[27]*/)
 {
+    using namespace vf::lbm::dir;
+
     return ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
             (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_0P0] - f[DIR_0M0])) /
            getDensity(f);
 }
 /*=====================================================================*/
-static LBMReal getCompVelocityX3(const LBMReal *const &f /*[27]*/)
+static real getCompVelocityX3(const real *const &f /*[27]*/)
 {
+    using namespace vf::lbm::dir;
+
     return ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
             (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[DIR_00P] - f[DIR_00M])) /
            getDensity(f);
 }
 /*=====================================================================*/
-static void calcCompVelocityX1(const LBMReal *const &f /*[27]*/, LBMReal &vx1)
+static void calcCompVelocityX1(const real *const &f /*[27]*/, real &vx1)
 {
+    using namespace vf::lbm::dir;
+
     vx1 = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00])) /
           getDensity(f);
 }
 /*=====================================================================*/
-static void calcCompVelocityX2(const LBMReal *const &f /*[27]*/, LBMReal &vx2)
+static void calcCompVelocityX2(const real *const &f /*[27]*/, real &vx2)
 {
+    using namespace vf::lbm::dir;
+
     vx2 = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
            (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_0P0] - f[DIR_0M0])) /
           getDensity(f);
 }
 /*=====================================================================*/
-static void calcCompVelocityX3(const LBMReal *const &f /*[27]*/, LBMReal &vx3)
+static void calcCompVelocityX3(const real *const &f /*[27]*/, real &vx3)
 {
+    using namespace vf::lbm::dir;
+
     vx3 = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
            (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[DIR_00P] - f[DIR_00M])) /
           getDensity(f);
 }
 /*=====================================================================*/
-static void calcIncompMacroscopicValues(const LBMReal *const &f /*[27]*/, LBMReal &rho, LBMReal &vx1, LBMReal &vx2,
-                                        LBMReal &vx3)
+static void calcIncompMacroscopicValues(const real *const &f /*[27]*/, real &rho, real &vx1, real &vx2,
+                                        real &vx3)
 {
     D3Q27System::calcDensity(f, rho);
     D3Q27System::calcIncompVelocityX1(f, vx1);
@@ -478,342 +506,353 @@ static void calcIncompMacroscopicValues(const LBMReal *const &f /*[27]*/, LBMRea
 }
 
 /*=====================================================================*/
-static void calcCompMacroscopicValues(const LBMReal *const &f /*[27]*/, LBMReal &drho, LBMReal &vx1, LBMReal &vx2,
-                                      LBMReal &vx3)
+static void calcCompMacroscopicValues(const real *const &f /*[27]*/, real &drho, real &vx1, real &vx2,
+                                      real &vx3)
 {
     D3Q27System::calcDensity(f, drho);
     D3Q27System::calcIncompVelocityX1(f, vx1);
     D3Q27System::calcIncompVelocityX2(f, vx2);
     D3Q27System::calcIncompVelocityX3(f, vx3);
-    LBMReal rho = drho + UbMath::one;
+    //real rho = drho + vf::lbm::constant::one;
+    real rho = drho + vf::lbm::constant::c1o1;
     vx1 /= rho;
     vx2 /= rho;
     vx3 /= rho;
 }
 //////////////////////////////////////////////////////////////////////////
-static LBMReal getCompFeqForDirection(const int &direction, const LBMReal &drho, const LBMReal &vx1, const LBMReal &vx2,
-                                      const LBMReal &vx3)
+static real getCompFeqForDirection(const int &direction, const real &drho, const real &vx1, const real &vx2,
+                                      const real &vx3)
 {
-    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
-    LBMReal rho   = drho + UbMath::one;
+    using namespace vf::lbm::dir;
+
+    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    real rho   = drho + vf::lbm::constant::c1o1;
     switch (direction) {
         case DIR_000:
-            return REAL_CAST(UbMath::c8o27 * (drho + rho * (-cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c8o27 * (drho + rho * (-cu_sq)));
         case DIR_P00:
-            return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (vx1) +vf::lbm::constant::c9o2 * (vx1) * (vx1)-cu_sq)));
         case DIR_M00:
-            return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (-vx1) + UbMath::c9o2 * (-vx1) * (-vx1) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (-vx1) + vf::lbm::constant::c9o2 * (-vx1) * (-vx1) - cu_sq)));
         case DIR_0P0:
-            return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (vx2) + UbMath::c9o2 * (vx2) * (vx2)-cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (vx2) +vf::lbm::constant::c9o2 * (vx2) * (vx2)-cu_sq)));
         case DIR_0M0:
-            return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (-vx2) + UbMath::c9o2 * (-vx2) * (-vx2) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (-vx2) + vf::lbm::constant::c9o2 * (-vx2) * (-vx2) - cu_sq)));
         case DIR_00P:
-            return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (vx3) + UbMath::c9o2 * (vx3) * (vx3)-cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (vx3) + vf::lbm::constant::c9o2 * (vx3) * (vx3)-cu_sq)));
         case DIR_00M:
-            return REAL_CAST(UbMath::c2o27 * (drho + rho * (3.0 * (-vx3) + UbMath::c9o2 * (-vx3) * (-vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (-vx3) + vf::lbm::constant::c9o2 * (-vx3) * (-vx3) - cu_sq)));
         case DIR_PP0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (vx1 + vx2) + UbMath::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (vx1 + vx2) + vf::lbm::constant::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq)));
         case DIR_MM0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (-vx1 - vx2) + UbMath::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (-vx1 - vx2) + vf::lbm::constant::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq)));
         case DIR_PM0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (vx1 - vx2) + UbMath::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (vx1 - vx2) + vf::lbm::constant::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq)));
         case DIR_MP0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (-vx1 + vx2) + UbMath::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (-vx1 + vx2) + vf::lbm::constant::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq)));
         case DIR_P0P:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (vx1 + vx3) + UbMath::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (vx1 + vx3) + vf::lbm::constant::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq)));
         case DIR_M0M:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (-vx1 - vx3) + UbMath::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (-vx1 - vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq)));
         case DIR_P0M:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (vx1 - vx3) + UbMath::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (vx1 - vx3) + vf::lbm::constant::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq)));
         case DIR_M0P:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (-vx1 + vx3) + UbMath::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (-vx1 + vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq)));
         case DIR_0PP:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (vx2 + vx3) + UbMath::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (vx2 + vx3) + vf::lbm::constant::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq)));
         case DIR_0MM:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (-vx2 - vx3) + UbMath::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (-vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq)));
         case DIR_0PM:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (vx2 - vx3) + UbMath::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (vx2 - vx3) + vf::lbm::constant::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq)));
         case DIR_0MP:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + rho * (3.0 * (-vx2 + vx3) + UbMath::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq)));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + rho * (3.0 * (-vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq)));
         case DIR_PPP:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (vx1 + vx2 + vx3) +
-                                            UbMath::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq)));
         case DIR_MMM:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (-vx1 - vx2 - vx3) +
-                                            UbMath::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq)));
         case DIR_PPM:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (vx1 + vx2 - vx3) +
-                                            UbMath::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq)));
         case DIR_MMP:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (-vx1 - vx2 + vx3) +
-                                            UbMath::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq)));
+                                            vf::lbm::constant::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq)));
         case DIR_PMP:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (vx1 - vx2 + vx3) +
-                                            UbMath::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq)));
         case DIR_MPM:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (-vx1 + vx2 - vx3) +
-                                            UbMath::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq)));
         case DIR_PMM:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (vx1 - vx2 - vx3) +
-                                            UbMath::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq)));
         case DIR_MPP:
-            return REAL_CAST(UbMath::c1o216 *
+            return REAL_CAST(vf::lbm::constant::c1o216 *
                              (drho + rho * (3.0 * (-vx1 + vx2 + vx3) +
-                                            UbMath::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq)));
+                                 vf::lbm::constant::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq)));
         default:
             throw UbException(UB_EXARGS, "unknown dir");
     }
 }
 //////////////////////////////////////////////////////////////////////////
-static void calcCompFeq(LBMReal *const &feq /*[27]*/, const LBMReal &drho, const LBMReal &vx1, const LBMReal &vx2,
-                        const LBMReal &vx3)
+static void calcCompFeq(real *const &feq /*[27]*/, const real &drho, const real &vx1, const real &vx2,
+                        const real &vx3)
 {
-    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
-    LBMReal rho   = drho + UbMath::one;
+    using namespace vf::lbm::dir;
 
-    feq[DIR_000] = UbMath::c8o27 * (drho + rho * (-cu_sq));
-    feq[DIR_P00]    = UbMath::c2o27 * (drho + rho * (3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq));
-    feq[DIR_M00]    = UbMath::c2o27 * (drho + rho * (3.0 * (-vx1) + UbMath::c9o2 * (-vx1) * (-vx1) - cu_sq));
-    feq[DIR_0P0]    = UbMath::c2o27 * (drho + rho * (3.0 * (vx2) + UbMath::c9o2 * (vx2) * (vx2)-cu_sq));
-    feq[DIR_0M0]    = UbMath::c2o27 * (drho + rho * (3.0 * (-vx2) + UbMath::c9o2 * (-vx2) * (-vx2) - cu_sq));
-    feq[DIR_00P]    = UbMath::c2o27 * (drho + rho * (3.0 * (vx3) + UbMath::c9o2 * (vx3) * (vx3)-cu_sq));
-    feq[DIR_00M]    = UbMath::c2o27 * (drho + rho * (3.0 * (-vx3) + UbMath::c9o2 * (-vx3) * (-vx3) - cu_sq));
-    feq[DIR_PP0]   = UbMath::c1o54 * (drho + rho * (3.0 * (vx1 + vx2) + UbMath::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq));
-    feq[DIR_MM0]  = UbMath::c1o54 * (drho + rho * (3.0 * (-vx1 - vx2) + UbMath::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq));
-    feq[DIR_PM0]  = UbMath::c1o54 * (drho + rho * (3.0 * (vx1 - vx2) + UbMath::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq));
-    feq[DIR_MP0]  = UbMath::c1o54 * (drho + rho * (3.0 * (-vx1 + vx2) + UbMath::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq));
-    feq[DIR_P0P]  = UbMath::c1o54 * (drho + rho * (3.0 * (vx1 + vx3) + UbMath::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq));
-    feq[DIR_M0M]  = UbMath::c1o54 * (drho + rho * (3.0 * (-vx1 - vx3) + UbMath::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq));
-    feq[DIR_P0M]  = UbMath::c1o54 * (drho + rho * (3.0 * (vx1 - vx3) + UbMath::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq));
-    feq[DIR_M0P]  = UbMath::c1o54 * (drho + rho * (3.0 * (-vx1 + vx3) + UbMath::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq));
-    feq[DIR_0PP]  = UbMath::c1o54 * (drho + rho * (3.0 * (vx2 + vx3) + UbMath::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq));
-    feq[DIR_0MM]  = UbMath::c1o54 * (drho + rho * (3.0 * (-vx2 - vx3) + UbMath::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq));
-    feq[DIR_0PM]  = UbMath::c1o54 * (drho + rho * (3.0 * (vx2 - vx3) + UbMath::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq));
-    feq[DIR_0MP]  = UbMath::c1o54 * (drho + rho * (3.0 * (-vx2 + vx3) + UbMath::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq));
-    feq[DIR_PPP] = UbMath::c1o216 *
-               (drho + rho * (3.0 * (vx1 + vx2 + vx3) + UbMath::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq));
+    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    real rho   = drho + vf::lbm::constant::c1o1;
+
+    feq[DIR_000] = vf::lbm::constant::c8o27 * (drho + rho * (-cu_sq));
+    feq[DIR_P00]    = vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (vx1) + vf::lbm::constant::c9o2 * (vx1) * (vx1)-cu_sq));
+    feq[DIR_M00]    = vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (-vx1) + vf::lbm::constant::c9o2 * (-vx1) * (-vx1) - cu_sq));
+    feq[DIR_0P0]    = vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (vx2) + vf::lbm::constant::c9o2 * (vx2) * (vx2)-cu_sq));
+    feq[DIR_0M0]    = vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (-vx2) + vf::lbm::constant::c9o2 * (-vx2) * (-vx2) - cu_sq));
+    feq[DIR_00P]    = vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (vx3) + vf::lbm::constant::c9o2 * (vx3) * (vx3)-cu_sq));
+    feq[DIR_00M]    = vf::lbm::constant::c2o27 * (drho + rho * (3.0 * (-vx3) + vf::lbm::constant::c9o2 * (-vx3) * (-vx3) - cu_sq));
+    feq[DIR_PP0]   = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (vx1 + vx2) + vf::lbm::constant::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq));
+    feq[DIR_MM0]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (-vx1 - vx2) + vf::lbm::constant::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq));
+    feq[DIR_PM0]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (vx1 - vx2) + vf::lbm::constant::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq));
+    feq[DIR_MP0]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (-vx1 + vx2) + vf::lbm::constant::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq));
+    feq[DIR_P0P]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (vx1 + vx3) + vf::lbm::constant::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq));
+    feq[DIR_M0M]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (-vx1 - vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq));
+    feq[DIR_P0M]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (vx1 - vx3) + vf::lbm::constant::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq));
+    feq[DIR_M0P]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (-vx1 + vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq));
+    feq[DIR_0PP]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (vx2 + vx3) + vf::lbm::constant::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq));
+    feq[DIR_0MM]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (-vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq));
+    feq[DIR_0PM]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (vx2 - vx3) + vf::lbm::constant::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq));
+    feq[DIR_0MP]  = vf::lbm::constant::c1o54 * (drho + rho * (3.0 * (-vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq));
+    feq[DIR_PPP] = vf::lbm::constant::c1o216 *
+               (drho + rho * (3.0 * (vx1 + vx2 + vx3) + vf::lbm::constant::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq));
     feq[DIR_MMM] =
-        UbMath::c1o216 *
-        (drho + rho * (3.0 * (-vx1 - vx2 - vx3) + UbMath::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq));
-    feq[DIR_PPM] = UbMath::c1o216 *
-               (drho + rho * (3.0 * (vx1 + vx2 - vx3) + UbMath::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq));
+        vf::lbm::constant::c1o216 *
+        (drho + rho * (3.0 * (-vx1 - vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq));
+    feq[DIR_PPM] = vf::lbm::constant::c1o216 *
+               (drho + rho * (3.0 * (vx1 + vx2 - vx3) + vf::lbm::constant::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq));
     feq[DIR_MMP] =
-        UbMath::c1o216 *
-        (drho + rho * (3.0 * (-vx1 - vx2 + vx3) + UbMath::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq));
-    feq[DIR_PMP] = UbMath::c1o216 *
-               (drho + rho * (3.0 * (vx1 - vx2 + vx3) + UbMath::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq));
+        vf::lbm::constant::c1o216 *
+        (drho + rho * (3.0 * (-vx1 - vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq));
+    feq[DIR_PMP] = vf::lbm::constant::c1o216 *
+               (drho + rho * (3.0 * (vx1 - vx2 + vx3) + vf::lbm::constant::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq));
     feq[DIR_MPM] =
-        UbMath::c1o216 *
-        (drho + rho * (3.0 * (-vx1 + vx2 - vx3) + UbMath::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq));
-    feq[DIR_PMM] = UbMath::c1o216 *
-               (drho + rho * (3.0 * (vx1 - vx2 - vx3) + UbMath::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq));
+        vf::lbm::constant::c1o216 *
+        (drho + rho * (3.0 * (-vx1 + vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq));
+    feq[DIR_PMM] = vf::lbm::constant::c1o216 *
+               (drho + rho * (3.0 * (vx1 - vx2 - vx3) + vf::lbm::constant::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq));
     feq[DIR_MPP] =
-        UbMath::c1o216 *
-        (drho + rho * (3.0 * (-vx1 + vx2 + vx3) + UbMath::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq));
+        vf::lbm::constant::c1o216 *
+        (drho + rho * (3.0 * (-vx1 + vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq));
 }
 //////////////////////////////////////////////////////////////////////////
-static LBMReal getIncompFeqForDirection(const int &direction, const LBMReal &drho, const LBMReal &vx1,
-                                        const LBMReal &vx2, const LBMReal &vx3)
+static real getIncompFeqForDirection(const int &direction, const real &drho, const real &vx1,
+                                        const real &vx2, const real &vx3)
 {
-    LBMReal cu_sq = 1.5f * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    using namespace vf::lbm::dir;
+
+    real cu_sq = 1.5f * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
     switch (direction) {
         case DIR_000:
-            return REAL_CAST(UbMath::c8o27 * (drho - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c8o27 * (drho - cu_sq));
         case DIR_P00:
-            return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + 3.0 * (vx1) + vf::lbm::constant::c9o2 * (vx1) * (vx1)-cu_sq));
         case DIR_M00:
-            return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (-vx1) + UbMath::c9o2 * (-vx1) * (-vx1) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + 3.0 * (-vx1) + vf::lbm::constant::c9o2 * (-vx1) * (-vx1) - cu_sq));
         case DIR_0P0:
-            return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (vx2) + UbMath::c9o2 * (vx2) * (vx2)-cu_sq));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + 3.0 * (vx2) + vf::lbm::constant::c9o2 * (vx2) * (vx2)-cu_sq));
         case DIR_0M0:
-            return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (-vx2) + UbMath::c9o2 * (-vx2) * (-vx2) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + 3.0 * (-vx2) + vf::lbm::constant::c9o2 * (-vx2) * (-vx2) - cu_sq));
         case DIR_00P:
-            return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (vx3) + UbMath::c9o2 * (vx3) * (vx3)-cu_sq));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + 3.0 * (vx3) + vf::lbm::constant::c9o2 * (vx3) * (vx3)-cu_sq));
         case DIR_00M:
-            return REAL_CAST(UbMath::c2o27 * (drho + 3.0 * (-vx3) + UbMath::c9o2 * (-vx3) * (-vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c2o27 * (drho + 3.0 * (-vx3) + vf::lbm::constant::c9o2 * (-vx3) * (-vx3) - cu_sq));
         case DIR_PP0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (vx1 + vx2) + UbMath::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (vx1 + vx2) + vf::lbm::constant::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq));
         case DIR_MM0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (-vx1 - vx2) + UbMath::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (-vx1 - vx2) + vf::lbm::constant::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq));
         case DIR_PM0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (vx1 - vx2) + UbMath::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (vx1 - vx2) + vf::lbm::constant::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq));
         case DIR_MP0:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (-vx1 + vx2) + UbMath::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (-vx1 + vx2) + vf::lbm::constant::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq));
         case DIR_P0P:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (vx1 + vx3) + UbMath::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (vx1 + vx3) + vf::lbm::constant::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq));
         case DIR_M0M:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (-vx1 - vx3) + UbMath::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (-vx1 - vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq));
         case DIR_P0M:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (vx1 - vx3) + UbMath::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (vx1 - vx3) + vf::lbm::constant::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq));
         case DIR_M0P:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (-vx1 + vx3) + UbMath::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (-vx1 + vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq));
         case DIR_0PP:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (vx2 + vx3) + UbMath::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (vx2 + vx3) + vf::lbm::constant::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq));
         case DIR_0MM:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (-vx2 - vx3) + UbMath::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (-vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq));
         case DIR_0PM:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (vx2 - vx3) + UbMath::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (vx2 - vx3) + vf::lbm::constant::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq));
         case DIR_0MP:
-            return REAL_CAST(UbMath::c1o54 *
-                             (drho + 3.0 * (-vx2 + vx3) + UbMath::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o54 *
+                             (drho + 3.0 * (-vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq));
         case DIR_PPP:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (vx1 + vx2 + vx3) +
-                                               UbMath::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (vx1 + vx2 + vx3) +
+                                               vf::lbm::constant::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq));
         case DIR_MMM:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (-vx1 - vx2 - vx3) +
-                                               UbMath::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (-vx1 - vx2 - vx3) +
+                                               vf::lbm::constant::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq));
         case DIR_PPM:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (vx1 + vx2 - vx3) +
-                                               UbMath::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (vx1 + vx2 - vx3) +
+                                               vf::lbm::constant::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq));
         case DIR_MMP:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (-vx1 - vx2 + vx3) +
-                                               UbMath::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (-vx1 - vx2 + vx3) +
+                                               vf::lbm::constant::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq));
         case DIR_PMP:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (vx1 - vx2 + vx3) +
-                                               UbMath::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (vx1 - vx2 + vx3) +
+                                               vf::lbm::constant::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq));
         case DIR_MPM:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (-vx1 + vx2 - vx3) +
-                                               UbMath::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (-vx1 + vx2 - vx3) +
+                                               vf::lbm::constant::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq));
         case DIR_PMM:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (vx1 - vx2 - vx3) +
-                                               UbMath::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (vx1 - vx2 - vx3) +
+                                               vf::lbm::constant::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq));
         case DIR_MPP:
-            return REAL_CAST(UbMath::c1o216 * (drho + 3.0 * (-vx1 + vx2 + vx3) +
-                                               UbMath::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq));
+            return REAL_CAST(vf::lbm::constant::c1o216 * (drho + 3.0 * (-vx1 + vx2 + vx3) +
+                                               vf::lbm::constant::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq));
         default:
             throw UbException(UB_EXARGS, "unknown dir");
     }
 }
 //////////////////////////////////////////////////////////////////////////
-static void calcIncompFeq(LBMReal *const &feq /*[27]*/, const LBMReal &drho, const LBMReal &vx1, const LBMReal &vx2,
-                          const LBMReal &vx3)
+static void calcIncompFeq(real *const &feq /*[27]*/, const real &drho, const real &vx1, const real &vx2,
+                          const real &vx3)
 {
-    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    using namespace vf::lbm::dir;
 
-    feq[DIR_000] = UbMath::c8o27 * (drho - cu_sq);
-    feq[DIR_P00]    = UbMath::c2o27 * (drho + 3.0 * (vx1) + UbMath::c9o2 * (vx1) * (vx1)-cu_sq);
-    feq[DIR_M00]    = UbMath::c2o27 * (drho + 3.0 * (-vx1) + UbMath::c9o2 * (-vx1) * (-vx1) - cu_sq);
-    feq[DIR_0P0]    = UbMath::c2o27 * (drho + 3.0 * (vx2) + UbMath::c9o2 * (vx2) * (vx2)-cu_sq);
-    feq[DIR_0M0]    = UbMath::c2o27 * (drho + 3.0 * (-vx2) + UbMath::c9o2 * (-vx2) * (-vx2) - cu_sq);
-    feq[DIR_00P]    = UbMath::c2o27 * (drho + 3.0 * (vx3) + UbMath::c9o2 * (vx3) * (vx3)-cu_sq);
-    feq[DIR_00M]    = UbMath::c2o27 * (drho + 3.0 * (-vx3) + UbMath::c9o2 * (-vx3) * (-vx3) - cu_sq);
-    feq[DIR_PP0]   = UbMath::c1o54 * (drho + 3.0 * (vx1 + vx2) + UbMath::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq);
-    feq[DIR_MM0]   = UbMath::c1o54 * (drho + 3.0 * (-vx1 - vx2) + UbMath::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq);
-    feq[DIR_PM0]   = UbMath::c1o54 * (drho + 3.0 * (vx1 - vx2) + UbMath::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq);
-    feq[DIR_MP0]   = UbMath::c1o54 * (drho + 3.0 * (-vx1 + vx2) + UbMath::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq);
-    feq[DIR_P0P]   = UbMath::c1o54 * (drho + 3.0 * (vx1 + vx3) + UbMath::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq);
-    feq[DIR_M0M]   = UbMath::c1o54 * (drho + 3.0 * (-vx1 - vx3) + UbMath::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq);
-    feq[DIR_P0M]   = UbMath::c1o54 * (drho + 3.0 * (vx1 - vx3) + UbMath::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq);
-    feq[DIR_M0P]   = UbMath::c1o54 * (drho + 3.0 * (-vx1 + vx3) + UbMath::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq);
-    feq[DIR_0PP]   = UbMath::c1o54 * (drho + 3.0 * (vx2 + vx3) + UbMath::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq);
-    feq[DIR_0MM]   = UbMath::c1o54 * (drho + 3.0 * (-vx2 - vx3) + UbMath::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq);
-    feq[DIR_0PM]   = UbMath::c1o54 * (drho + 3.0 * (vx2 - vx3) + UbMath::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq);
-    feq[DIR_0MP]   = UbMath::c1o54 * (drho + 3.0 * (-vx2 + vx3) + UbMath::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq);
-    feq[DIR_PPP]  = UbMath::c1o216 *
-               (drho + 3.0 * (vx1 + vx2 + vx3) + UbMath::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq);
-    feq[DIR_MMM] = UbMath::c1o216 *
-               (drho + 3.0 * (-vx1 - vx2 - vx3) + UbMath::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq);
-    feq[DIR_PPM] = UbMath::c1o216 *
-               (drho + 3.0 * (vx1 + vx2 - vx3) + UbMath::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq);
-    feq[DIR_MMP] = UbMath::c1o216 *
-               (drho + 3.0 * (-vx1 - vx2 + vx3) + UbMath::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq);
-    feq[DIR_PMP] = UbMath::c1o216 *
-               (drho + 3.0 * (vx1 - vx2 + vx3) + UbMath::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq);
-    feq[DIR_MPM] = UbMath::c1o216 *
-               (drho + 3.0 * (-vx1 + vx2 - vx3) + UbMath::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq);
-    feq[DIR_PMM] = UbMath::c1o216 *
-               (drho + 3.0 * (vx1 - vx2 - vx3) + UbMath::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq);
-    feq[DIR_MPP] = UbMath::c1o216 *
-               (drho + 3.0 * (-vx1 + vx2 + vx3) + UbMath::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
+    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+
+    feq[DIR_000] = vf::lbm::constant::c8o27 * (drho - cu_sq);
+    feq[DIR_P00]    = vf::lbm::constant::c2o27 * (drho + 3.0 * (vx1) + vf::lbm::constant::c9o2 * (vx1) * (vx1)-cu_sq);
+    feq[DIR_M00]    = vf::lbm::constant::c2o27 * (drho + 3.0 * (-vx1) + vf::lbm::constant::c9o2 * (-vx1) * (-vx1) - cu_sq);
+    feq[DIR_0P0]    = vf::lbm::constant::c2o27 * (drho + 3.0 * (vx2) + vf::lbm::constant::c9o2 * (vx2) * (vx2)-cu_sq);
+    feq[DIR_0M0]    = vf::lbm::constant::c2o27 * (drho + 3.0 * (-vx2) + vf::lbm::constant::c9o2 * (-vx2) * (-vx2) - cu_sq);
+    feq[DIR_00P]    = vf::lbm::constant::c2o27 * (drho + 3.0 * (vx3) + vf::lbm::constant::c9o2 * (vx3) * (vx3)-cu_sq);
+    feq[DIR_00M]    = vf::lbm::constant::c2o27 * (drho + 3.0 * (-vx3) + vf::lbm::constant::c9o2 * (-vx3) * (-vx3) - cu_sq);
+    feq[DIR_PP0]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (vx1 + vx2) + vf::lbm::constant::c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq);
+    feq[DIR_MM0]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (-vx1 - vx2) + vf::lbm::constant::c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq);
+    feq[DIR_PM0]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (vx1 - vx2) + vf::lbm::constant::c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq);
+    feq[DIR_MP0]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (-vx1 + vx2) + vf::lbm::constant::c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq);
+    feq[DIR_P0P]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (vx1 + vx3) + vf::lbm::constant::c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq);
+    feq[DIR_M0M]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (-vx1 - vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq);
+    feq[DIR_P0M]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (vx1 - vx3) + vf::lbm::constant::c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq);
+    feq[DIR_M0P]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (-vx1 + vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq);
+    feq[DIR_0PP]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (vx2 + vx3) + vf::lbm::constant::c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq);
+    feq[DIR_0MM]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (-vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq);
+    feq[DIR_0PM]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (vx2 - vx3) + vf::lbm::constant::c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq);
+    feq[DIR_0MP]   = vf::lbm::constant::c1o54 * (drho + 3.0 * (-vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq);
+    feq[DIR_PPP]  = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (vx1 + vx2 + vx3) + vf::lbm::constant::c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq);
+    feq[DIR_MMM] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (-vx1 - vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq);
+    feq[DIR_PPM] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (vx1 + vx2 - vx3) + vf::lbm::constant::c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq);
+    feq[DIR_MMP] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (-vx1 - vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq);
+    feq[DIR_PMP] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (vx1 - vx2 + vx3) + vf::lbm::constant::c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq);
+    feq[DIR_MPM] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (-vx1 + vx2 - vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq);
+    feq[DIR_PMM] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (vx1 - vx2 - vx3) + vf::lbm::constant::c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq);
+    feq[DIR_MPP] = vf::lbm::constant::c1o216 *
+               (drho + 3.0 * (-vx1 + vx2 + vx3) + vf::lbm::constant::c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
 }
 //////////////////////////////////////////////////////////////////////////
-static inline float getBoundaryVelocityForDirection(const int &direction, const float &bcVelocityX1,
-                                                    const float &bcVelocityX2, const float &bcVelocityX3)
+static inline real getBoundaryVelocityForDirection(const int &direction, const real &bcVelocityX1,
+                                                    const real &bcVelocityX2, const real &bcVelocityX3)
 {
+    using namespace vf::lbm::dir;
+ 
     switch (direction) {
         case DIR_P00:
-            return (float)(UbMath::c4o9 * (+bcVelocityX1));
+            return (real)(vf::lbm::constant::c4o9 * (+bcVelocityX1));
         case DIR_M00:
-            return (float)(UbMath::c4o9 * (-bcVelocityX1));
+            return (real)(vf::lbm::constant::c4o9 * (-bcVelocityX1));
         case DIR_0P0:
-            return (float)(UbMath::c4o9 * (+bcVelocityX2));
+            return (real)(vf::lbm::constant::c4o9 * (+bcVelocityX2));
         case DIR_0M0:
-            return (float)(UbMath::c4o9 * (-bcVelocityX2));
+            return (real)(vf::lbm::constant::c4o9 * (-bcVelocityX2));
         case DIR_00P:
-            return (float)(UbMath::c4o9 * (+bcVelocityX3));
+            return (real)(vf::lbm::constant::c4o9 * (+bcVelocityX3));
         case DIR_00M:
-            return (float)(UbMath::c4o9 * (-bcVelocityX3));
+            return (real)(vf::lbm::constant::c4o9 * (-bcVelocityX3));
         case DIR_PP0:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
+            return (real)(vf::lbm::constant::c1o9 * (+bcVelocityX1 + bcVelocityX2));
         case DIR_MM0:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
+            return (real)(vf::lbm::constant::c1o9 * (-bcVelocityX1 - bcVelocityX2));
         case DIR_PM0:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
+            return (real)(vf::lbm::constant::c1o9 * (+bcVelocityX1 - bcVelocityX2));
         case DIR_MP0:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
+            return (real)(vf::lbm::constant::c1o9 * (-bcVelocityX1 + bcVelocityX2));
         case DIR_P0P:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (+bcVelocityX1 + bcVelocityX3));
         case DIR_M0M:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (-bcVelocityX1 - bcVelocityX3));
         case DIR_P0M:
-            return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (+bcVelocityX1 - bcVelocityX3));
         case DIR_M0P:
-            return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (-bcVelocityX1 + bcVelocityX3));
         case DIR_0PP:
-            return (float)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (+bcVelocityX2 + bcVelocityX3));
         case DIR_0MM:
-            return (float)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (-bcVelocityX2 - bcVelocityX3));
         case DIR_0PM:
-            return (float)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (+bcVelocityX2 - bcVelocityX3));
         case DIR_0MP:
-            return (float)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o9 * (-bcVelocityX2 + bcVelocityX3));
         case DIR_PPP:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
         case DIR_MMM:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
         case DIR_PPM:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
         case DIR_MMP:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
         case DIR_PMP:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
         case DIR_MPM:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
         case DIR_PMM:
-            return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
         case DIR_MPP:
-            return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+            return (real)(vf::lbm::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
         default:
             throw UbException(UB_EXARGS, "unknown direction");
     }
@@ -822,8 +861,9 @@ static inline float getBoundaryVelocityForDirection(const int &direction, const 
 static const int &getInvertDirection(const int &direction)
 {
 #ifdef _DEBUG
-    if (direction < STARTDIR || direction > ENDDIR)
-        throw UbException(UB_EXARGS, "unknown direction");
+ //   if (direction < STARTDIR || direction > ENDDIR)
+     if (direction < FSTARTDIR || direction > FENDDIR)
+       throw UbException(UB_EXARGS, "unknown direction");
 #endif
     return INVDIR[direction];
 }
@@ -839,48 +879,52 @@ static void getLBMDirections(std::vector<int> &dirs, bool onlyLBdirs = false)
     } else /*STARTDIR->ENDDIR*/
     {
         dirs.resize(ENDDIR + 1);
-        for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
+        for (int dir = STARTF; dir <= ENDF; ++dir)
             dirs[dir] = dir;
     }
 }
 //////////////////////////////////////////////////////////////////////////
-static std::vector<int> getEX(const int &exn)
+static std::vector<int> getDX(const int &exn)
 {
     std::vector<int> ex;
     ex.resize(ENDDIR + 1);
     switch (exn) {
         case 1:
-            for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
+            for (int dir = FSTARTDIR; dir <= FENDDIR; ++dir)
                 ex[dir] = DX1[dir];
             break;
         case 2:
-            for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
+            for (int dir = FSTARTDIR; dir <= FENDDIR; ++dir)
                 ex[dir] = DX2[dir];
             break;
         case 3:
-            for (int dir = STARTDIR; dir <= ENDDIR; ++dir)
+            for (int dir = FSTARTDIR; dir <= FENDDIR; ++dir)
                 ex[dir] = DX3[dir];
             break;
     }
     return ex;
 }
 //////////////////////////////////////////////////////////////////////////
-static inline void calcDistanceToNeighbors(std::vector<double> &distNeigh, const double &deltaX1)
+static inline void calcDistanceToNeighbors(std::vector<real> &distNeigh, const real &deltaX1)
 {
+    using namespace vf::lbm::dir;
+
     // distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
 
     distNeigh[DIR_P00] = distNeigh[DIR_M00] = distNeigh[DIR_0P0] = deltaX1;
     distNeigh[DIR_0M0] = distNeigh[DIR_00P] = distNeigh[DIR_00M] = deltaX1;
-    distNeigh[DIR_PP0] = distNeigh[DIR_MP0] = distNeigh[DIR_MM0] = distNeigh[DIR_PM0] = UbMath::sqrt2 * deltaX1;
-    distNeigh[DIR_P0P] = distNeigh[DIR_0PP] = distNeigh[DIR_M0P] = distNeigh[DIR_0MP] = UbMath::sqrt2 * deltaX1;
-    distNeigh[DIR_P0M] = distNeigh[DIR_0PM] = distNeigh[DIR_M0M] = distNeigh[DIR_0MM] = UbMath::sqrt2 * deltaX1;
-    distNeigh[DIR_PPP] = distNeigh[DIR_MPP] = distNeigh[DIR_PMP] = distNeigh[DIR_MMP] = UbMath::sqrt3 * deltaX1;
-    distNeigh[DIR_PPM] = distNeigh[DIR_MPM] = distNeigh[DIR_PMM] = distNeigh[DIR_MMM] = UbMath::sqrt3 * deltaX1;
+    distNeigh[DIR_PP0] = distNeigh[DIR_MP0] = distNeigh[DIR_MM0] = distNeigh[DIR_PM0] = vf::lbm::constant::sqrt2 * deltaX1;
+    distNeigh[DIR_P0P] = distNeigh[DIR_0PP] = distNeigh[DIR_M0P] = distNeigh[DIR_0MP] = vf::lbm::constant::sqrt2 * deltaX1;
+    distNeigh[DIR_P0M] = distNeigh[DIR_0PM] = distNeigh[DIR_M0M] = distNeigh[DIR_0MM] = vf::lbm::constant::sqrt2 * deltaX1;
+    distNeigh[DIR_PPP] = distNeigh[DIR_MPP] = distNeigh[DIR_PMP] = distNeigh[DIR_MMP] = vf::lbm::constant::sqrt3 * deltaX1;
+    distNeigh[DIR_PPM] = distNeigh[DIR_MPM] = distNeigh[DIR_PMM] = distNeigh[DIR_MMM] = vf::lbm::constant::sqrt3 * deltaX1;
 }
 //////////////////////////////////////////////////////////////////////////
-static inline void calcDistanceToNeighbors(std::vector<double> &distNeigh, const double &deltaX1, const double &deltaX2,
-                                           const double &deltaX3)
+static inline void calcDistanceToNeighbors(std::vector<real> &distNeigh, const real &deltaX1, const real &deltaX2,
+                                           const real &deltaX3)
 {
+    using namespace vf::lbm::dir;
+
     // distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
     distNeigh[DIR_P00] = distNeigh[DIR_M00] = deltaX1;
     distNeigh[DIR_0P0] = distNeigh[DIR_0M0] = deltaX2;
@@ -894,11 +938,13 @@ static inline void calcDistanceToNeighbors(std::vector<double> &distNeigh, const
         sqrt(deltaX1 * deltaX1 + deltaX2 * deltaX2 + deltaX3 * deltaX3);
 }
 //////////////////////////////////////////////////////////////////////////
-static inline void initRayVectors(double *const &rayX1, double *const &rayX2, double *const &rayX3)
+static inline void initRayVectors(real *const &rayX1, real *const &rayX2, real *const &rayX3)
 {
+    using namespace vf::lbm::dir;
+
     int fdir;
-    double c1oS2 = UbMath::one_over_sqrt2;
-    double c1oS3 = UbMath::one_over_sqrt3;
+    real c1oS2 = vf::lbm::constant::one_over_sqrt2;
+    real c1oS3 = vf::lbm::constant::one_over_sqrt3;
     fdir         = DIR_P00;
     rayX1[fdir]  = 1.0;
     rayX2[fdir]  = 0.0;
@@ -1005,64 +1051,68 @@ static inline void initRayVectors(double *const &rayX1, double *const &rayX2, do
     rayX3[fdir]  = -c1oS3;
 }
 //////////////////////////////////////////////////////////////////////////
-static inline LBMReal calcPress(const LBMReal *const f, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3)
+static inline real calcPress(const real *const f, real rho, real vx1, real vx2, real vx3)
 {
-    LBMReal op = 1.0;
+    using namespace vf::lbm::dir;
+
+    real op = 1.0;
     return ((f[DIR_P00] + f[DIR_M00] + f[DIR_0P0] + f[DIR_0M0] + f[DIR_00P] + f[DIR_00M] +
              2. * (f[DIR_PP0] + f[DIR_MM0] + f[DIR_PM0] + f[DIR_MP0] + f[DIR_P0P] + f[DIR_M0M] + f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] + f[DIR_0MM] + f[DIR_0PM] + f[DIR_0MP]) +
              3. * (f[DIR_PPP] + f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] + f[DIR_PPM] + f[DIR_MMM] + f[DIR_PMM] + f[DIR_MPM]) -
              (vx1 * vx1 + vx2 * vx2 + vx3 * vx3)) *
                 (1 - 0.5 * op) +
             op * 0.5 * (rho)) *
-           UbMath::c1o3;
+           vf::lbm::constant::c1o3;
 }
 //////////////////////////////////////////////////////////////////////////
-static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
+static inline real getShearRate(const real *const f, real collFactorF)
 {
-    LBMReal mfcbb = f[DIR_P00];
-    LBMReal mfbcb = f[DIR_0P0];
-    LBMReal mfbbc = f[DIR_00P];
-    LBMReal mfccb = f[DIR_PP0];
-    LBMReal mfacb = f[DIR_MP0];
-    LBMReal mfcbc = f[DIR_P0P];
-    LBMReal mfabc = f[DIR_M0P];
-    LBMReal mfbcc = f[DIR_0PP];
-    LBMReal mfbac = f[DIR_0MP];
-    LBMReal mfccc = f[DIR_PPP];
-    LBMReal mfacc = f[DIR_MPP];
-    LBMReal mfcac = f[DIR_PMP];
-    LBMReal mfaac = f[DIR_MMP];
+    using namespace vf::lbm::dir;
 
-    LBMReal mfabb = f[DIR_M00];
-    LBMReal mfbab = f[DIR_0M0];
-    LBMReal mfbba = f[DIR_00M];
-    LBMReal mfaab = f[DIR_MM0];
-    LBMReal mfcab = f[DIR_PM0];
-    LBMReal mfaba = f[DIR_M0M];
-    LBMReal mfcba = f[DIR_P0M];
-    LBMReal mfbaa = f[DIR_0MM];
-    LBMReal mfbca = f[DIR_0PM];
-    LBMReal mfaaa = f[DIR_MMM];
-    LBMReal mfcaa = f[DIR_PMM];
-    LBMReal mfaca = f[DIR_MPM];
-    LBMReal mfcca = f[DIR_PPM];
+    real mfcbb = f[DIR_P00];
+    real mfbcb = f[DIR_0P0];
+    real mfbbc = f[DIR_00P];
+    real mfccb = f[DIR_PP0];
+    real mfacb = f[DIR_MP0];
+    real mfcbc = f[DIR_P0P];
+    real mfabc = f[DIR_M0P];
+    real mfbcc = f[DIR_0PP];
+    real mfbac = f[DIR_0MP];
+    real mfccc = f[DIR_PPP];
+    real mfacc = f[DIR_MPP];
+    real mfcac = f[DIR_PMP];
+    real mfaac = f[DIR_MMP];
 
-    LBMReal mfbbb = f[DIR_000];
+    real mfabb = f[DIR_M00];
+    real mfbab = f[DIR_0M0];
+    real mfbba = f[DIR_00M];
+    real mfaab = f[DIR_MM0];
+    real mfcab = f[DIR_PM0];
+    real mfaba = f[DIR_M0M];
+    real mfcba = f[DIR_P0M];
+    real mfbaa = f[DIR_0MM];
+    real mfbca = f[DIR_0PM];
+    real mfaaa = f[DIR_MMM];
+    real mfcaa = f[DIR_PMM];
+    real mfaca = f[DIR_MPM];
+    real mfcca = f[DIR_PPM];
 
-    LBMReal m0, m1, m2;
+    real mfbbb = f[DIR_000];
 
-    LBMReal rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca) + (mfaab + mfacb + mfcab + mfccb) +
+    real m0, m1, m2;
+
+    real rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca) + (mfaab + mfacb + mfcab + mfccb) +
                   (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc) + (mfabb + mfcbb) +
                   (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-    LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+    real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
                    (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) + (mfcbb - mfabb));
-    LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+    real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
                    (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) + (mfbcb - mfbab));
-    LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+    real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
                    (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) + (mfbbc - mfbba));
 
-    LBMReal oMdrho;
+    real oMdrho;
 
     oMdrho = mfccc + mfaaa;
     m0     = mfaca + mfcac;
@@ -1090,9 +1140,9 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m0 += mfbbb; // hat gefehlt
     oMdrho = 1. - (oMdrho + m0);
 
-    LBMReal vx2;
-    LBMReal vy2;
-    LBMReal vz2;
+    real vx2;
+    real vy2;
+    real vz2;
     vx2 = vvx * vvx;
     vy2 = vvy * vvy;
     vz2 = vvz * vvz;
@@ -1106,7 +1156,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfaac - mfaaa;
     m0    = m2 + mfaab;
     mfaaa = m0;
-    m0 += UbMath::c1o36 * oMdrho;
+    m0 += vf::lbm::constant::c1o36 * oMdrho;
     mfaab = m1 - m0 * vvz;
     mfaac = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1114,7 +1164,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfabc - mfaba;
     m0    = m2 + mfabb;
     mfaba = m0;
-    m0 += UbMath::c1o9 * oMdrho;
+    m0 += vf::lbm::constant::c1o9 * oMdrho;
     mfabb = m1 - m0 * vvz;
     mfabc = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1122,7 +1172,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfacc - mfaca;
     m0    = m2 + mfacb;
     mfaca = m0;
-    m0 += UbMath::c1o36 * oMdrho;
+    m0 += vf::lbm::constant::c1o36 * oMdrho;
     mfacb = m1 - m0 * vvz;
     mfacc = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1131,7 +1181,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfbac - mfbaa;
     m0    = m2 + mfbab;
     mfbaa = m0;
-    m0 += UbMath::c1o9 * oMdrho;
+    m0 += vf::lbm::constant::c1o9 * oMdrho;
     mfbab = m1 - m0 * vvz;
     mfbac = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1139,7 +1189,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfbbc - mfbba;
     m0    = m2 + mfbbb;
     mfbba = m0;
-    m0 += UbMath::c4o9 * oMdrho;
+    m0 += vf::lbm::constant::c4o9 * oMdrho;
     mfbbb = m1 - m0 * vvz;
     mfbbc = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1147,7 +1197,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfbcc - mfbca;
     m0    = m2 + mfbcb;
     mfbca = m0;
-    m0 += UbMath::c1o9 * oMdrho;
+    m0 += vf::lbm::constant::c1o9 * oMdrho;
     mfbcb = m1 - m0 * vvz;
     mfbcc = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1156,7 +1206,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfcac - mfcaa;
     m0    = m2 + mfcab;
     mfcaa = m0;
-    m0 += UbMath::c1o36 * oMdrho;
+    m0 += vf::lbm::constant::c1o36 * oMdrho;
     mfcab = m1 - m0 * vvz;
     mfcac = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1164,7 +1214,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfcbc - mfcba;
     m0    = m2 + mfcbb;
     mfcba = m0;
-    m0 += UbMath::c1o9 * oMdrho;
+    m0 += vf::lbm::constant::c1o9 * oMdrho;
     mfcbb = m1 - m0 * vvz;
     mfcbc = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1172,7 +1222,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfccc - mfcca;
     m0    = m2 + mfccb;
     mfcca = m0;
-    m0 += UbMath::c1o36 * oMdrho;
+    m0 += vf::lbm::constant::c1o36 * oMdrho;
     mfccb = m1 - m0 * vvz;
     mfccc = m2 - 2. * m1 * vvz + vz2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1184,7 +1234,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfaca - mfaaa;
     m0    = m2 + mfaba;
     mfaaa = m0;
-    m0 += UbMath::c1o6 * oMdrho;
+    m0 += vf::lbm::constant::c1o6 * oMdrho;
     mfaba = m1 - m0 * vvy;
     mfaca = m2 - 2. * m1 * vvy + vy2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1199,7 +1249,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfacc - mfaac;
     m0    = m2 + mfabc;
     mfaac = m0;
-    m0 += UbMath::c1o18 * oMdrho;
+    m0 += vf::lbm::constant::c1o18 * oMdrho;
     mfabc = m1 - m0 * vvy;
     mfacc = m2 - 2. * m1 * vvy + vy2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1208,7 +1258,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfbca - mfbaa;
     m0    = m2 + mfbba;
     mfbaa = m0;
-    m0 += UbMath::c2o3 * oMdrho;
+    m0 += vf::lbm::constant::c2o3 * oMdrho;
     mfbba = m1 - m0 * vvy;
     mfbca = m2 - 2. * m1 * vvy + vy2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1223,7 +1273,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfbcc - mfbac;
     m0    = m2 + mfbbc;
     mfbac = m0;
-    m0 += UbMath::c2o9 * oMdrho;
+    m0 += vf::lbm::constant::c2o9 * oMdrho;
     mfbbc = m1 - m0 * vvy;
     mfbcc = m2 - 2. * m1 * vvy + vy2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1232,7 +1282,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfcca - mfcaa;
     m0    = m2 + mfcba;
     mfcaa = m0;
-    m0 += UbMath::c1o6 * oMdrho;
+    m0 += vf::lbm::constant::c1o6 * oMdrho;
     mfcba = m1 - m0 * vvy;
     mfcca = m2 - 2. * m1 * vvy + vy2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1247,7 +1297,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfccc - mfcac;
     m0    = m2 + mfcbc;
     mfcac = m0;
-    m0 += UbMath::c1o18 * oMdrho;
+    m0 += vf::lbm::constant::c1o18 * oMdrho;
     mfcbc = m1 - m0 * vvy;
     mfccc = m2 - 2. * m1 * vvy + vy2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1274,7 +1324,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfcca - mfaca;
     m0    = m2 + mfbca;
     mfaca = m0;
-    m0 += UbMath::c1o3 * oMdrho;
+    m0 += vf::lbm::constant::c1o3 * oMdrho;
     mfbca = m1 - m0 * vvx;
     mfcca = m2 - 2. * m1 * vvx + vx2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1305,7 +1355,7 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfcac - mfaac;
     m0    = m2 + mfbac;
     mfaac = m0;
-    m0 += UbMath::c1o3 * oMdrho;
+    m0 += vf::lbm::constant::c1o3 * oMdrho;
     mfbac = m1 - m0 * vvx;
     mfcac = m2 - 2. * m1 * vvx + vx2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
@@ -1320,36 +1370,38 @@ static inline LBMReal getShearRate(const LBMReal *const f, LBMReal collFactorF)
     m1    = mfccc - mfacc;
     m0    = m2 + mfbcc;
     mfacc = m0;
-    m0 += UbMath::c1o9 * oMdrho;
+    m0 += vf::lbm::constant::c1o9 * oMdrho;
     mfbcc = m1 - m0 * vvx;
     mfccc = m2 - 2. * m1 * vvx + vx2 * m0;
     ////////////////////////////////////////////////////////////////////////////////////
     // Cumulants
     ////////////////////////////////////////////////////////////////////////////////////
-    LBMReal OxxPyyPzz = 1.; // omega2 or bulk viscosity
+    real OxxPyyPzz = 1.; // omega2 or bulk viscosity
 
-    LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
-    LBMReal mxxMyy    = mfcaa - mfaca;
-    LBMReal mxxMzz    = mfcaa - mfaac;
+    real mxxPyyPzz = mfcaa + mfaca + mfaac;
+    real mxxMyy    = mfcaa - mfaca;
+    real mxxMzz    = mfcaa - mfaac;
 
-    LBMReal dxux = -UbMath::c1o2 * collFactorF * (mxxMyy + mxxMzz) + UbMath::c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
-    LBMReal dyuy = dxux + collFactorF * UbMath::c3o2 * mxxMyy;
-    LBMReal dzuz = dxux + collFactorF * UbMath::c3o2 * mxxMzz;
+    real dxux = -vf::lbm::constant::c1o2 * collFactorF * (mxxMyy + mxxMzz) + vf::lbm::constant::c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
+    real dyuy = dxux + collFactorF * vf::lbm::constant::c3o2 * mxxMyy;
+    real dzuz = dxux + collFactorF * vf::lbm::constant::c3o2 * mxxMzz;
 
-    LBMReal Dxy = -UbMath::three * collFactorF * mfbba;
-    LBMReal Dxz = -UbMath::three * collFactorF * mfbab;
-    LBMReal Dyz = -UbMath::three * collFactorF * mfabb;
+    real Dxy = -vf::lbm::constant::c3o1 * collFactorF * mfbba;
+    real Dxz = -vf::lbm::constant::c3o1 * collFactorF * mfbab;
+    real Dyz = -vf::lbm::constant::c3o1 * collFactorF * mfabb;
 
-    return sqrt(UbMath::c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) /
-           (rho + UbMath::one);
+    return sqrt(vf::lbm::constant::c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) /
+           (rho + vf::lbm::constant::c1o1);
 }
 //Multiphase stuff
 //////////////////////////////////////////////////////////////////////////
-static void calcMultiphaseFeq(LBMReal *const &feq /*[27]*/, const LBMReal &rho, const LBMReal &p1, const LBMReal &vx1,
-                              const LBMReal &vx2, const LBMReal &vx3)
+static void calcMultiphaseFeq(real *const &feq /*[27]*/, const real &rho, const real &p1, const real &vx1,
+                              const real &vx2, const real &vx3)
 {
-    using namespace UbMath;
-    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    using namespace vf::lbm::dir;
+
+    using namespace vf::lbm::constant;
+    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
     feq[DIR_000] = c8o27 * (p1 + rho * c1o3 * (-cu_sq));
     feq[DIR_P00]    = c2o27 * (p1 + rho * c1o3 * (3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq));
@@ -1388,11 +1440,13 @@ static void calcMultiphaseFeq(LBMReal *const &feq /*[27]*/, const LBMReal &rho, 
                (p1 + rho * c1o3 * (3.0 * (-vx1 + vx2 + vx3) + c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq));
 }
 //////////////////////////////////////////////////////////////////////////
-static void calcMultiphaseFeqVB(LBMReal *const &feq /*[27]*/, const LBMReal &p1, const LBMReal &vx1, const LBMReal &vx2,
-                                const LBMReal &vx3)
+static void calcMultiphaseFeqVB(real *const &feq /*[27]*/, const real &p1, const real &vx1, const real &vx2,
+                                const real &vx3)
 {
-    using namespace UbMath;
-    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    using namespace vf::lbm::dir;
+
+    using namespace vf::lbm::constant;
+    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
     feq[DIR_000] = p1 + c8o27 * (-cu_sq);
     feq[DIR_P00]    = c2o27 * ((3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq));
@@ -1423,11 +1477,13 @@ static void calcMultiphaseFeqVB(LBMReal *const &feq /*[27]*/, const LBMReal &p1,
     feq[DIR_MPP]  = c1o216 * ((3.0 * (-vx1 + vx2 + vx3) + c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq));
 }
 //////////////////////////////////////////////////////////////////////////
-static void calcMultiphaseHeq(LBMReal *const &heq /*[27]*/, const LBMReal &phi, const LBMReal &vx1, const LBMReal &vx2,
-                              const LBMReal &vx3)
+static void calcMultiphaseHeq(real *const &heq /*[27]*/, const real &phi, const real &vx1, const real &vx2,
+                              const real &vx3)
 {
-    using namespace UbMath;
-    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+    using namespace vf::lbm::dir;
+    using namespace vf::lbm::constant;
+
+    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
     heq[DIR_000] = c8o27 * phi * (1.0 - cu_sq);
     heq[DIR_P00]    = c2o27 * phi * (1.0 + 3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);

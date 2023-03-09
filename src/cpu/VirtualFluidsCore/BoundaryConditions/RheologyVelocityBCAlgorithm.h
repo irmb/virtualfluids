@@ -43,11 +43,11 @@ class RheologyVelocityBCAlgorithm : public BCAlgorithm
 public:
    RheologyVelocityBCAlgorithm();
    ~RheologyVelocityBCAlgorithm();
-   virtual SPtr<BCAlgorithm> clone() override { UB_THROW(UbException("LBMReal clone() - belongs in the derived class")); }
+   virtual SPtr<BCAlgorithm> clone() override { UB_THROW(UbException("real clone() - belongs in the derived class")); }
    void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 protected:
-   virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const = 0; // { UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class")); }
+   virtual real getRheologyCollFactor(real omegaInf, real shearRate, real drho) const = 0; // { UB_THROW(UbException("real getRheologyCollFactor() - belongs in the derived class")); }
 };
 
 #endif // RheologyVelocityBCAlgorithm_h__

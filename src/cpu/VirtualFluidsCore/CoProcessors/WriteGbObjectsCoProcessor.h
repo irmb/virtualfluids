@@ -24,12 +24,12 @@ public:
                               std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteGbObjectsCoProcessor() override;
     //! calls collectData.
-    void process(double step) override;
+    void process(real step) override;
     //! adds geometry object
     void addGbObject(SPtr<GbObject3D> object);
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
 
 private:
     std::vector<SPtr<GbObject3D>> objects;

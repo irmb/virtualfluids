@@ -40,7 +40,7 @@ void TurbulenceIntensityCoProcessor::init()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TurbulenceIntensityCoProcessor::process(double step)
+void TurbulenceIntensityCoProcessor::process(real step)
 {
     calculateAverageValues(int(step));
 
@@ -50,7 +50,7 @@ void TurbulenceIntensityCoProcessor::process(double step)
     UBLOG(logDEBUG3, "TurbulenceIntensityCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void TurbulenceIntensityCoProcessor::collectData(double step)
+void TurbulenceIntensityCoProcessor::collectData(real step)
 {
     int istep = int(step);
 
@@ -100,7 +100,7 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
     //   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-    double dx                 = grid->getDeltaX(block);
+    real dx                 = grid->getDeltaX(block);
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -138,12 +138,12 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
                     // compute turbulence intensity
-                    double temp =
+                    real temp =
                         (*av)(ix1, ix2, ix3, AvVxxyyzz) / ((*av)(ix1, ix2, ix3, AvVx) * (*av)(ix1, ix2, ix3, AvVx) +
                                                            (*av)(ix1, ix2, ix3, AvVy) * (*av)(ix1, ix2, ix3, AvVy) +
                                                            (*av)(ix1, ix2, ix3, AvVz) * (*av)(ix1, ix2, ix3, AvVz));
 
-                    LBMReal ti = sqrt(temp);
+                    real ti = sqrt(temp);
 
                     if (UbMath::isNaN(ti))
                         UB_THROW(
@@ -179,14 +179,15 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
+void TurbulenceIntensityCoProcessor::calculateAverageValues(real timeStep)
 {
+    using namespace vf::lbm::dir;
     using namespace D3Q27System;
 
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
     int maxInitLevel = this->grid->getFinestInitializedLevel();
-    LBMReal f[27];
-    LBMReal vx, vy, vz;
+    real f[27];
+    real vx, vy, vz;
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (SPtr<Block3D> block : blockVector[level]) {

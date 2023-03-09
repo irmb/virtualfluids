@@ -44,12 +44,13 @@ const int EsoTwistD3Q27System::ETX3[EsoTwistD3Q27System::ENDF + 1] = { 0, 0, 0, 
                                                                        0, 1, 1, 0, 0, -1, 0, -1, 0, 1, 0, 1, 0 };
 
 const int EsoTwistD3Q27System::etINVDIR[EsoTwistD3Q27System::ENDF + 1] = {
-    D3Q27System::INV_P00,   D3Q27System::INV_M00,   D3Q27System::INV_0P0,   D3Q27System::INV_0M0,   D3Q27System::INV_00P,
-    D3Q27System::INV_00M,   D3Q27System::INV_PP0,  D3Q27System::INV_MM0,  D3Q27System::INV_PM0,  D3Q27System::INV_MP0,
-    D3Q27System::INV_P0P,  D3Q27System::INV_M0M,  D3Q27System::INV_P0M,  D3Q27System::INV_M0P,  D3Q27System::INV_0PP,
-    D3Q27System::INV_0MM,  D3Q27System::INV_0PM,  D3Q27System::INV_0MP,  D3Q27System::INV_PPP, D3Q27System::INV_MPP,
-    D3Q27System::INV_PMP, D3Q27System::INV_MMP, D3Q27System::INV_PPM, D3Q27System::INV_MPM, D3Q27System::INV_PMM,
-    D3Q27System::INV_MMM, D3Q27System::DIR_000
+
+    vf::lbm::dir::INV_P00,   vf::lbm::dir::INV_M00,   vf::lbm::dir::INV_0P0,   vf::lbm::dir::INV_0M0,   vf::lbm::dir::INV_00P,
+    vf::lbm::dir::INV_00M,   vf::lbm::dir::INV_PP0,  vf::lbm::dir::INV_MM0,  vf::lbm::dir::INV_PM0,  vf::lbm::dir::INV_MP0,
+    vf::lbm::dir::INV_P0P,  vf::lbm::dir::INV_M0M,  vf::lbm::dir::INV_P0M,  vf::lbm::dir::INV_M0P,  vf::lbm::dir::INV_0PP,
+    vf::lbm::dir::INV_0MM,  vf::lbm::dir::INV_0PM,  vf::lbm::dir::INV_0MP,  vf::lbm::dir::INV_PPP, vf::lbm::dir::INV_MPP,
+    vf::lbm::dir::INV_PMP, vf::lbm::dir::INV_MMP, vf::lbm::dir::INV_PPM, vf::lbm::dir::INV_MPM, vf::lbm::dir::INV_PMM,
+    vf::lbm::dir::INV_MMM, vf::lbm::dir::DIR_000
 };
 
 const unsigned long int EsoTwistD3Q27System::etDIR[EsoTwistD3Q27System::ENDF + 1] = {

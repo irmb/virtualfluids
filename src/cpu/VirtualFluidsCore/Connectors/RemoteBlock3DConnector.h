@@ -70,7 +70,7 @@ public:
     bool isInterpolationConnectorCF() override { return false; }
     bool isInterpolationConnectorFC() override { return false; }
 
-    double getSendRecieveTime() { return 0; }
+    real getSendRecieveTime() { return 0; }
 
     void prepareForSendX1() override {}
     void prepareForSendX2() override {}

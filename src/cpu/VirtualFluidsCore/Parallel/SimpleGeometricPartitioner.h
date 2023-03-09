@@ -27,9 +27,9 @@ public:
         if (p == 1)
             return { 1, 1, 1 };
 
-        double a = pow(p * pow(x, 3.0) / xyz, 1.0 / 3.0);
-        double b = pow(p * pow(y, 3.0) / xyz, 1.0 / 3.0);
-        double c = pow(p * pow(z, 3.0) / xyz, 1.0 / 3.0);
+        real a = pow(p * pow(x, 3.0) / xyz, 1.0 / 3.0);
+        real b = pow(p * pow(y, 3.0) / xyz, 1.0 / 3.0);
+        real c = pow(p * pow(z, 3.0) / xyz, 1.0 / 3.0);
 
         MaxDim maxDim;
 

@@ -22,13 +22,13 @@ public:
                                    const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~PressureCoefficientCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
     void addInteractor(SPtr<D3Q27Interactor> interactor);
     void readValues(int step);
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
     void calculateRho();
     void writeValues(int step);
 
@@ -38,15 +38,15 @@ private:
     std::shared_ptr<vf::mpi::Communicator> comm;
     std::vector<SPtr<D3Q27Interactor>> interactors;
     int numberOfSteps;
-    double maxStep;
+    real maxStep;
 
     std::vector<UbTupleFloat3> nodes;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
 
-    std::vector<double> outValues;
+    std::vector<real> outValues;
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 

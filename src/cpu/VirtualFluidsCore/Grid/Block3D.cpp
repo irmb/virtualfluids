@@ -257,6 +257,8 @@ int Block3D::getNumberOfRemoteConnectors()
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfLocalConnectorsForSurfaces()
 {
+    using namespace vf::lbm::dir;
+
     int count = 0;
 
     if (connectors.size() < 6)
@@ -264,7 +266,7 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
 
     for (SPtr<Block3DConnector> c : connectors) {
         if (c) {
-            if (c->getSendDir() >= D3Q27System::DIR_P00 && c->getSendDir() <= D3Q27System ::DIR_00M && c->isLocalConnector())
+            if (c->getSendDir() >= (int)DIR_P00 && c->getSendDir() <= (int)DIR_00M && c->isLocalConnector())
                 count++;
         }
     }
@@ -274,11 +276,13 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfRemoteConnectorsForSurfaces()
 {
+    using namespace vf::lbm::dir;
+
     int count = 0;
 
     for (SPtr<Block3DConnector> c : connectors) {
         if (c) {
-            if (c->getSendDir() >= D3Q27System::DIR_P00 && c->getSendDir() <= D3Q27System ::DIR_00M && c->isRemoteConnector())
+            if (c->getSendDir() >= (int)DIR_P00 && c->getSendDir() <= (int)DIR_00M && c->isRemoteConnector())
                 count++;
         }
     }
@@ -317,10 +321,10 @@ void Block3D::deleteInterpolationFlag()
     interpolationFlagCF = 0;
 }
 //////////////////////////////////////////////////////////////////////////
-double Block3D::getWorkLoad()
+real Block3D::getWorkLoad()
 {
-    double l = kernel->getCalculationTime();
-    l *= static_cast<double>(1 << level);
+    real l = kernel->getCalculationTime();
+    l *= static_cast<real>(1 << level);
     return l;
 }
 //////////////////////////////////////////////////////////////////////////

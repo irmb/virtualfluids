@@ -74,6 +74,7 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -166,7 +167,7 @@ int main(int argc, char *argv[])
         para->setTimestepEnd(timeStepEnd);
 
         para->setOutputPrefix("ChannelFlow");
-        para->setMainKernel("CumulantK17CompChimStream");
+        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
         const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
         real overlap = (real)8.0 * dx;

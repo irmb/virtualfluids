@@ -29,21 +29,21 @@ public:
     AverageValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer, SPtr<UbScheduler> s,
                              SPtr<UbScheduler> Avs, SPtr<UbScheduler> rsMeans, SPtr<UbScheduler> rsRMS, bool restart);
     //! Make update
-    void process(double step) override;
+    void process(real step) override;
     //! Resets averaged velocity and RMS-values according to ResetSceduler
-    void reset(double step);
+    void reset(real step);
 
 protected:
     //! Prepare data and write in .vtk file
-    void collectData(double step);
+    void collectData(real step);
     //! Reset data
-    void resetDataRMS(double step);
-    void resetDataMeans(double step);
+    void resetDataRMS(real step);
+    void resetDataMeans(real step);
     //! prepare data
     void addData(const SPtr<Block3D> block);
     void clearData();
     //! Computes average and RMS values of macroscopic quantities
-    void calculateAverageValues(double timeStep);
+    void calculateAverageValues(real timeStep);
     ////! write .txt file spatial intergrated averaged value, fluctuation, porous features
     // void collectPlotDataZ(double step);
     ////! create txt file and write head line
@@ -53,14 +53,14 @@ private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::vector<std::vector<SPtr<Block3D>>> blockVector;
     int minInitLevel; // min init level
     int maxInitLevel;
     int gridRank;
     int resetStepRMS;
     int resetStepMeans;
-    double averageInterval;
+    real averageInterval;
     std::string path;
     WbWriter *writer;
     bool restart, compressible;
@@ -83,7 +83,7 @@ private:
         AvPrms = 10
     };
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 #endif

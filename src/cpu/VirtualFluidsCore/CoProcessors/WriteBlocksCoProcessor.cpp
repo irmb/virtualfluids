@@ -49,13 +49,13 @@ WriteBlocksCoProcessor::WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
 //////////////////////////////////////////////////////////////////////////
 WriteBlocksCoProcessor::~WriteBlocksCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void WriteBlocksCoProcessor::process(double step)
+void WriteBlocksCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteBlocksCoProcessor::collectData(double step)
+void WriteBlocksCoProcessor::collectData(real step)
 {
     if (comm->getProcessID() == comm->getRoot()) {
         int istep = int(step);
@@ -76,7 +76,7 @@ void WriteBlocksCoProcessor::collectData(double step)
         celldatanames.push_back("bundle");
 #endif
 
-        std::vector<std::vector<double>> celldata(celldatanames.size());
+        std::vector<std::vector<real>> celldata(celldatanames.size());
 
         int nr           = 0;
         int minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -109,12 +109,12 @@ void WriteBlocksCoProcessor::collectData(double step)
                 nr += 8;
 
                 // data
-                celldata[0].push_back((double)block->isActive());
-                celldata[1].push_back((double)block->getRank());
-                celldata[2].push_back((double)block->hasInterpolationFlag());
-                celldata[3].push_back((double)block->getGlobalID());
-                celldata[4].push_back((double)block->getPart());
-                celldata[5].push_back((double)block->getLevel());
+                celldata[0].push_back((real)block->isActive());
+                celldata[1].push_back((real)block->getRank());
+                celldata[2].push_back((real)block->hasInterpolationFlag());
+                celldata[3].push_back((real)block->getGlobalID());
+                celldata[4].push_back((real)block->getPart());
+                celldata[5].push_back((real)block->getLevel());
 
                 // bool flag = false;
                 // std::vector<SPtr<Block3DConnector>> connectors;
@@ -164,7 +164,7 @@ void WriteBlocksCoProcessor::collectData(double step)
                 //}
 
 #ifdef VF_FETOL
-                celldata[6].push_back((double)block->getBundle());
+                celldata[6].push_back((real)block->getBundle());
 #endif
             }
         }

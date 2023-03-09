@@ -34,7 +34,7 @@ CumulantK15BulkComp::CumulantK15BulkComp(std::shared_ptr<Parameter> para, int le
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 CumulantK15BulkComp::CumulantK15BulkComp()

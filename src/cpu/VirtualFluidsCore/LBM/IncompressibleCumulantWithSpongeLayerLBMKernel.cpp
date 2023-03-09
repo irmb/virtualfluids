@@ -8,7 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;    
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::IncompressibleCumulantWithSpongeLayerLBMKernel()
@@ -23,7 +24,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initDataSet()
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP)
+void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdir, real vL1, real vdx, real vSP)
 {
    direction = vdir;
    L1 = vL1;
@@ -31,18 +32,20 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdi
    SP = vSP;
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, double vL1, double vdx, double vSP)
+void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, real vL1, real vdx, real vSP)
 {
+    using namespace vf::lbm::dir;
+
    direction = vdir;
    L1 = vL1;
    dx = vdx;
    SP = vSP;
 
-   double sizeX = L1 / dx;
-   double sizeSP = SP / dx;
-   double muX1, muX2, muX3;
+   real sizeX = L1 / dx;
+   real sizeSP = SP / dx;
+   real muX1, muX2, muX3;
 
-   LBMReal spongeFactor;
+   real spongeFactor;
 
    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
@@ -57,7 +60,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
    int maxX2 = bcArrayMaxX2 - ghostLayerWidth - 1;
    int maxX3 = bcArrayMaxX3 - ghostLayerWidth - 1;
 
-   SPtr<RelaxationFactorArray3D> relaxationFactorPtr = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3));
+   SPtr<RelaxationFactorArray3D> relaxationFactorPtr = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(maxX1, maxX2, maxX3));
    dataSet->setRelaxationFactor(relaxationFactorPtr);
 
    for (int x3 = minX3; x3 < maxX3; x3++)
@@ -68,38 +71,38 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
          {
             switch (direction)
             {
-            case D3Q27System::DIR_P00:
-               muX1 = (double)(x1 + ix1 * maxX1);
+            case DIR_P00:
+               muX1 = (real)(x1 + ix1 * maxX1);
                if (muX1 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::DIR_M00:
-               muX1 = (double)(x1 + ix1 * maxX1);
+            case DIR_M00:
+               muX1 = (real)(x1 + ix1 * maxX1);
                if (muX1 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::DIR_0P0:
-               muX2 = (double)(x2 + ix2 * maxX2);
+            case DIR_0P0:
+               muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::DIR_0M0:
-               muX2 = (double)(x2 + ix2 * maxX2);
+            case DIR_0M0:
+               muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::DIR_00P:
-               muX3 = (double)(x3 + ix3 * maxX3);
+            case DIR_00P:
+               muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
                break;
-            case D3Q27System::DIR_00M:
-               muX3 = (double)(x3 + ix3 * maxX3);
+            case DIR_00M:
+               muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
                else spongeFactor = 1.0;
@@ -204,8 +207,8 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
    int maxX2 = bcArrayMaxX2-ghostLayerWidth-1;
    int maxX3 = bcArrayMaxX3-ghostLayerWidth-1;
 
-   LBMReal collFactor0 = collFactor;
-   LBMReal spongeFactor;
+   real collFactor0 = collFactor;
+   real spongeFactor;
 
    for(int x3 = minX3; x3 <= maxX3; x3++)
    {
@@ -231,49 +234,49 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
 
                //Rest ist b
 
-               LBMReal mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1,x2,x3);
-               LBMReal mfbcb = (*this->localDistributions)(D3Q27System::ET_N,x1,x2,x3); 
-               LBMReal mfbbc = (*this->localDistributions)(D3Q27System::ET_T,x1,x2,x3);
-               LBMReal mfccb = (*this->localDistributions)(D3Q27System::ET_NE,x1,x2,x3);
-               LBMReal mfacb = (*this->localDistributions)(D3Q27System::ET_NW,x1p,x2,x3);
-               LBMReal mfcbc = (*this->localDistributions)(D3Q27System::ET_TE,x1,x2,x3);
-               LBMReal mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p,x2,x3);
-               LBMReal mfbcc = (*this->localDistributions)(D3Q27System::ET_TN,x1,x2,x3);
-               LBMReal mfbac = (*this->localDistributions)(D3Q27System::ET_TS,x1,x2p,x3);
-               LBMReal mfccc = (*this->localDistributions)(D3Q27System::ET_TNE,x1,x2,x3);
-               LBMReal mfacc = (*this->localDistributions)(D3Q27System::ET_TNW,x1p,x2,x3);
-               LBMReal mfcac = (*this->localDistributions)(D3Q27System::ET_TSE,x1,x2p,x3);
-               LBMReal mfaac = (*this->localDistributions)(D3Q27System::ET_TSW,x1p,x2p,x3);
+               real mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1,x2,x3);
+               real mfbcb = (*this->localDistributions)(D3Q27System::ET_N,x1,x2,x3); 
+               real mfbbc = (*this->localDistributions)(D3Q27System::ET_T,x1,x2,x3);
+               real mfccb = (*this->localDistributions)(D3Q27System::ET_NE,x1,x2,x3);
+               real mfacb = (*this->localDistributions)(D3Q27System::ET_NW,x1p,x2,x3);
+               real mfcbc = (*this->localDistributions)(D3Q27System::ET_TE,x1,x2,x3);
+               real mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p,x2,x3);
+               real mfbcc = (*this->localDistributions)(D3Q27System::ET_TN,x1,x2,x3);
+               real mfbac = (*this->localDistributions)(D3Q27System::ET_TS,x1,x2p,x3);
+               real mfccc = (*this->localDistributions)(D3Q27System::ET_TNE,x1,x2,x3);
+               real mfacc = (*this->localDistributions)(D3Q27System::ET_TNW,x1p,x2,x3);
+               real mfcac = (*this->localDistributions)(D3Q27System::ET_TSE,x1,x2p,x3);
+               real mfaac = (*this->localDistributions)(D3Q27System::ET_TSW,x1p,x2p,x3);
 
-               LBMReal mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W,x1p,x2,x3  );
-               LBMReal mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,x2p,x3  );
-               LBMReal mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,x2,x3p  );
-               LBMReal mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1p,x2p,x3 );
-               LBMReal mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,x2p,x3 );
-               LBMReal mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1p,x2,x3p );
-               LBMReal mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE,x1,x2,x3p );
-               LBMReal mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS,x1,x2p,x3p );
-               LBMReal mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN,x1,x2,x3p );
-               LBMReal mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW,x1p,x2p,x3p);
-               LBMReal mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE,x1,x2p,x3p);
-               LBMReal mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1p,x2,x3p);
-               LBMReal mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,x2,x3p);
+               real mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W,x1p,x2,x3  );
+               real mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,x2p,x3  );
+               real mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,x2,x3p  );
+               real mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1p,x2p,x3 );
+               real mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,x2p,x3 );
+               real mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1p,x2,x3p );
+               real mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE,x1,x2,x3p );
+               real mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS,x1,x2p,x3p );
+               real mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN,x1,x2,x3p );
+               real mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW,x1p,x2p,x3p);
+               real mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE,x1,x2p,x3p);
+               real mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1p,x2,x3p);
+               real mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,x2,x3p);
 
-               LBMReal mfbbb = (*this->zeroDistributions)(x1,x2,x3);
+               real mfbbb = (*this->zeroDistributions)(x1,x2,x3);
 
-               LBMReal m0, m1, m2;
+               real m0, m1, m2;
                
-               LBMReal rho=(mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
+               real rho=(mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
                   +(mfaab+mfacb+mfcab+mfccb)+(mfaba+mfabc+mfcba+mfcbc)+(mfbaa+mfbac+mfbca+mfbcc)
                   +(mfabb+mfcbb)+(mfbab+mfbcb)+(mfbba+mfbbc)+mfbbb;
 
-               LBMReal vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) +
+               real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) +
                   (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
                   (mfcbb-mfabb));
-               LBMReal vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) +
+               real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) +
                   (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
                   (mfbcb-mfbab));
-               LBMReal vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) +
+               real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) +
                   (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
                   (mfbbc-mfbba));
                //////////////////////////////////////////////////////////////////////////
@@ -323,7 +326,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                //}
                //////////////////////////////////////////////////////////////////////////
 
-               LBMReal oMdrho;
+               real oMdrho;
 
                oMdrho=mfccc+mfaaa;
                m0=mfaca+mfcac;
@@ -351,15 +354,15 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                m0+=mfbbb; //hat gefehlt
                oMdrho = 1. - (oMdrho + m0);
 
-               LBMReal vx2;
-               LBMReal vy2;
-               LBMReal vz2;
+               real vx2;
+               real vy2;
+               real vz2;
                vx2=vvx*vvx;
                vy2=vvy*vvy;
                vz2=vvz*vvz;
                ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal wadjust;
-               LBMReal qudricLimit = 0.01;
+               real wadjust;
+               real qudricLimit = 0.01;
                ////////////////////////////////////////////////////////////////////////////////////
                //Hin
                ////////////////////////////////////////////////////////////////////////////////////
@@ -590,29 +593,29 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////
                // Cumulants
                ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal OxxPyyPzz = 1.;
-               LBMReal OxyyPxzz  = 1.;//-s9;//2+s9;//
-               //LBMReal OxyyMxzz  = 1.;//2+s9;//
-               LBMReal O4        = 1.;
-               LBMReal O5        = 1.;
-               LBMReal O6        = 1.;
+               real OxxPyyPzz = 1.;
+               real OxyyPxzz  = 1.;//-s9;//2+s9;//
+               //real OxyyMxzz  = 1.;//2+s9;//
+               real O4        = 1.;
+               real O5        = 1.;
+               real O6        = 1.;
 
                //Cum 4.
-               LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab);
-               LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb);
-               LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb);
+               real CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab);
+               real CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb);
+               real CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb);
 
-               LBMReal CUMcca = mfcca - (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
-               LBMReal CUMcac = mfcac - (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
-               LBMReal CUMacc = mfacc - (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               real CUMcca = mfcca - (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               real CUMcac = mfcac - (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
+               real CUMacc = mfacc - (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-1)*oMdrho;
 
                //Cum 5.
-               LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-               LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-               LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+               real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+               real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+               real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
                //Cum 6.
-               LBMReal CUMccc = mfccc  +((-4. *  mfbbb * mfbbb 
+               real CUMccc = mfccc  +((-4. *  mfbbb * mfbbb 
                   -       (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
                   -  4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
                   -  2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
@@ -626,13 +629,13 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
 
                //2.
                // linear combinations
-               LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
-               LBMReal mxxMyy    = mfcaa - mfaca;
-               LBMReal mxxMzz         = mfcaa - mfaac;
+               real mxxPyyPzz = mfcaa + mfaca + mfaac;
+               real mxxMyy    = mfcaa - mfaca;
+               real mxxMzz         = mfcaa - mfaac;
 
-               LBMReal dxux = -c1o2 * collFactor *(mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz*(mfaaa - mxxPyyPzz);
-               LBMReal dyuy = dxux + collFactor * c3o2 * mxxMyy;
-               LBMReal dzuz = dxux + collFactor * c3o2 * mxxMzz;
+               real dxux = -c1o2 * collFactor *(mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz*(mfaaa - mxxPyyPzz);
+               real dyuy = dxux + collFactor * c3o2 * mxxMyy;
+               real dzuz = dxux + collFactor * c3o2 * mxxMzz;
 
                //relax
                mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -650,14 +653,14 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
 
                //3.
                // linear combinations
-               LBMReal mxxyPyzz = mfcba + mfabc;
-               LBMReal mxxyMyzz = mfcba - mfabc;
+               real mxxyPyzz = mfcba + mfabc;
+               real mxxyMyzz = mfcba - mfabc;
 
-               LBMReal mxxzPyyz = mfcab + mfacb;
-               LBMReal mxxzMyyz = mfcab - mfacb;
+               real mxxzPyyz = mfcab + mfacb;
+               real mxxzMyyz = mfcab - mfacb;
 
-               LBMReal mxyyPxzz = mfbca + mfbac;
-               LBMReal mxyyMxzz = mfbca - mfbac;
+               real mxyyPxzz = mfbca + mfbac;
+               real mxyyMxzz = mfbca - mfbac;
 
                //relax
                wadjust    = OxyyMxzz+(1.-OxyyMxzz)*fabs(mfbbb)/(fabs(mfbbb)+qudricLimit);
@@ -948,11 +951,11 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                //proof correctness
                //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-               LBMReal rho_post = (mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
+               real rho_post = (mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
                   +(mfaab+mfacb+mfcab+mfccb)+(mfaba+mfabc+mfcba+mfcbc)+(mfbaa+mfbac+mfbca+mfbcc)
                   +(mfabb+mfcbb)+(mfbab+mfbcb)+(mfbba+mfbbc)+mfbbb; 
                //LBMReal dif = fabs(rho - rho_post);
-               LBMReal dif = rho - rho_post;
+               real dif = rho - rho_post;
 #ifdef SINGLEPRECISION
                if(dif > 10.0E-7 || dif < -10.0E-7)
 #else

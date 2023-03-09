@@ -43,13 +43,13 @@ TimeseriesCoProcessor::TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler
 //////////////////////////////////////////////////////////////////////////
 TimeseriesCoProcessor::~TimeseriesCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void TimeseriesCoProcessor::process(double step)
+void TimeseriesCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeseriesCoProcessor::collectData(double step)
+void TimeseriesCoProcessor::collectData(real step)
 {
     h1->calculateMQ();
 
@@ -58,13 +58,13 @@ void TimeseriesCoProcessor::collectData(double step)
     if (comm->getProcessID() == comm->getRoot()) {
         int istep = static_cast<int>(step);
         std::ofstream ostr;
-        double cellsVolume = h1->getCellsVolume();
+        real cellsVolume = h1->getCellsVolume();
 
-        double rho    = (h1->getRho()) / cellsVolume;
-        double vx     = (h1->getVx1()) / cellsVolume;
-        double vy     = (h1->getVx2()) / cellsVolume;
-        double vz     = (h1->getVx3()) / cellsVolume;
-        double volume = cellsVolume;
+        real rho    = (h1->getRho()) / cellsVolume;
+        real vx     = (h1->getVx1()) / cellsVolume;
+        real vy     = (h1->getVx2()) / cellsVolume;
+        real vz     = (h1->getVx3()) / cellsVolume;
+        real volume = cellsVolume;
 
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {

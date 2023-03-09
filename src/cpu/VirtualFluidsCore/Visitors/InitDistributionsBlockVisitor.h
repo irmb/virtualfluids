@@ -63,7 +63,7 @@ class Block3D;
 class InitDistributionsBlockVisitor : public Block3DVisitor
 {
 public:
-    using D3Q27RealLim = std::numeric_limits<LBMReal>;
+    using D3Q27RealLim = std::numeric_limits<real>;
 
 public:
     InitDistributionsBlockVisitor();
@@ -81,10 +81,10 @@ public:
     void setVx3(const std::string &muParserString);
     void setRho(const std::string &muParserString);
     //////////////////////////////////////////////////////////////////////////
-    void setVx1(LBMReal vx1);
-    void setVx2(LBMReal vx2);
-    void setVx3(LBMReal vx3);
-    void setRho(LBMReal rho);
+    void setVx1(real vx1);
+    void setVx2(real vx2);
+    void setVx3(real vx3);
+    void setRho(real rho);
 
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 

@@ -28,19 +28,29 @@ int main(int argc, char *argv[])
     //double g_maxX2 =  429.087e-3;
     //double g_maxX3 =  214.5e-3;
 
-    double g_minX1 = -1341.81e-3 + 10e-3;
-    double g_minX2 =  0.360872;
-    double g_minX3 = 0;//-210e-3;
+    //double g_minX1 = -1341.81e-3 + 10e-3;
+    //double g_minX2 =  0.360872;
+    //double g_minX3 = -210e-3;
 
-    double g_maxX1 = -1260.81e-3 - 10e-3;
-    double g_maxX2 =  0.416302;
-    double g_maxX3 = 0.20105; //210e-3;
+    //double g_maxX1 = -1260.81e-3 - 10e-3;
+    //double g_maxX2 =  0.416302;
+    //double g_maxX3 = 210e-3;
 
-    int blockNX[3] = { 10, 10, 10 };
+    //int blockNX[3] = { 10, 10, 10 };
+
+    double g_minX1 = -1.31431;
+    double g_minX2 = 0.375582;
+    double g_minX3 = -210e-3 - 1e-3;
+
+    double g_maxX1 = -1.28831;
+    double g_maxX2 = 0.401582;
+    double g_maxX3 = 0.206;
+
+    int blockNX[3] = { 26, 26, 26 };
 
     double dx = 1e-3;
 
-    double uLB  = 0.0001;
+    double uLB  = 0.00001;
     //double rhoLB = 0.0;
 
     // concrete 
@@ -51,31 +61,33 @@ int main(int argc, char *argv[])
     double A = UbMath::PI * R * R;
     double u = V / 3600 / A;
     double muConcrete = 2.1133054011798826; // [Pa s]
+    double rhoAir = 1.2041;                // [kg/m^3]
     double tau0 = 715.218181094648; //
     double rhoConcrete = 2400; // [kg/m^3]
     double nu = muConcrete / rhoConcrete;
-    double rhoAir = 1.2041; // [kg/m^3]
+
     //double Re_D = d_part * u / nu;
     //if (myid == 0) UBLOG(logINFO, "Re_D = " << Re_D);
     //
     SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(d_part, 1., 2400, d_part / dx, uLB);
-    //double nuLB = D*units->getFactorLentghWToLb() * u*units->getFactorVelocityWToLb() / Re_D;
-    //if (myid == 0) UBLOG(logINFO, "nuLB = " << nuLB);
+    if (myid == 0) std::cout << units->toString() << std::endl;
 
     double interfaceThickness = 4.096;
     double sigma = 0.03;
     double Re = rhoConcrete * u * d_part / muConcrete;
     double We = rhoConcrete * u * u * d_part / sigma;
 
-    double nu_h_LB = uLB * d_part / Re;
-    double nu_l_LB = nu_h_LB;
-    if (myid == 0) UBLOG(logINFO, "nu_h = " << nu_h_LB << " nu_l = " << nu_l_LB);
+    
+
+    double nu_h_LB = uLB * d_part * units->getFactorLentghWToLb() / Re;
+    double nu_l_LB = 0;// = nu_h_LB;
+    
 
     double rho_h_LB = 1;
 
     // surface tension
-    double sigma_LB = rho_h_LB * uLB * uLB * d_part / We;
-    if (myid == 0) UBLOG(logINFO, "sigma_LB = " << sigma_LB);
+    double sigma_LB = rho_h_LB * uLB * uLB * d_part * units->getFactorLentghWToLb() / We;
+    
 
     // LBMReal dLB = 0; // = length[1] / dx;
     LBMReal rhoLB = 0.0;
@@ -105,11 +117,168 @@ int main(int argc, char *argv[])
     //SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(d_part, 1., 1000, d_part / dx, std::abs(uLB));
     //SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(d_part, 1., 1000, d_part / dx, std::abs(uLB));
     //SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(d_part, 1., 2400, d_part / dx, uRef);
-    if (myid == 0) std::cout << units->toString() << std::endl;
+    
 
-    //SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
-    //SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
-    //SPtr<LBMKernel> kernel = make_shared<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>();
+    //SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+    //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+    SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+    noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+
+
+
+  
+    // concrete inflow boundary condition
+    mu::Parser fct;
+    fct.SetExpr("U");
+    fct.DefineConst("U", -u*units->getFactorVelocityWToLb());
+    if (myid == 0) VF_LOG_INFO("Concrete inflow velocity = {} m/s", u);
+    if (myid == 0) VF_LOG_INFO("Concrete inflow velocity = {} dx/dt", u * units->getFactorVelocityWToLb());
+    if (myid == 0) VF_LOG_INFO("Concrete Re = {}", Re);
+        
+    //    // Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering
+    //    // Mechanics, 21(6), 371-379.
+    //    double cx1 = -1.31431 + R;
+    //    double cx2 = 0.375582 + R;
+    //    //double cx3 = 0.20105 + R;
+    //    double L = g_maxX1 - g_minX1;
+    //    double p_concrete = 1e5; // Pa = 1 Bar
+    //    double p1 = p_concrete * units->getFactorPressureWToLb();
+    //    double p2 = 0.0;
+    //    double drhoLB = 1.0 + rhoLB;
+    //    double muLB = drhoLB * nuLB;
+    //    double N = R * R / 2 * muLB * uLB * (p1 - p2) / L - 3;
+
+    //    // mu::Parser fct;
+    //    fct.SetExpr("U*(1-(((((x2-y0)^2+(x1-x0)^2)^0.5)/R)^NplusOne))");
+    //    fct.DefineConst("x0", cx1);
+    //    fct.DefineConst("y0", cx2);
+    //    //fct.DefineConst("z0", cx3);
+    //    fct.DefineConst("R", R);
+    //    fct.DefineConst("U", uLB * ((N + 3) / (N + 1)));
+    //    fct.DefineConst("NplusOne", N + 1.0);
+    
+
+    //SPtr<BCAdapter> inflowConcreteBCAdapter(new VelocityBCAdapter(false, false, true, fct, 0, BCFunction::INFCONST));
+    //inflowConcreteBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+    SPtr<BCAdapter> inflowConcreteBCAdapter(new MultiphaseVelocityBCAdapter(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
+    inflowConcreteBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+
+    
+        // air inflow boundary condition
+        //  Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering
+        //  Mechanics, 21(6), 371-379.
+        // SPtr<LBMUnitConverter> unitsAir = std::make_shared<LBMUnitConverter>(d_part, LBMUnitConverter::AIR_20C, d_part / dx);
+        //SPtr<LBMUnitConverter> unitsAir = std::make_shared<LBMUnitConverter>(d_part, 1., 1.2041, d_part / dx, uLB);
+        //double V = 40;      // flow rate [m^3/h]
+        //double D = 0.0166;  // air inlet diameter [m]
+        //double R = D / 2.0; // radius [m]
+        //double A = UbMath::PI * R * R;
+        //double u = V / 3600 / A;
+        //double uLB = u * unitsAir->getFactorVelocityWToLb();
+        //// double cx1 = -1.2788 + R;
+        //double cx2 = 0.3803 + R;
+        //double cx3 = 0.1517 + R;
+        //double L = g_maxX1 - g_minX1;
+        //double p_air = 7e5; // Pa = 7 Bar
+        //double p1 = p_air;
+        //double p2 = 0.0;
+        //double mu = 17.2e-6; // Pa s, air 20° C
+        //double N = R * R / 2 * mu * u * (p1 - p2) / L - 3;
+        //if (myid == 0) VF_LOG_INFO("Air inflow velocity = {} m/s", u);
+        //if (myid == 0) VF_LOG_INFO("Air inflow velocity = {} dx/dt", uLB);
+        //
+
+        //double nu = mu / rhoConcrete;
+        //double Re = d_part * u / nu;
+        //if (myid == 0) VF_LOG_INFO("Re_air = {}", Re);
+
+        //double nuLB = d_part * unitsAir->getFactorLentghWToLb() * uLB / Re;
+        //if (myid == 0) VF_LOG_INFO("nuLB_air = {}", nuLB);
+        //nu_l_LB = nuLB;
+    
+
+    SPtr<LBMUnitConverter> unitsAir = std::make_shared<LBMUnitConverter>(d_part, 1., 1.2041, d_part / dx, uLB);
+    double V_air = 40;      // flow rate [m^3/h]
+    double D_air = 0.00553; // air inlet diameter [m]
+    double R_air = D_air / 2.0; // radius [m]
+    double A_air = UbMath::PI * R_air * R_air;
+    double u_air = V_air / 3600 / A_air;
+    double uLB_air = u_air * unitsAir->getFactorVelocityWToLb();
+    // double cx1 = -1.2788 + R;
+    double cx2 = 0.385822 + R_air;
+    double cx3 = 0.135562 + R_air;
+    double L_air = 0.00747;
+    double p_air = 7e5; // Pa = 7 Bar
+    double p1 = p_air;
+    double p2 = 1e5;
+    double mu_air = 17.2e-6; // Pa s, air 20° C
+    double rho_air = 1.2041;  // [kg/m^3]
+    double N = R_air * R_air / 2 * mu_air * u_air * (p1 - p2) / L_air - 3;
+    if (myid == 0) VF_LOG_INFO("Air inflow velocity = {} m/s", u_air);
+    if (myid == 0) VF_LOG_INFO("Air inflow velocity = {} dx/dt", uLB_air);
+
+    double nu_air = mu_air / rho_air;
+    double Re_air = d_part * u_air / nu_air;
+    if (myid == 0) VF_LOG_INFO("Air Re = {}", Re_air);
+
+    double nuLB_air = d_part * unitsAir->getFactorLentghWToLb() * uLB_air / Re_air;
+    if (myid == 0) VF_LOG_INFO("nuLB_air = {}", nuLB_air);
+    nu_l_LB = nuLB_air;
+
+    if (myid == 0) VF_LOG_INFO("nu_h = {}", nu_h_LB);
+    if (myid == 0) VF_LOG_INFO("nu_l = {}", nu_l_LB);
+    if (myid == 0) VF_LOG_INFO("sigma_LB = {}", sigma_LB);
+
+    
+
+    mu::Parser fctVx1;
+    //fctVx1.SetExpr("U");
+    //fctVx1.DefineConst("U", uLB_air);
+    mu::Parser fctVx2;
+    fctVx2.SetExpr("U");
+    fctVx2.DefineConst("U", 0);
+    mu::Parser fctVx3;
+    //fctVx3.SetExpr("U");
+    //fctVx3.DefineConst("U", -uLB_air);
+    
+    fctVx1.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^NplusOne))");
+    //fct.DefineConst("x0", cx1);
+    fctVx1.DefineConst("y0", cx2);
+    fctVx1.DefineConst("z0", cx3);
+    fctVx1.DefineConst("R", R);
+    fctVx1.DefineConst("U", uLB_air * ((N + 3) / (N + 1)));
+    fctVx1.DefineConst("NplusOne", N + 1.0);
+
+    fctVx3.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^NplusOne))");
+    // fc3.DefineConst("x0", cx1);
+    fctVx3.DefineConst("y0", cx2);
+    fctVx3.DefineConst("z0", cx3);
+    fctVx3.DefineConst("R", R);
+    fctVx3.DefineConst("U", -uLB_air * ((N + 3) / (N + 1)));
+    fctVx3.DefineConst("NplusOne", N + 1.0);
+    
+
+    //SPtr<BCAdapter> inflowAirBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+    //inflowAirBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+    SPtr<BCAdapter> inflowAirBCAdapter(new MultiphaseVelocityBCAdapter(true, false, true, fctVx1, fctVx3, fctVx3, phiL, 0, BCFunction::INFCONST));
+    inflowAirBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+
+    SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
+    //outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
+    //SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
+    outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+    //////////////////////////////////////////////////////////////////////////////////
+    // BC visitor
+    //BoundaryConditionsBlockVisitor bcVisitor;♣
+    MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+    bcVisitor.addBC(noSlipBCAdapter);
+    bcVisitor.addBC(inflowConcreteBCAdapter);
+    bcVisitor.addBC(inflowAirBCAdapter);
+    bcVisitor.addBC(outflowBCAdapter);
+
+    // SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
+    // SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
+    // SPtr<LBMKernel> kernel = make_shared<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>();
     SPtr<LBMKernel> kernel = make_shared<MultiphaseSimpleVelocityBaseExternalPressureLBMKernel>();
 
     kernel->setWithForcing(true);
@@ -127,112 +296,9 @@ int main(int argc, char *argv[])
     kernel->setDensityRatio(densityRatio);
     kernel->setMultiphaseModelParameters(beta, kappa);
     kernel->setContactAngle(theta);
- 
+
     SPtr<BCProcessor> bcProc = make_shared<BCProcessor>();
     kernel->setBCProcessor(bcProc);
-
-    //SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-    //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
-    SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-    noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
-
-
-    mu::Parser fct;
-
-    {
-        // concrete inflow boundary condition
-        fct.SetExpr("U");
-        fct.DefineConst("U", -u*units->getFactorVelocityWToLb());
-        if (myid == 0) UBLOG(logINFO, "Concrete inflow velocity = " << u << " m/s");
-        if (myid == 0) UBLOG(logINFO, "Concrete inflow velocity = " << u*units->getFactorVelocityWToLb() << " dx/dt");
-    //    // Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering
-    //    // Mechanics, 21(6), 371-379.
-    //    double cx1 = -1.31431 + R;
-    //    double cx2 = 0.375582 + R;
-    //    //double cx3 = 0.20105 + R;
-    //    double L = g_maxX1 - g_minX1;
-    //    double p_concrete = 7e5; // Pa = 7 Bar
-    //    double p1 = p_concrete * units->getFactorPressureWToLb();
-    //    double p2 = 0.0;
-    //    double drhoLB = 1.0 + rhoLB;
-    //    double muLB = drhoLB * nuLB;
-    //    double N = R * R / 2 * muLB * uLB * (p1 - p2) / L - 3;
-
-    //    // mu::Parser fct;
-    //    fct.SetExpr("U*(1-(((((x2-y0)^2+(x1-x0)^2)^0.5)/R)^NplusOne))");
-    //    fct.DefineConst("x0", cx1);
-    //    fct.DefineConst("y0", cx2);
-    //    //fct.DefineConst("z0", cx3);
-    //    fct.DefineConst("R", R);
-    //    fct.DefineConst("U", uLB * ((N + 3) / (N + 1)));
-    //    fct.DefineConst("NplusOne", N + 1.0);
-    }
-
-    //SPtr<BCAdapter> inflowConcreteBCAdapter(new VelocityBCAdapter(false, false, true, fct, 0, BCFunction::INFCONST));
-    //inflowConcreteBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-    SPtr<BCAdapter> inflowConcreteBCAdapter(new MultiphaseVelocityBCAdapter(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
-    inflowConcreteBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-
-    {
-        //air inflow boundary condition
-        // Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering
-        // Mechanics, 21(6), 371-379.
-        //SPtr<LBMUnitConverter> unitsAir = std::make_shared<LBMUnitConverter>(d_part, LBMUnitConverter::AIR_20C, d_part / dx);
-        SPtr<LBMUnitConverter> unitsAir = std::make_shared<LBMUnitConverter>(d_part, 1., 1.2041, d_part / dx, uLB);
-        double V = 40;     // flow rate [m^3/h]
-        double D = 0.0166;  // air inlet diameter [m]
-        double R = D / 2.0; // radius [m]
-        double A = UbMath::PI * R * R;
-        double u = V / 3600 / A;
-        double uLB = u * unitsAir->getFactorVelocityWToLb();
-        //double cx1 = -1.2788 + R;
-        double cx2 = 0.3803 + R;
-        double cx3 = 0.1517 + R;
-        double L = g_maxX1 - g_minX1;
-        double p_air = 7e5; // Pa = 7 Bar
-        double p1 = p_air;
-        double p2 = 0.0;
-        double mu = 17.2e-6; //Pa s, air 20° C
-        double N = R * R / 2 * mu * u * (p1 - p2) / L - 3;
-        if (myid == 0) UBLOG(logINFO, "Air inflow velocity = " << u << " m/s");
-        if (myid == 0) UBLOG(logINFO, "Air inflow velocity = " << uLB << " dx/dt");
-
-        double nu = mu / rhoConcrete;
-        double Re = D * u / nu;
-        if (myid == 0) UBLOG(logINFO, "Re_air = " << Re);
-
-        double nuLB = D * unitsAir->getFactorLentghWToLb() * uLB * unitsAir->getFactorVelocityWToLb() / Re;
-        if (myid == 0) UBLOG(logINFO, "nuLB_air = " << nuLB);
-
-        // mu::Parser fct;
-        fct.SetExpr("U");
-        fct.DefineConst("U", -uLB);
-        //fct.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^NplusOne))");
-        ////fct.DefineConst("x0", cx1);
-        //fct.DefineConst("y0", cx2);
-        //fct.DefineConst("z0", cx3);
-        //fct.DefineConst("R", R);
-        //fct.DefineConst("U", -uLB * ((N + 3) / (N + 1)));
-        //fct.DefineConst("NplusOne", N + 1.0);
-    }
-
-    //SPtr<BCAdapter> inflowAirBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-    //inflowAirBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-    SPtr<BCAdapter> inflowAirBCAdapter(new MultiphaseVelocityBCAdapter(true, false, false, fct, phiL, 0, BCFunction::INFCONST));
-    inflowAirBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-
-    SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
-    //outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
-    //SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
-    outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
-    //////////////////////////////////////////////////////////////////////////////////
-    // BC visitor
-    //BoundaryConditionsBlockVisitor bcVisitor;♣
-    MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-    bcVisitor.addBC(noSlipBCAdapter);
-    bcVisitor.addBC(inflowConcreteBCAdapter);
-    bcVisitor.addBC(inflowAirBCAdapter);
-    bcVisitor.addBC(outflowBCAdapter);
 
     SPtr<Grid3D> grid = make_shared<Grid3D>(comm);
     grid->setPeriodicX1(false);
@@ -244,7 +310,7 @@ int main(int argc, char *argv[])
 
     string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
 
-    string outputPath = "d:/temp/NozzleFlowTest_Multiphase";
+    string outputPath = "d:/temp/NozzleFlowTest_Multiphase2";
     UbSystem::makeDirectory(outputPath);
     UbSystem::makeDirectory(outputPath + "/liggghts");
 
@@ -254,7 +320,7 @@ int main(int argc, char *argv[])
     //    UbLog::output_policy::setStream(logFilename.str());
     //}
 
-    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::RECURSIVE));
     
     SPtr<GbObject3D> gridCube = make_shared <GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
     if (myid == 0)
@@ -314,42 +380,57 @@ int main(int argc, char *argv[])
     meshNozzleVolcanNozzle2->readMeshFromSTLFileBinary(geoPath + "/06_2_Nozzle_Volcan_Nozzle.stl", true);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle2:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle2.get(), outputPath + "/geo/meshNozzleVolcanNozzle2", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
+    SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::POINTS);
     ///////////////////////////////////////////////////////////
     //box
     SPtr<D3Q27Interactor> intrBox = SPtr<D3Q27Interactor>(new D3Q27Interactor(gridCube, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
     ///////////////////////////////////////////////////////////
     //inflow
     GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, 0.20105, -1.30181+0.0005, 0.390872-0.00229, 0.23, 0.013));
-    if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+    if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlBinary::getInstance());
     SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBCAdapter, Interactor3D::SOLID));
     ///////////////////////////////////////////////////////////
     //outflow
     GbCylinder3DPtr geoOutflow(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, -0.22, -1.30181+0.0005, 0.390872-0.00229, -0.21, 0.013));
-    if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), outputPath + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+    //GbCylinder3DPtr geoOutflow(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, g_minX3, -1.30181+0.0005, 0.390872-0.00229, -0.21, 0.013));
+    if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), outputPath + "/geo/geoOutflow", WbWriterVtkXmlBinary::getInstance());
     SPtr<D3Q27Interactor> intrOutflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowBCAdapter, Interactor3D::SOLID));
     ///////////////////////////////////////////////////////////
-    SPtr<GbTriFaceMesh3D> geoAirInlet = std::make_shared<GbTriFaceMesh3D>();
-    if (myid == 0) UBLOG(logINFO, "Read Air_Inlet:start");
-    geoAirInlet->readMeshFromSTLFileASCII(geoPath + "/Air_Inlet.stl", true);
-    if (myid == 0) UBLOG(logINFO, "Read Air_Inlet:end");
-    if (myid == 0) GbSystem3D::writeGeoObject(geoAirInlet.get(), outputPath + "/geo/geoAirInlet", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(
-        geoAirInlet, grid, inflowAirBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
+    //SPtr<GbTriFaceMesh3D> geoAirInlet = std::make_shared<GbTriFaceMesh3D>();
+    //if (myid == 0) UBLOG(logINFO, "Read Air_Inlet:start");
+    //geoAirInlet->readMeshFromSTLFileASCII(geoPath + "/Air_Inlet.stl", true);
+    //if (myid == 0) UBLOG(logINFO, "Read Air_Inlet:end");
+    //if (myid == 0) GbSystem3D::writeGeoObject(geoAirInlet.get(), outputPath + "/geo/geoAirInlet", WbWriterVtkXmlBinary::getInstance());
+    //SPtr<Interactor3D> intrAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(geoAirInlet, grid, inflowAirBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
+    /////////////////////////////////////////////////////////////
+    //Fluid area
+    GbCylinder3DPtr geoFluidArea(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, g_minX3, -1.30181+0.0005, 0.390872-0.00229, g_maxX3, 0.013));
+    if (myid == 0) GbSystem3D::writeGeoObject(geoFluidArea.get(), outputPath + "/geo/geoFluidArea", WbWriterVtkXmlBinary::getInstance());
+    SPtr<D3Q27Interactor> intrFluidArea = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoFluidArea, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+    ///////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////
+    GbCylinder3DPtr geoAirInflow(new GbCylinder3D(-1.31431 - 0.0005, 0.388587, 0.1383275, -1.31431, 0.388587, 0.1383275, 0.002765));
+    if (myid == 0) GbSystem3D::writeGeoObject(geoAirInflow.get(), outputPath + "/geo/geoAirInlet", WbWriterVtkXmlBinary::getInstance());
+    SPtr<Interactor3D> intrAirInflow = std::make_shared<D3Q27Interactor>(geoAirInflow, grid, inflowAirBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
     ///////////////////////////////////////////////////////////
 
     InteractorsHelper intHelper(grid, metisVisitor, true);
-    intHelper.addInteractor(intrBox);
-    intHelper.addInteractor(intrInflow);
-    intHelper.addInteractor(intrAirInlet);
-    intHelper.addInteractor(intrOutflow);
-    intHelper.addInteractor(intrNozzleAirDistributor);
-    intHelper.addInteractor(intrNozzleAirInlet);
-    intHelper.addInteractor(intrNozzleSpacer);
-    intHelper.addInteractor(intrNozzleAccDistributor);
-    intHelper.addInteractor(intrNozzleAccInlet);
-    intHelper.addInteractor(intrNozzleVolcanNozzle1);
+    
+    intHelper.addInteractor(intrFluidArea);
     intHelper.addInteractor(intrNozzleVolcanNozzle2);
+    //intHelper.addInteractor(intrBox);
+    intHelper.addInteractor(intrInflow);
+    intHelper.addInteractor(intrAirInflow);
+    intHelper.addInteractor(intrOutflow);
+    
+
+    //intHelper.addInteractor(intrNozzleAirDistributor);
+    //intHelper.addInteractor(intrNozzleAirInlet);
+    //intHelper.addInteractor(intrNozzleSpacer);
+    //intHelper.addInteractor(intrNozzleAccDistributor);
+    //intHelper.addInteractor(intrNozzleAccInlet);
+    //intHelper.addInteractor(intrNozzleVolcanNozzle1);
+    
 
 
     intHelper.selectBlocks();

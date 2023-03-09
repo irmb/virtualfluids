@@ -25,7 +25,7 @@ AverageValuesCoProcessor::AverageValuesCoProcessor(SPtr<Grid3D> grid, const std:
 {
     resetStepMeans  = (int)rsMeans->getMinBegin();
     resetStepRMS    = (int)rsRMS->getMinBegin();
-    averageInterval = (double)Avs->getMinStep();
+    averageInterval = (real)Avs->getMinStep();
 
     gridRank     = grid->getRank();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -54,7 +54,7 @@ AverageValuesCoProcessor::AverageValuesCoProcessor(SPtr<Grid3D> grid, const std:
     // restartStep = 0.0;
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::process(double step)
+void AverageValuesCoProcessor::process(real step)
 {
     // resetRMS(step);
     if (resetSchedulerRMS->isDue(step))
@@ -76,7 +76,7 @@ void AverageValuesCoProcessor::process(double step)
     UBLOG(logDEBUG3, "AverageValuesCoProcessor::update:" << step);
 }
 
-void AverageValuesCoProcessor::resetDataRMS(double step)
+void AverageValuesCoProcessor::resetDataRMS(real step)
 {
     resetStepRMS = (int)step;
 
@@ -120,7 +120,7 @@ void AverageValuesCoProcessor::resetDataRMS(double step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::resetDataMeans(double step)
+void AverageValuesCoProcessor::resetDataMeans(real step)
 {
     resetStepMeans = (int)step;
 
@@ -161,7 +161,7 @@ void AverageValuesCoProcessor::resetDataMeans(double step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::collectData(double step)
+void AverageValuesCoProcessor::collectData(real step)
 {
     int istep = int(step);
 
@@ -219,7 +219,7 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
     //	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-    double dx                 = grid->getDeltaX(block);
+    real dx                 = grid->getDeltaX(block);
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -272,20 +272,20 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
                                                 float(val<2>(org) - val<2>(nodeOffset) + ix2 * dx),
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
-                    LBMReal vx = (*av)(AvVx, ix1, ix2, ix3);
-                    LBMReal vy = (*av)(AvVy, ix1, ix2, ix3);
-                    LBMReal vz = (*av)(AvVz, ix1, ix2, ix3);
+                    real vx = (*av)(AvVx, ix1, ix2, ix3);
+                    real vy = (*av)(AvVy, ix1, ix2, ix3);
+                    real vz = (*av)(AvVz, ix1, ix2, ix3);
 
-                    LBMReal vxx = (*av)(AvVxx, ix1, ix2, ix3);
-                    LBMReal vyy = (*av)(AvVyy, ix1, ix2, ix3);
-                    LBMReal vzz = (*av)(AvVzz, ix1, ix2, ix3);
+                    real vxx = (*av)(AvVxx, ix1, ix2, ix3);
+                    real vyy = (*av)(AvVyy, ix1, ix2, ix3);
+                    real vzz = (*av)(AvVzz, ix1, ix2, ix3);
 
-                    LBMReal vxy = (*av)(AvVxy, ix1, ix2, ix3);
-                    LBMReal vxz = (*av)(AvVxz, ix1, ix2, ix3);
-                    LBMReal vyz = (*av)(AvVyz, ix1, ix2, ix3);
+                    real vxy = (*av)(AvVxy, ix1, ix2, ix3);
+                    real vxz = (*av)(AvVxz, ix1, ix2, ix3);
+                    real vyz = (*av)(AvVyz, ix1, ix2, ix3);
 
-                    LBMReal vp    = (*av)(AvP, ix1, ix2, ix3);
-                    LBMReal vprms = (*av)(AvPrms, ix1, ix2, ix3);
+                    real vp    = (*av)(AvP, ix1, ix2, ix3);
+                    real vprms = (*av)(AvPrms, ix1, ix2, ix3);
 
                     data[index++].push_back(vx);
                     data[index++].push_back(vy);
@@ -330,7 +330,7 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
+void AverageValuesCoProcessor::calculateAverageValues(real timeStep)
 {
     using namespace D3Q27System;
 
@@ -342,7 +342,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
         calcMacros = &calcIncompMacroscopicValues;
     }
 
-    LBMReal f[27];
+    real f[27];
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (SPtr<Block3D> block : blockVector[level]) {
@@ -375,18 +375,18 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute velocity
                                 //////////////////////////////////////////////////////////////////////////
-                                LBMReal vx, vy, vz, rho;
+                                real vx, vy, vz, rho;
                                 calcMacros(f, rho, vx, vy, vz);
-                                double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
+                                real press = D3Q27System::calcPress(f, rho, vx, vy, vz);
 
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values
                                 //////////////////////////////////////////////////////////////////////////
 
-                                LBMReal timeStepAfterResetRMS =
-                                    (double)(timeStep - resetStepRMS) / ((double)averageInterval);
-                                LBMReal timeStepAfterResetMeans =
-                                    (double)(timeStep - resetStepMeans) / ((double)averageInterval);
+                                real timeStepAfterResetRMS =
+                                    (real)(timeStep - resetStepRMS) / ((real)averageInterval);
+                                real timeStepAfterResetMeans =
+                                    (real)(timeStep - resetStepMeans) / ((real)averageInterval);
 
                                 // mean velocity
                                 (*av)(AvVx, ix1, ix2, ix3) =

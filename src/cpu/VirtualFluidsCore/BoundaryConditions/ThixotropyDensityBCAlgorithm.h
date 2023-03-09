@@ -47,12 +47,12 @@ public:
 	//void addDistributionsF(SPtr<DistributionArray3D> distributions);
 	void addDistributionsH(SPtr<DistributionArray3D> distributions);
 	void applyBC();
-	void setLambdaBC(LBMReal lambda) { this->lambdaBC = lambda; }
-	LBMReal getLambdaBC() { return this->lambdaBC; }
+	void setLambdaBC(real lambda) { this->lambdaBC = lambda; }
+	real getLambdaBC() { return this->lambdaBC; }
 protected:
 	SPtr<DistributionArray3D> distributionsH;
 private:
-	LBMReal lambdaBC;
+	real lambdaBC;
 };
 #endif // ThixotropyDensityBCAlgorithm_h__
 

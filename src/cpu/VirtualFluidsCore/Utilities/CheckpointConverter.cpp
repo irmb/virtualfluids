@@ -134,8 +134,8 @@ void CheckpointConverter::convert(int step, int procCount)
 void CheckpointConverter::convertBlocks(int step, int procCount)
 {
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     start = MPI_Wtime();
 
     // file to read from
@@ -298,8 +298,8 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameW);
 
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     start = MPI_Wtime();
 
     int blocksCount = 0;
@@ -307,7 +307,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
     DataSetRestart *dataSetReadArray;
     DataSetMigration *dataSetWriteArray;
     size_t doubleCountInBlock;
-    std::vector<double> doubleValuesArray;
+    std::vector<real> doubleValuesArray;
     size_t sizeofOneDataSet;
 
     // calculate the read offset
@@ -341,7 +341,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
         // offset to read the data of the next process
         read_offset =
             read_offset + (MPI_Offset)(3 * sizeof(dataSetParam) +
-                                       blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double)));
+                                       blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(real)));
 
         // write parameters of data arrays
         MPI_File_write_at(file_handlerW, (MPI_Offset)0, &dataSetParamStr1, 1, dataSetParamType, MPI_STATUS_IGNORE);
@@ -350,7 +350,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
         MPI_File_write_at(file_handlerW, (MPI_Offset)(2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType,
                           MPI_STATUS_IGNORE);
 
-        sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double);
+        sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(real);
 
         // write blocks and their data arrays
         for (int nb = 0; nb < blocksCount; nb++) {
@@ -434,8 +434,8 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
 void CheckpointConverter::convert___Array(int /*step*/, int procCount, std::string filenameR, std::string filenameW)
 {
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -456,7 +456,7 @@ void CheckpointConverter::convert___Array(int /*step*/, int procCount, std::stri
     DataSetSmallRestart *dataSetSmallReadArray;
     DataSetSmallMigration *dataSetSmallWriteArray;
     int doubleCountInBlock;
-    std::vector<double> doubleValuesArray;
+    std::vector<real> doubleValuesArray;
 
     // calculate the read offset
     MPI_Offset read_offset = (MPI_Offset)(procCount * sizeof(int));
@@ -482,9 +482,9 @@ void CheckpointConverter::convert___Array(int /*step*/, int procCount, std::stri
                 &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
         read_offset = read_offset + sizeof(dataSetParam) +
-                      blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+                      blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(real));
 
-        sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
+        sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(real);
 
         MPI_File_write_at(file_handlerW, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
@@ -529,8 +529,8 @@ void CheckpointConverter::convertBC(int step, int procCount)
     if (rcW != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameW);
 
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

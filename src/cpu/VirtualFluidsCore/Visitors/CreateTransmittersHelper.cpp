@@ -87,22 +87,22 @@ void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Blo
         string sendPoolKey    = generatePoolKey(srcRank, srcLevel, tgtRank, tgtLevel);
         string receivePoolKey = generatePoolKey(tgtRank, tgtLevel, srcRank, srcLevel);
 
-        TbCbVectorMpiPool<LBMReal>::MpiPoolPtr sendPool = TbCbVectorMpiPool<LBMReal>::getTbCbVectorMpiPool(sendPoolKey);
-        TbCbVectorMpiPool<LBMReal>::MpiPoolPtr recvPool =
-            TbCbVectorMpiPool<LBMReal>::getTbCbVectorMpiPool(receivePoolKey);
+        TbCbVectorMpiPool<real>::MpiPoolPtr sendPool = TbCbVectorMpiPool<real>::getTbCbVectorMpiPool(sendPoolKey);
+        TbCbVectorMpiPool<real>::MpiPoolPtr recvPool =
+            TbCbVectorMpiPool<real>::getTbCbVectorMpiPool(receivePoolKey);
 
         MPI_Comm mpi_comm = *((MPI_Comm *)comm->getNativeCommunicator());
 
         if (!sendPool)
-            sendPool = TbCbVectorMpiPool<LBMReal>::createTbCbVectorMpiPool(
+            sendPool = TbCbVectorMpiPool<real>::createTbCbVectorMpiPool(
                 sendPoolKey, tgtRank, generateMPITag(srcLevel, tgtLevel), mpi_comm);
         if (!recvPool)
-            recvPool = TbCbVectorMpiPool<LBMReal>::createTbCbVectorMpiPool(
+            recvPool = TbCbVectorMpiPool<real>::createTbCbVectorMpiPool(
                 receivePoolKey, tgtRank, generateMPITag(tgtLevel, srcLevel), mpi_comm);
 
-        TbCbVectorMpiPool<LBMReal>::CbVectorKey keyOfSendCbVectorKey =
+        TbCbVectorMpiPool<real>::CbVectorKey keyOfSendCbVectorKey =
             generateVectorKey(sblock->getX1(), sblock->getX2(), sblock->getX3() /*tgtID*/, dir, ib);
-        TbCbVectorMpiPool<LBMReal>::CbVectorKey keyOfRecvCbVectorKey =
+        TbCbVectorMpiPool<real>::CbVectorKey keyOfRecvCbVectorKey =
             generateVectorKey(tblock->getX1(), tblock->getX2(), tblock->getX3() /*srcID*/, invDir, ib);
 
         ////////////////////////////////////////////////////////
@@ -118,8 +118,8 @@ void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Blo
         ////////////////////////////////////////////////////////
 
         // create sender-/receiver
-        sender   = TransmitterPtr(new TbCbVectorSenderMpiPool<LBMReal>(keyOfSendCbVectorKey, sendPool.get()));
-        receiver = TransmitterPtr(new TbCbVectorReceiverMpiPool<LBMReal>(keyOfRecvCbVectorKey, recvPool.get()));
+        sender   = TransmitterPtr(new TbCbVectorSenderMpiPool<real>(keyOfSendCbVectorKey, sendPool.get()));
+        receiver = TransmitterPtr(new TbCbVectorReceiverMpiPool<real>(keyOfRecvCbVectorKey, recvPool.get()));
     }
 #ifdef VF_FETOL
     if (tType == BOND) {
@@ -129,24 +129,24 @@ void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Blo
         int sendBondPoolKey    = generatePoolKey(srcBondRank, srcLevel, tgtBondRank, tgtLevel);
         int receiveBondPoolKey = generatePoolKey(tgtBondRank, tgtLevel, srcBondRank, srcLevel);
 
-        TbCbVectorBondPool<LBMReal>::BondPoolPtr sendPool =
-            TbCbVectorBondPool<LBMReal>::getTbCbVectorBondPool(sendBondPoolKey);
-        TbCbVectorBondPool<LBMReal>::BondPoolPtr recvPool =
-            TbCbVectorBondPool<LBMReal>::getTbCbVectorBondPool(receiveBondPoolKey);
+        TbCbVectorBondPool<real>::BondPoolPtr sendPool =
+            TbCbVectorBondPool<real>::getTbCbVectorBondPool(sendBondPoolKey);
+        TbCbVectorBondPool<real>::BondPoolPtr recvPool =
+            TbCbVectorBondPool<real>::getTbCbVectorBondPool(receiveBondPoolKey);
 
         if (!sendPool)
-            sendPool = TbCbVectorBondPool<LBMReal>::createTbCbVectorBondPool(sendBondPoolKey, tgtBondRank,
+            sendPool = TbCbVectorBondPool<real>::createTbCbVectorBondPool(sendBondPoolKey, tgtBondRank,
                                                                              generateMPITag(srcLevel, tgtLevel));
         if (!recvPool)
-            recvPool = TbCbVectorBondPool<LBMReal>::createTbCbVectorBondPool(receiveBondPoolKey, tgtBondRank,
+            recvPool = TbCbVectorBondPool<real>::createTbCbVectorBondPool(receiveBondPoolKey, tgtBondRank,
                                                                              generateMPITag(tgtLevel, srcLevel));
 
-        TbCbVectorBondPool<LBMReal>::CbVectorKey keyOfSendCbVectorKey = generateVectorKey(tgtID, dir, ib);
-        TbCbVectorBondPool<LBMReal>::CbVectorKey keyOfRecvCbVectorKey = generateVectorKey(srcID, invDir, ib);
+        TbCbVectorBondPool<real>::CbVectorKey keyOfSendCbVectorKey = generateVectorKey(tgtID, dir, ib);
+        TbCbVectorBondPool<real>::CbVectorKey keyOfRecvCbVectorKey = generateVectorKey(srcID, invDir, ib);
 
         // create sender-/receiver
-        sender   = TransmitterPtr(new TbCbVectorSenderBondPool<LBMReal>(keyOfSendCbVectorKey, sendPool.get()));
-        receiver = TransmitterPtr(new TbCbVectorReceiverBondPool<LBMReal>(keyOfRecvCbVectorKey, recvPool.get()));
+        sender   = TransmitterPtr(new TbCbVectorSenderBondPool<real>(keyOfSendCbVectorKey, sendPool.get()));
+        receiver = TransmitterPtr(new TbCbVectorReceiverBondPool<real>(keyOfRecvCbVectorKey, recvPool.get()));
     }
 #endif
 }

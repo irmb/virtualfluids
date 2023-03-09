@@ -8,7 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////
 ThixotropyLBMKernel::ThixotropyLBMKernel()
@@ -134,37 +135,37 @@ void ThixotropyLBMKernel::calculate(int step)
 						////////////////////////////////////////////////////////////////////////////
 						//////////////////////////////////////////////////////////////////////////
 
-						LBMReal mfcbb = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
-						LBMReal mfbcb = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
-						LBMReal mfbbc = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
-						LBMReal mfccb = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
-						LBMReal mfacb = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
-						LBMReal mfcbc = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
-						LBMReal mfabc = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
-						LBMReal mfbcc = (*this->localDistributionsH)(D3Q27System::ET_TN, x1, x2, x3);
-						LBMReal mfbac = (*this->localDistributionsH)(D3Q27System::ET_TS, x1, x2p, x3);
-						LBMReal mfccc = (*this->localDistributionsH)(D3Q27System::ET_TNE, x1, x2, x3);
-						LBMReal mfacc = (*this->localDistributionsH)(D3Q27System::ET_TNW, x1p, x2, x3);
-						LBMReal mfcac = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
-						LBMReal mfaac = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
+						real mfcbb = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
+						real mfbcb = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
+						real mfbbc = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
+						real mfccb = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
+						real mfacb = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
+						real mfcbc = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
+						real mfabc = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
+						real mfbcc = (*this->localDistributionsH)(D3Q27System::ET_TN, x1, x2, x3);
+						real mfbac = (*this->localDistributionsH)(D3Q27System::ET_TS, x1, x2p, x3);
+						real mfccc = (*this->localDistributionsH)(D3Q27System::ET_TNE, x1, x2, x3);
+						real mfacc = (*this->localDistributionsH)(D3Q27System::ET_TNW, x1p, x2, x3);
+						real mfcac = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
+						real mfaac = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
 								  
-						LBMReal mfabb = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
-						LBMReal mfbab = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
-						LBMReal mfbba = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
-						LBMReal mfaab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
-						LBMReal mfcab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
-						LBMReal mfaba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);
-						LBMReal mfcba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BE, x1, x2, x3p);
-						LBMReal mfbaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BS, x1, x2p, x3p);
-						LBMReal mfbca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BN, x1, x2, x3p);
-						LBMReal mfaaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-						LBMReal mfcaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSE, x1, x2p, x3p);
-						LBMReal mfaca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
-						LBMReal mfcca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
+						real mfabb = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
+						real mfbab = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
+						real mfbba = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
+						real mfaab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
+						real mfcab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
+						real mfaba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);
+						real mfcba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BE, x1, x2, x3p);
+						real mfbaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BS, x1, x2p, x3p);
+						real mfbca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BN, x1, x2, x3p);
+						real mfaaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+						real mfcaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSE, x1, x2p, x3p);
+						real mfaca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
+						real mfcca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
 								  
-						LBMReal mfbbb = (*this->zeroDistributionsH)(x1, x2, x3);
+						real mfbbb = (*this->zeroDistributionsH)(x1, x2, x3);
 
-						LBMReal lambda = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+						real lambda = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
@@ -214,35 +215,35 @@ void ThixotropyLBMKernel::calculate(int step)
 
 						mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
 
-						LBMReal m0, m1, m2;
+						real m0, m1, m2;
 
-						LBMReal rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+						real rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-						LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+						real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 							(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 							(mfcbb - mfabb));
-						LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+						real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 							(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
 							(mfbcb - mfbab));
-						LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+						real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 							(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 							(mfbbc - mfbba));
 						
 
-						LBMReal eta0 = (1/collFactor-c1o2)*c1o3;
-						LBMReal eta = (1 + lambda)* eta0;
-						collFactorF = one/(3*eta/(rho+one)+c1o2);
+						real eta0 = (1/collFactor-c1o2)*c1o3;
+						real eta = (1 + lambda)* eta0;
+						collFactorF = c1o1 /(3*eta/(rho+ c1o1)+c1o2);
 						//collFactorF = collFactor;
 
 						//forcing 
 						///////////////////////////////////////////////////////////////////////////////////////////
 						if (withForcing)
 						{
-							muX1 = static_cast<double>(x1 - 1 + ix1*maxX1);
-							muX2 = static_cast<double>(x2 - 1 + ix2*maxX2);
-							muX3 = static_cast<double>(x3 - 1 + ix3*maxX3);
+							muX1 = static_cast<real>(x1 - 1 + ix1*maxX1);
+							muX2 = static_cast<real>(x2 - 1 + ix2*maxX2);
+							muX3 = static_cast<real>(x3 - 1 + ix3*maxX3);
 
 							forcingX1 = muForcingX1.Eval();
 							forcingX2 = muForcingX2.Eval();
@@ -253,7 +254,7 @@ void ThixotropyLBMKernel::calculate(int step)
 							vvz += forcingX3*deltaT*0.5; // Z
 						}
 						///////////////////////////////////////////////////////////////////////////////////////////               
-						LBMReal oMdrho;
+						real oMdrho;
 
 						oMdrho = mfccc + mfaaa;
 						m0 = mfaca + mfcac;
@@ -281,15 +282,15 @@ void ThixotropyLBMKernel::calculate(int step)
 						m0 += mfbbb; //hat gefehlt
 						oMdrho = 1. - (oMdrho + m0);
 
-						LBMReal vx2;
-						LBMReal vy2;
-						LBMReal vz2;
+						real vx2;
+						real vy2;
+						real vz2;
 						vx2 = vvx*vvx;
 						vy2 = vvy*vvy;
 						vz2 = vvz*vvz;
 						////////////////////////////////////////////////////////////////////////////////////
-						LBMReal wadjust;
-						LBMReal qudricLimit = 0.01;
+						real wadjust;
+						real qudricLimit = 0.01;
 						////////////////////////////////////////////////////////////////////////////////////
 						//Hin
 						////////////////////////////////////////////////////////////////////////////////////
@@ -520,33 +521,33 @@ void ThixotropyLBMKernel::calculate(int step)
 						////////////////////////////////////////////////////////////////////////////////////
 						// Cumulants
 						////////////////////////////////////////////////////////////////////////////////////
-						LBMReal OxxPyyPzz = 1.; //omega2 or bulk viscosity
-						LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
-											  //LBMReal OxyyMxzz  = 1.;//2+s9;//
-						LBMReal O4 = 1.;
-						LBMReal O5 = 1.;
-						LBMReal O6 = 1.;
+						real OxxPyyPzz = 1.; //omega2 or bulk viscosity
+						real OxyyPxzz = 1.;//-s9;//2+s9;//
+											  //real OxyyMxzz  = 1.;//2+s9;//
+						real O4 = 1.;
+						real O5 = 1.;
+						real O6 = 1.;
 
 						//Cum 4.
 						//LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
 						//LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
 						//LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-						LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
-						LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
-						LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
+						real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
+						real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
+						real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-						LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho - 1)*oMdrho);
-						LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho - 1)*oMdrho);
-						LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho - 1)*oMdrho);
+						real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho - 1)*oMdrho);
+						real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho - 1)*oMdrho);
+						real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho - 1)*oMdrho);
 
 						//Cum 5.
-						LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-						LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-						LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+						real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+						real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+						real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
 						//Cum 6.
-						LBMReal CUMccc = mfccc + ((-4. *  mfbbb * mfbbb
+						real CUMccc = mfccc + ((-4. *  mfbbb * mfbbb
 							- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 							- 4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
 							- 2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
@@ -560,17 +561,17 @@ void ThixotropyLBMKernel::calculate(int step)
 
 						//2.
 						// linear combinations
-						LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
-						LBMReal mxxMyy = mfcaa - mfaca;
-						LBMReal mxxMzz = mfcaa - mfaac;
+						real mxxPyyPzz = mfcaa + mfaca + mfaac;
+						real mxxMyy = mfcaa - mfaca;
+						real mxxMzz = mfcaa - mfaac;
 
-						LBMReal dxux = -c1o2 * collFactorF *(mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz*(mfaaa - mxxPyyPzz);
-						LBMReal dyuy = dxux + collFactorF * c3o2 * mxxMyy;
-						LBMReal dzuz = dxux + collFactorF * c3o2 * mxxMzz;
+						real dxux = -c1o2 * collFactorF *(mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz*(mfaaa - mxxPyyPzz);
+						real dyuy = dxux + collFactorF * c3o2 * mxxMyy;
+						real dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						LBMReal Dxy =-three*collFactorF*mfbba;
-                  LBMReal Dxz =-three*collFactorF*mfbab;
-                  LBMReal Dyz =-three*collFactorF*mfabb;
+						real Dxy =-c3o1 *collFactorF*mfbba;
+						real Dxz =-c3o1*collFactorF*mfbab;
+						real Dyz =-c3o1*collFactorF*mfabb;
 
 						//relax
 						mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -588,14 +589,14 @@ void ThixotropyLBMKernel::calculate(int step)
 
 						//3.
 						// linear combinations
-						LBMReal mxxyPyzz = mfcba + mfabc;
-						LBMReal mxxyMyzz = mfcba - mfabc;
+						real mxxyPyzz = mfcba + mfabc;
+						real mxxyMyzz = mfcba - mfabc;
 
-						LBMReal mxxzPyyz = mfcab + mfacb;
-						LBMReal mxxzMyyz = mfcab - mfacb;
+						real mxxzPyyz = mfcab + mfacb;
+						real mxxzMyyz = mfcab - mfacb;
 
-						LBMReal mxyyPxzz = mfbca + mfbac;
-						LBMReal mxyyMxzz = mfbca - mfbac;
+						real mxyyPxzz = mfbca + mfbac;
+						real mxyyMxzz = mfbca - mfbac;
 
 						//relax
 						wadjust = OxyyMxzz + (1. - OxyyMxzz)*fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
@@ -890,11 +891,11 @@ void ThixotropyLBMKernel::calculate(int step)
 						//proof correctness
 						//////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-						LBMReal rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+						real rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 						//LBMReal dif = fabs(rho - rho_post);
-						LBMReal dif = rho - rho_post;
+						real dif = rho - rho_post;
 #ifdef SINGLEPRECISION
 						if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
@@ -956,7 +957,7 @@ void ThixotropyLBMKernel::calculate(int step)
 
 
 
-						LBMReal ux, uy, uz;
+						real ux, uy, uz;
 
 						ux = vvx;						
 						uy = vvy;
@@ -1002,7 +1003,7 @@ void ThixotropyLBMKernel::calculate(int step)
 						mfbbb = (*this->zeroDistributionsH)(x1, x2, x3);
 
 						////////////////////////////////////////////////////////////////////////////////////
-						LBMReal drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
+						real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 							(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 							((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
 					
@@ -1012,59 +1013,59 @@ void ThixotropyLBMKernel::calculate(int step)
 						//LBMReal theta = 60 * 1.28172e+06;
 						//LBMReal alpha = 0.005;// *10.0;
 
-						LBMReal gammaDot = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						real gammaDot = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + c1o1);
 
-						LBMReal dlambda = one / theta - alpha * lambda * gammaDot;
+						real dlambda = c1o1 / theta - alpha * lambda * gammaDot;
 
 						//LBMReal dlambda = one / (T*pow(lambda,m)) - alpha * lambda * gammaDot;
 
 						//////////////////////////////////////////////////////////////////////////
 						//collision Factorized Central moment Kernel Geier 2015
 						//////////////////////////////////////////////////////////////////////////               
-						LBMReal Mom000 = mfaaa + mfaab + mfaac + mfaba + mfabb + mfabc + mfaca +
+						real Mom000 = mfaaa + mfaab + mfaac + mfaba + mfabb + mfabc + mfaca +
 							mfacb + mfacc + mfbaa + mfbab + mfbac + mfbba + mfbbb + mfbbc + mfbca +
 							mfbcb + mfbcc + mfcaa + mfcab + mfcac + mfcba + mfcbb + mfcbc + mfcca + mfccb + mfccc;
 						
 						Mom000 += dlambda*c1o2;  //1
 
 																												   //(100)//
-						LBMReal Mom100 = mfaaa*(-1 - ux) + mfaab*(-1 - ux) + mfaac*(-1 - ux) + mfaba*(-1 - ux) + mfabb*(-1 - ux) + mfabc*(-1 - ux) + mfaca*(-1 - ux) +
+						real Mom100 = mfaaa*(-1 - ux) + mfaab*(-1 - ux) + mfaac*(-1 - ux) + mfaba*(-1 - ux) + mfabb*(-1 - ux) + mfabc*(-1 - ux) + mfaca*(-1 - ux) +
 							mfacb*(-1 - ux) + mfacc*(-1 - ux) + mfcaa*(1 - ux) + mfcab*(1 - ux) + mfcac*(1 - ux) + mfcba*(1 - ux) + mfcbb*(1 - ux) +
 							mfcbc*(1 - ux) + mfcca*(1 - ux) + mfccb*(1 - ux) + mfccc*(1 - ux) - mfbaa*ux - mfbab*ux - mfbac*ux - mfbba*ux - mfbbb*ux -
 							mfbbc*ux - mfbca*ux - mfbcb*ux - mfbcc*ux;
 
-						LBMReal Mom010 = mfaaa*(-1 - uy) + mfaab*(-1 - uy) + mfaac*(-1 - uy) + mfbaa*(-1 - uy) + mfbab*(-1 - uy) + mfbac*(-1 - uy) + mfcaa*(-1 - uy) +
+						real Mom010 = mfaaa*(-1 - uy) + mfaab*(-1 - uy) + mfaac*(-1 - uy) + mfbaa*(-1 - uy) + mfbab*(-1 - uy) + mfbac*(-1 - uy) + mfcaa*(-1 - uy) +
 							mfcab*(-1 - uy) + mfcac*(-1 - uy) + mfaca*(1 - uy) + mfacb*(1 - uy) + mfacc*(1 - uy) + mfbca*(1 - uy) + mfbcb*(1 - uy) +
 							mfbcc*(1 - uy) + mfcca*(1 - uy) + mfccb*(1 - uy) + mfccc*(1 - uy) - mfaba*uy - mfabb*uy - mfabc*uy - mfbba*uy - mfbbb*uy -
 							mfbbc*uy - mfcba*uy - mfcbb*uy - mfcbc*uy;
 
-						LBMReal Mom001 = mfaaa*(-1 - uz) + mfaba*(-1 - uz) + mfaca*(-1 - uz) + mfbaa*(-1 - uz) + mfbba*(-1 - uz) + mfbca*(-1 - uz) + mfcaa*(-1 - uz) +
+						real Mom001 = mfaaa*(-1 - uz) + mfaba*(-1 - uz) + mfaca*(-1 - uz) + mfbaa*(-1 - uz) + mfbba*(-1 - uz) + mfbca*(-1 - uz) + mfcaa*(-1 - uz) +
 							mfcba*(-1 - uz) + mfcca*(-1 - uz) + mfaac*(1 - uz) + mfabc*(1 - uz) + mfacc*(1 - uz) + mfbac*(1 - uz) + mfbbc*(1 - uz) +
 							mfbcc*(1 - uz) + mfcac*(1 - uz) + mfcbc*(1 - uz) + mfccc*(1 - uz) - mfaab*uz - mfabb*uz - mfacb*uz - mfbab*uz - mfbbb*uz -
 							mfbcb*uz - mfcab*uz - mfcbb*uz - mfccb*uz;
 						////
 
 						//(110)//
-						LBMReal Mom110 = mfaaa*(-1 - ux)*(-1 - uy) + mfaab*(-1 - ux)*(-1 - uy) + mfaac*(-1 - ux)*(-1 - uy) + mfcaa*(1 - ux)*(-1 - uy) +
+						real Mom110 = mfaaa*(-1 - ux)*(-1 - uy) + mfaab*(-1 - ux)*(-1 - uy) + mfaac*(-1 - ux)*(-1 - uy) + mfcaa*(1 - ux)*(-1 - uy) +
 							mfcab*(1 - ux)*(-1 - uy) + mfcac*(1 - ux)*(-1 - uy) - mfbaa*ux*(-1 - uy) - mfbab*ux*(-1 - uy) - mfbac*ux*(-1 - uy) +
 							mfaca*(-1 - ux)*(1 - uy) + mfacb*(-1 - ux)*(1 - uy) + mfacc*(-1 - ux)*(1 - uy) + mfcca*(1 - ux)*(1 - uy) + mfccb*(1 - ux)*(1 - uy) +
 							mfccc*(1 - ux)*(1 - uy) - mfbca*ux*(1 - uy) - mfbcb*ux*(1 - uy) - mfbcc*ux*(1 - uy) - mfaba*(-1 - ux)*uy - mfabb*(-1 - ux)*uy -
 							mfabc*(-1 - ux)*uy - mfcba*(1 - ux)*uy - mfcbb*(1 - ux)*uy - mfcbc*(1 - ux)*uy + mfbba*ux*uy + mfbbb*ux*uy + mfbbc*ux*uy;
 
-						LBMReal Mom101 = mfaaa*(-1 - ux)*(-1 - uz) + mfaba*(-1 - ux)*(-1 - uz) + mfaca*(-1 - ux)*(-1 - uz) + mfcaa*(1 - ux)*(-1 - uz) +
+						real Mom101 = mfaaa*(-1 - ux)*(-1 - uz) + mfaba*(-1 - ux)*(-1 - uz) + mfaca*(-1 - ux)*(-1 - uz) + mfcaa*(1 - ux)*(-1 - uz) +
 							mfcba*(1 - ux)*(-1 - uz) + mfcca*(1 - ux)*(-1 - uz) - mfbaa*ux*(-1 - uz) - mfbba*ux*(-1 - uz) - mfbca*ux*(-1 - uz) +
 							mfaac*(-1 - ux)*(1 - uz) + mfabc*(-1 - ux)*(1 - uz) + mfacc*(-1 - ux)*(1 - uz) + mfcac*(1 - ux)*(1 - uz) + mfcbc*(1 - ux)*(1 - uz) +
 							mfccc*(1 - ux)*(1 - uz) - mfbac*ux*(1 - uz) - mfbbc*ux*(1 - uz) - mfbcc*ux*(1 - uz) - mfaab*(-1 - ux)*uz - mfabb*(-1 - ux)*uz -
 							mfacb*(-1 - ux)*uz - mfcab*(1 - ux)*uz - mfcbb*(1 - ux)*uz - mfccb*(1 - ux)*uz + mfbab*ux*uz + mfbbb*ux*uz + mfbcb*ux*uz;
 
-						LBMReal Mom011 = mfaaa*(-1 - uy)*(-1 - uz) + mfbaa*(-1 - uy)*(-1 - uz) + mfcaa*(-1 - uy)*(-1 - uz) + mfaca*(1 - uy)*(-1 - uz) +
+						real Mom011 = mfaaa*(-1 - uy)*(-1 - uz) + mfbaa*(-1 - uy)*(-1 - uz) + mfcaa*(-1 - uy)*(-1 - uz) + mfaca*(1 - uy)*(-1 - uz) +
 							mfbca*(1 - uy)*(-1 - uz) + mfcca*(1 - uy)*(-1 - uz) - mfaba*uy*(-1 - uz) - mfbba*uy*(-1 - uz) - mfcba*uy*(-1 - uz) +
 							mfaac*(-1 - uy)*(1 - uz) + mfbac*(-1 - uy)*(1 - uz) + mfcac*(-1 - uy)*(1 - uz) + mfacc*(1 - uy)*(1 - uz) + mfbcc*(1 - uy)*(1 - uz) +
 							mfccc*(1 - uy)*(1 - uz) - mfabc*uy*(1 - uz) - mfbbc*uy*(1 - uz) - mfcbc*uy*(1 - uz) - mfaab*(-1 - uy)*uz - mfbab*(-1 - uy)*uz -
 							mfcab*(-1 - uy)*uz - mfacb*(1 - uy)*uz - mfbcb*(1 - uy)*uz - mfccb*(1 - uy)*uz + mfabb*uy*uz + mfbbb*uy*uz + mfcbb*uy*uz;
 						////
 
-						LBMReal Mom111 = mfaaa*(-1 - ux)*(-1 - uy)*(-1 - uz) + mfcaa*(1 - ux)*(-1 - uy)*(-1 - uz) - mfbaa*ux*(-1 - uy)*(-1 - uz) +
+						real Mom111 = mfaaa*(-1 - ux)*(-1 - uy)*(-1 - uz) + mfcaa*(1 - ux)*(-1 - uy)*(-1 - uz) - mfbaa*ux*(-1 - uy)*(-1 - uz) +
 							mfaca*(-1 - ux)*(1 - uy)*(-1 - uz) + mfcca*(1 - ux)*(1 - uy)*(-1 - uz) - mfbca*ux*(1 - uy)*(-1 - uz) -
 							mfaba*(-1 - ux)*uy*(-1 - uz) - mfcba*(1 - ux)*uy*(-1 - uz) + mfbba*ux*uy*(-1 - uz) + mfaac*(-1 - ux)*(-1 - uy)*(1 - uz) +
 							mfcac*(1 - ux)*(-1 - uy)*(1 - uz) - mfbac*ux*(-1 - uy)*(1 - uz) + mfacc*(-1 - ux)*(1 - uy)*(1 - uz) +
@@ -1074,14 +1075,14 @@ void ThixotropyLBMKernel::calculate(int step)
 							mfbbb*ux*uy*uz;
 
 						//(200)//
-						LBMReal Mom200 = ((mfcaa + mfcab + mfcac + mfcba + mfcbb + mfcbc + mfcca + mfccb +
+						real Mom200 = ((mfcaa + mfcab + mfcac + mfcba + mfcbb + mfcbc + mfcca + mfccb +
 							mfccc)*pow(-1 + ux, 2) +
 							(mfbaa + mfbab + mfbac + mfbba + mfbbb + mfbbc + mfbca +
 								mfbcb + mfbcc)*pow(ux, 2) +
 								(mfaaa + mfaab + mfaac + mfaba + mfabb + mfabc + mfaca +
 									mfacb + mfacc)*pow(1 + ux, 2)) - Mom000 / 3;
 
-						LBMReal Mom020 = ((mfaca + mfacb + mfacc)*pow(-1 + uy, 2) +
+						real Mom020 = ((mfaca + mfacb + mfacc)*pow(-1 + uy, 2) +
 							(mfbca + mfbcb + mfbcc)*pow(-1 + uy, 2) +
 							(mfcca + mfccb + mfccc)*pow(-1 + uy, 2) +
 							(mfaba + mfabb + mfabc)*pow(uy, 2) +
@@ -1091,7 +1092,7 @@ void ThixotropyLBMKernel::calculate(int step)
 							(mfbaa + mfbab + mfbac)*pow(1 + uy, 2) +
 							(mfcaa + mfcab + mfcac)*pow(1 + uy, 2)) - Mom000 / 3;
 
-						LBMReal Mom002 = (mfaba + mfabc + mfaca + mfacc + mfbba + mfbbc + mfbca + mfbcc +
+						real Mom002 = (mfaba + mfabc + mfaca + mfacc + mfbba + mfbbc + mfbca + mfbcc +
 							mfcba + mfcbc + mfcca + mfccc + mfaac*pow(-1 + uz, 2) +
 							mfbac*pow(-1 + uz, 2) + mfcac*pow(-1 + uz, 2) +
 							2 * mfaba*uz - 2 * mfabc*uz + 2 * mfaca*uz - 2 * mfacc*uz +
@@ -1109,7 +1110,7 @@ void ThixotropyLBMKernel::calculate(int step)
 						////
 
 						//(210)//
-						LBMReal Mom210 = (pow(1 + ux, 2)*(-((mfaca + mfacb + mfacc)*(-1 + uy)) -
+						real Mom210 = (pow(1 + ux, 2)*(-((mfaca + mfacb + mfacc)*(-1 + uy)) -
 							(mfaba + mfabb + mfabc)*uy -
 							(mfaaa + mfaab + mfaac)*(1 + uy)) +
 							pow(ux, 2)*(-((mfbca + mfbcb + mfbcc)*(-1 + uy)) -
@@ -1119,7 +1120,7 @@ void ThixotropyLBMKernel::calculate(int step)
 							(mfcba + mfcbb + mfcbc)*uy -
 								(mfcaa + mfcab + mfcac)*(1 + uy))) - Mom010 / 3;
 
-						LBMReal Mom201 = (-(pow(1 + ux, 2)*(mfaba - mfabc + mfaca - mfacc +
+						real Mom201 = (-(pow(1 + ux, 2)*(mfaba - mfabc + mfaca - mfacc +
 							mfaac*(-1 + uz) + mfaab*uz + mfaba*uz + mfabb*uz +
 							mfabc*uz + mfaca*uz + mfacb*uz + mfacc*uz +
 							mfaaa*(1 + uz))) -
@@ -1130,7 +1131,7 @@ void ThixotropyLBMKernel::calculate(int step)
 								mfcac*(-1 + uz) + mfcab*uz + mfcba*uz + mfcbb*uz +
 								mfcbc*uz + mfcca*uz + mfccb*uz + mfccc*uz + mfcaa*(1 + uz))) - Mom001 / 3;
 
-						LBMReal Mom120 = ((-1 - ux)*((mfaca + mfacb + mfacc)*pow(-1 + uy, 2) +
+						real Mom120 = ((-1 - ux)*((mfaca + mfacb + mfacc)*pow(-1 + uy, 2) +
 							(mfaba + mfabb + mfabc)*pow(uy, 2) +
 							(mfaaa + mfaab + mfaac)*pow(1 + uy, 2)) -
 							ux*((mfbca + mfbcb + mfbcc)*pow(-1 + uy, 2) +
@@ -1141,7 +1142,7 @@ void ThixotropyLBMKernel::calculate(int step)
 									(mfcaa + mfcab + mfcac)*pow(1 + uy, 2))) - Mom100 / 3;
 
 
-						LBMReal Mom102 = (-((1 + ux)*(mfaba + mfabc + mfaca + mfacc +
+						real Mom102 = (-((1 + ux)*(mfaba + mfabc + mfaca + mfacc +
 							mfaac*pow(-1 + uz, 2) + 2 * mfaba*uz - 2 * mfabc*uz +
 							2 * mfaca*uz - 2 * mfacc*uz + mfaab*pow(uz, 2) +
 							mfaba*pow(uz, 2) + mfabb*pow(uz, 2) +
@@ -1162,7 +1163,7 @@ void ThixotropyLBMKernel::calculate(int step)
 									mfccb*pow(uz, 2) + mfccc*pow(uz, 2) +
 									mfcaa*pow(1 + uz, 2))) - Mom100 / 3;
 
-						LBMReal Mom021 = (-(pow(1 + uy, 2)*(mfaac*(-1 + uz) + mfaab*uz +
+						real Mom021 = (-(pow(1 + uy, 2)*(mfaac*(-1 + uz) + mfaab*uz +
 							mfaaa*(1 + uz))) -
 							pow(uy, 2)*(mfabc*(-1 + uz) + mfabb*uz + mfaba*(1 + uz)) -
 							pow(-1 + uy, 2)*(mfacc*(-1 + uz) + mfacb*uz +
@@ -1175,7 +1176,7 @@ void ThixotropyLBMKernel::calculate(int step)
 							pow(uy, 2)*(mfcbc*(-1 + uz) + mfcbb*uz + mfcba*(1 + uz)) -
 							pow(-1 + uy, 2)*(mfccc*(-1 + uz) + mfccb*uz + mfcca*(1 + uz))) - Mom001 / 3;
 
-						LBMReal Mom012 = (-((1 + uy)*(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
+						real Mom012 = (-((1 + uy)*(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
 							mfaaa*pow(1 + uz, 2))) -
 							uy*(mfabc*pow(-1 + uz, 2) + mfabb*pow(uz, 2) +
 								mfaba*pow(1 + uz, 2)) -
@@ -1197,7 +1198,7 @@ void ThixotropyLBMKernel::calculate(int step)
 
 
 						//(220)//
-						LBMReal Mom220 = (pow(1 + ux, 2)*((mfaca + mfacb + mfacc)*pow(-1 + uy, 2) +
+						real Mom220 = (pow(1 + ux, 2)*((mfaca + mfacb + mfacc)*pow(-1 + uy, 2) +
 							(mfaba + mfabb + mfabc)*pow(uy, 2) +
 							(mfaaa + mfaab + mfaac)*pow(1 + uy, 2)) +
 							pow(ux, 2)*((mfbca + mfbcb + mfbcc)*pow(-1 + uy, 2) +
@@ -1207,7 +1208,7 @@ void ThixotropyLBMKernel::calculate(int step)
 							(mfcba + mfcbb + mfcbc)*pow(uy, 2) +
 								(mfcaa + mfcab + mfcac)*pow(1 + uy, 2))) - Mom000 / 9;
 
-						LBMReal Mom202 = (pow(1 + ux, 2)*(mfaba + mfabc + mfaca + mfacc +
+						real Mom202 = (pow(1 + ux, 2)*(mfaba + mfabc + mfaca + mfacc +
 							mfaac*pow(-1 + uz, 2) + 2 * mfaba*uz - 2 * mfabc*uz +
 							2 * mfaca*uz - 2 * mfacc*uz + mfaab*pow(uz, 2) +
 							mfaba*pow(uz, 2) + mfabb*pow(uz, 2) +
@@ -1229,7 +1230,7 @@ void ThixotropyLBMKernel::calculate(int step)
 								mfccb*pow(uz, 2) + mfccc*pow(uz, 2) +
 								mfcaa*pow(1 + uz, 2))) - Mom000 / 9;
 
-						LBMReal Mom022 = (pow(1 + uy, 2)*(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
+						real Mom022 = (pow(1 + uy, 2)*(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
 							mfaaa*pow(1 + uz, 2)) +
 							pow(uy, 2)*(mfabc*pow(-1 + uz, 2) + mfabb*pow(uz, 2) +
 								mfaba*pow(1 + uz, 2)) +
@@ -1250,7 +1251,7 @@ void ThixotropyLBMKernel::calculate(int step)
 						////
 
 						//(221)//
-						LBMReal Mom221 = (pow(1 + ux, 2)*(-(pow(1 + uy, 2)*
+						real Mom221 = (pow(1 + ux, 2)*(-(pow(1 + uy, 2)*
 							(mfaac*(-1 + uz) + mfaab*uz + mfaaa*(1 + uz))) -
 							pow(uy, 2)*(mfabc*(-1 + uz) + mfabb*uz +
 								mfaba*(1 + uz)) -
@@ -1269,7 +1270,7 @@ void ThixotropyLBMKernel::calculate(int step)
 								pow(-1 + uy, 2)*(mfccc*(-1 + uz) + mfccb*uz +
 									mfcca*(1 + uz)))) - Mom001 / 9;
 
-						LBMReal Mom212 = (pow(1 + ux, 2)*(-((1 + uy)*
+						real Mom212 = (pow(1 + ux, 2)*(-((1 + uy)*
 							(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
 								mfaaa*pow(1 + uz, 2))) -
 							uy*(mfabc*pow(-1 + uz, 2) + mfabb*pow(uz, 2) +
@@ -1291,7 +1292,7 @@ void ThixotropyLBMKernel::calculate(int step)
 									(-1 + uy)*(mfccc*pow(-1 + uz, 2) + mfccb*pow(uz, 2) +
 										mfcca*pow(1 + uz, 2)))) - Mom010 / 9;
 
-						LBMReal Mom122 = ((-1 - ux)*(pow(1 + uy, 2)*
+						real Mom122 = ((-1 - ux)*(pow(1 + uy, 2)*
 							(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
 								mfaaa*pow(1 + uz, 2)) +
 							pow(uy, 2)*(mfabc*pow(-1 + uz, 2) + mfabb*pow(uz, 2) +
@@ -1314,7 +1315,7 @@ void ThixotropyLBMKernel::calculate(int step)
 						////
 
 						//(211)//
-						LBMReal Mom211 = (pow(1 + ux, 2)*((1 + uy)*(mfaac*(-1 + uz) + mfaab*uz +
+						real Mom211 = (pow(1 + ux, 2)*((1 + uy)*(mfaac*(-1 + uz) + mfaab*uz +
 							mfaaa*(1 + uz)) +
 							uy*(mfabc*(-1 + uz) + mfabb*uz + mfaba*(1 + uz)) +
 							(-1 + uy)*(mfacc*(-1 + uz) + mfacb*uz + mfaca*(1 + uz))) +
@@ -1327,7 +1328,7 @@ void ThixotropyLBMKernel::calculate(int step)
 								uy*(mfcbc*(-1 + uz) + mfcbb*uz + mfcba*(1 + uz)) +
 								(-1 + uy)*(mfccc*(-1 + uz) + mfccb*uz + mfcca*(1 + uz)))) - Mom011 / 3;
 
-						LBMReal Mom121 = ((-1 - ux)*(-(pow(1 + uy, 2)*
+						real Mom121 = ((-1 - ux)*(-(pow(1 + uy, 2)*
 							(mfaac*(-1 + uz) + mfaab*uz + mfaaa*(1 + uz))) -
 							pow(uy, 2)*(mfabc*(-1 + uz) + mfabb*uz +
 								mfaba*(1 + uz)) -
@@ -1346,7 +1347,7 @@ void ThixotropyLBMKernel::calculate(int step)
 										pow(-1 + uy, 2)*(mfccc*(-1 + uz) + mfccb*uz +
 											mfcca*(1 + uz)))) - Mom101 / 3;
 
-						LBMReal Mom112 = ((-1 - ux)*(-((1 + uy)*(mfaac*pow(-1 + uz, 2) +
+						real Mom112 = ((-1 - ux)*(-((1 + uy)*(mfaac*pow(-1 + uz, 2) +
 							mfaab*pow(uz, 2) + mfaaa*pow(1 + uz, 2))) -
 							uy*(mfabc*pow(-1 + uz, 2) + mfabb*pow(uz, 2) +
 								mfaba*pow(1 + uz, 2)) -
@@ -1367,7 +1368,7 @@ void ThixotropyLBMKernel::calculate(int step)
 						////
 
 						//(222)//
-						LBMReal Mom222 = (pow(1 + ux, 2)*(pow(1 + uy, 2)*
+						real Mom222 = (pow(1 + ux, 2)*(pow(1 + uy, 2)*
 							(mfaac*pow(-1 + uz, 2) + mfaab*pow(uz, 2) +
 								mfaaa*pow(1 + uz, 2)) +
 							pow(uy, 2)*(mfabc*pow(-1 + uz, 2) + mfabb*pow(uz, 2) +
@@ -1394,7 +1395,7 @@ void ThixotropyLBMKernel::calculate(int step)
 
 
 
-						LBMReal Meq000 = drho+dlambda*c1o2;
+						real Meq000 = drho+dlambda*c1o2;
 
 
 						// relaxation Central Moment MRT
@@ -1815,46 +1816,46 @@ void ThixotropyLBMKernel::calculate(int step)
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-double ThixotropyLBMKernel::getCalculationTime()
+real ThixotropyLBMKernel::getCalculationTime()
 {
 	//return timer.getDuration();
 	return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyLBMKernel::setCollisionFactorF(double collFactor)
+void ThixotropyLBMKernel::setCollisionFactorF(real collFactor)
 {
 	setCollisionFactor(collFactor);
 	this->collFactorF = collFactor;
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyLBMKernel::setCollisionFactorH(double collFactor)
+void ThixotropyLBMKernel::setCollisionFactorH(real collFactor)
 {
 	this->collFactorH = collFactor;
 }
 //////////////////////////////////////////////////////////////////////////
-double ThixotropyLBMKernel::getCollisionFactorF() const
+real ThixotropyLBMKernel::getCollisionFactorF() const
 {
 	return this->collFactorF;
 }
 //////////////////////////////////////////////////////////////////////////
-double ThixotropyLBMKernel::getCollisionFactorH() const
+real ThixotropyLBMKernel::getCollisionFactorH() const
 {
 	return this->collFactorH;
 }
-void ThixotropyLBMKernel::setAlpha(double alpha)
+void ThixotropyLBMKernel::setAlpha(real alpha)
 {
 	this->alpha = alpha;
 }
-double ThixotropyLBMKernel::getAlpha() const
+real ThixotropyLBMKernel::getAlpha() const
 {
 	return this->alpha;
 }
-void ThixotropyLBMKernel::setTheta(double theta)
+void ThixotropyLBMKernel::setTheta(real theta)
 {
 	this->theta = theta;
 }
-double ThixotropyLBMKernel::getTheta() const
+real ThixotropyLBMKernel::getTheta() const
 {
 	return this->theta;
 }

@@ -76,7 +76,7 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
         SPtr<BCArray3D> bcArray = bcProcessor->getBCArray();
 
         bool compressible = kernel->getCompressible();
-        double collFactor = kernel->getCollisionFactor();
+        real collFactor = kernel->getCollisionFactor();
 
         int minX1 = 0;
         int minX2 = 0;
