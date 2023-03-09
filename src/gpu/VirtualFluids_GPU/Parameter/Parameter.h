@@ -222,7 +222,7 @@ struct LBMSimulationParameter {
     // BC Pressure
     TempPressforBoundaryConditions TempPress;
 
-    // memsizeSP/////////////////
+    // memory size of sparse matrix /////////////////
 
 
 
