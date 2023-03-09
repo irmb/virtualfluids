@@ -180,7 +180,7 @@ struct LBMSimulationParameter {
     // \brief velocities to fit the force
     real *VxForce, *VyForce, *VzForce;
 
-    // Concentration////////
+    //! \brief stores indices for the concentration field
     int *concIndex;
     //    real *concentration;
     unsigned int numberOfPointsConc;
