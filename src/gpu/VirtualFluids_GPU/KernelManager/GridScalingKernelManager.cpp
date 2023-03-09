@@ -307,8 +307,8 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
         ScaleFCThS27(
             para->getParD(level)->distributions.f[0],
             para->getParD(level+1)->distributions.f[0],
-            para->getParD(level)->distributionsAD27.f[0],
-            para->getParD(level+1)->distributionsAD27.f[0],
+            para->getParD(level)->distributionsAD.f[0],
+            para->getParD(level+1)->distributionsAD.f[0],
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
@@ -576,8 +576,8 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
         ScaleCFThS27(
             para->getParD(level)->distributions.f[0],
             para->getParD(level+1)->distributions.f[0],
-            para->getParD(level)->distributionsAD27.f[0],
-            para->getParD(level+1)->distributionsAD27.f[0],
+            para->getParD(level)->distributionsAD.f[0],
+            para->getParD(level+1)->distributionsAD.f[0],
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,

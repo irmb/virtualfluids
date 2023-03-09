@@ -90,6 +90,62 @@ struct LBMSimulationParameter {
     unsigned long long numberOfNodes;
     //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
     unsigned long long memSizeRealLBnodes, memSizeLonglongLBnodes;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the slip boundary condition data
+    QforBoundaryConditions slipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the no slip boundary condition data
+    QforBoundaryConditions noSlipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the velocity boundary condition data
+    QforBoundaryConditions velocityBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the geometry boundary condition data
+    QforBoundaryConditions geometryBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the pressure boundary condition data
+    QforBoundaryConditions pressureBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the outflow boundary condition data
+    QforBoundaryConditions outflowBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the stress boundary condition data
+    QforBoundaryConditions stressBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the precursor boundary condition data
+    QforPrecursorBoundaryConditions precursorBC;
+
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief sets a uniform forcing on each fluid node in all three spatial dimensions
+    real *forcing;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores parameters for a wall model
+    WallModelParameters wallModel;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief allows reading values for a boundary condition from a file
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief can be used for pressure correction at outflow boundary condition
+    real outflowPressureCorrectionFactor;
+    //////////////////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // Advection Diffusion
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the diffusivity
+    real diffusivity;
+    //! \brief stores the value for omega (for the diffusivity)
+    real omegaDiffusivity;
+    //! \brief stores a field of concentration values
+    real *concentration;
+    //! \brief store all distribution functions for the D3Q27 advection diffusion field
+    Distributions27 distributionsAD;
+
+
+
+
+
 
 
 
@@ -116,6 +172,45 @@ struct LBMSimulationParameter {
     //unsigned int mem_size_int;
     //unsigned int mem_size_real;
 
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED  BCs that are not used any more
+    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED BCs that are not used any more
+    unsigned int kInletQread, kOutletQread;            // DEPRECATED
+
+    QforBoundaryConditions propellerBC;                                                 // DEPRECATED
+    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;     // DEPRECATED
+    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;           // DEPRECATED
+    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;        // DEPRECATED
+
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, // DEPRECATED
+    numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead; // DEPRECATED
+
+    //! \brief stores a full matrix field of concentration values
+    real *Conc_Full;
+
+    //////////////////////////////////////////////////////////////////////////
+    // \brief velocities to fit the force
+    real *VxForce, *VyForce, *VzForce;
+
+    //! \brief stores indices for the concentration field
+    int *concIndex;
+    //    real *concentration;
+    unsigned int numberOfPointsConc;
+    //! \brief store all distribution functions for the D3Q7 advection diffusion field
+    Distributions7 distributionsAD7;
+    // Plane Conc
+    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
+    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
+
+
+    // trafo///////////////////
+    real mTtoWx, mTtoWy, mTtoWz;
+    real cTtoWx, cTtoWy, cTtoWz;
+
+    // MGstrafo////////////////
+    real cStartx, cStarty, cStartz;
+    real cFx, cFy, cFz;
+
+
     //////////////////////////////////////////////////////////////////////////
 
 
@@ -129,44 +224,20 @@ struct LBMSimulationParameter {
     // distributions F3////////
     Distributions6 g6;
 
-    unsigned int size_Array_SP;
+    unsigned int size_Array_SP; //?? Deprecated
 
-
-    // memsizeSP/////////////////
-
-
-
-    //////////////////////////////////////////////////////////////////////////
-
-
-    // advection diffusion //////////////////
-    //! \brief store all distribution functions for the D3Q7 advection diffusion field
-    Distributions7 distributionsAD7;
-    //! \brief store all distribution functions for the D3Q27 advection diffusion field
-    Distributions27 distributionsAD27;
-    //! \brief stores a field of concentration values
-    real *Conc, *Conc_Full;
-    //! \brief stores the diffusivity
-    real diffusivity;
-    //! \brief stores the value for omega (for the diffusivity)
-    real omegaDiffusivity;
     // BC NoSlip
     TempforBoundaryConditions Temp;
     // BC Velocity
     TempVelforBoundaryConditions TempVel;
     // BC Pressure
     TempPressforBoundaryConditions TempPress;
-    // Plane Conc
-    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
-    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
 
-    // trafo///////////////////
-    real mTtoWx, mTtoWy, mTtoWz;
-    real cTtoWx, cTtoWy, cTtoWz;
+    // memory size of sparse matrix /////////////////
 
-    // MGstrafo////////////////
-    real cStartx, cStarty, cStartz;
-    real cFx, cFy, cFz;
+
+
+    //////////////////////////////////////////////////////////////////////////
 
 
     // body forces////////////
@@ -246,35 +317,10 @@ struct LBMSimulationParameter {
     OffsetFC offFCBulk;
     unsigned int mem_size_kCF_off;
     unsigned int mem_size_kFC_off;
-    
-    //! \brief stores the boundary condition data
-    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
-    //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead;
-
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
-    QforBoundaryConditions propellerBC;
-    QforBoundaryConditions geometryBC;
-    QforPrecursorBoundaryConditions precursorBC;
-    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
-    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
-    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED
-    unsigned int kInletQread, kOutletQread;  // DEPRECATED
-
-    WallModelParameters wallModel;
-    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
-    real outflowPressureCorrectionFactor;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
 
-    //////////////////////////////////////////////////////////////////////////
-    // velocities to fit the force
-    real *VxForce, *VyForce, *VzForce;
-    //////////////////////////////////////////////////////////////////////////
-    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
-    real *forcing;
 
     // Measure Points/////////
     std::vector<MeasurePoints> MP;
@@ -323,11 +369,6 @@ struct LBMSimulationParameter {
     double *cpPressBottom2;
     unsigned int numberOfPointsCpBottom2;
     std::vector<std::vector<double>> cpBottom2;
-
-    // Concentration////////
-    int *concIndex;
-    real *concentration;
-    unsigned int numberOfPointsConc;
 
     // street X and Y velocity fractions///////
     real *streetFractionXvelocity;

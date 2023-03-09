@@ -20,7 +20,7 @@ void ADComp27::run()
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->distributions.f[0],
-        para->getParD(level)->distributionsAD27.f[0],
+        para->getParD(level)->distributionsAD.f[0],
         para->getParD(level)->numberOfNodes,
         para->getParD(level)->isEvenTimestep);
     getLastCudaError("LB_KERNEL_AD_COMP_27 execution failed");
