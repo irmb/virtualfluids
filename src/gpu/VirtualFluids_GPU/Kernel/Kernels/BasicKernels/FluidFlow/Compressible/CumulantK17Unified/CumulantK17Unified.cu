@@ -22,7 +22,7 @@ CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int leve
 
     myPreProcessorTypes.push_back(InitCompSP27);
 
-    myKernelGroup = BasicKernel;
+    
 
     this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 }

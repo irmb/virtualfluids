@@ -33,7 +33,7 @@ CumulantCompSP27::CumulantCompSP27(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 CumulantCompSP27::CumulantCompSP27()

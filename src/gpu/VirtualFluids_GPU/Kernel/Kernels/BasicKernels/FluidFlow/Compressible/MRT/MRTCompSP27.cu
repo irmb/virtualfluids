@@ -32,7 +32,7 @@ MRTCompSP27::MRTCompSP27(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 MRTCompSP27::MRTCompSP27()

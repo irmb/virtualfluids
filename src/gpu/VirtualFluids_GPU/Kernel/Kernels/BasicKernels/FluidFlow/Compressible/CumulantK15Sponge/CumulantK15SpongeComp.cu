@@ -35,7 +35,7 @@ CumulantK15SpongeComp::CumulantK15SpongeComp(std::shared_ptr<Parameter> para, in
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 CumulantK15SpongeComp::CumulantK15SpongeComp()
