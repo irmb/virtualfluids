@@ -37,6 +37,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <array>
 
 #include "lbm/constants/D3Q27.h"
 #include "LBMSystem.h"
@@ -1392,6 +1393,662 @@ static inline real getShearRate(const real *const f, real collFactorF)
 
     return sqrt(vf::lbm::constant::c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) /
            (rho + vf::lbm::constant::c1o1);
+}
+
+static inline std::array<real,6> getSecondMoments(const real *const f, real collFactorF)
+{
+    using namespace vf::lbm::dir;
+    using namespace vf::lbm::constant;
+
+    real mfcbb = f[DIR_P00];
+    real mfbcb = f[DIR_0P0];
+    real mfbbc = f[DIR_00P];
+    real mfccb = f[DIR_PP0];
+    real mfacb = f[DIR_MP0];
+    real mfcbc = f[DIR_P0P];
+    real mfabc = f[DIR_M0P];
+    real mfbcc = f[DIR_0PP];
+    real mfbac = f[DIR_0MP];
+    real mfccc = f[DIR_PPP];
+    real mfacc = f[DIR_MPP];
+    real mfcac = f[DIR_PMP];
+    real mfaac = f[DIR_MMP];
+
+    real mfabb = f[DIR_M00];
+    real mfbab = f[DIR_0M0];
+    real mfbba = f[DIR_00M];
+    real mfaab = f[DIR_MM0];
+    real mfcab = f[DIR_PM0];
+    real mfaba = f[DIR_M0M];
+    real mfcba = f[DIR_P0M];
+    real mfbaa = f[DIR_0MM];
+    real mfbca = f[DIR_0PM];
+    real mfaaa = f[DIR_MMM];
+    real mfcaa = f[DIR_PMM];
+    real mfaca = f[DIR_MPM];
+    real mfcca = f[DIR_PPM];
+
+    real mfbbb = f[DIR_000];
+
+    real m0, m1, m2;
+
+    //real rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca) + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc) + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+
+    real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) + (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) + (mfcbb - mfabb));
+    real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) + (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) + (mfbcb - mfbab));
+    real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) + (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) + (mfbbc - mfbba));
+
+    real oMdrho;
+
+    oMdrho = mfccc + mfaaa;
+    m0 = mfaca + mfcac;
+    m1 = mfacc + mfcaa;
+    m2 = mfaac + mfcca;
+    oMdrho += m0;
+    m1 += m2;
+    oMdrho += m1;
+    m0 = mfbac + mfbca;
+    m1 = mfbaa + mfbcc;
+    m0 += m1;
+    m1 = mfabc + mfcba;
+    m2 = mfaba + mfcbc;
+    m1 += m2;
+    m0 += m1;
+    m1 = mfacb + mfcab;
+    m2 = mfaab + mfccb;
+    m1 += m2;
+    m0 += m1;
+    oMdrho += m0;
+    m0 = mfabb + mfcbb;
+    m1 = mfbab + mfbcb;
+    m2 = mfbba + mfbbc;
+    m0 += m1 + m2;
+    m0 += mfbbb; // hat gefehlt
+    oMdrho = 1. - (oMdrho + m0);
+
+    real vx2;
+    real vy2;
+    real vz2;
+    vx2 = vvx * vvx;
+    vy2 = vvy * vvy;
+    vz2 = vvz * vvz;
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Hin
+    ////////////////////////////////////////////////////////////////////////////////////
+    // mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Z - Dir
+    m2 = mfaaa + mfaac;
+    m1 = mfaac - mfaaa;
+    m0 = m2 + mfaab;
+    mfaaa = m0;
+    m0 += c1o36 * oMdrho;
+    mfaab = m1 - m0 * vvz;
+    mfaac = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaba + mfabc;
+    m1 = mfabc - mfaba;
+    m0 = m2 + mfabb;
+    mfaba = m0;
+    m0 += c1o9 * oMdrho;
+    mfabb = m1 - m0 * vvz;
+    mfabc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaca + mfacc;
+    m1 = mfacc - mfaca;
+    m0 = m2 + mfacb;
+    mfaca = m0;
+    m0 += c1o36 * oMdrho;
+    mfacb = m1 - m0 * vvz;
+    mfacc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbaa + mfbac;
+    m1 = mfbac - mfbaa;
+    m0 = m2 + mfbab;
+    mfbaa = m0;
+    m0 += c1o9 * oMdrho;
+    mfbab = m1 - m0 * vvz;
+    mfbac = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbba + mfbbc;
+    m1 = mfbbc - mfbba;
+    m0 = m2 + mfbbb;
+    mfbba = m0;
+    m0 += c4o9 * oMdrho;
+    mfbbb = m1 - m0 * vvz;
+    mfbbc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbca + mfbcc;
+    m1 = mfbcc - mfbca;
+    m0 = m2 + mfbcb;
+    mfbca = m0;
+    m0 += c1o9 * oMdrho;
+    mfbcb = m1 - m0 * vvz;
+    mfbcc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcaa + mfcac;
+    m1 = mfcac - mfcaa;
+    m0 = m2 + mfcab;
+    mfcaa = m0;
+    m0 += c1o36 * oMdrho;
+    mfcab = m1 - m0 * vvz;
+    mfcac = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcba + mfcbc;
+    m1 = mfcbc - mfcba;
+    m0 = m2 + mfcbb;
+    mfcba = m0;
+    m0 += c1o9 * oMdrho;
+    mfcbb = m1 - m0 * vvz;
+    mfcbc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcca + mfccc;
+    m1 = mfccc - mfcca;
+    m0 = m2 + mfccb;
+    mfcca = m0;
+    m0 += c1o36 * oMdrho;
+    mfccb = m1 - m0 * vvz;
+    mfccc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    // mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Y - Dir
+    m2 = mfaaa + mfaca;
+    m1 = mfaca - mfaaa;
+    m0 = m2 + mfaba;
+    mfaaa = m0;
+    m0 += c1o6 * oMdrho;
+    mfaba = m1 - m0 * vvy;
+    mfaca = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaab + mfacb;
+    m1 = mfacb - mfaab;
+    m0 = m2 + mfabb;
+    mfaab = m0;
+    mfabb = m1 - m0 * vvy;
+    mfacb = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaac + mfacc;
+    m1 = mfacc - mfaac;
+    m0 = m2 + mfabc;
+    mfaac = m0;
+    m0 += c1o18 * oMdrho;
+    mfabc = m1 - m0 * vvy;
+    mfacc = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbaa + mfbca;
+    m1 = mfbca - mfbaa;
+    m0 = m2 + mfbba;
+    mfbaa = m0;
+    m0 += c2o3 * oMdrho;
+    mfbba = m1 - m0 * vvy;
+    mfbca = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbab + mfbcb;
+    m1 = mfbcb - mfbab;
+    m0 = m2 + mfbbb;
+    mfbab = m0;
+    mfbbb = m1 - m0 * vvy;
+    mfbcb = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbac + mfbcc;
+    m1 = mfbcc - mfbac;
+    m0 = m2 + mfbbc;
+    mfbac = m0;
+    m0 += c2o9 * oMdrho;
+    mfbbc = m1 - m0 * vvy;
+    mfbcc = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcaa + mfcca;
+    m1 = mfcca - mfcaa;
+    m0 = m2 + mfcba;
+    mfcaa = m0;
+    m0 += c1o6 * oMdrho;
+    mfcba = m1 - m0 * vvy;
+    mfcca = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcab + mfccb;
+    m1 = mfccb - mfcab;
+    m0 = m2 + mfcbb;
+    mfcab = m0;
+    mfcbb = m1 - m0 * vvy;
+    mfccb = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcac + mfccc;
+    m1 = mfccc - mfcac;
+    m0 = m2 + mfcbc;
+    mfcac = m0;
+    m0 += c1o18 * oMdrho;
+    mfcbc = m1 - m0 * vvy;
+    mfccc = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    // mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9            Konditionieren
+    ////////////////////////////////////////////////////////////////////////////////////
+    // X - Dir
+    m2 = mfaaa + mfcaa;
+    m1 = mfcaa - mfaaa;
+    m0 = m2 + mfbaa;
+    mfaaa = m0;
+    m0 += 1. * oMdrho;
+    mfbaa = m1 - m0 * vvx;
+    mfcaa = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaba + mfcba;
+    m1 = mfcba - mfaba;
+    m0 = m2 + mfbba;
+    mfaba = m0;
+    mfbba = m1 - m0 * vvx;
+    mfcba = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaca + mfcca;
+    m1 = mfcca - mfaca;
+    m0 = m2 + mfbca;
+    mfaca = m0;
+    m0 += c1o3 * oMdrho;
+    mfbca = m1 - m0 * vvx;
+    mfcca = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaab + mfcab;
+    m1 = mfcab - mfaab;
+    m0 = m2 + mfbab;
+    mfaab = m0;
+    mfbab = m1 - m0 * vvx;
+    mfcab = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfabb + mfcbb;
+    m1 = mfcbb - mfabb;
+    m0 = m2 + mfbbb;
+    mfabb = m0;
+    mfbbb = m1 - m0 * vvx;
+    mfcbb = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfacb + mfccb;
+    m1 = mfccb - mfacb;
+    m0 = m2 + mfbcb;
+    mfacb = m0;
+    mfbcb = m1 - m0 * vvx;
+    mfccb = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaac + mfcac;
+    m1 = mfcac - mfaac;
+    m0 = m2 + mfbac;
+    mfaac = m0;
+    m0 += c1o3 * oMdrho;
+    mfbac = m1 - m0 * vvx;
+    mfcac = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfabc + mfcbc;
+    m1 = mfcbc - mfabc;
+    m0 = m2 + mfbbc;
+    mfabc = m0;
+    mfbbc = m1 - m0 * vvx;
+    mfcbc = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfacc + mfccc;
+    m1 = mfccc - mfacc;
+    m0 = m2 + mfbcc;
+    mfacc = m0;
+    m0 += c1o9 * oMdrho;
+    mfbcc = m1 - m0 * vvx;
+    mfccc = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Cumulants
+    ////////////////////////////////////////////////////////////////////////////////////
+    real OxxPyyPzz = 1.; // omega2 or bulk viscosity
+
+    real mxxPyyPzz = mfcaa + mfaca + mfaac;
+    real mxxMyy = mfcaa - mfaca;
+    real mxxMzz = mfcaa - mfaac;
+
+   // average pre and post collision
+    std::array<real, 6> moments = {
+    (mxxPyyPzz-mfaaa) * (c1o1 - c1o2 * OxxPyyPzz),
+    (mxxMyy) * (c1o1 - c1o2 * collFactorF),
+    (mxxMzz) * (c1o1 - c1o2 * collFactorF),
+    (mfbba)  * (c1o1 - c1o2 * collFactorF),
+    (mfbab)  * (c1o1 - c1o2 * collFactorF),
+    (mfabb)  * (c1o1 - c1o2 * collFactorF)
+    };
+
+    return moments;
+}
+static inline std::array<real, 6> getStressTensor(const real *const f, real collFactorF)
+{
+    using namespace vf::lbm::dir;
+    using namespace vf::lbm::constant;
+
+    real mfcbb = f[DIR_P00];
+    real mfbcb = f[DIR_0P0];
+    real mfbbc = f[DIR_00P];
+    real mfccb = f[DIR_PP0];
+    real mfacb = f[DIR_MP0];
+    real mfcbc = f[DIR_P0P];
+    real mfabc = f[DIR_M0P];
+    real mfbcc = f[DIR_0PP];
+    real mfbac = f[DIR_0MP];
+    real mfccc = f[DIR_PPP];
+    real mfacc = f[DIR_MPP];
+    real mfcac = f[DIR_PMP];
+    real mfaac = f[DIR_MMP];
+
+    real mfabb = f[DIR_M00];
+    real mfbab = f[DIR_0M0];
+    real mfbba = f[DIR_00M];
+    real mfaab = f[DIR_MM0];
+    real mfcab = f[DIR_PM0];
+    real mfaba = f[DIR_M0M];
+    real mfcba = f[DIR_P0M];
+    real mfbaa = f[DIR_0MM];
+    real mfbca = f[DIR_0PM];
+    real mfaaa = f[DIR_MMM];
+    real mfcaa = f[DIR_PMM];
+    real mfaca = f[DIR_MPM];
+    real mfcca = f[DIR_PPM];
+
+    real mfbbb = f[DIR_000];
+
+    real m0, m1, m2;
+
+    //real rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca) + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc) + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+
+    real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) + (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) + (mfcbb - mfabb));
+    real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) + (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) + (mfbcb - mfbab));
+    real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) + (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) + (mfbbc - mfbba));
+
+    real oMdrho;
+
+    oMdrho = mfccc + mfaaa;
+    m0 = mfaca + mfcac;
+    m1 = mfacc + mfcaa;
+    m2 = mfaac + mfcca;
+    oMdrho += m0;
+    m1 += m2;
+    oMdrho += m1;
+    m0 = mfbac + mfbca;
+    m1 = mfbaa + mfbcc;
+    m0 += m1;
+    m1 = mfabc + mfcba;
+    m2 = mfaba + mfcbc;
+    m1 += m2;
+    m0 += m1;
+    m1 = mfacb + mfcab;
+    m2 = mfaab + mfccb;
+    m1 += m2;
+    m0 += m1;
+    oMdrho += m0;
+    m0 = mfabb + mfcbb;
+    m1 = mfbab + mfbcb;
+    m2 = mfbba + mfbbc;
+    m0 += m1 + m2;
+    m0 += mfbbb; // hat gefehlt
+    oMdrho = 1. - (oMdrho + m0);
+
+    real vx2;
+    real vy2;
+    real vz2;
+    vx2 = vvx * vvx;
+    vy2 = vvy * vvy;
+    vz2 = vvz * vvz;
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Hin
+    ////////////////////////////////////////////////////////////////////////////////////
+    // mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Z - Dir
+    m2 = mfaaa + mfaac;
+    m1 = mfaac - mfaaa;
+    m0 = m2 + mfaab;
+    mfaaa = m0;
+    m0 += c1o36 * oMdrho;
+    mfaab = m1 - m0 * vvz;
+    mfaac = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaba + mfabc;
+    m1 = mfabc - mfaba;
+    m0 = m2 + mfabb;
+    mfaba = m0;
+    m0 += c1o9 * oMdrho;
+    mfabb = m1 - m0 * vvz;
+    mfabc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaca + mfacc;
+    m1 = mfacc - mfaca;
+    m0 = m2 + mfacb;
+    mfaca = m0;
+    m0 += c1o36 * oMdrho;
+    mfacb = m1 - m0 * vvz;
+    mfacc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbaa + mfbac;
+    m1 = mfbac - mfbaa;
+    m0 = m2 + mfbab;
+    mfbaa = m0;
+    m0 += c1o9 * oMdrho;
+    mfbab = m1 - m0 * vvz;
+    mfbac = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbba + mfbbc;
+    m1 = mfbbc - mfbba;
+    m0 = m2 + mfbbb;
+    mfbba = m0;
+    m0 += c4o9 * oMdrho;
+    mfbbb = m1 - m0 * vvz;
+    mfbbc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbca + mfbcc;
+    m1 = mfbcc - mfbca;
+    m0 = m2 + mfbcb;
+    mfbca = m0;
+    m0 += c1o9 * oMdrho;
+    mfbcb = m1 - m0 * vvz;
+    mfbcc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcaa + mfcac;
+    m1 = mfcac - mfcaa;
+    m0 = m2 + mfcab;
+    mfcaa = m0;
+    m0 += c1o36 * oMdrho;
+    mfcab = m1 - m0 * vvz;
+    mfcac = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcba + mfcbc;
+    m1 = mfcbc - mfcba;
+    m0 = m2 + mfcbb;
+    mfcba = m0;
+    m0 += c1o9 * oMdrho;
+    mfcbb = m1 - m0 * vvz;
+    mfcbc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcca + mfccc;
+    m1 = mfccc - mfcca;
+    m0 = m2 + mfccb;
+    mfcca = m0;
+    m0 += c1o36 * oMdrho;
+    mfccb = m1 - m0 * vvz;
+    mfccc = m2 - 2. * m1 * vvz + vz2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    // mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Y - Dir
+    m2 = mfaaa + mfaca;
+    m1 = mfaca - mfaaa;
+    m0 = m2 + mfaba;
+    mfaaa = m0;
+    m0 += c1o6 * oMdrho;
+    mfaba = m1 - m0 * vvy;
+    mfaca = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaab + mfacb;
+    m1 = mfacb - mfaab;
+    m0 = m2 + mfabb;
+    mfaab = m0;
+    mfabb = m1 - m0 * vvy;
+    mfacb = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaac + mfacc;
+    m1 = mfacc - mfaac;
+    m0 = m2 + mfabc;
+    mfaac = m0;
+    m0 += c1o18 * oMdrho;
+    mfabc = m1 - m0 * vvy;
+    mfacc = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbaa + mfbca;
+    m1 = mfbca - mfbaa;
+    m0 = m2 + mfbba;
+    mfbaa = m0;
+    m0 += c2o3 * oMdrho;
+    mfbba = m1 - m0 * vvy;
+    mfbca = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbab + mfbcb;
+    m1 = mfbcb - mfbab;
+    m0 = m2 + mfbbb;
+    mfbab = m0;
+    mfbbb = m1 - m0 * vvy;
+    mfbcb = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfbac + mfbcc;
+    m1 = mfbcc - mfbac;
+    m0 = m2 + mfbbc;
+    mfbac = m0;
+    m0 += c2o9 * oMdrho;
+    mfbbc = m1 - m0 * vvy;
+    mfbcc = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcaa + mfcca;
+    m1 = mfcca - mfcaa;
+    m0 = m2 + mfcba;
+    mfcaa = m0;
+    m0 += c1o6 * oMdrho;
+    mfcba = m1 - m0 * vvy;
+    mfcca = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcab + mfccb;
+    m1 = mfccb - mfcab;
+    m0 = m2 + mfcbb;
+    mfcab = m0;
+    mfcbb = m1 - m0 * vvy;
+    mfccb = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfcac + mfccc;
+    m1 = mfccc - mfcac;
+    m0 = m2 + mfcbc;
+    mfcac = m0;
+    m0 += c1o18 * oMdrho;
+    mfcbc = m1 - m0 * vvy;
+    mfccc = m2 - 2. * m1 * vvy + vy2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    // mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9            Konditionieren
+    ////////////////////////////////////////////////////////////////////////////////////
+    // X - Dir
+    m2 = mfaaa + mfcaa;
+    m1 = mfcaa - mfaaa;
+    m0 = m2 + mfbaa;
+    mfaaa = m0;
+    m0 += 1. * oMdrho;
+    mfbaa = m1 - m0 * vvx;
+    mfcaa = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaba + mfcba;
+    m1 = mfcba - mfaba;
+    m0 = m2 + mfbba;
+    mfaba = m0;
+    mfbba = m1 - m0 * vvx;
+    mfcba = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaca + mfcca;
+    m1 = mfcca - mfaca;
+    m0 = m2 + mfbca;
+    mfaca = m0;
+    m0 += c1o3 * oMdrho;
+    mfbca = m1 - m0 * vvx;
+    mfcca = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaab + mfcab;
+    m1 = mfcab - mfaab;
+    m0 = m2 + mfbab;
+    mfaab = m0;
+    mfbab = m1 - m0 * vvx;
+    mfcab = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfabb + mfcbb;
+    m1 = mfcbb - mfabb;
+    m0 = m2 + mfbbb;
+    mfabb = m0;
+    mfbbb = m1 - m0 * vvx;
+    mfcbb = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfacb + mfccb;
+    m1 = mfccb - mfacb;
+    m0 = m2 + mfbcb;
+    mfacb = m0;
+    mfbcb = m1 - m0 * vvx;
+    mfccb = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfaac + mfcac;
+    m1 = mfcac - mfaac;
+    m0 = m2 + mfbac;
+    mfaac = m0;
+    m0 += c1o3 * oMdrho;
+    mfbac = m1 - m0 * vvx;
+    mfcac = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfabc + mfcbc;
+    m1 = mfcbc - mfabc;
+    m0 = m2 + mfbbc;
+    mfabc = m0;
+    mfbbc = m1 - m0 * vvx;
+    mfcbc = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    m2 = mfacc + mfccc;
+    m1 = mfccc - mfacc;
+    m0 = m2 + mfbcc;
+    mfacc = m0;
+    m0 += c1o9 * oMdrho;
+    mfbcc = m1 - m0 * vvx;
+    mfccc = m2 - 2. * m1 * vvx + vx2 * m0;
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Cumulants
+    ////////////////////////////////////////////////////////////////////////////////////
+    real OxxPyyPzz = 1.; // omega2 or bulk viscosity
+
+    real mxxPyyPzz = mfcaa + mfaca + mfaac;
+    real mxxMyy = mfcaa - mfaca;
+    real mxxMzz = mfcaa - mfaac;
+
+    real dxux = -c1o2 * collFactorF * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
+    real dyuy = dxux + collFactorF * c3o2 * mxxMyy;
+    real dzuz = dxux + collFactorF * c3o2 * mxxMzz;
+
+    real Dxy = -c3o1 * collFactorF * mfbba;
+    real Dxz = -c3o1 * collFactorF * mfbab;
+    real Dyz = -c3o1 * collFactorF * mfabb;
+    real nu = c1o3 * (c1o1 / collFactorF - c1o2);
+
+    // average pre and post collision
+    std::array<real, 6> moments = { -c1o3 * mfaaa + c2o1*nu*dxux,
+                                    -c1o3 * mfaaa + c2o1*nu*dyuy,
+                                    -c1o3 * mfaaa + c2o1*nu*dzuz,
+                                     nu*Dxy,nu*Dxz,nu*Dyz};
+
+    return moments;
 }
 //Multiphase stuff
 //////////////////////////////////////////////////////////////////////////

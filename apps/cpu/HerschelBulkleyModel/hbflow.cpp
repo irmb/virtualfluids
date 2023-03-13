@@ -137,21 +137,33 @@ void bflow(string configname)
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyPowellEyringModelNoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
+      mu::Parser fctVx;
+      fctVx.SetExpr("u");
+      fctVx.DefineConst("u", 0.001);
+ 
+
+      SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, false, false, fctVx, 0, BCFunction::INFCONST));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
+
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
       //bcVisitor.addBC(noSlipBCAdapter);
+      //bcVisitor.addBC(velocityBCAdapter);
 
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new PowellEyringModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       
       //double forcingXY = forcing / sqrt(2.0);
       //kernel->setForcingX1(forcingXY);
       //kernel->setForcingX2(forcingXY);
+      
       kernel->setForcingX1(forcing);
       kernel->setWithForcing(true);
       kernel->setBCProcessor(bcProc);
@@ -293,6 +305,14 @@ void bflow(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
+      SPtr<UbScheduler> forceSch(new UbScheduler(1000));
+      //real dummy = 1;
+      SPtr<CalculateTorqueCoProcessor> fp = std::make_shared<CalculateTorqueCoProcessor>(grid, forceSch, pathname + "/forces/forces.csv", comm);
+      fp->addInteractor(addWallYminInt);
+
+      SPtr<CalculateTorqueCoProcessor> fp2 = std::make_shared<CalculateTorqueCoProcessor>(grid, forceSch, pathname + "/forces/forces2.csv", comm);
+      fp2->addInteractor(addWallYmaxInt);
+
       //write data for visualization of macroscopic quantities
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname,
@@ -305,6 +325,8 @@ void bflow(string configname)
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(writeMQCoProcessor);
       calculator->addCoProcessor(writeThixotropicMQCoProcessor);
+      calculator->addCoProcessor(fp);
+      calculator->addCoProcessor(fp2);
       //calculator->addCoProcessor(migCoProcessor);
       //calculator->addCoProcessor(restartCoProcessor);
 

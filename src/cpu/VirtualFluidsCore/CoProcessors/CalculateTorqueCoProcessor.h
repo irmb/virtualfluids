@@ -23,6 +23,7 @@ class UbScheduler;
 class D3Q27Interactor;
 class DistributionArray3D;
 class BoundaryConditions;
+class ILBMKernel;
 
 class CalculateTorqueCoProcessor: public CoProcessor 
 {
@@ -35,7 +36,10 @@ public:
 protected:
 	void collectData(real step);
    void calculateForces();
-   UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
+    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
+    UbTupleDouble3 getForcesFromMoments(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz);
+    UbTupleDouble3 getForcesFromStressTensor(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz);
+
 private:
    std::string path;
    std::shared_ptr<vf::mpi::Communicator> comm;
@@ -43,6 +47,8 @@ private:
    real torqueX1global;
    real torqueX2global;
    real torqueX3global;
+
+   real Fx, Fy, Fz;
 };
 
 
