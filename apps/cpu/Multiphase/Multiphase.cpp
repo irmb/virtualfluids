@@ -472,18 +472,18 @@ void run(string configname)
 #endif
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-        SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
-        calculator->addSimulationObserver(npr);
-        calculator->addSimulationObserver(pp);
-        calculator->addSimulationObserver(timeDepBC);
-        calculator->addSimulationObserver(rcp);
+        SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+        simulation->addSimulationObserver(npr);
+        simulation->addSimulationObserver(pp);
+        simulation->addSimulationObserver(timeDepBC);
+        simulation->addSimulationObserver(rcp);
 
 
 
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
-        calculator->run();
+        simulation->run();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
     } catch (std::exception &e) {

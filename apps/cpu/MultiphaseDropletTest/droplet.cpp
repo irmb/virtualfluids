@@ -391,15 +391,15 @@ void run(string configname)
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-        SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
-        calculator->addSimulationObserver(npr);
-        calculator->addSimulationObserver(pp);
-        calculator->addSimulationObserver(rcp);
+        SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+        simulation->addSimulationObserver(npr);
+        simulation->addSimulationObserver(pp);
+        simulation->addSimulationObserver(rcp);
 
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
-        calculator->run();
+        simulation->run();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
             

@@ -290,15 +290,15 @@ void run()
       //tav->setWithGhostLayer(true);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
-      calculator->addSimulationObserver(nupsSimulationObserver);
-      calculator->addSimulationObserver(writeMQSimulationObserver);
-      //calculator->addSimulationObserver(tav);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+      simulation->addSimulationObserver(nupsSimulationObserver);
+      simulation->addSimulationObserver(writeMQSimulationObserver);
+      //simulation->addSimulationObserver(tav);
 
       //omp_set_num_threads(1);
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
-      calculator->run();
+      simulation->run();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

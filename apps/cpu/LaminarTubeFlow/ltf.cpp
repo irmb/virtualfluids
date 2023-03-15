@@ -328,14 +328,14 @@ void run(string configname)
       omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
-      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, int(endTime)));
-      calculator->addSimulationObserver(npr);
-      calculator->addSimulationObserver(pp);
-      calculator->addSimulationObserver(migSimulationObserver);
-      //calculator->addSimulationObserver(timeDepBC);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, int(endTime)));
+      simulation->addSimulationObserver(npr);
+      simulation->addSimulationObserver(pp);
+      simulation->addSimulationObserver(migSimulationObserver);
+      //simulation->addSimulationObserver(timeDepBC);
 
       if (myid == 0) VF_LOG_INFO("Simulation-start");
-      calculator->run();
+      simulation->run();
       if (myid == 0) VF_LOG_INFO("Simulation-end");
    }
    catch (std::exception& e)

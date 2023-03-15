@@ -293,14 +293,14 @@ void run(string configname)
       fp->addInteractor(sphereInt);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endstep));
-      calculator->addSimulationObserver(npr);
-      calculator->addSimulationObserver(fp);
-      calculator->addSimulationObserver(writeMQSimulationObserver);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endstep));
+      simulation->addSimulationObserver(npr);
+      simulation->addSimulationObserver(fp);
+      simulation->addSimulationObserver(writeMQSimulationObserver);
 
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculator->run();
+      simulation->run();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
 
    }

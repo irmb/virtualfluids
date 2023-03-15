@@ -315,13 +315,13 @@ void run(string configname)
 
 	  omp_set_num_threads(numOfThreads);
 	  SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-	  SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
-	  calculator->addSimulationObserver(nupsSimulationObserver);
-     calculator->addSimulationObserver(fp);
-     calculator->addSimulationObserver(writeMQSimulationObserver);
+	  SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+	  simulation->addSimulationObserver(nupsSimulationObserver);
+     simulation->addSimulationObserver(fp);
+     simulation->addSimulationObserver(writeMQSimulationObserver);
 
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
-	  calculator->run();
+	  simulation->run();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");
    }
    catch(std::exception& e)

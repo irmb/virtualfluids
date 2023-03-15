@@ -422,16 +422,16 @@ void bflow(string configname)
       SPtr<WriteThixotropyQuantitiesSimulationObserver> writeThixotropicMQSimulationObserver(new WriteThixotropyQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
-      calculator->addSimulationObserver(npr);
-      calculator->addSimulationObserver(fp);
-      calculator->addSimulationObserver(fp2);
-      calculator->addSimulationObserver(writeMQSimulationObserver);
-      calculator->addSimulationObserver(writeThixotropicMQSimulationObserver);
-      //calculator->addSimulationObserver(restartSimulationObserver);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+      simulation->addSimulationObserver(npr);
+      simulation->addSimulationObserver(fp);
+      simulation->addSimulationObserver(fp2);
+      simulation->addSimulationObserver(writeMQSimulationObserver);
+      simulation->addSimulationObserver(writeThixotropicMQSimulationObserver);
+      //simulation->addSimulationObserver(restartSimulationObserver);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculator->run();
+      simulation->run();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

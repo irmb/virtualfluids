@@ -191,14 +191,14 @@ void pf1()
    //start simulation 
    //omp_set_num_threads(numOfThreads);
    SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
-   SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
-   calculator->addSimulationObserver(npr);
-   calculator->addSimulationObserver(writeMQSimulationObserver);
-   //calculator->addSimulationObserver(migSimulationObserver);
-   //calculator->addSimulationObserver(restartSimulationObserver);
+   SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+   simulation->addSimulationObserver(npr);
+   simulation->addSimulationObserver(writeMQSimulationObserver);
+   //simulation->addSimulationObserver(migSimulationObserver);
+   //simulation->addSimulationObserver(restartSimulationObserver);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
-   calculator->run();
+   simulation->run();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
    
    ppblocks->update(10);
