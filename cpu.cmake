@@ -29,7 +29,9 @@ SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
-SET(USE_LIGGGHTS OFF CACHE BOOL "include LIGGGHTS library support")
+SET(ENABLE_MODULE_LiggghtsCoupling OFF CACHE BOOL "enable coupling with LIGGGHTS library")
+SET(ENABLE_MODULE_NonNewtonianFluids OFF CACHE BOOL "enable non-Newtonian fluids module")
+SET(ENABLE_MODULE_MultiphaseFlow OFF CACHE BOOL "enable multiphase flow module")
 
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
@@ -85,8 +87,16 @@ if(BUILD_VF_PYTHON_BINDINGS)
     add_subdirectory(src/cpu/simulationconfig)
 endif()
 
-if(USE_LIGGGHTS)
+if(ENABLE_MODULE_LiggghtsCoupling)
     add_subdirectory(src/cpu/LiggghtsCoupling)
+endif()
+
+if(ENABLE_MODULE_NonNewtonianFluids)
+    add_subdirectory(src/cpu/NonNewtonianFluids)
+endif()
+
+if(ENABLE_MODULE_MultiphaseFlow)
+    add_subdirectory(src/cpu/MultiphaseFlow)
 endif()
 
 set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")
