@@ -199,7 +199,7 @@ void bflow(string configname)
       if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
       //////////////////////////////////////
 
-      SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
       ppblocks->process(0);
 
       unsigned long nob = grid->getNumberOfBlocks();
@@ -252,26 +252,26 @@ void bflow(string configname)
       grid->accept(bcVisitor);
 
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm);
+      WriteBoundaryConditionsSimulationObserver ppgeo = WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm);
       ppgeo.process(1);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //write data for visualization of macroscopic quantities
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname,
+      SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname,
          WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
-      SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      SPtr<WriteThixotropyQuantitiesSimulationObserver> writeThixotropicMQSimulationObserver(new WriteThixotropyQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-      calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->addCoProcessor(writeThixotropicMQCoProcessor);
-      //calculator->addCoProcessor(migCoProcessor);
-      //calculator->addCoProcessor(restartCoProcessor);
+      calculator->addSimulationObserver(npr);
+      calculator->addSimulationObserver(writeMQSimulationObserver);
+      calculator->addSimulationObserver(writeThixotropicMQSimulationObserver);
+      //calculator->addSimulationObserver(migSimulationObserver);
+      //calculator->addSimulationObserver(restartSimulationObserver);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

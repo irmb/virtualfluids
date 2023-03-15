@@ -35,7 +35,7 @@
 
 #include "Block3D.h"
 #include "Block3DConnector.h"
-#include "CoProcessor.h"
+#include "SimulationObserver.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
 
@@ -75,11 +75,11 @@ Calculator::Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayer
 //////////////////////////////////////////////////////////////////////////
 Calculator::~Calculator() = default;
 //////////////////////////////////////////////////////////////////////////
-void Calculator::addCoProcessor(SPtr<CoProcessor> coProcessor) { coProcessors.push_back(coProcessor); }
+void Calculator::addSimulationObserver(SPtr<SimulationObserver> coProcessor) { coProcessors.push_back(coProcessor); }
 //////////////////////////////////////////////////////////////////////////
 void Calculator::coProcess(real step)
 {
-    for (SPtr<CoProcessor> cp : coProcessors) {
+    for (SPtr<SimulationObserver> cp : coProcessors) {
         cp->process(step);
     }
 }

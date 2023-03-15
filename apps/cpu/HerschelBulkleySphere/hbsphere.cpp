@@ -168,10 +168,10 @@ void bflow(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, outputPath, comm));
-      restartCoProcessor->setLBMKernel(kernel);
-      restartCoProcessor->setBCSet(bcProc);
-      //restartCoProcessor->setNu(k);
+      SPtr<MPIIOMigrationSimulationObserver> restartSimulationObserver(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, outputPath, comm));
+      restartSimulationObserver->setLBMKernel(kernel);
+      restartSimulationObserver->setBCSet(bcProc);
+      //restartSimulationObserver->setNu(k);
       //////////////////////////////////////////////////////////////////////////
 
       if (myid == 0)
@@ -261,7 +261,7 @@ void bflow(string configname)
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
 
-         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
          ppblocks->process(0);
 
          unsigned long nob = grid->getNumberOfBlocks();
@@ -310,7 +310,7 @@ void bflow(string configname)
       }
       else
       {
-         restartCoProcessor->restart((int)restartStep);
+         restartSimulationObserver->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          SetBcBlocksBlockVisitor v(sphereInt);
          grid->accept(v);
@@ -331,32 +331,32 @@ void bflow(string configname)
       grid->accept(bcVisitor);
 
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlASCII::getInstance(), comm);
+      WriteBoundaryConditionsSimulationObserver ppgeo = WriteBoundaryConditionsSimulationObserver(grid, geoSch, outputPath, WbWriterVtkXmlASCII::getInstance(), comm);
       ppgeo.process(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //write data for visualization of macroscopic quantities
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       //SPtr<UbScheduler> visSch(new UbScheduler(10,1));
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-      //writeMQCoProcessor->process(0);
+      SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      //writeMQSimulationObserver->process(0);
 
       real area = UbMath::PI*radius*radius;
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
-      SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, velocity, area);
+      SPtr<CalculateForcesSimulationObserver> fp = make_shared<CalculateForcesSimulationObserver>(grid, forceSch, outputPath + "/forces/forces.txt", comm, velocity, area);
       fp->addInteractor(sphereInt);
 
-      SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      SPtr<WriteThixotropyQuantitiesSimulationObserver> writeThixotropicMQSimulationObserver(new WriteThixotropyQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-      calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(fp);
-      calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->addCoProcessor(writeThixotropicMQCoProcessor);
-      calculator->addCoProcessor(restartCoProcessor);
+      calculator->addSimulationObserver(npr);
+      calculator->addSimulationObserver(fp);
+      calculator->addSimulationObserver(writeMQSimulationObserver);
+      calculator->addSimulationObserver(writeThixotropicMQSimulationObserver);
+      calculator->addSimulationObserver(restartSimulationObserver);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

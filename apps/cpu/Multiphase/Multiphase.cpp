@@ -129,9 +129,9 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-        //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
-        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //SPtr<MPIIORestartSimulationObserver> rcp(new MPIIORestartSimulationObserver(grid, rSch, pathname, comm));
+        SPtr<MPIIOMigrationSimulationObserver> rcp(new MPIIOMigrationSimulationObserver(grid, rSch, metisVisitor, pathname, comm));
+        //SPtr<MPIIOMigrationBESimulationObserver> rcp(new MPIIOMigrationBESimulationObserver(grid, rSch, pathname, comm));
         //rcp->setNu(nuLB);
         //rcp->setNuLG(nuL, nuG);
         //rcp->setDensityRatio(densityRatio);
@@ -265,7 +265,7 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
+            SPtr<WriteBlocksSimulationObserver> ppblocks(new WriteBlocksSimulationObserver(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
             SPtr<Interactor3D> tubes(new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS));
@@ -415,7 +415,7 @@ void run(string configname)
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
-                SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(
+                SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(
                     grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
                 ppgeo->process(0);
                 ppgeo.reset();
@@ -455,16 +455,16 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-        SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
-            //SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
+        SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
+            //SPtr<WriteMacroscopicQuantitiesSimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         pp->process(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-        SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+        SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
         SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-        auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+        auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
         timeDepBC->addInteractor(cylInt);
 
 #ifdef _OPENMP
@@ -473,10 +473,10 @@ void run(string configname)
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
         SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-        calculator->addCoProcessor(npr);
-        calculator->addCoProcessor(pp);
-        calculator->addCoProcessor(timeDepBC);
-        calculator->addCoProcessor(rcp);
+        calculator->addSimulationObserver(npr);
+        calculator->addSimulationObserver(pp);
+        calculator->addSimulationObserver(timeDepBC);
+        calculator->addSimulationObserver(rcp);
 
 
 

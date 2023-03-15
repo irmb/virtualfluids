@@ -130,9 +130,9 @@ private:
     //////////////////////////////////////////////////////////////////////////
     void deleteBC(std::size_t x1, std::size_t x2, std::size_t x3);
 
-    friend class MPIIORestartCoProcessor;
-    friend class MPIIOMigrationCoProcessor;
-    friend class MPIIOMigrationBECoProcessor;
+    friend class MPIIORestartSimulationObserver;
+    friend class MPIIOMigrationSimulationObserver;
+    friend class MPIIOMigrationBESimulationObserver;
 
 protected:
     //////////////////////////////////////////////////////////////////////////

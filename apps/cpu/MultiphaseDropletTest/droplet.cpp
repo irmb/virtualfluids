@@ -194,9 +194,9 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-        //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
-        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //SPtr<MPIIORestartSimulationObserver> rcp(new MPIIORestartSimulationObserver(grid, rSch, pathname, comm));
+        SPtr<MPIIOMigrationSimulationObserver> rcp(new MPIIOMigrationSimulationObserver(grid, rSch, metisVisitor, pathname, comm));
+        //SPtr<MPIIOMigrationBESimulationObserver> rcp(new MPIIOMigrationBESimulationObserver(grid, rSch, pathname, comm));
         // rcp->setNu(nuLB);
         // rcp->setNuLG(nuL, nuG);
         // rcp->setDensityRatio(densityRatio);
@@ -236,7 +236,7 @@ void run(string configname)
             SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
             SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
  
-            SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
+            SPtr<WriteBlocksSimulationObserver> ppblocks(new WriteBlocksSimulationObserver(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
             InteractorsHelper intHelper(grid, metisVisitor, true);
@@ -317,7 +317,7 @@ void run(string configname)
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
-                SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(
+                SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(
                     grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
                 ppgeo->process(0);
                 ppgeo.reset();
@@ -380,21 +380,21 @@ void run(string configname)
         t = (int)(t_ast/std::sqrt(g_y/D));         
         visSch->addSchedule(t,t,t); //t=9
 
-        SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
+        SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         if(grid->getTimeStep() == 0) 
             pp->process(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-        SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+        SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
         SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-        calculator->addCoProcessor(npr);
-        calculator->addCoProcessor(pp);
-        calculator->addCoProcessor(rcp);
+        calculator->addSimulationObserver(npr);
+        calculator->addSimulationObserver(pp);
+        calculator->addSimulationObserver(rcp);
 
 
         if (myid == 0)

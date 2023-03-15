@@ -11,7 +11,7 @@ class Grid3D;
 namespace vf::mpi {class Communicator;}
 
 //! \class UtilConvertor
-//! \brief Converts timestep data from MPIIORestartCoProcessor format into MPIIOMigrationCoProcessor format
+//! \brief Converts timestep data from MPIIORestartSimulationObserver format into MPIIOMigrationSimulationObserver format
 class CheckpointConverter
 {
 public:

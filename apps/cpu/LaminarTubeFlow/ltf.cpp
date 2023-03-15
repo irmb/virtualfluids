@@ -113,13 +113,13 @@ void run(string configname)
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
-      SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
-      migCoProcessor->setLBMKernel(kernel);
-      migCoProcessor->setBCSet(bcProc);
-      migCoProcessor->setNu(nuLB);
-      migCoProcessor->setNuLG(0.01, 0.01);
-      migCoProcessor->setDensityRatio(1);
+      //SPtr<MPIIOMigrationSimulationObserver> migSimulationObserver(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      SPtr<MPIIOMigrationBESimulationObserver> migSimulationObserver(new MPIIOMigrationBESimulationObserver(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      migSimulationObserver->setLBMKernel(kernel);
+      migSimulationObserver->setBCSet(bcProc);
+      migSimulationObserver->setNu(nuLB);
+      migSimulationObserver->setNuLG(0.01, 0.01);
+      migSimulationObserver->setDensityRatio(1);
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<D3Q27Interactor> inflowInt;
@@ -189,7 +189,7 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          ppblocks->process(0);
 
@@ -280,7 +280,7 @@ void run(string configname)
          //boundary conditions grid
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+            SPtr<SimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
             ppgeo->process(0);
             ppgeo.reset();
          }
@@ -302,7 +302,7 @@ void run(string configname)
             VF_LOG_INFO("path = {}", pathname);
          }
 
-         migCoProcessor->restart((int)restartStep);
+         migSimulationObserver->restart((int)restartStep);
          grid->setTimeStep(restartStep);
 
          if (myid == 0) VF_LOG_INFO("Restart - end");
@@ -316,23 +316,23 @@ void run(string configname)
       grid->accept(setInterConnsVisitor);
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      SPtr<SimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
-      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-      //auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+      //auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
       //timeDepBC->addInteractor(inflowInt);
 
       omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, int(endTime)));
-      calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(pp);
-      calculator->addCoProcessor(migCoProcessor);
-      //calculator->addCoProcessor(timeDepBC);
+      calculator->addSimulationObserver(npr);
+      calculator->addSimulationObserver(pp);
+      calculator->addSimulationObserver(migSimulationObserver);
+      //calculator->addSimulationObserver(timeDepBC);
 
       if (myid == 0) VF_LOG_INFO("Simulation-start");
       calculator->calculate();

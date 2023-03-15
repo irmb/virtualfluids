@@ -103,8 +103,8 @@ protected:
     CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
     size_t NX1, NX2, NX3;
 
-    friend class MPIIORestartCoProcessor;
-    friend class MPIIOMigrationCoProcessor;
+    friend class MPIIORestartSimulationObserver;
+    friend class MPIIOMigrationSimulationObserver;
 };
 
 #endif

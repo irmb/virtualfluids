@@ -164,7 +164,7 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(d_maxX1, d_minX2 - 4.0*blockLength, d_minX3 - 4.0*blockLength, d_maxX1 + 4.0*blockLength, d_maxX2 + 4.0*blockLength, d_maxX3 + 4.0*blockLength));
          if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), outputPath + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
 
          //walls
          SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, slipBC, Interactor3D::SOLID));
@@ -251,8 +251,8 @@ void run(string configname)
 
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         SPtr<CoProcessor> ppgeo(
-            new WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<SimulationObserver> ppgeo(
+            new WriteBoundaryConditionsSimulationObserver(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
          ppgeo->process(0);
          ppgeo.reset();
 
@@ -282,21 +282,21 @@ void run(string configname)
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outstep));
       //stepSch->addSchedule(10000, 0, 1000000);
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, outputPath, WbWriterVtkXmlBinary::getInstance(), conv,comm));
+      SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, stepSch, outputPath, WbWriterVtkXmlBinary::getInstance(), conv,comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       real area = UbMath::PI * radius * radius;
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
-      SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, uLB, area);
+      SPtr<CalculateForcesSimulationObserver> fp = make_shared<CalculateForcesSimulationObserver>(grid, forceSch, outputPath + "/forces/forces.txt", comm, uLB, area);
       fp->addInteractor(sphereInt);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endstep));
-      calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(fp);
-      calculator->addCoProcessor(writeMQCoProcessor);
+      calculator->addSimulationObserver(npr);
+      calculator->addSimulationObserver(fp);
+      calculator->addSimulationObserver(writeMQSimulationObserver);
 
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");

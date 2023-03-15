@@ -42,7 +42,7 @@ class Grid3D;
 class UbScheduler;
 class Block3D;
 class Block3DConnector;
-class CoProcessor;
+class SimulationObserver;
 
 //! \class Calculator
 //! \brief A base class for main calculation loop
@@ -53,7 +53,7 @@ public:
     Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps);
     virtual ~Calculator();
     //! control of coProcessors
-    void addCoProcessor(SPtr<CoProcessor> coProcessor);
+    void addSimulationObserver(SPtr<SimulationObserver> coProcessor);
     void coProcess(real step);
 
     virtual void calculate() = 0;
@@ -86,7 +86,7 @@ protected:
     std::vector<std::vector<SPtr<Block3DConnector>>> localInterConns;
     std::vector<std::vector<SPtr<Block3DConnector>>> remoteInterConns;
 
-    std::vector<SPtr<CoProcessor>> coProcessors;
+    std::vector<SPtr<SimulationObserver>> coProcessors;
 };
 
 #endif

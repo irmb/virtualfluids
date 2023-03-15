@@ -133,7 +133,7 @@ void run()
          if (myid==0) UBLOG(logINFO, "Refinement - end");
       }
 
-      SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
       //outflow
       GbCuboid3DPtr geoOutflow1(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
@@ -264,7 +264,7 @@ void run()
 
       //Postrozess
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      SPtr<SimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
       ppgeo->process(0);
       ppgeo.reset();
 
@@ -278,22 +278,22 @@ void run()
       }
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-      writeMQCoProcessor->process(0);
+      SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      writeMQSimulationObserver->process(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      std::shared_ptr<NUPSCounterSimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //SPtr<UbScheduler> tavSch(new UbScheduler(1, 0, endTime));
-      //SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-      //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      //SPtr<TimeAveragedValuesSimulationObserver> tav(new TimeAveragedValuesSimulationObserver(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+      //   TimeAveragedValuesSimulationObserver::Density | TimeAveragedValuesSimulationObserver::Velocity | TimeAveragedValuesSimulationObserver::Fluctuations));
       //tav->setWithGhostLayer(true);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-      calculator->addCoProcessor(nupsCoProcessor);
-      calculator->addCoProcessor(writeMQCoProcessor);
-      //calculator->addCoProcessor(tav);
+      calculator->addSimulationObserver(nupsSimulationObserver);
+      calculator->addSimulationObserver(writeMQSimulationObserver);
+      //calculator->addSimulationObserver(tav);
 
       //omp_set_num_threads(1);
 

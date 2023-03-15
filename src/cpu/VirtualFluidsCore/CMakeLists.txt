@@ -42,7 +42,7 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/LB
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Parallel)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Grid)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Visitors)
-target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CoProcessors)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/SimulationObservers)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
 
 

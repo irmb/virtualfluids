@@ -338,9 +338,9 @@ protected:
     char algorithmType { -1 };
 
 private:
-    friend class MPIIORestartCoProcessor;
-    friend class MPIIOMigrationCoProcessor;
-    friend class MPIIOMigrationBECoProcessor;
+    friend class MPIIORestartSimulationObserver;
+    friend class MPIIOMigrationSimulationObserver;
+    friend class MPIIOMigrationBESimulationObserver;
 };
 
 #endif
