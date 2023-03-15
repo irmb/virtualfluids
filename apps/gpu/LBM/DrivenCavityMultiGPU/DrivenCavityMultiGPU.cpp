@@ -51,6 +51,7 @@
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -78,7 +79,7 @@ void multipleLevel(std::filesystem::path& configPath)
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
     config.load(configPath.string());
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
@@ -93,7 +94,7 @@ void multipleLevel(std::filesystem::path& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const std::string outPath("output/");
+    const std::string outPath("output/" + std::to_string(para->getNumprocs()) + "GPU/");
     const std::string gridPath = "output/";
     std::string simulationName("DrivenCavityMultiGPU");
 
@@ -125,7 +126,7 @@ void multipleLevel(std::filesystem::path& configPath)
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
-    para->setMainKernel("CumulantK17");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +164,7 @@ void multipleLevel(std::filesystem::path& configPath)
             const real ySplit = 0.0;
             const real zSplit = 0.0;
 
-            if (communicator.getNummberOfProcess() == 2) {
+            if (communicator.getNumberOfProcess() == 2) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zSplit + overlap,
@@ -210,7 +211,7 @@ void multipleLevel(std::filesystem::path& configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcess() == 4) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, yGridMax,
@@ -294,7 +295,7 @@ void multipleLevel(std::filesystem::path& configPath)
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcess() == 8) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,

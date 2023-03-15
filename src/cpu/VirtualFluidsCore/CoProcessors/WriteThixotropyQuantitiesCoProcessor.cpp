@@ -153,8 +153,16 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 	datanames.resize(0);
 	datanames.push_back("viscosity");
 	//datanames.push_back("lambda");
-	//datanames.push_back("ShearRate");
+	datanames.push_back("ShearRate");
 	datanames.push_back("omega");
+
+	datanames.push_back("MP");
+    datanames.push_back("MXXMYY");
+    datanames.push_back("MXXMZZ");
+    datanames.push_back("MXY");
+    datanames.push_back("MXZ");
+    datanames.push_back("MYZ");
+
 	//datanames.push_back("Fluxx");
 	//datanames.push_back("Fluxy");
 	//datanames.push_back("Fluxz");
@@ -249,10 +257,20 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					//LBMReal omega = Rheology::getPowellEyringCollFactor(collFactor, shearRate, rho);
 					real omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
 					real viscosity = (omega == 0) ? 0 : vf::lbm::constant::c1o3 * (vf::lbm::constant::c1o1/omega- vf::lbm::constant::c1o2);
+                    std::array<real, 6> moments = D3Q27System::getSecondMoments(f, omega);
+
 
 					
 					data[index++].push_back(viscosity);
+                    data[index++].push_back(shearRate);
 					data[index++].push_back(omega);
+
+					data[index++].push_back(moments[0]);
+                    data[index++].push_back(moments[1]);
+                    data[index++].push_back(moments[2]);
+                    data[index++].push_back(moments[3]);
+                    data[index++].push_back(moments[4]);
+                    data[index++].push_back(moments[5]);
 				}
 			}
 		}

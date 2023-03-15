@@ -49,6 +49,7 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +103,7 @@ void multipleLevel(std::filesystem::path &configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath.string());
     SPtr<Parameter> para =
-        std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+        std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,8 +161,7 @@ void multipleLevel(std::filesystem::path &configPath)
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
     para->setUseStreams(useStreams);
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -206,7 +206,7 @@ void multipleLevel(std::filesystem::path &configPath)
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
-            if (communicator.getNummberOfProcess() == 2) {
+            if (communicator.getNumberOfProcess() == 2) {
                 const real zSplit = 0.0; // round(((double)bbzp + bbzm) * 0.5);
 
                 if (generatePart == 0) {
@@ -257,7 +257,7 @@ void multipleLevel(std::filesystem::path &configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcess() == 4) {
 
                 const real xSplit = 100.0;
                 const real zSplit = 0.0;
@@ -347,7 +347,7 @@ void multipleLevel(std::filesystem::path &configPath)
                     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcess() == 8) {
                 real xSplit = 140.0; // 100.0 // mit groesserem Level 1 140.0
                 real ySplit = 32.0;  // 32.0
                 real zSplit = 0.0;

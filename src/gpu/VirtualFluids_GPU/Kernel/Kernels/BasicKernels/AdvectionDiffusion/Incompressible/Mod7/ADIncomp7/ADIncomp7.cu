@@ -33,7 +33,6 @@ ADIncomp7::ADIncomp7(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitIncompAD7);
 
-	myKernelGroup = ADKernel7;
 }
 
 ADIncomp7::ADIncomp7()

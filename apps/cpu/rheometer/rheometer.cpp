@@ -142,9 +142,9 @@ void bflow(string configname)
       //thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
       //SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
@@ -181,10 +181,10 @@ void bflow(string configname)
       //fctVx.SetExpr("0.0");
 
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
+      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
 
       //SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
       //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
@@ -202,11 +202,11 @@ void bflow(string configname)
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BGKLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
@@ -243,7 +243,7 @@ void bflow(string configname)
       //around x
       //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 3.0 * deltax, 0.5 * g_maxX2, 0.5 * g_maxX3,                                               g_maxX1 + 3.0 * deltax, 0.5 * g_maxX2, 0.5 * g_maxX3, 0.5 * g_maxX3));
 
-      GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
+      GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
 
       SPtr<D3Q27Interactor> rotorInt =
           SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
@@ -254,7 +254,7 @@ void bflow(string configname)
       //around x
       //SPtr<GbObject3D> rotor(new GbCylinder3D(g_minX1 - 3.0 * deltax, 0.5 * g_maxX2, 0.5 * g_maxX3,                                           g_maxX1 + 3.0 * deltax, 0.5 * g_maxX2, 0.5 * g_maxX3, 0.25 * g_maxX3));
 
-      GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
+      GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
 
       SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
@@ -427,7 +427,7 @@ void bflow(string configname)
       calculator->addCoProcessor(fp);
       calculator->addCoProcessor(fp2);
       calculator->addCoProcessor(writeMQCoProcessor);
-      //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
+      calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       //calculator->addCoProcessor(restartCoProcessor);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");

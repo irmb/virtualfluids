@@ -3,8 +3,8 @@ user: $PHOENIX_REMOTE_USER
 private_keyfile: $PHOENIX_PRIVATE_KEY
 
 copy:
-  - from: regression-tests/multigpu_test/slurm.job
-    to: multigpu_test/slurm.job
+  - from: regression-tests/multigpu_test/slurm4GPU.job
+    to: multigpu_test/slurm4GPU.job
     overwrite: true
 
   - from: "CMake/"
@@ -36,13 +36,16 @@ copy:
     overwrite: true
 
 collect:
-  - from: multigpu_test/output/
-    to: output/results/
+  - from: multigpu_test/output/4GPU/
+    to: output/4GPU
     overwrite: true
 
-  - from: multigpu_test/slurmMultiGPU.out
-    to: output/slurmMultiGPU.out
+  - from: multigpu_test/slurm4GPU.out
+    to: output/4GPU/slurm4GPU.out
     overwrite: true
 
-sbatch: multigpu_test/slurm.job
+clean:
+  - multigpu_test/output/*
+
+sbatch: multigpu_test/slurm4GPU.job
 continue_if_job_fails: true

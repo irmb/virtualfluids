@@ -5,7 +5,6 @@
 
 #include "LBM/LB.h" 
 
-#include "Kernel/Utilities/KernelGroup.h"
 #include "PreProcessor/PreProcessorType.h"
 #include "Parameter/CudaStreamManager.h"
 
@@ -20,6 +19,5 @@ public:
 
     virtual bool checkParameter()                                = 0;
     virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;
-    virtual KernelGroup getKernelGroup()                         = 0;
 };
 #endif

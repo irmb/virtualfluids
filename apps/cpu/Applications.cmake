@@ -83,4 +83,6 @@ ENDIF()
 #add_subdirectory(Applications/OrganPipe)
 #add_subdirectory(Applications/LidDrivenCavity)
 
-
+if(BUILD_USE_BOOST)
+    add_subdirectory(${APPS_ROOT_CPU}/TPMSRow)
+endif()

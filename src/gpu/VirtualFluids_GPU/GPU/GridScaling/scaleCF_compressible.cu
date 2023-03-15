@@ -218,7 +218,7 @@ __device__ __inline__ void interpolateDistributions(
 //!
 
 // based on scaleCF_RhoSq_comp_27
-__global__ void scaleCF_compressible(
+template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real* distributionsCoarse, 
     real* distributionsFine, 
     unsigned int* neighborXcoarse,
@@ -235,6 +235,8 @@ __global__ void scaleCF_compressible(
     unsigned int numberOfInterfaceNodes, 
     real omegaCoarse, 
     real omegaFine, 
+    real* turbulentViscosityCoarse,
+    real* turbulentViscosityFine,
     OffCF offsetCF)
 {
     ////////////////////////////////////////////////////////////////////////////////
@@ -310,6 +312,8 @@ __global__ void scaleCF_compressible(
     unsigned int k_0MM = k_base_0MM;
     unsigned int k_MMM = k_base_MMM;
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
         kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM);
@@ -326,6 +330,8 @@ __global__ void scaleCF_compressible(
     k_M0M = neighborZcoarse[k_M0M];
     k_0MM = neighborZcoarse[k_0MM];
     k_MMM = neighborZcoarse[k_MMM];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
 
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
@@ -344,6 +350,8 @@ __global__ void scaleCF_compressible(
     k_0MM = k_MMM;
     k_MMM = neighborXcoarse[k_MMM];
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
         kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP);
@@ -360,6 +368,8 @@ __global__ void scaleCF_compressible(
     k_M00 = neighborXcoarse[k_base_M00];
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXcoarse[k_base_MM0];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
 
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
@@ -388,6 +398,8 @@ __global__ void scaleCF_compressible(
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
         kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM);
@@ -404,6 +416,8 @@ __global__ void scaleCF_compressible(
     k_M0M = neighborZcoarse[k_M0M];
     k_0MM = neighborZcoarse[k_0MM];
     k_MMM = neighborZcoarse[k_MMM];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
     
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
@@ -423,10 +437,11 @@ __global__ void scaleCF_compressible(
     k_0MM = k_MMM;
     k_MMM = neighborXcoarse[k_MMM];
 
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
+
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
         kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP);
-
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -440,6 +455,8 @@ __global__ void scaleCF_compressible(
     k_M00 = neighborXcoarse[k_base_M00];
     k_0M0 = k_base_MM0;
     k_MM0 = neighborXcoarse[k_base_MM0];
+
+    if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
     
     calculateMomentsOnSourceNodes( distCoarse, omegaC,
         k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
@@ -883,28 +900,6 @@ __global__ void scaleCF_compressible(
     real y = -c1o4;
     real z = -c1o4;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Set moments (zeroth to sixth order) on destination node
-    //!
-    interpolateDistributions(
-        x, y, z,
-        m_000, 
-        m_100, m_010, m_001,
-        m_011, m_101, m_110, m_200, m_020, m_002,
-        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
-        m_022, m_202, m_220, m_211, m_121, m_112,
-        m_122, m_212, m_221,
-        m_222,
-        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
-        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
-        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
-        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
-        LaplaceRho, eps_new, omegaF, 
-        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
-    );
-
-    //////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
     k_base_000 = indicesFineMMM[nodeIndex];
     k_base_M00 = neighborXfine [k_base_000];
@@ -924,6 +919,28 @@ __global__ void scaleCF_compressible(
     k_M0M = k_base_M0M;
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Set moments (zeroth to sixth order) on destination node
+    //!
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
+    interpolateDistributions(
+        x, y, z,
+        m_000, 
+        m_100, m_010, m_001,
+        m_011, m_101, m_110, m_200, m_020, m_002,
+        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
+        m_022, m_202, m_220, m_211, m_121, m_112,
+        m_122, m_212, m_221,
+        m_222,
+        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
+        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
+        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
+        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
+        LaplaceRho, eps_new, omegaF, 
+        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
+    );
 
     //////////////////////////////////////////////////////////////////////////
     //! - Write distributions: style of reading and writing the distributions from/to
@@ -968,9 +985,22 @@ __global__ void scaleCF_compressible(
     x = -c1o4;
     y = -c1o4;
     z =  c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_00M;
+    k_M00 = k_M0M;
+    k_0M0 = k_0MM;
+    k_00M = neighborZfine[k_00M];
+    k_MM0 = k_MMM;
+    k_M0M = neighborZfine[k_M0M];
+    k_0MM = neighborZfine[k_0MM];
+    k_MMM = neighborZfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -987,17 +1017,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_00M;
-    k_M00 = k_M0M;
-    k_0M0 = k_0MM;
-    k_00M = neighborZfine[k_00M];
-    k_MM0 = k_MMM;
-    k_M0M = neighborZfine[k_M0M];
-    k_0MM = neighborZfine[k_0MM];
-    k_MMM = neighborZfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1038,9 +1057,21 @@ __global__ void scaleCF_compressible(
     y = -c1o4;
     z =  c1o4;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_M00;
+    k_M00 = neighborXfine[k_M00];
+    k_0M0 = k_MM0;
+    k_00M = k_M0M;
+    k_MM0 = neighborXfine[k_MM0];
+    k_M0M = neighborXfine[k_M0M];
+    k_0MM = k_MMM;
+    k_MMM = neighborXfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1057,17 +1088,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_M00;
-    k_M00 = neighborXfine[k_M00];
-    k_0M0 = k_MM0;
-    k_00M = k_M0M;
-    k_MM0 = neighborXfine[k_MM0];
-    k_M0M = neighborXfine[k_M0M];
-    k_0MM = k_MMM;
-    k_MMM = neighborXfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1107,9 +1127,22 @@ __global__ void scaleCF_compressible(
     x =  c1o4;
     y = -c1o4;
     z = -c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_00M = k_000;
+    k_M0M = k_M00;
+    k_0MM = k_0M0;
+    k_MMM = k_MM0;
+    k_000 = k_base_M00;
+    k_M00 = neighborXfine[k_base_M00];
+    k_0M0 = k_base_MM0;
+    k_MM0 = neighborXfine[k_base_MM0];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1126,17 +1159,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_00M = k_000;
-    k_M0M = k_M00;
-    k_0MM = k_0M0;
-    k_MMM = k_MM0;
-    k_000 = k_base_M00;
-    k_M00 = neighborXfine[k_base_M00];
-    k_0M0 = k_base_MM0;
-    k_MM0 = neighborXfine[k_base_MM0];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1177,25 +1199,6 @@ __global__ void scaleCF_compressible(
     y =  c1o4;
     z = -c1o4;
     
-    ////////////////////////////////////////////////////////////////////////////////
-    // Set moments (zeroth to sixth orders) on destination node
-    interpolateDistributions(
-        x, y, z,
-        m_000, 
-        m_100, m_010, m_001,
-        m_011, m_101, m_110, m_200, m_020, m_002,
-        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
-        m_022, m_202, m_220, m_211, m_121, m_112,
-        m_122, m_212, m_221,
-        m_222,
-        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
-        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
-        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
-        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
-        LaplaceRho, eps_new, omegaF, 
-        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
-    );
-
     //////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
     k_base_000 = k_base_0M0;
@@ -1217,6 +1220,28 @@ __global__ void scaleCF_compressible(
     k_M0M = k_base_M0M;
     k_0MM = k_base_0MM;
     k_MMM = k_base_MMM;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
+    interpolateDistributions(
+        x, y, z,
+        m_000, 
+        m_100, m_010, m_001,
+        m_011, m_101, m_110, m_200, m_020, m_002,
+        m_111, m_210, m_012, m_201, m_021, m_120, m_102,
+        m_022, m_202, m_220, m_211, m_121, m_112,
+        m_122, m_212, m_221,
+        m_222,
+        a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110,  a_101, a_011, a_111,
+        b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110,  b_101, b_011, b_111,
+        c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110,  c_101, c_011, c_111,
+        d_000, d_100, d_010, d_001, d_110, d_101, d_011, d_111,
+        LaplaceRho, eps_new, omegaF, 
+        kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
+    );
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1256,9 +1281,22 @@ __global__ void scaleCF_compressible(
     x = -c1o4;
     y =  c1o4;
     z =  c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_00M;
+    k_M00 = k_M0M;
+    k_0M0 = k_0MM;
+    k_00M = neighborZfine[k_00M];
+    k_MM0 = k_MMM;
+    k_M0M = neighborZfine[k_M0M];
+    k_0MM = neighborZfine[k_0MM];
+    k_MMM = neighborZfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1275,17 +1313,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_00M;
-    k_M00 = k_M0M;
-    k_0M0 = k_0MM;
-    k_00M = neighborZfine[k_00M];
-    k_MM0 = k_MMM;
-    k_M0M = neighborZfine[k_M0M];
-    k_0MM = neighborZfine[k_0MM];
-    k_MMM = neighborZfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1325,9 +1352,22 @@ __global__ void scaleCF_compressible(
     x = c1o4;
     y = c1o4;
     z = c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_000 = k_M00;
+    k_M00 = neighborXfine[k_M00];
+    k_0M0 = k_MM0;
+    k_00M = k_M0M;
+    k_MM0 = neighborXfine[k_MM0];
+    k_M0M = neighborXfine[k_M0M];
+    k_0MM = k_MMM;
+    k_MMM = neighborXfine[k_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1344,17 +1384,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_000 = k_M00;
-    k_M00 = neighborXfine[k_M00];
-    k_0M0 = k_MM0;
-    k_00M = k_M0M;
-    k_MM0 = neighborXfine[k_MM0];
-    k_M0M = neighborXfine[k_M0M];
-    k_0MM = k_MMM;
-    k_MMM = neighborXfine[k_MMM];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1394,9 +1423,22 @@ __global__ void scaleCF_compressible(
     x =  c1o4;
     y =  c1o4;
     z = -c1o4;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    k_00M = k_000;
+    k_M0M = k_M00;
+    k_0MM = k_0M0;
+    k_MMM = k_MM0;
+    k_000 = k_base_M00;
+    k_M00 = neighborXfine[k_base_M00];
+    k_0M0 = k_base_MM0;
+    k_MM0 = neighborXfine[k_base_MM0];
 
     ////////////////////////////////////////////////////////////////////////////////
     // Set moments (zeroth to sixth orders) on destination node
+
+    if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
+
     interpolateDistributions(
         x, y, z,
         m_000, 
@@ -1413,17 +1455,6 @@ __global__ void scaleCF_compressible(
         LaplaceRho, eps_new, omegaF, 
         kxxMyyAverage, kxxMzzAverage, kyzAverage, kxzAverage, kxyAverage
     );
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    k_00M = k_000;
-    k_M0M = k_M00;
-    k_0MM = k_0M0;
-    k_MMM = k_MM0;
-    k_000 = k_base_M00;
-    k_M00 = neighborXfine[k_base_M00];
-    k_0M0 = k_base_MM0;
-    k_MM0 = neighborXfine[k_base_MM0];
 
     //////////////////////////////////////////////////////////////////////////
     // Write distributions
@@ -1455,3 +1486,7 @@ __global__ void scaleCF_compressible(
     (distFine.f[DIR_PMM])[k_0MM] = f_PMM;
     (distFine.f[DIR_MMM])[k_MMM] = f_MMM;
 }
+
+template __global__ void scaleCF_compressible<true>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffCF offsetCF);
+
+template __global__ void scaleCF_compressible<false>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffCF offsetCF);

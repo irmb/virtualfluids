@@ -1860,7 +1860,7 @@ __global__ void scaleCF_RhoSq_comp_27( real* DC,
                                                   unsigned int nyF,
                                                   OffCF offCF);
 
-__global__ void scaleCF_compressible(
+template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real* distributionsCoarse,
     real* distributionsFine,
     unsigned int* neighborXcoarse,
@@ -1877,6 +1877,8 @@ __global__ void scaleCF_compressible(
     unsigned int numberOfInterfaceNodes,
     real omegaCoarse,
     real omegaFine,
+    real* turbulentViscosityCoarse,
+    real* turbulentViscosityFine,
     OffCF offsetCF);
 
 __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
@@ -2263,7 +2265,7 @@ __global__ void scaleFC_RhoSq_comp_27( real* DC,
                                                   unsigned int nyF,
                                                   OffFC offFC);
 
-__global__ void scaleFC_compressible(
+template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real *distributionsCoarse,
     real *distributionsFine,
     unsigned int *neighborXcoarse,
@@ -2280,6 +2282,8 @@ __global__ void scaleFC_compressible(
     unsigned int numberOfInterfaceNodes,
     real omegaCoarse,
     real omegaFine,
+    real* turbulentViscosityCoarse,
+    real* turbulentViscosityFine,
     OffFC offsetFC);
 
 __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,

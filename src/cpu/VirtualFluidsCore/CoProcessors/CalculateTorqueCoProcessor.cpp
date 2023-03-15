@@ -12,6 +12,7 @@
 #include "BCArray3D.h"
 #include "EsoTwist3D.h"
 #include "DistributionArray3D.h"
+#include "Rheology.h"
 
 CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::mpi::Communicator> comm) : CoProcessor(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
 {
@@ -70,7 +71,10 @@ void CalculateTorqueCoProcessor::collectData( real step )
       ostr << istep << ";";
       ostr << torqueX1global << ";";
       ostr << torqueX2global << ";";
-      ostr << torqueX3global;
+      ostr << torqueX3global << ";";
+      ostr << Fx << ";";
+      ostr << Fy << ";";
+      ostr << Fz;
       ostr << std::endl;
       ostr.close();
    }
@@ -103,7 +107,6 @@ void CalculateTorqueCoProcessor::calculateForces()
 
          SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
          SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
-         distributions->swap();
 
          int ghostLayerWidth = kernel->getGhostLayerWidth();
          int minX1 = ghostLayerWidth;
@@ -125,23 +128,30 @@ void CalculateTorqueCoProcessor::calculateForces()
             if(bcArray->isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                SPtr<BoundaryConditions> bc = bcArray->getBC(x1,x2,x3);
-               UbTupleDouble3 forceVec     = getForces(x1,x2,x3,distributions,bc);
-               real Fx                   = val<1>(forceVec);
-               real Fy                   = val<2>(forceVec);
-               real Fz                   = val<3>(forceVec);
-
+               
                Vector3D worldCoordinates = grid->getNodeCoordinates(block, x1, x2, x3);
-               real rx                 = (worldCoordinates[0] - x1Centre) / deltaX;
-               real ry                 = (worldCoordinates[1] - x2Centre) / deltaX;
-               real rz                 = (worldCoordinates[2] - x3Centre) / deltaX;
+               real rx = (worldCoordinates[0] - x1Centre) / deltaX;
+               real ry = (worldCoordinates[1] - x2Centre) / deltaX;
+               real rz = (worldCoordinates[2] - x3Centre) / deltaX;
+
+               // real nx = rx / sqrt(rx * rx + ry * ry + rz * rz);
+               // real ny = ry / sqrt(rx * rx + ry * ry + rz * rz);
+               // real nz = rz / sqrt(rx * rx + ry * ry + rz * rz);
+
+               UbTupleDouble3 forceVec = getForces(x1, x2, x3, distributions, bc);
+               //UbTupleDouble3 forceVec = getForcesFromMoments(x1, x2, x3, kernel, distributions, bc, nx, ny, nz);
+               //UbTupleDouble3 forceVec = getForcesFromStressTensor(x1, x2, x3, kernel, distributions, bc, nx, ny, nz);
+               /*real*/ Fx                   = val<1>(forceVec);
+               /*real*/ Fy                   = val<2>(forceVec);
+               /*real*/ Fz                   = val<3>(forceVec);
+              
+
 
                torqueX1 += ry * Fz - rz * Fy;
                torqueX2 += rz * Fx - rx * Fz;
                torqueX3 += rx * Fy - ry * Fx;
             }
          }
-
-         distributions->swap();
 
          torqueX1global += torqueX1;
          torqueX2global += torqueX2;
@@ -174,9 +184,6 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
 
-   real fs[D3Q27System::ENDF + 1];
-   distributions->getDistributionInv(fs, x1, x2, x3);
-   
    if(bc)
    {
       //references to tuple "force"
@@ -184,6 +191,8 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
       real& forceX2 = val<2>(force);
       real& forceX3 = val<3>(force);
       real f,  fnbr;
+
+      dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
       for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
       {
@@ -198,8 +207,81 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
             forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];
          }
       }
+
+      dynamicPointerCast<EsoTwist3D>(distributions)->swap();
    }
-   
+
+   return force;
+}
+//////////////////////////////////////////////////////////////////////////
+UbTupleDouble3 CalculateTorqueCoProcessor::getForcesFromMoments(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz)
+{
+   using namespace vf::lbm::constant;
+   UbTupleDouble3 force(0.0, 0.0, 0.0);
+
+
+   if (bc) {
+      real f[D3Q27System::ENDF + 1];
+      distributions->getDistribution(f, x1, x2, x3);
+      real collFactor = kernel->getCollisionFactor();
+      real shearRate = D3Q27System::getShearRate(f, collFactor);
+      real rho = D3Q27System::getDensity(f);
+      real omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
+      std::array<real, 6> moments = D3Q27System::getSecondMoments(f, omega);
+
+      // references to tuple "force"
+      real &forceX1 = val<1>(force);
+      real &forceX2 = val<2>(force);
+      real &forceX3 = val<3>(force);
+
+      real mxx = (moments[0] + moments[1] + moments[2])*c1o3;
+      real myy = (-c2o1 * moments[1] + moments[2] + moments[0]) * c1o3; 
+      real mzz = (-c2o1 * moments[2] + moments[1] + moments[0]) * c1o3;
+      real mxy = moments[3];
+      real mxz = moments[4];
+      real myz = moments[5];
+      
+      forceX1 = mxx *nx + mxy*ny + mxz*nz;
+      forceX2 = mxy *nx + myy*ny + myz*nz;
+      forceX3 = mxz *nx + myz*ny + mzz*nz;
+   }
+
+   return force;
+}
+//////////////////////////////////////////////////////////////////////////
+UbTupleDouble3 CalculateTorqueCoProcessor::getForcesFromStressTensor(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz)
+{
+   using namespace vf::lbm::constant;
+   UbTupleDouble3 force(0.0, 0.0, 0.0);
+
+   if (bc) {
+      real f[D3Q27System::ENDF + 1];
+      distributions->getDistribution(f, x1, x2, x3);
+      real collFactor = kernel->getCollisionFactor();
+      real shearRate = D3Q27System::getShearRate(f, collFactor);
+      real rho = D3Q27System::getDensity(f);
+      real omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
+      std::array<real, 6> stress = D3Q27System::getStressTensor(f, omega);
+
+      // references to tuple "force"
+      real &forceX1 = val<1>(force);
+      real &forceX2 = val<2>(force);
+      real &forceX3 = val<3>(force);
+
+      real &tauXX = stress[0];
+      real &tauYY = stress[1];
+      real &tauZZ = stress[2];
+      real &tauXY = stress[3];
+      real &tauXZ = stress[4];
+      real &tauYZ = stress[5];
+
+      //https: // journals.aps.org/pre/pdf/10.1103/PhysRevE.88.013303
+
+      forceX1 = tauXX * nx + tauXY * ny + tauXZ * nz;
+      forceX2 = tauXY * nx + tauYY * ny + tauYZ * nz;
+      forceX3 = tauXZ * nx + tauYZ * ny + tauZZ * nz;
+   }
+
    return force;
 }
 //////////////////////////////////////////////////////////////////////////

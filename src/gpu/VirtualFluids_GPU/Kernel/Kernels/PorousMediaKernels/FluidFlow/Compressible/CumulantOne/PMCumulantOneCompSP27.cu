@@ -57,7 +57,7 @@ PMCumulantOneCompSP27::PMCumulantOneCompSP27(std::shared_ptr<Parameter> para, st
 
 	myPreProcessorTypes.push_back(InitSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 PMCumulantOneCompSP27::PMCumulantOneCompSP27()
