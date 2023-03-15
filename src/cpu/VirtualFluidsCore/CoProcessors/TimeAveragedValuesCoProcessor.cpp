@@ -1,6 +1,6 @@
 #include "TimeAveragedValuesCoProcessor.h"
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "LBMKernel.h"
 
 #include "Block3D.h"
@@ -244,7 +244,7 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     SPtr<AverageValuesArray3D> ar           = kernel->getDataSet()->getAverageDensity();
     SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageVelocity();
@@ -365,7 +365,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(real timeSteps)
             SPtr<Block3D> block = blockVector[level][i];
             if (block) {
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
-                SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                 SPtr<AverageValuesArray3D> ar           = kernel->getDataSet()->getAverageDensity();
                 SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageVelocity();
@@ -487,7 +487,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(real step)
                     SPtr<Block3D> block = blockVector[level][i];
                     if (block) {
                         SPtr<ILBMKernel> kernel                 = block->getKernel();
-                        SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                        SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                         SPtr<AverageValuesArray3D> ar           = kernel->getDataSet()->getAverageDensity();
                         SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageVelocity();

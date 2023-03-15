@@ -1,7 +1,7 @@
 #ifdef VF_CATALYST
 
 #include "InSituCatalystCoProcessor.h"
-#include <D3Q27ETBCProcessor.h>
+#include <D3Q27ETBCSet.h>
 #include <LBMKernel.h>
 #include <string>
 #include <vector>
@@ -97,7 +97,7 @@ void InSituCatalystCoProcessor::addData(SPtr<Block3D> block)
     real dx                   = grid->getDeltaX(block);
 
     SPtr<LBMKernel> kernel                  = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     real f[D3Q27System::ENDF + 1];
     real vx1, vx2, vx3, rho;
@@ -214,7 +214,7 @@ void InSituCatalystCoProcessor::addVTKGridData(SPtr<Block3D> block)
     real dx                   = grid->getDeltaX(block);
 
     SPtr<LBMKernel> kernel                  = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     real f[D3Q27System::ENDF + 1];
     real vx1, vx2, vx3, rho;

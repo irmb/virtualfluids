@@ -3,7 +3,7 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27EsoTwist3DSoA.h"
 #include "DataSet3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "BCArray3D.h"
 #include "lbm/constants/NumericConstants.h"
 
@@ -33,7 +33,7 @@ SPtr<LBMKernel> LBMKernelETD3Q27BGK::clone()
    SPtr<LBMKernel> kernel(new LBMKernelETD3Q27BGK());
    std::dynamic_pointer_cast<LBMKernelETD3Q27BGK>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
-   kernel->setBCProcessor(bcProcessor->clone(kernel));
+   kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
    kernel->setForcingX1(muForcingX1);
    kernel->setForcingX2(muForcingX2);
@@ -63,7 +63,7 @@ void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
    nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
    real f[D3Q27System::ENDF+1];
    real feq[D3Q27System::ENDF+1];
    real drho,vx1,vx2,vx3;

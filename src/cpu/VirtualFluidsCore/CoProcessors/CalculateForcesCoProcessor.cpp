@@ -1,5 +1,5 @@
 #include "CalculateForcesCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 
 #include "BCArray3D.h"
 #include "Block3D.h"
@@ -117,7 +117,7 @@ void CalculateForcesCoProcessor::calculateForces()
             std::set<std::vector<int>> &transNodeIndicesSet = t.second;
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             distributions->swap();
 

@@ -63,7 +63,7 @@ SPtr<LBMKernel> CumulantK17LBMKernel::clone()
     kernel->setNX(nx);
     std::dynamic_pointer_cast<CumulantK17LBMKernel>(kernel)->initDataSet();
     kernel->setCollisionFactor(this->collFactor);
-    kernel->setBCProcessor(bcProcessor->clone(kernel));
+    kernel->setBCSet(bcSet->clone(kernel));
     kernel->setWithForcing(withForcing);
     kernel->setForcingX1(muForcingX1);
     kernel->setForcingX2(muForcingX2);
@@ -116,7 +116,7 @@ void CumulantK17LBMKernel::calculate(int step)
     nonLocalDistributions = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
     restDistributions = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
     const int bcArrayMaxX2 = (int)bcArray->getNX2();

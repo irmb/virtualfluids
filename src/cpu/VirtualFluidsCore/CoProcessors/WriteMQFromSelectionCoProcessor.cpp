@@ -1,5 +1,5 @@
 #include "WriteMQFromSelectionCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "LBMKernel.h"
 #include <string>
 #include <vector>
@@ -126,7 +126,7 @@ void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     real f[D3Q27System::ENDF + 1];
     real vx1, vx2, vx3, rho;

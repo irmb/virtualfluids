@@ -33,7 +33,7 @@
 
 #include "MultiphaseVelocityFormInitDistributionsBlockVisitor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
@@ -178,7 +178,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 		if (!kernel)
 			throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
-		SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+		SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
         SPtr<EsoTwist3D> distributionsF = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions()); 
 		SPtr<EsoTwist3D> distributionsH = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getHdistributions());
         SPtr<EsoTwist3D> distributionsH2 = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getH2distributions());

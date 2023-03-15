@@ -1,5 +1,5 @@
 #include "CalculateTorqueCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 
 #include <mpi/Communicator.h>
 #include "D3Q27Interactor.h"
@@ -105,7 +105,7 @@ void CalculateTorqueCoProcessor::calculateForces()
 
          SPtr<ILBMKernel> kernel = block->getKernel();
 
-         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+         SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();          
          SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
 
          int ghostLayerWidth = kernel->getGhostLayerWidth();

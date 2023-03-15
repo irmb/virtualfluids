@@ -32,15 +32,15 @@
 //=======================================================================================
 
 #include "MultiphaseBoundaryConditionsBlockVisitor.h"
-#include "BCAdapter.h"
+#include "BC.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"
-#include "BCAdapter.h"
+#include "BC.h"
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "LBMKernel.h"
@@ -67,14 +67,14 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
          throw UbException(UB_EXARGS, "LBMKernel in " + block->toString() + "is not exist!");
       }
 
-      SPtr<BCProcessor> bcProcessor = kernel->getBCProcessor();
+      SPtr<BCSet> bcSet = kernel->getBCSet();
 
-      if (!bcProcessor)
+      if (!bcSet)
       {
          throw UbException(UB_EXARGS,"Boundary Conditions Processor is not exist!" );
       }
 
-      SPtr<BCArray3D> bcArray = bcProcessor->getBCArray();
+      SPtr<BCArray3D> bcArray = bcSet->getBCArray();
 
       bool compressible = kernel->getCompressible();
       real collFactorL = kernel->getCollisionFactorL();
@@ -93,7 +93,7 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
       int maxX3 = (int)bcArray->getNX3();
       SPtr<BoundaryConditions> bcPtr;
 
-      bcProcessor->clearBC();
+      bcSet->clearBC();
 
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 	  SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
@@ -109,8 +109,8 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
                {
                   if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL)
                   {
-                     char alg = bcPtr->getBcAlgorithmType();
-                     SPtr<BCAlgorithm> bca = bcMap[alg];
+                     char alg = bcPtr->getBCStrategyType();
+                     SPtr<BCStrategy> bca = bcMap[alg];
                      
                      if (bca)
                      {
@@ -129,7 +129,7 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
 						bca->setPhiBound(phiL, phiH);
                         bca->setCompressible(compressible);
                         bca->setBcArray(bcArray);
-                        bcProcessor->addBC(bca);
+                        bcSet->addBC(bca);
                      }
                   }
                }
@@ -139,9 +139,9 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseBoundaryConditionsBlockVisitor::addBC(SPtr<BCAdapter> bc)
+void MultiphaseBoundaryConditionsBlockVisitor::addBC(SPtr<BC> bc)
 {
-   bcMap.insert(std::make_pair(bc->getBcAlgorithmType(), bc->getAlgorithm()));
+   bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getAlgorithm()));
 }
 
 

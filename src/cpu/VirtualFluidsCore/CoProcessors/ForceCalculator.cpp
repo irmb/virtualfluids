@@ -1,5 +1,5 @@
 #include "ForceCalculator.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 
 #include "BCArray3D.h"
 #include "Block3D.h"
@@ -66,7 +66,7 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interac
 
             SPtr<Block3D> block                     = t.first;
             SPtr<ILBMKernel> kernel                 = block->getKernel();
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             distributions->swap();
 

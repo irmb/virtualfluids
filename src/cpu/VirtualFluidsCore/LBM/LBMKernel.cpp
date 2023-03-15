@@ -33,7 +33,7 @@
 
 #include "LBMKernel.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "DataSet3D.h"
 
@@ -49,9 +49,9 @@ LBMKernel::LBMKernel()
     this->nx[2] = 0;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setBCProcessor(SPtr<BCProcessor> bcp) { bcProcessor = bcp; }
+void LBMKernel::setBCSet(SPtr<BCSet> bcp) { bcSet = bcp; }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCProcessor> LBMKernel::getBCProcessor() const { return bcProcessor; }
+SPtr<BCSet> LBMKernel::getBCSet() const { return bcSet; }
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::setCollisionFactor(real collFactor) { this->collFactor = collFactor; }
 //////////////////////////////////////////////////////////////////////////
@@ -185,7 +185,7 @@ std::array<int, 3> LBMKernel::getNX() { return nx; }
 //////////////////////////////////////////////////////////////////////////
 bool LBMKernel::isInsideOfDomain(const int &x1, const int &x2, const int &x3) const
 {
-    const SPtr<BCArray3D> bcArray = this->bcProcessor->getBCArray();
+    const SPtr<BCArray3D> bcArray = this->bcSet->getBCArray();
     return bcArray->isInsideOfDomain(x1, x2, x3, ghostLayerWidth);
 }
 //////////////////////////////////////////////////////////////////////////

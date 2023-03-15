@@ -68,16 +68,16 @@ void pf1()
    //boundary conditions definition 
    //boundary conditions adapters
    //////////////////////////////////////////////////////////////////////////////
-   SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-   noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+   SPtr<BC> noSlipBC(new NoSlipBC());
+   noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
    //boundary conditions visitor
    BoundaryConditionsBlockVisitor bcVisitor;
-   bcVisitor.addBC(noSlipBCAdapter);
+   bcVisitor.addBC(noSlipBC);
    //////////////////////////////////////////////////////////////////////////////////
 
    //set boundary conditions for blocks and create process decomposition for MPI
-   SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+   SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBC, Interactor3D::INVERSESOLID));
    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
    InteractorsHelper intHelper(grid, metisVisitor);
    intHelper.addInteractor(cylinderInt);
@@ -116,8 +116,8 @@ void pf1()
    //LBM kernel definition
    SPtr<LBMKernel> kernel;
    kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-   SPtr<BCProcessor> bcProc(new BCProcessor());
-   kernel->setBCProcessor(bcProc);
+   SPtr<BCSet> bcProc(new BCSet());
+   kernel->setBCSet(bcProc);
 
    //set forcing
    mu::Parser fctForcingX1;
@@ -145,15 +145,15 @@ void pf1()
    SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
    //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, mSch, pathOut, comm));
    //restartCoProcessor->setLBMKernel(kernel);
-   //restartCoProcessor->setBCProcessor(bcProc);
+   //restartCoProcessor->setBCSet(bcProc);
 
    /*SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut + "/mig", comm));
    migCoProcessor->setLBMKernel(kernel);
-   migCoProcessor->setBCProcessor(bcProc);*/
+   migCoProcessor->setBCSet(bcProc);*/
 
    //SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
    //migCoProcessor->setLBMKernel(kernel);
-   //migCoProcessor->setBCProcessor(bcProc);
+   //migCoProcessor->setBCSet(bcProc);
    //migCoProcessor->setNu(nuLB);
 
    //SPtr<UtilConvertor> convertProcessor(new UtilConvertor(grid, pathOut, comm));
@@ -173,7 +173,7 @@ void pf1()
    //restartCoProcessor->restart(200);
    //SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathOut + "/mig", comm));
    //migCoProcessor->setLBMKernel(kernel);
-   //migCoProcessor->setBCProcessor(bcProc);
+   //migCoProcessor->setBCSet(bcProc);
    //migCoProcessor->setNu(nuLB);
    //migCoProcessor->restart(10);
 

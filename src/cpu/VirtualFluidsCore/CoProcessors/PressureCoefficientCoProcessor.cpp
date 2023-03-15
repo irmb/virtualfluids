@@ -2,7 +2,7 @@
 #include <WbWriterVtkXmlASCII.h>
 
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include <mpi/Communicator.h>
 #include "D3Q27Interactor.h"
@@ -54,7 +54,7 @@ void PressureCoefficientCoProcessor::calculateRho()
             std::set<std::vector<int>> &bcNodeIndicesSet = t.second;
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
             UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);

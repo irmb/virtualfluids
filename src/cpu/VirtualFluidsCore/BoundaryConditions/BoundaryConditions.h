@@ -311,8 +311,8 @@ public:
         return (((flag >> (optionDigits * direction)) & maxOptionVal) != 0);
     }
 
-    void setBcAlgorithmType(char alg) { algorithmType = alg; }
-    char getBcAlgorithmType() { return algorithmType; }
+    void setBCStrategyType(char alg) { algorithmType = alg; }
+    char getBCStrategyType() { return algorithmType; }
 
 public:
     static const int optionDigits = 2;   //--> 2 bits for secondary Option --> maxOptionVal = 7

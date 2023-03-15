@@ -32,7 +32,7 @@
 //=======================================================================================
 
 #include "WriteBoundaryConditionsCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "LBMKernel.h"
 #include <string>
 #include <vector>
@@ -147,7 +147,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel = block->getKernel();
-    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
 
     int minX1 = 0;

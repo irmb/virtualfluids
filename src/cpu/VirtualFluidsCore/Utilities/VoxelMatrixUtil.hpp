@@ -2,7 +2,7 @@
 #define VoxelMatrixUtil_h__
 
 #include "GbCuboid3D.h"
-#include "NoSlipBCAdapter.h"
+#include "NoSlipBC.h"
 #include "D3Q27Interactor.h"
 #include "SetBcBlocksBlockVisitor.h"
 #include "Block3D.h"
@@ -13,7 +13,7 @@ namespace Utilities
 {
    void voxelMatrixDiscretisation(SPtr<GbVoxelMatrix3D> matrix, std::string& pathname, int myid, int fileCounter, SPtr<Grid3D> grid, int bounceBackOption, bool vmFile)
    {
-      SPtr<BCAdapter> noSlipPM(new NoSlipBCAdapter(bounceBackOption));
+      SPtr<BC> noSlipPM(new NoSlipBC(bounceBackOption));
       SPtr<D3Q27Interactor> vmInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(matrix, grid, noSlipPM, Interactor3D::SOLID));
 
       if (vmFile)

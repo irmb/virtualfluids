@@ -83,7 +83,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::clone()
     kernel->setMobility(this->mob);
 	kernel->setInterfaceWidth(this->interfaceWidth);
 
-    kernel->setBCProcessor(bcProcessor->clone(kernel));
+    kernel->setBCSet(bcSet->clone(kernel));
     kernel->setWithForcing(withForcing);
     kernel->setForcingX1(muForcingX1);
     kernel->setForcingX2(muForcingX2);
@@ -176,7 +176,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 
 	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
 
-    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
     const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -3540,7 +3540,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::findNeighbors(CbArray3D<re
     using namespace D3Q27System;
 	using namespace vf::lbm::dir;
 
-    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
     phi[DIR_000] = (*ph)(x1, x2, x3);
 
@@ -3561,7 +3561,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::findNeighbors2(CbArray3D<r
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
 
-	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
 	phi2[DIR_000] = (*ph)(x1, x2, x3);
 

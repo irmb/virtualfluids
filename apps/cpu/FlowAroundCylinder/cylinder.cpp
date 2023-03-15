@@ -80,23 +80,23 @@ void run(string configname)
       SPtr<Grid3D> grid(new Grid3D(comm));
 
       //BC
-      SPtr<BCAdapter> noSlipAdapter(new NoSlipBCAdapter());
-      noSlipAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      SPtr<BC> noSlipAdapter(new NoSlipBC());
+      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
       mu::Parser fct;
       fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
-      SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+      SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
 
-      SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      SPtr<BC> denBC(new DensityBC(rhoLB));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
       
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipAdapter);
-      bcVisitor.addBC(velBCAdapter);
-      bcVisitor.addBC(denBCAdapter);
+      bcVisitor.addBC(velBC);
+      bcVisitor.addBC(denBC);
 
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -199,10 +199,10 @@ void run(string configname)
          SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipAdapter, Interactor3D::SOLID));
 
          //inflow
-         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBC, Interactor3D::SOLID));
 
          //outflow
-         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
          
          SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
@@ -247,8 +247,8 @@ void run(string configname)
 
          SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
 
-         SPtr<BCProcessor> bcProc(new BCProcessor());
-         kernel->setBCProcessor(bcProc);
+         SPtr<BCSet> bcProc(new BCSet());
+         kernel->setBCSet(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nueLB, availMem, needMem);
          grid->accept(kernelVisitor);

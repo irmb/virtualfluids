@@ -1,6 +1,6 @@
 #include "AverageValuesCoProcessor.h"
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "LBMKernel.h"
 
 #include "basics/writer/WbWriterVtkXmlASCII.h"
@@ -84,7 +84,7 @@ void AverageValuesCoProcessor::resetDataRMS(real step)
         for (SPtr<Block3D> block : blockVector[level]) {
             if (block) {
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
-                SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                 SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
 
@@ -128,7 +128,7 @@ void AverageValuesCoProcessor::resetDataMeans(real step)
         for (SPtr<Block3D> block : blockVector[level]) {
             if (block) {
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
-                SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                 SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
 
@@ -238,7 +238,7 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
     // int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -348,7 +348,7 @@ void AverageValuesCoProcessor::calculateAverageValues(real timeStep)
         for (SPtr<Block3D> block : blockVector[level]) {
             if (block) {
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
-                SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                 SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
 

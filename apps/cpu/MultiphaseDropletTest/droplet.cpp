@@ -169,17 +169,17 @@ void run(string configname)
         kernel->setMultiphaseModelParameters(beta, kappa);
         kernel->setContactAngle(theta);
 
-        SPtr<BCProcessor> bcProc(new BCProcessor());
-        // BCProcessorPtr bcProc(new ThinWallBCProcessor());
+        SPtr<BCSet> bcProc(new BCSet());
+        // BCSetPtr bcProc(new ThinWallBCSet());
 
-        kernel->setBCProcessor(bcProc);
+        kernel->setBCSet(bcProc);
 
-        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+        SPtr<BC> noSlipBC(new NoSlipBC());
+        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBCAdapter);
+        bcVisitor.addBC(noSlipBC);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
         grid->setDeltaX(dx);
@@ -202,7 +202,7 @@ void run(string configname)
         // rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
-        rcp->setBCProcessor(bcProc);
+        rcp->setBCSet(bcProc);
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
@@ -233,8 +233,8 @@ void run(string configname)
             GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - dx2, g_maxX2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
             GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
 
-            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
  
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));

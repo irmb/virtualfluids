@@ -32,7 +32,7 @@
 //=======================================================================================
 
 #include "WriteMultiphaseQuantitiesCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "LBMKernel.h"
 #include <string>
 #include <vector>
@@ -167,7 +167,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     data.resize(datanames.size());
 
 
-    SPtr<BCArray3D> bcArray                  = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                  = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions();
     SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
     SPtr<DistributionArray3D> distributionsH2 = kernel->getDataSet()->getH2distributions();

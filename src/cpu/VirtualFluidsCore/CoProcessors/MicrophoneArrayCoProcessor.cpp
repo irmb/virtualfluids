@@ -1,6 +1,6 @@
 #include "MicrophoneArrayCoProcessor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include <mpi/Communicator.h>
 #include "D3Q27System.h"
@@ -48,7 +48,7 @@ bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
         if (block) {
             SPtr<ILBMKernel> kernel = block->getKernel();
             if (kernel) {
-                SPtr<BCArray3D> bcarray = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcarray = kernel->getBCSet()->getBCArray();
                 UbTupleInt3 nodes       = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
                 if (!bcarray->isUndefined(val<1>(nodes), val<2>(nodes), val<3>(nodes))) {
 

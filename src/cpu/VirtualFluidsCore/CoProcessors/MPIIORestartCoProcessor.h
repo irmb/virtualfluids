@@ -12,7 +12,7 @@
 class Grid3D;
 class UbScheduler;
 namespace vf::mpi {class Communicator;}
-class BCProcessor;
+class BCSet;
 class LBMKernel;
 
 //! \class MPIIORestartCoProcessor
@@ -74,8 +74,8 @@ public:
     void readBoundaryConds(int step);
     //! The function sets LBMKernel
     void setLBMKernel(SPtr<LBMKernel> kernel);
-    //! The function sets BCProcessor
-    void setBCProcessor(SPtr<BCProcessor> bcProcessor);
+    //! The function sets BCSet
+    void setBCSet(SPtr<BCSet> BCSet);
     //! The function truncates the data files
     void clearAllFiles(int step);
 
@@ -86,7 +86,7 @@ private:
 
     MPIIODataStructures::boundCondParam boundCondParamStr;
     SPtr<LBMKernel> lbmKernel;
-    SPtr<BCProcessor> bcProcessor;
+    SPtr<BCSet> bcSet;
 
     //std::vector<double> doubleValuesArrayRW;
 };

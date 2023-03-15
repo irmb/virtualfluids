@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "WriteThixotropyQuantitiesCoProcessor.h"
 #include "LBMKernel.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "UbScheduler.h"
 #include "DataSet3D.h"
 #include "D3Q27System.h"
@@ -178,7 +178,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 	data.resize(datanames.size());
 
    SPtr<ILBMKernel> kernel = block->getKernel();
-   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+   SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();          
    SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions(); 
 	//SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
 	//LBMReal collFactorF = staticPointerCast<ThixotropyExpLBMKernel>(kernel)->getCollisionFactorF();

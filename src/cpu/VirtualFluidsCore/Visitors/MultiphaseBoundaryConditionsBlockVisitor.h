@@ -37,8 +37,8 @@
 #include "Block3DVisitor.h"
 #include <map>
 
-class BCAdapter;
-class BCAlgorithm;
+class BC;
+class BCStrategy;
 
 class MultiphaseBoundaryConditionsBlockVisitor : public Block3DVisitor
 {
@@ -47,9 +47,9 @@ public:
    virtual ~MultiphaseBoundaryConditionsBlockVisitor();
    
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
-   void addBC(SPtr<BCAdapter> bc);
+   void addBC(SPtr<BC> bc);
 protected:
 private:
-   std::map<char, SPtr<BCAlgorithm>> bcMap;
+   std::map<char, SPtr<BCStrategy>> bcMap;
 };
 #endif // MultiphaseBoundaryConditionsBlockVisitor_h__

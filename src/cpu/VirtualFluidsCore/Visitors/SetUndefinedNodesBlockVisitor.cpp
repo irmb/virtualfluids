@@ -1,6 +1,6 @@
 #include "SetUndefinedNodesBlockVisitor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
@@ -29,7 +29,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     // int gl = kernel->getGhostLayerWidth();
     int gl = 0;
 
-    SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcMatrix = kernel->getBCSet()->getBCArray();
 
     int minX1 = gl;
     int minX2 = gl;

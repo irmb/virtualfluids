@@ -1,5 +1,5 @@
 #include "LineTimeSeriesCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "WbWriterVtkXmlASCII.h"
 
 #include "Block3D.h"

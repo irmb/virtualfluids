@@ -10,7 +10,7 @@ class Interactor3D;
 class Grid3D;
 
 //! \brief The class update interactors depend of time step.
-//! \details TimeDependentBCCoProcessor update every time step information in BCAdapters throw Interactors
+//! \details TimeDependentBCCoProcessor update every time step information in BCs throw Interactors
 //! \author Sonja Uphoff, Kostyantyn Kucher
 class TimeDependentBCCoProcessor : public CoProcessor
 {

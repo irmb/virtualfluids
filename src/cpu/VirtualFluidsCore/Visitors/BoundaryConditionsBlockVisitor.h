@@ -41,8 +41,8 @@
 
 class Grid3D;
 class Block3D;
-class BCAlgorithm;
-class BCAdapter;
+class BCStrategy;
+class BC;
 
 //! \brief set boundary conditions
 class BoundaryConditionsBlockVisitor : public Block3DVisitor
@@ -52,10 +52,10 @@ public:
     ~BoundaryConditionsBlockVisitor() override;
 
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
-    void addBC(SPtr<BCAdapter> bc);
+    void addBC(SPtr<BC> bc);
 
 protected:
 private:
-    std::map<char, SPtr<BCAlgorithm>> bcMap;
+    std::map<char, SPtr<BCStrategy>> bcMap;
 };
 #endif // BoundaryConditionBlockVisitor_h__

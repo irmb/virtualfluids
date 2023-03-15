@@ -106,14 +106,14 @@ void bflow(string configname)
       thix->setYieldStress(tau0LB);
       //thix->setOmegaMin(omegaMin);
 
-      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      SPtr<BC> noSlipBC(new NoSlipBC());
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyHerschelBulkleyModelNoSlipBCStrategy()));
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelNoSlipBCStrategy()));
 
-      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
-      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
-      //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SlipBCAlgorithm()));
+      SPtr<BC> slipBC(new SlipBC());
+      slipBC->setBCStrategy(SPtr<BCStrategy>(new SimpleSlipBCStrategy()));
+      //slipBC->setBCStrategy(SPtr<BCStrategy>(new SlipBCStrategy()));
 
       //// rotation around X-axis
       mu::Parser fctVy;
@@ -148,26 +148,26 @@ void bflow(string configname)
       //mu::Parser fctVy;
       //fctVy.SetExpr("0.0");
 
-      SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
+      SPtr<BC> velocityBC(new VelocityBC(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+      velocityBC->setBCStrategy(SPtr<BCStrategy>(new SimpleVelocityBCStrategy()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelVelocityBCStrategy()));
 
-      //SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
-      //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
-      ////densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      //SPtr<BC> densityBC(new DensityBC());
+      //densityBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+      ////densityBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
 
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      //bcVisitor.addBC(noSlipBCAdapter);
-      bcVisitor.addBC(slipBCAdapter);
-      bcVisitor.addBC(velocityBCAdapter);
-      //bcVisitor.addBC(densityBCAdapter);
+      //bcVisitor.addBC(noSlipBC);
+      bcVisitor.addBC(slipBC);
+      bcVisitor.addBC(velocityBC);
+      //bcVisitor.addBC(densityBC);
       
-      SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      SPtr<BCSet> bcProc;
+      bcProc = SPtr<BCSet>(new BCSet());
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BGKLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
@@ -177,7 +177,7 @@ void bflow(string configname)
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
-      kernel->setBCProcessor(bcProc);
+      kernel->setBCSet(bcProc);
       //kernel->setForcingX1(forcing);
       //kernel->setWithForcing(true);
 
@@ -201,7 +201,7 @@ void bflow(string configname)
       SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, outputPath, comm));
       //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, mSch, outputPath, comm));
       restartCoProcessor->setLBMKernel(kernel);
-      restartCoProcessor->setBCProcessor(bcProc);
+      restartCoProcessor->setBCSet(bcProc);
       //restartCoProcessor->setNu(k);
       //////////////////////////////////////////////////////////////////////////
 
@@ -222,7 +222,7 @@ void bflow(string configname)
       //// //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
 
       // SPtr<D3Q27Interactor> statorInt =
-      //    SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      //    SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBC, Interactor3D::SOLID));
       
       SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
       stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
@@ -231,7 +231,7 @@ void bflow(string configname)
       //stator->translate(4.0, -73.0, -6.0);
 
       SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
-         new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+         new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES));
 
       GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
 
@@ -250,7 +250,7 @@ void bflow(string configname)
       GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
 
       SPtr<D3Q27Interactor> rotorInt =
-          SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
+          SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBC, Interactor3D::INVERSESOLID));
 
       //walls
       GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - deltax, g_minX2 - deltax, g_minX3 - deltax, g_minX1,
@@ -262,8 +262,8 @@ void bflow(string configname)
       if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
       //wall interactors
-      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, slipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, slipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBC, Interactor3D::SOLID));
 
       if (myid == 0)
       {

@@ -1,5 +1,5 @@
 #include "QCriterionCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
@@ -101,7 +101,7 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
     int minX1 = 0;
@@ -204,7 +204,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
                                                   const SPtr<Block3D> block, real *vE, real *vW)
 {
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
     bool compressible = block->getKernel()->getCompressible();
@@ -280,7 +280,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
         if (!checkInterpolation || neighNodeIsBC) {
             SPtr<ILBMKernel> kernelW                 = blockNeighW->getKernel();
-            SPtr<BCArray3D> bcArrayW                 = kernelW->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArrayW                 = kernelW->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributionsW = kernelW->getDataSet()->getFdistributions();
             real fW2[27];
             real fW[27];
@@ -312,7 +312,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
             // throw UbException(UB_EXARGS,"Parallel or Non-Uniform Simulation -- not yet implemented");
         } else {
             SPtr<ILBMKernel> kernelW                 = blockNeighW->getKernel();
-            SPtr<BCArray3D> bcArrayW                 = kernelW->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArrayW                 = kernelW->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributionsW = kernelW->getDataSet()->getFdistributions();
             real fW[27];
 

@@ -112,14 +112,14 @@ void run()
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
-      outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      SPtr<BC> outflowBC(new DensityBC(rhoLB));
+      outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(outflowBCAdapter);
+      bcVisitor.addBC(outflowBC);
 
-      SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      SPtr<BCSet> bcProc;
+      bcProc = SPtr<BCSet>(new BCSet());
 
       SPtr<GbObject3D> refCube(new GbCuboid3D(g_minX1-blockLength,-0.02,-0.02,g_maxX1+blockLength,0.02,0.02));
       if (myid==0) GbSystem3D::writeGeoObject(refCube.get(), pathname+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
@@ -138,19 +138,19 @@ void run()
       //outflow
       GbCuboid3DPtr geoOutflow1(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow1.get(), pathname+"/geo/geoOutflow1", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBC, Interactor3D::SOLID));
 
       GbCuboid3DPtr geoOutflow2(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow2.get(), pathname+"/geo/geoOutflow2", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBC, Interactor3D::SOLID));
       
       GbCuboid3DPtr geoOutflow3(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow3.get(), pathname+"/geo/geoOutflow3", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBC, Interactor3D::SOLID));
 
       GbCuboid3DPtr geoOutflow4(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow4.get(), pathname+"/geo/geoOutflow4", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBC, Interactor3D::SOLID));
 
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       InteractorsHelper intHelper(grid, metisVisitor);
@@ -211,9 +211,9 @@ void run()
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
-      SPtr<BCProcessor> bcProcessor(new BCProcessor());
+      SPtr<BCSet> BCSet(new BCSet());
 
-      kernel->setBCProcessor(bcProcessor);
+      kernel->setBCSet(BCSet);
 
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
       grid->accept(kernelVisitor);

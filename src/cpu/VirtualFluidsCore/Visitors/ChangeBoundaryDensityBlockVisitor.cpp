@@ -1,6 +1,6 @@
 #include "ChangeBoundaryDensityBlockVisitor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
 #include "Grid3D.h"
@@ -19,7 +19,7 @@ void ChangeBoundaryDensityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> b
 {
     if (block->getRank() == grid->getRank()) {
         SPtr<ILBMKernel> kernel = block->getKernel();
-        SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
         int minX1 = 0;
         int minX2 = 0;

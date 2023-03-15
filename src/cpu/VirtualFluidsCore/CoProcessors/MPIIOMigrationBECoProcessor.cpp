@@ -1,6 +1,6 @@
 #include "MPIIOMigrationBECoProcessor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
 #include <mpi/Communicator.h>
@@ -685,7 +685,7 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
     {
         for (SPtr<Block3D> block : blocksVector[level]) // all the blocks of the current level
         {
-            bcArr = block->getKernel()->getBCProcessor()->getBCArray();
+            bcArr = block->getKernel()->getBCSet()->getBCArray();
 
             bcAddArray[ic].globalID = block->getGlobalID();                // id of the block needed to find it while regenerating the grid
             bcAddArray[ic].boundCond_count      = 0; // how many BoundaryConditions in this block
@@ -716,7 +716,7 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
                     bouCond->nx3                    = (real)bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bouCond->q[iq] = (real)bcArr->bcvector[bc]->getQ(iq);
-                    bouCond->algorithmType = bcArr->bcvector[bc]->getBcAlgorithmType();
+                    bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
                 }
 
                 bcVector[ic].push_back(*bouCond);
@@ -1006,8 +1006,8 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
 
     if (!lbmKernel)
         UB_THROW(UbException(UB_EXARGS, "lbmKernel does not exist!"));
-    if (!bcProcessor)
-        UB_THROW(UbException(UB_EXARGS, "bcProcessor does not exist!"));
+    if (!bcSet)
+        UB_THROW(UbException(UB_EXARGS, "BCSet does not exist!"));
     if (nue == -999.999)
         UB_THROW(UbException(UB_EXARGS, "nue is not initialised!"));
     if (nuL == -999.999 )
@@ -1681,7 +1681,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
                     bc->nx3 = bcArray[ibc].nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bc->setQ(bcArray[ibc].q[iq], iq);
-                    bc->setBcAlgorithmType(bcArray[ibc].algorithmType);
+                    bc->setBCStrategyType(bcArray[ibc].algorithmType);
                 }
 
                 bcVector.push_back(bc);
@@ -1690,14 +1690,14 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
             CbArray3D<int, IndexerX3X2X1> bcim(bcindexmatrixV, boundCondParamStr.nx1, boundCondParamStr.nx2, boundCondParamStr.nx3);
             SPtr<Block3D> block1 = grid->getBlock(blockID);
 
-            SPtr<BCProcessor> bcProc = bcProcessor->clone(block1->getKernel());
+            SPtr<BCSet> bcProc = bcSet->clone(block1->getKernel());
             SPtr<BCArray3D> bcArr(new BCArray3D());
             bcArr->bcindexmatrix  = bcim;
             bcArr->bcvector       = bcVector;
             bcArr->indexContainer = indexContainerV;
             bcProc->setBCArray(bcArr);
 
-            block1->getKernel()->setBCProcessor(bcProc);
+            block1->getKernel()->setBCSet(bcProc);
         }
     }
 
@@ -1723,7 +1723,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
 //////////////////////////////////////////////////////////////////////////
 void MPIIOMigrationBECoProcessor::setLBMKernel(SPtr<LBMKernel> kernel) { this->lbmKernel = kernel; }
 //////////////////////////////////////////////////////////////////////////
-void MPIIOMigrationBECoProcessor::setBCProcessor(SPtr<BCProcessor> bcProcessor) { this->bcProcessor = bcProcessor; }
+void MPIIOMigrationBECoProcessor::setBCSet(SPtr<BCSet> bcSet) { this->bcSet = bcSet; }
 //////////////////////////////////////////////////////////////////////////
 void MPIIOMigrationBECoProcessor::setNu(real nu) { this->nue = nu; }
 

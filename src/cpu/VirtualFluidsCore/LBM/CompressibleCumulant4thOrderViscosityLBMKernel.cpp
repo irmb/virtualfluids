@@ -35,7 +35,7 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
    kernel->setNX(nx);
    dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
-   kernel->setBCProcessor(bcProcessor->clone(kernel));
+   kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
    kernel->setForcingX1(muForcingX1);
    kernel->setForcingX2(muForcingX2);
@@ -93,7 +93,7 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();

@@ -1,7 +1,7 @@
 #include "TurbulenceIntensityCoProcessor.h"
 
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include <mpi/Communicator.h>
 #include "DataSet3D.h"
@@ -109,7 +109,7 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
     // int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -193,7 +193,7 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(real timeStep)
         for (SPtr<Block3D> block : blockVector[level]) {
             if (block) {
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
-                SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                 SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
 

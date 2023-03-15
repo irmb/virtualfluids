@@ -102,13 +102,13 @@ void bflow(string configname)
       thix->setYieldStress(tau0);
       thix->setOmegaMin(omegaMin);
 
-      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      SPtr<BC> noSlipBC(new NoSlipBC());
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyHerschelBulkleyModelNoSlipBCStrategy()));
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelNoSlipBCStrategy()));
 
-      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
-      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
+      SPtr<BC> slipBC(new SlipBC());
+      slipBC->setBCStrategy(SPtr<BCStrategy>(new SimpleSlipBCStrategy()));
 
       mu::Parser fct;
       fct.SetExpr("U");
@@ -118,31 +118,31 @@ void bflow(string configname)
       //fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
       //fct.DefineConst("U", U);
       //fct.DefineConst("H", H);
-      SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+      SPtr<BC> velocityBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
+      velocityBC->setBCStrategy(SPtr<BCStrategy>(new SimpleVelocityBCStrategy()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
 
-      SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
-      densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
-      //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      SPtr<BC> densityBC(new DensityBC());
+      densityBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+      //densityBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
 
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBCAdapter);
-      bcVisitor.addBC(slipBCAdapter);
-      bcVisitor.addBC(velocityBCAdapter);
-      bcVisitor.addBC(densityBCAdapter);
+      bcVisitor.addBC(noSlipBC);
+      bcVisitor.addBC(slipBC);
+      bcVisitor.addBC(velocityBC);
+      bcVisitor.addBC(densityBC);
       
-      SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      SPtr<BCSet> bcProc;
+      bcProc = SPtr<BCSet>(new BCSet());
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
-      kernel->setBCProcessor(bcProc);
+      kernel->setBCSet(bcProc);
       //kernel->setForcingX1(forcing);
       //kernel->setWithForcing(true);
 
@@ -159,7 +159,7 @@ void bflow(string configname)
       //sphere
       SPtr<GbObject3D> sphere(new GbSphere3D(sphereCenter[0], sphereCenter[1], sphereCenter[2], radius));
       GbSystem3D::writeGeoObject(sphere.get(), outputPath + "/geo/sphere", WbWriterVtkXmlBinary::getInstance());
-      SPtr<D3Q27Interactor> sphereInt(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> sphereInt(new D3Q27Interactor(sphere, grid, noSlipBC, Interactor3D::SOLID));
 
       ////////////////////////////////////////////
       //METIS
@@ -170,7 +170,7 @@ void bflow(string configname)
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
       SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, outputPath, comm));
       restartCoProcessor->setLBMKernel(kernel);
-      restartCoProcessor->setBCProcessor(bcProc);
+      restartCoProcessor->setBCSet(bcProc);
       //restartCoProcessor->setNu(k);
       //////////////////////////////////////////////////////////////////////////
 
@@ -234,14 +234,14 @@ void bflow(string configname)
          if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
          //wall interactors
-         SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, slipBC, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, slipBC, Interactor3D::SOLID));
                                                                                
-         SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, slipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, slipBC, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, slipBC, Interactor3D::SOLID));
 
-         SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, velocityBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, densityBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, velocityBC, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, densityBC, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS

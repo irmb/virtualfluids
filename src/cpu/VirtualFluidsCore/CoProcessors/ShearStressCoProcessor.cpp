@@ -1,5 +1,5 @@
 #include "ShearStressCoProcessor.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "WbWriterVtkXmlASCII.h"
 
 #include "BCArray3D.h"
@@ -137,7 +137,7 @@ void ShearStressCoProcessor::calculateShearStress(real timeStep)
             std::set<std::vector<int>> &transNodeIndicesSet = t.second;
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
@@ -253,7 +253,7 @@ void ShearStressCoProcessor::addData()
             real dx                 = grid->getDeltaX(block);
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
@@ -364,7 +364,7 @@ void ShearStressCoProcessor::resetData(real /*step*/)
                 //            double         dx           = grid->getDeltaX(block);
 
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
-                SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+                SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
                 SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
@@ -417,7 +417,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
     real dx                               = grid->getDeltaX(block);
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     bcPtr                                   = bcArray->getBC(ix1, ix2, ix3);
     int x, y, z;
 
@@ -852,7 +852,7 @@ void ShearStressCoProcessor::initDistance()
             //         double         dx           = grid->getDeltaX(block);
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 

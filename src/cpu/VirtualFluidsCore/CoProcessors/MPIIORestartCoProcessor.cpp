@@ -1,6 +1,6 @@
 #include "MPIIORestartCoProcessor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
 #include <mpi/Communicator.h>
@@ -826,7 +826,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
     {
         for (SPtr<Block3D> block : blocksVector[level]) // all the blocks of the current level
         {
-            bcArr = block->getKernel()->getBCProcessor()->getBCArray();
+            bcArr = block->getKernel()->getBCSet()->getBCArray();
 
             bcAddArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
             bcAddArray[ic].x2                   = block->getX2();
@@ -859,7 +859,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
                     bouCond->nx3                    = (real)bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bouCond->q[iq] = (real)bcArr->bcvector[bc]->getQ(iq);
-                    bouCond->algorithmType = bcArr->bcvector[bc]->getBcAlgorithmType();
+                    bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
                 }
 
                 bcVector.push_back(*bouCond);
@@ -1546,7 +1546,7 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
                 bc->nx3 = bcArray[index].nx3;
                 for (int iq = 0; iq < 26; iq++)
                     bc->setQ(bcArray[index].q[iq], iq);
-                bc->setBcAlgorithmType(bcArray[index].algorithmType);
+                bc->setBCStrategyType(bcArray[index].algorithmType);
             }
 
             bcVector.push_back(bc);
@@ -1562,14 +1562,14 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
         CbArray3D<int, IndexerX3X2X1> bcim(bcindexmatrixV, boundCondParamStr.nx1, boundCondParamStr.nx2, boundCondParamStr.nx3);
 
         SPtr<Block3D> block = grid->getBlock(bcAddArray[n].x1, bcAddArray[n].x2, bcAddArray[n].x3, bcAddArray[n].level);
-        SPtr<BCProcessor> bcProc = bcProcessor->clone(block->getKernel());
+        SPtr<BCSet> bcSet = bcSet->clone(block->getKernel());
         SPtr<BCArray3D> bcArr(new BCArray3D());
         bcArr->bcindexmatrix  = bcim;
         bcArr->bcvector       = bcVector;
         bcArr->indexContainer = indexContainerV;
-        bcProc->setBCArray(bcArr);
+        bcSet->setBCArray(bcArr);
 
-        block->getKernel()->setBCProcessor(bcProc);
+        block->getKernel()->setBCSet(bcSet);
     }
 
     delete nullBouCond;
@@ -1586,4 +1586,4 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
 //////////////////////////////////////////////////////////////////////////
 void MPIIORestartCoProcessor::setLBMKernel(SPtr<LBMKernel> kernel) { this->lbmKernel = kernel; }
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartCoProcessor::setBCProcessor(SPtr<BCProcessor> bcProcessor) { this->bcProcessor = bcProcessor; }
+void MPIIORestartCoProcessor::setBCSet(SPtr<BCSet> BCSet) { this->bcSet = BCSet; }

@@ -2,7 +2,7 @@
 
 #include "InSituVTKCoProcessor.h"
 #include <BCArray3D.h>
-#include <BCProcessor.h>
+#include <BCSet.h>
 #include <Block3D.h>
 #include <BoundaryConditions.h>
 #include <Communicator.h>
@@ -130,7 +130,7 @@ void InSituVTKCoProcessor::addData(SPtr<Block3D> block)
     real dx                   = grid->getDeltaX(block);
 
     SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     real f[D3Q27System::ENDF + 1];
     real vx1, vx2, vx3, rho;

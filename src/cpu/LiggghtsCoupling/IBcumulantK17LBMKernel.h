@@ -35,7 +35,7 @@
 #define IBcumulantK17LBMKernel_h__
 
 #include "LBMKernel.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "D3Q27System.h"
 #include "UbTiming.h"
 #include "CbArray4D.h"

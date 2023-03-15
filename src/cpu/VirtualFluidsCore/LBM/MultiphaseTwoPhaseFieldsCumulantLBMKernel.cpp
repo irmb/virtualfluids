@@ -71,7 +71,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsCumulantLBMKernel::clone()
     kernel->setPhaseFieldRelaxation(this->tauH);
     kernel->setMobility(this->mob);
 
-    kernel->setBCProcessor(bcProcessor->clone(kernel));
+    kernel->setBCSet(bcSet->clone(kernel));
     kernel->setWithForcing(withForcing);
     kernel->setForcingX1(muForcingX1);
     kernel->setForcingX2(muForcingX2);
@@ -160,7 +160,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
     nonLocalDistributionsH2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getNonLocalDistributions();
     zeroDistributionsH2     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getZeroDistributions();
 
-    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
     const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -3174,7 +3174,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<real, In
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
 
-	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
     phi[DIR_000] = (*ph)(x1, x2, x3);
 
@@ -3195,7 +3195,7 @@ void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors2(CbArray3D<real, I
 	using namespace D3Q27System;
 	using namespace vf::lbm::dir;
 
-	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
 	phi2[DIR_000] = (*ph)(x1, x2, x3);
 

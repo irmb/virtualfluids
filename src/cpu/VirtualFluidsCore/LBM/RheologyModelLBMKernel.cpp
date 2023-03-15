@@ -83,7 +83,7 @@ void RheologyModelLBMKernel::calculate(int step)
 	nonLocalDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
 	zeroDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
 	const int bcArrayMaxX1 = (int)bcArray->getNX1();
 	const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -903,7 +903,7 @@ void RheologyModelLBMKernel::calculate(int step)
 //	kernel->setCollisionFactor(collFactor);
 //	collFactorF = collFactor;
 //	dynamicPointerCast<RheologyModelLBMKernel>(kernel)->initDataSet();
-//	kernel->setBCProcessor(bcProcessor->clone(kernel));
+//	kernel->setBCSet(bcSet->clone(kernel));
 //	kernel->setWithForcing(withForcing);
 //	kernel->setForcingX1(muForcingX1);
 //	kernel->setForcingX2(muForcingX2);

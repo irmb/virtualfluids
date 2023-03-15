@@ -33,7 +33,7 @@
 
 #include "BasicCalculator.h"
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "Block3DConnector.h"
 #include "LBMKernel.h"
@@ -332,7 +332,7 @@ void BasicCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 #endif
         for (int i = 0; i < size; i++) {
             try {
-                blocks[level][i]->getKernel()->getBCProcessor()->applyPreCollisionBC();
+                blocks[level][i]->getKernel()->getBCSet()->applyPreCollisionBC();
             } catch (std::exception &e) {
                 UBLOG(logERROR, e.what());
                 exit(EXIT_FAILURE);
@@ -357,7 +357,7 @@ void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 #endif
         for (int i = 0; i < size; i++) {
             try {
-                blocks[level][i]->getKernel()->getBCProcessor()->applyPostCollisionBC();
+                blocks[level][i]->getKernel()->getBCSet()->applyPostCollisionBC();
             } catch (std::exception &e) {
                 UBLOG(logERROR, e.what());
                 exit(EXIT_FAILURE);

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 
@@ -65,7 +65,7 @@ void IntegrateValuesHelper::init(int level)
             orgX3 = val<3>(org);
 
             SPtr<LBMKernel> kernel                  = dynamicPointerCast<LBMKernel>(block->getKernel());
-            SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             int ghostLayerWitdh                     = kernel->getGhostLayerWidth();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             real internX1, internX2, internX3;
@@ -193,7 +193,7 @@ void IntegrateValuesHelper::calculateMQ()
             calcMacros = &D3Q27System::calcIncompMacroscopicValues;
         }
 
-        SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
         for (UbTupleInt3 node : cn.nodes) {
             distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));

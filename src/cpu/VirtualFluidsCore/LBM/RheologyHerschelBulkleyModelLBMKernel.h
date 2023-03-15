@@ -49,7 +49,7 @@ public:
 		kernel->setNX(nx);
 		kernel->setCollisionFactor(collFactor);
 		dynamicPointerCast<RheologyHerschelBulkleyModelLBMKernel>(kernel)->initDataSet();
-		kernel->setBCProcessor(bcProcessor->clone(kernel));
+		kernel->setBCSet(bcSet->clone(kernel));
 		kernel->setWithForcing(withForcing);
 		kernel->setForcingX1(muForcingX1);
 		kernel->setForcingX2(muForcingX2);

@@ -34,7 +34,7 @@
 #define RheologyModelLBMKernel_H
 
 #include "LBMKernel.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "D3Q27System.h"
 #include "basics/utilities/UbTiming.h"
 #include "basics/container/CbArray4D.h"
