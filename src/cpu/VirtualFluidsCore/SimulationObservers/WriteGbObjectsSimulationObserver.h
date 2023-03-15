@@ -24,7 +24,7 @@ public:
                               std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteGbObjectsSimulationObserver() override;
     //! calls collectData.
-    void process(real step) override;
+    void update(real step) override;
     //! adds geometry object
     void addGbObject(SPtr<GbObject3D> object);
 

@@ -59,7 +59,7 @@ public:
     virtual ~SimulationObserver();
     //! \brief Updates observer
     //! \param step is the actual time step
-    virtual void process(real step) = 0;
+    virtual void update(real step) = 0;
 
 protected:
     SPtr<Grid3D> grid;

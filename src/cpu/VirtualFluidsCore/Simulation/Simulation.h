@@ -26,30 +26,46 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BasicCalculator.h
+//! \file Simulation.h
 //! \ingroup Grid
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BasicCalculator_h__
-#define BasicCalculator_h__
+#ifndef Simulation_H
+#define Simulation_H
 
-#include "Calculator.h"
+#include <PointerDefinitions.h>
+#include <vector>
+#include "lbm/constants/D3Q27.h"
 
+class Grid3D;
+class UbScheduler;
+class Block3D;
 class Block3DConnector;
+class SimulationObserver;
 
-//! \class BasicCalculator
-//! \brief Class implements basic functionality with MPI + OpenMP parallelization for main calculation loop
-//! \author  Konstantin Kutscher
+//! \class Simulation
+//! \brief A base class for main simulation loop
 
-class BasicCalculator : public Calculator
+class Simulation
 {
 public:
-    BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps);
-    ~BasicCalculator() override = default;
-    void calculate() override;
+    Simulation(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps);
+    virtual ~Simulation();
+    //! control of coProcessors
+    void addSimulationObserver(SPtr<SimulationObserver> coProcessor);
+    void notifyObservers(real step);
+
+    virtual void run();
 
 protected:
+    virtual void initLocalConnectors();
+    virtual void initRemoteConnectors();
+    void initConnectors(std::vector<SPtr<Block3DConnector>> &connectors);
+    void deleteBlocks();
+    void deleteConnectors();
+    void deleteConnectors(std::vector<std::vector<SPtr<Block3DConnector>>> &conns);
+
     void calculateBlocks(int startLevel, int maxInitLevel, int calcStep);
     void swapDistributions(int startLevel, int maxInitLevel);
     void exchangeBlockData(int startLevel, int maxInitLevel);
@@ -63,7 +79,27 @@ protected:
     void applyPreCollisionBC(int startLevel, int maxInitLevel);
     void applyPostCollisionBC(int startLevel, int maxInitLevel);
 
-private:
+    int minLevel, maxLevel;
+    int startTimeStep;
+    int numberOfTimeSteps;
+    std::vector<std::vector<SPtr<Block3DConnector>>> localConns;
+    std::vector<std::vector<SPtr<Block3DConnector>>> remoteConns;
+
+    bool refinement;
+    SPtr<Grid3D> grid;
+    SPtr<UbScheduler> additionalGhostLayerUpdateScheduler;
+    std::vector<std::vector<SPtr<Block3D>>> blocks;
+
+    // localInterConns and remoteInterConns save interpolation connectors
+    // every element save CF connectors for current level and FC connectors for next level
+    // e.g.
+    // localInterConns[0] = CF(0), FC(1)
+    // localInterConns[1] = CF(1), FC(2)
+    // localInterConns[2]
+    std::vector<std::vector<SPtr<Block3DConnector>>> localInterConns;
+    std::vector<std::vector<SPtr<Block3DConnector>>> remoteInterConns;
+
+    std::vector<SPtr<SimulationObserver>> simulationObserver;
 };
 
-#endif // BasicCalculator_h__
+#endif

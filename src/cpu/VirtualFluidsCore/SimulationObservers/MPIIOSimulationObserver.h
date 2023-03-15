@@ -19,7 +19,7 @@ public:
     ~MPIIOSimulationObserver() override;
 
     //! Each timestep writes the grid into the files
-    void process(real step) override = 0;
+    void update(real step) override = 0;
 
     //! Writes the blocks of the grid into the file cpBlocks.bin
     void writeBlocks(int step);

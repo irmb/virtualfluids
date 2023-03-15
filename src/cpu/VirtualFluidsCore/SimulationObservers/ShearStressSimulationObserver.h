@@ -31,7 +31,7 @@ public:
                            SPtr<UbScheduler> rs);
     ~ShearStressSimulationObserver() override;
 
-    void process(real step) override;
+    void update(real step) override;
 
     void addInteractor(SPtr<D3Q27Interactor> interactor);
 

@@ -43,7 +43,7 @@ TimeseriesSimulationObserver::TimeseriesSimulationObserver(SPtr<Grid3D> grid, SP
 //////////////////////////////////////////////////////////////////////////
 TimeseriesSimulationObserver::~TimeseriesSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void TimeseriesSimulationObserver::process(real step)
+void TimeseriesSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

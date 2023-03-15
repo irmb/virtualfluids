@@ -262,7 +262,7 @@ void bflow(string configname)
          //////////////////////////////////////
 
          SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppblocks->process(0);
+         ppblocks->update(0);
 
          unsigned long nob = grid->getNumberOfBlocks();
          int gl = 3;
@@ -332,7 +332,7 @@ void bflow(string configname)
 
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
       WriteBoundaryConditionsSimulationObserver ppgeo = WriteBoundaryConditionsSimulationObserver(grid, geoSch, outputPath, WbWriterVtkXmlASCII::getInstance(), comm);
-      ppgeo.process(0);
+      ppgeo.update(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
@@ -341,7 +341,7 @@ void bflow(string configname)
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       //SPtr<UbScheduler> visSch(new UbScheduler(10,1));
       SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-      //writeMQSimulationObserver->process(0);
+      //writeMQSimulationObserver->update(0);
 
       real area = UbMath::PI*radius*radius;
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
@@ -351,7 +351,7 @@ void bflow(string configname)
       SPtr<WriteThixotropyQuantitiesSimulationObserver> writeThixotropicMQSimulationObserver(new WriteThixotropyQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
       calculator->addSimulationObserver(npr);
       calculator->addSimulationObserver(fp);
       calculator->addSimulationObserver(writeMQSimulationObserver);
@@ -359,7 +359,7 @@ void bflow(string configname)
       calculator->addSimulationObserver(restartSimulationObserver);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculator->calculate();
+      calculator->run();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

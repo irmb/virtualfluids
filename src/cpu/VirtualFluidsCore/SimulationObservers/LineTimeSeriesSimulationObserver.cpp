@@ -61,7 +61,7 @@ LineTimeSeriesSimulationObserver::LineTimeSeriesSimulationObserver(SPtr<Grid3D> 
     ix3 = x3min % val<3>(blockNx) + 1;
 }
 //////////////////////////////////////////////////////////////////////////
-void LineTimeSeriesSimulationObserver::process(real step)
+void LineTimeSeriesSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step)) {
         collectData();

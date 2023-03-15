@@ -23,7 +23,7 @@ public:
     InSituVTKSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &configFile,
                          SPtr<LBMUnitConverter> conv);
     virtual ~InSituVTKSimulationObserver();
-    void process(real step);
+    void update(real step);
 
 protected:
     void collectData(real step);

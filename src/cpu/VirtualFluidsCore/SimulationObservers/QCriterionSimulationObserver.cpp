@@ -32,7 +32,7 @@ void QCriterionSimulationObserver::init()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void QCriterionSimulationObserver::process(real step)
+void QCriterionSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

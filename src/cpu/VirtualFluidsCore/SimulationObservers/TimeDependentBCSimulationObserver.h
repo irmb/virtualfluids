@@ -18,7 +18,7 @@ public:
     TimeDependentBCSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s);
     ~TimeDependentBCSimulationObserver() override;
 
-    void process(real step) override;
+    void update(real step) override;
 
     //! add interactors to SimulationObserver
     void addInteractor(SPtr<Interactor3D> interactor);

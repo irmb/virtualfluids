@@ -27,7 +27,7 @@ public:
                                     std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteMQFromSelectionSimulationObserver() override = default;
 
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     void collectData(real step);

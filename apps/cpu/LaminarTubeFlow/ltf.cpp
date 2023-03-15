@@ -191,7 +191,7 @@ void run(string configname)
 
          SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-         ppblocks->process(0);
+         ppblocks->update(0);
 
          SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBC, Interactor3D::INVERSESOLID));
 
@@ -229,7 +229,7 @@ void run(string configname)
          intHelper.addInteractor(outflowInt);
          intHelper.selectBlocks();
 
-         ppblocks->process(0);
+         ppblocks->update(0);
          ppblocks.reset();
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -281,7 +281,7 @@ void run(string configname)
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
             SPtr<SimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-            ppgeo->process(0);
+            ppgeo->update(0);
             ppgeo.reset();
          }
 
@@ -328,14 +328,14 @@ void run(string configname)
       omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, int(endTime)));
+      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, int(endTime)));
       calculator->addSimulationObserver(npr);
       calculator->addSimulationObserver(pp);
       calculator->addSimulationObserver(migSimulationObserver);
       //calculator->addSimulationObserver(timeDepBC);
 
       if (myid == 0) VF_LOG_INFO("Simulation-start");
-      calculator->calculate();
+      calculator->run();
       if (myid == 0) VF_LOG_INFO("Simulation-end");
    }
    catch (std::exception& e)

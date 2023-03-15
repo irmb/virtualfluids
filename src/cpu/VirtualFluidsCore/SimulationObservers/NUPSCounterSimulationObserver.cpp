@@ -61,7 +61,7 @@ NUPSCounterSimulationObserver::NUPSCounterSimulationObserver(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 NUPSCounterSimulationObserver::~NUPSCounterSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void NUPSCounterSimulationObserver::process(real step)
+void NUPSCounterSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -76,7 +76,7 @@ void NUPSCounterSimulationObserver::collectData(real step)
         real tnups  = nups / (real)numOfThreads;
         UBLOG(logINFO, "Calculation step = " << step);
         UBLOG(logINFO, "Total performance = " << nups_t << " NUPS");
-        UBLOG(logINFO, "Performance per process = " << nups << " NUPS");
+        UBLOG(logINFO, "Performance per update = " << nups << " NUPS");
         UBLOG(logINFO, "Performance per thread = " << tnups << " NUPS");
         UBLOG(logINFO, "Time for " << step - nupsStep << " steps = " << time << " s");
         nupsStep = step;

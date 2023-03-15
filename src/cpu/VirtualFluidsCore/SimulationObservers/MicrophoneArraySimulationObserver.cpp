@@ -22,7 +22,7 @@ MicrophoneArraySimulationObserver::MicrophoneArraySimulationObserver(SPtr<Grid3D
 
 MicrophoneArraySimulationObserver::~MicrophoneArraySimulationObserver() = default;
 
-void MicrophoneArraySimulationObserver::process(real step)
+void MicrophoneArraySimulationObserver::update(real step)
 {
     if (microphones.size() > 0) {
         collectData(step);
@@ -31,7 +31,7 @@ void MicrophoneArraySimulationObserver::process(real step)
             writeFile(step);
     }
 
-    UBLOG(logDEBUG3, "MicrophoneArraySimulationObserver::process:" << step);
+    UBLOG(logDEBUG3, "MicrophoneArraySimulationObserver::update:" << step);
 }
 
 bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)

@@ -64,7 +64,7 @@ public:
                                        WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteBoundaryConditionsSimulationObserver() override = default;
 
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     //! Collect data for VTK-file

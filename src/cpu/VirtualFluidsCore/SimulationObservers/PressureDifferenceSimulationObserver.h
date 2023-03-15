@@ -29,7 +29,7 @@ public:
                                   /*const SPtr<LBMUnitConverter> conv,*/ std::shared_ptr<vf::mpi::Communicator> comm);
     ~PressureDifferenceSimulationObserver() override;
 
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     SPtr<IntegrateValuesHelper> h1, h2;

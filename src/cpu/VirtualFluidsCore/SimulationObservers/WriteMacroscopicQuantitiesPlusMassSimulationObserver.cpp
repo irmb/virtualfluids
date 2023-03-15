@@ -72,7 +72,7 @@ void WriteMacroscopicQuantitiesPlusMassSimulationObserver::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesPlusMassSimulationObserver::process(real step)
+void WriteMacroscopicQuantitiesPlusMassSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

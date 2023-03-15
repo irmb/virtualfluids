@@ -57,7 +57,7 @@ CalculateForcesSimulationObserver::CalculateForcesSimulationObserver(SPtr<Grid3D
 //////////////////////////////////////////////////////////////////////////
 CalculateForcesSimulationObserver::~CalculateForcesSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesSimulationObserver::process(real step)
+void CalculateForcesSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

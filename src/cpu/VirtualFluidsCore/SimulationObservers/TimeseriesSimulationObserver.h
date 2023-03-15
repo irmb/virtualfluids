@@ -31,7 +31,7 @@ public:
     ~TimeseriesSimulationObserver() override;
 
     //! calls collectData.
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     void collectData(real step);

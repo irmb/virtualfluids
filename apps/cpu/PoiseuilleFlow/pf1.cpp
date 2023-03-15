@@ -85,7 +85,7 @@ void pf1()
 
    //write data for visualization of block grid
    SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
-   ppblocks->process(0);
+   ppblocks->update(0);
    //ppblocks.reset();
 
    unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -164,7 +164,7 @@ void pf1()
    {
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
       WriteBoundaryConditionsSimulationObserver ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), /*SPtr<LBMUnitConverter>(new LBMUnitConverter()),*/ comm);
-      ppgeo.process(0);
+      ppgeo.update(0);
    }
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
@@ -177,7 +177,7 @@ void pf1()
    //migSimulationObserver->setNu(nuLB);
    //migSimulationObserver->restart(10);
 
-   ppblocks->process(1);
+   ppblocks->update(1);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));
@@ -191,17 +191,17 @@ void pf1()
    //start simulation 
    //omp_set_num_threads(numOfThreads);
    SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
-   SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+   SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
    calculator->addSimulationObserver(npr);
    calculator->addSimulationObserver(writeMQSimulationObserver);
    //calculator->addSimulationObserver(migSimulationObserver);
    //calculator->addSimulationObserver(restartSimulationObserver);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
-   calculator->calculate();
+   calculator->run();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
    
-   ppblocks->process(10);
+   ppblocks->update(10);
 }
 
 

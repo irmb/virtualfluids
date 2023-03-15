@@ -25,7 +25,7 @@ LiggghtsCouplingSimulationObserver::~LiggghtsCouplingSimulationObserver()
 {
 }
 
-void LiggghtsCouplingSimulationObserver::process(double actualTimeStep)
+void LiggghtsCouplingSimulationObserver::update(double actualTimeStep)
 { 
     if (comm->getProcessID() == 0)
         std::cout << "LiggghtsCouplingSimulationObserver step: " << actualTimeStep << "\n";

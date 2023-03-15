@@ -19,7 +19,7 @@ class TurbulenceIntensitySimulationObserver : public SimulationObserver
 public:
     TurbulenceIntensitySimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
                                    SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm);
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     void collectData(real step);

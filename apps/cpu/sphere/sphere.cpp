@@ -197,7 +197,7 @@ void run(string configname)
          //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
          //grid->accept(pqPartVisitor);
 
-         ppblocks->process(0);
+         ppblocks->update(0);
          ppblocks.reset();
 
          unsigned long nob = grid->getNumberOfBlocks();
@@ -253,7 +253,7 @@ void run(string configname)
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
          SPtr<SimulationObserver> ppgeo(
             new WriteBoundaryConditionsSimulationObserver(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppgeo->process(0);
+         ppgeo->update(0);
          ppgeo.reset();
 
          if (myid == 0) UBLOG(logINFO, "Preprozess - end");
@@ -293,14 +293,14 @@ void run(string configname)
       fp->addInteractor(sphereInt);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endstep));
+      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endstep));
       calculator->addSimulationObserver(npr);
       calculator->addSimulationObserver(fp);
       calculator->addSimulationObserver(writeMQSimulationObserver);
 
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculator->calculate();
+      calculator->run();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
 
    }

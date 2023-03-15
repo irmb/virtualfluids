@@ -69,7 +69,7 @@ WriteBoundaryConditionsSimulationObserver::WriteBoundaryConditionsSimulationObse
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteBoundaryConditionsSimulationObserver::process(real step)
+void WriteBoundaryConditionsSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

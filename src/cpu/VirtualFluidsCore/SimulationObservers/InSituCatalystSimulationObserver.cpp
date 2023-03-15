@@ -42,7 +42,7 @@ InSituCatalystSimulationObserver::InSituCatalystSimulationObserver(SPtr<Grid3D> 
 //////////////////////////////////////////////////////////////////////////
 InSituCatalystSimulationObserver::~InSituCatalystSimulationObserver() {}
 //////////////////////////////////////////////////////////////////////////
-void InSituCatalystSimulationObserver::process(real step)
+void InSituCatalystSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

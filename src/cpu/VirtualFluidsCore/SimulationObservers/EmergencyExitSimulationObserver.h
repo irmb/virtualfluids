@@ -25,7 +25,7 @@ public:
                              SPtr<MPIIORestartSimulationObserver> rp, std::shared_ptr<vf::mpi::Communicator> comm);
     ~EmergencyExitSimulationObserver() override;
 
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     void collectData(real step);

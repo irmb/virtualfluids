@@ -42,7 +42,7 @@ CalculateTorqueSimulationObserver::~CalculateTorqueSimulationObserver()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateTorqueSimulationObserver::process( real step )
+void CalculateTorqueSimulationObserver::update( real step )
 {
    if(scheduler->isDue(step) )
       collectData(step);

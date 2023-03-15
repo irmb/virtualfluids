@@ -116,7 +116,7 @@ void TimeAveragedValuesSimulationObserver::initData()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesSimulationObserver::process(real step)
+void TimeAveragedValuesSimulationObserver::update(real step)
 {
     if (step == minStep) {
         initData();

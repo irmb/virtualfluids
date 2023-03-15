@@ -38,7 +38,7 @@ ShearStressSimulationObserver::ShearStressSimulationObserver(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 ShearStressSimulationObserver::~ShearStressSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void ShearStressSimulationObserver::process(real step)
+void ShearStressSimulationObserver::update(real step)
 {
     if (step == 0) {
         initDistance();

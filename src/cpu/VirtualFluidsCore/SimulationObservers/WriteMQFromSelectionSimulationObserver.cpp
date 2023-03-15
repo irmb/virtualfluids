@@ -35,7 +35,7 @@ WriteMQFromSelectionSimulationObserver::WriteMQFromSelectionSimulationObserver(S
 //////////////////////////////////////////////////////////////////////////
 void WriteMQFromSelectionSimulationObserver::init() {}
 //////////////////////////////////////////////////////////////////////////
-void WriteMQFromSelectionSimulationObserver::process(real step)
+void WriteMQFromSelectionSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

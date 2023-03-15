@@ -444,7 +444,7 @@ void run(string configname)
 
             intHelper.selectBlocks();
 
-            ppblocks->process(0);
+            ppblocks->update(0);
             ppblocks.reset();
 
             unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -550,7 +550,7 @@ void run(string configname)
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
                 SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(
                     grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-                ppgeo->process(0);
+                ppgeo->update(0);
                 ppgeo.reset();
             }
 
@@ -582,7 +582,7 @@ void run(string configname)
         visSch->addSchedule(t,t,t); //t=7.19
         SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-        pp->process(0);
+        pp->update(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
@@ -596,7 +596,7 @@ void run(string configname)
 #endif
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-        SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+        SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
         calculator->addSimulationObserver(npr);
         calculator->addSimulationObserver(pp);
         calculator->addSimulationObserver(timeDepBC);
@@ -604,7 +604,7 @@ void run(string configname)
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
-        calculator->calculate();
+        calculator->run();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
     } catch (std::exception &e) {

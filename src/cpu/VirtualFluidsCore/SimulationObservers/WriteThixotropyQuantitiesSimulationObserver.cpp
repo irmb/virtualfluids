@@ -71,7 +71,7 @@ void WriteThixotropyQuantitiesSimulationObserver::init()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesSimulationObserver::process(real step)
+void WriteThixotropyQuantitiesSimulationObserver::update(real step)
 {
 	if (scheduler->isDue(step))
 		collectData(step);

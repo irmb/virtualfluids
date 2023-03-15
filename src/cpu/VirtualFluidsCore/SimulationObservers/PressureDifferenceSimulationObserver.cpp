@@ -71,7 +71,7 @@ PressureDifferenceSimulationObserver::PressureDifferenceSimulationObserver(SPtr<
 //////////////////////////////////////////////////////////////////////////
 PressureDifferenceSimulationObserver::~PressureDifferenceSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void PressureDifferenceSimulationObserver::process(real step)
+void PressureDifferenceSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

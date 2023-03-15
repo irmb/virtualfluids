@@ -173,10 +173,9 @@
 #include <Data/EsoTwistD3Q27System.h>
 #include <Data/VoidData3D.h>
 
-#include <Grid/BasicCalculator.h>
-#include <Grid/Block3D.h>
-#include <Grid/Calculator.h>
-#include <Grid/Grid3D.h>
+#include <Simulation/Block3D.h>
+#include <Simulation/Simulation.h>
+#include <Simulation/Grid3D.h>
 
 #include <Interactors/D3Q27Interactor.h>
 #include <Interactors/D3Q27TriFaceMeshInteractor.h>

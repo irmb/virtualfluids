@@ -22,7 +22,7 @@ EmergencyExitSimulationObserver::EmergencyExitSimulationObserver(SPtr<Grid3D> gr
 //////////////////////////////////////////////////////////////////////////
 EmergencyExitSimulationObserver::~EmergencyExitSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void EmergencyExitSimulationObserver::process(real step)
+void EmergencyExitSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -33,7 +33,7 @@ void EmergencyExitSimulationObserver::process(real step)
 void EmergencyExitSimulationObserver::collectData(real step)
 {
     if (readMetafile()) {
-        rp->process((int)step);
+        rp->update((int)step);
         if (comm->getProcessID() == comm->getRoot())
             UBLOG(logINFO, "EmergencyExitSimulationObserver save step: " << step);
         comm->barrier();

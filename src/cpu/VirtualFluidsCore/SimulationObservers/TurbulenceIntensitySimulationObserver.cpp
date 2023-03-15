@@ -40,7 +40,7 @@ void TurbulenceIntensitySimulationObserver::init()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TurbulenceIntensitySimulationObserver::process(real step)
+void TurbulenceIntensitySimulationObserver::update(real step)
 {
     calculateAverageValues(int(step));
 

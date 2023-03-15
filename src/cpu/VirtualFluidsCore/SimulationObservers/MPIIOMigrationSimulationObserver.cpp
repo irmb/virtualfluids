@@ -69,7 +69,7 @@ MPIIOMigrationSimulationObserver::~MPIIOMigrationSimulationObserver()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void MPIIOMigrationSimulationObserver::process(real step)
+void MPIIOMigrationSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step)) 
     {

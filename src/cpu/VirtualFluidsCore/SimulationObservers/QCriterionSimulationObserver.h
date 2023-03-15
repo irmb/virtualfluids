@@ -31,7 +31,7 @@ public:
     QCriterionSimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer, SPtr<UbScheduler> s,
                           std::shared_ptr<vf::mpi::Communicator> comm);
     //! Make update if timestep is write-timestep specified in SPtr<UbScheduler> s
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     //! Prepare data and write in .vtk file

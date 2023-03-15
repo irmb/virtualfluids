@@ -54,7 +54,7 @@ AverageValuesSimulationObserver::AverageValuesSimulationObserver(SPtr<Grid3D> gr
     // restartStep = 0.0;
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesSimulationObserver::process(real step)
+void AverageValuesSimulationObserver::update(real step)
 {
     // resetRMS(step);
     if (resetSchedulerRMS->isDue(step))

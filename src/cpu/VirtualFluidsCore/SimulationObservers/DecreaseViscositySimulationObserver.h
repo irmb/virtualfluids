@@ -31,7 +31,7 @@ public:
     DecreaseViscositySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, mu::Parser *nueFunc, std::shared_ptr<vf::mpi::Communicator> comm);
     ~DecreaseViscositySimulationObserver() override;
     //! calls collect PostprocessData.
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     //! resets the collision factor depending on the current timestep.

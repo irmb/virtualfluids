@@ -14,7 +14,7 @@ WriteGbObjectsSimulationObserver::WriteGbObjectsSimulationObserver(SPtr<Grid3D> 
 //////////////////////////////////////////////////////////////////////////
 WriteGbObjectsSimulationObserver::~WriteGbObjectsSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void WriteGbObjectsSimulationObserver::process(real step)
+void WriteGbObjectsSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

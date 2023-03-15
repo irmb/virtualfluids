@@ -217,7 +217,7 @@ void run(string configname)
          intHelper.selectBlocks();
 
 
-         ppblocks->process(0);
+         ppblocks->update(0);
          ppblocks.reset();
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -277,7 +277,7 @@ void run(string configname)
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
          SPtr<SimulationObserver> ppgeo(
             new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppgeo->process(0);
+         ppgeo->update(0);
          ppgeo.reset();
 
          if (myid==0) UBLOG(logINFO, "Preprozess - end");
@@ -315,13 +315,13 @@ void run(string configname)
 
 	  omp_set_num_threads(numOfThreads);
 	  SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-	  SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+	  SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
 	  calculator->addSimulationObserver(nupsSimulationObserver);
      calculator->addSimulationObserver(fp);
      calculator->addSimulationObserver(writeMQSimulationObserver);
 
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
-	  calculator->calculate();
+	  calculator->run();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");
    }
    catch(std::exception& e)

@@ -73,7 +73,7 @@ void WriteMultiphaseQuantitiesSimulationObserver::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMultiphaseQuantitiesSimulationObserver::process(real step)
+void WriteMultiphaseQuantitiesSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

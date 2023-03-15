@@ -26,7 +26,7 @@ DecreaseViscositySimulationObserver::DecreaseViscositySimulationObserver(SPtr<Gr
 //////////////////////////////////////////////////////////////////////////
 DecreaseViscositySimulationObserver::~DecreaseViscositySimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void DecreaseViscositySimulationObserver::process(real step)
+void DecreaseViscositySimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         setViscosity(step);

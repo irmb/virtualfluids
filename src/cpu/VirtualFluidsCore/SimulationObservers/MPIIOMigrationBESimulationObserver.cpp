@@ -40,7 +40,7 @@ MPIIOMigrationBESimulationObserver::MPIIOMigrationBESimulationObserver(SPtr<Grid
 //////////////////////////////////////////////////////////////////////////
 MPIIOMigrationBESimulationObserver::~MPIIOMigrationBESimulationObserver() { MPI_Type_free(&sendBlockIntType); }
 
-void MPIIOMigrationBESimulationObserver::process(real step)
+void MPIIOMigrationBESimulationObserver::update(real step)
 {
     if (scheduler->isDue(step)) {
         if (comm->isRoot())

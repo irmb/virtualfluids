@@ -25,7 +25,7 @@ public:
     InSituCatalystSimulationObserver();
     InSituCatalystSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::string script);
     virtual ~InSituCatalystSimulationObserver();
-    void process(real step);
+    void update(real step);
 
 protected:
     void collectData(real step);

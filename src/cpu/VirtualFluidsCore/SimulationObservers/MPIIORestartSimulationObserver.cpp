@@ -77,7 +77,7 @@ MPIIORestartSimulationObserver::~MPIIORestartSimulationObserver()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartSimulationObserver::process(real step)
+void MPIIORestartSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step)) 
     {

@@ -57,7 +57,7 @@ public:
     NUPSCounterSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, std::shared_ptr<vf::mpi::Communicator> comm);
     ~NUPSCounterSimulationObserver() override;
 
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     //! Collect data for calculation of NUPS

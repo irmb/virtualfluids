@@ -27,7 +27,7 @@ public:
     ~MicrophoneArraySimulationObserver() override;
 
     //! calls collectData.
-    void process(real step) override;
+    void update(real step) override;
 
     //! add microphone
     bool addMicrophone(Vector3D coords);

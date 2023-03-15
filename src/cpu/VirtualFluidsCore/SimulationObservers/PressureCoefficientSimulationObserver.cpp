@@ -23,7 +23,7 @@ PressureCoefficientSimulationObserver::PressureCoefficientSimulationObserver(SPt
 //////////////////////////////////////////////////////////////////////////
 PressureCoefficientSimulationObserver::~PressureCoefficientSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void PressureCoefficientSimulationObserver::process(real step)
+void PressureCoefficientSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

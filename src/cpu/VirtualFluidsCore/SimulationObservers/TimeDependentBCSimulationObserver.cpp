@@ -8,7 +8,7 @@ TimeDependentBCSimulationObserver::TimeDependentBCSimulationObserver(SPtr<Grid3D
 //////////////////////////////////////////////////////////////////////////
 TimeDependentBCSimulationObserver::~TimeDependentBCSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void TimeDependentBCSimulationObserver::process(real step)
+void TimeDependentBCSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step)) {
         for (SPtr<Interactor3D> inter : interactors)

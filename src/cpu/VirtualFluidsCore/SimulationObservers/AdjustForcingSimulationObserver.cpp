@@ -71,7 +71,7 @@ AdjustForcingSimulationObserver::AdjustForcingSimulationObserver(SPtr<Grid3D> gr
 }
 
 //////////////////////////////////////////////////////////////////////////
-void AdjustForcingSimulationObserver::process(real step)
+void AdjustForcingSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

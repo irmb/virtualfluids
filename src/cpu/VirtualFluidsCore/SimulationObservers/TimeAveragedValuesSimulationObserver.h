@@ -47,7 +47,7 @@ public:
                                   std::vector<real> &levelCoords, std::vector<real> &bounds,
                                   bool timeAveraging = true);
     //! Make update
-    void process(real step) override;
+    void update(real step) override;
     //! Computes subtotal of velocity , fluctuations and triple correlations
     void calculateSubtotal(real step);
     void addLevelCoordinate(real c);

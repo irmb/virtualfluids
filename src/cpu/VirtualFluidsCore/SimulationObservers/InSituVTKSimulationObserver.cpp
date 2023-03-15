@@ -57,7 +57,7 @@ InSituVTKSimulationObserver::InSituVTKSimulationObserver(SPtr<Grid3D> grid, SPtr
 //////////////////////////////////////////////////////////////////////////
 InSituVTKSimulationObserver::~InSituVTKSimulationObserver() { comm->CloseConnection(); }
 //////////////////////////////////////////////////////////////////////////
-void InSituVTKSimulationObserver::process(real step)
+void InSituVTKSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

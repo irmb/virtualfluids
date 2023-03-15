@@ -48,7 +48,7 @@ public:
 	WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
 	~WriteThixotropyQuantitiesSimulationObserver() = default;
 
-   void process(real step) override;
+   void update(real step) override;
 
 protected:
    void collectData(real step);

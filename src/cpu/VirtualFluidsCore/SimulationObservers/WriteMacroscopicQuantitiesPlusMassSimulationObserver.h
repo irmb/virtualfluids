@@ -66,7 +66,7 @@ public:
                                           WbWriter *const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteMacroscopicQuantitiesPlusMassSimulationObserver() override = default;
 
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     //! Collect data for VTK-file

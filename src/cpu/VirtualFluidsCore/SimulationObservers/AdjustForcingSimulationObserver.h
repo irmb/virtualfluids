@@ -24,7 +24,7 @@ public:
     AdjustForcingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                              SPtr<IntegrateValuesHelper> integrateValues, real vTarged, std::shared_ptr<vf::mpi::Communicator> comm);
     //!< calls collect PostprocessData
-    void process(real step) override;
+    void update(real step) override;
 
 protected:
     //!< object that can compute spacial average values in 3D-subdomain.

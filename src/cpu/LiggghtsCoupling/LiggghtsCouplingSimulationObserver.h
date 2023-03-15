@@ -65,7 +65,7 @@ public:
                                 LiggghtsCouplingWrapper &wrapper, int demSteps, SPtr<LBMUnitConverter> units);
     virtual ~LiggghtsCouplingSimulationObserver();
 
-    void process(double actualTimeStep) override;
+    void update(double actualTimeStep) override;
 
     
 protected:

@@ -49,7 +49,7 @@ WriteBlocksSimulationObserver::WriteBlocksSimulationObserver(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 WriteBlocksSimulationObserver::~WriteBlocksSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-void WriteBlocksSimulationObserver::process(real step)
+void WriteBlocksSimulationObserver::update(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);

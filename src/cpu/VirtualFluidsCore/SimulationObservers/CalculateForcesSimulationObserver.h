@@ -33,7 +33,7 @@ public:
     CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm,
                                real v, real a);
     ~CalculateForcesSimulationObserver() override;
-    void process(real step) override;
+    void update(real step) override;
     void addInteractor(SPtr<D3Q27Interactor> interactor);
 
 protected:

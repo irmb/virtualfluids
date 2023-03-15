@@ -36,7 +36,7 @@ public:
                                 std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIOMigrationBESimulationObserver() override;
     //! Each timestep writes the grid into the files
-    void process(real step) override;
+    void update(real step) override;
     //! Reads the grid from the files before grid reconstruction
     void restart(int step);
     //! Writes the blocks of the grid into the file cpBlocks.bin

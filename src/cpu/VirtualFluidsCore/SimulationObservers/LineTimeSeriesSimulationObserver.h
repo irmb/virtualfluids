@@ -30,7 +30,7 @@ public:
                               int level, std::shared_ptr<vf::mpi::Communicator> comm);
     ~LineTimeSeriesSimulationObserver() override = default;
 
-    void process(real step) override;
+    void update(real step) override;
     void writeLine(const std::string &path);
 
 protected:

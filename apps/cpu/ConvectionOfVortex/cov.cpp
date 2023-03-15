@@ -160,7 +160,7 @@ void run()
       //intHelper.addInteractor(outflowIntr4);
       intHelper.selectBlocks();
 
-      ppblocks->process(0);
+      ppblocks->update(0);
       ppblocks.reset();
 
       //set connectors  
@@ -265,7 +265,7 @@ void run()
       //Postrozess
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
       SPtr<SimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-      ppgeo->process(0);
+      ppgeo->update(0);
       ppgeo.reset();
 
       if (myid==0) UBLOG(logINFO, "Preprozess - end");
@@ -279,7 +279,7 @@ void run()
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-      writeMQSimulationObserver->process(0);
+      writeMQSimulationObserver->update(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       std::shared_ptr<NUPSCounterSimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
@@ -290,7 +290,7 @@ void run()
       //tav->setWithGhostLayer(true);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, endTime));
       calculator->addSimulationObserver(nupsSimulationObserver);
       calculator->addSimulationObserver(writeMQSimulationObserver);
       //calculator->addSimulationObserver(tav);
@@ -298,7 +298,7 @@ void run()
       //omp_set_num_threads(1);
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
-      calculator->calculate();
+      calculator->run();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

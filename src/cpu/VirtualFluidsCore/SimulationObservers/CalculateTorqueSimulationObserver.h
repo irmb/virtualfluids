@@ -31,7 +31,7 @@ public:
    //! Constructor
    CalculateTorqueSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
 	virtual ~CalculateTorqueSimulationObserver();             
-	void process(real step); 
+	void update(real step); 
    void addInteractor(SPtr<D3Q27Interactor> interactor);
 protected:
 	void collectData(real step);

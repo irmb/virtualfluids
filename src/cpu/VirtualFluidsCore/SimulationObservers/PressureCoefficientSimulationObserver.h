@@ -22,7 +22,7 @@ public:
                                    const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~PressureCoefficientSimulationObserver() override;
 
-    void process(real step) override;
+    void update(real step) override;
 
     void addInteractor(SPtr<D3Q27Interactor> interactor);
     void readValues(int step);
