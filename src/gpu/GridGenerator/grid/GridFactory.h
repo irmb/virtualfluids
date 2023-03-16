@@ -59,7 +59,7 @@ public:
         
         grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
 
-        grid->setTriangularMeshDiscretizationStrategy(new PointInObjectDiscretizationStrategy());
+        grid->setTriangularMeshDiscretizationStrategy(std::make_shared<PointInObjectDiscretizationStrategy>());
 
         return grid;
     }

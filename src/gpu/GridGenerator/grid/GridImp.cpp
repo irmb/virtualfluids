@@ -812,12 +812,12 @@ uint GridImp::getLevel() const
     return this->level;
 }
 
-void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
+void GridImp::setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy)
 {
     this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;
 }
 
-TriangularMeshDiscretizationStrategy * GridImp::getTriangularMeshDiscretizationStrategy()
+SPtr<TriangularMeshDiscretizationStrategy> GridImp::getTriangularMeshDiscretizationStrategy()
 {
     return this->triangularMeshDiscretizationStrategy;
 }

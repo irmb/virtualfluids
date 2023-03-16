@@ -132,7 +132,7 @@ private:
 
     uint numberOfLayers;
 
-    TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy;
+    SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 
     uint numberOfSolidBoundaryNodes = 0;
 
@@ -177,8 +177,8 @@ public:
     uint getLevel(real levelNull) const;
     uint getLevel() const;
 
-    void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy);
-    TriangularMeshDiscretizationStrategy *getTriangularMeshDiscretizationStrategy();
+    void setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy);
+    SPtr<TriangularMeshDiscretizationStrategy> getTriangularMeshDiscretizationStrategy();
 
     uint getNumberOfSolidBoundaryNodes() const override;
     void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
