@@ -169,6 +169,7 @@ class findNeighborsIntegrationTest : public ::testing::Test
 {
 protected:
     SPtr<MultipleGridBuilder> gridBuilder;
+
     void SetUp() override
     {
         auto gridFactory = GridFactory::make();

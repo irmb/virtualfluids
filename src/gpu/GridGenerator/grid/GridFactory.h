@@ -59,7 +59,7 @@ public:
         
         grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
 
-        grid->setTriangularMeshDiscretizationStrategy(std::make_shared<PointInObjectDiscretizationStrategy>());
+        grid->setTriangularMeshDiscretizationStrategy(std::make_shared<PointInObjectDiscretizationStrategy>()); // Probably a bug, as this->triangularMeshDiscretizationStrategy is never used. Until ad5efd332a1d6808fccdf8e54fa547630eff401b this line was ``grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);``
 
         return grid;
     }
@@ -69,19 +69,19 @@ public:
         switch (triangularMeshDiscretizationMethod)
         {
         case TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE:
-            triangularMeshDiscretizationStrategy = new PointUnderTriangleStrategy();
+            triangularMeshDiscretizationStrategy = std::make_shared<PointUnderTriangleStrategy>();
             break;
         case TriangularMeshDiscretizationMethod::RAYCASTING:
-            triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
+            triangularMeshDiscretizationStrategy = std::make_shared<RayCastingDiscretizationStrategy>();
             break;
         case TriangularMeshDiscretizationMethod::POINT_IN_OBJECT:
-            triangularMeshDiscretizationStrategy = new PointInObjectDiscretizationStrategy();
+            triangularMeshDiscretizationStrategy = std::make_shared<PointInObjectDiscretizationStrategy>();
             break;
         }
     }
 
 private:
-    TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
+    SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 };
 
 
