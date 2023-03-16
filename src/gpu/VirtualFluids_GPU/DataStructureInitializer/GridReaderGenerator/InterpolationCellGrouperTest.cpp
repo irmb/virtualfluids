@@ -38,7 +38,7 @@ private:
     std::vector<uint> fluidNodeIndicesBorder;
 
 public:
-    GridImpDouble(Object *object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
+    GridImpDouble(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
                   Distribution d, uint level)
         : GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, d, level)
     {

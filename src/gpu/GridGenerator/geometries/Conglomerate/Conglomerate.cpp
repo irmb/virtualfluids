@@ -32,30 +32,14 @@
 //=======================================================================================
 #include "Conglomerate.h"
 
-Conglomerate::Conglomerate()
-{
-    addObjects = new Object*[MAX_NUMBER_OF_OBJECTS];
-    subtractObjects = new Object*[MAX_NUMBER_OF_OBJECTS];
-}
-
-Conglomerate::~Conglomerate()
-{
-    for (uint i = 0; i < numberOfAddObjects; i++)
-        delete addObjects[i];
-
-    for (uint i = 0; i < numberOfSubtractObjects; i++)
-        delete subtractObjects[i];
-
-    delete[] addObjects;
-    delete[] subtractObjects;
-}
+#include <memory>
 
 SPtr<Conglomerate> Conglomerate::makeShared()
 {
-    return SPtr<Conglomerate>(new Conglomerate());
+    return std::make_shared<Conglomerate>();
 }
 
-void Conglomerate::add(Object* object)
+void Conglomerate::add(SPtr<Object> object)
 {
     if (numberOfAddObjects < MAX_NUMBER_OF_OBJECTS)
     {
@@ -65,7 +49,7 @@ void Conglomerate::add(Object* object)
         printf("[WARNING] max numbers of %d reached! Object was not added.\n", MAX_NUMBER_OF_OBJECTS);
 }
 
-void Conglomerate::subtract(Object* object)
+void Conglomerate::subtract(SPtr<Object> object)
 {
     if (numberOfSubtractObjects < MAX_NUMBER_OF_OBJECTS)
     {
@@ -76,9 +60,9 @@ void Conglomerate::subtract(Object* object)
         printf("[WARNING] max numbers of %d reached! Object was not added.\n", MAX_NUMBER_OF_OBJECTS);
 }
 
-Object* Conglomerate::clone() const
+SPtr<Object> Conglomerate::clone() const
 {
-    auto conglomerate = new Conglomerate();
+    auto conglomerate = std::make_shared<Conglomerate>();
     for (uint i = 0; i < numberOfAddObjects; i++)
         conglomerate->add(addObjects[i]->clone());
 

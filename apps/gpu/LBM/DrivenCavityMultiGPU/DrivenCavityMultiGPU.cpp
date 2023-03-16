@@ -150,9 +150,9 @@ void multipleLevel(std::filesystem::path& configPath)
         const real zGridMin = -0.5 * L;
         const real zGridMax = 0.5 * L;
 
-        Cuboid *level1 = nullptr;
+        SPtr<Cuboid> level1 = nullptr;
         if (useLevels)
-            level1 = new Cuboid(-0.25 * L, -0.25 * L, -0.25 * L, 0.25 * L, 0.25 * L, 0.25 * L);
+            level1 = std::make_shared<Cuboid>(-0.25 * L, -0.25 * L, -0.25 * L, 0.25 * L, 0.25 * L, 0.25 * L);
 
         if (para->getNumprocs() > 1) {
 

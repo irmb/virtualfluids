@@ -79,9 +79,9 @@ TriangularMesh::TriangularMesh()
     this->minmax = BoundingBox::makeInvalidMinMaxBox();  // blame Lenz
 }
 
-Object* TriangularMesh::clone() const
+SPtr<Object> TriangularMesh::clone() const
 {
-    auto mesh = new TriangularMesh();
+    auto mesh = std::make_shared<TriangularMesh>();
     mesh->setTriangles(this->triangleVec);
     return mesh;
 }

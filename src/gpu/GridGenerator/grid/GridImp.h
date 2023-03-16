@@ -74,10 +74,10 @@ class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, publi
 {
 protected:
     GridImp() = default;
-    GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
+    GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
 public:
-    static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    static SPtr<GridImp> makeShared(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
     ~GridImp() override = default;
 
 private:
@@ -113,7 +113,7 @@ private:
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
-    Object* object;
+    SPtr<Object> object;
     GridInterface *gridInterface;
 
     int *sparseIndices;
@@ -231,7 +231,7 @@ public:
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
-    const Object* getObject() const override;
+    SPtr<const Object> getObject() const override;
 
     Field getField() const;
     char getFieldEntry(uint index) const override;

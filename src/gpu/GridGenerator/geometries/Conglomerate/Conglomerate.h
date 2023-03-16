@@ -41,17 +41,14 @@
 
 class GRIDGENERATOR_EXPORT Conglomerate : public Object
 {
-public:              
-    Conglomerate();
-    virtual ~Conglomerate();
-
+public:
     static SPtr<Conglomerate> makeShared();
 
-    void add(Object* object);
-    void subtract(Object* objectStub);
+    void add(SPtr<Object> object);
+    void subtract(SPtr<Object> objectStub);
 
 
-    Object* clone() const override;
+    SPtr<Object> clone() const override;
 
     double getX1Centroid() override;
     double getX1Minimum() override;
@@ -74,8 +71,8 @@ protected:
     static double getMaximum(double val1, double val2);
 
 
-    Object** addObjects;
-    Object** subtractObjects;
+    std::array<SPtr<Object>, MAX_NUMBER_OF_OBJECTS> addObjects;
+    std::array<SPtr<Object>, MAX_NUMBER_OF_OBJECTS> subtractObjects;
     uint numberOfAddObjects = 0;
     uint numberOfSubtractObjects = 0;
 };

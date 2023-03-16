@@ -299,8 +299,8 @@ void multipleLevel(const std::string& configPath)
         real dx = 1.0 / 20.0;
         real vx = 0.05;
 
-        TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+        auto triangularMesh = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+        //auto triangularMesh = std::make_shared<TriangularMesh>("stl/ShpereNotOptimal.lnx.stl");
 
         // all
         //gridBuilder->addCoarseGrid(-2, -2, -2,  

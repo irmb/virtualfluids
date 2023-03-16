@@ -54,7 +54,7 @@ class GRIDGENERATOR_EXPORT Grid
 public:
     virtual ~Grid() = default;
 
-    virtual const Object* getObject() const = 0;
+    virtual SPtr<const Object> getObject() const = 0;
 
     virtual real getDelta() const = 0;
     virtual uint getSparseSize() const = 0;

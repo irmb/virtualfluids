@@ -206,10 +206,10 @@ void multipleLevel(std::filesystem::path& configPath)
                 if (useLevels) {
                     if (scalingType == "strong") {
                         gridBuilder->addGrid(
-                            new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1),
+                            std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1),
                             1);
                     } else if (scalingType == "weak") {
-                        gridBuilder->addGrid(new Cuboid(-0.5 * dCubeLev1, -0.5 * dCubeLev1,
+                        gridBuilder->addGrid(std::make_shared<Cuboid>(-0.5 * dCubeLev1, -0.5 * dCubeLev1,
                                                         sideLengthCube - 0.5 * dCubeLev1, 0.5 * dCubeLev1,
                                                         0.5 * dCubeLev1, sideLengthCube + 0.5 * dCubeLev1),
                                              1);
@@ -218,14 +218,14 @@ void multipleLevel(std::filesystem::path& configPath)
 
                 if (scalingType == "weak") {
                     if (useLevels) {
-                        gridBuilder->addGeometry(new Sphere(0.0, 0.0, sideLengthCube, dSphere));
+                        gridBuilder->addGeometry(std::make_shared<Sphere>(0.0, 0.0, sideLengthCube, dSphere));
                     } else {
-                        TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_2GPU.stl");
+                        auto sphereSTL = std::make_shared<TriangularMesh>(stlPath + "Spheres_2GPU.stl");
                         gridBuilder->addGeometry(sphereSTL);
                     }
                 } else if (scalingType == "strong") {
                     gridBuilder->addGeometry(
-                        new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
+                        std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
                 }
 
                 if (generatePart == 0)
@@ -291,10 +291,10 @@ void multipleLevel(std::filesystem::path& configPath)
                 if (useLevels) {
                     if (scalingType == "strong") {
                         gridBuilder->addGrid(
-                            new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1),
+                            std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1),
                             1);
                     } else if (scalingType == "weak") {
-                        gridBuilder->addGrid(new Cuboid(-0.5 * dCubeLev1, sideLengthCube - 0.5 * dCubeLev1,
+                        gridBuilder->addGrid(std::make_shared<Cuboid>(-0.5 * dCubeLev1, sideLengthCube - 0.5 * dCubeLev1,
                                                         sideLengthCube - 0.5 * dCubeLev1, 0.5 * dCubeLev1,
                                                         sideLengthCube + 0.5 * dCubeLev1,
                                                         sideLengthCube + 0.5 * dCubeLev1),
@@ -304,14 +304,14 @@ void multipleLevel(std::filesystem::path& configPath)
 
                 if (scalingType == "weak") {
                     if (useLevels) {
-                        gridBuilder->addGeometry(new Sphere(0.0, sideLengthCube, sideLengthCube, dSphere));
+                        gridBuilder->addGeometry(std::make_shared<Sphere>(0.0, sideLengthCube, sideLengthCube, dSphere));
                     } else {
-                        TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_4GPU.stl");
+                        auto sphereSTL = std::make_shared<TriangularMesh>(stlPath + "Spheres_4GPU.stl");
                         gridBuilder->addGeometry(sphereSTL);
                     }
                 } else if (scalingType == "strong") {
                     gridBuilder->addGeometry(
-                        new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
+                        std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
                 }
 
                 if (generatePart == 0)
@@ -426,11 +426,11 @@ void multipleLevel(std::filesystem::path& configPath)
                 if (useLevels) {
                     if (scalingType == "strong") {
                         gridBuilder->addGrid(
-                            new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1),
+                            std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1),
                             1);
                     } else if (scalingType == "weak") {
                         gridBuilder->addGrid(
-                            new Cuboid(sideLengthCube - 0.5 * dCubeLev1, sideLengthCube - 0.5 * dCubeLev1,
+                            std::make_shared<Cuboid>(sideLengthCube - 0.5 * dCubeLev1, sideLengthCube - 0.5 * dCubeLev1,
                                        sideLengthCube - 0.5 * dCubeLev1, sideLengthCube + 0.5 * dCubeLev1,
                                        sideLengthCube + 0.5 * dCubeLev1, sideLengthCube + 0.5 * dCubeLev1),
                             1);
@@ -439,14 +439,14 @@ void multipleLevel(std::filesystem::path& configPath)
 
                 if (scalingType == "weak") {
                     if (useLevels) {
-                        gridBuilder->addGeometry(new Sphere(sideLengthCube, sideLengthCube, sideLengthCube, dSphere));
+                        gridBuilder->addGeometry(std::make_shared<Sphere>(sideLengthCube, sideLengthCube, sideLengthCube, dSphere));
                     } else {
-                        TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_8GPU.stl");
+                        auto sphereSTL = std::make_shared<TriangularMesh>(stlPath + "Spheres_8GPU.stl");
                         gridBuilder->addGeometry(sphereSTL);
                     }
                 } else if (scalingType == "strong") {
                     gridBuilder->addGeometry(
-                        new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
+                        std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
                 }
 
                 if (generatePart == 0)
@@ -600,9 +600,9 @@ void multipleLevel(std::filesystem::path& configPath)
                 gridBuilder->setNumberOfLayers(10, 8);
                 if (scalingType == "strong") {
                     gridBuilder->addGrid(
-                        new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);
+                        std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);
                 } else if (scalingType == "weak")
-                    gridBuilder->addGrid(new Cuboid(sideLengthCube - 0.5 * dCubeLev1, sideLengthCube - 0.5 * dCubeLev1,
+                    gridBuilder->addGrid(std::make_shared<Cuboid>(sideLengthCube - 0.5 * dCubeLev1, sideLengthCube - 0.5 * dCubeLev1,
                                                     sideLengthCube - 0.5 * dCubeLev1, sideLengthCube + 0.5 * dCubeLev1,
                                                     sideLengthCube + 0.5 * dCubeLev1, sideLengthCube + 0.5 * dCubeLev1),
                                          1);
@@ -610,14 +610,14 @@ void multipleLevel(std::filesystem::path& configPath)
 
             if (scalingType == "weak") {
                 if (useLevels) {
-                    gridBuilder->addGeometry(new Sphere(sideLengthCube, sideLengthCube, sideLengthCube, dSphere));
+                    gridBuilder->addGeometry(std::make_shared<Sphere>(sideLengthCube, sideLengthCube, sideLengthCube, dSphere));
                 } else {
-                    TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_1GPU.stl");
+                    auto sphereSTL = std::make_shared<TriangularMesh>(stlPath + "Spheres_1GPU.stl");
                     gridBuilder->addGeometry(sphereSTL);
                 }
             } else {
                 gridBuilder->addGeometry(
-                    new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
+                    std::make_shared<Sphere>(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
             }
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!

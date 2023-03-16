@@ -39,7 +39,7 @@ int main( int argc, char* argv[])
 	gridBuilder->addCoarseGrid(-256, -256, -10,
 								256,  256,  40, dx);
 
-    TriangularMesh* flatGroundSTL = TriangularMesh::make("F:/Work/Computations/NagelSchreckenberg/FlatGround.stl");
+    auto flatGroundSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/NagelSchreckenberg/FlatGround.stl");
 
     gridBuilder->addGeometry(flatGroundSTL);
 

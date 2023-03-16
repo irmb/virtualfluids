@@ -268,31 +268,31 @@ void multipleLevel(const std::string& configPath)
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     //Conglomerate* conglomerate = new Conglomerate();
-    //conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
-    //conglomerate->subtract(new Sphere(30, 20, 20, 4));
+    //conglomerate->add(std::make_shared<Cuboid>(10, 10, 10, 30, 30, 30));
+    //conglomerate->subtract(std::make_shared<Sphere>(30, 20, 20, 4));
     //gridBuilder->addGrid(conglomerate, 2);
 
 
 //    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 14, 10, 20, 0.25);
-    //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
+    //auto triangularMesh = std::make_shared<TriangularMesh>("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
     gridBuilder->addCoarseGrid(-10, -8, -3, 50, 20, 20, 0.25);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl", DiscretizationMethod::RAYCASTING);
+    auto triangularMesh = std::make_shared<TriangularMesh>("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl", DiscretizationMethod::RAYCASTING);
 
 
     //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
 
-    //TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
+    //auto sphere = std::make_shared<TriangularMesh>("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
     //TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
     //trans.transformWorldToGrid(*sphere);
     //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
 
-    //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
+    //gridBuilder->addGrid(std::make_shared<Sphere>(20, 20, 20, 8));
     gridBuilder->addGrid(triangularMesh, 2);
 
-    //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
-    //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
+    //gridBuilder->addFineGrid(std::make_shared<Cuboid>(15, 15, 15, 25, 25, 25), 1);
+    //gridBuilder->addFineGrid(std::make_shared<Cuboid>(17, 17, 17, 23, 23, 23), 2);
 
 
     //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);

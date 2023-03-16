@@ -32,6 +32,7 @@
 //=======================================================================================
 #include "Cuboid.h"
 
+#include "PointerDefinitions.h"
 #include "utilities/math/Math.h"
 
 Cuboid::Cuboid(const double& x1a,const double& x2a, const double& x3a, const double& x1b,const double& x2b, const double& x3b)
@@ -40,14 +41,9 @@ Cuboid::Cuboid(const double& x1a,const double& x2a, const double& x3a, const dou
 
 }
 
-Cuboid::~Cuboid()
+SPtr<Object> Cuboid::clone() const
 {
-
-}
-
-Object* Cuboid::clone() const
-{
-    return new Cuboid(minX1, minX2, minX3, maxX1, maxX2, maxX3);
+    return std::make_shared<Cuboid>(minX1, minX2, minX3, maxX1, maxX2, maxX3);
 }
 
 double Cuboid::getX1Centroid()

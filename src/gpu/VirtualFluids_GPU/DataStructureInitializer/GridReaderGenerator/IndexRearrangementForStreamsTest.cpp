@@ -57,16 +57,16 @@ private:
     std::vector<uint> fluidNodeIndicesBorder;
 
 public:
-    GridImpDouble(Object *object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
+    GridImpDouble(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
                   Distribution d, uint level)
         : GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, d, level)
     {
     }
 
-    static SPtr<GridImpDouble> makeShared(Object *object, real startX, real startY, real startZ, real endX, real endY,
+    static SPtr<GridImpDouble> makeShared(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY,
                                           real endZ, real delta, Distribution d, uint level)
     {
-        SPtr<GridImpDouble> grid(new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
+        SPtr<GridImpDouble> grid(std::make_shared<GridImpDouble>(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
         return grid;
     }
 };

@@ -50,10 +50,10 @@ class GRIDGENERATOR_EXPORT GridFactory
 public:
     static SPtr<GridFactory> make()
     {
-        return SPtr<GridFactory>(new GridFactory());
+        return std::make_shared<GridFactory>();
     }
 
-    SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
+    SPtr<Grid> makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
     {
         SPtr<GridImp> grid;
         
