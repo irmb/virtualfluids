@@ -1194,8 +1194,8 @@ void GridGenerator::allocArrays_OffsetScale()
         cudaMemoryManager->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
-        builder->getOffsetCF(para->getParH(level)->neighborCF.x, para->getParH(level)->neighborCF.y, para->getParH(level)->neighborCF.z, level);
-        builder->getOffsetFC(para->getParH(level)->neighborFC.x, para->getParH(level)->neighborFC.y, para->getParH(level)->neighborFC.z, level);
+        builder->getOffsetCF(para->getParH(level)->neighborCoarseToFine.x, para->getParH(level)->neighborCoarseToFine.y, para->getParH(level)->neighborCoarseToFine.z, level);
+        builder->getOffsetFC(para->getParH(level)->neighborFineToCoarse.x, para->getParH(level)->neighborFineToCoarse.y, para->getParH(level)->neighborFineToCoarse.z, level);
         builder->getGridInterfaceIndices(para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.fineCellIndices, level);
 
         if (para->getUseStreams() || para->getNumprocs() > 1) {

@@ -20,9 +20,9 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level) co
     parDs[level]->fineToCoarseBulk.coarseCellIndices = parDs[level]->fineToCoarseBorder.coarseCellIndices + parDs[level]->fineToCoarseBorder.numberOfCells;
     parDs[level]->fineToCoarseBorder.fineCellIndices = parDs[level]->fineToCoarse.fineCellIndices;
     parDs[level]->fineToCoarseBulk.fineCellIndices = parDs[level]->fineToCoarseBorder.fineCellIndices + parDs[level]->fineToCoarseBorder.numberOfCells;
-    parDs[level]->neighborFCBulk.x = parDs[level]->neighborFC.x + parDs[level]->fineToCoarseBorder.numberOfCells;
-    parDs[level]->neighborFCBulk.y = parDs[level]->neighborFC.y + parDs[level]->fineToCoarseBorder.numberOfCells;
-    parDs[level]->neighborFCBulk.z = parDs[level]->neighborFC.z + parDs[level]->fineToCoarseBorder.numberOfCells;
+    parDs[level]->neighborFineToCoarseBulk.x = parDs[level]->neighborFineToCoarse.x + parDs[level]->fineToCoarseBorder.numberOfCells;
+    parDs[level]->neighborFineToCoarseBulk.y = parDs[level]->neighborFineToCoarse.y + parDs[level]->fineToCoarseBorder.numberOfCells;
+    parDs[level]->neighborFineToCoarseBulk.z = parDs[level]->neighborFineToCoarse.z + parDs[level]->fineToCoarseBorder.numberOfCells;
 }
 
 void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) const
@@ -48,15 +48,15 @@ void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) 
         if (grid->isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
             iCellFccBorderVector.push_back(iCellFccAll[i]);
             iCellFcfBorderVector.push_back(iCellFcfAll[i]);
-            xBorderVector.push_back(parHs[level]->neighborFC.x[i]);
-            yBorderVector.push_back(parHs[level]->neighborFC.y[i]);
-            zBorderVector.push_back(parHs[level]->neighborFC.z[i]);
+            xBorderVector.push_back(parHs[level]->neighborFineToCoarse.x[i]);
+            yBorderVector.push_back(parHs[level]->neighborFineToCoarse.y[i]);
+            zBorderVector.push_back(parHs[level]->neighborFineToCoarse.z[i]);
         } else {
             iCellFccBulkVector.push_back(iCellFccAll[i]);
             iCellFcfBulkVector.push_back(iCellFcfAll[i]);
-            xBulkVector.push_back(parHs[level]->neighborFC.x[i]);
-            yBulkVector.push_back(parHs[level]->neighborFC.y[i]);
-            zBulkVector.push_back(parHs[level]->neighborFC.z[i]);
+            xBulkVector.push_back(parHs[level]->neighborFineToCoarse.x[i]);
+            yBulkVector.push_back(parHs[level]->neighborFineToCoarse.y[i]);
+            zBulkVector.push_back(parHs[level]->neighborFineToCoarse.z[i]);
         }
 
     // set new sizes and pointers
@@ -66,25 +66,25 @@ void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) 
     parHs[level]->fineToCoarseBulk.numberOfCells = (uint)iCellFccBulkVector.size();
     parHs[level]->fineToCoarseBulk.coarseCellIndices = iCellFccAll + parHs[level]->fineToCoarseBorder.numberOfCells;
     parHs[level]->fineToCoarseBulk.fineCellIndices = iCellFcfAll + parHs[level]->fineToCoarseBorder.numberOfCells;
-    parHs[level]->neighborFCBulk.x = parHs[level]->neighborFC.x + parHs[level]->fineToCoarseBorder.numberOfCells;
-    parHs[level]->neighborFCBulk.y = parHs[level]->neighborFC.y + parHs[level]->fineToCoarseBorder.numberOfCells;
-    parHs[level]->neighborFCBulk.z = parHs[level]->neighborFC.z + parHs[level]->fineToCoarseBorder.numberOfCells;
+    parHs[level]->neighborFineToCoarseBulk.x = parHs[level]->neighborFineToCoarse.x + parHs[level]->fineToCoarseBorder.numberOfCells;
+    parHs[level]->neighborFineToCoarseBulk.y = parHs[level]->neighborFineToCoarse.y + parHs[level]->fineToCoarseBorder.numberOfCells;
+    parHs[level]->neighborFineToCoarseBulk.z = parHs[level]->neighborFineToCoarse.z + parHs[level]->fineToCoarseBorder.numberOfCells;
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
     for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
         iCellFccAll[i] = iCellFccBorderVector[i];
         iCellFcfAll[i] = iCellFcfBorderVector[i];
-        parHs[level]->neighborFC.x[i] = xBorderVector[i];
-        parHs[level]->neighborFC.y[i] = yBorderVector[i];
-        parHs[level]->neighborFC.z[i] = zBorderVector[i];
+        parHs[level]->neighborFineToCoarse.x[i] = xBorderVector[i];
+        parHs[level]->neighborFineToCoarse.y[i] = yBorderVector[i];
+        parHs[level]->neighborFineToCoarse.z[i] = zBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++) {
         parHs[level]->fineToCoarseBulk.coarseCellIndices[i] = iCellFccBulkVector[i];
         parHs[level]->fineToCoarseBulk.fineCellIndices[i] = iCellFcfBulkVector[i];
-        parHs[level]->neighborFCBulk.x[i] = xBulkVector[i];
-        parHs[level]->neighborFCBulk.y[i] = yBulkVector[i];
-        parHs[level]->neighborFCBulk.z[i] = zBulkVector[i];
+        parHs[level]->neighborFineToCoarseBulk.x[i] = xBulkVector[i];
+        parHs[level]->neighborFineToCoarseBulk.y[i] = yBulkVector[i];
+        parHs[level]->neighborFineToCoarseBulk.z[i] = zBulkVector[i];
     }
 }
 
@@ -98,9 +98,9 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level) co
     parDs[level]->coarseToFineBulk.coarseCellIndices = parDs[level]->coarseToFineBorder.coarseCellIndices + parDs[level]->coarseToFineBorder.numberOfCells;
     parDs[level]->coarseToFineBorder.fineCellIndices = parDs[level]->coarseToFine.fineCellIndices;
     parDs[level]->coarseToFineBulk.fineCellIndices = parDs[level]->coarseToFineBorder.fineCellIndices + parDs[level]->coarseToFineBorder.numberOfCells;
-    parDs[level]->neighborCFBulk.x = parDs[level]->neighborCF.x + parDs[level]->coarseToFineBorder.numberOfCells;
-    parDs[level]->neighborCFBulk.y = parDs[level]->neighborCF.y + parDs[level]->coarseToFineBorder.numberOfCells;
-    parDs[level]->neighborCFBulk.z = parDs[level]->neighborCF.z + parDs[level]->coarseToFineBorder.numberOfCells;
+    parDs[level]->neighborCoarseToFineBulk.x = parDs[level]->neighborCoarseToFine.x + parDs[level]->coarseToFineBorder.numberOfCells;
+    parDs[level]->neighborCoarseToFineBulk.y = parDs[level]->neighborCoarseToFine.y + parDs[level]->coarseToFineBorder.numberOfCells;
+    parDs[level]->neighborCoarseToFineBulk.z = parDs[level]->neighborCoarseToFine.z + parDs[level]->coarseToFineBorder.numberOfCells;
 }
 
 void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) const
@@ -140,15 +140,15 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
 
             iCellCfcBorderVector.push_back(iCellCfcAll[i]);
             iCellCffBorderVector.push_back(iCellCffAll[i]);
-            xBorderVector.push_back(parHs[level]->neighborCF.x[i]);
-            yBorderVector.push_back(parHs[level]->neighborCF.y[i]);
-            zBorderVector.push_back(parHs[level]->neighborCF.z[i]);
+            xBorderVector.push_back(parHs[level]->neighborCoarseToFine.x[i]);
+            yBorderVector.push_back(parHs[level]->neighborCoarseToFine.y[i]);
+            zBorderVector.push_back(parHs[level]->neighborCoarseToFine.z[i]);
         } else {
             iCellCfcBulkVector.push_back(iCellCfcAll[i]);
             iCellCffBulkVector.push_back(iCellCffAll[i]);
-            xBulkVector.push_back(parHs[level]->neighborCF.x[i]);
-            yBulkVector.push_back(parHs[level]->neighborCF.y[i]);
-            zBulkVector.push_back(parHs[level]->neighborCF.z[i]);
+            xBulkVector.push_back(parHs[level]->neighborCoarseToFine.x[i]);
+            yBulkVector.push_back(parHs[level]->neighborCoarseToFine.y[i]);
+            zBulkVector.push_back(parHs[level]->neighborCoarseToFine.z[i]);
         }
     }
 
@@ -159,24 +159,24 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
     parHs[level]->coarseToFineBulk.numberOfCells = (uint)iCellCfcBulkVector.size();
     parHs[level]->coarseToFineBulk.coarseCellIndices = parHs[level]->coarseToFine.coarseCellIndices + parHs[level]->coarseToFineBorder.numberOfCells;
     parHs[level]->coarseToFineBulk.fineCellIndices = parHs[level]->coarseToFine.fineCellIndices + parHs[level]->coarseToFineBorder.numberOfCells;
-    parHs[level]->neighborCFBulk.x = parHs[level]->neighborCF.x + parHs[level]->coarseToFineBorder.numberOfCells;
-    parHs[level]->neighborCFBulk.y = parHs[level]->neighborCF.y + parHs[level]->coarseToFineBorder.numberOfCells;
-    parHs[level]->neighborCFBulk.z = parHs[level]->neighborCF.z + parHs[level]->coarseToFineBorder.numberOfCells;
+    parHs[level]->neighborCoarseToFineBulk.x = parHs[level]->neighborCoarseToFine.x + parHs[level]->coarseToFineBorder.numberOfCells;
+    parHs[level]->neighborCoarseToFineBulk.y = parHs[level]->neighborCoarseToFine.y + parHs[level]->coarseToFineBorder.numberOfCells;
+    parHs[level]->neighborCoarseToFineBulk.z = parHs[level]->neighborCoarseToFine.z + parHs[level]->coarseToFineBorder.numberOfCells;
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
     for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
         parHs[level]->coarseToFineBorder.coarseCellIndices[i] = iCellCfcBorderVector[i];
         parHs[level]->coarseToFineBorder.fineCellIndices[i] = iCellCffBorderVector[i];
-        parHs[level]->neighborCF.x[i] = xBorderVector[i];
-        parHs[level]->neighborCF.y[i] = yBorderVector[i];
-        parHs[level]->neighborCF.z[i] = zBorderVector[i];
+        parHs[level]->neighborCoarseToFine.x[i] = xBorderVector[i];
+        parHs[level]->neighborCoarseToFine.y[i] = yBorderVector[i];
+        parHs[level]->neighborCoarseToFine.z[i] = zBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellCfcBulkVector.size(); i++) {
         parHs[level]->coarseToFineBulk.coarseCellIndices[i] = iCellCfcBulkVector[i];
         parHs[level]->coarseToFineBulk.fineCellIndices[i] = iCellCffBulkVector[i];
-        parHs[level]->neighborCFBulk.x[i] = xBulkVector[i];
-        parHs[level]->neighborCFBulk.y[i] = yBulkVector[i];
-        parHs[level]->neighborCFBulk.z[i] = zBulkVector[i];
+        parHs[level]->neighborCoarseToFineBulk.x[i] = xBulkVector[i];
+        parHs[level]->neighborCoarseToFineBulk.y[i] = yBulkVector[i];
+        parHs[level]->neighborCoarseToFineBulk.z[i] = zBulkVector[i];
     }
 }

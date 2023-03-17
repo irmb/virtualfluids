@@ -300,7 +300,7 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->neighborFC);
+            para->getParD(level)->neighborFineToCoarse);
     }
     else if (para->getDiffMod() == 27)
     {
@@ -324,7 +324,7 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->neighborFC);
+            para->getParD(level)->neighborFineToCoarse);
     }
 }
 
@@ -569,7 +569,7 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->neighborCF);
+            para->getParD(level)->neighborCoarseToFine);
     }
     else if (para->getDiffMod() == 27)
     {
@@ -593,6 +593,6 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->neighborCF);
+            para->getParD(level)->neighborCoarseToFine);
     }
 }

@@ -180,8 +180,8 @@ void GridReader::allocArrays_OffsetScale()
 		cudaMemoryManager->cudaAllocInterfaceOffFC(i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
-        obj_offCF->initArrayOffset(para->getParH(i)->neighborCF.x, para->getParH(i)->neighborCF.y, para->getParH(i)->neighborCF.z, i);
-        obj_offFC->initArrayOffset(para->getParH(i)->neighborFC.x, para->getParH(i)->neighborFC.y, para->getParH(i)->neighborFC.z, i);
+        obj_offCF->initArrayOffset(para->getParH(i)->neighborCoarseToFine.x, para->getParH(i)->neighborCoarseToFine.y, para->getParH(i)->neighborCoarseToFine.z, i);
+        obj_offFC->initArrayOffset(para->getParH(i)->neighborFineToCoarse.x, para->getParH(i)->neighborFineToCoarse.y, para->getParH(i)->neighborFineToCoarse.z, i);
         obj_scaleCFC->initScale(para->getParH(i)->coarseToFine.coarseCellIndices, i);
         obj_scaleCFF->initScale(para->getParH(i)->coarseToFine.fineCellIndices, i);
         obj_scaleFCC->initScale(para->getParH(i)->fineToCoarse.coarseCellIndices, i);

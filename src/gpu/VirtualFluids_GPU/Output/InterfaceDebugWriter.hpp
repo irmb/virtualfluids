@@ -136,9 +136,9 @@ void writeInterfaceLinesDebugOff(Parameter *para)
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
         for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++) {
-            double xoff = para->getParH(level)->neighborCF.x[u];
-            double yoff = para->getParH(level)->neighborCF.y[u];
-            double zoff = para->getParH(level)->neighborCF.z[u];
+            double xoff = para->getParH(level)->neighborCoarseToFine.x[u];
+            double yoff = para->getParH(level)->neighborCoarseToFine.y[u];
+            double zoff = para->getParH(level)->neighborCoarseToFine.z[u];
 
             int posFine = para->getParH(level)->coarseToFine.fineCellIndices[u];
 
