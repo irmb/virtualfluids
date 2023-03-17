@@ -105,12 +105,12 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         para = testingVF::createParameterForLevel(cf.level);
-        para->getParH(cf.level)->intCF.ICellCFC = &(cf.iCellCFC.front());
-        para->getParH(cf.level)->intCF.ICellCFF = &(cf.iCellCFF.front());
+        para->getParH(cf.level)->intCF.coarseCellIndices = &(cf.iCellCFC.front());
+        para->getParH(cf.level)->intCF.fineCellIndices = &(cf.iCellCFF.front());
         para->getParH(cf.level)->neighborX = cf.neighborX;
         para->getParH(cf.level)->neighborY = cf.neighborY;
         para->getParH(cf.level)->neighborZ = cf.neighborZ;
-        para->getParH(cf.level)->intCF.kCF = cf.sizeOfICellCf;
+        para->getParH(cf.level)->intCF.numberOfCells = cf.sizeOfICellCf;
         para->getParH(cf.level)->neighborCF.x = &(cf.offsetCFx.front());
         para->getParH(cf.level)->neighborCF.y = &(cf.offsetCFy.front());
         para->getParH(cf.level)->neighborCF.z = &(cf.offsetCFz.front());
@@ -128,26 +128,26 @@ TEST_F(InterpolationCellGrouperTest_IndicesCFBorderBulkTest, splitCoarseToFineIn
 {
     testSubject->splitCoarseToFineIntoBorderAndBulk(cf.level);
 
-    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF + para->getParH(cf.level)->intCFBulk.kCF,
+    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.numberOfCells + para->getParH(cf.level)->intCFBulk.numberOfCells,
                 testing::Eq(cf.sizeOfICellCf))
         << "The number of interpolation cells from coarse to fine changed during reordering.";
 
     // check coarse to fine border (coarse nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF, testing::Eq((uint)cf.iCellCfcBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFC, cf.iCellCfcBorder_expected))
+    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.numberOfCells, testing::Eq((uint)cf.iCellCfcBorder_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.coarseCellIndices, cf.iCellCfcBorder_expected))
         << "intCFBorder.ICellCFC does not match the expected border vector";
     // check coarse to fine border (fine nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF, testing::Eq((uint)cf.iCellCffBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFF, cf.iCellCffBorder_expected))
+    EXPECT_THAT(para->getParH(cf.level)->intCFBorder.numberOfCells, testing::Eq((uint)cf.iCellCffBorder_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.fineCellIndices, cf.iCellCffBorder_expected))
         << "intCFBorder.ICellCFF does not match the expected border vector";
 
     // check coarse to fine bulk (coarse nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBulk.kCF, testing::Eq((uint)cf.iCellCfcBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFC, cf.iCellCfcBulk_expected))
+    EXPECT_THAT(para->getParH(cf.level)->intCFBulk.numberOfCells, testing::Eq((uint)cf.iCellCfcBulk_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.coarseCellIndices, cf.iCellCfcBulk_expected))
         << "intCFBulk.ICellCFC does not match the expected bulk vector";
     // check coarse to fine bulk (fine nodes)
-    EXPECT_THAT(para->getParH(cf.level)->intCFBulk.kCF, testing::Eq((uint)cf.iCellCffBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFF, cf.iCellCffBulk_expected))
+    EXPECT_THAT(para->getParH(cf.level)->intCFBulk.numberOfCells, testing::Eq((uint)cf.iCellCffBulk_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.fineCellIndices, cf.iCellCffBulk_expected))
         << "intCFBulk.ICellCFF does not match the expected bulk vector";
 
     // check offset cells
@@ -199,9 +199,9 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         para = testingVF::createParameterForLevel(fc.level);
-        para->getParH(fc.level)->intFC.ICellFCC = &(fc.iCellFCC.front());
-        para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
-        para->getParH(fc.level)->intFC.kFC = fc.sizeOfICellFC;
+        para->getParH(fc.level)->intFC.coarseCellIndices = &(fc.iCellFCC.front());
+        para->getParH(fc.level)->intFC.fineCellIndices = &(fc.iCellFCF.front());
+        para->getParH(fc.level)->intFC.numberOfCells = fc.sizeOfICellFC;
         para->getParH(fc.level)->neighborFC.x = &(fc.offsetFCx.front());
         para->getParH(fc.level)->neighborFC.y = &(fc.offsetFCy.front());
         para->getParH(fc.level)->neighborFC.z = &(fc.offsetFCz.front());
@@ -219,26 +219,26 @@ TEST_F(InterpolationCellGrouperTest_IndicesFCBorderBulkTest, splitFineToCoarseIn
 {
     testSubject->splitFineToCoarseIntoBorderAndBulk(fc.level);
 
-    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC + para->getParH(fc.level)->intFCBulk.kFC,
+    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.numberOfCells + para->getParH(fc.level)->intFCBulk.numberOfCells,
                 testing::Eq(fc.sizeOfICellFC))
         << "The number of interpolation cells from coarse to fine changed during reordering.";
 
     // check coarse to fine border (coarse nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC, testing::Eq((uint)fc.iCellFccBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.ICellFCC, fc.iCellFccBorder_expected))
+    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.numberOfCells, testing::Eq((uint)fc.iCellFccBorder_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.coarseCellIndices, fc.iCellFccBorder_expected))
         << "intFCBorder.ICellFCC does not match the expected border vector";
     // check coarse to fine border (fine nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC, testing::Eq((uint)fc.iCellFcfBorder_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.ICellFCF, fc.iCellFcfBorder_expected))
+    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.numberOfCells, testing::Eq((uint)fc.iCellFcfBorder_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.fineCellIndices, fc.iCellFcfBorder_expected))
         << "intFCBorder.ICellFCF does not match the expected border vector";
 
     // check coarse to fine bulk (coarse nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFccBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCC, fc.iCellFccBulk_expected))
+    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.numberOfCells, testing::Eq((uint)fc.iCellFccBulk_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.coarseCellIndices, fc.iCellFccBulk_expected))
         << "intFCBulk.ICellFCC does not match the expected bulk vector";
     // check coarse to fine bulk (fine nodes)
-    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFcfBulk_expected.size()));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCF, fc.iCellFcfBulk_expected))
+    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.numberOfCells, testing::Eq((uint)fc.iCellFcfBulk_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.fineCellIndices, fc.iCellFcfBulk_expected))
         << "intFCBulk.ICellFCF does not match the expected bulk vector";
 
     // check offset cells

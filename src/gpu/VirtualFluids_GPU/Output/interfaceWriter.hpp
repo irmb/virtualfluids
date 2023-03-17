@@ -32,11 +32,11 @@ public:
 		{
 			if ((Type == "_InterfaceCFC") || (Type == "_InterfaceCFF"))
 			{
-                nodeNumberVec += para->getParH(level)->intCF.kCF;
+                nodeNumberVec += para->getParH(level)->intCF.numberOfCells;
 			}
 			else if (Type == "_InterfaceFCF")
 			{
-                nodeNumberVec += para->getParH(level)->intFC.kFC;
+                nodeNumberVec += para->getParH(level)->intFC.numberOfCells;
 			}
 		}
 		nodesVec.resize(nodeNumberVec*8);
@@ -55,9 +55,9 @@ public:
 			//std::vector<unsigned int>& posVec = posIndexVec[level];
 			if (Type == "_InterfaceCFC")
 			{
-                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.numberOfCells; u++)
 				{
-					int pos = para->getParH(level)->intCF.ICellCFC[u];
+					int pos = para->getParH(level)->intCF.coarseCellIndices[u];
 					int ix1 = pos % nx1lev;
 					int wertDurchNx1 = pos / nx1lev;
 					int ix2 = wertDurchNx1 % nx2lev;
@@ -82,9 +82,9 @@ public:
 			}
 			else if (Type == "_InterfaceCFF")
 			{
-                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.numberOfCells; u++)
 				{
-					int pos = para->getParH(level)->intCF.ICellCFF[u];
+					int pos = para->getParH(level)->intCF.fineCellIndices[u];
 					int ix1 = pos % nx1lev;
 					int wertDurchNx1 = pos / nx1lev;
 					int ix2 = wertDurchNx1 % nx2lev;
@@ -109,9 +109,9 @@ public:
 			}
 			else if (Type == "_InterfaceFCF")
 			{
-                for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intFC.numberOfCells; u++)
 				{
-					int pos = para->getParH(level)->intFC.ICellFCF[u];
+					int pos = para->getParH(level)->intFC.fineCellIndices[u];
 					int ix1 = pos % nx1lev;
 					int wertDurchNx1 = pos / nx1lev;
 					int ix2 = wertDurchNx1 % nx2lev;
@@ -146,7 +146,7 @@ public:
 		int nodeNumberVec = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-            nodeNumberVec += para->getParH(level)->intFC.kFC;
+            nodeNumberVec += para->getParH(level)->intFC.numberOfCells;
 		}
 		nodesVec.resize(nodeNumberVec*8);
 		int nodeCount = 0;
@@ -163,9 +163,9 @@ public:
 			double achtelNodeDelta = 0.125*nodeDeltaLevel;
 			//int count = 0;
 			//std::vector<unsigned int>& posVec = posIndexVec[level];
-            for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
+            for (unsigned int u = 0; u < para->getParH(level)->intFC.numberOfCells; u++)
 			{
-				int pos = para->getParH(level)->intFC.ICellFCC[u];//posVec[u];
+				int pos = para->getParH(level)->intFC.coarseCellIndices[u];//posVec[u];
 				int ix1 = pos % nx1lev;
 				int wertDurchNx1 = pos / nx1lev;
 				int ix2 = wertDurchNx1 % nx2lev;

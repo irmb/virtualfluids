@@ -4025,7 +4025,7 @@ void ScaleCF_staggered_time_comp_27(
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, ICellNeigh& offsetCF, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->kCF);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
     scaleCF_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
@@ -4040,9 +4040,9 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
         parameterDeviceC->numberOfNodes,
         parameterDeviceF->numberOfNodes,
         parameterDeviceC->isEvenTimestep,
-        icellCF->ICellCFC,
-        icellCF->ICellCFF,
-        icellCF->kCF,
+        icellCF->coarseCellIndices,
+        icellCF->fineCellIndices,
+        icellCF->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
         parameterDeviceC->viscosity,
@@ -4056,7 +4056,7 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
 
 template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, ICellNeigh& offsetCF, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->kCF);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
     scaleCF_compressible<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
@@ -4071,9 +4071,9 @@ template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationPara
         parameterDeviceC->numberOfNodes,
         parameterDeviceF->numberOfNodes,
         parameterDeviceC->isEvenTimestep,
-        icellCF->ICellCFC,
-        icellCF->ICellCFF,
-        icellCF->kCF,
+        icellCF->coarseCellIndices,
+        icellCF->fineCellIndices,
+        icellCF->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
         parameterDeviceC->turbViscosity,
@@ -4922,7 +4922,7 @@ void ScaleFC_staggered_time_comp_27(
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, ICellNeigh &offsetFC, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
     scaleFC_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
@@ -4937,9 +4937,9 @@ void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
         parameterDeviceC->numberOfNodes,
         parameterDeviceF->numberOfNodes,
         parameterDeviceC->isEvenTimestep,
-        icellFC->ICellFCC,
-        icellFC->ICellFCF,
-        icellFC->kFC,
+        icellFC->coarseCellIndices,
+        icellFC->fineCellIndices,
+        icellFC->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
         parameterDeviceC->viscosity,
@@ -4953,7 +4953,7 @@ void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
 //////////////////////////////////////////////////////////////////////////
 template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, ICellNeigh &offsetFC, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
     scaleFC_compressible<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
@@ -4968,9 +4968,9 @@ template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationPara
         parameterDeviceC->numberOfNodes,
         parameterDeviceF->numberOfNodes,
         parameterDeviceC->isEvenTimestep,
-        icellFC->ICellFCC,
-        icellFC->ICellFCF,
-        icellFC->kFC,
+        icellFC->coarseCellIndices,
+        icellFC->fineCellIndices,
+        icellFC->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
         parameterDeviceC->turbViscosity,

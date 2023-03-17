@@ -165,18 +165,18 @@ struct InitCondition
 
 //Interface Cells
 typedef struct ICellCF{
-   uint* ICellCFF;
-   uint* ICellCFC;
-   uint kCF;
+   uint* fineCellIndices;
+   uint* coarseCellIndices;
+   uint numberOfCells;
 } InterpolationCellCoarseToFine;
 
 typedef struct ICellFC{
-   uint* ICellFCF;
-   uint* ICellFCC;
-   uint kFC;
+   uint* fineCellIndices;
+   uint* coarseCellIndices;
+   uint numberOfCells;
 } InterpolationCellFineToCoarse;
 
-//Offset of the interface cells at the wall
+//! \brief stores location of neighboring cell (necessary for refinement into the wall)
 typedef struct ICellNeigh{
    real* x;
    real* y;

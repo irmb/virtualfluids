@@ -21,9 +21,9 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-                out.writeInteger(para->getParH(level)->intCF.kCF);
+                out.writeInteger(para->getParH(level)->intCF.numberOfCells);
 				out.writeLine();
-                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.numberOfCells; u++)
 				{
 					out.writeDouble(para->getParH(level)->neighborCF.x[u]);
 					out.writeDouble(para->getParH(level)->neighborCF.y[u]);
@@ -36,9 +36,9 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-                out.writeInteger(para->getParH(level)->intFC.kFC);
+                out.writeInteger(para->getParH(level)->intFC.numberOfCells);
 				out.writeLine();
-                for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intFC.numberOfCells; u++)
 				{
 					out.writeDouble(para->getParH(level)->neighborFC.x[u]);
 					out.writeDouble(para->getParH(level)->neighborFC.y[u]);

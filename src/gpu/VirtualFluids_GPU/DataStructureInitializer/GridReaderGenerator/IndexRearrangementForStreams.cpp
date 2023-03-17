@@ -333,7 +333,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
 {
     VF_LOG_INFO("Reorder send indices for communication after fine to coarse: level: {} direction: {}", level,
                 direction);
-    if (para->getParH(level)->intCF.kCF == 0 || para->getParH(level)->intFC.kFC == 0)
+    if (para->getParH(level)->intCF.numberOfCells == 0 || para->getParH(level)->intFC.numberOfCells == 0)
         VF_LOG_CRITICAL("reorderSendIndicesForCommAfterFtoC(): para->getParH(level)->intCF needs to be initialized "
                         "before calling this function");
 
@@ -345,7 +345,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     // iCellFCC
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         sparseIndexSend = sendIndices[posInSendIndices];
-        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.kFC, sparseIndexSend, level)) {
+        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.numberOfCells, sparseIndexSend, level)) {
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
         }
@@ -383,7 +383,7 @@ bool IndexRearrangementForStreams::isSparseIndexInICellFCC(uint sizeOfICellFCC, 
     for (uint j = 0; j < sizeOfICellFCC; j++) {
         if (sparseIndex < 0)
             return false;
-        if (para->getParH(level)->intFC.ICellFCC[j] == (uint)sparseIndex) {
+        if (para->getParH(level)->intFC.coarseCellIndices[j] == (uint)sparseIndex) {
             return true;
         }
     }
@@ -397,8 +397,8 @@ void IndexRearrangementForStreams::aggregateNodesInICellCFC(int level, std::vect
     uint *neighborY = para->getParH(level)->neighborY;
     uint *neighborZ = para->getParH(level)->neighborZ;
 
-    for (uint x = 0; x < para->getParH(level)->intCF.kCF; x++) {
-        sparseIndex = para->getParH(level)->intCF.ICellCFC[x];
+    for (uint x = 0; x < para->getParH(level)->intCF.numberOfCells; x++) {
+        sparseIndex = para->getParH(level)->intCF.coarseCellIndices[x];
         nodesCFC.push_back(sparseIndex);
         nodesCFC.push_back(neighborX[sparseIndex]);
         nodesCFC.push_back(neighborY[sparseIndex]);

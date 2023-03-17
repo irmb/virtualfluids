@@ -166,12 +166,12 @@ void GridReader::allocArrays_OffsetScale()
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size CF
-        para->getParH(i)->intCF.kCF = tempCF;
-        para->getParD(i)->intCF.kCF = para->getParH(i)->intCF.kCF;
+        para->getParH(i)->intCF.numberOfCells = tempCF;
+        para->getParD(i)->intCF.numberOfCells = para->getParH(i)->intCF.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size FC
-        para->getParH(i)->intFC.kFC = tempFC;
-        para->getParD(i)->intFC.kFC = para->getParH(i)->intFC.kFC;
+        para->getParH(i)->intFC.numberOfCells = tempFC;
+        para->getParD(i)->intFC.numberOfCells = para->getParH(i)->intFC.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
 		cudaMemoryManager->cudaAllocInterfaceCF(i);
@@ -182,10 +182,10 @@ void GridReader::allocArrays_OffsetScale()
         //init
         obj_offCF->initArrayOffset(para->getParH(i)->neighborCF.x, para->getParH(i)->neighborCF.y, para->getParH(i)->neighborCF.z, i);
         obj_offFC->initArrayOffset(para->getParH(i)->neighborFC.x, para->getParH(i)->neighborFC.y, para->getParH(i)->neighborFC.z, i);
-        obj_scaleCFC->initScale(para->getParH(i)->intCF.ICellCFC, i);
-        obj_scaleCFF->initScale(para->getParH(i)->intCF.ICellCFF, i);
-        obj_scaleFCC->initScale(para->getParH(i)->intFC.ICellFCC, i);
-        obj_scaleFCF->initScale(para->getParH(i)->intFC.ICellFCF, i);
+        obj_scaleCFC->initScale(para->getParH(i)->intCF.coarseCellIndices, i);
+        obj_scaleCFF->initScale(para->getParH(i)->intCF.fineCellIndices, i);
+        obj_scaleFCC->initScale(para->getParH(i)->intFC.coarseCellIndices, i);
+        obj_scaleFCF->initScale(para->getParH(i)->intFC.fineCellIndices, i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
 		cudaMemoryManager->cudaCopyInterfaceCF(i);

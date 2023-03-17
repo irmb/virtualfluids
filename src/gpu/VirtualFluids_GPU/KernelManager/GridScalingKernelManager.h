@@ -84,9 +84,9 @@ private:
     void checkScalingFunction(const gridScalingFC &scalingFunctionFC, const InterpolationCellFineToCoarse &scalingStruct,
                               const std::string &scalingName)
     {
-        if (!scalingFunctionFC && scalingStruct.kFC > 0)
+        if (!scalingFunctionFC && scalingStruct.numberOfCells > 0)
             throw std::runtime_error("The scaling function " + scalingName + " was not set!");
-        if (scalingFunctionFC && scalingStruct.kFC == 0)
+        if (scalingFunctionFC && scalingStruct.numberOfCells == 0)
             VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
     }
 
@@ -98,9 +98,9 @@ private:
     void checkScalingFunction(const gridScalingCF &scalingFunctionCF, const InterpolationCellCoarseToFine &scalingStruct,
                               const std::string &scalingName)
     {
-        if (!scalingFunctionCF && scalingStruct.kCF > 0)
+        if (!scalingFunctionCF && scalingStruct.numberOfCells > 0)
             throw std::runtime_error("The scaling function " + scalingName + " was not set!");
-        if (scalingFunctionCF && scalingStruct.kCF == 0)
+        if (scalingFunctionCF && scalingStruct.numberOfCells == 0)
             VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
     }
 

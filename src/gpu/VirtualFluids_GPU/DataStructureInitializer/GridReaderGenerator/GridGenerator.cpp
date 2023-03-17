@@ -1180,12 +1180,12 @@ void GridGenerator::allocArrays_OffsetScale()
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size CF
-        para->getParH(level)->intCF.kCF = numberOfNodesPerLevelCF;
-        para->getParD(level)->intCF.kCF = para->getParH(level)->intCF.kCF;
+        para->getParH(level)->intCF.numberOfCells = numberOfNodesPerLevelCF;
+        para->getParD(level)->intCF.numberOfCells = para->getParH(level)->intCF.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size FC
-        para->getParH(level)->intFC.kFC = numberOfNodesPerLevelFC;
-        para->getParD(level)->intFC.kFC = para->getParH(level)->intFC.kFC;
+        para->getParH(level)->intFC.numberOfCells = numberOfNodesPerLevelFC;
+        para->getParD(level)->intFC.numberOfCells = para->getParH(level)->intFC.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
         cudaMemoryManager->cudaAllocInterfaceCF(level);
@@ -1196,7 +1196,7 @@ void GridGenerator::allocArrays_OffsetScale()
         //init
         builder->getOffsetCF(para->getParH(level)->neighborCF.x, para->getParH(level)->neighborCF.y, para->getParH(level)->neighborCF.z, level);
         builder->getOffsetFC(para->getParH(level)->neighborFC.x, para->getParH(level)->neighborFC.y, para->getParH(level)->neighborFC.z, level);
-        builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
+        builder->getGridInterfaceIndices(para->getParH(level)->intCF.coarseCellIndices, para->getParH(level)->intCF.fineCellIndices, para->getParH(level)->intFC.coarseCellIndices, para->getParH(level)->intFC.fineCellIndices, level);
 
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk

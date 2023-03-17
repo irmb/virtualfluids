@@ -13,8 +13,8 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
    real xOff = (real)0.0f;
    real yOff = (real)0.0f; 
    real zOff = (real)0.0f;
-   intCF.kCF    = 0;
-   intFC.kFC    = 0;
+   intCF.numberOfCells    = 0;
+   intFC.numberOfCells    = 0;
 
    ///////////////////////////////////////////////////////////////////////////
    //Defines
@@ -125,12 +125,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.x[intCF.kCF]   = xOff;
-            offCF.y[intCF.kCF]   = yOff;
-            offCF.z[intCF.kCF]   = zOff;
-            intCF.kCF++;
+            intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+            intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+            offCF.x[intCF.numberOfCells]   = xOff;
+            offCF.y[intCF.numberOfCells]   = yOff;
+            offCF.z[intCF.numberOfCells]   = zOff;
+            intCF.numberOfCells++;
          }
       }
       //////////////////////////   fine->coarse   ////////////////////////////
@@ -142,12 +142,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -166,12 +166,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.x[intCF.kCF]   = xOff;
-            offCF.y[intCF.kCF]   = yOff;
-            offCF.z[intCF.kCF]   = zOff;
-            intCF.kCF++;
+            intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+            intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+            offCF.x[intCF.numberOfCells]   = xOff;
+            offCF.y[intCF.numberOfCells]   = yOff;
+            offCF.z[intCF.numberOfCells]   = zOff;
+            intCF.numberOfCells++;
          }
       }
       //////////////////////////   fine->coarse   ////////////////////////////
@@ -183,12 +183,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -207,12 +207,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.x[intCF.kCF]   = xOff;
-            offCF.y[intCF.kCF]   = yOff;
-            offCF.z[intCF.kCF]   = zOff;
-            intCF.kCF++;
+            intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+            intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+            offCF.x[intCF.numberOfCells]   = xOff;
+            offCF.y[intCF.numberOfCells]   = yOff;
+            offCF.z[intCF.numberOfCells]   = zOff;
+            intCF.numberOfCells++;
          }
       }
       //////////////////////////   fine->coarse   ////////////////////////////
@@ -224,12 +224,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -248,12 +248,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.x[intCF.kCF]   = xOff;
-            offCF.y[intCF.kCF]   = yOff;
-            offCF.z[intCF.kCF]   = zOff;
-            intCF.kCF++;
+            intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+            intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+            offCF.x[intCF.numberOfCells]   = xOff;
+            offCF.y[intCF.numberOfCells]   = yOff;
+            offCF.z[intCF.numberOfCells]   = zOff;
+            intCF.numberOfCells++;
          }
       }
       //////////////////////////   fine->coarse   ////////////////////////////
@@ -265,12 +265,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -289,12 +289,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.x[intCF.kCF]   = xOff;
-            offCF.y[intCF.kCF]   = yOff;
-            offCF.z[intCF.kCF]   = zOff;
-            intCF.kCF++;
+            intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+            intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+            offCF.x[intCF.numberOfCells]   = xOff;
+            offCF.y[intCF.numberOfCells]   = yOff;
+            offCF.z[intCF.numberOfCells]   = zOff;
+            intCF.numberOfCells++;
          }
       }
       //////////////////////////   fine->coarse   ////////////////////////////
@@ -306,12 +306,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   =xOff;
-            offFC.y[intFC.kFC]   =yOff;
-            offFC.z[intFC.kFC]   =zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   =xOff;
+            offFC.y[intFC.numberOfCells]   =yOff;
+            offFC.z[intFC.numberOfCells]   =zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -330,12 +330,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.x[intCF.kCF]   = xOff;
-            offCF.y[intCF.kCF]   = yOff;
-            offCF.z[intCF.kCF]   = zOff;
-            intCF.kCF++;
+            intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+            intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+            offCF.x[intCF.numberOfCells]   = xOff;
+            offCF.y[intCF.numberOfCells]   = yOff;
+            offCF.z[intCF.numberOfCells]   = zOff;
+            intCF.numberOfCells++;
          }
       }
       //////////////////////////   fine->coarse   ////////////////////////////
@@ -347,12 +347,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -401,12 +401,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -427,12 +427,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_E]==false)
       {
@@ -443,12 +443,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
       else if (needInterface[INTERFACE_N]==false)
@@ -460,12 +460,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -506,12 +506,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -532,12 +532,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_E]==false)
       {
@@ -548,12 +548,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
       else if (needInterface[INTERFACE_S]==false)
@@ -565,12 +565,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -611,12 +611,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -637,12 +637,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_E]==false)
       {
@@ -653,12 +653,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[INTERFACE_T]==false)
@@ -670,12 +670,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -716,12 +716,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -742,12 +742,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_E]==false)
       {
@@ -758,12 +758,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[INTERFACE_B]==false)
@@ -775,12 +775,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -821,12 +821,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -847,12 +847,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_W]==false)
       {
@@ -863,12 +863,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
       else if (needInterface[INTERFACE_N]==false)
@@ -880,12 +880,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -926,12 +926,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -952,12 +952,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_W]==false)
       {
@@ -968,12 +968,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
       else if (needInterface[INTERFACE_S]==false)
@@ -985,12 +985,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1031,12 +1031,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1057,12 +1057,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_W]==false)
       {
@@ -1073,12 +1073,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[INTERFACE_T]==false)
@@ -1090,12 +1090,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1136,12 +1136,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1162,12 +1162,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_W]==false)
       {
@@ -1178,12 +1178,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[INTERFACE_B]==false)
@@ -1195,12 +1195,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1241,12 +1241,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1267,12 +1267,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[ INTERFACE_N]==false)
       {
@@ -1283,12 +1283,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[ INTERFACE_T]==false)
@@ -1300,12 +1300,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1346,12 +1346,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1372,12 +1372,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[ INTERFACE_N]==false)
       {
@@ -1388,12 +1388,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[ INTERFACE_B]==false)
@@ -1405,12 +1405,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1451,12 +1451,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1477,12 +1477,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[ INTERFACE_S]==false)
       {
@@ -1493,12 +1493,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[ INTERFACE_T]==false)
@@ -1510,12 +1510,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1556,12 +1556,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {
          posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-         intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.x[intCF.kCF]   = xOff;
-         offCF.y[intCF.kCF]   = yOff;
-         offCF.z[intCF.kCF]   = zOff;
-         intCF.kCF++;
+         intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+         intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+         offCF.x[intCF.numberOfCells]   = xOff;
+         offCF.y[intCF.numberOfCells]   = yOff;
+         offCF.z[intCF.numberOfCells]   = zOff;
+         intCF.numberOfCells++;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1582,12 +1582,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       {			
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[ INTERFACE_S]==false)
       {
@@ -1598,12 +1598,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       } 
       else if (needInterface[ INTERFACE_B]==false)
@@ -1615,12 +1615,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
          {			
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.x[intFC.kFC]   = xOff;
-            offFC.y[intFC.kFC]   = yOff;
-            offFC.z[intFC.kFC]   = zOff;
-            intFC.kFC++;
+            intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+            intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+            offFC.x[intFC.numberOfCells]   = xOff;
+            offFC.y[intFC.numberOfCells]   = yOff;
+            offFC.z[intFC.numberOfCells]   = zOff;
+            intFC.numberOfCells++;
          }
       }
    }
@@ -1665,12 +1665,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1691,12 +1691,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_E]==false)
       {
@@ -1706,12 +1706,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_N]==false)
       {
@@ -1721,12 +1721,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_T]==false)
       {
@@ -1736,12 +1736,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_N]==false))
       {
@@ -1751,12 +1751,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -1766,12 +1766,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -1781,12 +1781,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -1822,12 +1822,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1848,12 +1848,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_E]==false)
       {
@@ -1863,12 +1863,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_N]==false)
       {
@@ -1878,12 +1878,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_B]==false)
       {
@@ -1893,12 +1893,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_N]==false))
       {
@@ -1908,12 +1908,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -1923,12 +1923,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -1938,12 +1938,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -1979,12 +1979,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2005,12 +2005,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_E]==false)
       {
@@ -2020,12 +2020,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_S]==false)
       {
@@ -2035,12 +2035,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_T]==false)
       {
@@ -2050,12 +2050,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_S]==false))
       {
@@ -2065,12 +2065,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -2080,12 +2080,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -2095,12 +2095,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -2136,12 +2136,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2162,12 +2162,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_E]==false)
       {
@@ -2177,12 +2177,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_S]==false)
       {
@@ -2192,12 +2192,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_B]==false)
       {
@@ -2207,12 +2207,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_S]==false))
       {
@@ -2222,12 +2222,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -2237,12 +2237,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -2252,12 +2252,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -2293,12 +2293,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2319,12 +2319,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_W]==false)
       {
@@ -2334,12 +2334,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_N]==false)
       {
@@ -2349,12 +2349,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_T]==false)
       {
@@ -2364,12 +2364,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_N]==false))
       {
@@ -2379,12 +2379,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -2394,12 +2394,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -2409,12 +2409,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -2450,12 +2450,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2476,12 +2476,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_W]==false)
       {
@@ -2491,12 +2491,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_N]==false)
       {
@@ -2506,12 +2506,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_B]==false)
       {
@@ -2521,12 +2521,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_N]==false))
       {
@@ -2536,12 +2536,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -2551,12 +2551,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -2566,12 +2566,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -2607,12 +2607,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2633,12 +2633,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_W]==false)
       {
@@ -2648,12 +2648,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_S]==false)
       {
@@ -2663,12 +2663,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_T]==false)
       {
@@ -2678,12 +2678,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_S]==false))
       {
@@ -2693,12 +2693,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -2708,12 +2708,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_T]==false))
       {
@@ -2723,12 +2723,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 
@@ -2764,12 +2764,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
-      intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
-      intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.x[intCF.kCF]   = xOff;
-      offCF.y[intCF.kCF]   = yOff;
-      offCF.z[intCF.kCF]   = zOff;
-      intCF.kCF++;
+      intCF.coarseCellIndices[intCF.numberOfCells] = kCoarse[posCSWB];
+      intCF.fineCellIndices[intCF.numberOfCells] = kFine[posFSWB];
+      offCF.x[intCF.numberOfCells]   = xOff;
+      offCF.y[intCF.numberOfCells]   = yOff;
+      offCF.z[intCF.numberOfCells]   = zOff;
+      intCF.numberOfCells++;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2790,12 +2790,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
       posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-      intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-      intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.x[intFC.kFC]   = xOff;
-      offFC.y[intFC.kFC]   = yOff;
-      offFC.z[intFC.kFC]   = zOff;
-      intFC.kFC++;
+      intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+      intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+      offFC.x[intFC.numberOfCells]   = xOff;
+      offFC.y[intFC.numberOfCells]   = yOff;
+      offFC.z[intFC.numberOfCells]   = zOff;
+      intFC.numberOfCells++;
 
       if (needInterface[INTERFACE_W]==false)
       {
@@ -2805,12 +2805,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_S]==false)
       {
@@ -2820,12 +2820,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if (needInterface[INTERFACE_B]==false)
       {
@@ -2835,12 +2835,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_S]==false))
       {
@@ -2850,12 +2850,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -2865,12 +2865,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_B]==false))
       {
@@ -2880,12 +2880,12 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
 
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
-         intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
-         intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.x[intFC.kFC]   = xOff;
-         offFC.y[intFC.kFC]   = yOff;
-         offFC.z[intFC.kFC]   = zOff;
-         intFC.kFC++;
+         intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
+         intFC.fineCellIndices[intFC.numberOfCells] = kFine[posFSWB];
+         offFC.x[intFC.numberOfCells]   = xOff;
+         offFC.y[intFC.numberOfCells]   = yOff;
+         offFC.z[intFC.numberOfCells]   = zOff;
+         intFC.numberOfCells++;
       }
    }
 

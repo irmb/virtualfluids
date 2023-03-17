@@ -38,11 +38,11 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-                out.writeInteger(para->getParH(level)->intCF.kCF);
+                out.writeInteger(para->getParH(level)->intCF.numberOfCells);
 				out.writeLine();
-                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.numberOfCells; u++)
 				{
-					out.writeInteger(para->getParH(level)->intCF.ICellCFC[u]);
+					out.writeInteger(para->getParH(level)->intCF.coarseCellIndices[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -51,11 +51,11 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-                out.writeInteger(para->getParH(level)->intCF.kCF);
+                out.writeInteger(para->getParH(level)->intCF.numberOfCells);
 				out.writeLine();
-                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.numberOfCells; u++)
 				{
-					out.writeInteger(para->getParH(level)->intCF.ICellCFF[u]);
+					out.writeInteger(para->getParH(level)->intCF.fineCellIndices[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -64,11 +64,11 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-                out.writeInteger(para->getParH(level)->intFC.kFC);
+                out.writeInteger(para->getParH(level)->intFC.numberOfCells);
 				out.writeLine();
-                for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intFC.numberOfCells; u++)
 				{
-					out.writeInteger(para->getParH(level)->intFC.ICellFCC[u]);
+					out.writeInteger(para->getParH(level)->intFC.coarseCellIndices[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -77,11 +77,11 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-                out.writeInteger(para->getParH(level)->intFC.kFC);
+                out.writeInteger(para->getParH(level)->intFC.numberOfCells);
 				out.writeLine();
-                for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intFC.numberOfCells; u++)
 				{
-					out.writeInteger(para->getParH(level)->intFC.ICellFCF[u]);
+					out.writeInteger(para->getParH(level)->intFC.fineCellIndices[u]);
 				}
 				out.writeLine();
 			} //end levelloop
