@@ -156,10 +156,10 @@ struct LBMSimulationParameter {
     InterpolationCell fineToCoarse;
     //////////////////////////////////////////////////////////////////////////
     //! \brief distinguish between bulk and border interpolation cells (necessary for communication hiding)
-    InterpolationCell intFCBorder;
-    InterpolationCell intFCBulk;
-    InterpolationCell intCFBorder;
-    InterpolationCell intCFBulk;
+    InterpolationCell fineToCoarseBorder;
+    InterpolationCell fineToCoarseBulk;
+    InterpolationCell coarseToFineBorder;
+    InterpolationCell coarseToFineBulk;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores location of neighboring cell (necessary for refinement into the wall)
     InterpolationCellNeighbor neighborCF;

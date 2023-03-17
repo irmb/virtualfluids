@@ -635,7 +635,7 @@ void writeInterfaceFCC_Send(Parameter *para)
             nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 
             // nodedata section
-            nodedata[1][nodeCount]           = u < para->getParH(level)->intFCBorder.numberOfCells;
+            nodedata[1][nodeCount]           = u < para->getParH(level)->fineToCoarseBorder.numberOfCells;
             int sendDir                      = 0.0;
             int sendDirectionInCommAfterFtoC = 0.0;
             int sendIndex                    = 0.0;
@@ -689,7 +689,7 @@ void writeInterfaceCFC_Recv(Parameter *para)
             nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 
             // nodedata section
-            nodedata[1][nodeCount]           = u < para->getParH(level)->intCFBorder.numberOfCells;
+            nodedata[1][nodeCount]           = u < para->getParH(level)->coarseToFineBorder.numberOfCells;
             int recvDir                      = 0.0;
             int recvDirectionInCommAfterFtoC = 0.0;
             int recvIndex                    = 0.0;

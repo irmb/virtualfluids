@@ -1154,10 +1154,10 @@ void CudaMemoryManager::cudaCopyInterfaceFC(int lev)
 void CudaMemoryManager::cudaCheckInterfaceFCBulk(int lev)
 {
     // only use for testing!
-    size_t memsize = sizeof(uint) * parameter->getParH(lev)->intFCBulk.numberOfCells;
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->intFCBulk.coarseCellIndices, parameter->getParH(lev)->intFCBulk.coarseCellIndices, memsize, cudaMemcpyDeviceToDevice));
-    for (uint i = 0; i < parameter->getParH(lev)->intFCBulk.numberOfCells; i++)
-        printf("%d %d\n", i, parameter->getParH(lev)->intFCBulk.coarseCellIndices[i]);
+    size_t memsize = sizeof(uint) * parameter->getParH(lev)->fineToCoarseBulk.numberOfCells;
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fineToCoarseBulk.coarseCellIndices, parameter->getParH(lev)->fineToCoarseBulk.coarseCellIndices, memsize, cudaMemcpyDeviceToDevice));
+    for (uint i = 0; i < parameter->getParH(lev)->fineToCoarseBulk.numberOfCells; i++)
+        printf("%d %d\n", i, parameter->getParH(lev)->fineToCoarseBulk.coarseCellIndices[i]);
 }
 void CudaMemoryManager::cudaFreeInterfaceFC(int lev)
 {
