@@ -1,11 +1,11 @@
 #include "FindInterface/FindInterface.h"
 
-void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC, 
+void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineToCoarse &intFC, 
                    unsigned int LxCoarse, unsigned int LyCoarse, unsigned int LzCoarse, 
                    unsigned int LxFine, unsigned int LyFine, unsigned int LzFine, 
                    unsigned int dNx, unsigned int dNy, unsigned int dNz, 
                    unsigned int *kCoarse, unsigned int *kFine, bool* needInterface,
-                   OffsetCF &offCF, OffsetFC &offFC)
+                   InterpolationCellNeighborCoarseToFine &offCF, InterpolationCellNeighborFineToCoarse &offFC)
 {
    unsigned int iC,iF,jC,jF,hC,hF;
    unsigned int posCSWB, posFSWB;
@@ -127,9 +127,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
             intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
             intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.xOffCF[intCF.kCF]   = xOff;
-            offCF.yOffCF[intCF.kCF]   = yOff;
-            offCF.zOffCF[intCF.kCF]   = zOff;
+            offCF.x[intCF.kCF]   = xOff;
+            offCF.y[intCF.kCF]   = yOff;
+            offCF.z[intCF.kCF]   = zOff;
             intCF.kCF++;
          }
       }
@@ -144,9 +144,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -168,9 +168,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
             intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.xOffCF[intCF.kCF]   = xOff;
-            offCF.yOffCF[intCF.kCF]   = yOff;
-            offCF.zOffCF[intCF.kCF]   = zOff;
+            offCF.x[intCF.kCF]   = xOff;
+            offCF.y[intCF.kCF]   = yOff;
+            offCF.z[intCF.kCF]   = zOff;
             intCF.kCF++;
          }
       }
@@ -185,9 +185,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -209,9 +209,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
             intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.xOffCF[intCF.kCF]   = xOff;
-            offCF.yOffCF[intCF.kCF]   = yOff;
-            offCF.zOffCF[intCF.kCF]   = zOff;
+            offCF.x[intCF.kCF]   = xOff;
+            offCF.y[intCF.kCF]   = yOff;
+            offCF.z[intCF.kCF]   = zOff;
             intCF.kCF++;
          }
       }
@@ -226,9 +226,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -250,9 +250,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
             intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.xOffCF[intCF.kCF]   = xOff;
-            offCF.yOffCF[intCF.kCF]   = yOff;
-            offCF.zOffCF[intCF.kCF]   = zOff;
+            offCF.x[intCF.kCF]   = xOff;
+            offCF.y[intCF.kCF]   = yOff;
+            offCF.z[intCF.kCF]   = zOff;
             intCF.kCF++;
          }
       }
@@ -267,9 +267,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -291,9 +291,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
             intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.xOffCF[intCF.kCF]   = xOff;
-            offCF.yOffCF[intCF.kCF]   = yOff;
-            offCF.zOffCF[intCF.kCF]   = zOff;
+            offCF.x[intCF.kCF]   = xOff;
+            offCF.y[intCF.kCF]   = yOff;
+            offCF.z[intCF.kCF]   = zOff;
             intCF.kCF++;
          }
       }
@@ -308,9 +308,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   =xOff;
-            offFC.yOffFC[intFC.kFC]   =yOff;
-            offFC.zOffFC[intFC.kFC]   =zOff;
+            offFC.x[intFC.kFC]   =xOff;
+            offFC.y[intFC.kFC]   =yOff;
+            offFC.z[intFC.kFC]   =zOff;
             intFC.kFC++;
          }
       }
@@ -332,9 +332,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
             intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
             intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-            offCF.xOffCF[intCF.kCF]   = xOff;
-            offCF.yOffCF[intCF.kCF]   = yOff;
-            offCF.zOffCF[intCF.kCF]   = zOff;
+            offCF.x[intCF.kCF]   = xOff;
+            offCF.y[intCF.kCF]   = yOff;
+            offCF.z[intCF.kCF]   = zOff;
             intCF.kCF++;
          }
       }
@@ -349,9 +349,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -403,9 +403,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -429,9 +429,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_E]==false)
@@ -445,9 +445,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -462,9 +462,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -508,9 +508,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -534,9 +534,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_E]==false)
@@ -550,9 +550,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -567,9 +567,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -613,9 +613,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -639,9 +639,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_E]==false)
@@ -655,9 +655,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -672,9 +672,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -718,9 +718,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -744,9 +744,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_E]==false)
@@ -760,9 +760,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -777,9 +777,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -823,9 +823,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -849,9 +849,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_W]==false)
@@ -865,9 +865,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -882,9 +882,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -928,9 +928,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -954,9 +954,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_W]==false)
@@ -970,9 +970,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -987,9 +987,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1033,9 +1033,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -1059,9 +1059,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_W]==false)
@@ -1075,9 +1075,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -1092,9 +1092,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1138,9 +1138,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -1164,9 +1164,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_W]==false)
@@ -1180,9 +1180,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -1197,9 +1197,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1243,9 +1243,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -1269,9 +1269,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[ INTERFACE_N]==false)
@@ -1285,9 +1285,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -1302,9 +1302,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1348,9 +1348,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -1374,9 +1374,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[ INTERFACE_N]==false)
@@ -1390,9 +1390,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -1407,9 +1407,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1453,9 +1453,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -1479,9 +1479,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[ INTERFACE_S]==false)
@@ -1495,9 +1495,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -1512,9 +1512,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1558,9 +1558,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
          intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-         offCF.xOffCF[intCF.kCF]   = xOff;
-         offCF.yOffCF[intCF.kCF]   = yOff;
-         offCF.zOffCF[intCF.kCF]   = zOff;
+         offCF.x[intCF.kCF]   = xOff;
+         offCF.y[intCF.kCF]   = yOff;
+         offCF.z[intCF.kCF]   = zOff;
          intCF.kCF++;
       }
 
@@ -1584,9 +1584,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[ INTERFACE_S]==false)
@@ -1600,9 +1600,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       } 
@@ -1617,9 +1617,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
             intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-            offFC.xOffFC[intFC.kFC]   = xOff;
-            offFC.yOffFC[intFC.kFC]   = yOff;
-            offFC.zOffFC[intFC.kFC]   = zOff;
+            offFC.x[intFC.kFC]   = xOff;
+            offFC.y[intFC.kFC]   = yOff;
+            offFC.z[intFC.kFC]   = zOff;
             intFC.kFC++;
          }
       }
@@ -1667,9 +1667,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -1693,9 +1693,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_E]==false)
@@ -1708,9 +1708,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_N]==false)
@@ -1723,9 +1723,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_T]==false)
@@ -1738,9 +1738,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_N]==false))
@@ -1753,9 +1753,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_T]==false))
@@ -1768,9 +1768,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_T]==false))
@@ -1783,9 +1783,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -1824,9 +1824,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -1850,9 +1850,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_E]==false)
@@ -1865,9 +1865,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_N]==false)
@@ -1880,9 +1880,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_B]==false)
@@ -1895,9 +1895,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_N]==false))
@@ -1910,9 +1910,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_B]==false))
@@ -1925,9 +1925,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_B]==false))
@@ -1940,9 +1940,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -1981,9 +1981,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -2007,9 +2007,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_E]==false)
@@ -2022,9 +2022,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_S]==false)
@@ -2037,9 +2037,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_T]==false)
@@ -2052,9 +2052,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_S]==false))
@@ -2067,9 +2067,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_T]==false))
@@ -2082,9 +2082,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_T]==false))
@@ -2097,9 +2097,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -2138,9 +2138,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -2164,9 +2164,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_E]==false)
@@ -2179,9 +2179,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_S]==false)
@@ -2194,9 +2194,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_B]==false)
@@ -2209,9 +2209,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_S]==false))
@@ -2224,9 +2224,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_E]==false) && (needInterface[INTERFACE_B]==false))
@@ -2239,9 +2239,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_B]==false))
@@ -2254,9 +2254,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -2295,9 +2295,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -2321,9 +2321,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_W]==false)
@@ -2336,9 +2336,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_N]==false)
@@ -2351,9 +2351,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_T]==false)
@@ -2366,9 +2366,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_N]==false))
@@ -2381,9 +2381,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_T]==false))
@@ -2396,9 +2396,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_T]==false))
@@ -2411,9 +2411,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -2452,9 +2452,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -2478,9 +2478,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_W]==false)
@@ -2493,9 +2493,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_N]==false)
@@ -2508,9 +2508,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_B]==false)
@@ -2523,9 +2523,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_N]==false))
@@ -2538,9 +2538,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_B]==false))
@@ -2553,9 +2553,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_N]==false) && (needInterface[INTERFACE_B]==false))
@@ -2568,9 +2568,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -2609,9 +2609,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -2635,9 +2635,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_W]==false)
@@ -2650,9 +2650,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_S]==false)
@@ -2665,9 +2665,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_T]==false)
@@ -2680,9 +2680,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_S]==false))
@@ -2695,9 +2695,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_T]==false))
@@ -2710,9 +2710,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_T]==false))
@@ -2725,9 +2725,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }
@@ -2766,9 +2766,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
       intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
       intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-      offCF.xOffCF[intCF.kCF]   = xOff;
-      offCF.yOffCF[intCF.kCF]   = yOff;
-      offCF.zOffCF[intCF.kCF]   = zOff;
+      offCF.x[intCF.kCF]   = xOff;
+      offCF.y[intCF.kCF]   = yOff;
+      offCF.z[intCF.kCF]   = zOff;
       intCF.kCF++;
       //////////////////////////////////////////////////////////////////////////
 
@@ -2792,9 +2792,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
       intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
       intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-      offFC.xOffFC[intFC.kFC]   = xOff;
-      offFC.yOffFC[intFC.kFC]   = yOff;
-      offFC.zOffFC[intFC.kFC]   = zOff;
+      offFC.x[intFC.kFC]   = xOff;
+      offFC.y[intFC.kFC]   = yOff;
+      offFC.z[intFC.kFC]   = zOff;
       intFC.kFC++;
 
       if (needInterface[INTERFACE_W]==false)
@@ -2807,9 +2807,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_S]==false)
@@ -2822,9 +2822,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if (needInterface[INTERFACE_B]==false)
@@ -2837,9 +2837,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_S]==false))
@@ -2852,9 +2852,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_W]==false) && (needInterface[INTERFACE_B]==false))
@@ -2867,9 +2867,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
       if ((needInterface[INTERFACE_S]==false) && (needInterface[INTERFACE_B]==false))
@@ -2882,9 +2882,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
          intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-         offFC.xOffFC[intFC.kFC]   = xOff;
-         offFC.yOffFC[intFC.kFC]   = yOff;
-         offFC.zOffFC[intFC.kFC]   = zOff;
+         offFC.x[intFC.kFC]   = xOff;
+         offFC.y[intFC.kFC]   = yOff;
+         offFC.z[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
    }

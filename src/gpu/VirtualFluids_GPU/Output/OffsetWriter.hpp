@@ -25,9 +25,9 @@ public:
 				out.writeLine();
                 for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
 				{
-					out.writeDouble(para->getParH(level)->offCF.xOffCF[u]);
-					out.writeDouble(para->getParH(level)->offCF.yOffCF[u]);
-					out.writeDouble(para->getParH(level)->offCF.zOffCF[u]);
+					out.writeDouble(para->getParH(level)->neighborCF.x[u]);
+					out.writeDouble(para->getParH(level)->neighborCF.y[u]);
+					out.writeDouble(para->getParH(level)->neighborCF.z[u]);
 				}
 				out.writeLine();
 			} //end levelloop
@@ -40,9 +40,9 @@ public:
 				out.writeLine();
                 for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
 				{
-					out.writeDouble(para->getParH(level)->offFC.xOffFC[u]);
-					out.writeDouble(para->getParH(level)->offFC.yOffFC[u]);
-					out.writeDouble(para->getParH(level)->offFC.zOffFC[u]);
+					out.writeDouble(para->getParH(level)->neighborFC.x[u]);
+					out.writeDouble(para->getParH(level)->neighborFC.y[u]);
+					out.writeDouble(para->getParH(level)->neighborFC.z[u]);
 				}
 				out.writeLine();
 			} //end levelloop

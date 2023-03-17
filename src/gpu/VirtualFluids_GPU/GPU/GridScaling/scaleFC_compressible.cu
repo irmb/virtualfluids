@@ -65,7 +65,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real omegaFine,
     real* turbulentViscosityCoarse,
     real* turbulentViscosityFine,
-    OffFC offsetFC)
+    ICellNeighFC offsetFC)
 {
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
@@ -424,9 +424,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
     //!
-    real xoff    = offsetFC.xOffFC[nodeIndex];
-    real yoff    = offsetFC.yOffFC[nodeIndex];
-    real zoff    = offsetFC.zOffFC[nodeIndex];
+    real xoff    = offsetFC.x[nodeIndex];
+    real yoff    = offsetFC.y[nodeIndex];
+    real zoff    = offsetFC.z[nodeIndex];
      
     real xoff_sq = xoff * xoff;
     real yoff_sq = yoff * yoff;
@@ -708,6 +708,6 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     ////////////////////////////////////////////////////////////////////////////////////
 }
 
-template __global__ void scaleFC_compressible<true>( real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffFC offsetFC);
+template __global__ void scaleFC_compressible<true>( real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeighFC offsetFC);
 
-template __global__ void scaleFC_compressible<false>( real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffFC offsetFC);
+template __global__ void scaleFC_compressible<false>( real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeighFC offsetFC);

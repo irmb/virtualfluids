@@ -152,20 +152,20 @@ struct LBMSimulationParameter {
     // Grid Refinement
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the base-node-indices of coarse and fine refinement cells
-    InterpolationCellCF intCF;
-    InterpolationCellFC intFC;
+    InterpolationCellCoarseToFine intCF;
+    InterpolationCellFineToCoarse intFC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief distinguish between bulk and border interpolation cells (necessary for communication hiding)
-    InterpolationCellFC intFCBorder;
-    InterpolationCellFC intFCBulk;
-    InterpolationCellCF intCFBorder;
-    InterpolationCellCF intCFBulk;
+    InterpolationCellFineToCoarse intFCBorder;
+    InterpolationCellFineToCoarse intFCBulk;
+    InterpolationCellCoarseToFine intCFBorder;
+    InterpolationCellCoarseToFine intCFBulk;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores location of neighboring cell (necessary for refinement into the wall)
-    OffsetCF offCF;
-    OffsetCF offCFBulk;
-    OffsetFC offFC;
-    OffsetFC offFCBulk;
+    InterpolationCellNeighborCoarseToFine neighborCF;
+    InterpolationCellNeighborCoarseToFine neighborCFBulk;
+    InterpolationCellNeighborFineToCoarse neighborFC;
+    InterpolationCellNeighborFineToCoarse neighborFCBulk;
     //////////////////////////////////////////////////////////////////////////
 
 
@@ -266,6 +266,36 @@ struct LBMSimulationParameter {
     // macroscopic values//////
     // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
 
+    // derivations for iso test
+    real *dxxUx, *dyyUy, *dzzUz;
+
+    // grid////////////////////
+    unsigned int nx, ny, nz;
+    unsigned int gridNX, gridNY, gridNZ;
+
+    // size of matrix//////////
+    unsigned int size_Mat;
+    unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
+
+    // size of Plane btw. 2 GPUs//////
+    unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
+    unsigned int sizePlaneST, sizePlaneRT, startT, endT;
+    bool isSetSendB, isSetRecvB, isSetSendT, isSetRecvT;
+    int *SendT, *SendB, *RecvT, *RecvB;
+
+    // size of Plane for PressMess
+    unsigned int sizePlanePress, startP;
+    unsigned int sizePlanePressIN, startPIN;
+    unsigned int sizePlanePressOUT, startPOUT;
+    bool isSetPress;
+
+    // deltaPhi
+    real deltaPhi;
+
+    // particles
+    PathLineParticles plp;
+
+
     //////////////////////////////////////////////////////////////////////////
 
 
@@ -289,34 +319,11 @@ struct LBMSimulationParameter {
     std::vector<real> turbulenceIntensity;
 
 
-    // derivations for iso test
-    real *dxxUx, *dyyUy, *dzzUz;
-
     // median-macro-values/////
     real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
     real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
     // Advection-Diffusion
     real *Conc_Med, *Conc_Med_Out;
-
-    // grid////////////////////
-    unsigned int nx, ny, nz;
-    unsigned int gridNX, gridNY, gridNZ;
-
-    // size of matrix//////////
-    unsigned int size_Mat;
-    unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
-
-    // size of Plane btw. 2 GPUs//////
-    unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
-    unsigned int sizePlaneST, sizePlaneRT, startT, endT;
-    bool isSetSendB, isSetRecvB, isSetSendT, isSetRecvT;
-    int *SendT, *SendB, *RecvT, *RecvB;
-
-    // size of Plane for PressMess
-    unsigned int sizePlanePress, startP;
-    unsigned int sizePlanePressIN, startPIN;
-    unsigned int sizePlanePressOUT, startPOUT;
-    bool isSetPress;
 
 
     // print///////////////////
@@ -382,13 +389,6 @@ struct LBMSimulationParameter {
     int *naschVelocity;
     uint numberOfStreetNodes;
 
-    // deltaPhi
-    real deltaPhi;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // particles
-    PathLineParticles plp;
-    ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////
     // 1D domain decomposition

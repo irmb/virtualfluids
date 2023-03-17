@@ -168,26 +168,26 @@ typedef struct ICellCF{
    uint* ICellCFF;
    uint* ICellCFC;
    uint kCF;
-} InterpolationCellCF;
+} InterpolationCellCoarseToFine;
 
 typedef struct ICellFC{
    uint* ICellFCF;
    uint* ICellFCC;
    uint kFC;
-} InterpolationCellFC;
+} InterpolationCellFineToCoarse;
 
 //Offset of the interface cells at the wall
-typedef struct OffCF{
-   real* xOffCF;
-   real* yOffCF;
-   real* zOffCF;
-} OffsetCF;
+typedef struct ICellNeighCF{
+   real* x;
+   real* y;
+   real* z;
+} InterpolationCellNeighborCoarseToFine;
 
-typedef struct OffFC{
-   real* xOffFC;
-   real* yOffFC;
-   real* zOffFC;
-} OffsetFC;
+typedef struct ICellNeighFC{
+   real* x;
+   real* y;
+   real* z;
+} InterpolationCellNeighborFineToCoarse;
 
 // Distribution functions g 6
 typedef struct  Distri6 {

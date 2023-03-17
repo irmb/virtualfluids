@@ -111,9 +111,9 @@ private:
         para->getParH(cf.level)->neighborY = cf.neighborY;
         para->getParH(cf.level)->neighborZ = cf.neighborZ;
         para->getParH(cf.level)->intCF.kCF = cf.sizeOfICellCf;
-        para->getParH(cf.level)->offCF.xOffCF = &(cf.offsetCFx.front());
-        para->getParH(cf.level)->offCF.yOffCF = &(cf.offsetCFy.front());
-        para->getParH(cf.level)->offCF.zOffCF = &(cf.offsetCFz.front());
+        para->getParH(cf.level)->neighborCF.x = &(cf.offsetCFx.front());
+        para->getParH(cf.level)->neighborCF.y = &(cf.offsetCFy.front());
+        para->getParH(cf.level)->neighborCF.z = &(cf.offsetCFz.front());
 
         return std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
     };
@@ -151,12 +151,12 @@ TEST_F(InterpolationCellGrouperTest_IndicesCFBorderBulkTest, splitCoarseToFineIn
         << "intCFBulk.ICellCFF does not match the expected bulk vector";
 
     // check offset cells
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.xOffCF, cf.offsetCFx_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.xOffCF, cf.offsetCFx_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.yOffCF, cf.offsetCFy_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.yOffCF, cf.offsetCFy_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.zOffCF, cf.offsetCFz_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.zOffCF, cf.offsetCFz_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->neighborCF.x, cf.offsetCFx_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->neighborCFBulk.x, cf.offsetCFx_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->neighborCF.y, cf.offsetCFy_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->neighborCFBulk.y, cf.offsetCFy_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->neighborCF.z, cf.offsetCFz_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->neighborCFBulk.z, cf.offsetCFz_Bulk_expected));
 }
 
 struct FCBorderBulk {
@@ -202,9 +202,9 @@ private:
         para->getParH(fc.level)->intFC.ICellFCC = &(fc.iCellFCC.front());
         para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
         para->getParH(fc.level)->intFC.kFC = fc.sizeOfICellFC;
-        para->getParH(fc.level)->offFC.xOffFC = &(fc.offsetFCx.front());
-        para->getParH(fc.level)->offFC.yOffFC = &(fc.offsetFCy.front());
-        para->getParH(fc.level)->offFC.zOffFC = &(fc.offsetFCz.front());
+        para->getParH(fc.level)->neighborFC.x = &(fc.offsetFCx.front());
+        para->getParH(fc.level)->neighborFC.y = &(fc.offsetFCy.front());
+        para->getParH(fc.level)->neighborFC.z = &(fc.offsetFCz.front());
 
         return std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
     };
@@ -242,10 +242,10 @@ TEST_F(InterpolationCellGrouperTest_IndicesFCBorderBulkTest, splitFineToCoarseIn
         << "intFCBulk.ICellFCF does not match the expected bulk vector";
 
     // check offset cells
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.xOffFC, fc.offsetFCx_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.xOffFC, fc.offsetFCx_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.yOffFC, fc.offsetFCy_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.yOffFC, fc.offsetFCy_Bulk_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFC.zOffFC, fc.offsetFCz_Border_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->offFCBulk.zOffFC, fc.offsetFCz_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFC.x, fc.offsetFCx_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFCBulk.x, fc.offsetFCx_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFC.y, fc.offsetFCy_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFCBulk.y, fc.offsetFCy_Bulk_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFC.z, fc.offsetFCz_Border_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFCBulk.z, fc.offsetFCz_Bulk_expected));
 }

@@ -49,9 +49,9 @@ struct LBMSimulationParameter;
 struct CUstream_st;
 
 using gridScalingFC =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, OffFC &, CUstream_st *stream)>;
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, ICellNeighFC &, CUstream_st *stream)>;
 using gridScalingCF =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, OffCF &, CUstream_st *stream)>;
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, ICellNeighCF &, CUstream_st *stream)>;
 
 //! \class GridScalingKernelManager
 //! \brief manage the cuda kernel calls
@@ -64,13 +64,13 @@ public:
     GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernelH
-    void runFineToCoarseKernelLB(const int level, InterpolationCellFC *icellFC, OffFC &offFC, CudaStreamIndex streamIndex) const;
+    void runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeighFC &offFC, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, InterpolationCellCF *icellCF, OffCF &offCF, CudaStreamIndex streamIndex) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine *icellCF, ICellNeighCF &offCF, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;
@@ -81,7 +81,7 @@ private:
     //! scaling factory \param scalingFunctionFC: a kernel function for the grid scaling \param scalingStruct: a struct
     //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
     //! scaling function
-    void checkScalingFunction(const gridScalingFC &scalingFunctionFC, const InterpolationCellFC &scalingStruct,
+    void checkScalingFunction(const gridScalingFC &scalingFunctionFC, const InterpolationCellFineToCoarse &scalingStruct,
                               const std::string &scalingName)
     {
         if (!scalingFunctionFC && scalingStruct.kFC > 0)
@@ -95,7 +95,7 @@ private:
     //! scaling factory \param scalingFunctionCF: a kernel function for the grid scaling \param scalingStruct: a struct
     //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
     //! scaling function
-    void checkScalingFunction(const gridScalingCF &scalingFunctionCF, const InterpolationCellCF &scalingStruct,
+    void checkScalingFunction(const gridScalingCF &scalingFunctionCF, const InterpolationCellCoarseToFine &scalingStruct,
                               const std::string &scalingName)
     {
         if (!scalingFunctionCF && scalingStruct.kCF > 0)

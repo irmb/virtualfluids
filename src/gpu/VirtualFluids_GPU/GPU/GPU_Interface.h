@@ -1353,7 +1353,7 @@ void ScaleCFEff27(real* DC,
                              unsigned int nxF, 
                              unsigned int nyF,
                              unsigned int numberOfThreads,
-                             OffCF offCF);
+                             ICellNeighCF offCF);
 
 void ScaleFCEff27(real* DC, 
                              real* DF, 
@@ -1377,7 +1377,7 @@ void ScaleFCEff27(real* DC,
                              unsigned int nxF, 
                              unsigned int nyF,
                              unsigned int numberOfThreads,
-                             OffFC offFC);
+                             ICellNeighFC offFC);
 
 void ScaleCFLast27(real* DC, 
                               real* DF, 
@@ -1401,7 +1401,7 @@ void ScaleCFLast27(real* DC,
                               unsigned int nxF, 
                               unsigned int nyF,
                               unsigned int numberOfThreads,
-                              OffCF offCF);
+                              ICellNeighCF offCF);
 
 void ScaleFCLast27(real* DC, 
                               real* DF, 
@@ -1425,7 +1425,7 @@ void ScaleFCLast27(real* DC,
                               unsigned int nxF, 
                               unsigned int nyF,
                               unsigned int numberOfThreads,
-                              OffFC offFC);
+                              ICellNeighFC offFC);
 
 void ScaleCFpress27(real* DC, 
                               real* DF, 
@@ -1449,7 +1449,7 @@ void ScaleCFpress27(real* DC,
                               unsigned int nxF, 
                               unsigned int nyF,
                               unsigned int numberOfThreads,
-                              OffCF offCF);
+                              ICellNeighCF offCF);
 
 void ScaleFCpress27(  real* DC, 
                                  real* DF, 
@@ -1473,7 +1473,7 @@ void ScaleFCpress27(  real* DC,
                                  unsigned int nxF, 
                                  unsigned int nyF,
                                  unsigned int numberOfThreads,
-                                 OffFC offFC);
+                                 ICellNeighFC offFC);
 
 void ScaleCF_Fix_27(real* DC, 
                               real* DF, 
@@ -1497,7 +1497,7 @@ void ScaleCF_Fix_27(real* DC,
                               unsigned int nxF, 
                               unsigned int nyF,
                               unsigned int numberOfThreads,
-                              OffCF offCF);
+                              ICellNeighCF offCF);
 
 void ScaleCF_Fix_comp_27(   real* DC, 
 									   real* DF, 
@@ -1521,7 +1521,7 @@ void ScaleCF_Fix_comp_27(   real* DC,
 									   unsigned int nxF, 
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffCF offCF);
+									   ICellNeighCF offCF);
 
 void ScaleCF_0817_comp_27(  real* DC, 
 									   real* DF, 
@@ -1545,7 +1545,7 @@ void ScaleCF_0817_comp_27(  real* DC,
 									   unsigned int nxF, 
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffCF offCF,
+									   ICellNeighCF offCF,
 									   CUstream_st* stream);
 
 void ScaleCF_comp_D3Q27F3_2018(	real* DC,
@@ -1571,7 +1571,7 @@ void ScaleCF_comp_D3Q27F3_2018(	real* DC,
 											unsigned int nxF, 
 											unsigned int nyF,
 											unsigned int numberOfThreads,
-											OffCF offCF);
+											ICellNeighCF offCF);
 
 void ScaleCF_comp_D3Q27F3(real* DC,
 									 real* DF,
@@ -1596,7 +1596,7 @@ void ScaleCF_comp_D3Q27F3(real* DC,
 									 unsigned int nxF, 
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffCF offCF,
+									 ICellNeighCF offCF,
 									 CUstream_st *stream);
 
 void ScaleCF_staggered_time_comp_27( real* DC, 
@@ -1621,11 +1621,11 @@ void ScaleCF_staggered_time_comp_27( real* DC,
 												unsigned int nxF, 
 												unsigned int nyF,
 												unsigned int numberOfThreads,
-												OffCF offCF);
+												ICellNeighCF offCF);
 
-void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF &offsetCF, CUstream_st *stream);
+void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, ICellNeighCF &offsetCF, CUstream_st *stream);
 
-template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF &offsetCF, CUstream_st *stream);
+template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, ICellNeighCF &offsetCF, CUstream_st *stream);
 
 void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -1649,7 +1649,7 @@ void ScaleCF_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int nxF, 
 											  unsigned int nyF,
 											  unsigned int numberOfThreads,
-											  OffCF offCF,
+											  ICellNeighCF offCF,
 											  CUstream_st *stream);
 
 void ScaleCF_AA2016_comp_27( real* DC, 
@@ -1674,7 +1674,7 @@ void ScaleCF_AA2016_comp_27( real* DC,
 										unsigned int nxF, 
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffCF offCF,
+										ICellNeighCF offCF,
 										CUstream_st *stream);
 
 void ScaleCF_NSPress_27(real* DC, 
@@ -1699,7 +1699,7 @@ void ScaleCF_NSPress_27(real* DC,
 								  unsigned int nxF, 
 								  unsigned int nyF,
 								  unsigned int numberOfThreads,
-								  OffCF offCF);
+								  ICellNeighCF offCF);
 
 void ScaleFC_Fix_27(  real* DC, 
                                  real* DF, 
@@ -1723,7 +1723,7 @@ void ScaleFC_Fix_27(  real* DC,
                                  unsigned int nxF, 
                                  unsigned int nyF,
                                  unsigned int numberOfThreads,
-                                 OffFC offFC);
+                                 ICellNeighFC offFC);
 
 void ScaleFC_Fix_comp_27(   real* DC, 
 									   real* DF, 
@@ -1747,7 +1747,7 @@ void ScaleFC_Fix_comp_27(   real* DC,
 									   unsigned int nxF, 
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffFC offFC);
+									   ICellNeighFC offFC);
 
 void ScaleFC_0817_comp_27(  real* DC, 
 									   real* DF, 
@@ -1771,7 +1771,7 @@ void ScaleFC_0817_comp_27(  real* DC,
 									   unsigned int nxF, 
 									   unsigned int nyF,
 									   unsigned int numberOfThreads,
-									   OffFC offFC,
+									   ICellNeighFC offFC,
 									   CUstream_st *stream);
 
 void ScaleFC_comp_D3Q27F3_2018(real* DC,
@@ -1797,7 +1797,7 @@ void ScaleFC_comp_D3Q27F3_2018(real* DC,
 										  unsigned int nxF, 
 										  unsigned int nyF,
 										  unsigned int numberOfThreads,
-										  OffFC offFC);
+										  ICellNeighFC offFC);
 
 void ScaleFC_comp_D3Q27F3( real* DC,
 									  real* DF,
@@ -1822,7 +1822,7 @@ void ScaleFC_comp_D3Q27F3( real* DC,
 									  unsigned int nxF, 
 									  unsigned int nyF,
 									  unsigned int numberOfThreads,
-									  OffFC offFC,
+									  ICellNeighFC offFC,
 									  CUstream_st *stream);
 
 void ScaleFC_staggered_time_comp_27( real* DC, 
@@ -1847,11 +1847,11 @@ void ScaleFC_staggered_time_comp_27( real* DC,
 												unsigned int nxF, 
 												unsigned int nyF,
 												unsigned int numberOfThreads,
-												OffFC offFC);
+												ICellNeighFC offFC);
 
-void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC& offsetFC, CUstream_st *stream);
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, ICellNeighFC& offsetFC, CUstream_st *stream);
 
-template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC& offsetFC, CUstream_st *stream);
+template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, ICellNeighFC& offsetFC, CUstream_st *stream);
 
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -1875,7 +1875,7 @@ void ScaleFC_RhoSq_3rdMom_comp_27( real* DC,
 											  unsigned int nxF, 
 											  unsigned int nyF,
 											  unsigned int numberOfThreads,
-											  OffFC offFC,
+											  ICellNeighFC offFC,
 											  CUstream_st *stream);
 
 void ScaleFC_AA2016_comp_27( real* DC, 
@@ -1900,7 +1900,7 @@ void ScaleFC_AA2016_comp_27( real* DC,
 										unsigned int nxF, 
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffFC offFC,
+										ICellNeighFC offFC,
 										CUstream_st *stream);
 
 void ScaleFC_NSPress_27(  real* DC, 
@@ -1925,7 +1925,7 @@ void ScaleFC_NSPress_27(  real* DC,
 									 unsigned int nxF, 
 									 unsigned int nyF,
 									 unsigned int numberOfThreads,
-									 OffFC offFC);
+									 ICellNeighFC offFC);
 
 void ScaleCFThS7(  real* DC, 
                               real* DF, 
@@ -1986,7 +1986,7 @@ void ScaleCFThSMG7(   real* DC,
                                  real nu,
                                  real diffusivity_fine,
                                  unsigned int numberOfThreads,
-                                 OffCF offCF);
+                                 ICellNeighCF offCF);
 
 void ScaleFCThSMG7(real* DC, 
                               real* DF,
@@ -2007,7 +2007,7 @@ void ScaleFCThSMG7(real* DC,
                               real nu,
                               real diffusivity_coarse,
                               unsigned int numberOfThreads,
-                              OffFC offFC);
+                              ICellNeighFC offFC);
 
 void ScaleCFThS27( real* DC, 
                               real* DF, 
@@ -2028,7 +2028,7 @@ void ScaleCFThS27( real* DC,
                               real nu,
                               real diffusivity_fine,
 							  unsigned int numberOfThreads,
-							  OffCF offCF);
+							  ICellNeighCF offCF);
 
 void ScaleFCThS27( real* DC, 
                               real* DF,
@@ -2049,7 +2049,7 @@ void ScaleFCThS27( real* DC,
                               real nu,
                               real diffusivity_coarse,
 							  unsigned int numberOfThreads,
-							  OffFC offFC);
+							  ICellNeighFC offFC);
 
 void DragLiftPostD27(real* DD, 
 								int* k_Q, 
