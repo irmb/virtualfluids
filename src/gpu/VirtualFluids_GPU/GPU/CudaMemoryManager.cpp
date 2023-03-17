@@ -1106,50 +1106,50 @@ void CudaMemoryManager::cudaFreeMedianOut(int lev)
 //Interface CF
 void CudaMemoryManager::cudaAllocInterfaceCF(int lev)
 {
-    uint mem_size_kCF = sizeof(uint) * parameter->getParH(lev)->intCF.numberOfCells;
+    uint mem_size_kCF = sizeof(uint) * parameter->getParH(lev)->coarseToFine.numberOfCells;
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->intCF.coarseCellIndices), mem_size_kCF  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->intCF.fineCellIndices), mem_size_kCF  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coarseToFine.coarseCellIndices), mem_size_kCF  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coarseToFine.fineCellIndices), mem_size_kCF  ));
     //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->intCF.coarseCellIndices), mem_size_kCF  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->intCF.fineCellIndices), mem_size_kCF  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coarseToFine.coarseCellIndices), mem_size_kCF  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coarseToFine.fineCellIndices), mem_size_kCF  ));
     //////////////////////////////////////////////////////////////////////////
     double tmp = 2. * (double)mem_size_kCF;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyInterfaceCF(int lev)
 {
-    uint mem_size_kCF = sizeof(uint) * parameter->getParH(lev)->intCF.numberOfCells;
+    uint mem_size_kCF = sizeof(uint) * parameter->getParH(lev)->coarseToFine.numberOfCells;
 
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->intCF.coarseCellIndices, parameter->getParH(lev)->intCF.coarseCellIndices, mem_size_kCF, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->intCF.fineCellIndices, parameter->getParH(lev)->intCF.fineCellIndices, mem_size_kCF, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->coarseToFine.coarseCellIndices, parameter->getParH(lev)->coarseToFine.coarseCellIndices, mem_size_kCF, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->coarseToFine.fineCellIndices, parameter->getParH(lev)->coarseToFine.fineCellIndices, mem_size_kCF, cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaFreeInterfaceCF(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->intCF.coarseCellIndices));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->intCF.fineCellIndices));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coarseToFine.coarseCellIndices));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coarseToFine.fineCellIndices));
 }
 //Interface FC
 void CudaMemoryManager::cudaAllocInterfaceFC(int lev)
 {
-    uint mem_size_kFC = sizeof(uint) * parameter->getParH(lev)->intFC.numberOfCells;
+    uint mem_size_kFC = sizeof(uint) * parameter->getParH(lev)->fineToCoarse.numberOfCells;
 
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->intFC.fineCellIndices), mem_size_kFC  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->intFC.coarseCellIndices), mem_size_kFC  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->fineToCoarse.fineCellIndices), mem_size_kFC  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->fineToCoarse.coarseCellIndices), mem_size_kFC  ));
     //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->intFC.fineCellIndices), mem_size_kFC  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->intFC.coarseCellIndices), mem_size_kFC  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->fineToCoarse.fineCellIndices), mem_size_kFC  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->fineToCoarse.coarseCellIndices), mem_size_kFC  ));
     //////////////////////////////////////////////////////////////////////////
     double tmp = 2. * (double)mem_size_kFC;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyInterfaceFC(int lev)
 {
-    uint mem_size_kFC = sizeof(uint) * parameter->getParH(lev)->intFC.numberOfCells;
+    uint mem_size_kFC = sizeof(uint) * parameter->getParH(lev)->fineToCoarse.numberOfCells;
 
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->intFC.fineCellIndices, parameter->getParH(lev)->intFC.fineCellIndices, mem_size_kFC, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->intFC.coarseCellIndices, parameter->getParH(lev)->intFC.coarseCellIndices, mem_size_kFC, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fineToCoarse.fineCellIndices, parameter->getParH(lev)->fineToCoarse.fineCellIndices, mem_size_kFC, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fineToCoarse.coarseCellIndices, parameter->getParH(lev)->fineToCoarse.coarseCellIndices, mem_size_kFC, cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaCheckInterfaceFCBulk(int lev)
 {
@@ -1161,13 +1161,13 @@ void CudaMemoryManager::cudaCheckInterfaceFCBulk(int lev)
 }
 void CudaMemoryManager::cudaFreeInterfaceFC(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->intFC.fineCellIndices));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->intFC.coarseCellIndices));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->fineToCoarse.fineCellIndices));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->fineToCoarse.coarseCellIndices));
 }
 //Interface Offset CF
 void CudaMemoryManager::cudaAllocInterfaceOffCF(int lev)
 {
-    uint mem_size_kCF_off = sizeof(real) * parameter->getParH(lev)->intCF.numberOfCells;
+    uint mem_size_kCF_off = sizeof(real) * parameter->getParH(lev)->coarseToFine.numberOfCells;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->neighborCF.x), mem_size_kCF_off  ));
@@ -1185,7 +1185,7 @@ void CudaMemoryManager::cudaAllocInterfaceOffCF(int lev)
 }
 void CudaMemoryManager::cudaCopyInterfaceOffCF(int lev)
 {
-    uint mem_size_kCF_off = sizeof(real) * parameter->getParH(lev)->intCF.numberOfCells;
+    uint mem_size_kCF_off = sizeof(real) * parameter->getParH(lev)->coarseToFine.numberOfCells;
 
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->neighborCF.x, parameter->getParH(lev)->neighborCF.x, mem_size_kCF_off, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->neighborCF.y, parameter->getParH(lev)->neighborCF.y, mem_size_kCF_off, cudaMemcpyHostToDevice));
@@ -1201,7 +1201,7 @@ void CudaMemoryManager::cudaFreeInterfaceOffCF(int lev)
 //Interface Offset FC
 void CudaMemoryManager::cudaAllocInterfaceOffFC(int lev)
 {
-    uint mem_size_kFC_off = sizeof(real) * parameter->getParH(lev)->intFC.numberOfCells;
+    uint mem_size_kFC_off = sizeof(real) * parameter->getParH(lev)->fineToCoarse.numberOfCells;
 
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->neighborFC.x), mem_size_kFC_off  ));
@@ -1219,7 +1219,7 @@ void CudaMemoryManager::cudaAllocInterfaceOffFC(int lev)
 }
 void CudaMemoryManager::cudaCopyInterfaceOffFC(int lev)
 {
-    uint mem_size_kFC_off = sizeof(real) * parameter->getParH(lev)->intFC.numberOfCells;
+    uint mem_size_kFC_off = sizeof(real) * parameter->getParH(lev)->fineToCoarse.numberOfCells;
 
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->neighborFC.x, parameter->getParH(lev)->neighborFC.x, mem_size_kFC_off, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->neighborFC.y, parameter->getParH(lev)->neighborFC.y, mem_size_kFC_off, cudaMemcpyHostToDevice));

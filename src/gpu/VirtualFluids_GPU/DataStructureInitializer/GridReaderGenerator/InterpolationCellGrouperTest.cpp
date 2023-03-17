@@ -105,12 +105,12 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         para = testingVF::createParameterForLevel(cf.level);
-        para->getParH(cf.level)->intCF.coarseCellIndices = &(cf.iCellCFC.front());
-        para->getParH(cf.level)->intCF.fineCellIndices = &(cf.iCellCFF.front());
+        para->getParH(cf.level)->coarseToFine.coarseCellIndices = &(cf.iCellCFC.front());
+        para->getParH(cf.level)->coarseToFine.fineCellIndices = &(cf.iCellCFF.front());
         para->getParH(cf.level)->neighborX = cf.neighborX;
         para->getParH(cf.level)->neighborY = cf.neighborY;
         para->getParH(cf.level)->neighborZ = cf.neighborZ;
-        para->getParH(cf.level)->intCF.numberOfCells = cf.sizeOfICellCf;
+        para->getParH(cf.level)->coarseToFine.numberOfCells = cf.sizeOfICellCf;
         para->getParH(cf.level)->neighborCF.x = &(cf.offsetCFx.front());
         para->getParH(cf.level)->neighborCF.y = &(cf.offsetCFy.front());
         para->getParH(cf.level)->neighborCF.z = &(cf.offsetCFz.front());
@@ -199,9 +199,9 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         para = testingVF::createParameterForLevel(fc.level);
-        para->getParH(fc.level)->intFC.coarseCellIndices = &(fc.iCellFCC.front());
-        para->getParH(fc.level)->intFC.fineCellIndices = &(fc.iCellFCF.front());
-        para->getParH(fc.level)->intFC.numberOfCells = fc.sizeOfICellFC;
+        para->getParH(fc.level)->fineToCoarse.coarseCellIndices = &(fc.iCellFCC.front());
+        para->getParH(fc.level)->fineToCoarse.fineCellIndices = &(fc.iCellFCF.front());
+        para->getParH(fc.level)->fineToCoarse.numberOfCells = fc.sizeOfICellFC;
         para->getParH(fc.level)->neighborFC.x = &(fc.offsetFCx.front());
         para->getParH(fc.level)->neighborFC.y = &(fc.offsetFCy.front());
         para->getParH(fc.level)->neighborFC.z = &(fc.offsetFCz.front());

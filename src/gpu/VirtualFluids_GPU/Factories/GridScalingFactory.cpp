@@ -6,7 +6,7 @@ void GridScalingFactory::setScalingFactory(const GridScalingFactory::GridScaling
     this->gridScaling = gridScalingType;
 }
 
-gridScalingFC GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) const
+gridScaling GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) const
 {
     // for descriptions of the scaling types refer to the header
     switch (gridScaling) {
@@ -22,7 +22,7 @@ gridScalingFC GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) c
     }
 }
 
-gridScalingCF GridScalingFactory::getGridScalingCF(bool hasTurbulentViscosity) const
+gridScaling GridScalingFactory::getGridScalingCF(bool hasTurbulentViscosity) const
 {
     // for descriptions of the scaling types refer to the header
     switch (gridScaling) {

@@ -230,16 +230,16 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 	//define bool vector for nodes outside the interface
 	for (unsigned int it = 0; it < para->getParH(lev + 1)->numberOfPointsCpTop; it++)
 	{
-        for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->intCF.numberOfCells; ifit++)
+        for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->coarseToFine.numberOfCells; ifit++)
 		{
-			if ((para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH((int)lev)->intCF.fineCellIndices[ifit]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborY[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborY[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->intCF.fineCellIndices[ifit]]]]))
+			if ((para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborY[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ[para->getParH(lev + 1)->neighborY[para->getParH(lev + 1)->neighborX[para->getParH((int)lev)->coarseToFine.fineCellIndices[ifit]]]]))
 			{
 				para->getParH(lev + 1)->isOutsideInterface.push_back(false);
 				tempBool = false;
@@ -256,9 +256,9 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	for (unsigned int it = 0; it < para->getParH((int)lev)->numberOfPointsCpTop; it++)
 	{
-        for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->intFC.numberOfCells; ifit++)
+        for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->fineToCoarse.numberOfCells; ifit++)
 		{
-			if (para->getParH((int)lev)->cpTopIndex[it] == (int)para->getParH((int)lev)->intFC.coarseCellIndices[ifit])
+			if (para->getParH((int)lev)->cpTopIndex[it] == (int)para->getParH((int)lev)->fineToCoarse.coarseCellIndices[ifit])
 			{
 				para->getParH((int)lev)->isOutsideInterface.push_back(false);
 				tempBool = false;

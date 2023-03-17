@@ -152,14 +152,14 @@ struct LBMSimulationParameter {
     // Grid Refinement
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the base-node-indices of coarse and fine refinement cells
-    InterpolationCellCoarseToFine intCF;
-    InterpolationCellFineToCoarse intFC;
+    InterpolationCell coarseToFine;
+    InterpolationCell fineToCoarse;
     //////////////////////////////////////////////////////////////////////////
     //! \brief distinguish between bulk and border interpolation cells (necessary for communication hiding)
-    InterpolationCellFineToCoarse intFCBorder;
-    InterpolationCellFineToCoarse intFCBulk;
-    InterpolationCellCoarseToFine intCFBorder;
-    InterpolationCellCoarseToFine intCFBulk;
+    InterpolationCell intFCBorder;
+    InterpolationCell intFCBulk;
+    InterpolationCell intCFBorder;
+    InterpolationCell intCFBulk;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores location of neighboring cell (necessary for refinement into the wall)
     InterpolationCellNeighbor neighborCF;

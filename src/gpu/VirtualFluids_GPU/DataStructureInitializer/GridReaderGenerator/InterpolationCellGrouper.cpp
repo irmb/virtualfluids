@@ -16,9 +16,9 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level) co
 
     parDs[level]->intFCBorder.numberOfCells = parHs[level]->intFCBorder.numberOfCells;
     parDs[level]->intFCBulk.numberOfCells = parHs[level]->intFCBulk.numberOfCells;
-    parDs[level]->intFCBorder.coarseCellIndices = parDs[level]->intFC.coarseCellIndices;
+    parDs[level]->intFCBorder.coarseCellIndices = parDs[level]->fineToCoarse.coarseCellIndices;
     parDs[level]->intFCBulk.coarseCellIndices = parDs[level]->intFCBorder.coarseCellIndices + parDs[level]->intFCBorder.numberOfCells;
-    parDs[level]->intFCBorder.fineCellIndices = parDs[level]->intFC.fineCellIndices;
+    parDs[level]->intFCBorder.fineCellIndices = parDs[level]->fineToCoarse.fineCellIndices;
     parDs[level]->intFCBulk.fineCellIndices = parDs[level]->intFCBorder.fineCellIndices + parDs[level]->intFCBorder.numberOfCells;
     parDs[level]->neighborFCBulk.x = parDs[level]->neighborFC.x + parDs[level]->intFCBorder.numberOfCells;
     parDs[level]->neighborFCBulk.y = parDs[level]->neighborFC.y + parDs[level]->intFCBorder.numberOfCells;
@@ -28,8 +28,8 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level) co
 void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) const
 {
     // create some local variables for better readability
-    uint *iCellFccAll = parHs[level]->intFC.coarseCellIndices;
-    uint *iCellFcfAll = parHs[level]->intFC.fineCellIndices;
+    uint *iCellFccAll = parHs[level]->fineToCoarse.coarseCellIndices;
+    uint *iCellFcfAll = parHs[level]->fineToCoarse.fineCellIndices;
     auto grid = this->builder->getGrid(level);
 
     std::vector<uint> iCellFccBorderVector;
@@ -44,7 +44,7 @@ void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) 
     std::vector<real> zBulkVector;
 
     // fill border and bulk vectors with iCellFCs
-    for (uint i = 0; i < parHs[level]->intFC.numberOfCells; i++)
+    for (uint i = 0; i < parHs[level]->fineToCoarse.numberOfCells; i++)
         if (grid->isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
             iCellFccBorderVector.push_back(iCellFccAll[i]);
             iCellFcfBorderVector.push_back(iCellFcfAll[i]);
@@ -94,9 +94,9 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level) co
 
     parDs[level]->intCFBorder.numberOfCells = parHs[level]->intCFBorder.numberOfCells;
     parDs[level]->intCFBulk.numberOfCells = parHs[level]->intCFBulk.numberOfCells;
-    parDs[level]->intCFBorder.coarseCellIndices = parDs[level]->intCF.coarseCellIndices;
+    parDs[level]->intCFBorder.coarseCellIndices = parDs[level]->coarseToFine.coarseCellIndices;
     parDs[level]->intCFBulk.coarseCellIndices = parDs[level]->intCFBorder.coarseCellIndices + parDs[level]->intCFBorder.numberOfCells;
-    parDs[level]->intCFBorder.fineCellIndices = parDs[level]->intCF.fineCellIndices;
+    parDs[level]->intCFBorder.fineCellIndices = parDs[level]->coarseToFine.fineCellIndices;
     parDs[level]->intCFBulk.fineCellIndices = parDs[level]->intCFBorder.fineCellIndices + parDs[level]->intCFBorder.numberOfCells;
     parDs[level]->neighborCFBulk.x = parDs[level]->neighborCF.x + parDs[level]->intCFBorder.numberOfCells;
     parDs[level]->neighborCFBulk.y = parDs[level]->neighborCF.y + parDs[level]->intCFBorder.numberOfCells;
@@ -106,8 +106,8 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level) co
 void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) const
 {
     // create some local variables for better readability
-    uint *iCellCfcAll = parHs[level]->intCF.coarseCellIndices;
-    uint *iCellCffAll = parHs[level]->intCF.fineCellIndices;
+    uint *iCellCfcAll = parHs[level]->coarseToFine.coarseCellIndices;
+    uint *iCellCffAll = parHs[level]->coarseToFine.fineCellIndices;
     uint *neighborX = this->parHs[level]->neighborX;
     uint *neighborY = this->parHs[level]->neighborY;
     uint *neighborZ = this->parHs[level]->neighborZ;
@@ -126,7 +126,7 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
     uint sparseIndexOfICellBSW;
 
     // fill border and bulk vectors with iCellCFs
-    for (uint i = 0; i < parHs[level]->intCF.numberOfCells; i++) {
+    for (uint i = 0; i < parHs[level]->coarseToFine.numberOfCells; i++) {
         sparseIndexOfICellBSW = iCellCfcAll[i];
 
         if (grid->isSparseIndexInFluidNodeIndicesBorder(sparseIndexOfICellBSW) ||
@@ -153,12 +153,12 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
     }
 
     // set new sizes and pointers
-    parHs[level]->intCFBorder.coarseCellIndices = parHs[level]->intCF.coarseCellIndices;
-    parHs[level]->intCFBorder.fineCellIndices = parHs[level]->intCF.fineCellIndices;
+    parHs[level]->intCFBorder.coarseCellIndices = parHs[level]->coarseToFine.coarseCellIndices;
+    parHs[level]->intCFBorder.fineCellIndices = parHs[level]->coarseToFine.fineCellIndices;
     parHs[level]->intCFBorder.numberOfCells = (uint)iCellCfcBorderVector.size();
     parHs[level]->intCFBulk.numberOfCells = (uint)iCellCfcBulkVector.size();
-    parHs[level]->intCFBulk.coarseCellIndices = parHs[level]->intCF.coarseCellIndices + parHs[level]->intCFBorder.numberOfCells;
-    parHs[level]->intCFBulk.fineCellIndices = parHs[level]->intCF.fineCellIndices + parHs[level]->intCFBorder.numberOfCells;
+    parHs[level]->intCFBulk.coarseCellIndices = parHs[level]->coarseToFine.coarseCellIndices + parHs[level]->intCFBorder.numberOfCells;
+    parHs[level]->intCFBulk.fineCellIndices = parHs[level]->coarseToFine.fineCellIndices + parHs[level]->intCFBorder.numberOfCells;
     parHs[level]->neighborCFBulk.x = parHs[level]->neighborCF.x + parHs[level]->intCFBorder.numberOfCells;
     parHs[level]->neighborCFBulk.y = parHs[level]->neighborCF.y + parHs[level]->intCFBorder.numberOfCells;
     parHs[level]->neighborCFBulk.z = parHs[level]->neighborCF.z + parHs[level]->intCFBorder.numberOfCells;

@@ -47,8 +47,8 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
         if(!gridScalingFactory){
             throw std::runtime_error("There is more than one level, but no scalingFactory was provided.");
         }
-        checkScalingFunction(gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->intFC, "scalingFineToCoarse");
-        checkScalingFunction(gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->intCF, "scalingCoarseToFine");
+        checkScalingFunction(gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->fineToCoarse, "scalingFineToCoarse");
+        checkScalingFunction(gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->coarseToFine, "scalingCoarseToFine");
         this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity());
         this->scalingCoarseToFine = gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity());
     }
@@ -59,7 +59,7 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
         VF_LOG_TRACE("Function for scalingCoarseToFine is nullptr");
 }
 
-void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const
+void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCell *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
@@ -294,9 +294,9 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intFC.coarseCellIndices,
-            para->getParD(level)->intFC.fineCellIndices,
-            para->getParD(level)->intFC.numberOfCells,
+            para->getParD(level)->fineToCoarse.coarseCellIndices,
+            para->getParD(level)->fineToCoarse.fineCellIndices,
+            para->getParD(level)->fineToCoarse.numberOfCells,
             para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
@@ -318,9 +318,9 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intFC.coarseCellIndices,
-            para->getParD(level)->intFC.fineCellIndices,
-            para->getParD(level)->intFC.numberOfCells,
+            para->getParD(level)->fineToCoarse.coarseCellIndices,
+            para->getParD(level)->fineToCoarse.fineCellIndices,
+            para->getParD(level)->fineToCoarse.numberOfCells,
             para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
@@ -328,7 +328,7 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
     }
 }
 
-void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine* icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const
+void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCell* icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     this->scalingCoarseToFine(para->getParD(level).get(), para->getParD(level+1).get(), icellCF, offCF, stream);
@@ -563,9 +563,9 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intCF.coarseCellIndices,
-            para->getParD(level)->intCF.fineCellIndices,
-            para->getParD(level)->intCF.numberOfCells,
+            para->getParD(level)->coarseToFine.coarseCellIndices,
+            para->getParD(level)->coarseToFine.fineCellIndices,
+            para->getParD(level)->coarseToFine.numberOfCells,
             para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
@@ -587,9 +587,9 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intCF.coarseCellIndices,
-            para->getParD(level)->intCF.fineCellIndices,
-            para->getParD(level)->intCF.numberOfCells,
+            para->getParD(level)->coarseToFine.coarseCellIndices,
+            para->getParD(level)->coarseToFine.fineCellIndices,
+            para->getParD(level)->coarseToFine.numberOfCells,
             para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,

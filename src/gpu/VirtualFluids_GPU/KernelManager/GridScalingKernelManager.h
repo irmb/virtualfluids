@@ -48,10 +48,8 @@ enum class CudaStreamIndex;
 struct LBMSimulationParameter;
 struct CUstream_st;
 
-using gridScalingFC =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, ICellNeigh &, CUstream_st *stream)>;
-using gridScalingCF =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, ICellNeigh &, CUstream_st *stream)>;
+using gridScaling =
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICell *, ICellNeigh &, CUstream_st *stream)>;
 
 //! \class GridScalingKernelManager
 //! \brief manage the cuda kernel calls
@@ -64,13 +62,13 @@ public:
     GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernelH
-    void runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const;
+    void runFineToCoarseKernelLB(const int level, InterpolationCell *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine *icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCell *icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;
@@ -78,35 +76,21 @@ public:
 private:
     //! \brief check if grid scaling was set
     //! \throws std::runtime_error if interpolation nodes were assigned, but no scaling function was set in the grid
-    //! scaling factory \param scalingFunctionFC: a kernel function for the grid scaling \param scalingStruct: a struct
+    //! scaling factory \param scalingFunction: a kernel function for the grid scaling \param scalingStruct: a struct
     //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
     //! scaling function
-    void checkScalingFunction(const gridScalingFC &scalingFunctionFC, const InterpolationCellFineToCoarse &scalingStruct,
+    void checkScalingFunction(const gridScaling &scalingFunction, const InterpolationCell &scalingStruct,
                               const std::string &scalingName)
     {
-        if (!scalingFunctionFC && scalingStruct.numberOfCells > 0)
+        if (!scalingFunction && scalingStruct.numberOfCells > 0)
             throw std::runtime_error("The scaling function " + scalingName + " was not set!");
-        if (scalingFunctionFC && scalingStruct.numberOfCells == 0)
-            VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
-    }
-
-    //! \brief check if grid scaling was set
-    //! \throws std::runtime_error if interpolation nodes were assigned, but no scaling function was set in the grid
-    //! scaling factory \param scalingFunctionCF: a kernel function for the grid scaling \param scalingStruct: a struct
-    //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
-    //! scaling function
-    void checkScalingFunction(const gridScalingCF &scalingFunctionCF, const InterpolationCellCoarseToFine &scalingStruct,
-                              const std::string &scalingName)
-    {
-        if (!scalingFunctionCF && scalingStruct.numberOfCells > 0)
-            throw std::runtime_error("The scaling function " + scalingName + " was not set!");
-        if (scalingFunctionCF && scalingStruct.numberOfCells == 0)
+        if (scalingFunction && scalingStruct.numberOfCells == 0)
             VF_LOG_WARNING("The scaling function {} was set, although there is no refinement", scalingName);
     }
 
     SPtr<Parameter> para;
 
-    gridScalingFC scalingFineToCoarse = nullptr;
-    gridScalingCF scalingCoarseToFine = nullptr;
+    gridScaling scalingFineToCoarse = nullptr;
+    gridScaling scalingCoarseToFine = nullptr;
 };
 #endif

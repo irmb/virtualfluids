@@ -128,10 +128,10 @@ private:
 
         para = testingVF::createParameterForLevel(si.level);
 
-        para->getParH(si.level)->intFC.numberOfCells = si.kFC;
-        para->getParH(si.level)->intFC.coarseCellIndices = &(si.iCellFCC.front());
-        para->getParH(si.level)->intCF.coarseCellIndices = &(si.iCellCFC.front());
-        para->getParH(si.level)->intCF.numberOfCells = si.kCF;
+        para->getParH(si.level)->fineToCoarse.numberOfCells = si.kFC;
+        para->getParH(si.level)->fineToCoarse.coarseCellIndices = &(si.iCellFCC.front());
+        para->getParH(si.level)->coarseToFine.coarseCellIndices = &(si.iCellCFC.front());
+        para->getParH(si.level)->coarseToFine.numberOfCells = si.kCF;
         para->getParH(si.level)->neighborX = si.neighborX;
         para->getParH(si.level)->neighborY = si.neighborY;
         para->getParH(si.level)->neighborZ = si.neighborZ;
