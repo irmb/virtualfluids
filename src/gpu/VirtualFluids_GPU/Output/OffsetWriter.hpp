@@ -21,9 +21,9 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-				out.writeInteger(para->getParH(level)->K_CF);
+                out.writeInteger(para->getParH(level)->intCF.kCF);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->K_CF; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
 				{
 					out.writeDouble(para->getParH(level)->offCF.xOffCF[u]);
 					out.writeDouble(para->getParH(level)->offCF.yOffCF[u]);
@@ -36,9 +36,9 @@ public:
 		{
 			for (int level = 0; level < para->getMaxLevel(); level++)
 			{
-				out.writeInteger(para->getParH(level)->K_FC);
+                out.writeInteger(para->getParH(level)->intFC.kFC);
 				out.writeLine();
-				for(unsigned int u=0; u<para->getParH(level)->K_FC; u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
 				{
 					out.writeDouble(para->getParH(level)->offFC.xOffFC[u]);
 					out.writeDouble(para->getParH(level)->offFC.yOffFC[u]);

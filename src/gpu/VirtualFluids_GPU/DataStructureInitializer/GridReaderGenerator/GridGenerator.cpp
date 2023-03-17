@@ -1179,25 +1179,13 @@ void GridGenerator::allocArrays_OffsetScale()
         std::cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << std::endl;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(level)->K_CF = numberOfNodesPerLevelCF;
-        para->getParD(level)->K_CF = para->getParH(level)->K_CF;
-        para->getParH(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParD(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParH(level)->mem_size_kCF = sizeof(uint)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF = sizeof(uint)* para->getParD(level)->K_CF;
-        para->getParH(level)->mem_size_kCF_off = sizeof(real)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF_off = sizeof(real)* para->getParD(level)->K_CF;
+        //size CF
+        para->getParH(level)->intCF.kCF = numberOfNodesPerLevelCF;
+        para->getParD(level)->intCF.kCF = para->getParH(level)->intCF.kCF;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(level)->K_FC = numberOfNodesPerLevelFC;
-        para->getParD(level)->K_FC = para->getParH(level)->K_FC;
-        para->getParH(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParD(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParH(level)->mem_size_kFC = sizeof(uint)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC = sizeof(uint)* para->getParD(level)->K_FC;
-        para->getParH(level)->mem_size_kFC_off = sizeof(real)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
+        //size FC
+        para->getParH(level)->intFC.kFC = numberOfNodesPerLevelFC;
+        para->getParD(level)->intFC.kFC = para->getParH(level)->intFC.kFC;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
         cudaMemoryManager->cudaAllocInterfaceCF(level);

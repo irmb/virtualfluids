@@ -46,8 +46,7 @@ void writeInterfaceLinesDebugCF(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugCF.vtk";
-        writeGridInterfaceLines(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF,
-                                para->getParH(level)->K_CF, fileName);
+        writeGridInterfaceLines(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intCF.kCF, fileName);
     }
 }
 
@@ -55,8 +54,7 @@ void writeInterfaceLinesDebugFC(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugFC.vtk";
-        writeGridInterfaceLines(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF,
-                                para->getParH(level)->K_FC, fileName);
+        writeGridInterfaceLines(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, para->getParH(level)->intFC.kFC, fileName);
     }
 }
 
@@ -90,7 +88,7 @@ void writeInterfaceLinesDebugCFCneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_CFCneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_CF,
+        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.kCF,
                                          filename);
     }
 }
@@ -100,8 +98,7 @@ void writeInterfaceLinesDebugCFFneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_CFFneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->intCF.ICellCFF,
-                                         para->getParH(level)->K_CF, filename);
+        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intCF.kCF, filename);
     }
 }
 
@@ -110,7 +107,7 @@ void writeInterfaceLinesDebugFCCneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_FCCneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_FC,
+        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC,
                                          filename);
     }
 }
@@ -120,8 +117,7 @@ void writeInterfaceLinesDebugFCFneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_FCFneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->intFC.ICellFCF,
-                                         para->getParH(level)->K_FC, filename);
+        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->intFC.ICellFCF, para->getParH(level)->intFC.kFC, filename);
     }
 }
 
@@ -134,12 +130,12 @@ void writeInterfaceLinesDebugOff(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->intCF.kCF;
     }
     nodesVec.resize(nodeNumberVec * 8);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
+        for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++) {
             double xoff = para->getParH(level)->offCF.xOffCF[u];
             double yoff = para->getParH(level)->offCF.yOffCF[u];
             double zoff = para->getParH(level)->offCF.zOffCF[u];
@@ -175,12 +171,12 @@ void writeInterfacePointsDebugCFC(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->intCF.kCF;
     }
     nodesVec2.resize(nodeNumberVec * 8);
     int nodeCount2 = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
+        for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++) {
             int pos = para->getParH(level)->intCF.ICellCFC[u];
 
             double x1 = para->getParH(level)->coordinateX[pos];
@@ -467,12 +463,12 @@ void writeInterfaceCellsDebugCFC(Parameter *para)
     int nodeNumberVec = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->intCF.kCF;
     }
     nodesVec.resize(nodeNumberVec * 8);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
+        for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++) {
             int pos = para->getParH(level)->intCF.ICellCFC[u];
 
             double x1             = para->getParH(level)->coordinateX[pos];
@@ -508,12 +504,12 @@ void writeInterfaceCellsDebugCFF(Parameter *para)
     int nodeNumberVec = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->intCF.kCF;
     }
     nodesVec.resize(nodeNumberVec * 8);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
+        for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++) {
             int pos = para->getParH(level)->intCF.ICellCFF[u];
 
             double x1             = para->getParH(level + 1)->coordinateX[pos];

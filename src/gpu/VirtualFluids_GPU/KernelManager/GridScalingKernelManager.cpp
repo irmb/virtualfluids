@@ -296,8 +296,8 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->isEvenTimestep,
             para->getParD(level)->intFC.ICellFCC,
             para->getParD(level)->intFC.ICellFCF,
-            para->getParD(level)->K_FC,
-            para->getParD(level)->vis,
+            para->getParD(level)->intFC.kFC,
+            para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
             para->getParD(level)->offFC);
@@ -320,8 +320,8 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->isEvenTimestep,
             para->getParD(level)->intFC.ICellFCC,
             para->getParD(level)->intFC.ICellFCF,
-            para->getParD(level)->K_FC,
-            para->getParD(level)->vis,
+            para->getParD(level)->intFC.kFC,
+            para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
             para->getParD(level)->offFC);
@@ -565,8 +565,8 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->isEvenTimestep,
             para->getParD(level)->intCF.ICellCFC,
             para->getParD(level)->intCF.ICellCFF,
-            para->getParD(level)->K_CF,
-            para->getParD(level)->vis,
+            para->getParD(level)->intCF.kCF,
+            para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
             para->getParD(level)->offCF);
@@ -589,8 +589,8 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->isEvenTimestep,
             para->getParD(level)->intCF.ICellCFC,
             para->getParD(level)->intCF.ICellCFF,
-            para->getParD(level)->K_CF,
-            para->getParD(level)->vis,
+            para->getParD(level)->intCF.kCF,
+            para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
             para->getParD(level)->offCF);

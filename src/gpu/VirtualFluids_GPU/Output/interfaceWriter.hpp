@@ -32,11 +32,11 @@ public:
 		{
 			if ((Type == "_InterfaceCFC") || (Type == "_InterfaceCFF"))
 			{
-				nodeNumberVec += para->getParH(level)->K_CF;
+                nodeNumberVec += para->getParH(level)->intCF.kCF;
 			}
 			else if (Type == "_InterfaceFCF")
 			{
-				nodeNumberVec += para->getParH(level)->K_FC;
+                nodeNumberVec += para->getParH(level)->intFC.kFC;
 			}
 		}
 		nodesVec.resize(nodeNumberVec*8);
@@ -55,7 +55,7 @@ public:
 			//std::vector<unsigned int>& posVec = posIndexVec[level];
 			if (Type == "_InterfaceCFC")
 			{
-				for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
 				{
 					int pos = para->getParH(level)->intCF.ICellCFC[u];
 					int ix1 = pos % nx1lev;
@@ -82,7 +82,7 @@ public:
 			}
 			else if (Type == "_InterfaceCFF")
 			{
-				for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++)
 				{
 					int pos = para->getParH(level)->intCF.ICellCFF[u];
 					int ix1 = pos % nx1lev;
@@ -109,7 +109,7 @@ public:
 			}
 			else if (Type == "_InterfaceFCF")
 			{
-				for(unsigned int u=0;u<para->getParH(level)->K_FC;u++)
+                for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
 				{
 					int pos = para->getParH(level)->intFC.ICellFCF[u];
 					int ix1 = pos % nx1lev;
@@ -146,7 +146,7 @@ public:
 		int nodeNumberVec = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-			nodeNumberVec += para->getParH(level)->K_FC;
+            nodeNumberVec += para->getParH(level)->intFC.kFC;
 		}
 		nodesVec.resize(nodeNumberVec*8);
 		int nodeCount = 0;
@@ -163,7 +163,7 @@ public:
 			double achtelNodeDelta = 0.125*nodeDeltaLevel;
 			//int count = 0;
 			//std::vector<unsigned int>& posVec = posIndexVec[level];
-			for(unsigned int u=0;u<para->getParH(level)->K_FC;u++)
+            for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++)
 			{
 				int pos = para->getParH(level)->intFC.ICellFCC[u];//posVec[u];
 				int ix1 = pos % nx1lev;

@@ -165,25 +165,13 @@ void GridReader::allocArrays_OffsetScale()
         AnzahlKnotenGesFC += tempFC;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(i)->K_CF = tempCF;
-        para->getParD(i)->K_CF = para->getParH(i)->K_CF;
-        para->getParH(i)->intCF.kCF = para->getParH(i)->K_CF;
-        para->getParD(i)->intCF.kCF = para->getParH(i)->K_CF;
-        para->getParH(i)->mem_size_kCF = sizeof(unsigned int)* para->getParH(i)->K_CF;
-        para->getParD(i)->mem_size_kCF = sizeof(unsigned int)* para->getParD(i)->K_CF;
-        para->getParH(i)->mem_size_kCF_off = sizeof(real)* para->getParH(i)->K_CF;
-        para->getParD(i)->mem_size_kCF_off = sizeof(real)* para->getParD(i)->K_CF;
+        //size CF
+        para->getParH(i)->intCF.kCF = tempCF;
+        para->getParD(i)->intCF.kCF = para->getParH(i)->intCF.kCF;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(i)->K_FC = tempFC;
-        para->getParD(i)->K_FC = para->getParH(i)->K_FC;
-        para->getParH(i)->intFC.kFC = para->getParH(i)->K_FC;
-        para->getParD(i)->intFC.kFC = para->getParH(i)->K_FC;
-        para->getParH(i)->mem_size_kFC = sizeof(unsigned int)* para->getParH(i)->K_FC;
-        para->getParD(i)->mem_size_kFC = sizeof(unsigned int)* para->getParD(i)->K_FC;
-        para->getParH(i)->mem_size_kFC_off = sizeof(real)* para->getParH(i)->K_FC;
-        para->getParD(i)->mem_size_kFC_off = sizeof(real)* para->getParD(i)->K_FC;
+        //size FC
+        para->getParH(i)->intFC.kFC = tempFC;
+        para->getParD(i)->intFC.kFC = para->getParH(i)->intFC.kFC;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
 		cudaMemoryManager->cudaAllocInterfaceCF(i);
