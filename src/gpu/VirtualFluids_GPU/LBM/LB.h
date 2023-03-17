@@ -164,6 +164,7 @@ struct InitCondition
 };
 
 //Interface Cells
+// example of old names (pre 2023) ICellCFC: interpolation from Coarse (C) to Fine (F), indices of the Coarse cells (C)
 typedef struct ICells{
    uint* fineCellIndices;
    uint* coarseCellIndices;
