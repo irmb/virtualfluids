@@ -795,7 +795,7 @@ void writeSendNodesStream(Parameter *para)
             }
         }
 
-        // check if node is in iCellFCC
+        // check if node is in a coarse cell for the interpolation from fine to coarse
         nodedata[4].resize(nodedata[0].size());
         for (int i = 0; i < (int)nodedata[0].size(); i++) {
             pos = nodedata[0][i];
@@ -891,7 +891,7 @@ void writeRecvNodesStream(Parameter *para)
             }
         }
 
-        // Recv are nodes ghost nodes and therefore they can't be iCellCFCs
+        // Recv are nodes ghost nodes and therefore they can't be coarse cells for the interpolation from coarse to fine
 
         std::string filenameVec = para->getFName() + "_writeRecvNodesStreams_PID_" +
                                   std::to_string(vf::gpu::Communicator::getInstance().getPID()) + "_" +
