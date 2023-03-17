@@ -49,7 +49,7 @@ struct LBMSimulationParameter;
 struct CUstream_st;
 
 using gridScaling =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICell *, ICellNeigh &, CUstream_st *stream)>;
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICells *, ICellNeigh &, CUstream_st *stream)>;
 
 //! \class GridScalingKernelManager
 //! \brief manage the cuda kernel calls
@@ -62,13 +62,13 @@ public:
     GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernelH
-    void runFineToCoarseKernelLB(const int level, InterpolationCell *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const;
+    void runFineToCoarseKernelLB(const int level, InterpolationCells *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, InterpolationCell *icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCells *icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;
@@ -79,7 +79,7 @@ private:
     //! scaling factory \param scalingFunction: a kernel function for the grid scaling \param scalingStruct: a struct
     //! containing the grid nodes which are part of the interpolation \param scalingName: the name of the checked
     //! scaling function
-    void checkScalingFunction(const gridScaling &scalingFunction, const InterpolationCell &scalingStruct,
+    void checkScalingFunction(const gridScaling &scalingFunction, const InterpolationCells &scalingStruct,
                               const std::string &scalingName)
     {
         if (!scalingFunction && scalingStruct.numberOfCells > 0)

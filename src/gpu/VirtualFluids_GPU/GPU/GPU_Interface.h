@@ -1623,9 +1623,9 @@ void ScaleCF_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												ICellNeigh offCF);
 
-void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellCF, ICellNeigh &offsetCF, CUstream_st *stream);
+void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellCF, ICellNeigh &offsetCF, CUstream_st *stream);
 
-template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellCF, ICellNeigh &offsetCF, CUstream_st *stream);
+template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellCF, ICellNeigh &offsetCF, CUstream_st *stream);
 
 void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
@@ -1849,9 +1849,9 @@ void ScaleFC_staggered_time_comp_27( real* DC,
 												unsigned int numberOfThreads,
 												ICellNeigh offFC);
 
-void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellFC, ICellNeigh& offsetFC, CUstream_st *stream);
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellFC, ICellNeigh& offsetFC, CUstream_st *stream);
 
-template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellFC, ICellNeigh& offsetFC, CUstream_st *stream);
+template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellFC, ICellNeigh& offsetFC, CUstream_st *stream);
 
 void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 

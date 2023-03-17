@@ -164,11 +164,11 @@ struct InitCondition
 };
 
 //Interface Cells
-typedef struct ICell{
+typedef struct ICells{
    uint* fineCellIndices;
    uint* coarseCellIndices;
    uint numberOfCells;
-} InterpolationCell;
+} InterpolationCells;
 
 //! \brief stores location of neighboring cell (necessary for refinement into the wall)
 typedef struct ICellNeigh{

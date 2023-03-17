@@ -1,6 +1,6 @@
 #include "FindInterface/FindInterface.h"
 
-void interpolation(InterpolationCell &intCF, InterpolationCell &intFC, 
+void interpolation(InterpolationCells &intCF, InterpolationCells &intFC, 
                    unsigned int LxCoarse, unsigned int LyCoarse, unsigned int LzCoarse, 
                    unsigned int LxFine, unsigned int LyFine, unsigned int LzFine, 
                    unsigned int dNx, unsigned int dNy, unsigned int dNz, 

@@ -4023,7 +4023,7 @@ void ScaleCF_staggered_time_comp_27(
     getLastCudaError("scaleCF_staggered_time_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellCF, ICellNeigh& offsetCF, CUstream_st *stream)
+void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellCF, ICellNeigh& offsetCF, CUstream_st *stream)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
@@ -4054,7 +4054,7 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
     getLastCudaError("scaleCF_RhoSq_27 execution failed");
 }
 
-template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellCF, ICellNeigh& offsetCF, CUstream_st *stream)
+template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellCF, ICellNeigh& offsetCF, CUstream_st *stream)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
@@ -4082,8 +4082,8 @@ template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationPara
 
     getLastCudaError("scaleCF_compressible execution failed");
 }
-template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellCF, ICellNeigh& offsetCF, CUstream_st *stream);
-template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellCF, ICellNeigh& offsetCF, CUstream_st *stream);
+template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellCF, ICellNeigh& offsetCF, CUstream_st *stream);
+template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellCF, ICellNeigh& offsetCF, CUstream_st *stream);
 
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_RhoSq_3rdMom_comp_27(
@@ -4920,7 +4920,7 @@ void ScaleFC_staggered_time_comp_27(
     getLastCudaError("scaleFC_staggered_time_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellFC, ICellNeigh &offsetFC, CUstream_st *stream)
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellFC, ICellNeigh &offsetFC, CUstream_st *stream)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
@@ -4951,7 +4951,7 @@ void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
     getLastCudaError("scaleFC_RhoSq_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellFC, ICellNeigh &offsetFC, CUstream_st *stream)
+template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellFC, ICellNeigh &offsetFC, CUstream_st *stream)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
@@ -4979,8 +4979,8 @@ template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationPara
 
     getLastCudaError("scaleFC_compressible execution failed");
 }
-template void ScaleFC_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellFC, ICellNeigh &offsetFC, CUstream_st *stream);
-template void ScaleFC_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICell * icellFC, ICellNeigh &offsetFC, CUstream_st *stream);
+template void ScaleFC_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellFC, ICellNeigh &offsetFC, CUstream_st *stream);
+template void ScaleFC_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * icellFC, ICellNeigh &offsetFC, CUstream_st *stream);
 
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_3rdMom_comp_27(
