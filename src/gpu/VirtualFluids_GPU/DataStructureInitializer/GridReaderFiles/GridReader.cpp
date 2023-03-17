@@ -165,25 +165,13 @@ void GridReader::allocArrays_OffsetScale()
         AnzahlKnotenGesFC += tempFC;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(i)->K_CF = tempCF;
-        para->getParD(i)->K_CF = para->getParH(i)->K_CF;
-        para->getParH(i)->intCF.kCF = para->getParH(i)->K_CF;
-        para->getParD(i)->intCF.kCF = para->getParH(i)->K_CF;
-        para->getParH(i)->mem_size_kCF = sizeof(unsigned int)* para->getParH(i)->K_CF;
-        para->getParD(i)->mem_size_kCF = sizeof(unsigned int)* para->getParD(i)->K_CF;
-        para->getParH(i)->mem_size_kCF_off = sizeof(real)* para->getParH(i)->K_CF;
-        para->getParD(i)->mem_size_kCF_off = sizeof(real)* para->getParD(i)->K_CF;
+        //size CF
+        para->getParH(i)->coarseToFine.numberOfCells = tempCF;
+        para->getParD(i)->coarseToFine.numberOfCells = para->getParH(i)->coarseToFine.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(i)->K_FC = tempFC;
-        para->getParD(i)->K_FC = para->getParH(i)->K_FC;
-        para->getParH(i)->intFC.kFC = para->getParH(i)->K_FC;
-        para->getParD(i)->intFC.kFC = para->getParH(i)->K_FC;
-        para->getParH(i)->mem_size_kFC = sizeof(unsigned int)* para->getParH(i)->K_FC;
-        para->getParD(i)->mem_size_kFC = sizeof(unsigned int)* para->getParD(i)->K_FC;
-        para->getParH(i)->mem_size_kFC_off = sizeof(real)* para->getParH(i)->K_FC;
-        para->getParD(i)->mem_size_kFC_off = sizeof(real)* para->getParD(i)->K_FC;
+        //size FC
+        para->getParH(i)->fineToCoarse.numberOfCells = tempFC;
+        para->getParD(i)->fineToCoarse.numberOfCells = para->getParH(i)->fineToCoarse.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
 		cudaMemoryManager->cudaAllocInterfaceCF(i);
@@ -192,12 +180,12 @@ void GridReader::allocArrays_OffsetScale()
 		cudaMemoryManager->cudaAllocInterfaceOffFC(i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
-        obj_offCF->initArrayOffset(para->getParH(i)->offCF.xOffCF, para->getParH(i)->offCF.yOffCF, para->getParH(i)->offCF.zOffCF, i);
-        obj_offFC->initArrayOffset(para->getParH(i)->offFC.xOffFC, para->getParH(i)->offFC.yOffFC, para->getParH(i)->offFC.zOffFC, i);
-        obj_scaleCFC->initScale(para->getParH(i)->intCF.ICellCFC, i);
-        obj_scaleCFF->initScale(para->getParH(i)->intCF.ICellCFF, i);
-        obj_scaleFCC->initScale(para->getParH(i)->intFC.ICellFCC, i);
-        obj_scaleFCF->initScale(para->getParH(i)->intFC.ICellFCF, i);
+        obj_offCF->initArrayOffset(para->getParH(i)->neighborCoarseToFine.x, para->getParH(i)->neighborCoarseToFine.y, para->getParH(i)->neighborCoarseToFine.z, i);
+        obj_offFC->initArrayOffset(para->getParH(i)->neighborFineToCoarse.x, para->getParH(i)->neighborFineToCoarse.y, para->getParH(i)->neighborFineToCoarse.z, i);
+        obj_scaleCFC->initScale(para->getParH(i)->coarseToFine.coarseCellIndices, i);
+        obj_scaleCFF->initScale(para->getParH(i)->coarseToFine.fineCellIndices, i);
+        obj_scaleFCC->initScale(para->getParH(i)->fineToCoarse.coarseCellIndices, i);
+        obj_scaleFCF->initScale(para->getParH(i)->fineToCoarse.fineCellIndices, i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
 		cudaMemoryManager->cudaCopyInterfaceCF(i);

@@ -36,7 +36,7 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 													 unsigned int nyC, 
 													 unsigned int nxF, 
 													 unsigned int nyF,
-													 OffFC offFC)
+													 ICellNeigh offFC)
 {
    real 
 	   *fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -205,9 +205,9 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -1283,7 +1283,7 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffFC offFC)
+												 ICellNeigh offFC)
 {
    real 
 	   *fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -1452,9 +1452,9 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;

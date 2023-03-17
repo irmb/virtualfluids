@@ -85,6 +85,8 @@ struct LBMSimulationParameter {
     real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
     //! \brief stores the value for omega
     real omega;
+    //! \brief stores the value for viscosity
+    real viscosity;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of nodes (based on indirect addressing scheme)
     unsigned long long numberOfNodes;
@@ -128,6 +130,8 @@ struct LBMSimulationParameter {
     //! \brief can be used for pressure correction at outflow boundary condition
     real outflowPressureCorrectionFactor;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief store the values of body forces for all 3 dimensions
+    real *forceX_SP, *forceY_SP, *forceZ_SP;
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -141,9 +145,28 @@ struct LBMSimulationParameter {
     real *concentration;
     //! \brief store all distribution functions for the D3Q27 advection diffusion field
     Distributions27 distributionsAD;
+    //////////////////////////////////////////////////////////////////////////
 
 
-
+    //////////////////////////////////////////////////////////////////////////
+    // Grid Refinement
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the base-node-indices of coarse and fine refinement cells
+    InterpolationCells coarseToFine;
+    InterpolationCells fineToCoarse;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief distinguish between bulk and border interpolation cells (necessary for communication hiding)
+    InterpolationCells fineToCoarseBorder;
+    InterpolationCells fineToCoarseBulk;
+    InterpolationCells coarseToFineBorder;
+    InterpolationCells coarseToFineBulk;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores location of neighboring cell (necessary for refinement into the wall)
+    InterpolationCellNeighbor neighborCoarseToFine;
+    InterpolationCellNeighbor neighborCoarseToFineBulk;
+    InterpolationCellNeighbor neighborFineToCoarse;
+    InterpolationCellNeighbor neighborFineToCoarseBulk;
+    //////////////////////////////////////////////////////////////////////////
 
 
 
@@ -153,7 +176,30 @@ struct LBMSimulationParameter {
 
 
     //////////////////////////////////////////////////////////////////////////
-    // DEPRECATED
+    // potential additional logic
+    //////////////////////////////////////////////////////////////////////////
+
+    // distributions F3////////
+    Distributions6 g6;
+
+    unsigned int size_Array_SP; //?? Deprecated
+
+    // BC NoSlip
+    TempforBoundaryConditions Temp;
+    // BC Velocity
+    TempVelforBoundaryConditions TempVel;
+    // BC Pressure
+    TempPressforBoundaryConditions TempPress;
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // DEPRECATED - planed to be taken out for next open source release
     //////////////////////////////////////////////////////////////////////////
 
     // distributions///////////
@@ -210,64 +256,18 @@ struct LBMSimulationParameter {
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-
-    //////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // additional logic 
-    //////////////////////////////////////////////////////////////////////////
-
-    // distributions F3////////
-    Distributions6 g6;
-
-    unsigned int size_Array_SP; //?? Deprecated
-
-    // BC NoSlip
-    TempforBoundaryConditions Temp;
-    // BC Velocity
-    TempVelforBoundaryConditions TempVel;
-    // BC Pressure
-    TempPressforBoundaryConditions TempPress;
-
-    // memory size of sparse matrix /////////////////
-
-
-
-    //////////////////////////////////////////////////////////////////////////
-
-
-    // body forces////////////
-    real *forceX_SP, *forceY_SP, *forceZ_SP;
+    // interface////////////////
+    bool need_interface[6];
+    unsigned int XdistKn, YdistKn, ZdistKn;
 
     // vel parab///////////////
     real *vParab;
 
-    // turbulent viscosity ///
-    real *turbViscosity;
-    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
-
-    // turbulence intensity //
-    real *vx_mean, *vy_mean, *vz_mean;       // means
-    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
-    std::vector<real> turbulenceIntensity;
-
     // macroscopic values//////
     // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
-    //! \brief stores the value for viscosity (on level 0)
-    real vis;
 
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
-
-    // median-macro-values/////
-    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
-    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
-    // Advection-Diffusion
-    real *Conc_Med, *Conc_Med_Out;
 
     // grid////////////////////
     unsigned int nx, ny, nz;
@@ -289,34 +289,47 @@ struct LBMSimulationParameter {
     unsigned int sizePlanePressOUT, startPOUT;
     bool isSetPress;
 
+    // deltaPhi
+    real deltaPhi;
+
+    // particles
+    PathLineParticles plp;
+
+
+    //////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+
+
+
+    // turbulent viscosity ///
+    real *turbViscosity;
+    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
+
+    // turbulence intensity //
+    real *vx_mean, *vy_mean, *vz_mean;       // means
+    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
+    std::vector<real> turbulenceIntensity;
+
+
+    // median-macro-values/////
+    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
+    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
+    // Advection-Diffusion
+    real *Conc_Med, *Conc_Med_Out;
+
 
     // print///////////////////
     unsigned int startz, endz;
     real Lx, Ly, Lz, dx;
     real distX, distY, distZ;
-
-    // interface////////////////
-    bool need_interface[6];
-    unsigned int XdistKn, YdistKn, ZdistKn;
-    InterpolationCellCF intCF;
-    InterpolationCellFC intFC;
-    unsigned int K_CF;
-    unsigned int K_FC;
-    unsigned int mem_size_kCF;
-    unsigned int mem_size_kFC;
-
-    InterpolationCellFC intFCBorder;
-    InterpolationCellFC intFCBulk;
-    InterpolationCellCF intCFBorder;
-    InterpolationCellCF intCFBulk;
-
-    // offset//////////////////
-    OffsetCF offCF;
-    OffsetCF offCFBulk;
-    OffsetFC offFC;
-    OffsetFC offFCBulk;
-    unsigned int mem_size_kCF_off;
-    unsigned int mem_size_kFC_off;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
@@ -376,13 +389,6 @@ struct LBMSimulationParameter {
     int *naschVelocity;
     uint numberOfStreetNodes;
 
-    // deltaPhi
-    real deltaPhi;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // particles
-    PathLineParticles plp;
-    ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////
     // 1D domain decomposition
