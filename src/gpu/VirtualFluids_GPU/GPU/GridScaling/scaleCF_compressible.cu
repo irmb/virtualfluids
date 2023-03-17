@@ -237,7 +237,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real omegaFine, 
     real* turbulentViscosityCoarse,
     real* turbulentViscosityFine,
-    ICellNeigh offsetCF)
+    ICellNeigh neighborCoarseToFine)
 {
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index coordinates from threadId_100, blockId_100, blockDim and gridDim.
@@ -758,9 +758,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
     //!
-    real xoff    = offsetCF.x[nodeIndex];
-    real yoff    = offsetCF.y[nodeIndex];
-    real zoff    = offsetCF.z[nodeIndex];
+    real xoff    = neighborCoarseToFine.x[nodeIndex];
+    real yoff    = neighborCoarseToFine.y[nodeIndex];
+    real zoff    = neighborCoarseToFine.z[nodeIndex];
 
     real xoff_sq = xoff * xoff;
     real yoff_sq = yoff * yoff;
