@@ -38,8 +38,8 @@ private:
     void preCollisionBC(int level, unsigned int t);
     void collisionPorousMedia(int level);
 
-    void fineToCoarse(int level, InterpolationCells* icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex);
-    void coarseToFine(int level, InterpolationCells* icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex);
+    void fineToCoarse(int level, InterpolationCells* fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex);
+    void coarseToFine(int level, InterpolationCells* coarseToFine, ICellNeigh &neighborCoarseToFine, CudaStreamIndex streamIndex);
 
     void prepareExchangeMultiGPU(int level, CudaStreamIndex streamIndex);
     void prepareExchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIndex);
