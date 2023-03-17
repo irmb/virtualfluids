@@ -28,63 +28,63 @@ void InterpolationCellGrouper::splitFineToCoarseIntoBorderAndBulk(uint level) co
 void InterpolationCellGrouper::reorderFineToCoarseIntoBorderAndBulk(uint level) const
 {
     // create some local variables for better readability
-    uint *iCellFccAll = parHs[level]->fineToCoarse.coarseCellIndices;
-    uint *iCellFcfAll = parHs[level]->fineToCoarse.fineCellIndices;
+    uint *fineToCoarseCoarseAll = parHs[level]->fineToCoarse.coarseCellIndices;
+    uint *fineToCoarseFineAll = parHs[level]->fineToCoarse.fineCellIndices;
     auto grid = this->builder->getGrid(level);
 
-    std::vector<uint> iCellFccBorderVector;
-    std::vector<uint> iCellFccBulkVector;
-    std::vector<uint> iCellFcfBorderVector;
-    std::vector<uint> iCellFcfBulkVector;
-    std::vector<real> xBorderVector;
-    std::vector<real> yBorderVector;
-    std::vector<real> zBorderVector;
-    std::vector<real> xBulkVector;
-    std::vector<real> yBulkVector;
-    std::vector<real> zBulkVector;
+    std::vector<uint> fineToCoarseCoarseBorderVector;
+    std::vector<uint> fineToCoarseCoarseBulkVector;
+    std::vector<uint> fineToCoarseFineBorderVector;
+    std::vector<uint> fineToCoarseFineBulkVector;
+    std::vector<real> neighborXBorder;
+    std::vector<real> neighborYBorder;
+    std::vector<real> neighborZBorder;
+    std::vector<real> neighborXBulk;
+    std::vector<real> neighborYBulk;
+    std::vector<real> neighborZBulk;
 
-    // fill border and bulk vectors with iCellFCs
+    // fill border and bulk vectors with interpolation cells fine to coarse
     for (uint i = 0; i < parHs[level]->fineToCoarse.numberOfCells; i++)
-        if (grid->isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
-            iCellFccBorderVector.push_back(iCellFccAll[i]);
-            iCellFcfBorderVector.push_back(iCellFcfAll[i]);
-            xBorderVector.push_back(parHs[level]->neighborFineToCoarse.x[i]);
-            yBorderVector.push_back(parHs[level]->neighborFineToCoarse.y[i]);
-            zBorderVector.push_back(parHs[level]->neighborFineToCoarse.z[i]);
+        if (grid->isSparseIndexInFluidNodeIndicesBorder(fineToCoarseCoarseAll[i])) {
+            fineToCoarseCoarseBorderVector.push_back(fineToCoarseCoarseAll[i]);
+            fineToCoarseFineBorderVector.push_back(fineToCoarseFineAll[i]);
+            neighborXBorder.push_back(parHs[level]->neighborFineToCoarse.x[i]);
+            neighborYBorder.push_back(parHs[level]->neighborFineToCoarse.y[i]);
+            neighborZBorder.push_back(parHs[level]->neighborFineToCoarse.z[i]);
         } else {
-            iCellFccBulkVector.push_back(iCellFccAll[i]);
-            iCellFcfBulkVector.push_back(iCellFcfAll[i]);
-            xBulkVector.push_back(parHs[level]->neighborFineToCoarse.x[i]);
-            yBulkVector.push_back(parHs[level]->neighborFineToCoarse.y[i]);
-            zBulkVector.push_back(parHs[level]->neighborFineToCoarse.z[i]);
+            fineToCoarseCoarseBulkVector.push_back(fineToCoarseCoarseAll[i]);
+            fineToCoarseFineBulkVector.push_back(fineToCoarseFineAll[i]);
+            neighborXBulk.push_back(parHs[level]->neighborFineToCoarse.x[i]);
+            neighborYBulk.push_back(parHs[level]->neighborFineToCoarse.y[i]);
+            neighborZBulk.push_back(parHs[level]->neighborFineToCoarse.z[i]);
         }
 
     // set new sizes and pointers
-    parHs[level]->fineToCoarseBorder.coarseCellIndices = iCellFccAll;
-    parHs[level]->fineToCoarseBorder.fineCellIndices = iCellFcfAll;
-    parHs[level]->fineToCoarseBorder.numberOfCells = (uint)iCellFccBorderVector.size();
-    parHs[level]->fineToCoarseBulk.numberOfCells = (uint)iCellFccBulkVector.size();
-    parHs[level]->fineToCoarseBulk.coarseCellIndices = iCellFccAll + parHs[level]->fineToCoarseBorder.numberOfCells;
-    parHs[level]->fineToCoarseBulk.fineCellIndices = iCellFcfAll + parHs[level]->fineToCoarseBorder.numberOfCells;
+    parHs[level]->fineToCoarseBorder.coarseCellIndices = fineToCoarseCoarseAll;
+    parHs[level]->fineToCoarseBorder.fineCellIndices = fineToCoarseFineAll;
+    parHs[level]->fineToCoarseBorder.numberOfCells = (uint)fineToCoarseCoarseBorderVector.size();
+    parHs[level]->fineToCoarseBulk.numberOfCells = (uint)fineToCoarseCoarseBulkVector.size();
+    parHs[level]->fineToCoarseBulk.coarseCellIndices = fineToCoarseCoarseAll + parHs[level]->fineToCoarseBorder.numberOfCells;
+    parHs[level]->fineToCoarseBulk.fineCellIndices = fineToCoarseFineAll + parHs[level]->fineToCoarseBorder.numberOfCells;
     parHs[level]->neighborFineToCoarseBulk.x = parHs[level]->neighborFineToCoarse.x + parHs[level]->fineToCoarseBorder.numberOfCells;
     parHs[level]->neighborFineToCoarseBulk.y = parHs[level]->neighborFineToCoarse.y + parHs[level]->fineToCoarseBorder.numberOfCells;
     parHs[level]->neighborFineToCoarseBulk.z = parHs[level]->neighborFineToCoarse.z + parHs[level]->fineToCoarseBorder.numberOfCells;
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
-    for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
-        iCellFccAll[i] = iCellFccBorderVector[i];
-        iCellFcfAll[i] = iCellFcfBorderVector[i];
-        parHs[level]->neighborFineToCoarse.x[i] = xBorderVector[i];
-        parHs[level]->neighborFineToCoarse.y[i] = yBorderVector[i];
-        parHs[level]->neighborFineToCoarse.z[i] = zBorderVector[i];
+    for (uint i = 0; i < (uint)fineToCoarseCoarseBorderVector.size(); i++) {
+        fineToCoarseCoarseAll[i] = fineToCoarseCoarseBorderVector[i];
+        fineToCoarseFineAll[i] = fineToCoarseFineBorderVector[i];
+        parHs[level]->neighborFineToCoarse.x[i] = neighborXBorder[i];
+        parHs[level]->neighborFineToCoarse.y[i] = neighborYBorder[i];
+        parHs[level]->neighborFineToCoarse.z[i] = neighborZBorder[i];
     }
-    for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++) {
-        parHs[level]->fineToCoarseBulk.coarseCellIndices[i] = iCellFccBulkVector[i];
-        parHs[level]->fineToCoarseBulk.fineCellIndices[i] = iCellFcfBulkVector[i];
-        parHs[level]->neighborFineToCoarseBulk.x[i] = xBulkVector[i];
-        parHs[level]->neighborFineToCoarseBulk.y[i] = yBulkVector[i];
-        parHs[level]->neighborFineToCoarseBulk.z[i] = zBulkVector[i];
+    for (uint i = 0; i < (uint)fineToCoarseCoarseBulkVector.size(); i++) {
+        parHs[level]->fineToCoarseBulk.coarseCellIndices[i] = fineToCoarseCoarseBulkVector[i];
+        parHs[level]->fineToCoarseBulk.fineCellIndices[i] = fineToCoarseFineBulkVector[i];
+        parHs[level]->neighborFineToCoarseBulk.x[i] = neighborXBulk[i];
+        parHs[level]->neighborFineToCoarseBulk.y[i] = neighborYBulk[i];
+        parHs[level]->neighborFineToCoarseBulk.z[i] = neighborZBulk[i];
     }
 }
 
@@ -106,28 +106,28 @@ void InterpolationCellGrouper::splitCoarseToFineIntoBorderAndBulk(uint level) co
 void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) const
 {
     // create some local variables for better readability
-    uint *iCellCfcAll = parHs[level]->coarseToFine.coarseCellIndices;
-    uint *iCellCffAll = parHs[level]->coarseToFine.fineCellIndices;
+    uint *coarseToFineCoarseAll = parHs[level]->coarseToFine.coarseCellIndices;
+    uint *coarseToFineFineAll = parHs[level]->coarseToFine.fineCellIndices;
     uint *neighborX = this->parHs[level]->neighborX;
     uint *neighborY = this->parHs[level]->neighborY;
     uint *neighborZ = this->parHs[level]->neighborZ;
     auto grid = this->builder->getGrid(level);
 
-    std::vector<uint> iCellCfcBorderVector;
-    std::vector<uint> iCellCfcBulkVector;
-    std::vector<uint> iCellCffBorderVector;
-    std::vector<uint> iCellCffBulkVector;
-    std::vector<real> xBorderVector;
-    std::vector<real> yBorderVector;
-    std::vector<real> zBorderVector;
-    std::vector<real> xBulkVector;
-    std::vector<real> yBulkVector;
-    std::vector<real> zBulkVector;
+    std::vector<uint> coarseToFineCoarseBorderVector;
+    std::vector<uint> coarseToFineCoarseBulkVector;
+    std::vector<uint> coarseToFineFineBorderVector;
+    std::vector<uint> coarseToFineFineBulkVector;
+    std::vector<real> neighborXBorder;
+    std::vector<real> neighborYBorder;
+    std::vector<real> neighborZBorder;
+    std::vector<real> neighborXBulk;
+    std::vector<real> neighborYBulk;
+    std::vector<real> neighborZBulk;
     uint sparseIndexOfICellBSW;
 
-    // fill border and bulk vectors with iCellCFs
+    // fill border and bulk vectors with interpolation cells coarse to fine
     for (uint i = 0; i < parHs[level]->coarseToFine.numberOfCells; i++) {
-        sparseIndexOfICellBSW = iCellCfcAll[i];
+        sparseIndexOfICellBSW = coarseToFineCoarseAll[i];
 
         if (grid->isSparseIndexInFluidNodeIndicesBorder(sparseIndexOfICellBSW) ||
             grid->isSparseIndexInFluidNodeIndicesBorder(neighborX[sparseIndexOfICellBSW]) ||
@@ -138,25 +138,25 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
             grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborY[sparseIndexOfICellBSW]]) ||
             grid->isSparseIndexInFluidNodeIndicesBorder(neighborZ[neighborY[neighborX[sparseIndexOfICellBSW]]])) {
 
-            iCellCfcBorderVector.push_back(iCellCfcAll[i]);
-            iCellCffBorderVector.push_back(iCellCffAll[i]);
-            xBorderVector.push_back(parHs[level]->neighborCoarseToFine.x[i]);
-            yBorderVector.push_back(parHs[level]->neighborCoarseToFine.y[i]);
-            zBorderVector.push_back(parHs[level]->neighborCoarseToFine.z[i]);
+            coarseToFineCoarseBorderVector.push_back(coarseToFineCoarseAll[i]);
+            coarseToFineFineBorderVector.push_back(coarseToFineFineAll[i]);
+            neighborXBorder.push_back(parHs[level]->neighborCoarseToFine.x[i]);
+            neighborYBorder.push_back(parHs[level]->neighborCoarseToFine.y[i]);
+            neighborZBorder.push_back(parHs[level]->neighborCoarseToFine.z[i]);
         } else {
-            iCellCfcBulkVector.push_back(iCellCfcAll[i]);
-            iCellCffBulkVector.push_back(iCellCffAll[i]);
-            xBulkVector.push_back(parHs[level]->neighborCoarseToFine.x[i]);
-            yBulkVector.push_back(parHs[level]->neighborCoarseToFine.y[i]);
-            zBulkVector.push_back(parHs[level]->neighborCoarseToFine.z[i]);
+            coarseToFineCoarseBulkVector.push_back(coarseToFineCoarseAll[i]);
+            coarseToFineFineBulkVector.push_back(coarseToFineFineAll[i]);
+            neighborXBulk.push_back(parHs[level]->neighborCoarseToFine.x[i]);
+            neighborYBulk.push_back(parHs[level]->neighborCoarseToFine.y[i]);
+            neighborZBulk.push_back(parHs[level]->neighborCoarseToFine.z[i]);
         }
     }
 
     // set new sizes and pointers
     parHs[level]->coarseToFineBorder.coarseCellIndices = parHs[level]->coarseToFine.coarseCellIndices;
     parHs[level]->coarseToFineBorder.fineCellIndices = parHs[level]->coarseToFine.fineCellIndices;
-    parHs[level]->coarseToFineBorder.numberOfCells = (uint)iCellCfcBorderVector.size();
-    parHs[level]->coarseToFineBulk.numberOfCells = (uint)iCellCfcBulkVector.size();
+    parHs[level]->coarseToFineBorder.numberOfCells = (uint)coarseToFineCoarseBorderVector.size();
+    parHs[level]->coarseToFineBulk.numberOfCells = (uint)coarseToFineCoarseBulkVector.size();
     parHs[level]->coarseToFineBulk.coarseCellIndices = parHs[level]->coarseToFine.coarseCellIndices + parHs[level]->coarseToFineBorder.numberOfCells;
     parHs[level]->coarseToFineBulk.fineCellIndices = parHs[level]->coarseToFine.fineCellIndices + parHs[level]->coarseToFineBorder.numberOfCells;
     parHs[level]->neighborCoarseToFineBulk.x = parHs[level]->neighborCoarseToFine.x + parHs[level]->coarseToFineBorder.numberOfCells;
@@ -165,18 +165,18 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
 
     // copy the created vectors to the memory addresses of the old arrays
     // this is inefficient :(
-    for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
-        parHs[level]->coarseToFineBorder.coarseCellIndices[i] = iCellCfcBorderVector[i];
-        parHs[level]->coarseToFineBorder.fineCellIndices[i] = iCellCffBorderVector[i];
-        parHs[level]->neighborCoarseToFine.x[i] = xBorderVector[i];
-        parHs[level]->neighborCoarseToFine.y[i] = yBorderVector[i];
-        parHs[level]->neighborCoarseToFine.z[i] = zBorderVector[i];
+    for (uint i = 0; i < (uint)coarseToFineCoarseBorderVector.size(); i++) {
+        parHs[level]->coarseToFineBorder.coarseCellIndices[i] = coarseToFineCoarseBorderVector[i];
+        parHs[level]->coarseToFineBorder.fineCellIndices[i] = coarseToFineFineBorderVector[i];
+        parHs[level]->neighborCoarseToFine.x[i] = neighborXBorder[i];
+        parHs[level]->neighborCoarseToFine.y[i] = neighborYBorder[i];
+        parHs[level]->neighborCoarseToFine.z[i] = neighborZBorder[i];
     }
-    for (uint i = 0; i < (uint)iCellCfcBulkVector.size(); i++) {
-        parHs[level]->coarseToFineBulk.coarseCellIndices[i] = iCellCfcBulkVector[i];
-        parHs[level]->coarseToFineBulk.fineCellIndices[i] = iCellCffBulkVector[i];
-        parHs[level]->neighborCoarseToFineBulk.x[i] = xBulkVector[i];
-        parHs[level]->neighborCoarseToFineBulk.y[i] = yBulkVector[i];
-        parHs[level]->neighborCoarseToFineBulk.z[i] = zBulkVector[i];
+    for (uint i = 0; i < (uint)coarseToFineCoarseBulkVector.size(); i++) {
+        parHs[level]->coarseToFineBulk.coarseCellIndices[i] = coarseToFineCoarseBulkVector[i];
+        parHs[level]->coarseToFineBulk.fineCellIndices[i] = coarseToFineFineBulkVector[i];
+        parHs[level]->neighborCoarseToFineBulk.x[i] = neighborXBulk[i];
+        parHs[level]->neighborCoarseToFineBulk.y[i] = neighborYBulk[i];
+        parHs[level]->neighborCoarseToFineBulk.z[i] = neighborZBulk[i];
     }
 }
