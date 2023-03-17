@@ -342,19 +342,19 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     std::vector<int> sendIndicesOther;
     uint numberOfSendIndices = builder->getNumberOfSendIndices(direction, level);
 
-    // iCellFCC
+    // coarse cells of interpolation fine to coarse (iCellFCC)
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         sparseIndexSend = sendIndices[posInSendIndices];
-        if (isSparseIndexInICellFCC(para->getParH(level)->fineToCoarse.numberOfCells, sparseIndexSend, level)) {
+        if (isSparseIndexInCoarseIndexForFtoC(para->getParH(level)->fineToCoarse.numberOfCells, sparseIndexSend, level)) {
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
         }
     }
 
-    // iCellCFC
-    std::vector<uint> nodesCFC;
-    aggregateNodesInICellCFC(level, nodesCFC);
-    for (auto sparseIndex : nodesCFC)
+    // coarse cells of interpolation coarse to fine (iCellCFC)
+    std::vector<uint> coarseCellsForCtoF;
+    aggregateCoarseNodesForCtoF(level, coarseCellsForCtoF);
+    for (auto sparseIndex : coarseCellsForCtoF)
         findIfSparseIndexIsInSendIndicesAndAddToCommVectors(sparseIndex, sendIndices, numberOfSendIndices,
                                                             sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
 
@@ -378,9 +378,9 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     }
 }
 
-bool IndexRearrangementForStreams::isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndex, int level) const
+bool IndexRearrangementForStreams::isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, int sparseIndex, int level) const
 {
-    for (uint j = 0; j < sizeOfICellFCC; j++) {
+    for (uint j = 0; j < numberOfCoarseNodesForFtoC; j++) {
         if (sparseIndex < 0)
             return false;
         if (para->getParH(level)->fineToCoarse.coarseCellIndices[j] == (uint)sparseIndex) {
@@ -390,7 +390,7 @@ bool IndexRearrangementForStreams::isSparseIndexInICellFCC(uint sizeOfICellFCC, 
     return false;
 }
 
-void IndexRearrangementForStreams::aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC) const
+void IndexRearrangementForStreams::aggregateCoarseNodesForCtoF(int level, std::vector<uint> &nodesCFC) const
 {
     uint sparseIndex;
     uint *neighborX = para->getParH(level)->neighborX;
