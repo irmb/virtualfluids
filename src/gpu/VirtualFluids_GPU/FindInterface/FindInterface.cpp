@@ -5,7 +5,7 @@ void interpolation(InterpolationCellCoarseToFine &intCF, InterpolationCellFineTo
                    unsigned int LxFine, unsigned int LyFine, unsigned int LzFine, 
                    unsigned int dNx, unsigned int dNy, unsigned int dNz, 
                    unsigned int *kCoarse, unsigned int *kFine, bool* needInterface,
-                   InterpolationCellNeighborCoarseToFine &offCF, InterpolationCellNeighborFineToCoarse &offFC)
+                   InterpolationCellNeighbor &offCF, InterpolationCellNeighbor &offFC)
 {
    unsigned int iC,iF,jC,jF,hC,hF;
    unsigned int posCSWB, posFSWB;

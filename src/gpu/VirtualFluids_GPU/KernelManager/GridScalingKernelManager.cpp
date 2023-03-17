@@ -59,7 +59,7 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
         VF_LOG_TRACE("Function for scalingCoarseToFine is nullptr");
 }
 
-void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeighFC &offFC, CudaStreamIndex streamIndex) const
+void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
@@ -328,7 +328,7 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
     }
 }
 
-void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine* icellCF, ICellNeighCF &offCF, CudaStreamIndex streamIndex) const
+void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine* icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     this->scalingCoarseToFine(para->getParD(level).get(), para->getParD(level+1).get(), icellCF, offCF, stream);

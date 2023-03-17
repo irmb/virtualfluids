@@ -35,7 +35,7 @@ __global__ void scaleCF_0817_comp_27( real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 ICellNeighCF offCF)
+												 ICellNeigh offCF)
 {
 	real
 		*fP00dest, *fM00dest, *f0P0dest, *f0M0dest, *f00Pdest, *f00Mdest, *fPP0dest, *fMM0dest, *fPM0dest,
@@ -4104,7 +4104,7 @@ __global__ void scaleCF_AA2016_comp_27(real* DC,
 												  unsigned int nyC, 
 												  unsigned int nxF, 
 												  unsigned int nyF,
-												  ICellNeighCF offCF)
+												  ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -10987,7 +10987,7 @@ __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int nyC, 
 														unsigned int nxF, 
 														unsigned int nyF,
-														ICellNeighCF offCF)
+														ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -17862,7 +17862,7 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 ICellNeighCF offCF)
+												 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -22146,7 +22146,7 @@ __global__ void scaleCF_staggered_time_comp_27(   real* DC,
 															 unsigned int nyC, 
 															 unsigned int nxF, 
 															 unsigned int nyF,
-															 ICellNeighCF offCF)
+															 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -26382,7 +26382,7 @@ __global__ void scaleCF_Fix_comp_27(  real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 ICellNeighCF offCF)
+												 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -31149,7 +31149,7 @@ __global__ void scaleCF_NSPress_27(   real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 ICellNeighCF offCF)
+												 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -35093,7 +35093,7 @@ __global__ void scaleCF_Fix_27(   real* DC,
                                              unsigned int nyC, 
                                              unsigned int nxF, 
                                              unsigned int nyF,
-                                             ICellNeighCF offCF)
+                                             ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -39351,7 +39351,7 @@ __global__ void scaleCFpress27(   real* DC,
                                              unsigned int nyC, 
                                              unsigned int nxF, 
                                              unsigned int nyF,
-                                             ICellNeighCF offCF)
+                                             ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -41025,7 +41025,7 @@ __global__ void scaleCFLast27( real* DC,
                                           unsigned int nyC, 
                                           unsigned int nxF, 
                                           unsigned int nyF,
-                                          ICellNeighCF offCF)
+                                          ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -43257,7 +43257,7 @@ __global__ void scaleCFThSMG7(    real* DC,
                                              unsigned int kCF, 
                                              real nu,
                                              real diffusivity_fine,
-                                             ICellNeighCF offCF)
+                                             ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, /**fzeroF,*/ *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
@@ -45607,7 +45607,7 @@ __global__ void scaleCFThS27(     real* DC,
                                              unsigned int kCF, 
                                              real nu,
                                              real diffusivity_fine,
-											 ICellNeighCF offCF)
+											 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, /**fzeroF,*/ *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
@@ -47300,7 +47300,7 @@ __global__ void scaleCFEff27(real* DC,
 									             unsigned int nyC, 
 									             unsigned int nxF, 
                                         unsigned int nyF,
-                                        ICellNeighCF offCF)
+                                        ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;

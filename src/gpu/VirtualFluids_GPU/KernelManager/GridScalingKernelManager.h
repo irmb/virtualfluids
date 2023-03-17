@@ -49,9 +49,9 @@ struct LBMSimulationParameter;
 struct CUstream_st;
 
 using gridScalingFC =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, ICellNeighFC &, CUstream_st *stream)>;
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, ICellNeigh &, CUstream_st *stream)>;
 using gridScalingCF =
-    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, ICellNeighCF &, CUstream_st *stream)>;
+    std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, ICellNeigh &, CUstream_st *stream)>;
 
 //! \class GridScalingKernelManager
 //! \brief manage the cuda kernel calls
@@ -64,13 +64,13 @@ public:
     GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory);
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernelH
-    void runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeighFC &offFC, CudaStreamIndex streamIndex) const;
+    void runFineToCoarseKernelLB(const int level, InterpolationCellFineToCoarse *icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
     void runFineToCoarseKernelAD(const int level) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
-    void runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine *icellCF, ICellNeighCF &offCF, CudaStreamIndex streamIndex) const;
+    void runCoarseToFineKernelLB(const int level, InterpolationCellCoarseToFine *icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex) const;
 
     //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
     void runCoarseToFineKernelAD(const int level) const;

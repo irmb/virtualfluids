@@ -36,7 +36,7 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 													 unsigned int nyC, 
 													 unsigned int nxF, 
 													 unsigned int nyF,
-													 ICellNeighFC offFC)
+													 ICellNeigh offFC)
 {
    real 
 	   *fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -1283,7 +1283,7 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 ICellNeighFC offFC)
+												 ICellNeigh offFC)
 {
    real 
 	   *fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,

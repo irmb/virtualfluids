@@ -42,8 +42,8 @@ struct LBMSimulationParameter;
 class Parameter;
 struct CUstream_st;
 
-using gridScalingFC = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, ICellNeighFC&, CUstream_st *stream)>;
-using gridScalingCF = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, ICellNeighCF&, CUstream_st *stream)>;
+using gridScalingFC = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, ICellNeigh&, CUstream_st *stream)>;
+using gridScalingCF = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, ICellNeigh&, CUstream_st *stream)>;
 
 class GridScalingFactory
 {

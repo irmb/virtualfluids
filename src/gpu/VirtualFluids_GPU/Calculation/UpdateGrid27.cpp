@@ -328,7 +328,7 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateGrid27::fineToCoarse(int level, InterpolationCellFineToCoarse* icellFC, ICellNeighFC &offFC, CudaStreamIndex streamIndex)
+void UpdateGrid27::fineToCoarse(int level, InterpolationCellFineToCoarse* icellFC, ICellNeigh &offFC, CudaStreamIndex streamIndex)
 {
     gridScalingKernelManager->runFineToCoarseKernelLB(level, icellFC, offFC, streamIndex);
 
@@ -341,7 +341,7 @@ void UpdateGrid27::fineToCoarse(int level, InterpolationCellFineToCoarse* icellF
     }
 }
 
-void UpdateGrid27::coarseToFine(int level, InterpolationCellCoarseToFine* icellCF, ICellNeighCF &offCF, CudaStreamIndex streamIndex)
+void UpdateGrid27::coarseToFine(int level, InterpolationCellCoarseToFine* icellCF, ICellNeigh &offCF, CudaStreamIndex streamIndex)
 {
     this->gridScalingKernelManager->runCoarseToFineKernelLB(level, icellCF, offCF, streamIndex);
 

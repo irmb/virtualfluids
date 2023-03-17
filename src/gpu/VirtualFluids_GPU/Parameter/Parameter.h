@@ -162,10 +162,10 @@ struct LBMSimulationParameter {
     InterpolationCellCoarseToFine intCFBulk;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores location of neighboring cell (necessary for refinement into the wall)
-    InterpolationCellNeighborCoarseToFine neighborCF;
-    InterpolationCellNeighborCoarseToFine neighborCFBulk;
-    InterpolationCellNeighborFineToCoarse neighborFC;
-    InterpolationCellNeighborFineToCoarse neighborFCBulk;
+    InterpolationCellNeighbor neighborCF;
+    InterpolationCellNeighbor neighborCFBulk;
+    InterpolationCellNeighbor neighborFC;
+    InterpolationCellNeighbor neighborFCBulk;
     //////////////////////////////////////////////////////////////////////////
 
 
