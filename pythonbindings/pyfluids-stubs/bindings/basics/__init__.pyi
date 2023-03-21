@@ -36,6 +36,7 @@ from typing import ClassVar
 
 from typing import overload
 
+from pyfluids.bindings.basics import logger as logger
 class ConfigurationFile:
     def __init__(self) -> None: ...
     def contains(self, key: str) -> bool: ...
