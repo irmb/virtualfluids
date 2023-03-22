@@ -19,7 +19,7 @@ PATH_TO_DIR=output/DrivenCavity_uniform
 
 # set the path to the reference data.
 # `regression-tests/reference_data` is fix `regression_tests/gpu/DrivenCavity_uniform_2022_12_16` must match the structure in https://github.com/irmb/test_data:
-PATH_TO_REFERENCE_DIR=regression-tests/reference_data/regression_tests/gpu/DrivenCavity_uniform
+PATH_TO_REFERENCE_DIR=reference_data/regression_tests/gpu/DrivenCavity_uniform
 
 # execute fieldcompare (A more comprehensive manual can be found here https://gitlab.com/dglaeser/fieldcompare)
 fieldcompare dir $PATH_TO_DIR $PATH_TO_REFERENCE_DIR --include-files "*.vtu"
