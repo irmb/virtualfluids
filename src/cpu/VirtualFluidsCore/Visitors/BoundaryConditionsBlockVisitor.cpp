@@ -45,13 +45,6 @@
 #include "BCArray3D.h"
 #include "ILBMKernel.h"
 
-#include "ThixotropyDensityBCStrategy.h"
-#include "ThixotropyVelocityBCStrategy.h"
-#include "ThixotropyNoSlipBCStrategy.h"
-#include "ThixotropyNonReflectingOutflowBCStrategy.h"
-#include "ThixotropyVelocityWithDensityBCStrategy.h"
-
-
 BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
 }
@@ -104,23 +97,6 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                                 bca->setNodeIndex(x1, x2, x3);
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
-
-                                if (alg == BCStrategy::ThixotropyVelocityBCStrategy)
-                                    std::static_pointer_cast<ThixotropyVelocityBCStrategy>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyDensityBCStrategy)
-                                    std::static_pointer_cast<ThixotropyDensityBCStrategy>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyNoSlipBCStrategy)
-                                    std::static_pointer_cast<ThixotropyNoSlipBCStrategy>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyNonReflectingOutflowBCStrategy)
-                                    std::static_pointer_cast<ThixotropyNonReflectingOutflowBCStrategy>(bca)
-                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyVelocityWithDensityBCStrategy)
-                                    std::static_pointer_cast<ThixotropyVelocityWithDensityBCStrategy>(bca)
-                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-
                                 bca->setCollFactor(collFactor);
                                 bca->setCompressible(compressible);
                                 bca->setBcArray(bcArray);

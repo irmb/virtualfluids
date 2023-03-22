@@ -4,7 +4,7 @@
 
 #include "VirtualFluids.h"
 
-#include "LiggghtsCouplingCoProcessor.h"
+#include "LiggghtsCouplingSimulationObserver.h"
 #include "LiggghtsCouplingWrapper.h"
 #include "IBcumulantK17LBMKernel.h"
 
@@ -39,15 +39,15 @@ int main(int argc, char *argv[])
     double nuLB = 1e-2;
 
     SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
-    SPtr<BCProcessor> bcProc = make_shared<BCProcessor>();
-    kernel->setBCProcessor(bcProc);
+    SPtr<BCSet> bcProc = make_shared<BCSet>();
+    kernel->setBCSet(bcProc);
 
-    SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-    noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+    SPtr<BC> noSlipBC(new NoSlipBC());
+    noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
     //////////////////////////////////////////////////////////////////////////////////
     // BC visitor
     BoundaryConditionsBlockVisitor bcVisitor;
-    bcVisitor.addBC(noSlipBCAdapter);
+    bcVisitor.addBC(noSlipBC);
 
     SPtr<Grid3D> grid = make_shared<Grid3D>(comm);
     grid->setPeriodicX1(true);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     UbSystem::makeDirectory(outputPath);
     UbSystem::makeDirectory(outputPath + "/liggghts");
 
-    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::RECURSIVE));
     
     SPtr<GbObject3D> gridCube = make_shared <GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
     if (myid == 0)
@@ -70,10 +70,10 @@ int main(int argc, char *argv[])
     GenBlocksGridVisitor genBlocks(gridCube);
     grid->accept(genBlocks);
 
-    SPtr<CoProcessor> ppblocks =
-        make_shared <WriteBlocksCoProcessor>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
+    SPtr<SimulationObserver> ppblocks =
+        make_shared <WriteBlocksSimulationObserver>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
                                                           WbWriterVtkXmlBinary::getInstance(), comm);
-    ppblocks->process(0);
+    ppblocks->update(0);
     ppblocks.reset();
 
     double dx2 = 2.0 * dx;
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
         new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_maxX3, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
     GbSystem3D::writeGeoObject(wallZmax.get(), outputPath + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
 
-    SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-    SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+    SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
+    SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
 
     InteractorsHelper intHelper(grid, metisVisitor, true);
     intHelper.addInteractor(wallZminInt);
@@ -136,15 +136,15 @@ int main(int argc, char *argv[])
     wrapper.execFile((char *)inFile2.c_str());
     wrapper.runUpto(demSubsteps - 1);
   
-    SPtr<LiggghtsCouplingCoProcessor> lcCoProcessor =
-        make_shared<LiggghtsCouplingCoProcessor>(grid, lScheduler, comm, wrapper, demSubsteps, units);
+    SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver =
+        make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, units);
 
     // boundary conditions grid
     {
         SPtr<UbScheduler> geoSch(new UbScheduler(1));
-        SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(
+        SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(
             grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
-        ppgeo->process(0);
+        ppgeo->update(0);
         ppgeo.reset();
     }
 
@@ -156,17 +156,17 @@ int main(int argc, char *argv[])
 
     // write data for visualization of macroscopic quantities
     SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
-    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(
-        new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(),
+    SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(
+        new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(),
                                                   SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
     int endTime = 3000; //20;
-    SPtr<Calculator> calculator(new BasicCalculator(grid, lScheduler, endTime));
-    calculator->addCoProcessor(lcCoProcessor);
-    calculator->addCoProcessor(writeMQCoProcessor);
+    SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));
+    simulation->addSimulationObserver(lcSimulationObserver);
+    simulation->addSimulationObserver(writeMQSimulationObserver);
 
     if (myid == 0) UBLOG(logINFO, "Simulation-start");
-    calculator->calculate();
+    simulation->run();
     if (myid == 0) UBLOG(logINFO, "Simulation-end");
 
 

@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../lib/liblbm.a CMakeFiles/lbm.dir/BGK.cpp.o CMakeFiles/lbm.dir/CumulantChimera.cpp.o CMakeFiles/lbm.dir/KernelParameter.cpp.o
+/usr/bin/ranlib ../../lib/liblbm.a

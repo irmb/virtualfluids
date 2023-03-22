@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../lib/libmpi.a CMakeFiles/mpi.dir/Communicator.cpp.o CMakeFiles/mpi.dir/MPICommunicator.cpp.o CMakeFiles/mpi.dir/NullCommunicator.cpp.o
+/usr/bin/ranlib ../../lib/libmpi.a

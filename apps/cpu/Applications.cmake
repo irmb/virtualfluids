@@ -14,7 +14,7 @@ add_subdirectory(${APPS_ROOT_CPU}/JetBreakup)
 
 add_subdirectory(${APPS_ROOT_CPU}/ConvectionOfVortex)
 
-IF(${USE_LIGGGHTS})
+IF(${VFCPU_ENABLE_LiggghtsCoupling})
 	add_subdirectory(${APPS_ROOT_CPU}/LiggghtsApp)
 	add_subdirectory(${APPS_ROOT_CPU}/FallingSphere)
 	add_subdirectory(${APPS_ROOT_CPU}/Nozzle)

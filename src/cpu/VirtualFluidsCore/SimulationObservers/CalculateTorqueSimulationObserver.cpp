@@ -1,4 +1,4 @@
-#include "CalculateTorqueSimulationObserver.h"
+#include "NonNewtonianFluids/SimulationObservers/CalculateTorqueSimulationObserver.h"
 #include "BCSet.h"
 
 #include <mpi/Communicator.h>
@@ -12,7 +12,7 @@
 #include "BCArray3D.h"
 #include "EsoTwist3D.h"
 #include "DistributionArray3D.h"
-#include "Rheology.h"
+#include "NonNewtonianFluids/LBM/Rheology.h"
 
 CalculateTorqueSimulationObserver::CalculateTorqueSimulationObserver( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::mpi::Communicator> comm) : SimulationObserver(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
 {

@@ -130,23 +130,25 @@
 #include <BoundaryConditions/VelocityBC.h>
 #include <BoundaryConditions/VelocityBCStrategy.h>
 #include <BoundaryConditions/VelocityWithDensityBCStrategy.h>
-#include <BoundaryConditions/ThixotropyDensityBCStrategy.h>
-#include <BoundaryConditions/ThixotropyNoSlipBCStrategy.h>
-#include <BoundaryConditions/ThixotropyVelocityBCStrategy.h>
-#include <BoundaryConditions/ThixotropyNonReflectingOutflowBCStrategy.h>
-#include <BoundaryConditions/ThixotropyVelocityWithDensityBCStrategy.h>
 #include <BoundaryConditions/SimpleVelocityBCStrategy.h>
-#include <BoundaryConditions/RheologyNoSlipBCStrategy.h>
-#include <BoundaryConditions/RheologyBinghamModelNoSlipBCStrategy.h>
-#include <BoundaryConditions/RheologyHerschelBulkleyModelNoSlipBCStrategy.h>
 #include <BoundaryConditions/SimpleSlipBCStrategy.h>
-#include <BoundaryConditions/RheologyPowellEyringModelNoSlipBCStrategy.h>
-#include <BoundaryConditions/RheologyBinghamModelVelocityBCStrategy.h>
-#include <BoundaryConditions/MultiphaseNoSlipBCStrategy.h>
-#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCStrategy.h>
-#include <BoundaryConditions/MultiphaseVelocityBC.h>
-#include <BoundaryConditions/MultiphaseVelocityBCStrategy.h>
-#include <BoundaryConditions/MultiphaseSlipBCStrategy.h> 
+
+#include <NonNewtonianFluids/BoundaryConditions/ThixotropyDensityBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/ThixotropyNoSlipBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/ThixotropyVelocityBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/ThixotropyNonReflectingOutflowBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/ThixotropyVelocityWithDensityBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/RheologyNoSlipBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/RheologyBinghamModelNoSlipBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/RheologyHerschelBulkleyModelNoSlipBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/RheologyPowellEyringModelNoSlipBCStrategy.h>
+#include <NonNewtonianFluids/BoundaryConditions/RheologyBinghamModelVelocityBCStrategy.h>
+
+#include <MultiphaseFlow/BoundaryConditions/MultiphaseNoSlipBCStrategy.h>
+#include <MultiphaseFlow/BoundaryConditions/MultiphaseNonReflectingOutflowBCStrategy.h>
+#include <MultiphaseFlow/BoundaryConditions/MultiphaseVelocityBC.h>
+#include <MultiphaseFlow/BoundaryConditions/MultiphaseVelocityBCStrategy.h>
+#include <MultiphaseFlow/BoundaryConditions/MultiphaseSlipBCStrategy.h> 
 
 #include <Connectors/Block3DConnector.h>
 //#include <Connectors/Block3DConnectorFactory.h>
@@ -184,7 +186,7 @@
 
 #include <SimulationObservers/AdjustForcingSimulationObserver.h>
 #include <SimulationObservers/CalculateForcesSimulationObserver.h>
-#include <SimulationObservers/CalculateTorqueSimulationObserver.h>
+#include <NonNewtonianFluids/SimulationObservers/CalculateTorqueSimulationObserver.h>
 #include <SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
 #include <SimulationObservers/WriteMQFromSelectionSimulationObserver.h>
 #include <SimulationObservers/WriteBoundaryConditionsSimulationObserver.h>
@@ -214,8 +216,8 @@
 #include <SimulationObservers/MPIIOMigrationSimulationObserver.h>
 #include <SimulationObservers/MPIIORestartSimulationObserver.h>
 #include <SimulationObservers/MicrophoneArraySimulationObserver.h>
-#include <WriteThixotropyQuantitiesSimulationObserver.h>
-#include <WriteMultiphaseQuantitiesSimulationObserver.h>
+#include <NonNewtonianFluids/SimulationObservers/WriteThixotropyQuantitiesSimulationObserver.h>
+#include <MultiphaseFlow/SimulationObservers/WriteMultiphaseQuantitiesSimulationObserver.h>
 #include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
@@ -240,26 +242,26 @@
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
 #include <LBM/BGKLBMKernel.h>
-#include <LBM/ThixotropyLBMKernel.h>
-#include <LBM/ThixotropyExpLBMKernel.h>
+#include <NonNewtonianFluids/LBM/ThixotropyLBMKernel.h>
+#include <NonNewtonianFluids/LBM/ThixotropyExpLBMKernel.h>
 #include <LBM/CumulantLBMKernel.h>
 #include <LBM/CumulantK17LBMKernel.h>
 //#include <LBM/RheologyModelLBMKernel.h>
 //#include <LBM/RheologyModelLBMKernel2.h>
-#include <LBM/RheologyBinghamModelLBMKernel.h>
-#include <LBM/RheologyHerschelBulkleyModelLBMKernel.h>
-#include <LBM/RheologyInterpolationProcessor.h>
-#include <LBM/Rheology.h>
-#include <LBM/RheologyK17LBMKernel.h>
-#include <LBM/RheologyPowellEyringModelLBMKernel.h>
-#include <LBM/MultiphaseCumulantLBMKernel.h>
-#include <LBM/MultiphaseScratchCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
-#include <LBM/MultiphasePressureFilterLBMKernel.h>
-#include <LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
-#include <MultiphaseSimpleVelocityBaseExternalPressureLBMKernel.h>
+#include <NonNewtonianFluids/LBM/RheologyBinghamModelLBMKernel.h>
+#include <NonNewtonianFluids/LBM/RheologyHerschelBulkleyModelLBMKernel.h>
+#include <NonNewtonianFluids/LBM/RheologyInterpolationProcessor.h>
+#include <NonNewtonianFluids/LBM/Rheology.h>
+#include <NonNewtonianFluids/LBM/RheologyK17LBMKernel.h>
+#include <NonNewtonianFluids/LBM/RheologyPowellEyringModelLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphaseCumulantLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphaseScratchCumulantLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphasePressureFilterLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
+#include <MultiphaseFlow/LBM/MultiphaseSimpleVelocityBaseExternalPressureLBMKernel.h>
 
 
 
@@ -348,10 +350,10 @@
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 #include <ZoltanPartitioningGridVisitor.h>
-#include <Visitors/MultiphaseSetKernelBlockVisitor.h>
-#include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
-#include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
-#include <Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
+#include <MultiphaseFlow/Visitors/MultiphaseSetKernelBlockVisitor.h>
+#include <MultiphaseFlow/Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
+#include <MultiphaseFlow/Visitors/MultiphaseInitDistributionsBlockVisitor.h>
+#include <MultiphaseFlow/Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

@@ -52,8 +52,8 @@ BCSet::~BCSet() = default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCSet> BCSet::clone(SPtr<ILBMKernel> kernel)
 {
-    SPtr<BCSet> BCSet(new BCSet(kernel));
-    return BCSet;
+    SPtr<BCSet> bcSet(new BCSet(kernel));
+    return bcSet;
 }
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCArray3D> BCSet::getBCArray() { return bcArray; }
