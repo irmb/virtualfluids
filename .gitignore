@@ -4,6 +4,7 @@ bin/
 cmake-build-debug/
 run/
 buildGCC
+buildWSL
 
 # Python
 _skbuild/
