@@ -55,7 +55,7 @@ namespace kernel
                 .def_readwrite("forcing_in_x1", &LBMKernelConfiguration::forcingX1)
                 .def_readwrite("forcing_in_x2", &LBMKernelConfiguration::forcingX2)
                 .def_readwrite("forcing_in_x3", &LBMKernelConfiguration::forcingX3)
-                .def("set_forcing", [](LBMKernelConfiguration &kernelConfig, double x1, double x2, double x3)
+                .def("set_forcing", [](LBMKernelConfiguration &kernelConfig, real x1, real x2, real x3)
                 {
                     kernelConfig.forcingX1 = x1;
                     kernelConfig.forcingX2 = x2;

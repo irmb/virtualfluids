@@ -77,14 +77,14 @@ namespace boundaryconditions
 
         bc_class<VelocityBCAdapter, VelocityBCAlgorithm>(bcModule, "VelocityBoundaryCondition")
                 .def(py::init())
-                .def(py::init<bool &, bool &, bool &, mu::Parser &, double &, double &>(),
+                .def(py::init<bool &, bool &, bool &, mu::Parser &, real &, real &>(),
                      "vx1"_a, "vx2"_a, "vx3"_a,
                      "function"_a, "start_time"_a, "end_time"_a)
-                .def(py::init<bool &, bool &, bool &, mu::Parser &, mu::Parser &, mu::Parser &, double &, double &>(),
+                .def(py::init<bool &, bool &, bool &, mu::Parser &, mu::Parser &, mu::Parser &, real &, real &>(),
                      "vx1"_a, "vx2"_a, "vx3"_a,
                      "function_vx1"_a, "function_vx2"_a, "function_vx2"_a,
                      "start_time"_a, "end_time"_a)
-                .def(py::init<double &, double &, double &, double &, double &, double &, double &, double &, double &>(),
+                .def(py::init<real &, real &, real &, real &, real &, real &, real &, real &, real &>(),
                      "vx1"_a, "vx1_start_time"_a, "vx1_end_time"_a,
                      "vx2"_a, "vx2_start_time"_a, "vx2_end_time"_a,
                      "vx3"_a, "vx3_start_time"_a, "vx3_end_time"_a);
