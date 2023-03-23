@@ -219,10 +219,10 @@ void run(string configname)
          SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel());
          //SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
 
-         SPtr<BCSet> BCSet(new BCSet());
+         SPtr<BCSet> bcSet(new BCSet());
 
 
-         kernel->setBCSet(BCSet);
+         kernel->setBCSet(bcSet);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);

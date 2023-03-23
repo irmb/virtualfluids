@@ -211,9 +211,9 @@ void run()
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
-      SPtr<BCSet> BCSet(new BCSet());
+      SPtr<BCSet> bcSet(new BCSet());
 
-      kernel->setBCSet(BCSet);
+      kernel->setBCSet(bcSet);
 
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
       grid->accept(kernelVisitor);

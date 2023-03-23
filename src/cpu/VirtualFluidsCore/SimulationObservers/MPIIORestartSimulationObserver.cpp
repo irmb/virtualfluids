@@ -1562,14 +1562,14 @@ void MPIIORestartSimulationObserver::readBoundaryConds(int step)
         CbArray3D<int, IndexerX3X2X1> bcim(bcindexmatrixV, boundCondParamStr.nx1, boundCondParamStr.nx2, boundCondParamStr.nx3);
 
         SPtr<Block3D> block = grid->getBlock(bcAddArray[n].x1, bcAddArray[n].x2, bcAddArray[n].x3, bcAddArray[n].level);
-        SPtr<BCSet> bcSet = bcSet->clone(block->getKernel());
+        SPtr<BCSet> bcSetNew = bcSet->clone(block->getKernel());
         SPtr<BCArray3D> bcArr(new BCArray3D());
         bcArr->bcindexmatrix  = bcim;
         bcArr->bcvector       = bcVector;
         bcArr->indexContainer = indexContainerV;
-        bcSet->setBCArray(bcArr);
+        bcSetNew->setBCArray(bcArr);
 
-        block->getKernel()->setBCSet(bcSet);
+        block->getKernel()->setBCSet(bcSetNew);
     }
 
     delete nullBouCond;
@@ -1586,4 +1586,4 @@ void MPIIORestartSimulationObserver::readBoundaryConds(int step)
 //////////////////////////////////////////////////////////////////////////
 void MPIIORestartSimulationObserver::setLBMKernel(SPtr<LBMKernel> kernel) { this->lbmKernel = kernel; }
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartSimulationObserver::setBCSet(SPtr<BCSet> BCSet) { this->bcSet = BCSet; }
+void MPIIORestartSimulationObserver::setBCSet(SPtr<BCSet> bcSet) { this->bcSet = bcSet; }
