@@ -53,46 +53,45 @@ __inline__ __host__ __device__ real trilinearInterpolation( real dW, real dE, re
                                         uint k,  uint ke, uint kn, uint kt, uint kne, uint kte, uint ktn, uint ktne,
                                         real* quantity )
 {
-    real interpolatedValue = (            dE*dN*dT*quantity[k]    + dW*dN*dT*quantity[ke]
-                                        + dE*dS*dT*quantity[kn]   + dW*dS*dT*quantity[kne]
-                                        + dE*dN*dB*quantity[kt]   + dW*dN*dB*quantity[kte]
-                                        + dE*dS*dB*quantity[ktn]  + dW*dS*dB*quantity[ktne] );
-    return interpolatedValue;
+    return  (   dE*dN*dT*quantity[k]    + dW*dN*dT*quantity[ke]
+              + dE*dS*dT*quantity[kn]   + dW*dS*dT*quantity[kne]
+              + dE*dN*dB*quantity[kt]   + dW*dN*dB*quantity[kte]
+              + dE*dS*dB*quantity[ktn]  + dW*dS*dB*quantity[ktne] );
 }
 
-__inline__ __host__ __device__ void translate2D(real &posX, real &posY, real &newPosX, real &newPosY, real &translationX, real &translationY)
+__inline__ __host__ __device__ void translate2D(real posX, real posY, real &newPosX, real &newPosY, real translationX, real translationY)
 {
     newPosX = posX + translationX;
     newPosY = posY + translationY;
 }
 
-__inline__ __host__ __device__ void invTranslate2D(real &posX, real &posY, real &newPosX, real &newPosY, real &translationX, real &translationY)
+__inline__ __host__ __device__ void invTranslate2D(real posX, real posY, real &newPosX, real &newPosY, real translationX, real translationY)
 {
     newPosX = posX - translationX;
     newPosY = posY - translationY;
 }
 
-__inline__ __host__ __device__ void translate3D(real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &translationX, real &translationY, real &translationZ)
+__inline__ __host__ __device__ void translate3D(real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real translationX, real translationY, real translationZ)
 {
     newPosX = posX + translationX;
     newPosY = posY + translationY;
     newPosZ = posZ + translationZ;
 }
 
-__inline__ __host__ __device__ void invTranslate3D(real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &translationX, real &translationY, real &translationZ)
+__inline__ __host__ __device__ void invTranslate3D(real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real translationX, real translationY, real translationZ)
 {
     newPosX = posX - translationX;
     newPosY = posY - translationY;
     newPosZ = posZ - translationZ;
 }
 
-__inline__ __host__ __device__ void rotate2D(real &angle, real &posX, real &posY, real &newPosX, real &newPosY)
+__inline__ __host__ __device__ void rotate2D(real angle, real posX, real posY, real &newPosX, real &newPosY)
 {
     newPosX = posX*cos(angle) - posY*sin(angle);
     newPosY = posX*sin(angle) + posY*cos(angle);  
 }
 
-__inline__ __host__ __device__ void rotate2D(real &angle, real &posX, real &posY, real &newPosX, real &newPosY, real &originX, real &originY)
+__inline__ __host__ __device__ void rotate2D(real angle, real posX, real posY, real &newPosX, real &newPosY, real originX, real originY)
 {
     real tmpX, tmpY;
     invTranslate2D(posX, posY, newPosX, newPosY, originX, originY);
@@ -100,13 +99,13 @@ __inline__ __host__ __device__ void rotate2D(real &angle, real &posX, real &posY
     translate2D(tmpX, tmpY, newPosX, newPosY, originX, originY);
 }
 
-__inline__ __host__ __device__ void invRotate2D(real &angle, real &posX, real &posY, real &newPosX, real &newPosY)
+__inline__ __host__ __device__ void invRotate2D(real angle, real posX, real posY, real &newPosX, real &newPosY)
 {
     newPosX =  posX*cos(angle) + posY*sin(angle);
     newPosY = -posX*sin(angle) + posY*cos(angle);  
 }
 
-__inline__ __host__ __device__ void invRotate2D(real &angle, real &posX, real &posY, real &newPosX, real &newPosY, real &originX, real &originY)
+__inline__ __host__ __device__ void invRotate2D(real angle, real posX, real posY, real &newPosX, real &newPosY, real originX, real originY)
 {
     real tmpX, tmpY;
     invTranslate2D(posX, posY, newPosX, newPosY, originX, originY);
@@ -114,13 +113,13 @@ __inline__ __host__ __device__ void invRotate2D(real &angle, real &posX, real &p
     translate2D(tmpX, tmpY, newPosX, newPosY, originX, originY);
 }
 
-__inline__ __host__ __device__ void rotateAboutX3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ)
+__inline__ __host__ __device__ void rotateAboutX3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ)
 {
     newPosX = posX;
     rotate2D(angle, posY, posZ, newPosY, newPosZ);
 }
 
-__inline__ __host__ __device__ void rotateAboutX3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &originX, real &originY, real &originZ)
+__inline__ __host__ __device__ void rotateAboutX3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real originX, real originY, real originZ)
 {
     real tmpX, tmpY, tmpZ;
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
@@ -128,13 +127,13 @@ __inline__ __host__ __device__ void rotateAboutX3D(real &angle, real &posX, real
     translate3D(tmpX, tmpY, tmpZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
 }
 
-__inline__ __host__ __device__ void invRotateAboutX3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ)
+__inline__ __host__ __device__ void invRotateAboutX3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ)
 {
     newPosX = posX;
     invRotate2D(angle, posY, posZ, newPosY, newPosZ);
 }
 
-__inline__ __host__ __device__ void invRotateAboutX3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &originX, real &originY, real &originZ)
+__inline__ __host__ __device__ void invRotateAboutX3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real originX, real originY, real originZ)
 {
     real tmpX, tmpY, tmpZ;
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
@@ -142,13 +141,13 @@ __inline__ __host__ __device__ void invRotateAboutX3D(real &angle, real &posX, r
     translate3D(tmpX, tmpY, tmpZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
 }
 
-__inline__ __host__ __device__ void rotateAboutY3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ)
+__inline__ __host__ __device__ void rotateAboutY3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ)
 {    
     newPosY =  posY;
     rotate2D(angle, posX, posZ, newPosX, newPosZ);
 }
 
-__inline__ __host__ __device__ void rotateAboutY3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &originX, real &originY, real &originZ)
+__inline__ __host__ __device__ void rotateAboutY3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real originX, real originY, real originZ)
 {
     real tmpX, tmpY, tmpZ;
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
@@ -156,13 +155,13 @@ __inline__ __host__ __device__ void rotateAboutY3D(real &angle, real &posX, real
     translate3D(tmpX, tmpY, tmpZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
 }
 
-__inline__ __host__ __device__ void invRotateAboutY3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ)
+__inline__ __host__ __device__ void invRotateAboutY3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ)
 {
     newPosY =  posY;
     invRotate2D(angle, posX, posZ, newPosX, newPosZ);
 }
 
-__inline__ __host__ __device__ void invRotateAboutY3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &originX, real &originY, real &originZ)
+__inline__ __host__ __device__ void invRotateAboutY3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real originX, real originY, real originZ)
 {
     real tmpX, tmpY, tmpZ;
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
@@ -171,13 +170,13 @@ __inline__ __host__ __device__ void invRotateAboutY3D(real &angle, real &posX, r
 }
 
 
-__inline__ __host__ __device__ void rotateAboutZ3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ)
+__inline__ __host__ __device__ void rotateAboutZ3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ)
 {
     newPosZ = posZ;
     rotate2D(angle, posX, posY, newPosX, newPosY);
 }
 
-__inline__ __host__ __device__ void rotateAboutZ3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &originX, real &originY, real &originZ)
+__inline__ __host__ __device__ void rotateAboutZ3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real originX, real originY, real originZ)
 {
     real tmpX, tmpY, tmpZ;
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
@@ -185,13 +184,13 @@ __inline__ __host__ __device__ void rotateAboutZ3D(real &angle, real &posX, real
     translate3D(tmpX, tmpY, tmpZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
 }
 
-__inline__ __host__ __device__ void invRotateAboutZ3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ)
+__inline__ __host__ __device__ void invRotateAboutZ3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ)
 {
     newPosZ = posZ;
     invRotate2D(angle, posX, posY, newPosX, newPosY);
 }
 
-__inline__ __host__ __device__ void invRotateAboutZ3D(real &angle, real &posX, real &posY, real &posZ, real &newPosX, real &newPosY, real &newPosZ, real &originX, real &originY, real &originZ)
+__inline__ __host__ __device__ void invRotateAboutZ3D(real angle, real posX, real posY, real posZ, real &newPosX, real &newPosY, real &newPosZ, real originX, real originY, real originZ)
 {
     real tmpX, tmpY, tmpZ;
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);

@@ -78,9 +78,9 @@ void swapArrays(real* &arr1, real* &arr2)
 }
 
 __host__ __device__ __inline__ void rotateFromBladeToGlobal(
-                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
+                            real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF, 
                             real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
-                            real& azimuth, real& yaw)
+                            real azimuth, real yaw)
 {
     real tmpX, tmpY, tmpZ;
 
@@ -91,8 +91,8 @@ __host__ __device__ __inline__ void rotateFromBladeToGlobal(
 
 __host__ __device__ __inline__ void rotateFromGlobalToBlade(
                             real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
-                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
-                            real& azimuth, real& yaw)
+                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
+                            real azimuth, real yaw)
 {
     real tmpX, tmpY, tmpZ;
 
