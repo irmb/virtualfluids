@@ -32,7 +32,7 @@ public:
         level(_level),
         useHostArrays(_useHostArrays),
         numberOfTurbines(0),
-        numberOfNodes(0),
+        numberOfGridNodes(0),
         PreCollisionInteractor()
     {
         this->deltaT = _deltaT*exp2(-this->level);
@@ -62,7 +62,7 @@ public:
     uint getNumberOfBladesPerTurbine(){ return this->numberOfBlades; };
 
     uint getNumberOfIndices(){ return this->numberOfIndices; };
-    uint getNumberOfNodes(){ return this->numberOfNodes; };
+    uint getNumberOfNodes(){ return this->numberOfGridNodes; };
 
     real* getAllAzimuths(){ return azimuthsH; };
     real* getAllOmegas(){ return omegasH; };
@@ -189,7 +189,7 @@ private:
     const real epsilon; // in m
     const int level;
     uint numberOfIndices;
-    uint numberOfNodes;
+    uint numberOfGridNodes;
     real forceRatio, factorGaussian, invEpsilonSqrd, invDeltaX;
     int streamIndex;
 };
