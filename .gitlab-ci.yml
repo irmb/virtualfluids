@@ -178,6 +178,7 @@ gcc_9_unit_tests:
 
   script:
     - ctest
+    - ctest --rerun-failed --output-on-failure
 
 ###############################################################################
 msvc_17_unit_tests:
