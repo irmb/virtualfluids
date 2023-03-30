@@ -36,6 +36,7 @@
 #include <sstream>
 # include <algorithm>
 #include <cmath>
+#include <vector>
 
 #include "global.h"
 
@@ -1762,7 +1763,7 @@ real* GridImp::getDistribution() const
     return this->distribution.f;
 }
 
-int* GridImp::getDirection() const
+const std::vector<int>& GridImp::getDirection() const
 {
     return this->distribution.dirs;
 }

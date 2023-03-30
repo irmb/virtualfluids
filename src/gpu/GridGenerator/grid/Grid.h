@@ -101,7 +101,7 @@ public:
     virtual uint *getFC_offset() const = 0;
 
     virtual real *getDistribution() const = 0;
-    virtual int* getDirection() const = 0;
+    virtual const std::vector<int> &getDirection() const = 0;
     virtual int getStartDirection() const = 0;
     virtual int getEndDirection() const = 0;
 

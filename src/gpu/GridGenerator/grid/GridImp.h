@@ -243,7 +243,7 @@ public:
     uint getSparseSize() const override;
     int getSparseIndex(uint matrixIndex) const override;
     real* getDistribution() const override;
-    int* getDirection() const override;
+    const std::vector<int>& getDirection() const override;
     int getStartDirection() const override;
     int getEndDirection() const override;
 
