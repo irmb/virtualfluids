@@ -135,7 +135,9 @@ struct FunctionGyroidThirdOrder {
 	double t17, t3, t2, t18, t20, t8, t13, t5, t9, t6, t11, t14;
 	double f300, f210, f201, f120, f102, f030, f021, f012, f003, f200, f110, f101, f020, f011, f002, f100, f010, f001, f000;
 
-	double repeatedTerm, repeatedTermRoot;
+	double L_cubed, PI_cubed, L_squared, PI_squared, repeatedTermPsquared;
+
+	double repeatedTerm, repeatedTermRoot, repeatedTermRoot2, repeatedTermPowerOneandHalf;
 	double T1, T2, T3, T4, T5, T6, T7, T8, T9, Gyroidh;
 
 	double operator() (double q) {
@@ -154,8 +156,8 @@ struct FunctionGyroidThirdOrder {
 	 t20 = cos((2. * M_PI*(y+q*dir2)) / L)*cos((2. * M_PI*(z+q*dir3)) / L);
 
 	//Gyroid third order derivatives
-	double L_cubed = pow(L, 3.);
-	double PI_cubed =  pow(M_PI, 3.);
+	 L_cubed = pow(L, 3.);
+	 PI_cubed =  pow(M_PI, 3.);
 	 f300 = (8. * PI_cubed*(-t17 + t3)) / L_cubed;
 	 f210 = (8. * PI_cubed*t2) / L_cubed;
 	 f201 = (-8. * PI_cubed*t18) / L_cubed;
@@ -167,8 +169,8 @@ struct FunctionGyroidThirdOrder {
 	 f003 = (8. * PI_cubed*(-t18 + t8)) / L_cubed;
 
 	//Gyroid second order derivatives		
-	double L_squared = pow(L, 2.);
-	double PI_squared =  pow(M_PI, 2.);
+	 L_squared = pow(L, 2.);
+	 PI_squared =  pow(M_PI, 2.);
 	 f200 = (-4. * PI_squared*(t13 + t5)) / L_squared;
 	 f110 = (-4. * PI_squared*t9) / L_squared;
 	 f101 = (-4. * PI_squared*t6) / L_squared;
@@ -197,25 +199,28 @@ struct FunctionGyroidThirdOrder {
 	 T8 = f001*f011*h + f010*f020*h + f100*f110*h;
 	 T9 = f001*f101*h + f010*f110*h + f100*f200*h;
 
+	repeatedTermRoot2 = sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2));
+	repeatedTermPowerOneandHalf = pow(repeatedTerm, 1.5);
+	repeatedTermPsquared = pow(repeatedTerm, 2.);
 
 	 Gyroidh = 2 * h*sqrt(pow(f001 - (T1*h) / (2.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (2.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (2.*repeatedTermRoot), 2))
-		- (3 * h*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2))) / 2.
+		- (3 * h*repeatedTermRoot2) / 2.
 		- (3 * h*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot) + (h*((T7 - 3 * f001*repeatedTermRoot)*
-		(4 * pow(T1, 2)*h - 4 * (pow(f002, 2) + f001*f003 + pow(f011, 2) + f010*f012 + pow(f101, 2) + f100*f102)*h*repeatedTerm + 12 * f002*pow(repeatedTerm, 1.5)) +
-			(T8 - 3 * f010*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*pow(repeatedTerm, 1.5)) +
-			(T9 - 3 * f100*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*pow(repeatedTerm, 1.5)))) /
-			(108.*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2))*
-				pow(repeatedTerm, 2)), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot) +
-				(h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*pow(repeatedTerm, 1.5)) +
-					(T8 - 3 * f010*repeatedTermRoot)*(4 * pow(T2, 2)*h - 4 * (pow(f011, 2) + pow(f020, 2) + f001*f021 + f010*f030 + pow(f110, 2) + f100*f120)*h*repeatedTerm + 12 * f020*pow(repeatedTerm, 1.5)) +
-					(T9 - 3 * f100*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*pow(repeatedTerm, 1.5)))) /
-					(108.*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2))*
-						pow(repeatedTerm, 2)), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot) +
-						(h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*pow(repeatedTerm, 1.5)) +
-							(T8 - 3 * f010*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*pow(repeatedTerm, 1.5)) +
-							(T9 - 3 * f100*repeatedTermRoot)*(4 * pow(T3, 2)*h - 4 * (pow(f101, 2) + pow(f110, 2) + pow(f200, 2) + f001*f201 + f010*f210 + f100*f300)*h*repeatedTerm + 12 * f200*pow(repeatedTerm, 1.5)))) /
-							(108.*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2))*
-								pow(repeatedTerm, 2)), 2))) / 2. + f000;
+		(4 * pow(T1, 2)*h - 4 * (pow(f002, 2) + f001*f003 + pow(f011, 2) + f010*f012 + pow(f101, 2) + f100*f102)*h*repeatedTerm + 12 * f002*repeatedTermPowerOneandHalf) +
+			(T8 - 3 * f010*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*repeatedTermPowerOneandHalf) +
+			(T9 - 3 * f100*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*repeatedTermPowerOneandHalf))) /
+			(108.*repeatedTermRoot2*
+				repeatedTermPsquared), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot) +
+				(h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*repeatedTermPowerOneandHalf) +
+					(T8 - 3 * f010*repeatedTermRoot)*(4 * pow(T2, 2)*h - 4 * (pow(f011, 2) + pow(f020, 2) + f001*f021 + f010*f030 + pow(f110, 2) + f100*f120)*h*repeatedTerm + 12 * f020*repeatedTermPowerOneandHalf) +
+					(T9 - 3 * f100*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*repeatedTermPowerOneandHalf))) /
+					(108.*repeatedTermRoot2*
+						repeatedTermPsquared), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot) +
+						(h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*repeatedTermPowerOneandHalf) +
+							(T8 - 3 * f010*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*repeatedTermPowerOneandHalf) +
+							(T9 - 3 * f100*repeatedTermRoot)*(4 * pow(T3, 2)*h - 4 * (pow(f101, 2) + pow(f110, 2) + pow(f200, 2) + f001*f201 + f010*f210 + f100*f300)*h*repeatedTerm + 12 * f200*repeatedTermPowerOneandHalf))) /
+							(108.*repeatedTermRoot2*
+								repeatedTermPsquared), 2))) / 2. + f000;
 	
 		return Gyroidh;
 	}
