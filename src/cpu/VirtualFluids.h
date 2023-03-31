@@ -269,7 +269,7 @@
 #include <geometry3d/GbCylinder3D.h>
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/GbHalfSpaceKrischan3D.h>
-#include <geometry3d/GbImplicitSurface.h>
+#include <geometry3d/GbGyroidThirdOrder.h>
 #include <geometry3d/GbLine3D.h>
 #include <geometry3d/GbMeshTools3D.h>
 #include <geometry3d/GbObject3D.h>

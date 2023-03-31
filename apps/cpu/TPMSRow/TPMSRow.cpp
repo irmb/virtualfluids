@@ -177,10 +177,10 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
-            GbImplicitSurfacePtr tpms;
-            // tpms = GbImplicitSurfacePtr(new GbImplicitSurface(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
+            GbGyroidThirdOrderPtr tpms;
+            // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
             // dx));
-            tpms = GbImplicitSurfacePtr(new GbImplicitSurface(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
+            tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
                                                               TPMSOrigin[0] + TPMSL[0],
                                                               TPMSOrigin[1] + TPMSL[1],
                                                               TPMSOrigin[2] + TPMSL[2],
@@ -345,7 +345,7 @@ void run(string configname)
             //intHelper.addInteractor(zMaxFunnelInt);
             //intHelper.addInteractor(funnelInt);
 
-            intHelper.addInteractor(tpmsInt);
+            //intHelper.addInteractor(tpmsInt);
             intHelper.addInteractor(zMinInt);
             intHelper.addInteractor(zMaxInt);
 
@@ -473,7 +473,7 @@ void run(string configname)
         fnu.DefineConst("u", vx);
         SPtr<CoProcessor> nupr(new DecreaseViscosityCoProcessor(grid, nuSch, &fnu, comm));
 
-        SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
+        SPtr<UbScheduler> nupsSch(new UbScheduler(10, 10, 100000000));
         SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
         //omp_set_num_threads(numOfThreads);
