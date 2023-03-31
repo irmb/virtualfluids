@@ -132,6 +132,8 @@ struct FunctionGyroidThirdOrder {
 	double dir1, dir2, dir3, L;
 	double h;
 	
+
+	double operator() (double q) {
 	double t17, t3, t2, t18, t20, t8, t13, t5, t9, t6, t11, t14;
 	double f300, f210, f201, f120, f102, f030, f021, f012, f003, f200, f110, f101, f020, f011, f002, f100, f010, f001, f000;
 
@@ -139,8 +141,7 @@ struct FunctionGyroidThirdOrder {
 
 	double repeatedTerm, repeatedTermRoot, repeatedTermRoot2, repeatedTermPowerOneandHalf;
 	double T1, T2, T3, T4, T5, T6, T7, T8, T9, Gyroidh;
-
-	double operator() (double q) {
+		
 	//sins and cosines combinations 
 	 t2  = sin((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
 	 t3  = sin((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
