@@ -345,7 +345,7 @@ void run(string configname)
             //intHelper.addInteractor(zMaxFunnelInt);
             //intHelper.addInteractor(funnelInt);
 
-            //intHelper.addInteractor(tpmsInt);
+            intHelper.addInteractor(tpmsInt);
             intHelper.addInteractor(zMinInt);
             intHelper.addInteractor(zMaxInt);
 
