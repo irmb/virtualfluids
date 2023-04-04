@@ -30,8 +30,8 @@
 //! \ingroup geometry3d
 //! \author Hussein Alihussein
 //=======================================================================================
-#ifndef GbGyroidThirdOrder_H
-#define GbGyroidThirdOrder_H
+#ifndef GbGeneralThirdOrderImplicitSurface_H
+#define GbGeneralThirdOrderImplicitSurface_H
 
 #ifdef BUILD_USE_BOOST
 
