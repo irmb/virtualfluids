@@ -493,9 +493,9 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->gridNX           = getGridX().at(i);
         parH[i]->gridNY           = getGridY().at(i);
         parH[i]->gridNZ           = getGridZ().at(i);
-        parH[i]->vis              = ic.vis * pow(2.f, i);
-        parH[i]->diffusivity      = ic.Diffusivity * pow(2.f, i);
-        parH[i]->omega            = 1.0f / (3.0f * parH[i]->vis + 0.5f); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
+        parH[i]->viscosity        = ic.vis * pow((real)2.0, i);
+        parH[i]->diffusivity      = ic.Diffusivity * pow((real)2.0, i);
+        parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
         parH[i]->nx               = parH[i]->gridNX + 2 * STARTOFFX;
         parH[i]->ny               = parH[i]->gridNY + 2 * STARTOFFY;
         parH[i]->nz               = parH[i]->gridNZ + 2 * STARTOFFZ;
@@ -510,10 +510,10 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->isEvenTimestep        = true;
         parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
         parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
-        parH[i]->Lx               = (real)((1.f * parH[i]->gridNX - 1.f) / (pow(2.f, i)));
-        parH[i]->Ly               = (real)((1.f * parH[i]->gridNY - 1.f) / (pow(2.f, i)));
-        parH[i]->Lz               = (real)((1.f * parH[i]->gridNZ - 1.f) / (pow(2.f, i)));
-        parH[i]->dx               = (real)(1.f / (pow(2.f, i)));
+        parH[i]->Lx               = ((real)1.0 * parH[i]->gridNX - (real)1.0) / (pow((real)2.0, i));
+        parH[i]->Ly               = ((real)1.0 * parH[i]->gridNY - (real)1.0) / (pow((real)2.0, i));
+        parH[i]->Lz               = ((real)1.0 * parH[i]->gridNZ - (real)1.0) / (pow((real)2.0, i));
+        parH[i]->dx               = (real)1.0 / pow((real)2.0, i);
         parH[i]->XdistKn          = getDistX().at(i);
         parH[i]->YdistKn          = getDistY().at(i);
         parH[i]->ZdistKn          = getDistZ().at(i);
@@ -521,12 +521,12 @@ void Parameter::initLBMSimulationParameter()
             parH[i]->distX  = (real)getDistX().at(i);
             parH[i]->distY  = (real)getDistY().at(i);
             parH[i]->distZ  = (real)getDistZ().at(i);
-            parH[i]->mTtoWx = (real)1.0f;
-            parH[i]->mTtoWy = (real)1.0f;
-            parH[i]->mTtoWz = (real)1.0f;
-            parH[i]->cTtoWx = (real)0.0f;
-            parH[i]->cTtoWy = (real)0.0f;
-            parH[i]->cTtoWz = (real)0.0f;
+            parH[i]->mTtoWx = (real)1.0;
+            parH[i]->mTtoWy = (real)1.0;
+            parH[i]->mTtoWz = (real)1.0;
+            parH[i]->cTtoWx = (real)0.0;
+            parH[i]->cTtoWy = (real)0.0;
+            parH[i]->cTtoWz = (real)0.0;
             ////MGs Trafo///////////////////////////////////////////////////////////////
             // parH[i]->cStartx               = (real)parH[i]->XdistKn;
             // parH[i]->cStarty               = (real)parH[i]->XdistKn;
@@ -534,9 +534,9 @@ void Parameter::initLBMSimulationParameter()
             ////////////////////////////////////////////////////////////////////////////
         } else {
             // Geller
-            parH[i]->distX = ((real)getDistX().at(i) + 0.25f) * parH[i - 1]->dx;
-            parH[i]->distY = ((real)getDistY().at(i) + 0.25f) * parH[i - 1]->dx;
-            parH[i]->distZ = ((real)getDistZ().at(i) + 0.25f) * parH[i - 1]->dx;
+            parH[i]->distX = ((real)getDistX().at(i) + (real)0.25) * parH[i - 1]->dx;
+            parH[i]->distY = ((real)getDistY().at(i) + (real)0.25) * parH[i - 1]->dx;
+            parH[i]->distZ = ((real)getDistZ().at(i) + (real)0.25) * parH[i - 1]->dx;
             // parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
             // parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
             // parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
@@ -561,7 +561,7 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->gridNX           = parH[i]->gridNX;
         parD[i]->gridNY           = parH[i]->gridNY;
         parD[i]->gridNZ           = parH[i]->gridNZ;
-        parD[i]->vis              = parH[i]->vis;
+        parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
         parD[i]->nx               = parH[i]->nx;
@@ -598,7 +598,7 @@ void Parameter::checkParameterValidityCumulantK17() const
     if (this->mainKernel != "CumulantK17")
         return;
 
-    const real viscosity = this->parH[maxlevel]->vis;
+    const real viscosity = this->parH[maxlevel]->viscosity;
     const real viscosityLimit = 1.0 / 42.0;
     if (viscosity > viscosityLimit) {
         VF_LOG_WARNING("The viscosity (in LB units) at level {} is {:1.3g}. It is recommended to keep it smaller than {:1.3g} "

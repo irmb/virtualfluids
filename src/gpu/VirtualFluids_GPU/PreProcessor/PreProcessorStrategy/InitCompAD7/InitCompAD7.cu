@@ -18,7 +18,7 @@ void InitCompAD7::init(int level)
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->Conc,
+        para->getParD(level)->concentration,
         para->getParD(level)->velocityX,
         para->getParD(level)->velocityY,
         para->getParD(level)->velocityZ,

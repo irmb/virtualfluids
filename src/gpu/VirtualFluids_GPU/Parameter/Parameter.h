@@ -85,11 +85,90 @@ struct LBMSimulationParameter {
     real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
     //! \brief stores the value for omega
     real omega;
+    //! \brief stores the value for viscosity
+    real viscosity;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of nodes (based on indirect addressing scheme)
     unsigned long long numberOfNodes;
     //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
     unsigned long long memSizeRealLBnodes, memSizeLonglongLBnodes;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the slip boundary condition data
+    QforBoundaryConditions slipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the no slip boundary condition data
+    QforBoundaryConditions noSlipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the velocity boundary condition data
+    QforBoundaryConditions velocityBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the geometry boundary condition data
+    QforBoundaryConditions geometryBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the pressure boundary condition data
+    QforBoundaryConditions pressureBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the outflow boundary condition data
+    QforBoundaryConditions outflowBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the stress boundary condition data
+    QforBoundaryConditions stressBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the precursor boundary condition data
+    QforPrecursorBoundaryConditions precursorBC;
+
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief sets a uniform forcing on each fluid node in all three spatial dimensions
+    real *forcing;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores parameters for a wall model
+    WallModelParameters wallModel;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief allows reading values for a boundary condition from a file
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief can be used for pressure correction at outflow boundary condition
+    real outflowPressureCorrectionFactor;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the values of body forces for all 3 dimensions
+    real *forceX_SP, *forceY_SP, *forceZ_SP;
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // Advection Diffusion
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the diffusivity
+    real diffusivity;
+    //! \brief stores the value for omega (for the diffusivity)
+    real omegaDiffusivity;
+    //! \brief stores a field of concentration values
+    real *concentration;
+    //! \brief store all distribution functions for the D3Q27 advection diffusion field
+    Distributions27 distributionsAD;
+    //////////////////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // Grid Refinement
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the base-node-indices of coarse and fine refinement cells
+    InterpolationCells coarseToFine;
+    InterpolationCells fineToCoarse;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief distinguish between bulk and border interpolation cells (necessary for communication hiding)
+    InterpolationCells fineToCoarseBorder;
+    InterpolationCells fineToCoarseBulk;
+    InterpolationCells coarseToFineBorder;
+    InterpolationCells coarseToFineBulk;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores location of neighboring cell (necessary for refinement into the wall)
+    InterpolationCellNeighbor neighborCoarseToFine;
+    InterpolationCellNeighbor neighborCoarseToFineBulk;
+    InterpolationCellNeighbor neighborFineToCoarse;
+    InterpolationCellNeighbor neighborFineToCoarseBulk;
+    //////////////////////////////////////////////////////////////////////////
+
+
 
 
 
@@ -97,7 +176,30 @@ struct LBMSimulationParameter {
 
 
     //////////////////////////////////////////////////////////////////////////
-    // DEPRECATED
+    // potential additional logic
+    //////////////////////////////////////////////////////////////////////////
+
+    // distributions F3////////
+    Distributions6 g6;
+
+    unsigned int size_Array_SP; //?? Deprecated
+
+    // BC NoSlip
+    TempforBoundaryConditions Temp;
+    // BC Velocity
+    TempVelforBoundaryConditions TempVel;
+    // BC Pressure
+    TempPressforBoundaryConditions TempPress;
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // DEPRECATED - planed to be taken out for next open source release
     //////////////////////////////////////////////////////////////////////////
 
     // distributions///////////
@@ -116,49 +218,35 @@ struct LBMSimulationParameter {
     //unsigned int mem_size_int;
     //unsigned int mem_size_real;
 
-    //////////////////////////////////////////////////////////////////////////
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED  BCs that are not used any more
+    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED BCs that are not used any more
+    unsigned int kInletQread, kOutletQread;            // DEPRECATED
 
+    QforBoundaryConditions propellerBC;                                                 // DEPRECATED
+    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;     // DEPRECATED
+    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;           // DEPRECATED
+    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;        // DEPRECATED
 
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, // DEPRECATED
+    numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead; // DEPRECATED
 
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // additional logic 
-    //////////////////////////////////////////////////////////////////////////
-
-    // distributions F3////////
-    Distributions6 g6;
-
-    unsigned int size_Array_SP;
-
-
-    // memsizeSP/////////////////
-
-
+    //! \brief stores a full matrix field of concentration values
+    real *Conc_Full;
 
     //////////////////////////////////////////////////////////////////////////
+    // \brief velocities to fit the force
+    real *VxForce, *VyForce, *VzForce;
 
-
-    // advection diffusion //////////////////
+    //! \brief stores indices for the concentration field
+    int *concIndex;
+    //    real *concentration;
+    unsigned int numberOfPointsConc;
     //! \brief store all distribution functions for the D3Q7 advection diffusion field
     Distributions7 distributionsAD7;
-    //! \brief store all distribution functions for the D3Q27 advection diffusion field
-    Distributions27 distributionsAD27;
-    //! \brief stores a field of concentration values
-    real *Conc, *Conc_Full;
-    //! \brief stores the diffusivity
-    real diffusivity;
-    //! \brief stores the value for omega (for the diffusivity)
-    real omegaDiffusivity;
-    // BC NoSlip
-    TempforBoundaryConditions Temp;
-    // BC Velocity
-    TempVelforBoundaryConditions TempVel;
-    // BC Pressure
-    TempPressforBoundaryConditions TempPress;
     // Plane Conc
     real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
     std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
+
 
     // trafo///////////////////
     real mTtoWx, mTtoWy, mTtoWz;
@@ -168,35 +256,18 @@ struct LBMSimulationParameter {
     real cStartx, cStarty, cStartz;
     real cFx, cFy, cFz;
 
-
-    // body forces////////////
-    real *forceX_SP, *forceY_SP, *forceZ_SP;
+    // interface////////////////
+    bool need_interface[6];
+    unsigned int XdistKn, YdistKn, ZdistKn;
 
     // vel parab///////////////
     real *vParab;
 
-    // turbulent viscosity ///
-    real *turbViscosity;
-    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
-
-    // turbulence intensity //
-    real *vx_mean, *vy_mean, *vz_mean;       // means
-    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
-    std::vector<real> turbulenceIntensity;
-
     // macroscopic values//////
     // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
-    //! \brief stores the value for viscosity (on level 0)
-    real vis;
 
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
-
-    // median-macro-values/////
-    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
-    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
-    // Advection-Diffusion
-    real *Conc_Med, *Conc_Med_Out;
 
     // grid////////////////////
     unsigned int nx, ny, nz;
@@ -218,63 +289,51 @@ struct LBMSimulationParameter {
     unsigned int sizePlanePressOUT, startPOUT;
     bool isSetPress;
 
+    // deltaPhi
+    real deltaPhi;
+
+    // particles
+    PathLineParticles plp;
+
+
+    //////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+
+
+
+    // turbulent viscosity ///
+    real *turbViscosity;
+    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
+
+    // turbulence intensity //
+    real *vx_mean, *vy_mean, *vz_mean;       // means
+    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
+    std::vector<real> turbulenceIntensity;
+
+
+    // median-macro-values/////
+    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
+    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
+    // Advection-Diffusion
+    real *Conc_Med, *Conc_Med_Out;
+
 
     // print///////////////////
     unsigned int startz, endz;
     real Lx, Ly, Lz, dx;
     real distX, distY, distZ;
 
-    // interface////////////////
-    bool need_interface[6];
-    unsigned int XdistKn, YdistKn, ZdistKn;
-    InterpolationCellCF intCF;
-    InterpolationCellFC intFC;
-    unsigned int K_CF;
-    unsigned int K_FC;
-    unsigned int mem_size_kCF;
-    unsigned int mem_size_kFC;
-
-    InterpolationCellFC intFCBorder;
-    InterpolationCellFC intFCBulk;
-    InterpolationCellCF intCFBorder;
-    InterpolationCellCF intCFBulk;
-
-    // offset//////////////////
-    OffsetCF offCF;
-    OffsetCF offCFBulk;
-    OffsetFC offFC;
-    OffsetFC offFCBulk;
-    unsigned int mem_size_kCF_off;
-    unsigned int mem_size_kFC_off;
-    
-    //! \brief stores the boundary condition data
-    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
-    //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead;
-
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
-    QforBoundaryConditions propellerBC;
-    QforBoundaryConditions geometryBC;
-    QforPrecursorBoundaryConditions precursorBC;
-    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
-    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
-    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED
-    unsigned int kInletQread, kOutletQread;  // DEPRECATED
-
-    WallModelParameters wallModel;
-    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
-    real outflowPressureCorrectionFactor;
-
     // testRoundoffError
     Distributions27 kDistTestRE;
 
-    //////////////////////////////////////////////////////////////////////////
-    // velocities to fit the force
-    real *VxForce, *VyForce, *VzForce;
-    //////////////////////////////////////////////////////////////////////////
-    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
-    real *forcing;
 
     // Measure Points/////////
     std::vector<MeasurePoints> MP;
@@ -324,24 +383,12 @@ struct LBMSimulationParameter {
     unsigned int numberOfPointsCpBottom2;
     std::vector<std::vector<double>> cpBottom2;
 
-    // Concentration////////
-    int *concIndex;
-    real *concentration;
-    unsigned int numberOfPointsConc;
-
     // street X and Y velocity fractions///////
     real *streetFractionXvelocity;
     real *streetFractionYvelocity;
     int *naschVelocity;
     uint numberOfStreetNodes;
 
-    // deltaPhi
-    real deltaPhi;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // particles
-    PathLineParticles plp;
-    ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////
     // 1D domain decomposition

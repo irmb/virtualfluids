@@ -20,49 +20,31 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
 //
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file GridScalingFactory.h
-//! \ingroup Factories
-//! \author Anna Wellmann, Martin Schönherr
+//! \file NonReflectingOutflowBCAlgorithmWithRelaxation.h
+//! \ingroup BoundarConditions
+//! \author Konstantin Kutscher, Hussein Alihussein
 //=======================================================================================
-#ifndef GS_FACTORY
-#define GS_FACTORY
+#ifndef NonReflectingOutflowBCAlgorithmWithRelaxation_h__
+#define NonReflectingOutflowBCAlgorithmWithRelaxation_h__
 
-#include <functional>
+#include "BCAlgorithm.h"
+#include <PointerDefinitions.h>
 
-#include "LBM/LB.h"
-#include "Parameter/Parameter.h"
+class DistributionArray3D;
 
-struct LBMSimulationParameter;
-class Parameter;
-struct CUstream_st;
-
-using gridScaling = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICells *, ICellNeigh&, CUstream_st *stream)>;
-
-class GridScalingFactory
+class NonReflectingOutflowBCAlgorithmWithRelaxation : public BCAlgorithm
 {
 public:
-    //! \brief An enumeration for selecting a scaling function
-    enum class GridScaling {
-        //! - ScaleCompressible = basic scaling for compressible fluid flow
-        ScaleCompressible,
-        //! - DEPRECATED: ScaleRhoSq = scaling for cumulant kernel rho squared
-        ScaleRhoSq,
-        NotSpecified
-    };
-
-    void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType);
-
-    [[nodiscard]] gridScaling getGridScalingFC(bool hasTurbulentViscosity) const;
-    [[nodiscard]] gridScaling getGridScalingCF(bool hasTurbulentViscosity) const;
-
-private:
-    GridScaling gridScalingType = GridScaling::NotSpecified;
+    NonReflectingOutflowBCAlgorithmWithRelaxation();
+    ~NonReflectingOutflowBCAlgorithmWithRelaxation() override;
+    SPtr<BCAlgorithm> clone() override;
+    void addDistributions(SPtr<DistributionArray3D> distributions) override;
+    void applyBC() override;
 };
-
-#endif
+#endif // NonReflectingDensityBCAlgorithm_h__

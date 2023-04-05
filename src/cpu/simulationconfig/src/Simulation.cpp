@@ -33,6 +33,8 @@
 #include <simulationconfig/SimulationParameters.h>
 #include <simulationconfig/Simulation.h>
 
+#include <lbm/constants/D3Q27.h>
+
 
 Simulation::Simulation()
 {

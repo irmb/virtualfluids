@@ -92,7 +92,7 @@ msvc_17:
     - git --version
     - $env:Path += ";C:\Program Files\CMake\bin\"
     - cmake --version
-    - $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin"
+    - $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin"
     - MSBuild.exe -version
 
   script:
@@ -178,6 +178,7 @@ gcc_9_unit_tests:
 
   script:
     - ctest
+    - ctest --rerun-failed --output-on-failure
 
 ###############################################################################
 msvc_17_unit_tests:

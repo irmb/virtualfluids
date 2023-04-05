@@ -46,8 +46,7 @@ void writeInterfaceLinesDebugCF(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugCF.vtk";
-        writeGridInterfaceLines(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF,
-                                para->getParH(level)->K_CF, fileName);
+        writeGridInterfaceLines(para, level, para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->coarseToFine.numberOfCells, fileName);
     }
 }
 
@@ -55,8 +54,7 @@ void writeInterfaceLinesDebugFC(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugFC.vtk";
-        writeGridInterfaceLines(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF,
-                                para->getParH(level)->K_FC, fileName);
+        writeGridInterfaceLines(para, level, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.fineCellIndices, para->getParH(level)->fineToCoarse.numberOfCells, fileName);
     }
 }
 
@@ -90,7 +88,7 @@ void writeInterfaceLinesDebugCFCneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_CFCneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_CF,
+        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.numberOfCells,
                                          filename);
     }
 }
@@ -100,8 +98,7 @@ void writeInterfaceLinesDebugCFFneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_CFFneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->intCF.ICellCFF,
-                                         para->getParH(level)->K_CF, filename);
+        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->coarseToFine.numberOfCells, filename);
     }
 }
 
@@ -110,7 +107,7 @@ void writeInterfaceLinesDebugFCCneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_FCCneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_FC,
+        writeGridInterfaceLinesNeighbors(para, level, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.numberOfCells,
                                          filename);
     }
 }
@@ -120,8 +117,7 @@ void writeInterfaceLinesDebugFCFneighbor(Parameter *para)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
         std::string filename = para->getFName() + "_" + StringUtil::toString<int>(level) + "_FCFneighbor.vtk";
-        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->intFC.ICellFCF,
-                                         para->getParH(level)->K_FC, filename);
+        writeGridInterfaceLinesNeighbors(para, level + 1, para->getParH(level)->fineToCoarse.fineCellIndices, para->getParH(level)->fineToCoarse.numberOfCells, filename);
     }
 }
 
@@ -134,17 +130,17 @@ void writeInterfaceLinesDebugOff(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->coarseToFine.numberOfCells;
     }
     nodesVec.resize(nodeNumberVec * 8);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
-            double xoff = para->getParH(level)->offCF.xOffCF[u];
-            double yoff = para->getParH(level)->offCF.yOffCF[u];
-            double zoff = para->getParH(level)->offCF.zOffCF[u];
+        for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++) {
+            double xoff = para->getParH(level)->neighborCoarseToFine.x[u];
+            double yoff = para->getParH(level)->neighborCoarseToFine.y[u];
+            double zoff = para->getParH(level)->neighborCoarseToFine.z[u];
 
-            int posFine = para->getParH(level)->intCF.ICellCFF[u];
+            int posFine = para->getParH(level)->coarseToFine.fineCellIndices[u];
 
             double x1Fine = para->getParH(level + 1)->coordinateX[posFine];
             double x2Fine = para->getParH(level + 1)->coordinateY[posFine];
@@ -175,13 +171,13 @@ void writeInterfacePointsDebugCFC(Parameter *para)
 
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->coarseToFine.numberOfCells;
     }
     nodesVec2.resize(nodeNumberVec * 8);
     int nodeCount2 = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
-            int pos = para->getParH(level)->intCF.ICellCFC[u];
+        for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++) {
+            int pos = para->getParH(level)->coarseToFine.coarseCellIndices[u];
 
             double x1 = para->getParH(level)->coordinateX[pos];
             double x2 = para->getParH(level)->coordinateY[pos];
@@ -467,13 +463,13 @@ void writeInterfaceCellsDebugCFC(Parameter *para)
     int nodeNumberVec = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->coarseToFine.numberOfCells;
     }
     nodesVec.resize(nodeNumberVec * 8);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
-            int pos = para->getParH(level)->intCF.ICellCFC[u];
+        for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++) {
+            int pos = para->getParH(level)->coarseToFine.coarseCellIndices[u];
 
             double x1             = para->getParH(level)->coordinateX[pos];
             double x2             = para->getParH(level)->coordinateY[pos];
@@ -508,13 +504,13 @@ void writeInterfaceCellsDebugCFF(Parameter *para)
     int nodeNumberVec = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) // evtl. Maxlevel + 1
     {
-        nodeNumberVec += (int)para->getParH(level)->K_CF;
+        nodeNumberVec += (int)para->getParH(level)->coarseToFine.numberOfCells;
     }
     nodesVec.resize(nodeNumberVec * 8);
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->K_CF; u++) {
-            int pos = para->getParH(level)->intCF.ICellCFF[u];
+        for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++) {
+            int pos = para->getParH(level)->coarseToFine.fineCellIndices[u];
 
             double x1             = para->getParH(level + 1)->coordinateX[pos];
             double x2             = para->getParH(level + 1)->coordinateY[pos];
@@ -620,7 +616,7 @@ void writeInterfaceFCC_Send(Parameter *para)
     std::vector<std::vector<double>> nodedata;
 
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->intFC.kFC;
+        nodeNumberVec += (int)para->getParH(level)->fineToCoarse.numberOfCells;
     }
 
     nodesVec.resize(nodeNumberVec);
@@ -628,8 +624,8 @@ void writeInterfaceFCC_Send(Parameter *para)
 
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++) {
-            int pos                = para->getParH(level)->intFC.ICellFCC[u];
+        for (unsigned int u = 0; u < para->getParH(level)->fineToCoarse.numberOfCells; u++) {
+            int pos                = para->getParH(level)->fineToCoarse.coarseCellIndices[u];
             nodedata[0][nodeCount] = pos;
 
             // coordinate section
@@ -639,7 +635,7 @@ void writeInterfaceFCC_Send(Parameter *para)
             nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 
             // nodedata section
-            nodedata[1][nodeCount]           = u < para->getParH(level)->intFCBorder.kFC;
+            nodedata[1][nodeCount]           = u < para->getParH(level)->fineToCoarseBorder.numberOfCells;
             int sendDir                      = 0.0;
             int sendDirectionInCommAfterFtoC = 0.0;
             int sendIndex                    = 0.0;
@@ -674,7 +670,7 @@ void writeInterfaceCFC_Recv(Parameter *para)
     std::vector<std::vector<double>> nodedata;
 
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        nodeNumberVec += (int)para->getParH(level)->intCF.kCF;
+        nodeNumberVec += (int)para->getParH(level)->coarseToFine.numberOfCells;
     }
 
     nodesVec.resize(nodeNumberVec);
@@ -682,8 +678,8 @@ void writeInterfaceCFC_Recv(Parameter *para)
 
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (unsigned int u = 0; u < para->getParH(level)->intCF.kCF; u++) {
-            int pos                = para->getParH(level)->intCF.ICellCFC[u];
+        for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++) {
+            int pos                = para->getParH(level)->coarseToFine.coarseCellIndices[u];
             nodedata[0][nodeCount] = pos;
 
             // coordinate section
@@ -693,7 +689,7 @@ void writeInterfaceCFC_Recv(Parameter *para)
             nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 
             // nodedata section
-            nodedata[1][nodeCount]           = u < para->getParH(level)->intCFBorder.kCF;
+            nodedata[1][nodeCount]           = u < para->getParH(level)->coarseToFineBorder.numberOfCells;
             int recvDir                      = 0.0;
             int recvDirectionInCommAfterFtoC = 0.0;
             int recvIndex                    = 0.0;
@@ -799,12 +795,12 @@ void writeSendNodesStream(Parameter *para)
             }
         }
 
-        // check if node is in iCellFCC
+        // check if node is in a coarse cell for the interpolation from fine to coarse
         nodedata[4].resize(nodedata[0].size());
         for (int i = 0; i < (int)nodedata[0].size(); i++) {
             pos = nodedata[0][i];
-            for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++) {
-                if (para->getParH(level)->intFC.ICellFCC[u] == (uint)pos) {
+            for (unsigned int u = 0; u < para->getParH(level)->fineToCoarse.numberOfCells; u++) {
+                if (para->getParH(level)->fineToCoarse.coarseCellIndices[u] == (uint)pos) {
                     nodedata[4][i] = 1.0;
                     break;
                 }
@@ -895,7 +891,7 @@ void writeRecvNodesStream(Parameter *para)
             }
         }
 
-        // Recv are nodes ghost nodes and therefore they can't be iCellCFCs
+        // Recv are nodes ghost nodes and therefore they can't be coarse cells for the interpolation from coarse to fine
 
         std::string filenameVec = para->getFName() + "_writeRecvNodesStreams_PID_" +
                                   std::to_string(vf::gpu::Communicator::getInstance().getPID()) + "_" +

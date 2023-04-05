@@ -164,30 +164,19 @@ struct InitCondition
 };
 
 //Interface Cells
-typedef struct ICellCF{
-   uint* ICellCFF;
-   uint* ICellCFC;
-   uint kCF;
-} InterpolationCellCF;
+// example of old names (pre 2023) ICellCFC: interpolation from Coarse (C) to Fine (F), indices of the Coarse cells (C)
+typedef struct ICells{
+   uint* fineCellIndices;
+   uint* coarseCellIndices;
+   uint numberOfCells;
+} InterpolationCells;
 
-typedef struct ICellFC{
-   uint* ICellFCF;
-   uint* ICellFCC;
-   uint kFC;
-} InterpolationCellFC;
-
-//Offset of the interface cells at the wall
-typedef struct OffCF{
-   real* xOffCF;
-   real* yOffCF;
-   real* zOffCF;
-} OffsetCF;
-
-typedef struct OffFC{
-   real* xOffFC;
-   real* yOffFC;
-   real* zOffFC;
-} OffsetFC;
+//! \brief stores location of neighboring cell (necessary for refinement into the wall)
+typedef struct ICellNeigh{
+   real* x;
+   real* y;
+   real* z;
+} InterpolationCellNeighbor;
 
 // Distribution functions g 6
 typedef struct  Distri6 {

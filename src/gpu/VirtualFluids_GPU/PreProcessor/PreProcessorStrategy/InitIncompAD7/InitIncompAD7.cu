@@ -18,12 +18,12 @@ void InitIncompAD7::init(int level)
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->Conc,
+        para->getParD(level)->concentration,
         para->getParD(level)->velocityX,
         para->getParD(level)->velocityY,
         para->getParD(level)->velocityZ,
         para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD27.f[0],
+        para->getParD(level)->distributionsAD.f[0],
         para->getParD(level)->isEvenTimestep);
     getLastCudaError("LB_Init_Incomp_AD_7 execution failed");
 }

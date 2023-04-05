@@ -6,8 +6,8 @@
 
 
 # 1. Cloning the reference data from github
-mkdir -p regression-tests/reference_data
-git clone https://github.com/irmb/test_data regression-tests/reference_data
+rm -r reference_data && mkdir -p reference_data
+git clone https://github.com/irmb/test_data reference_data
 
 # 2. set up the python environnement
 #    by cloning our meshio patch and fieldcompare into a venv
