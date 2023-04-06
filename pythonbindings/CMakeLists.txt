@@ -7,7 +7,6 @@ endif()
 project(VirtualFluidsPython LANGUAGES ${PYFLUIDS_LANGUAGES})
 
 pybind11_add_module(python_bindings MODULE src/VirtualFluids.cpp)
-target_compile_definitions(python_bindings PUBLIC VF_DOUBLE_ACCURACY)
 
 set_target_properties(  python_bindings PROPERTIES
                         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pythonbindings/pyfluids
@@ -25,6 +24,7 @@ IF(BUILD_VF_GPU)
 ENDIF()
 
 IF(BUILD_VF_CPU)
+    target_compile_definitions(python_bindings PUBLIC VF_DOUBLE_ACCURACY)
     target_compile_definitions(python_bindings PRIVATE VF_METIS VF_MPI VF_CPU_PYTHONBINDINGS)
     target_link_libraries(python_bindings PRIVATE simulationconfig VirtualFluidsCore muparser)
 
