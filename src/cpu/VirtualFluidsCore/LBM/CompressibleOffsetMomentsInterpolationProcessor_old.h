@@ -1,5 +1,5 @@
-#ifndef CompressibleOffsetMomentsInterpolationProcessor2_H_
-#define CompressibleOffsetMomentsInterpolationProcessor2_H_
+#ifndef CompressibleOffsetMomentsInterpolationProcessor_OLD_H_
+#define CompressibleOffsetMomentsInterpolationProcessor_OLD_H_
 
 #include "InterpolationProcessor.h"
 #include "D3Q27System.h"
@@ -9,14 +9,13 @@
 //super compact interpolation method by Martin Geier
 //////////////////////////////////////////////////////////////////////////
 
-class CompressibleOffsetMomentsInterpolationProcessor;
 
-class CompressibleOffsetMomentsInterpolationProcessor2 : public InterpolationProcessor
+class CompressibleOffsetMomentsInterpolationProcessor_old : public InterpolationProcessor
 {
 public:
-   CompressibleOffsetMomentsInterpolationProcessor2();
-   CompressibleOffsetMomentsInterpolationProcessor2(real omegaC, real omegaF);
-   ~CompressibleOffsetMomentsInterpolationProcessor2() override;
+   CompressibleOffsetMomentsInterpolationProcessor_old();
+   CompressibleOffsetMomentsInterpolationProcessor_old(real omegaC, real omegaF);
+   ~CompressibleOffsetMomentsInterpolationProcessor_old() override;
    InterpolationProcessorPtr clone() override;
    void setOmegas(real omegaC, real omegaF) override;
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF) override;
@@ -69,12 +68,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline void CompressibleOffsetMomentsInterpolationProcessor2::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
+inline void CompressibleOffsetMomentsInterpolationProcessor_old::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
 {
    this->interpolateCoarseToFine(icellC, icellF, 0.0, 0.0, 0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void CompressibleOffsetMomentsInterpolationProcessor2::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
+inline void CompressibleOffsetMomentsInterpolationProcessor_old::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
 {
    this->interpolateFineToCoarse(icellF, icellC, 0.0, 0.0, 0.0);
 }

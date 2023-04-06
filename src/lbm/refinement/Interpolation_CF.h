@@ -27,8 +27,8 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //=======================================================================================
-#ifndef LBM_INTERPOLATION_FC_H
-#define LBM_INTERPOLATION_FC_H
+#ifndef LBM_INTERPOLATION_CF_H
+#define LBM_INTERPOLATION_CF_H
 
 #ifndef __host__
 #define __host__
@@ -44,7 +44,7 @@
 #include "lbm/KernelParameter.h"
 #include "lbm/Chimera.h"
 
-#include "lbm/Scaling.h"
+#include "lbm/refinement/Coefficients.h"
 
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
@@ -52,8 +52,9 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-__host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps_new, const real omegaC, Coefficients& coefficients)
+__host__ __device__ __inline__ void interpolate_cf(real* const f, const real& omegaF, const real& eps_new, Coefficients &coefficients, const real& x, const real& y, const real& z)
 {
+    const real useNEQ = c1o1;
 
     const real kxyAverage    = c0o1;
     const real kyzAverage    = c0o1;
@@ -61,9 +62,44 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps
     const real kxxMyyAverage = c0o1;
     const real kxxMzzAverage = c0o1;
 
+    real& a_000 = coefficients.a_000;
+    real& b_000 = coefficients.b_000;
+    real& c_000 = coefficients.c_000;
+    real& d_000 = coefficients.d_000;
+
+    real& a_100 = coefficients.a_100;
+    real& b_100 = coefficients.b_100;
+    real& c_100 = coefficients.c_100;
+    real& d_100 = coefficients.d_100;
+
+    real& a_010 = coefficients.a_010;
+    real& b_010 = coefficients.b_010;
+    real& c_010 = coefficients.c_010;
+    real& d_010 = coefficients.d_010;
+
+    real& a_001 = coefficients.a_001;
+    real& b_001 = coefficients.b_001;
+    real& c_001 = coefficients.c_001;
+    real& d_001 = coefficients.d_001;
+
+    real& d_110 = coefficients.d_110, &d_101 = coefficients.d_101, &d_011 = coefficients.d_011;
+    
+    real& a_200 = coefficients.a_200, &a_020 = coefficients.a_020, &a_002 = coefficients.a_002;
+    real& b_200 = coefficients.b_200, &b_020 = coefficients.b_020, &b_002 = coefficients.b_002;
+    real& c_200 = coefficients.c_200, &c_020 = coefficients.c_020, &c_002 = coefficients.c_002;
+
+    real& a_110 = coefficients.a_110, &a_101 = coefficients.a_101, &a_011 = coefficients.a_011;
+    real& b_110 = coefficients.b_110, &b_101 = coefficients.b_101, &b_011 = coefficients.b_011;
+    real& c_110 = coefficients.c_110, &c_101 = coefficients.c_101, &c_011 = coefficients.c_011;
+
+    real &a_111 = coefficients.a_111, &b_111 = coefficients.b_111, &c_111 = coefficients.c_111, &d_111 = coefficients.d_111;
+
+    real &LaplaceRho = coefficients.LaplaceRho;
+
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Set all moments to zero
-    //!
+    //!      
     real m_111 = c0o1;
     real m_211 = c0o1;
     real m_011 = c0o1;
@@ -123,40 +159,41 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps
     real& f_PMM = m_200;
     real& f_MMM = m_000;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Declare local variables for destination nodes
-    //!
-    real vvx, vvy, vvz, vx_sq, vy_sq, vz_sq;
-    real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
-    real press;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set macroscopic values on destination node (zeroth and first order moments)
     //!
-    press = coefficients.d_000 - c2o1 * coefficients.LaplaceRho * c1o8;
-    vvx   = coefficients.a_000;
-    vvy   = coefficients.b_000;
-    vvz   = coefficients.c_000;
+    real press = d_000 + x * d_100 + y * d_010 + z * d_001 +
+                 x * y * d_110 + x * z * d_101 + y * z * d_011 + x * y * z * d_111 + c3o1 * x * x * LaplaceRho;
+    real vvx   = a_000 + x * a_100 + y * a_010 + z * a_001 +
+                 x * x * a_200 + y * y * a_020 + z * z * a_002 +
+                 x * y * a_110 + x * z * a_101 + y * z * a_011 + x * y * z * a_111;
+    real vvy   = b_000 + x * b_100 + y * b_010 + z * b_001 +
+                 x * x * b_200 + y * y * b_020 + z * z * b_002 +
+                 x * y * b_110 + x * z * b_101 + y * z * b_011 + x * y * z * b_111;
+    real vvz   = c_000 + x * c_100 + y * c_010 + z * c_001 +
+                 x * x * c_200 + y * y * c_020 + z * z * c_002 +
+                 x * y * c_110 + x * z * c_101 + y * z * c_011 + x * y * z * c_111;
 
     m_000 = press; // m_000 is press, if drho is interpolated directly
-
-    vx_sq = vvx * vvx;
-    vy_sq = vvy * vvy;
-    vz_sq = vvz * vvz;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set moments (second to sixth order) on destination node
     //!
     // linear combinations for second order moments
-    mxxPyyPzz = m_000;
+    real mxxPyyPzz = m_000;
 
-    mxxMyy = -c2o3 * ((coefficients.a_100 - coefficients.b_010) + kxxMyyAverage) * eps_new / omegaC * (c1o1 + press);
-    mxxMzz = -c2o3 * ((coefficients.a_100 - coefficients.c_001) + kxxMzzAverage) * eps_new / omegaC * (c1o1 + press);
+    real mxxMyy = -c2o3 * (a_100 - b_010 + kxxMyyAverage + c2o1 * a_200 * x - b_110 * x + a_110 * y
+                  -c2o1 * b_020 * y + a_101 * z - b_011 * z - b_111 * x * z + a_111 * y * z) * eps_new/ omegaF * (c1o1 + press);
+    real mxxMzz = -c2o3 * (a_100 - c_001 + kxxMzzAverage + c2o1 * a_200 * x - c_101 * x + a_110 * y
+                  -c_011 * y - c_111 * x * y + a_101 * z - c2o1 * c_002 * z + a_111 * y * z) * eps_new/ omegaF * (c1o1 + press);
 
-    m_011 = -c1o3 * ((coefficients.b_001 + coefficients.c_010) + kyzAverage) * eps_new / omegaC * (c1o1 + press);
-    m_101 = -c1o3 * ((coefficients.a_001 + coefficients.c_100) + kxzAverage) * eps_new / omegaC * (c1o1 + press);
-    m_110 = -c1o3 * ((coefficients.a_010 + coefficients.b_100) + kxyAverage) * eps_new / omegaC * (c1o1 + press);
+    m_011 = -c1o3 * (b_001 + c_010 + kyzAverage + b_101 * x + c_110 * x + b_011 * y + c2o1 * c_020 * y
+            + b_111 * x * y + c2o1 * b_002 * z + c_011 * z + c_111 * x * z) * eps_new / omegaF * (c1o1 + press);
+    m_101 = -c1o3 * (a_001 + c_100 + kxzAverage + a_101 * x + c2o1 * c_200 * x + a_011 * y + c_110 * y
+            + a_111 * x * y + c2o1 * a_002 * z + c_101 * z + c_111 * y * z) * eps_new / omegaF * (c1o1 + press);
+    m_110 = -c1o3 * (a_010 + b_100 + kxyAverage + a_110 * x + c2o1 * b_200 * x + c2o1 * a_020 * y
+            + b_110 * y + a_011 * z + b_101 * z + a_111 * x * z + b_111 * y * z) * eps_new / omegaF * (c1o1 + press);
 
     m_200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
     m_020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
@@ -165,12 +202,12 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps
     // linear combinations for third order moments
     m_111 = c0o1;
 
-    mxxyPyzz = c0o1;
-    mxxyMyzz = c0o1;
-    mxxzPyyz = c0o1;
-    mxxzMyyz = c0o1;
-    mxyyPxzz = c0o1;
-    mxyyMxzz = c0o1;
+    real mxxyPyzz = c0o1;
+    real mxxyMyzz = c0o1;
+    real mxxzPyyz = c0o1;
+    real mxxzMyyz = c0o1;
+    real mxyyPxzz = c0o1;
+    real mxyyMxzz = c0o1;
 
     m_210 = ( mxxyMyzz + mxxyPyzz) * c1o2;
     m_012 = (-mxxyMyzz + mxxyPyzz) * c1o2;
@@ -186,8 +223,12 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps
 
     // fifth order moments
 
-    // sixth order moments
+    // sixth order moment
     m_222 = m_000 * c1o27;
+
+    real vx_sq = vvx * vvx;
+    real vy_sq = vvy * vvy;
+    real vz_sq = vvz * vvz;
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
@@ -196,6 +237,7 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps
     //! href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040
     //! ]</b></a>
     //!
+
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
     backwardInverseChimeraWithK(m_000, m_100, m_200, vvx, vx_sq, c1o1, c1o1);
@@ -260,6 +302,8 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps
     f[DIR_PMM] = f_PMM;
     f[DIR_MMM] = f_MMM;
 }
+
+
 
 }
 

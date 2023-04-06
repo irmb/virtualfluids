@@ -34,9 +34,9 @@
 #define KERNEL_UTILITIES_H
 
 #include "LBM/LB.h"
-#include "lbm/constants/D3Q27.h"
+
+#include <lbm/constants/D3Q27.h>
 #include <basics/constants/NumericConstants.h>
-#include <lbm/Scaling.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;

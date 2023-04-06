@@ -33,14 +33,17 @@
 #ifndef SCALING_HELPER_FUNCTIONS_H
 #define SCALING_HELPER_FUNCTIONS_H
 
-#include "LBM/LB.h" 
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 #include <basics/constants/NumericConstants.h>
 
 #include <lbm/constants/D3Q27.h>
 #include <lbm/KernelParameter.h>
-#include <lbm/Scaling.h>
+#include <basics/Core/DataTypes.h>
+
+#include <lbm/constants/D3Q27.h>
+
+#include <lbm/refinement/Coefficients.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -51,22 +54,22 @@ namespace vf::gpu
 template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     vf::lbm::MomentsOnSourceNodeSet& moments_set,
     const unsigned nodeIndex,
-    real *distributionsFine,
-    unsigned int *neighborXfine,
-    unsigned int *neighborYfine,
-    unsigned int *neighborZfine,
-    unsigned int *indicesFineMMM,
-    real* turbulentViscosityFine,
-    unsigned long long numberOfLBnodesFine,
-    const real omegaFine,
+    real *distribution,
+    unsigned int *neighborX,
+    unsigned int *neighborY,
+    unsigned int *neighborZ,
+    unsigned int *indices_MMM,
+    real* turbulentViscosity,
+    unsigned long long numberOfLBnodes,
+    const real omega,
     bool isEvenTimestep
 )
 {
-    real omegaF = omegaFine;
+    real omega_ = omega;
     Distributions27 distFine;
-    getPointersToDistributions(distFine, distributionsFine, numberOfLBnodesFine, isEvenTimestep);
+    getPointersToDistributions(distFine, distribution, numberOfLBnodes, isEvenTimestep);
 
-    vf::gpu::ListIndices indices;
+    ListIndices indices;
 
     //////////////////////////////////////////////////////////////////////////
     //! - Calculate moments for each source node 
@@ -75,14 +78,14 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     // source node BSW = MMM
     //////////////////////////////////////////////////////////////////////////
     // index of the base node and its neighbors
-    unsigned int k_base_000 = indicesFineMMM[nodeIndex];
-    unsigned int k_base_M00 = neighborXfine [k_base_000];
-    unsigned int k_base_0M0 = neighborYfine [k_base_000];
-    unsigned int k_base_00M = neighborZfine [k_base_000];
-    unsigned int k_base_MM0 = neighborYfine [k_base_M00];
-    unsigned int k_base_M0M = neighborZfine [k_base_M00];
-    unsigned int k_base_0MM = neighborZfine [k_base_0M0];
-    unsigned int k_base_MMM = neighborZfine [k_base_MM0];
+    unsigned int k_base_000 = indices_MMM[nodeIndex];
+    unsigned int k_base_M00 = neighborX [k_base_000];
+    unsigned int k_base_0M0 = neighborY [k_base_000];
+    unsigned int k_base_00M = neighborZ [k_base_000];
+    unsigned int k_base_MM0 = neighborY [k_base_M00];
+    unsigned int k_base_M0M = neighborZ [k_base_M00];
+    unsigned int k_base_0MM = neighborZ [k_base_0M0];
+    unsigned int k_base_MMM = neighborZ [k_base_MM0];
     //////////////////////////////////////////////////////////////////////////
     // Set neighbor indices
     indices.k_000 = k_base_000;
@@ -94,12 +97,12 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     indices.k_0MM = k_base_0MM;
     indices.k_MMM = k_base_MMM;
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     real f_fine[27];
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_MMM);
+    moments_set.calculate_MMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSW = MMP
@@ -108,34 +111,34 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     indices.k_000 = indices.k_00M;
     indices.k_M00 = indices.k_M0M;
     indices.k_0M0 = indices.k_0MM;
-    indices.k_00M = neighborZfine[indices.k_00M];
+    indices.k_00M = neighborZ[indices.k_00M];
     indices.k_MM0 = indices.k_MMM;
-    indices.k_M0M = neighborZfine[indices.k_M0M];
-    indices.k_0MM = neighborZfine[indices.k_0MM];
-    indices.k_MMM = neighborZfine[indices.k_MMM];
+    indices.k_M0M = neighborZ[indices.k_M0M];
+    indices.k_0MM = neighborZ[indices.k_0MM];
+    indices.k_MMM = neighborZ[indices.k_MMM];
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_MMP);
+    moments_set.calculate_MMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSE = PMP
     //////////////////////////////////////////////////////////////////////////
     // index
     indices.k_000 = indices.k_M00;
-    indices.k_M00 = neighborXfine[indices.k_M00];
+    indices.k_M00 = neighborX[indices.k_M00];
     indices.k_0M0 = indices.k_MM0;
     indices.k_00M = indices.k_M0M;
-    indices.k_MM0 = neighborXfine[indices.k_MM0];
-    indices.k_M0M = neighborXfine[indices.k_M0M];
+    indices.k_MM0 = neighborX[indices.k_MM0];
+    indices.k_M0M = neighborX[indices.k_M0M];
     indices.k_0MM = indices.k_MMM;
-    indices.k_MMM = neighborXfine[indices.k_MMM];
+    indices.k_MMM = neighborX[indices.k_MMM];
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_PMP);
+    moments_set.calculate_PMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BSE = PMM 
@@ -146,14 +149,14 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     indices.k_0MM = indices.k_0M0;
     indices.k_MMM = indices.k_MM0;
     indices.k_000 = k_base_M00;
-    indices.k_M00 = neighborXfine[k_base_M00];
+    indices.k_M00 = neighborX[k_base_M00];
     indices.k_0M0 = k_base_MM0;
-    indices.k_MM0 = neighborXfine[k_base_MM0];
+    indices.k_MM0 = neighborX[k_base_MM0];
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_PMM);
+    moments_set.calculate_PMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNW = MPM
@@ -161,12 +164,12 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     // index of the base node and its neighbors --> indices of all source nodes
     k_base_000 = k_base_0M0;
     k_base_M00 = k_base_MM0;
-    k_base_0M0 = neighborYfine[k_base_0M0];
+    k_base_0M0 = neighborY[k_base_0M0];
     k_base_00M = k_base_0MM;
-    k_base_MM0 = neighborYfine[k_base_MM0];
+    k_base_MM0 = neighborY[k_base_MM0];
     k_base_M0M = k_base_MMM;
-    k_base_0MM = neighborYfine[k_base_0MM];
-    k_base_MMM = neighborYfine[k_base_MMM];
+    k_base_0MM = neighborY[k_base_0MM];
+    k_base_MMM = neighborY[k_base_MMM];
     //////////////////////////////////////////////////////////////////////////
     // index
     indices.k_000 = k_base_000;
@@ -178,10 +181,10 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     indices.k_0MM = k_base_0MM;
     indices.k_MMM = k_base_MMM;
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_MPM);
+    moments_set.calculate_MPM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNW = MPP
@@ -190,34 +193,34 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     indices.k_000 = indices.k_00M;
     indices.k_M00 = indices.k_M0M;
     indices.k_0M0 = indices.k_0MM;
-    indices.k_00M = neighborZfine[indices.k_00M];
+    indices.k_00M = neighborZ[indices.k_00M];
     indices.k_MM0 = indices.k_MMM;
-    indices.k_M0M = neighborZfine[indices.k_M0M];
-    indices.k_0MM = neighborZfine[indices.k_0MM];
-    indices.k_MMM = neighborZfine[indices.k_MMM];
+    indices.k_M0M = neighborZ[indices.k_M0M];
+    indices.k_0MM = neighborZ[indices.k_0MM];
+    indices.k_MMM = neighborZ[indices.k_MMM];
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_MPP);
+    moments_set.calculate_MPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
     //////////////////////////////////////////////////////////////////////////
     // index
     indices.k_000 = indices.k_M00;
-    indices.k_M00 = neighborXfine[indices.k_M00];
+    indices.k_M00 = neighborX[indices.k_M00];
     indices.k_0M0 = indices.k_MM0;
     indices.k_00M = indices.k_M0M;
-    indices.k_MM0 = neighborXfine[indices.k_MM0];
-    indices.k_M0M = neighborXfine[indices.k_M0M];
+    indices.k_MM0 = neighborX[indices.k_MM0];
+    indices.k_M0M = neighborX[indices.k_M0M];
     indices.k_0MM = indices.k_MMM;
-    indices.k_MMM = neighborXfine[indices.k_MMM];
+    indices.k_MMM = neighborX[indices.k_MMM];
 
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_PPP);
+    moments_set.calculate_PPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -228,51 +231,16 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     indices.k_0MM = indices.k_0M0;
     indices.k_MMM = indices.k_MM0;
     indices.k_000 = k_base_M00;
-    indices.k_M00 = neighborXfine[k_base_M00];
+    indices.k_M00 = neighborX[k_base_M00];
     indices.k_0M0 = k_base_MM0;
-    indices.k_MM0 = neighborXfine[k_base_MM0];
+    indices.k_MM0 = neighborX[k_base_MM0];
     
-    omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     readDistributionFromList(f_fine, distFine, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_fine, omegaF, moments_set.moments_PPM);
+    moments_set.calculate_PPM(f_fine, omega_);
 }
 
-
-__device__ __inline__ void readDistributionFromList(vf::lbm::Distribution27 &distribution, const Distributions27 &dist, unsigned int &k_000,
-                                                         unsigned int &k_M00, unsigned int &k_0M0, unsigned int &k_00M,
-                                                         unsigned int &k_MM0, unsigned int &k_M0M, unsigned int &k_0MM,
-                                                         unsigned int &k_MMM)
-{
-    distribution.f[DIR_000] = (dist.f[DIR_000])[k_000];
-    distribution.f[DIR_P00] = (dist.f[DIR_P00])[k_000];
-    distribution.f[DIR_M00] = (dist.f[DIR_M00])[k_M00];
-    distribution.f[DIR_0P0] = (dist.f[DIR_0P0])[k_000];
-    distribution.f[DIR_0M0] = (dist.f[DIR_0M0])[k_0M0];
-    distribution.f[DIR_00P] = (dist.f[DIR_00P])[k_000];
-    distribution.f[DIR_00M] = (dist.f[DIR_00M])[k_00M];
-    distribution.f[DIR_PP0] = (dist.f[DIR_PP0])[k_000];
-    distribution.f[DIR_MM0] = (dist.f[DIR_MM0])[k_MM0];
-    distribution.f[DIR_PM0] = (dist.f[DIR_PM0])[k_0M0];
-    distribution.f[DIR_MP0] = (dist.f[DIR_MP0])[k_M00];
-    distribution.f[DIR_P0P] = (dist.f[DIR_P0P])[k_000];
-    distribution.f[DIR_M0M] = (dist.f[DIR_M0M])[k_M0M];
-    distribution.f[DIR_P0M] = (dist.f[DIR_P0M])[k_00M];
-    distribution.f[DIR_M0P] = (dist.f[DIR_M0P])[k_M00];
-    distribution.f[DIR_0PP] = (dist.f[DIR_0PP])[k_000];
-    distribution.f[DIR_0MM] = (dist.f[DIR_0MM])[k_0MM];
-    distribution.f[DIR_0PM] = (dist.f[DIR_0PM])[k_00M];
-    distribution.f[DIR_0MP] = (dist.f[DIR_0MP])[k_0M0];
-    distribution.f[DIR_PPP] = (dist.f[DIR_PPP])[k_000];
-    distribution.f[DIR_MPP] = (dist.f[DIR_MPP])[k_M00];
-    distribution.f[DIR_PMP] = (dist.f[DIR_PMP])[k_0M0];
-    distribution.f[DIR_MMP] = (dist.f[DIR_MMP])[k_MM0];
-    distribution.f[DIR_PPM] = (dist.f[DIR_PPM])[k_00M];
-    distribution.f[DIR_MPM] = (dist.f[DIR_MPM])[k_M0M];
-    distribution.f[DIR_PMM] = (dist.f[DIR_PMM])[k_0MM];
-    distribution.f[DIR_MMM] = (dist.f[DIR_MMM])[k_MMM];
 }
-
-} // namespace vf::gpu
 
 #endif

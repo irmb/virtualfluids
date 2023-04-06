@@ -36,6 +36,9 @@
 #include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
+#include <lbm/refinement/Interpolation_CF.h>
+#include <lbm/refinement/Coefficients.h>
+
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
@@ -93,7 +96,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     const real epsilon_new = c1o2; // ratio of grid resolutions
     real f[27];
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
 
@@ -122,7 +125,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
 
@@ -150,7 +153,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
 
@@ -178,7 +181,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +220,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,7 +244,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,7 +268,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -289,7 +292,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     omegaF = hasTurbulentViscosity ? calculateOmega(omegaFine, turbulentViscosityFine[indices.k_000]) : omegaFine;
 
-    vf::lbm::interpolate_cf(x, y, z, f, coefficients, epsilon_new, omegaF);
+    vf::lbm::interpolate_cf(f, omegaF, epsilon_new, coefficients, x, y, z);
 
     write(distFine, indices, f);
 }
@@ -370,7 +373,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real f_coarse[27];
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_MMM);
+    moments_set.calculate_MMM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSW = MMP
@@ -388,7 +391,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_MMP);
+    moments_set.calculate_MMP(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSE = PMP
@@ -406,7 +409,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_PMP);
+    moments_set.calculate_PMP(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BSE = PMM 
@@ -424,7 +427,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_PMM);
+    moments_set.calculate_PMM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNW = MPM
@@ -452,7 +455,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_MPM);
+    moments_set.calculate_MPM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNW = MPP
@@ -468,9 +471,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     indices.k_MMM = neighborZcoarse[indices.k_MMM];
 
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
-    
+
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_MPP);
+    moments_set.calculate_MPP(f_coarse, omegaC);
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
     //////////////////////////////////////////////////////////////////////////
@@ -487,7 +490,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_PPP);
+    moments_set.calculate_PPP(f_coarse, omegaC);
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
     //////////////////////////////////////////////////////////////////////////
@@ -504,7 +507,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     omegaC = hasTurbulentViscosity ? calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
     readDistributionFromList(f_coarse, distCoarse, indices);
-    vf::lbm::calculateMomentsOnSourceNodes(f_coarse, omegaC, moments_set.moments_PPM);
+    moments_set.calculate_PPM(f_coarse, omegaC);
     // should be extractel until this line
     // - ###################################################################
 
