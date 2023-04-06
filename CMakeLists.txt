@@ -220,7 +220,11 @@ if(BUILD_VF_GPU OR BUILD_VF_GKS)
 endif()
 
 if (BUILD_VF_PYTHON_BINDINGS)
-    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.10.3)
+    find_package(pybind11)
+    if(NOT pybind11_FOUND)
+        message("Did not find pybind in includes, fall back to shipped version.")
+        add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.10.3)
+    endif()
     add_subdirectory(pythonbindings)
 endif()
 
