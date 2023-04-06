@@ -55,7 +55,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 )
 {
     // Position Coarse 0., 0., 0.
-    Distributions27  distCoarse;
+    Distributions27 distCoarse;
     getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
     vf::gpu::ListIndices indices;

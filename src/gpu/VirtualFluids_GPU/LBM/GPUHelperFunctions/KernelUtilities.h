@@ -213,9 +213,7 @@ struct ListIndices
     unsigned int k_MMM { 0 };
 };
 
-
-
-__device__ __inline__ void readDistributionFromList(real *f, const Distributions27 &dist, ListIndices &indices)
+__device__ __inline__ void readDistributionFromList(real *f, const Distributions27 &dist, const ListIndices &indices)
 {
     f[DIR_000] = (dist.f[DIR_000])[indices.k_000];
     f[DIR_P00] = (dist.f[DIR_P00])[indices.k_000];

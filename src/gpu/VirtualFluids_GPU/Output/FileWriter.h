@@ -11,7 +11,6 @@
 
 class Parameter;
 class CudaMemoryManager;
-struct PN27;
 
 class FileWriter : public DataWriter
 {

@@ -34,18 +34,19 @@
 #define SCALING_HELPER_FUNCTIONS_H
 
 #include "LBM/LB.h" 
-#include "lbm/constants/D3Q27.h"
-#include "basics/constants/NumericConstants.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+
+#include <basics/constants/NumericConstants.h>
+
+#include <lbm/constants/D3Q27.h>
+#include <lbm/KernelParameter.h>
+#include <lbm/Scaling.h>
 
 using namespace vf::basics::constant;
-#include <lbm/KernelParameter.h>
-
 using namespace vf::lbm::dir;
 
 namespace vf::gpu
 {
-
-
 
 template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     vf::lbm::MomentsOnSourceNodeSet& moments_set,
