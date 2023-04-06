@@ -30,10 +30,12 @@
 //! \ingroup submodules
 //! \author Henry Korb
 //=======================================================================================
+
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <gpu/VirtualFluids_GPU/PreCollisionInteractor/ActuatorFarm.h>
 #include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+
 
 class PyActuatorFarm : public ActuatorFarm 
 {
@@ -87,7 +89,9 @@ namespace actuator_farm
 
         .def("add_turbine", &ActuatorFarm::addTurbine, py::arg("posX"), py::arg("posY"), py::arg("posZ"), py::arg("diameter"), py::arg("omega"), py::arg("azimuth"), py::arg("yaw"), py::arg("bladeRadii"))
 
-        .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position); }, py::arg("turbine"))
+        .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ 
+            real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position);
+            }, py::arg("turbine"))
         .def("get_turbine_azimuth", &ActuatorFarm::getTurbineAzimuth, py::arg("turbine"))
         .def("get_turbine_yaw", &ActuatorFarm::getTurbineYaw, py::arg("turbine"))
         .def("get_turbine_omega", &ActuatorFarm::getTurbineOmega, py::arg("turbine"))
@@ -150,28 +154,22 @@ namespace actuator_farm
         .def("set_turbine_yaw", &ActuatorFarm::setTurbineYaw, py::arg("turbine"), py::arg("yaw"))
         .def("set_turbine_omega", &ActuatorFarm::setTurbineOmega, py::arg("turbine"), py::arg("omega"))
 
-        .def("set_all_blade_coords", [](ActuatorFarm& al, arr coordsX, arr coordsY, arr coordsZ)
-        { 
+        .def("set_all_blade_coords", [](ActuatorFarm& al, arr coordsX, arr coordsY, arr coordsZ){ 
             al.setAllBladeCoords(np_to_arr(coordsX), np_to_arr(coordsY), np_to_arr(coordsZ)); 
         }, py::arg("blade_coords_x"), py::arg("blade_coords_y"), py::arg("blade_coords_z") )
-        .def("set_all_blade_velocities", [](ActuatorFarm& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
-        { 
+        .def("set_all_blade_velocities", [](ActuatorFarm& al, arr velocitiesX, arr velocitiesY, arr velocitiesZ){ 
             al.setAllBladeVelocities(np_to_arr(velocitiesX), np_to_arr(velocitiesY), np_to_arr(velocitiesZ)); 
         }, py::arg("blade_velocities_x"), py::arg("blade_velocities_y"), py::arg("blade_velocities_z") )
-        .def("set_all_blade_forces", [](ActuatorFarm& al, arr forcesX, arr forcesY, arr forcesZ)
-        { 
+        .def("set_all_blade_forces", [](ActuatorFarm& al, arr forcesX, arr forcesY, arr forcesZ){ 
             al.setAllBladeForces(np_to_arr(forcesX), np_to_arr(forcesY), np_to_arr(forcesZ));
         }, py::arg("blade_forces_x"), py::arg("blade_forces_y"), py::arg("blade_forces_z") )     
-        .def("set_turbine_blade_coords", [](ActuatorFarm& al, uint turbine, arr coordsX, arr coordsY, arr coordsZ)
-        { 
+        .def("set_turbine_blade_coords", [](ActuatorFarm& al, uint turbine, arr coordsX, arr coordsY, arr coordsZ){ 
             al.setTurbineBladeCoords(turbine, np_to_arr(coordsX), np_to_arr(coordsY), np_to_arr(coordsZ)); 
         }, py::arg("turbine"), py::arg("blade_coords_x"), py::arg("blade_coords_y"), py::arg("blade_coords_z") )
-        .def("set_turbine_blade_velocities", [](ActuatorFarm& al, uint turbine, arr velocitiesX, arr velocitiesY, arr velocitiesZ)
-        {
+        .def("set_turbine_blade_velocities", [](ActuatorFarm& al, uint turbine, arr velocitiesX, arr velocitiesY, arr velocitiesZ){
             al.setTurbineBladeVelocities(turbine, np_to_arr(velocitiesX), np_to_arr(velocitiesY), np_to_arr(velocitiesZ)); 
         }, py::arg("turbine"), py::arg("blade_velocities_x"), py::arg("blade_velocities_y"), py::arg("blade_velocities_z") )
-        .def("set_turbine_blade_forces", [](ActuatorFarm& al, uint turbine, arr forcesX, arr forcesY, arr forcesZ)
-        { 
+        .def("set_turbine_blade_forces", [](ActuatorFarm& al, uint turbine, arr forcesX, arr forcesY, arr forcesZ){ 
             al.setTurbineBladeForces(turbine, np_to_arr(forcesX), np_to_arr(forcesY), np_to_arr(forcesZ)); 
         }, py::arg("turbine"), py::arg("blade_forces_x"), py::arg("blade_forces_y"), py::arg("blade_forces_z") )
         .def("calc_blade_forces", &ActuatorFarm::calcBladeForces);
