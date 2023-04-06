@@ -52,7 +52,7 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-__host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps_new, const real omegaC, Coefficients& coefficients)
+__host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps_new, const real omegaC, const Coefficients& coefficients)
 {
 
     const real kxyAverage    = c0o1;

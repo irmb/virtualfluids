@@ -52,7 +52,7 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-__host__ __device__ __inline__ void interpolate_cf(real* const f, const real& omegaF, const real& eps_new, Coefficients &coefficients, const real& x, const real& y, const real& z)
+__host__ __device__ __inline__ void interpolate_cf(real* const f, const real& omegaF, const real& eps_new, const Coefficients &coefficients, const real& x, const real& y, const real& z)
 {
     const real useNEQ = c1o1;
 
@@ -62,39 +62,39 @@ __host__ __device__ __inline__ void interpolate_cf(real* const f, const real& om
     const real kxxMyyAverage = c0o1;
     const real kxxMzzAverage = c0o1;
 
-    real& a_000 = coefficients.a_000;
-    real& b_000 = coefficients.b_000;
-    real& c_000 = coefficients.c_000;
-    real& d_000 = coefficients.d_000;
+    const real& a_000 = coefficients.a_000;
+    const real& b_000 = coefficients.b_000;
+    const real& c_000 = coefficients.c_000;
+    const real& d_000 = coefficients.d_000;
 
-    real& a_100 = coefficients.a_100;
-    real& b_100 = coefficients.b_100;
-    real& c_100 = coefficients.c_100;
-    real& d_100 = coefficients.d_100;
+    const real& a_100 = coefficients.a_100;
+    const real& b_100 = coefficients.b_100;
+    const real& c_100 = coefficients.c_100;
+    const real& d_100 = coefficients.d_100;
 
-    real& a_010 = coefficients.a_010;
-    real& b_010 = coefficients.b_010;
-    real& c_010 = coefficients.c_010;
-    real& d_010 = coefficients.d_010;
+    const real& a_010 = coefficients.a_010;
+    const real& b_010 = coefficients.b_010;
+    const real& c_010 = coefficients.c_010;
+    const real& d_010 = coefficients.d_010;
 
-    real& a_001 = coefficients.a_001;
-    real& b_001 = coefficients.b_001;
-    real& c_001 = coefficients.c_001;
-    real& d_001 = coefficients.d_001;
+    const real& a_001 = coefficients.a_001;
+    const real& b_001 = coefficients.b_001;
+    const real& c_001 = coefficients.c_001;
+    const real& d_001 = coefficients.d_001;
 
-    real& d_110 = coefficients.d_110, &d_101 = coefficients.d_101, &d_011 = coefficients.d_011;
+    const real& d_110 = coefficients.d_110, &d_101 = coefficients.d_101, &d_011 = coefficients.d_011;
     
-    real& a_200 = coefficients.a_200, &a_020 = coefficients.a_020, &a_002 = coefficients.a_002;
-    real& b_200 = coefficients.b_200, &b_020 = coefficients.b_020, &b_002 = coefficients.b_002;
-    real& c_200 = coefficients.c_200, &c_020 = coefficients.c_020, &c_002 = coefficients.c_002;
+    const real& a_200 = coefficients.a_200, &a_020 = coefficients.a_020, &a_002 = coefficients.a_002;
+    const real& b_200 = coefficients.b_200, &b_020 = coefficients.b_020, &b_002 = coefficients.b_002;
+    const real& c_200 = coefficients.c_200, &c_020 = coefficients.c_020, &c_002 = coefficients.c_002;
 
-    real& a_110 = coefficients.a_110, &a_101 = coefficients.a_101, &a_011 = coefficients.a_011;
-    real& b_110 = coefficients.b_110, &b_101 = coefficients.b_101, &b_011 = coefficients.b_011;
-    real& c_110 = coefficients.c_110, &c_101 = coefficients.c_101, &c_011 = coefficients.c_011;
+    const real& a_110 = coefficients.a_110, &a_101 = coefficients.a_101, &a_011 = coefficients.a_011;
+    const real& b_110 = coefficients.b_110, &b_101 = coefficients.b_101, &b_011 = coefficients.b_011;
+    const real& c_110 = coefficients.c_110, &c_101 = coefficients.c_101, &c_011 = coefficients.c_011;
 
-    real &a_111 = coefficients.a_111, &b_111 = coefficients.b_111, &c_111 = coefficients.c_111, &d_111 = coefficients.d_111;
+    const real &a_111 = coefficients.a_111, &b_111 = coefficients.b_111, &c_111 = coefficients.c_111, &d_111 = coefficients.d_111;
 
-    real &LaplaceRho = coefficients.LaplaceRho;
+    const real &LaplaceRho = coefficients.LaplaceRho;
 
 
     ////////////////////////////////////////////////////////////////////////////////////
