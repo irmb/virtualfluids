@@ -18,7 +18,7 @@ PATH_TO_DIR=output/FlowAroundCylinder
 
 # set the path to the reference data.
 # `regression-tests/reference_data` is fix `regression_tests/gpu/DrivenCavity_2Levels` must match the structure in https://github.com/irmb/test_data:
-PATH_TO_REFERENCE_DIR=reference_data/regression_tests/cpu/FlowAroundCylinder
+PATH_TO_REFERENCE_DIR=reference_data/regression_tests/cpu/FlowAroundCylinder_2023_04
 
 # execute fieldcompare (A more comprehensive manual can be found here https://gitlab.com/dglaeser/fieldcompare)
 fieldcompare dir $PATH_TO_DIR $PATH_TO_REFERENCE_DIR --include-files "*.vtu"
