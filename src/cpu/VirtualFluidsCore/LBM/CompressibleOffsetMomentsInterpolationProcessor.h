@@ -4,6 +4,8 @@
 #include "InterpolationProcessor.h"
 #include "D3Q27System.h"
 
+#include <lbm/Scaling.h>
+
 //////////////////////////////////////////////////////////////////////////
 //it works only for cascaded LBM
 //super compact interpolation method by Martin Geier
@@ -27,6 +29,14 @@ protected:
 private:
    real omegaC{0.0}, omegaF{0.0};
    real a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
+
+    real a_000, a_100, a_010, a_001, a_200, a_020, a_002, a_110, a_101, a_011;
+    real b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110, b_101, b_011;
+    real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011;
+    real d_000, d_100, d_010, d_001, d_110, d_101, d_011;
+    real a_111, b_111, c_111, d_111;
+    real LaplaceRho;
+
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
    real press_SWT, press_NWT, press_NET, press_SET, press_SWB, press_NWB, press_NEB, press_SEB;
@@ -51,6 +61,10 @@ private:
 
    void setOffsets(real xoff, real yoff, real zoff) override;
    void calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs);
+
+   void interpolate_CF(real* fine, real omegaF, vf::lbm::Coefficients &coefficients, real x, real y, real z);
+
+
    real calcPressBSW();
    real calcPressTSW();
    real calcPressTSE();
