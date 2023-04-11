@@ -94,25 +94,34 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real omegaF  = omegaFine;
     real omegaC  = omegaCoarse;
 
-    // zeroth and first order moments at the source nodes
-    real drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP;
-    real drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP;
-    real drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP;
-    real drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP;
-    real drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM;
-    real drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM;
-    real drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM;
-    real drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM;
+    // // zeroth and first order moments at the source nodes
+    // real drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP;
+    // real drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP;
+    // real drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP;
+    // real drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP;
+    // real drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM;
+    // real drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM;
+    // real drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM;
+    // real drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM;
 
-    // second order moments at the source nodes
-    real kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP;
-    real kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP;
-    real kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP;
-    real kxyFromfcNEQ_MMP, kyzFromfcNEQ_MMP, kxzFromfcNEQ_MMP, kxxMyyFromfcNEQ_MMP, kxxMzzFromfcNEQ_MMP;
-    real kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM;
-    real kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM;
-    real kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM;
-    real kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM;
+    // // second order moments at the source nodes
+    // real kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP;
+    // real kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP;
+    // real kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP;
+    // real kxyFromfcNEQ_MMP, kyzFromfcNEQ_MMP, kxzFromfcNEQ_MMP, kxxMyyFromfcNEQ_MMP, kxxMzzFromfcNEQ_MMP;
+    // real kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM;
+    // real kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM;
+    // real kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM;
+    // real kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM;
+
+    vf::lbm::MomentsOnSourceNode moments_PPP;
+    vf::lbm::MomentsOnSourceNode moments_MPP;
+    vf::lbm::MomentsOnSourceNode moments_PMP;
+    vf::lbm::MomentsOnSourceNode moments_MMP;
+    vf::lbm::MomentsOnSourceNode moments_PPM;
+    vf::lbm::MomentsOnSourceNode moments_MPM;
+    vf::lbm::MomentsOnSourceNode moments_PMM;
+    vf::lbm::MomentsOnSourceNode moments_MMM;
 
     //////////////////////////////////////////////////////////////////////////
     //! - Calculate moments for each source node 
@@ -144,8 +153,8 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
 
     vf::lbm::Distribution27 distribution;
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
-        kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM);
+    
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_MMM);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
@@ -169,8 +178,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
 
     
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
-        kxyFromfcNEQ_MMP, kyzFromfcNEQ_MMP, kxzFromfcNEQ_MMP, kxxMyyFromfcNEQ_MMP, kxxMzzFromfcNEQ_MMP);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_MMP);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
@@ -192,8 +200,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
-        kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_PMP);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
@@ -215,8 +222,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
-        kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_PMM);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
@@ -248,8 +254,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
-        kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_MPM);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
@@ -271,8 +276,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
-        kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_MPP);
     
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
@@ -295,8 +299,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
 
 
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
-        kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_PPP);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
@@ -319,8 +322,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
 
 
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
-    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
-        kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM);
+    vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_PPM);
 
     // calculateMomentsOnSourceNodes( distFine, omegaF,
     //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
@@ -333,11 +335,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     const real xoff    = neighborFineToCoarse.x[nodeIndex];
     const real yoff    = neighborFineToCoarse.y[nodeIndex];
     const real zoff    = neighborFineToCoarse.z[nodeIndex];
-     
-    const real xoff_sq = xoff * xoff;
-    const real yoff_sq = yoff * yoff;
-    const real zoff_sq = zoff * zoff;
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Position Coarse 0., 0., 0.
@@ -366,25 +364,14 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
         xoff,
         yoff,
         zoff,
-        xoff_sq,
-        yoff_sq,
-        zoff_sq,
-        drho_PPP, vx1_PPP, vx2_PPP, vx3_PPP,
-        drho_MPP, vx1_MPP, vx2_MPP, vx3_MPP,
-        drho_PMP, vx1_PMP, vx2_PMP, vx3_PMP,
-        drho_MMP, vx1_MMP, vx2_MMP, vx3_MMP,
-        drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
-        drho_MPM, vx1_MPM, vx2_MPM, vx3_MPM,
-        drho_PMM, vx1_PMM, vx2_PMM, vx3_PMM,
-        drho_MMM, vx1_MMM, vx2_MMM, vx3_MMM,
-        kxyFromfcNEQ_PPP, kyzFromfcNEQ_PPP, kxzFromfcNEQ_PPP, kxxMyyFromfcNEQ_PPP, kxxMzzFromfcNEQ_PPP,
-        kxyFromfcNEQ_MPP, kyzFromfcNEQ_MPP, kxzFromfcNEQ_MPP, kxxMyyFromfcNEQ_MPP, kxxMzzFromfcNEQ_MPP,
-        kxyFromfcNEQ_PMP, kyzFromfcNEQ_PMP, kxzFromfcNEQ_PMP, kxxMyyFromfcNEQ_PMP, kxxMzzFromfcNEQ_PMP,
-        kxyFromfcNEQ_MMP, kyzFromfcNEQ_MMP, kxzFromfcNEQ_MMP, kxxMyyFromfcNEQ_MMP, kxxMzzFromfcNEQ_MMP,
-        kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM,
-        kxyFromfcNEQ_MPM, kyzFromfcNEQ_MPM, kxzFromfcNEQ_MPM, kxxMyyFromfcNEQ_MPM, kxxMzzFromfcNEQ_MPM,
-        kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM,
-        kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM);
+        moments_PPP,
+        moments_MPP,
+        moments_PMP,
+        moments_MMP,
+        moments_PPM,
+        moments_MPM,
+        moments_PMM,
+        moments_MMM);
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Write distributions: style of reading and writing the distributions from/to
