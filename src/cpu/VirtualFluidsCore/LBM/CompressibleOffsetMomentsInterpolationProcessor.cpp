@@ -41,8 +41,6 @@ void CompressibleOffsetMomentsInterpolationProcessor::setOmegas(real omegaC, rea
 
 void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
-    setOffsets(xoff, yoff, zoff);
-
     vf::lbm::Coefficients coefficients;
     calculateCoefficients(coefficients, icellC, omegaC, xoff, yoff, zoff);
 
@@ -58,11 +56,8 @@ void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3
 
 void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
-   setOffsets(xoff, yoff, zoff);
-
     vf::lbm::Coefficients coefficients;
     calculateCoefficients(coefficients, icellF, omegaF, xoff, yoff, zoff);
 
-    const real eps_new = vf::lbm::constant::c2o1; // ratio of grid resolutions
-    vf::lbm::interpolate_fc(icellC, eps_new, omegaC, coefficients);
+    vf::lbm::interpolate_fc(icellC, vf::lbm::constant::c2o1, omegaC, coefficients);
 }
