@@ -42,6 +42,7 @@
 #include "lbm/constants/NumericConstants.h"
 
 #include "lbm/KernelParameter.h"
+#include "lbm/MacroscopicQuantities.h"
 
 
 using namespace vf::lbm::constant;
@@ -85,7 +86,7 @@ struct MomentsOnSourceNode
 
     __host__ __device__ void calculate(const real* const f, const real omega)
     {
-        const real f_000 = f[dir::DIR_000];
+        // const real f_000 = f[dir::DIR_000];
         const real f_P00 = f[dir::DIR_P00];
         const real f_M00 = f[dir::DIR_M00];
         const real f_0P0 = f[dir::DIR_0P0];
@@ -113,28 +114,11 @@ struct MomentsOnSourceNode
         const real f_PMM = f[dir::DIR_PMM];
         const real f_MMM = f[dir::DIR_MMM];
 
-        ////////////////////////////////////////////////////////////////////////////////////
-        //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
-        //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
-        //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-        //!
-        this->drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
-                (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
-                ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
-                ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
-            f_000;
+        this->drho = getDensity(f);
 
-        const real oneOverRho = c1o1 / (c1o1 + this->drho);
-
-        this->velocityX = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
-                    (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
-                    oneOverRho;
-        this->velocityY = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
-                    (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
-                    oneOverRho;
-        this->velocityZ = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
-                    (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
-                    oneOverRho;
+        this->velocityX = getCompressibleVelocityX1(f, this->drho);
+        this->velocityY = getCompressibleVelocityX2(f, this->drho);
+        this->velocityZ = getCompressibleVelocityX3(f, this->drho);
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate second order moments for interpolation
