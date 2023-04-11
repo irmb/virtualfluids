@@ -320,14 +320,8 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     
     if(hasTurbulentViscosity) omegaF = omegaFine/ (c1o1 + c3o1*omegaFine*turbulentViscosityFine[k_000]);
 
-
     readDistributionFromList(distribution, distFine, k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM);
     vf::lbm::calculateMomentsOnSourceNodes(distribution.f, omegaF, moments_PPM);
-
-    // calculateMomentsOnSourceNodes( distFine, omegaF,
-    //     k_000, k_M00, k_0M0, k_00M, k_MM0, k_M0M, k_0MM, k_MMM, drho_PPM, vx1_PPM, vx2_PPM, vx3_PPM,
-    //     kxyFromfcNEQ_PPM, kyzFromfcNEQ_PPM, kxzFromfcNEQ_PPM, kxxMyyFromfcNEQ_PPM, kxxMzzFromfcNEQ_PPM);
-
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
@@ -356,14 +350,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     k_MMM = neighborZcoarse [k_MM0];
     ////////////////////////////////////////////////////////////////////////////////////
     if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse * turbulentViscosityCoarse[k_000]);
-    
-    real f[27];
-    vf::lbm::interpolate_fc(f,
-        eps_new,
-        omegaC,
-        xoff,
-        yoff,
-        zoff,
+
+    vf::lbm::Coefficients coefficients;
+    calculateCoefficients(xoff, yoff, zoff, coefficients, 
         moments_PPP,
         moments_MPP,
         moments_PMP,
@@ -372,6 +361,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
         moments_MPM,
         moments_PMM,
         moments_MMM);
+    
+    real f[27];
+    vf::lbm::interpolate_fc(f, eps_new, omegaC, coefficients);
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Write distributions: style of reading and writing the distributions from/to

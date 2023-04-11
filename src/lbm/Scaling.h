@@ -152,6 +152,8 @@ struct Coefficients
     real b_000, b_100, b_010, b_001, b_200, b_020, b_002, b_110, b_101, b_011;
     real c_000, c_100, c_010, c_001, c_200, c_020, c_002, c_110, c_101, c_011;
     real d_000, d_100, d_010, d_001, d_110, d_101, d_011;
+    real a_111, b_111, c_111, d_111;
+    real LaplaceRho;
 };
 
 
@@ -185,39 +187,42 @@ __host__ __device__ __inline__ void calculateCoefficients(real xoff, real yoff, 
     real& c_001 = coefficients.c_001;
     real& d_001 = coefficients.d_001;
 
-    real& d_110 = coefficients.d_110, d_101 = coefficients.d_101, d_011 = coefficients.d_011;
+    real& d_110 = coefficients.d_110, &d_101 = coefficients.d_101, &d_011 = coefficients.d_011;
     
-    real& a_200 = coefficients.a_200, a_020 = coefficients.a_020, a_002 = coefficients.a_002;
-    real& b_200 = coefficients.b_200, b_020 = coefficients.b_020, b_002 = coefficients.b_002;
-    real& c_200 = coefficients.c_200, c_020 = coefficients.c_020, c_002 = coefficients.c_002;
+    real& a_200 = coefficients.a_200, &a_020 = coefficients.a_020, &a_002 = coefficients.a_002;
+    real& b_200 = coefficients.b_200, &b_020 = coefficients.b_020, &b_002 = coefficients.b_002;
+    real& c_200 = coefficients.c_200, &c_020 = coefficients.c_020, &c_002 = coefficients.c_002;
 
-    real& a_110 = coefficients.a_110, a_101 = coefficients.a_101, a_011 = coefficients.a_011;
-    real& b_110 = coefficients.b_110, b_101 = coefficients.b_101, b_011 = coefficients.b_011;
-    real& c_110 = coefficients.c_110, c_101 = coefficients.c_101, c_011 = coefficients.c_011;
+    real& a_110 = coefficients.a_110, &a_101 = coefficients.a_101, &a_011 = coefficients.a_011;
+    real& b_110 = coefficients.b_110, &b_101 = coefficients.b_101, &b_011 = coefficients.b_011;
+    real& c_110 = coefficients.c_110, &c_101 = coefficients.c_101, &c_011 = coefficients.c_011;
 
+    real &a_111 = coefficients.a_111, &b_111 = coefficients.b_111, &c_111 = coefficients.c_111, &d_111 = coefficients.d_111;
+
+    real &LaplaceRho = coefficients.LaplaceRho;
 
     const real xoff_sq = xoff * xoff;
     const real yoff_sq = yoff * yoff;
     const real zoff_sq = zoff * zoff;
 
-    const real& drho_PPP = moments_PPP.drho, vx1_PPP = moments_PPP.velocityX, vx2_PPP = moments_PPP.velocityY, vx3_PPP = moments_PPP.velocityZ;
-    const real& drho_MPP = moments_MPP.drho, vx1_MPP = moments_MPP.velocityX, vx2_MPP = moments_MPP.velocityY, vx3_MPP = moments_MPP.velocityZ;
-    const real& drho_PMP = moments_PMP.drho, vx1_PMP = moments_PMP.velocityX, vx2_PMP = moments_PMP.velocityY, vx3_PMP = moments_PMP.velocityZ;
-    const real& drho_MMP = moments_MMP.drho, vx1_MMP = moments_MMP.velocityX, vx2_MMP = moments_MMP.velocityY, vx3_MMP = moments_MMP.velocityZ;
-    const real& drho_PPM = moments_PPM.drho, vx1_PPM = moments_PPM.velocityX, vx2_PPM = moments_PPM.velocityY, vx3_PPM = moments_PPM.velocityZ;
-    const real& drho_MPM = moments_MPM.drho, vx1_MPM = moments_MPM.velocityX, vx2_MPM = moments_MPM.velocityY, vx3_MPM = moments_MPM.velocityZ;
-    const real& drho_PMM = moments_PMM.drho, vx1_PMM = moments_PMM.velocityX, vx2_PMM = moments_PMM.velocityY, vx3_PMM = moments_PMM.velocityZ;
-    const real& drho_MMM = moments_MMM.drho, vx1_MMM = moments_MMM.velocityX, vx2_MMM = moments_MMM.velocityY, vx3_MMM = moments_MMM.velocityZ;
+    const real drho_PPP = moments_PPP.drho, vx1_PPP = moments_PPP.velocityX, vx2_PPP = moments_PPP.velocityY, vx3_PPP = moments_PPP.velocityZ;
+    const real drho_MPP = moments_MPP.drho, vx1_MPP = moments_MPP.velocityX, vx2_MPP = moments_MPP.velocityY, vx3_MPP = moments_MPP.velocityZ;
+    const real drho_PMP = moments_PMP.drho, vx1_PMP = moments_PMP.velocityX, vx2_PMP = moments_PMP.velocityY, vx3_PMP = moments_PMP.velocityZ;
+    const real drho_MMP = moments_MMP.drho, vx1_MMP = moments_MMP.velocityX, vx2_MMP = moments_MMP.velocityY, vx3_MMP = moments_MMP.velocityZ;
+    const real drho_PPM = moments_PPM.drho, vx1_PPM = moments_PPM.velocityX, vx2_PPM = moments_PPM.velocityY, vx3_PPM = moments_PPM.velocityZ;
+    const real drho_MPM = moments_MPM.drho, vx1_MPM = moments_MPM.velocityX, vx2_MPM = moments_MPM.velocityY, vx3_MPM = moments_MPM.velocityZ;
+    const real drho_PMM = moments_PMM.drho, vx1_PMM = moments_PMM.velocityX, vx2_PMM = moments_PMM.velocityY, vx3_PMM = moments_PMM.velocityZ;
+    const real drho_MMM = moments_MMM.drho, vx1_MMM = moments_MMM.velocityX, vx2_MMM = moments_MMM.velocityY, vx3_MMM = moments_MMM.velocityZ;
 
     // second order moments at the source nodes
-    const real& kxyFromfcNEQ_PPP = moments_PPP.kxyFromfcNEQ, kyzFromfcNEQ_PPP = moments_PPP.kyzFromfcNEQ, kxzFromfcNEQ_PPP = moments_PPP.kxzFromfcNEQ, kxxMyyFromfcNEQ_PPP = moments_PPP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PPP = moments_PPP.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_MPP = moments_MPP.kxyFromfcNEQ, kyzFromfcNEQ_MPP = moments_MPP.kyzFromfcNEQ, kxzFromfcNEQ_MPP = moments_MPP.kxzFromfcNEQ, kxxMyyFromfcNEQ_MPP = moments_MPP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MPP = moments_MPP.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_PMP = moments_PMP.kxyFromfcNEQ, kyzFromfcNEQ_PMP = moments_PMP.kyzFromfcNEQ, kxzFromfcNEQ_PMP = moments_PMP.kxzFromfcNEQ, kxxMyyFromfcNEQ_PMP = moments_PMP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PMP = moments_PMP.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_MMP = moments_MMP.kxyFromfcNEQ, kyzFromfcNEQ_MMP = moments_MMP.kyzFromfcNEQ, kxzFromfcNEQ_MMP = moments_MMP.kxzFromfcNEQ, kxxMyyFromfcNEQ_MMP = moments_MMP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MMP = moments_MMP.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_PPM = moments_PPM.kxyFromfcNEQ, kyzFromfcNEQ_PPM = moments_PPM.kyzFromfcNEQ, kxzFromfcNEQ_PPM = moments_PPM.kxzFromfcNEQ, kxxMyyFromfcNEQ_PPM = moments_PPM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PPM = moments_PPM.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_MPM = moments_MPM.kxyFromfcNEQ, kyzFromfcNEQ_MPM = moments_MPM.kyzFromfcNEQ, kxzFromfcNEQ_MPM = moments_MPM.kxzFromfcNEQ, kxxMyyFromfcNEQ_MPM = moments_MPM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MPM = moments_MPM.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_PMM = moments_PMM.kxyFromfcNEQ, kyzFromfcNEQ_PMM = moments_PMM.kyzFromfcNEQ, kxzFromfcNEQ_PMM = moments_PMM.kxzFromfcNEQ, kxxMyyFromfcNEQ_PMM = moments_PMM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PMM = moments_PMM.kxxMzzFromfcNEQ;
-    const real& kxyFromfcNEQ_MMM = moments_MMM.kxyFromfcNEQ, kyzFromfcNEQ_MMM = moments_MMM.kyzFromfcNEQ, kxzFromfcNEQ_MMM = moments_MMM.kxzFromfcNEQ, kxxMyyFromfcNEQ_MMM = moments_MMM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MMM = moments_MMM.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_PPP = moments_PPP.kxyFromfcNEQ, kyzFromfcNEQ_PPP = moments_PPP.kyzFromfcNEQ, kxzFromfcNEQ_PPP = moments_PPP.kxzFromfcNEQ, kxxMyyFromfcNEQ_PPP = moments_PPP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PPP = moments_PPP.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_MPP = moments_MPP.kxyFromfcNEQ, kyzFromfcNEQ_MPP = moments_MPP.kyzFromfcNEQ, kxzFromfcNEQ_MPP = moments_MPP.kxzFromfcNEQ, kxxMyyFromfcNEQ_MPP = moments_MPP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MPP = moments_MPP.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_PMP = moments_PMP.kxyFromfcNEQ, kyzFromfcNEQ_PMP = moments_PMP.kyzFromfcNEQ, kxzFromfcNEQ_PMP = moments_PMP.kxzFromfcNEQ, kxxMyyFromfcNEQ_PMP = moments_PMP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PMP = moments_PMP.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_MMP = moments_MMP.kxyFromfcNEQ, kyzFromfcNEQ_MMP = moments_MMP.kyzFromfcNEQ, kxzFromfcNEQ_MMP = moments_MMP.kxzFromfcNEQ, kxxMyyFromfcNEQ_MMP = moments_MMP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MMP = moments_MMP.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_PPM = moments_PPM.kxyFromfcNEQ, kyzFromfcNEQ_PPM = moments_PPM.kyzFromfcNEQ, kxzFromfcNEQ_PPM = moments_PPM.kxzFromfcNEQ, kxxMyyFromfcNEQ_PPM = moments_PPM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PPM = moments_PPM.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_MPM = moments_MPM.kxyFromfcNEQ, kyzFromfcNEQ_MPM = moments_MPM.kyzFromfcNEQ, kxzFromfcNEQ_MPM = moments_MPM.kxzFromfcNEQ, kxxMyyFromfcNEQ_MPM = moments_MPM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MPM = moments_MPM.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_PMM = moments_PMM.kxyFromfcNEQ, kyzFromfcNEQ_PMM = moments_PMM.kyzFromfcNEQ, kxzFromfcNEQ_PMM = moments_PMM.kxzFromfcNEQ, kxxMyyFromfcNEQ_PMM = moments_PMM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_PMM = moments_PMM.kxxMzzFromfcNEQ;
+    const real kxyFromfcNEQ_MMM = moments_MMM.kxyFromfcNEQ, kyzFromfcNEQ_MMM = moments_MMM.kyzFromfcNEQ, kxzFromfcNEQ_MMM = moments_MMM.kxzFromfcNEQ, kxxMyyFromfcNEQ_MMM = moments_MMM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQ_MMM = moments_MMM.kxxMzzFromfcNEQ;
 
     a_000 = c1o64 * (
             c2o1 * (
@@ -334,13 +339,17 @@ __host__ __device__ __inline__ void calculateCoefficients(real xoff, real yoff, 
     b_011 = c1o2 * (((vx2_PPP + vx2_MMM) - (vx2_MMP + vx2_PPM)) + ((vx2_PMM + vx2_MPP) - (vx2_MPM + vx2_PMP)));
     c_011 = c1o2 * (((vx3_PPP + vx3_MMM) - (vx3_MMP + vx3_PPM)) + ((vx3_PMM + vx3_MPP) - (vx3_MPM + vx3_PMP)));
 
+    a_111 = ((vx1_PPP - vx1_MMM) + (vx1_MMP - vx1_PPM)) + ((vx1_MPM - vx1_PMP) + (vx1_PMM - vx1_MPP));
+    b_111 = ((vx2_PPP - vx2_MMM) + (vx2_MMP - vx2_PPM)) + ((vx2_MPM - vx2_PMP) + (vx2_PMM - vx2_MPP));
+    c_111 = ((vx3_PPP - vx3_MMM) + (vx3_MMP - vx3_PPM)) + ((vx3_MPM - vx3_PMP) + (vx3_PMM - vx3_MPP));
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //!- Calculate coefficients for the polynomial interpolation of the pressure
     //! 
-    real LaplaceRho = 
+    LaplaceRho = 
         ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1))
         ? c0o1 : -c3o1 * (a_100 * a_100 + b_010 * b_010 + c_001 * c_001) - c6o1 * (b_100 * a_010 + c_100 * a_001 + c_010 * b_001);
-    d_000 =  c1o8 * ((((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM))) - c2o1 * LaplaceRho);
+    d_000 = c1o8 * (((drho_PPP + drho_MMM) + (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) + (drho_PMP + drho_MPM)));
     d_100 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_PMM - drho_MPP) + (drho_PMP - drho_MPM)));
     d_010 = c1o4 * (((drho_PPP - drho_MMM) + (drho_PPM - drho_MMP)) + ((drho_MPP - drho_PMM) + (drho_MPM - drho_PMP)));
     d_001 = c1o4 * (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_MPP - drho_PMM) + (drho_PMP - drho_MPM)));
@@ -348,6 +357,7 @@ __host__ __device__ __inline__ void calculateCoefficients(real xoff, real yoff, 
     d_101 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMP + drho_MPM) - (drho_PMM + drho_MPP)));
     d_011 = c1o2 * (((drho_PPP + drho_MMM) - (drho_PPM + drho_MMP)) + ((drho_PMM + drho_MPP) - (drho_PMP + drho_MPM)));
 
+    d_111 = (((drho_PPP - drho_MMM) + (drho_MMP - drho_PPM)) + ((drho_PMM - drho_MPP) + (drho_MPM - drho_PMP)));
 
     //////////////////////////////////////////////////////////////////////////
     //! - Extrapolation for refinement in to the wall (polynomial coefficients)
@@ -379,8 +389,11 @@ __host__ __device__ __inline__ void calculateCoefficients(real xoff, real yoff, 
     c_001 = c_001 + c2o1 * zoff * c_002 + xoff * c_101 + yoff * c_011;
     d_000 = d_000 + xoff * d_100 + yoff * d_010 + zoff * d_001 + 
             xoff * yoff * d_110 + xoff * zoff * d_101 + yoff * zoff * d_011;
-}
 
+    d_100 = d_100 + yoff * d_110 + zoff * d_101;
+    d_010 = d_010 + xoff * d_110 + zoff * d_011;
+    d_001 = d_001 + xoff * d_101 + yoff * d_011;
+}
 
 }
 

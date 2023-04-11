@@ -52,38 +52,14 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-__host__ __device__ __inline__ void interpolate_fc(real* const f,
-    const real eps_new,
-    const real omegaC,
-    const real xoff,
-    const real yoff,
-    const real zoff,
-    const vf::lbm::MomentsOnSourceNode &moments_PPP,
-    const vf::lbm::MomentsOnSourceNode &moments_MPP,
-    const vf::lbm::MomentsOnSourceNode &moments_PMP,
-    const vf::lbm::MomentsOnSourceNode &moments_MMP,
-    const vf::lbm::MomentsOnSourceNode &moments_PPM,
-    const vf::lbm::MomentsOnSourceNode &moments_MPM,
-    const vf::lbm::MomentsOnSourceNode &moments_PMM,
-    const vf::lbm::MomentsOnSourceNode &moments_MMM
-)
+__host__ __device__ __inline__ void interpolate_fc(real* const f, const real eps_new, const real omegaC, Coefficients& coefficients)
 {
-    Coefficients coefficients;
-    calculateCoefficients(xoff, yoff, zoff, coefficients, moments_PPP,
-        moments_MPP,
-        moments_PMP,
-        moments_MMP,
-        moments_PPM,
-        moments_MPM,
-        moments_PMM,
-        moments_MMM);
 
     const real kxyAverage    = c0o1;
     const real kyzAverage    = c0o1;
     const real kxzAverage    = c0o1;
     const real kxxMyyAverage = c0o1;
     const real kxxMzzAverage = c0o1;
-
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Set all moments to zero
@@ -158,7 +134,7 @@ __host__ __device__ __inline__ void interpolate_fc(real* const f,
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set macroscopic values on destination node (zeroth and first order moments)
     //!
-    press = coefficients.d_000;
+    press = coefficients.d_000 - c2o1 * coefficients.LaplaceRho * c1o8;
     vvx   = coefficients.a_000;
     vvy   = coefficients.b_000;
     vvz   = coefficients.c_000;
