@@ -62,7 +62,7 @@ __host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint
     uint x_off = turbine*numberOfBladeNodes*numberOfBlades;
     blade = (node - x_off)/numberOfBlades;
     uint y_off = numberOfBladeNodes*blade+x_off;
-    bladeNode = (node - y_off)/numberOfBladeNodes;
+    bladeNode = (node - y_off);
 }
 
 __host__ __device__ __forceinline__ real distSqrd(real distX, real distY, real distZ)
