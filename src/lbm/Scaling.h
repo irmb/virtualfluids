@@ -43,6 +43,7 @@
 
 #include "lbm/KernelParameter.h"
 
+
 using namespace vf::lbm::constant;
 using namespace vf::lbm::dir;
 
@@ -157,7 +158,7 @@ struct Coefficients
 };
 
 
-__host__ __device__ __inline__ void calculateCoefficients(real xoff, real yoff, real zoff, Coefficients &coefficients, 
+__host__ __device__ __inline__ void calculateCoefficients_(real xoff, real yoff, real zoff, Coefficients &coefficients, 
     const vf::lbm::MomentsOnSourceNode &moments_PPP,
     const vf::lbm::MomentsOnSourceNode &moments_MPP,
     const vf::lbm::MomentsOnSourceNode &moments_PMP,
@@ -394,6 +395,59 @@ __host__ __device__ __inline__ void calculateCoefficients(real xoff, real yoff, 
     d_010 = d_010 + xoff * d_110 + zoff * d_011;
     d_001 = d_001 + xoff * d_101 + yoff * d_011;
 }
+
+struct InterpolationCell 
+{
+    real MMP[27];
+    real MPP[27];
+    real PPP[27];
+    real PMP[27];
+    real MMM[27];
+    real MPM[27];
+    real PPM[27];
+    real PMM[27];
+};
+
+__host__ __device__ __inline__ void calculateCoefficients(Coefficients& coefficients, InterpolationCell& cell, real omega, real xoff, real yoff, real zoff)
+{
+    MomentsOnSourceNode moments_MMP;
+    MomentsOnSourceNode moments_MPP;
+    MomentsOnSourceNode moments_PPP;
+    MomentsOnSourceNode moments_PMP;
+    MomentsOnSourceNode moments_MMM;
+    MomentsOnSourceNode moments_MPM;
+    MomentsOnSourceNode moments_PPM;
+    MomentsOnSourceNode moments_PMM;
+
+    calculateMomentsOnSourceNodes(cell.MMP, omega, moments_MMP);
+    calculateMomentsOnSourceNodes(cell.MPP, omega, moments_MPP);
+    calculateMomentsOnSourceNodes(cell.PPP, omega, moments_PPP);
+    calculateMomentsOnSourceNodes(cell.PMP, omega, moments_PMP);
+    calculateMomentsOnSourceNodes(cell.MMM, omega, moments_MMM);
+    calculateMomentsOnSourceNodes(cell.MPM, omega, moments_MPM);
+    calculateMomentsOnSourceNodes(cell.PPM, omega, moments_PPM);
+    calculateMomentsOnSourceNodes(cell.PMM, omega, moments_PMM);
+
+    calculateCoefficients_(xoff, yoff, zoff, coefficients, moments_PPP, moments_MPP, moments_PMP, moments_MMP, moments_PPM, moments_MPM, moments_PMM, moments_MMM);
+}
+
+
+struct MomentsOnSourceNodeSet
+{
+    vf::lbm::MomentsOnSourceNode moments_PPP;
+    vf::lbm::MomentsOnSourceNode moments_MPP;
+    vf::lbm::MomentsOnSourceNode moments_PMP;
+    vf::lbm::MomentsOnSourceNode moments_MMP;
+    vf::lbm::MomentsOnSourceNode moments_PPM;
+    vf::lbm::MomentsOnSourceNode moments_MPM;
+    vf::lbm::MomentsOnSourceNode moments_PMM;
+    vf::lbm::MomentsOnSourceNode moments_MMM;
+
+    __host__ __device__ __inline__  void calculateCoefficients(Coefficients& coefficients, real xoff, real yoff, real zoff)
+    {
+        calculateCoefficients_(xoff, yoff, zoff, coefficients, moments_PPP, moments_MPP, moments_PMP, moments_MMP, moments_PPM, moments_MPM, moments_PMM, moments_MMM);
+    }
+};
 
 }
 

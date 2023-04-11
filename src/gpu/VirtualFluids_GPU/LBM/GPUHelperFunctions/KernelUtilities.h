@@ -35,7 +35,8 @@
 
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
-#include "basics/constants/NumericConstants.h"
+#include <basics/constants/NumericConstants.h>
+#include <lbm/Scaling.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -200,6 +201,93 @@ __inline__ __device__ bool isValidFluidNode(uint nodeType)
     return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
 
+struct ListIndices 
+{
+    unsigned int k_000 { 0 };
+    unsigned int k_M00 { 0 };
+    unsigned int k_0M0 { 0 };
+    unsigned int k_00M { 0 };
+    unsigned int k_MM0 { 0 };
+    unsigned int k_M0M { 0 };
+    unsigned int k_0MM { 0 };
+    unsigned int k_MMM { 0 };
+};
+
+
+
+__device__ __inline__ void readDistributionFromList(real *f, const Distributions27 &dist, ListIndices &indices)
+{
+    f[DIR_000] = (dist.f[DIR_000])[indices.k_000];
+    f[DIR_P00] = (dist.f[DIR_P00])[indices.k_000];
+    f[DIR_M00] = (dist.f[DIR_M00])[indices.k_M00];
+    f[DIR_0P0] = (dist.f[DIR_0P0])[indices.k_000];
+    f[DIR_0M0] = (dist.f[DIR_0M0])[indices.k_0M0];
+    f[DIR_00P] = (dist.f[DIR_00P])[indices.k_000];
+    f[DIR_00M] = (dist.f[DIR_00M])[indices.k_00M];
+    f[DIR_PP0] = (dist.f[DIR_PP0])[indices.k_000];
+    f[DIR_MM0] = (dist.f[DIR_MM0])[indices.k_MM0];
+    f[DIR_PM0] = (dist.f[DIR_PM0])[indices.k_0M0];
+    f[DIR_MP0] = (dist.f[DIR_MP0])[indices.k_M00];
+    f[DIR_P0P] = (dist.f[DIR_P0P])[indices.k_000];
+    f[DIR_M0M] = (dist.f[DIR_M0M])[indices.k_M0M];
+    f[DIR_P0M] = (dist.f[DIR_P0M])[indices.k_00M];
+    f[DIR_M0P] = (dist.f[DIR_M0P])[indices.k_M00];
+    f[DIR_0PP] = (dist.f[DIR_0PP])[indices.k_000];
+    f[DIR_0MM] = (dist.f[DIR_0MM])[indices.k_0MM];
+    f[DIR_0PM] = (dist.f[DIR_0PM])[indices.k_00M];
+    f[DIR_0MP] = (dist.f[DIR_0MP])[indices.k_0M0];
+    f[DIR_PPP] = (dist.f[DIR_PPP])[indices.k_000];
+    f[DIR_MPP] = (dist.f[DIR_MPP])[indices.k_M00];
+    f[DIR_PMP] = (dist.f[DIR_PMP])[indices.k_0M0];
+    f[DIR_MMP] = (dist.f[DIR_MMP])[indices.k_MM0];
+    f[DIR_PPM] = (dist.f[DIR_PPM])[indices.k_00M];
+    f[DIR_MPM] = (dist.f[DIR_MPM])[indices.k_M0M];
+    f[DIR_PMM] = (dist.f[DIR_PMM])[indices.k_0MM];
+    f[DIR_MMM] = (dist.f[DIR_MMM])[indices.k_MMM];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//! - Write distributions: style of reading and writing the distributions from/to
+//! stored arrays dependent on timestep is based on the esoteric twist algorithm
+//! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
+//! DOI:10.3390/computation5020019 ]</b></a>
+__inline__ __device__ void write(Distributions27 &destination, const ListIndices &indices, const real* f)
+{
+    (destination.f[DIR_000])[indices.k_000] = f[DIR_000];
+    (destination.f[DIR_P00])[indices.k_000] = f[DIR_P00];
+    (destination.f[DIR_M00])[indices.k_M00] = f[DIR_M00];
+    (destination.f[DIR_0P0])[indices.k_000] = f[DIR_0P0];
+    (destination.f[DIR_0M0])[indices.k_0M0] = f[DIR_0M0];
+    (destination.f[DIR_00P])[indices.k_000] = f[DIR_00P];
+    (destination.f[DIR_00M])[indices.k_00M] = f[DIR_00M];
+    (destination.f[DIR_PP0])[indices.k_000] = f[DIR_PP0];
+    (destination.f[DIR_MM0])[indices.k_MM0] = f[DIR_MM0];
+    (destination.f[DIR_PM0])[indices.k_0M0] = f[DIR_PM0];
+    (destination.f[DIR_MP0])[indices.k_M00] = f[DIR_MP0];
+    (destination.f[DIR_P0P])[indices.k_000] = f[DIR_P0P];
+    (destination.f[DIR_M0M])[indices.k_M0M] = f[DIR_M0M];
+    (destination.f[DIR_P0M])[indices.k_00M] = f[DIR_P0M];
+    (destination.f[DIR_M0P])[indices.k_M00] = f[DIR_M0P];
+    (destination.f[DIR_0PP])[indices.k_000] = f[DIR_0PP];
+    (destination.f[DIR_0MM])[indices.k_0MM] = f[DIR_0MM];
+    (destination.f[DIR_0PM])[indices.k_00M] = f[DIR_0PM];
+    (destination.f[DIR_0MP])[indices.k_0M0] = f[DIR_0MP];
+    (destination.f[DIR_PPP])[indices.k_000] = f[DIR_PPP];
+    (destination.f[DIR_MPP])[indices.k_M00] = f[DIR_MPP];
+    (destination.f[DIR_PMP])[indices.k_0M0] = f[DIR_PMP];
+    (destination.f[DIR_MMP])[indices.k_MM0] = f[DIR_MMP];
+    (destination.f[DIR_PPM])[indices.k_00M] = f[DIR_PPM];
+    (destination.f[DIR_MPM])[indices.k_M0M] = f[DIR_MPM];
+    (destination.f[DIR_PMM])[indices.k_0MM] = f[DIR_PMM];
+    (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_MMM];
+}
+
+
+__inline__ __device__ real calculateOmega(const real omega_old, real turbulenceViscosity)
+{
+    return omega_old / (c1o1 + c3o1 * omega_old * turbulenceViscosity);
+}
 
 }
 
