@@ -127,7 +127,7 @@ void multipleLevel(const std::string& configPath)
 		//Merged for Wind in X Direction
 		gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
-		gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+		gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
 		//////////////////////////////////////////////////////////////////////////
 

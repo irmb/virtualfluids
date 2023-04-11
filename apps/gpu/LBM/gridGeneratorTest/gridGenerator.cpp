@@ -146,7 +146,7 @@ void multipleLevel(const std::string& configPath)
 
 			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-			gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+			gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
 			//////////////////////////////////////////////////////////////////////////
 			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
@@ -223,7 +223,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
@@ -312,7 +312,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -399,7 +399,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -471,7 +471,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -562,7 +562,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -709,7 +709,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             if( generatePart == 0 ){
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
