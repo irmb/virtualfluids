@@ -14,9 +14,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-//#include "metis.h"
-
-#include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "Core/Input/ConfigFileReader/ConfigFileReader.h"

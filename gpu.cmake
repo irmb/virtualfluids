@@ -1,61 +1,17 @@
-IF( BUILD_VF_GKS )
-    # only use this with device of CC larger than 6.0
-    set(CMAKE_CUDA_FLAGS "-Xptxas=\"-v\"" CACHE STRING "" FORCE)
-    set(CMAKE_CUDA_ARCHITECTURES 60)
-ENDIF()
-
-set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
-
-
-##########################################################################################################################
-###                  Subdirectories                                                                                    ###
-##########################################################################################################################
-
 #############################################################
 ###                  Core                                 ###
 #############################################################
 
 add_subdirectory(src/gpu/GridGenerator)
-#add_subdirectory(3rdParty/metis/metis-5.1.0)
+add_subdirectory(src/gpu/VirtualFluids_GPU)
 
 #############################################################
-###                  Virtual Fluids GPU                   ###
+###                  Apps                                 ###
 #############################################################
 
-IF (BUILD_VF_GPU)
-    add_subdirectory(src/gpu/VirtualFluids_GPU)
-
-    add_subdirectory(apps/gpu/LBM/DrivenCavity)
-    add_subdirectory(apps/gpu/LBM/SphereGPU)
-    add_subdirectory(apps/gpu/LBM/BoundaryLayer)
-ELSE()
-    MESSAGE( STATUS "exclude Virtual Fluids GPU." )
-ENDIF()
-
-#############################################################
-###                  Virtual Fluids GKS                   ###
-#############################################################
-
-IF (BUILD_VF_GKS)
-    add_subdirectory(src/gpu/GksMeshAdapter)
-    add_subdirectory(src/gpu/GksVtkAdapter)
-
-    add_subdirectory(src/gpu/GksGpu)
-
-    add_subdirectory(apps/gpu/GKS/Flame7cm)
-ELSE()
-    MESSAGE( STATUS "exclude Virtual Fluids GKS." )
-ENDIF()
-
-#############################################################
-###                     JSONCPP                           ###
-#############################################################
-IF (NOT BUILD_JSONCPP)
-    MESSAGE( STATUS "Build Input Project without JsonCpp." )
-ELSE()
-    add_subdirectory(3rdParty/jsoncpp)
-    add_definitions(-DBUILD_JSONCPP)
-ENDIF()
+add_subdirectory(apps/gpu/LBM/DrivenCavity)
+add_subdirectory(apps/gpu/LBM/SphereGPU)
+add_subdirectory(apps/gpu/LBM/BoundaryLayer)
 
 #############################################################
 ###                   Numeric Tests                       ###

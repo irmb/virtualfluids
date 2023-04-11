@@ -15,7 +15,6 @@
 
 #include "metis.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 
