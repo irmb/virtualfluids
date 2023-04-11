@@ -62,7 +62,7 @@ public:
     uint getNumberOfBladesPerTurbine(){ return this->numberOfBlades; };
 
     uint getNumberOfIndices(){ return this->numberOfIndices; };
-    uint getNumberOfNodes(){ return this->numberOfGridNodes; };
+    uint getNumberOfGridNodes(){ return this->numberOfGridNodes; };
 
     real* getAllAzimuths(){ return azimuthsH; };
     real* getAllOmegas(){ return omegasH; };
