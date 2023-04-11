@@ -61,7 +61,9 @@ private:
    real calcPressBNE();
    void calcInterpolatedVelocity(real x, real y, real z,real& vx1, real& vx2, real& vx3) override;
    void calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz) override;
-
+   void calcMoments(const real* const f, real omega, real& rho, real& vx1, real& vx2, real& vx3, 
+      real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz);
+    void calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new) override;
    void calcInterpolation(const D3Q27ICell& icell, real* icellC);
 };
 

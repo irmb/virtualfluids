@@ -51,33 +51,33 @@ __device__ __inline__ void readDistributionFromList(vf::lbm::Distribution27 &dis
                                                          unsigned int &k_MM0, unsigned int &k_M0M, unsigned int &k_0MM,
                                                          unsigned int &k_MMM)
 {
-    distribution.f[vf::lbm::dir::PZZ] = (dist.f[DIR_000])[k_000];
-    distribution.f[vf::lbm::dir::MZZ] = (dist.f[DIR_P00])[k_000];
-    distribution.f[vf::lbm::dir::ZPZ] = (dist.f[DIR_M00])[k_M00];
-    distribution.f[vf::lbm::dir::ZMZ] = (dist.f[DIR_0P0])[k_000];
-    distribution.f[vf::lbm::dir::ZZP] = (dist.f[DIR_0M0])[k_0M0];
-    distribution.f[vf::lbm::dir::ZZM] = (dist.f[DIR_00P])[k_000];
-    distribution.f[vf::lbm::dir::PPZ] = (dist.f[DIR_00M])[k_00M];
-    distribution.f[vf::lbm::dir::MMZ] = (dist.f[DIR_PP0])[k_000];
-    distribution.f[vf::lbm::dir::PMZ] = (dist.f[DIR_MM0])[k_MM0];
-    distribution.f[vf::lbm::dir::MPZ] = (dist.f[DIR_PM0])[k_0M0];
-    distribution.f[vf::lbm::dir::PZP] = (dist.f[DIR_MP0])[k_M00];
-    distribution.f[vf::lbm::dir::MZM] = (dist.f[DIR_P0P])[k_000];
-    distribution.f[vf::lbm::dir::PZM] = (dist.f[DIR_M0M])[k_M0M];
-    distribution.f[vf::lbm::dir::MZP] = (dist.f[DIR_P0M])[k_00M];
-    distribution.f[vf::lbm::dir::ZPP] = (dist.f[DIR_M0P])[k_M00];
-    distribution.f[vf::lbm::dir::ZMM] = (dist.f[DIR_0PP])[k_000];
-    distribution.f[vf::lbm::dir::ZPM] = (dist.f[DIR_0MM])[k_0MM];
-    distribution.f[vf::lbm::dir::ZMP] = (dist.f[DIR_0PM])[k_00M];
-    distribution.f[vf::lbm::dir::PPP] = (dist.f[DIR_0MP])[k_0M0];
-    distribution.f[vf::lbm::dir::MPP] = (dist.f[DIR_PPP])[k_000];
-    distribution.f[vf::lbm::dir::PMP] = (dist.f[DIR_MPP])[k_M00];
-    distribution.f[vf::lbm::dir::MMP] = (dist.f[DIR_PMP])[k_0M0];
-    distribution.f[vf::lbm::dir::PPM] = (dist.f[DIR_MMP])[k_MM0];
-    distribution.f[vf::lbm::dir::MPM] = (dist.f[DIR_PPM])[k_00M];
-    distribution.f[vf::lbm::dir::PMM] = (dist.f[DIR_MPM])[k_M0M];
-    distribution.f[vf::lbm::dir::MMM] = (dist.f[DIR_PMM])[k_0MM];
-    distribution.f[vf::lbm::dir::ZZZ] = (dist.f[DIR_MMM])[k_MMM];
+    distribution.f[DIR_000] = (dist.f[DIR_000])[k_000];
+    distribution.f[DIR_P00] = (dist.f[DIR_P00])[k_000];
+    distribution.f[DIR_M00] = (dist.f[DIR_M00])[k_M00];
+    distribution.f[DIR_0P0] = (dist.f[DIR_0P0])[k_000];
+    distribution.f[DIR_0M0] = (dist.f[DIR_0M0])[k_0M0];
+    distribution.f[DIR_00P] = (dist.f[DIR_00P])[k_000];
+    distribution.f[DIR_00M] = (dist.f[DIR_00M])[k_00M];
+    distribution.f[DIR_PP0] = (dist.f[DIR_PP0])[k_000];
+    distribution.f[DIR_MM0] = (dist.f[DIR_MM0])[k_MM0];
+    distribution.f[DIR_PM0] = (dist.f[DIR_PM0])[k_0M0];
+    distribution.f[DIR_MP0] = (dist.f[DIR_MP0])[k_M00];
+    distribution.f[DIR_P0P] = (dist.f[DIR_P0P])[k_000];
+    distribution.f[DIR_M0M] = (dist.f[DIR_M0M])[k_M0M];
+    distribution.f[DIR_P0M] = (dist.f[DIR_P0M])[k_00M];
+    distribution.f[DIR_M0P] = (dist.f[DIR_M0P])[k_M00];
+    distribution.f[DIR_0PP] = (dist.f[DIR_0PP])[k_000];
+    distribution.f[DIR_0MM] = (dist.f[DIR_0MM])[k_0MM];
+    distribution.f[DIR_0PM] = (dist.f[DIR_0PM])[k_00M];
+    distribution.f[DIR_0MP] = (dist.f[DIR_0MP])[k_0M0];
+    distribution.f[DIR_PPP] = (dist.f[DIR_PPP])[k_000];
+    distribution.f[DIR_MPP] = (dist.f[DIR_MPP])[k_M00];
+    distribution.f[DIR_PMP] = (dist.f[DIR_PMP])[k_0M0];
+    distribution.f[DIR_MMP] = (dist.f[DIR_MMP])[k_MM0];
+    distribution.f[DIR_PPM] = (dist.f[DIR_PPM])[k_00M];
+    distribution.f[DIR_MPM] = (dist.f[DIR_MPM])[k_M0M];
+    distribution.f[DIR_PMM] = (dist.f[DIR_PMM])[k_0MM];
+    distribution.f[DIR_MMM] = (dist.f[DIR_MMM])[k_MMM];
 }
 
 
