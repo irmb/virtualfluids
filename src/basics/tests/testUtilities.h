@@ -1,8 +1,6 @@
 #ifndef TESTUTILITIES_H
 #define TESTUTILITIES_H
 
-#include "_deps/googletest-src/googletest/include/gtest/gtest.h"
-#include "gmock/gmock.h"
 #include <gmock/gmock.h>
 
 inline auto RealEq = [](auto value) {
