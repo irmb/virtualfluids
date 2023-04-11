@@ -1,6 +1,8 @@
 #ifndef INTERPOLATIONPROCESSOR_H
 #define INTERPOLATIONPROCESSOR_H
 
+#include <memory>
+
 #include "BCArray3D.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
@@ -18,7 +20,7 @@ struct D3Q27ICell {
 };
 
 class InterpolationProcessor;
-using InterpolationProcessorPtr = SPtr<InterpolationProcessor>;
+using InterpolationProcessorPtr = std::shared_ptr<InterpolationProcessor>;
 
 #include "InterpolationHelper.h"
 

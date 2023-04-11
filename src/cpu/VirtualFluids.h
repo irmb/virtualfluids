@@ -211,6 +211,7 @@
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
+#include <LBM/CompressibleOffsetMomentsInterpolationProcessor_.h>
 #include <LBM/CompressibleOffsetSquarePressureInterpolationProcessor.h>
 #include <LBM/IncompressibleOffsetInterpolationProcessor.h>
 #include <LBM/InterpolationHelper.h>

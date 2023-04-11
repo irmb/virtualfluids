@@ -1,5 +1,5 @@
-#ifndef CompressibleOffsetMomentsInterpolationProcessor_H_
-#define CompressibleOffsetMomentsInterpolationProcessor_H_
+#ifndef CompressibleOffsetMomentsInterpolationProcessor2_H_
+#define CompressibleOffsetMomentsInterpolationProcessor2_H_
 
 #include "InterpolationProcessor.h"
 #include "D3Q27System.h"
@@ -11,11 +11,12 @@
 
 class CompressibleOffsetMomentsInterpolationProcessor;
 
-class CompressibleOffsetMomentsInterpolationProcessor : public InterpolationProcessor
+class CompressibleOffsetMomentsInterpolationProcessor2 : public InterpolationProcessor
 {
 public:
-   CompressibleOffsetMomentsInterpolationProcessor() = default;
-   CompressibleOffsetMomentsInterpolationProcessor(real omegaC, real omegaF);
+   CompressibleOffsetMomentsInterpolationProcessor2();
+   CompressibleOffsetMomentsInterpolationProcessor2(real omegaC, real omegaF);
+   ~CompressibleOffsetMomentsInterpolationProcessor2() override;
    InterpolationProcessorPtr clone() override;
    void setOmegas(real omegaC, real omegaF) override;
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF) override;
@@ -44,12 +45,15 @@ private:
 //   real a,b,c;
 
    // bulk viscosity
-   real shearViscosity {0.0};
-   real bulkViscosity {0.0};
-   real OxxPyyPzzC {vf::lbm::constant::c1o1};
-   real OxxPyyPzzF {vf::lbm::constant::c1o1};
+   real shearViscosity;
+   real bulkViscosity;
+   real OxxPyyPzzC;
+   real OxxPyyPzzF;
 
    void setOffsets(real xoff, real yoff, real zoff) override;
+   void calcMoments(const real* const f, real omega, real& rho, real& vx1, real& vx2, real& vx3, 
+      real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz);
+   void calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new) override;
    void calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs);
    real calcPressBSW();
    real calcPressTSW();
@@ -59,19 +63,18 @@ private:
    real calcPressTNW();
    real calcPressTNE();
    real calcPressBNE();
+   void calcInterpolatedNodeFC(real* f, real omega) override;
    void calcInterpolatedVelocity(real x, real y, real z,real& vx1, real& vx2, real& vx3) override;
    void calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz) override;
-
-   void calcInterpolation(const D3Q27ICell& icell, real* icellC);
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
+inline void CompressibleOffsetMomentsInterpolationProcessor2::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
 {
    this->interpolateCoarseToFine(icellC, icellF, 0.0, 0.0, 0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
+inline void CompressibleOffsetMomentsInterpolationProcessor2::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
 {
    this->interpolateFineToCoarse(icellF, icellC, 0.0, 0.0, 0.0);
 }

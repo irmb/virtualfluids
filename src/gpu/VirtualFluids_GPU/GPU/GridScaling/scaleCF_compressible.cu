@@ -249,6 +249,32 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     if (nodeIndex >= numberOfInterfaceNodes)
         return;
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Calculate moments for each source node 
+    //!
+    ////////////////////////////////////////////////////////////////////////////////
+    // source node BSW = MMM
+    ////////////////////////////////////////////////////////////////////////////////
+    // index of the base node and its neighbors
+    unsigned int k_base_000 = indicesCoarseMMM[nodeIndex];
+    unsigned int k_base_M00 = neighborXcoarse [k_base_000];
+    unsigned int k_base_0M0 = neighborYcoarse [k_base_000];
+    unsigned int k_base_00M = neighborZcoarse [k_base_000];
+    unsigned int k_base_MM0 = neighborYcoarse [k_base_M00];
+    unsigned int k_base_M0M = neighborZcoarse [k_base_M00];
+    unsigned int k_base_0MM = neighborZcoarse [k_base_0M0];
+    unsigned int k_base_MMM = neighborZcoarse [k_base_MM0];
+    ////////////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    unsigned int k_000 = k_base_000;
+    unsigned int k_M00 = k_base_M00;
+    unsigned int k_0M0 = k_base_0M0;
+    unsigned int k_00M = k_base_00M;
+    unsigned int k_MM0 = k_base_MM0;
+    unsigned int k_M0M = k_base_M0M;
+    unsigned int k_0MM = k_base_0MM;
+    unsigned int k_MMM = k_base_MMM;
+
     //////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
     //! timestep is based on the esoteric twist algorithm \ref <a
@@ -286,31 +312,6 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real kxyFromfcNEQ_PMM, kyzFromfcNEQ_PMM, kxzFromfcNEQ_PMM, kxxMyyFromfcNEQ_PMM, kxxMzzFromfcNEQ_PMM;
     real kxyFromfcNEQ_MMM, kyzFromfcNEQ_MMM, kxzFromfcNEQ_MMM, kxxMyyFromfcNEQ_MMM, kxxMzzFromfcNEQ_MMM;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Calculate moments for each source node 
-    //!
-    ////////////////////////////////////////////////////////////////////////////////
-    // source node BSW = MMM
-    ////////////////////////////////////////////////////////////////////////////////
-    // index of the base node and its neighbors
-    unsigned int k_base_000 = indicesCoarseMMM[nodeIndex];
-    unsigned int k_base_M00 = neighborXcoarse [k_base_000];
-    unsigned int k_base_0M0 = neighborYcoarse [k_base_000];
-    unsigned int k_base_00M = neighborZcoarse [k_base_000];
-    unsigned int k_base_MM0 = neighborYcoarse [k_base_M00];
-    unsigned int k_base_M0M = neighborZcoarse [k_base_M00];
-    unsigned int k_base_0MM = neighborZcoarse [k_base_0M0];
-    unsigned int k_base_MMM = neighborZcoarse [k_base_MM0];
-    ////////////////////////////////////////////////////////////////////////////////
-    // Set neighbor indices
-    unsigned int k_000 = k_base_000;
-    unsigned int k_M00 = k_base_M00;
-    unsigned int k_0M0 = k_base_0M0;
-    unsigned int k_00M = k_base_00M;
-    unsigned int k_MM0 = k_base_MM0;
-    unsigned int k_M0M = k_base_M0M;
-    unsigned int k_0MM = k_base_0MM;
-    unsigned int k_MMM = k_base_MMM;
 
     if(hasTurbulentViscosity) omegaC = omegaCoarse / (c1o1 + c3o1*omegaCoarse*turbulentViscosityCoarse[k_000]);
 

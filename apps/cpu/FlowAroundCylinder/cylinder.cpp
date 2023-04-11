@@ -296,7 +296,8 @@ void run(string configname)
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
 	  grid->accept(setConnsVisitor);
 
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+    //   SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor2());
       SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nueLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 
