@@ -52,7 +52,7 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-__inline__ __host__ __device__ void interpolate_cf(real* const f, const real& omegaF, const real& eps_new, const Coefficients &coefficients, const real& x, const real& y, const real& z)
+inline __host__ __device__ void interpolate_cf(real* const f, const real& omegaF, const real& eps_new, const Coefficients &coefficients, const real& x, const real& y, const real& z)
 {
     const real useNEQ = c1o1;
 
