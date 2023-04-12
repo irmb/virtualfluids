@@ -5,9 +5,9 @@
 #include "DataSet3D.h"
 #include "BCProcessor.h"
 #include "BCArray3D.h"
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 //using namespace UbMath;
 
 //#define PROOF_CORRECTNESS

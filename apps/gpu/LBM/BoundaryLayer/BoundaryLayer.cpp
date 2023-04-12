@@ -51,7 +51,7 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -100,7 +100,7 @@ std::string path(".");
 
 std::string simulationName("BoundaryLayer");
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)

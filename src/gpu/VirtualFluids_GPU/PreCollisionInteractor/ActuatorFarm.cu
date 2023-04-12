@@ -44,10 +44,10 @@
 #include "Parameter/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 #include "logger/Logger.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 
 __host__ __device__ __inline__ uint calcNode(uint bladeNode, uint numberOfBladeNodes, uint blade, uint numberOfBlades, uint turbine, uint numberOfTurbines)

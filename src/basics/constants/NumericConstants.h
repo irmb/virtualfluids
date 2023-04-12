@@ -1,9 +1,9 @@
-#ifndef REAL_CONSTANT_H
-#define REAL_CONSTANT_H
+#ifndef BASICS_NUMERIC_CONSTANT_H
+#define BASICS_NUMERIC_CONSTANT_H
 
 #include <cmath>
 
-namespace vf::lbm::constant
+namespace vf::basics::constant
 {
 
 #ifdef VF_DOUBLE_ACCURACY
