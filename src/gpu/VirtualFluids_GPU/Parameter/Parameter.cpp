@@ -119,9 +119,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("UseConcFile"))
         this->setConcFile(configData.getValue<bool>("UseConcFile"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseStreetVelocityFile"))
-        this->setStreetVelocityFile(configData.getValue<bool>("UseStreetVelocityFile"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseMeasurePoints"))
         this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
     //////////////////////////////////////////////////////////////////////////
@@ -406,7 +403,6 @@ void Parameter::initGridPaths(){
     this->setcpBottom(gridPath + "cpBottom.dat");
     this->setcpBottom2(gridPath + "cpBottom2.dat");
     this->setConcentration(gridPath + "conc.dat");
-    this->setStreetVelocity(gridPath + "streetVector.dat");
 
     //////////////////////////////////////////////////////////////////////////
     // Normals - Geometry
@@ -982,10 +978,6 @@ void Parameter::setConcFile(bool concFile)
 {
     this->isConc = concFile;
 }
-void Parameter::setStreetVelocityFile(bool streetVelocityFile)
-{
-    this->streetVelocityFile = streetVelocityFile;
-}
 void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 {
     this->isMeasurePoints = useMeasurePoints;
@@ -1354,10 +1346,6 @@ void Parameter::setcpBottom2(std::string cpBottom2)
 void Parameter::setConcentration(std::string concFile)
 {
     this->concentration = concFile;
-}
-void Parameter::setStreetVelocity(std::string streetVelocity)
-{
-    this->streetVelocity = streetVelocity;
 }
 void Parameter::setclockCycleForMP(real clockCycleForMP)
 {
@@ -2315,10 +2303,6 @@ std::string Parameter::getConcentration()
 {
     return this->concentration;
 }
-std::string Parameter::getStreetVelocityFilePath()
-{
-    return this->streetVelocity;
-}
 real Parameter::getclockCycleForMP()
 {
     return this->clockCycleForMP;
@@ -2382,10 +2366,6 @@ bool Parameter::getIsCp()
 bool Parameter::getConcFile()
 {
     return this->isConc;
-}
-bool Parameter::isStreetVelocityFile()
-{
-    return this->streetVelocityFile;
 }
 bool Parameter::getUseMeasurePoints()
 {

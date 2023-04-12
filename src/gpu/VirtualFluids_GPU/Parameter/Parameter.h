@@ -304,12 +304,6 @@ struct LBMSimulationParameter {
     unsigned int numberOfPointsCpBottom2;
     std::vector<std::vector<double>> cpBottom2;
 
-    // street X and Y velocity fractions///////
-    real *streetFractionXvelocity;
-    real *streetFractionYvelocity;
-    int *naschVelocity;
-    uint numberOfStreetNodes;
-
     //////////////////////////////////////////////////////////////////////////
     // \brief velocities to fit the force
     real *VxForce, *VyForce, *VzForce;
@@ -584,7 +578,6 @@ public:
     void setcpBottom(std::string cpBottom);
     void setcpBottom2(std::string cpBottom2);
     void setConcentration(std::string concFile);
-    void setStreetVelocity(std::string streetVelocity);
     void setPrintFiles(bool printfiles);
     void setReadGeo(bool readGeo);
     void setTemperatureInit(real Temp);
@@ -606,7 +599,6 @@ public:
     void setIsProp(bool isProp);
     void setIsCp(bool isCp);
     void setConcFile(bool concFile);
-    void setStreetVelocityFile(bool streetVelocityFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
     void setTurbulenceModel(TurbulenceModel turbulenceModel);
@@ -804,7 +796,6 @@ public:
     std::string getcpBottom();
     std::string getcpBottom2();
     std::string getConcentration();
-    std::string getStreetVelocityFilePath();
     unsigned int getPressInID();
     unsigned int getPressOutID();
     unsigned int getPressInZ();
@@ -902,7 +893,6 @@ public:
     bool getCalc3rdOrderMoments();
     bool getCalcHighOrderMoments();
     bool getConcFile();
-    bool isStreetVelocityFile();
     bool getUseMeasurePoints();
     bool getUseWale();
     TurbulenceModel getTurbulenceModel();
@@ -1031,7 +1021,6 @@ private:
     bool isGeoNormal, isInflowNormal, isOutflowNormal;
     bool hasWallModelMonitor{ false };
     bool simulatePorousMedia{ false };
-    bool streetVelocityFile{ false };
 
     int diffMod{ 27 };
     //! \property maximum level of grid refinement
@@ -1089,7 +1078,7 @@ private:
     std::string periodicBcQs, periodicBcValues;
     std::string numberNodes, LBMvsSI;
     std::string cpTop, cpBottom, cpBottom2;
-    std::string concentration, streetVelocity;
+    std::string concentration;
     std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
     
     TurbulenceModel turbulenceModel{ TurbulenceModel::None };
