@@ -78,7 +78,7 @@ endif()
 option(BUILD_VF_PYTHON_BINDINGS "" OFF)
 
 option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
-
+option(BUILD_VF_ALL_SAMPLES "Build All Samples" OFF)
 
 #################################################################################
 #  MACROS
