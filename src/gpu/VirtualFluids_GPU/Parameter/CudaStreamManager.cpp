@@ -38,7 +38,7 @@ int CudaStreamManager::registerAndLaunchStream(CudaStreamIndex streamIndex)
     cudaStream_t new_stream = nullptr;
     cudaStreamCreate(&new_stream);
     cudaStreams.emplace(streamIndex, new_stream);
-    return cudaStreams.count(streamIndex) - 1;
+    return int(cudaStreams.count(streamIndex) - 1);
 }
 
 void CudaStreamManager::terminateStreams()
