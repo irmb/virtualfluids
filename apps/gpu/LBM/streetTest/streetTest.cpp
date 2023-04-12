@@ -45,7 +45,7 @@ int main( int argc, char* argv[])
 
 	gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 	
-	gridBuilder->buildGrids(LBM, false); 
+	gridBuilder->buildGrids(false); 
 	
     gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 	

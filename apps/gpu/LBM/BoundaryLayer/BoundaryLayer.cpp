@@ -142,8 +142,6 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    LbmOrGks lbmOrGks = LBM;
-
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
     const real L_x = 6*H;
@@ -299,28 +297,28 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
     }
 
-	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
     
     if(nProcs > 1){
         if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
         }
 
         if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
         if (isFirstSubDomain && !readPrecursor) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
         }
 
         if (isLastSubDomain && !readPrecursor) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
     }
