@@ -39,12 +39,3 @@ if(BUILD_NUMERIC_TESTS)
     add_subdirectory(apps/gpu/tests/NumericalTests)
     add_subdirectory(apps/gpu/tests/NumericalTestPostProcessing)
 endif()
-
-#############################################################
-###                 Annas Traffic Sim                     ###
-#############################################################
-
-if(BUILD_VF_TRAFFIC)
-    add_subdirectory(src/gpu/Traffic)
-    add_subdirectory(apps/gpu/LBM/TrafficTest)
-endif()
