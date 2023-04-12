@@ -32,6 +32,13 @@ ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()
 
+if(BUILD_VF_ALL_SAMPLES)
+    list(APPEND USER_APPS 
+    "apps/gpu/LBM/ActuatorLine"
+    "apps/gpu/LBM/SphereScaling" 
+    "apps/gpu/LBM/TGV_3D")
+endif()
+
 #############################################################
 ###                  Virtual Fluids GKS                   ###
 #############################################################
