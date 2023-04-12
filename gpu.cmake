@@ -25,12 +25,6 @@ add_subdirectory(apps/gpu/LBM/BoundaryLayer)
 #############################################################
 
 if(BUILD_NUMERIC_TESTS)
-
-    # PATH_NUMERICAL_TESTS can be passed to cmake e.g. cmake .. -DPATH_NUMERICAL_TESTS=/data/
-    if(PATH_NUMERICAL_TESTS)
-        LIST(APPEND VF_COMPILER_DEFINITION "PATH_NUMERICAL_TESTS=${PATH_NUMERICAL_TESTS}")
-    endif()
-
     if(NOT BUILD_VF_UNIT_TESTS) # in this case googletest is already included.
         add_subdirectory(${VF_THIRD_DIR}/googletest)
     endif()
