@@ -56,7 +56,7 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
 {
     triangularMesh->generateGbTriFaceMesh3D();
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start Point-In-Object Test:\n";
+    VF_LOG_INFO("Start Point-In-Object Test");
 
     // trigger the GbTriFaceMesh3D to generate a kd-tree
     triangularMesh->getGbTriFaceMesh3D()->isPointInGbObject3D(0.0, 0.0, 0.0);
@@ -79,12 +79,11 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
         //    grid->setNodeTo(i, OuterType);
 
         if( timer->getCurrentRuntimeInSeconds() > outputTime ){
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    " << index << "/" << grid->getSize() <<" nodes tested!\n";
+            VF_LOG_INFO("    {} / {} nodes tested", index, grid->getSize());
             timer->start();
         }
     }
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done Point-In-Object Test\n";
+    VF_LOG_INFO("Done Point-In-Object Test");
 }
 
 

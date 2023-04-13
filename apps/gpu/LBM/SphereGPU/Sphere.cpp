@@ -43,7 +43,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/Logger/Logger.h"
+#include <logger/Logger.h>
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
@@ -93,15 +93,6 @@ int main(int argc, char *argv[])
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
-
-        //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
         //////////////////////////////////////////////////////////////////////////
         // setup simulation parameters (with or without config file)

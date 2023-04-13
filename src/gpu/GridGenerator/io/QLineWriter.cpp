@@ -50,7 +50,7 @@ void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryConditi
 {
 	if (geometryBoundaryCondition == nullptr)
 	{
-		*logging::out << logging::Logger::WARNING << "(QLineWriter::writeArrows) no geometry bc on this grid level.\n";
+        VF_LOG_WARNING("(QLineWriter::writeArrows) no geometry bc on this grid level.");
 		return;
 	}
     std::vector<UbTupleFloat3> nodes;

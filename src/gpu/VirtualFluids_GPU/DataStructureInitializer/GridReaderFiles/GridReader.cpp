@@ -390,7 +390,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 				{
 					////////////////////////////////////////////////////////////////////////////////////////
 					//send
-					*logging::out << logging::Logger::INFO_INTERMEDIATE << "size of Data for X send buffer, Level " << i << " : " << tempSend << "\n";
+                    VF_LOG_INFO("size of Data for X send buffer, Level {} : {}", i, tempSend);
 					////////////////////////////////////////////////////////////////////////////////////////
 					para->setNumberOfProcessNeighborsX((unsigned int)procNeighborsSendX.size(), i, "send");
 					para->getParH(i)->sendProcessNeighborX[j].rankNeighbor = neighborRankX[j];

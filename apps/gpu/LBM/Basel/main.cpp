@@ -60,17 +60,6 @@
 
 void multipleLevel(const std::string& configPath)
 {
-	//std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-	//std::ofstream logFile("F:/Basel2019/log/gridGeneratorLog.txt");
-	//logging::Logger::addStream(&logFile);
-
-	logging::Logger::addStream(&std::cout);
-	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-	logging::Logger::timeStamp(logging::Logger::ENABLE);
-	logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-	//UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
-
 	auto gridFactory = GridFactory::make();
 	gridFactory->setGridStrategy(Device::CPU);
 	//gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
@@ -229,7 +218,6 @@ int main(int argc, char* argv[])
 			}
 			catch (const std::exception& e)
 			{
-				*logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
 				//MPI_Abort(MPI_COMM_WORLD, -1);
 			}
 			catch (...)
@@ -249,22 +237,17 @@ int main(int argc, char* argv[])
 			}
 			catch (const std::exception& e)
 			{
-
-				*logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-				//std::cout << e.what() << std::flush;
+				std::cout << e.what() << std::flush;
 				//MPI_Abort(MPI_COMM_WORLD, -1);
 			}
 			catch (const std::bad_alloc e)
 			{
-
-				*logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-				//std::cout << e.what() << std::flush;
+				std::cout << e.what() << std::flush;
 				//MPI_Abort(MPI_COMM_WORLD, -1);
 			}
 			catch (...)
 			{
-				*logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
-				//std::cout << "unknown exeption" << std::endl;
+				std::cout << "unknown exeption" << std::endl;
 			}
 
 			std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;

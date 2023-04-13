@@ -490,7 +490,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
     //
     for( int level = (int)grids.size()-1; level >= 0; level-- ) {
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
+        VF_LOG_INFO("Start initializing level {}", level);
 
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
@@ -502,7 +502,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
         else
             grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done initializing level " << level << "\n";
+        VF_LOG_INFO("Done initializing level {}", level);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -516,8 +516,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
     //
     if (solidObject)
     {
-
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
+        VF_LOG_TRACE("Start with Q Computation");
 
         // Currently the solid object is only used on the finest grid,
         // because refinement into solid objects is not yet implemented.
@@ -554,7 +553,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
             grids[level]->findQs(solidObject.get());
         }
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
+        VF_LOG_TRACE("Done with Q Computation");
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -603,24 +602,24 @@ GRIDGENERATOR_EXPORT void MultipleGridBuilder::setNumberOfLayers(uint numberOfLa
 
 void MultipleGridBuilder::emitNoCoarseGridExistsWarning()
 {
-    *logging::out << logging::Logger::WARNING << "No Coarse grid was added before. Actual Grid is not added, please create coarse grid before.\n";
+    VF_LOG_WARNING("No Coarse grid was added before. Actual Grid is not added, please create coarse grid before.");
 }
 
 
 void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
 {
-    *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
+    VF_LOG_WARNING("Grid lies not inside of coarse grid. Actual Grid is not added.");
 }
 
 void MultipleGridBuilder::findCommunicationIndices(int direction)
 {
-    *logging::out << logging::Logger::INFO_HIGH << "Start findCommunicationIndices()\n";
+    VF_LOG_TRACE("Start findCommunicationIndices()");
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
             grids[i]->findCommunicationIndices(direction, this->subDomainBox);
 
-    *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
+    VF_LOG_TRACE("Done findCommunicationIndices()");
 }
 
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const

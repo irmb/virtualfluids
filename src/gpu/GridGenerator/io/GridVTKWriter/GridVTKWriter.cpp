@@ -85,7 +85,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name)
         std::vector<std::string> nodedatanames;
         std::vector< std::vector<double> > nodedata;
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write Grid to XML VTK (*.vtu) output file : " + name + "_Part_" + std::to_string(part) + "\n";
+        VF_LOG_INFO("Write Grid to XML VTK (*.vtu) output file : {}_Part_{}", name, part);
 
         nodedatanames.emplace_back("types");
         nodedatanames.emplace_back("sparse_id");
@@ -154,7 +154,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name)
             }
         }
         WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name + "_Part_" + std::to_string(part), nodes, cells, nodedatanames, nodedata);
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "done. \n";
+        VF_LOG_INFO("done.");
     }
 
 }
@@ -282,14 +282,14 @@ void GridVTKWriter::initalVtkWriter(WRITING_FORMAT format, const std::string& na
 {
     GridVTKWriter::format = format;
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write Grid to vtk output file : " + name + "\n";
+    VF_LOG_INFO("Write Grid to vtk output file: {}", name);
 
     std::string mode = "w";
     if (isBinaryWritingFormat())
         mode = "wb";
     GridVTKWriter::openFile(name, mode);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "  Output file opened ...\n";
+    VF_LOG_INFO("Output file opened ...");
 }
 
 bool GridVTKWriter::isBinaryWritingFormat()
@@ -306,14 +306,14 @@ void GridVTKWriter::writeVtkFile(SPtr<Grid> grid)
     GridVTKWriter::writeTypes(grid);
     GridVTKWriter::closeFile();
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Output file closed\n";
+    VF_LOG_INFO("Output file closed");
 }
 
 void GridVTKWriter::openFile(const std::string& name, const std::string& mode)
 {
     file = fopen(name.c_str(), mode.c_str());
     if(file==NULL)
-        *logging::out << logging::Logger::INFO_HIGH << "  cannot open file ...\n";
+        VF_LOG_CRITICAL("cannot open file {}", name);
 }
 
 void GridVTKWriter::closeFile()

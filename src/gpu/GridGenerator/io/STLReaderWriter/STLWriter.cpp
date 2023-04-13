@@ -42,7 +42,7 @@
 void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary)
 {
     const int size = (int)vec.size();
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << size << " Triangles to STL : " + name + "\n";
+    VF_LOG_INFO("Write {} Triangles to STL : {}" , size, name);
 
     std::ios_base::openmode mode = std::ios::out;
     if (writeBinary)
@@ -51,7 +51,7 @@ void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bo
     std::ofstream ofstream(name, mode);
 
     if (!ofstream.is_open()) {
-        *logging::out << logging::Logger::INFO_HIGH << " Output file not open - exit function\n";
+        VF_LOG_WARNING("Output file not open - exit function");
         return;
     }
 
@@ -61,7 +61,7 @@ void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bo
         writeAsciiSTL(ofstream, vec);
 
     ofstream.close();
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Output file closed\n";
+    VF_LOG_INFO("Output file closed");
 }
 
 

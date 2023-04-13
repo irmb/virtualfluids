@@ -45,6 +45,6 @@
 #include "basics/PointerDefinitions.h"
 #include "basics/Core/DataTypes.h"
 
-#include "basics/Core/Logger/Logger.h"
+#include <logger/Logger.h>
 
 #endif

@@ -95,7 +95,7 @@ uint TriangularMesh::getNumberOfTriangles() const
 
 void TriangularMesh::findNeighbors()
 {
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "start finding neighbors ...\n";
+    VF_LOG_INFO("start finding neighbors ...");
 
     auto t = Timer::makeStart();
 
@@ -103,8 +103,7 @@ void TriangularMesh::findNeighbors()
     finder.fillWithNeighborAngles(this);
 
     t->end();
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time finding neighbors: " << t->getTimeInSeconds() << "s\n";
+    VF_LOG_INFO("time finding neighbors = {}", t->getTimeInSeconds());
 }
 
 void TriangularMesh::setTriangles(std::vector<Triangle> triangles)
@@ -152,7 +151,7 @@ GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
 {
     if( this->VF_GbTriFaceMesh3D ) return;
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start generating GbTriFaceMesh3D:\n";
+    VF_LOG_INFO("Start generating GbTriFaceMesh3D");
 
     std::vector<GbTriFaceMesh3D::Vertex>  *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
     std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(this->triangleVec.size());
@@ -168,7 +167,7 @@ GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
 
     this->VF_GbTriFaceMesh3D = std::make_shared<GbTriFaceMesh3D>( "stl", gbVertices, gbTriangles, GbTriFaceMesh3D::KDTREE_SAHPLIT, false );
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done generating GbTriFaceMesh3D\n";
+    VF_LOG_INFO("Done generating GbTriFaceMesh3D");
 }
 
 

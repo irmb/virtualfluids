@@ -156,17 +156,6 @@ void multipleLevel(const std::string& configPath)
     rankY = ( mpirank % ( sideLengthX * sideLengthY ) ) /   sideLengthX;
     rankZ =   mpirank                                   / ( sideLengthY * sideLengthX );
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    logging::Logger::addStream(&std::cout);
-
-    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(mpirank) + ".log" );
-    logging::Logger::addStream(&logFile);
-
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");

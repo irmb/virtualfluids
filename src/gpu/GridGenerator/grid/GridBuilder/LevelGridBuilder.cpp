@@ -94,7 +94,7 @@ void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real normalX,
             slipBoundaryCondition->fillSlipNormalLists();
             boundaryConditions[level]->slipBoundaryConditions.push_back(slipBoundaryCondition);
 
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << level << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
+            VF_LOG_INFO("Set Slip BC on level {} with {}", level, slipBoundaryCondition->indices.size());
         }
     }
 }
@@ -114,7 +114,7 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 
             boundaryConditions[level]->geometryBoundaryCondition->fillSlipNormalLists();
 
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry Slip BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
+            VF_LOG_INFO("Set Geometry Slip BC on level {} with {}", level, boundaryConditions[level]->geometryBoundaryCondition->indices.size());
         }
     }
 }
@@ -144,7 +144,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
 
         boundaryConditions[level]->stressBoundaryConditions.push_back(stressBoundaryCondition);
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Stress BC on level " << level << " with " << (int)stressBoundaryCondition->indices.size() << "\n";
+        VF_LOG_INFO("Set Stress BC on level {} with {}", level, stressBoundaryCondition->indices.size());
     }
 }
 
@@ -167,7 +167,7 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
 
             boundaryConditions[level]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
 
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << level << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
+            VF_LOG_INFO("Set Velocity BC on level {} with {}", level, velocityBoundaryCondition->indices.size());
         }
     }
 }
@@ -187,7 +187,7 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 
             boundaryConditions[level]->geometryBoundaryCondition->fillVelocityLists();
 
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry Velocity BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
+            VF_LOG_INFO("Set Geometry BC on level {} with {}", level, boundaryConditions[level]->geometryBoundaryCondition->indices.size());
         }
     }
 }
@@ -204,7 +204,7 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 
         boundaryConditions[level]->pressureBoundaryConditions.push_back(pressureBoundaryCondition);
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Pressure BC on level " << level << " with " << (int)pressureBoundaryCondition->indices.size() <<"\n";
+        VF_LOG_INFO("Set Pressure BC on level {} with {}", level, pressureBoundaryCondition->indices.size());
     }
 }
 
@@ -245,7 +245,7 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
         {
             boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
 
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry No-Slip BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
+            VF_LOG_INFO("Set Geometry No-Slip BC on level {} with {}", level, boundaryConditions[level]->geometryBoundaryCondition->indices.size());
         }
     }
 }
@@ -255,7 +255,7 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<Fil
 {
     if(fileLevelToGridLevelMap.empty())
     {
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Mapping precursor file levels to the corresponding grid levels" << "\n";
+        VF_LOG_INFO("Mapping precursor file levels to the corresponding grid levels");
 
         for (uint level = 0; level < getNumberOfGridLevels(); level++)
             fileLevelToGridLevelMap.push_back(level);
@@ -264,7 +264,7 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<Fil
     {
         if(fileLevelToGridLevelMap.size()!=getNumberOfGridLevels())
             throw std::runtime_error("In setPrecursorBoundaryCondition: fileLevelToGridLevelMap does not match with the number of levels");
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Using user defined file to grid level mapping"  << "\n";
+        VF_LOG_INFO("Using user defined file to grid level mapping");
     }
 
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
@@ -279,7 +279,7 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<Fil
 
         boundaryConditions[level]->precursorBoundaryConditions.push_back(precursorBoundaryCondition);
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Precursor BC on level " << level << " with " << (int)precursorBoundaryCondition->indices.size() << "\n";
+        VF_LOG_INFO("Set Precursor BC on level {} with {}", level, precursorBoundaryCondition->indices.size());
     }
 }
 
@@ -790,10 +790,10 @@ GRIDGENERATOR_EXPORT SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeomet
 
 void LevelGridBuilder::findFluidNodes(bool splitDomain)
 {
-    *logging::out << logging::Logger::INFO_HIGH << "Start findFluidNodes()\n";
+    VF_LOG_TRACE("Start findFluidNodes()");
     for (uint i = 0; i < grids.size(); i++)
         grids[i]->findFluidNodeIndices(splitDomain);
-    *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
+    VF_LOG_TRACE("Done findFluidNodes()");
 }
 
 

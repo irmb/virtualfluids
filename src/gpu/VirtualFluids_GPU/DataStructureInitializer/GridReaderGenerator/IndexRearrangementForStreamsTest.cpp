@@ -119,8 +119,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
@@ -216,8 +214,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-
         para = testingVF::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "send");
@@ -337,8 +333,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-
         para = testingVF::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "send");
@@ -458,8 +452,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-
         para = testingVF::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "send");
