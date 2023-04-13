@@ -14,6 +14,6 @@ class ConfigurationFile;
 
 namespace vf::gpu::tests
 {
-    std::shared_ptr<ConfigDataStruct> readConfigFile(const std::string aFilePath);
+    std::shared_ptr<ConfigDataStruct> readConfigFile(const std::string aFilePath, const std::string &pathNumericalTests);
 }
 #endif

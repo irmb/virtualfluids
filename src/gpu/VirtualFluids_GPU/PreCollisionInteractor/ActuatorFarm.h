@@ -3,14 +3,14 @@
 
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 #include <stdexcept>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 class Parameter;
 class GridProvider;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 class ActuatorFarm : public PreCollisionInteractor
 {

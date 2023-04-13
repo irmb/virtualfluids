@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.4
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.5
 
 stages:
   - build
@@ -326,24 +326,23 @@ gpu_numerical_tests:
 
   before_script:
     - cd /tmp
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set numerical_tests_gpu/grids numerical_tests_gpu/grids
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
     - ccache -s
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
-    - rm -r -f ./*
+    - rm -rf ./*
     - cmake ..
       --preset=make_numerical_tests_gpu
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
     - make -j4
     - ccache -s
 
   script:
-    - cd $CI_PROJECT_DIR
-    # - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
-    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK17chim_nu10tm3.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
+    - $CI_PROJECT_DIR/build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK17chim_nu10tm3.txt /tmp/test_data/numerical_tests_gpu/ 2>&1 | tee -a numerical_tests_gpu_results.txt
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"

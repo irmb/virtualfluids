@@ -13,7 +13,7 @@
 
 #include "Calculation/PorousMedia.h"
 
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 
 void CudaMemoryManager::cudaCopyPrint(int lev)
@@ -422,9 +422,9 @@ void CudaMemoryManager::cudaAllocLevelForcing(int level)
 {
     real fx_t{ 1. }, fy_t{ 1. }, fz_t{ 1. };
     for (int i = 0; i < level; i++) {
-        fx_t *= vf::lbm::constant::c2o1;
-        fy_t *= vf::lbm::constant::c2o1;
-        fz_t *= vf::lbm::constant::c2o1;
+        fx_t *= vf::basics::constant::c2o1;
+        fy_t *= vf::basics::constant::c2o1;
+        fz_t *= vf::basics::constant::c2o1;
     }
 
     const unsigned int mem_size = sizeof(real) * 3;

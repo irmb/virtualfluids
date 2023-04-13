@@ -10,14 +10,12 @@
 
 #include <basics/Core/DataTypes.h>
 
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-namespace vf
-{
-namespace lbm
-{
+using namespace vf::basics::constant;
 
-using namespace constant;
+namespace vf::lbm
+{
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief forward chimera transformation \ref forwardInverseChimeraWithK 
@@ -116,6 +114,5 @@ inline __host__ __device__ void backwardChimeraWithK(real &mfa, real &mfb, real 
     mfb = m1;
 }
 
-}
 }
 #endif

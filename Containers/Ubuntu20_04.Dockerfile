@@ -14,12 +14,14 @@
 # clangd language server https://clangd.llvm.org/
 # python pip3 with modules: setuptools, wheels, scikit-build, pyvista, numpy, ansible, gcovr
 
+# software-properties-common for add-apt-repository
+
 FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&   \
     apt-get install -y  \
-    wget unzip git      \
+    wget unzip software-properties-common \
     build-essential gdb \
     ccache              \
     ninja-build         \
@@ -36,16 +38,13 @@ RUN apt-get update &&   \
     cppcheck            \
     clangd-12           \
     && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-12 100 \
-    && mkdir -p /usr/local/cmake/ && cd /usr/local/cmake/ \
-    && version=3.24 && build=0 \
-    && wget https://cmake.org/files/v$version/cmake-$version.$build-linux-x86_64.tar.gz \
-    && tar -xzvf cmake-$version.$build-linux-x86_64.tar.gz                              \
-    && ln -s /usr/local/cmake/cmake-$version.$build-linux-x86_64/bin/* /usr/local/bin/  \
     && pip3 install      \
+        cmake==3.26.3    \
         setuptools       \
         wheel            \
         scikit-build     \
         pyvista          \
         numpy            \
         ansible          \
-        'jinja2<3.1' gcovr==5.0
+        'jinja2<3.1' gcovr==5.0 \
+    && apt update && add-apt-repository -y ppa:git-core/ppa && apt update && apt install git -y
