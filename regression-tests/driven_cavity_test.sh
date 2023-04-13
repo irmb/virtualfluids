@@ -3,6 +3,10 @@
 #################################
 # Driven Cavity Regression Test
 #################################
+rm -r reference_data && mkdir -p reference_data
+git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data reference_data
+cd reference_data
+git sparse-checkout add regression_tests/gpu/DrivenCavity_2Levels
 
 # build VirtualFluids accordingly to our specific test scenario.
 # in this case adding -DUSER_APPS="apps/gpu/LBM/DrivenCavity to the cmake command is not necessary, because the DrivenCavity is added to VirtualFluids by default.
