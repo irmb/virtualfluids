@@ -39,10 +39,6 @@
 #include <lbm/refinement/Interpolation_FC.h>
 #include <lbm/refinement/Coefficients.h>
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-using namespace vf::gpu;
-
 
 template <bool hasTurbulentViscosity> __device__ void interpolate(
     vf::lbm::Coefficients& coefficients,
@@ -60,7 +56,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 {
     // Position Coarse 0., 0., 0.
     Distributions27 distCoarse;
-    getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
+    vf::gpu::getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
     vf::gpu::ListIndices indices;
     indices.k_000 = indicesCoarse000[nodeIndex];
@@ -73,7 +69,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     indices.k_MMM = neighborZcoarse [indices.k_MM0];
 
     const real epsilon_new = c2o1; // ratio of grid resolutions
-    const real omega_coarse_new = hasTurbulentViscosity ? calculateOmega(omega_coarse, turbulentViscosityCoarse[indices.k_000]) : omega_coarse;
+    const real omega_coarse_new = hasTurbulentViscosity ? vf::gpu::calculateOmega(omega_coarse, turbulentViscosityCoarse[indices.k_000]) : omega_coarse;
     real f_coarse[27];
     vf::lbm::interpolate_fc(f_coarse, epsilon_new, omega_coarse_new, coefficients);
 
@@ -107,14 +103,14 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real* turbulentViscosityFine,
     ICellNeigh neighborFineToCoarse)
 {
-    const unsigned nodeIndex = getNodeIndex();
+    const unsigned nodeIndex = vf::gpu::getNodeIndex();
 
     if (nodeIndex >= numberOfInterfaceNodes)
         return;
 
     // 1.calculate moments
     vf::lbm::MomentsOnSourceNodeSet moments_set;
-    calculate_moment_set<hasTurbulentViscosity>(
+    vf::gpu::calculate_moment_set<hasTurbulentViscosity>(
         moments_set, nodeIndex, distributionsFine, neighborXfine, neighborYfine, neighborZfine, indicesFineMMM, turbulentViscosityFine, numberOfLBnodesFine, omegaFine, true);
 
     // 2.calculate coefficients

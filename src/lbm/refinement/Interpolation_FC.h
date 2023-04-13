@@ -37,16 +37,15 @@
 #define __device__
 #endif
 
+#include <basics/constants/NumericConstants.h>
 
 #include "lbm/constants/D3Q27.h"
-#include "lbm/constants/NumericConstants.h"
-
 #include "lbm/KernelParameter.h"
 #include "lbm/Chimera.h"
 
 #include "lbm/refinement/Coefficients.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 namespace vf::lbm
