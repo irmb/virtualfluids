@@ -688,3 +688,40 @@ sonar-scanner:
   script:
     - cd $CI_PROJECT_DIR
     - sonar-scanner -X -Dsonar.verbose=true -Dsonar.login=$SONAR_SECURITY_TOKEN
+
+
+
+build-regression-tests-ci:
+  image: python:3.10
+  stage: test
+
+  before_script:
+    - pip install -r utilities/ci-regression-tests/requirements.txt
+
+  script:
+    - python3 utilities/ci-regression-tests/generate-ci.py
+
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - generated/
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+trigger:regression-tests:
+  stage: test
+  needs:
+    - build-regression-tests-ci
+  trigger:
+    include:
+      - artifact: generated/regression-tests-ci.yml
+        job: build-regression-tests-ci
+    strategy: depend
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
