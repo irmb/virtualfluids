@@ -689,6 +689,8 @@ build-regression-tests-ci:
     - when: manual
       allow_failure: true
 
+  needs: []
+
 trigger:regression-tests:
   stage: test
   needs:
