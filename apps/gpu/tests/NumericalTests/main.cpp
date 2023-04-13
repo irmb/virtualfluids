@@ -12,9 +12,9 @@
 #include <fstream>
 #include <iostream>
 
-static TestSuiteResult startNumericalTests(const std::string &configFile)
+static TestSuiteResult startNumericalTests(const std::string &configFile, const std::string &pathNumericalTests)
 {
-    auto configData = vf::gpu::tests::readConfigFile(configFile);
+    auto configData = vf::gpu::tests::readConfigFile(configFile, pathNumericalTests);
 
     std::shared_ptr<NumericalTestFactoryImp> numericalTestFactory = NumericalTestFactoryImp::getNewInstance(configData);
 
@@ -33,10 +33,11 @@ int main(int argc, char **argv)
 
     auto tests_passed = TestSuiteResult::FAILED;
 
-    if (argc > 1)
-        tests_passed = startNumericalTests(argv[1]);
+    if (argc == 3) {
+        tests_passed = startNumericalTests(argv[1], argv[2]);
+    }
     else
-        std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+        std::cout << "Configuration file must be set!: lbmgm <config file> <path to grid data>" << std::endl << std::flush;
 
     MPI_Finalize();
 

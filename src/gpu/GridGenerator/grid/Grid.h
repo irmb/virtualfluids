@@ -33,8 +33,6 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include "Core/LbmOrGks.h"
-
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/geometries/Vertex/Vertex.h"
@@ -114,11 +112,11 @@ public:
     
     virtual void setOddStart(bool xOddStart, bool yOddStart, bool zOddStart) = 0;
 
-    virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
+    virtual void findGridInterface(SPtr<Grid> grid) = 0;
 
     virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
 
-    virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
+    virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) = 0;
 
     virtual void enableFindSolidBoundaryNodes() = 0;
     virtual void enableComputeQs()              = 0;
@@ -161,7 +159,7 @@ public:
 
     virtual void setNumberOfLayers(uint numberOfLayers) = 0;
 
-    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
+    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) = 0;
 
     virtual uint getNumberOfSendNodes(int direction)    = 0;
     virtual uint getNumberOfReceiveNodes(int direction) = 0;

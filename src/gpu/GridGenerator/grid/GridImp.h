@@ -36,8 +36,6 @@
 #include <array>
 #include <vector>
 
-#include "Core/LbmOrGks.h"
-
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/distributions/Distribution.h"
@@ -166,11 +164,11 @@ public:
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    void findGridInterface(SPtr<Grid> grid) override;
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
 
     void freeMemory() override;
 
@@ -217,7 +215,7 @@ public:
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
-    void findGridInterfaceCF(uint index, GridImp &finerGrid, LbmOrGks lbmOrGks);
+    void findGridInterfaceCF(uint index, GridImp &finerGrid);
     void findGridInterfaceFC(uint index, GridImp &finerGrid);
     void findOverlapStopper(uint index, GridImp &finerGrid);
     void findInvalidBoundaryNodes(uint index);
@@ -355,7 +353,7 @@ private:
     void allocateQs();
 
 public:
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override;
     void findCommunicationIndex(uint index, real coordinate, real limit, int direction);
 
     uint getNumberOfSendNodes(int direction) override;

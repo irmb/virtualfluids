@@ -466,7 +466,7 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
 //      => MultipleGridBuilder::findCommunicationIndices(...)
 //      => LevelGridBuilder::setCommunicationProcess(...)
 //
-void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
+void MultipleGridBuilder::buildGrids(bool enableThinWalls )
 {
     //////////////////////////////////////////////////////////////////////////
 
@@ -551,8 +551,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
             // compute the sub grid distances 
             // this works for STL and Sphere objects, but not yet for other primitives!
-            if( lbmOrGks == LBM )
-                grids[level]->findQs(solidObject.get());
+            grids[level]->findQs(solidObject);
         }
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
@@ -566,7 +565,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
     //
     for (size_t i = 0; i < grids.size() - 1; i++)
-        grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
+        grids[i]->findGridInterface(grids[i + 1]);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -574,7 +573,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // and INVALID_OUT_OF_GRID
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->limitToSubDomain( this->subDomainBox, lbmOrGks );
+            grids[i]->limitToSubDomain( this->subDomainBox);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -588,12 +587,10 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //      => computes the sparse indices
     //      => generates neighbor connectivity taking into account periodic boundaries
     //      => undates the interface connectivity to sparse indices (overwrites matrix indices!)
-    if (lbmOrGks == LBM) {
-        for (size_t i = 0; i < grids.size() - 1; i++)
-           grids[i]->findSparseIndices(grids[i + 1]);
+    for (size_t i = 0; i < grids.size() - 1; i++)
+        grids[i]->findSparseIndices(grids[i + 1]);
 
-        grids[grids.size() - 1]->findSparseIndices(nullptr);
-    }
+    grids[grids.size() - 1]->findSparseIndices(nullptr);
 
     //////////////////////////////////////////////////////////////////////////
 }
@@ -615,13 +612,13 @@ void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
     *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
 }
 
-void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOrGks)
+void MultipleGridBuilder::findCommunicationIndices(int direction)
 {
     *logging::out << logging::Logger::INFO_HIGH << "Start findCommunicationIndices()\n";
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->findCommunicationIndices(direction, this->subDomainBox, lbmOrGks);
+            grids[i]->findCommunicationIndices(direction, this->subDomainBox);
 
     *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
 }

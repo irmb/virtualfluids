@@ -2,7 +2,7 @@
 
 #include <cuda_runtime.h>
 
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 #include "lbm/constants/D3Q27.h"
 using namespace vf::lbm::dir;
 

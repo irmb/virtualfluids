@@ -26,6 +26,7 @@ pythonbindings/pymuparser/bindings*
 # simulation results
 output/
 logs/
+reference_data/
 
 # grid
 .grid/

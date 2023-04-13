@@ -1106,7 +1106,7 @@ int GridImp::getSparseIndex(const real &x, const real &y, const real &z) const
 // --------------------------------------------------------- //
 //                    Find Interface                         //
 // --------------------------------------------------------- //
-void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
+void GridImp::findGridInterface(SPtr<Grid> finerGrid)
 {
     auto fineGrid          = std::static_pointer_cast<GridImp>(finerGrid);
     const auto coarseLevel = this->getLevel();
@@ -1126,18 +1126,13 @@ void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
     this->gridInterface->fc.offset = new uint[sizeCF];
 
     for (uint index = 0; index < this->getSize(); index++)
-        this->findGridInterfaceCF(index, *fineGrid, lbmOrGks);
+        this->findGridInterfaceCF(index, *fineGrid);
 
     for (uint index = 0; index < this->getSize(); index++)
         this->findGridInterfaceFC(index, *fineGrid);
 
     for (uint index = 0; index < this->getSize(); index++)
         this->findOverlapStopper(index, *fineGrid);
-
-    if (lbmOrGks == GKS) {
-        for (uint index = 0; index < this->getSize(); index++)
-            this->findInvalidBoundaryNodes(index);
-    }
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "  ... done. \n";
 }
@@ -1147,7 +1142,7 @@ void GridImp::repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid)
     this->gridInterface->repairGridInterfaceOnMultiGPU( shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid) );
 }
 
-void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
+void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
 {
     for( uint index = 0; index < this->size; index++ ){
 
@@ -1158,8 +1153,7 @@ void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks
             BoundingBox tmpSubDomainBox = *subDomainBox;
 
             // one layer for receive nodes and one for stoppers
-            if( lbmOrGks == LBM )
-                tmpSubDomainBox.extend(this->delta);
+            tmpSubDomainBox.extend(this->delta);
 
             if (!tmpSubDomainBox.isInside(x, y, z)
                 && ( this->getFieldEntry(index) == FLUID ||
@@ -1177,10 +1171,7 @@ void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks
             BoundingBox tmpSubDomainBox = *subDomainBox;
 
             // one layer for receive nodes and one for stoppers
-            if( lbmOrGks == LBM )
-                tmpSubDomainBox.extend(2.0 * this->delta);
-            else
-                tmpSubDomainBox.extend(1.0 * this->delta);
+            tmpSubDomainBox.extend(2.0 * this->delta);
 
             if (!tmpSubDomainBox.isInside(x, y, z))
                 this->setFieldEntry(index, INVALID_OUT_OF_GRID);
@@ -1188,15 +1179,10 @@ void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks
     }
 }
 
-void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks)
+void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid)
 {
-    if (lbmOrGks == LBM)
-    {
-        gridInterface->findInterfaceCF            (index, this, &finerGrid);
-        gridInterface->findBoundaryGridInterfaceCF(index, this, &finerGrid);
-    }
-    else if (lbmOrGks == GKS)
-        gridInterface->findInterfaceCF_GKS(index, this, &finerGrid);
+    gridInterface->findInterfaceCF            (index, this, &finerGrid);
+    gridInterface->findBoundaryGridInterfaceCF(index, this, &finerGrid);
 }
 
 void GridImp::findGridInterfaceFC(uint index, GridImp& finerGrid)
@@ -1651,7 +1637,7 @@ bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex & point, co
     return false;
 }
 
-void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
+void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox)
 {
     for( uint index = 0; index < this->size; index++ ){
         real x, y, z;
@@ -1663,8 +1649,8 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
             this->getFieldEntry(index) == STOPPER_OUT_OF_GRID ||
             this->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE ) continue;
 
-        if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
-        if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_SOLID ) continue;
+        if( this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
+        if( this->getFieldEntry(index) == STOPPER_SOLID ) continue;
         if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
         if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);
         if( direction == CommunicationDirections::MY ) findCommunicationIndex( index, y, subDomainBox->minY, direction);

@@ -36,7 +36,7 @@
 #include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
@@ -237,7 +237,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real omegaFine, 
     real* turbulentViscosityCoarse,
     real* turbulentViscosityFine,
-    OffCF offsetCF)
+    ICellNeigh neighborCoarseToFine)
 {
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get the node index coordinates from threadId_100, blockId_100, blockDim and gridDim.
@@ -758,9 +758,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set the relative position of the offset cell {-1, 0, 1}
     //!
-    real xoff    = offsetCF.xOffCF[nodeIndex];
-    real yoff    = offsetCF.yOffCF[nodeIndex];
-    real zoff    = offsetCF.zOffCF[nodeIndex];
+    real xoff    = neighborCoarseToFine.x[nodeIndex];
+    real yoff    = neighborCoarseToFine.y[nodeIndex];
+    real zoff    = neighborCoarseToFine.z[nodeIndex];
 
     real xoff_sq = xoff * xoff;
     real yoff_sq = yoff * yoff;
@@ -1487,6 +1487,6 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     (distFine.f[DIR_MMM])[k_MMM] = f_MMM;
 }
 
-template __global__ void scaleCF_compressible<true>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffCF offsetCF);
+template __global__ void scaleCF_compressible<true>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeigh offsetCF);
 
-template __global__ void scaleCF_compressible<false>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, OffCF offsetCF);
+template __global__ void scaleCF_compressible<false>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeigh offsetCF);

@@ -43,7 +43,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
 #include "Core/Logger/Logger.h"
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
@@ -179,7 +178,7 @@ int main(int argc, char *argv[])
         // build grid
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->buildGrids(LBM, false);  // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->buildGrids(false);  // buildGrids() has to be called before setting the BCs!!!!
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units

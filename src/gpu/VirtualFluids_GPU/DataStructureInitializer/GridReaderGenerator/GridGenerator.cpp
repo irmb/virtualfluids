@@ -1179,25 +1179,13 @@ void GridGenerator::allocArrays_OffsetScale()
         std::cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << std::endl;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(level)->K_CF = numberOfNodesPerLevelCF;
-        para->getParD(level)->K_CF = para->getParH(level)->K_CF;
-        para->getParH(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParD(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParH(level)->mem_size_kCF = sizeof(uint)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF = sizeof(uint)* para->getParD(level)->K_CF;
-        para->getParH(level)->mem_size_kCF_off = sizeof(real)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF_off = sizeof(real)* para->getParD(level)->K_CF;
+        //size CF
+        para->getParH(level)->coarseToFine.numberOfCells = numberOfNodesPerLevelCF;
+        para->getParD(level)->coarseToFine.numberOfCells = para->getParH(level)->coarseToFine.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(level)->K_FC = numberOfNodesPerLevelFC;
-        para->getParD(level)->K_FC = para->getParH(level)->K_FC;
-        para->getParH(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParD(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParH(level)->mem_size_kFC = sizeof(uint)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC = sizeof(uint)* para->getParD(level)->K_FC;
-        para->getParH(level)->mem_size_kFC_off = sizeof(real)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
+        //size FC
+        para->getParH(level)->fineToCoarse.numberOfCells = numberOfNodesPerLevelFC;
+        para->getParD(level)->fineToCoarse.numberOfCells = para->getParH(level)->fineToCoarse.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
         cudaMemoryManager->cudaAllocInterfaceCF(level);
@@ -1206,9 +1194,9 @@ void GridGenerator::allocArrays_OffsetScale()
         cudaMemoryManager->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
-        builder->getOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
-        builder->getOffsetFC(para->getParH(level)->offFC.xOffFC, para->getParH(level)->offFC.yOffFC, para->getParH(level)->offFC.zOffFC, level);
-        builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
+        builder->getOffsetCF(para->getParH(level)->neighborCoarseToFine.x, para->getParH(level)->neighborCoarseToFine.y, para->getParH(level)->neighborCoarseToFine.z, level);
+        builder->getOffsetFC(para->getParH(level)->neighborFineToCoarse.x, para->getParH(level)->neighborFineToCoarse.y, para->getParH(level)->neighborFineToCoarse.z, level);
+        builder->getGridInterfaceIndices(para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.fineCellIndices, level);
 
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk

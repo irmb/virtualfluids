@@ -189,7 +189,7 @@ TEST_F(findNeighborsIntegrationTest, grid1)
     const real dx = 0.15;
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, dx);
 
-    gridBuilder->buildGrids(LBM, false);
+    gridBuilder->buildGrids(false);
     auto grid = gridBuilder->getGrid(0);
 
     // Only the last layer of nodes should have invalid neighbors. The grid is a cube with a side length of 9 nodes
@@ -212,7 +212,7 @@ TEST_F(findNeighborsIntegrationTest, grid2)
     const real dx = 1.0 / 64;
     gridBuilder->addCoarseGrid(-0.6, -0.6, -0.6, 0.6, 0.6, 0.6, dx);
 
-    gridBuilder->buildGrids(LBM, false);
+    gridBuilder->buildGrids(false);
     auto grid = gridBuilder->getGrid(0);
 
     // Only the last layer of nodes should have invalid neighbors. The grid is a cube with a side length of 79 nodes
@@ -235,7 +235,7 @@ TEST_F(findNeighborsIntegrationTest, validFluidNeighbors1)
     real dx = 0.17;
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, dx);
 
-    gridBuilder->buildGrids(LBM, false);
+    gridBuilder->buildGrids(false);
     auto grid = gridBuilder->getGrid(0);
 
     auto numberInvalidFluidNeighbors = testFluidNodeNeighbors(grid);
@@ -249,7 +249,7 @@ TEST_F(findNeighborsIntegrationTest, validFluidNeighbors2)
     real dx = 0.18;
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, dx);
 
-    gridBuilder->buildGrids(LBM, false);
+    gridBuilder->buildGrids(false);
     auto grid = gridBuilder->getGrid(0);
 
     auto numberInvalidFluidNeighbors = testFluidNodeNeighbors(grid);

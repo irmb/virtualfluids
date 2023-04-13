@@ -39,7 +39,7 @@
 #include <geometry3d/GbTriangle3D.h>
 
 #include <basics/utilities/UbSystem.h>
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 #ifdef MC_CUBES
 #include <MarchingCubes/MarchingCubes.h>
@@ -174,11 +174,11 @@ double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double &x1, const do
                                                       const double &rx1, const double &rx2, const double &rx3)
 {
     if (!((UbMath::equal(rx1, 0.0) || UbMath::equal(fabs(rx1), 1.0) ||
-           UbMath::equal(fabs(rx1), vf::lbm::constant::one_over_sqrt2) || UbMath::equal(fabs(rx1), vf::lbm::constant::one_over_sqrt3)) &&
+           UbMath::equal(fabs(rx1), vf::basics::constant::one_over_sqrt2) || UbMath::equal(fabs(rx1), vf::basics::constant::one_over_sqrt3)) &&
           (UbMath::equal(rx2, 0.0) || UbMath::equal(fabs(rx2), 1.0) ||
-           UbMath::equal(fabs(rx2), vf::lbm::constant::one_over_sqrt2) || UbMath::equal(fabs(rx2), vf::lbm::constant::one_over_sqrt3)) &&
+           UbMath::equal(fabs(rx2), vf::basics::constant::one_over_sqrt2) || UbMath::equal(fabs(rx2), vf::basics::constant::one_over_sqrt3)) &&
           (UbMath::equal(rx3, 0.0) || UbMath::equal(fabs(rx3), 1.0) ||
-           UbMath::equal(fabs(rx3), vf::lbm::constant::one_over_sqrt2) || UbMath::equal(fabs(rx3), vf::lbm::constant::one_over_sqrt3)))) {
+           UbMath::equal(fabs(rx3), vf::basics::constant::one_over_sqrt2) || UbMath::equal(fabs(rx3), vf::basics::constant::one_over_sqrt3)))) {
         throw UbException(UB_EXARGS, "nur fuer diskrete Boltzmannrichungen implementiert!!!");
     }
 

@@ -35,7 +35,6 @@
 
 #include <vector>
 #include <array>
-#include "Core/LbmOrGks.h"
 
 #include "global.h"
 
@@ -73,7 +72,7 @@ public:
     GRIDGENERATOR_EXPORT real getEndZ(uint level) const;
 
     GRIDGENERATOR_EXPORT std::vector<SPtr<Grid> > getGrids() const;
-    GRIDGENERATOR_EXPORT void buildGrids(LbmOrGks lbmOrGks, bool enableThinWalls = false);
+    GRIDGENERATOR_EXPORT void buildGrids(bool enableThinWalls = false);
 
     GRIDGENERATOR_EXPORT void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
 
@@ -112,7 +111,7 @@ private:
     SPtr<BoundingBox> subDomainBox;
 
 public:
-    GRIDGENERATOR_EXPORT void findCommunicationIndices(int direction, LbmOrGks lbmOrGks);
+    GRIDGENERATOR_EXPORT void findCommunicationIndices(int direction);
 };
 
 #endif

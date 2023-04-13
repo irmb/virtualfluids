@@ -845,20 +845,6 @@ __global__ void QVeloDeviceEQ27(real* VeloX,
                                            unsigned long long numberOfLBnodes,
                                            bool isEvenTimestep);
 
-__global__ void QVeloStreetDeviceEQ27(
-    real* veloXfraction,
-    real* veloYfraction,
-    int*  naschVelo,
-    real* DD,
-    int*  naschIndex,
-    int   numberOfStreetNodes,
-    real  velocityRatio,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool  isEvenTimestep);
-
 //Slip BCs
 __global__ void QSlipDevice27(real* DD,
                                          int* k_Q,
@@ -1648,7 +1634,7 @@ __global__ void scaleCFEff27(real* DC,
                                                  unsigned int nyC,
                                                  unsigned int nxF,
                                         unsigned int nyF,
-                                        OffCF offCF);
+                                        ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCFLast27( real* DC,
                                           real* DF,
@@ -1671,7 +1657,7 @@ __global__ void scaleCFLast27( real* DC,
                                           unsigned int nyC,
                                           unsigned int nxF,
                                           unsigned int nyF,
-                                          OffCF offCF);
+                                          ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCFpress27(real* DC,
                                           real* DF,
@@ -1694,7 +1680,7 @@ __global__ void scaleCFpress27(real* DC,
                                           unsigned int nyC,
                                           unsigned int nxF,
                                           unsigned int nyF,
-                                          OffCF offCF);
+                                          ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_Fix_27(real* DC,
                                           real* DF,
@@ -1717,7 +1703,7 @@ __global__ void scaleCF_Fix_27(real* DC,
                                           unsigned int nyC,
                                           unsigned int nxF,
                                           unsigned int nyF,
-                                          OffCF offCF);
+                                          ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_Fix_comp_27(   real* DC,
                                                   real* DF,
@@ -1740,7 +1726,7 @@ __global__ void scaleCF_Fix_comp_27(   real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffCF offCF);
+                                                  ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_0817_comp_27(  real* DC,
                                                   real* DF,
@@ -1763,7 +1749,7 @@ __global__ void scaleCF_0817_comp_27(  real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffCF offCF);
+                                                  ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_comp_D3Q27F3_2018( real* DC,
                                                       real* DF,
@@ -1787,7 +1773,7 @@ __global__ void scaleCF_comp_D3Q27F3_2018( real* DC,
                                                       unsigned int nyC,
                                                       unsigned int nxF,
                                                       unsigned int nyF,
-                                                      OffCF offCF);
+                                                      ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_comp_D3Q27F3( real* DC,
                                                  real* DF,
@@ -1811,7 +1797,7 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
                                                  unsigned int nyC,
                                                  unsigned int nxF,
                                                  unsigned int nyF,
-                                                 OffCF offCF);
+                                                 ICellNeigh neighborCoarseToFine);
 
 
 __global__ void scaleCF_staggered_time_comp_27(real* DC,
@@ -1835,7 +1821,7 @@ __global__ void scaleCF_staggered_time_comp_27(real* DC,
                                                           unsigned int nyC,
                                                           unsigned int nxF,
                                                           unsigned int nyF,
-                                                          OffCF offCF);
+                                                          ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_RhoSq_comp_27( real* DC,
                                                   real* DF,
@@ -1858,7 +1844,7 @@ __global__ void scaleCF_RhoSq_comp_27( real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffCF offCF);
+                                                  ICellNeigh neighborCoarseToFine);
 
 template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real* distributionsCoarse,
@@ -1879,7 +1865,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real omegaFine,
     real* turbulentViscosityCoarse,
     real* turbulentViscosityFine,
-    OffCF offsetCF);
+    ICellNeigh offsetCF);
 
 __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
                                                         real* DF,
@@ -1902,7 +1888,7 @@ __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
                                                         unsigned int nyC,
                                                         unsigned int nxF,
                                                         unsigned int nyF,
-                                                        OffCF offCF);
+                                                        ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_AA2016_comp_27(real* DC,
                                                   real* DF,
@@ -1925,7 +1911,7 @@ __global__ void scaleCF_AA2016_comp_27(real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffCF offCF);
+                                                  ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCF_NSPress_27(real* DC,
                                               real* DF,
@@ -1948,7 +1934,7 @@ __global__ void scaleCF_NSPress_27(real* DC,
                                               unsigned int nyC,
                                               unsigned int nxF,
                                               unsigned int nyF,
-                                              OffCF offCF);
+                                              ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCFThSMG7( real* DC,
                                           real* DF,
@@ -1968,7 +1954,7 @@ __global__ void scaleCFThSMG7( real* DC,
                                           unsigned int kCF,
                                           real nu,
                                           real diffusivity_fine,
-                                          OffCF offCF);
+                                          ICellNeigh neighborCoarseToFine);
 
 __global__ void scaleCFThS7(real* DC,
                                        real* DF,
@@ -2007,7 +1993,7 @@ __global__ void scaleCFThS27(real* DC,
                                         unsigned int kCF,
                                         real nu,
                                         real diffusivity_fine,
-                                        OffCF offCF);
+                                        ICellNeigh neighborCoarseToFine);
 
 //fine to coarse
 __global__ void scaleFC27(real* DC,
@@ -2053,7 +2039,7 @@ __global__ void scaleFCEff27(real* DC,
                                         unsigned int nyC,
                                         unsigned int nxF,
                                         unsigned int nyF,
-                                        OffFC offFC);
+                                        ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFCLast27( real* DC,
                                           real* DF,
@@ -2076,7 +2062,7 @@ __global__ void scaleFCLast27( real* DC,
                                           unsigned int nyC,
                                           unsigned int nxF,
                                           unsigned int nyF,
-                                          OffFC offFC);
+                                          ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFCpress27( real* DC,
                                           real* DF,
@@ -2099,7 +2085,7 @@ __global__ void scaleFCpress27( real* DC,
                                           unsigned int nyC,
                                           unsigned int nxF,
                                           unsigned int nyF,
-                                          OffFC offFC);
+                                          ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_Fix_27( real* DC,
                                           real* DF,
@@ -2122,7 +2108,7 @@ __global__ void scaleFC_Fix_27( real* DC,
                                           unsigned int nyC,
                                           unsigned int nxF,
                                           unsigned int nyF,
-                                          OffFC offFC);
+                                          ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_Fix_comp_27(   real* DC,
                                                   real* DF,
@@ -2145,7 +2131,7 @@ __global__ void scaleFC_Fix_comp_27(   real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffFC offFC);
+                                                  ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_0817_comp_27(  real* DC,
                                                   real* DF,
@@ -2168,7 +2154,7 @@ __global__ void scaleFC_0817_comp_27(  real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffFC offFC);
+                                                  ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_comp_D3Q27F3_2018( real* DC,
                                                       real* DF,
@@ -2192,7 +2178,7 @@ __global__ void scaleFC_comp_D3Q27F3_2018( real* DC,
                                                       unsigned int nyC,
                                                       unsigned int nxF,
                                                       unsigned int nyF,
-                                                      OffFC offFC);
+                                                      ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_comp_D3Q27F3( real* DC,
                                                  real* DF,
@@ -2216,7 +2202,7 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
                                                  unsigned int nyC,
                                                  unsigned int nxF,
                                                  unsigned int nyF,
-                                                 OffFC offFC);
+                                                 ICellNeigh neighborFineToCoarse);
 
 
 __global__ void scaleFC_staggered_time_comp_27(real* DC,
@@ -2240,7 +2226,7 @@ __global__ void scaleFC_staggered_time_comp_27(real* DC,
                                                           unsigned int nyC,
                                                           unsigned int nxF,
                                                           unsigned int nyF,
-                                                          OffFC offFC);
+                                                          ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_RhoSq_comp_27( real* DC,
                                                   real* DF,
@@ -2263,7 +2249,7 @@ __global__ void scaleFC_RhoSq_comp_27( real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffFC offFC);
+                                                  ICellNeigh neighborFineToCoarse);
 
 template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real *distributionsCoarse,
@@ -2284,7 +2270,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
     real omegaFine,
     real* turbulentViscosityCoarse,
     real* turbulentViscosityFine,
-    OffFC offsetFC);
+    ICellNeigh offsetFC);
 
 __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
                                                         real* DF,
@@ -2307,7 +2293,7 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
                                                         unsigned int nyC,
                                                         unsigned int nxF,
                                                         unsigned int nyF,
-                                                        OffFC offFC);
+                                                        ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_AA2016_comp_27(real* DC,
                                                   real* DF,
@@ -2330,7 +2316,7 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
                                                   unsigned int nyC,
                                                   unsigned int nxF,
                                                   unsigned int nyF,
-                                                  OffFC offFC);
+                                                  ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFC_NSPress_27(real* DC,
                                               real* DF,
@@ -2353,7 +2339,7 @@ __global__ void scaleFC_NSPress_27(real* DC,
                                               unsigned int nyC,
                                               unsigned int nxF,
                                               unsigned int nyF,
-                                              OffFC offFC);
+                                              ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFCThSMG7( real* DC,
                                           real* DF,
@@ -2373,7 +2359,7 @@ __global__ void scaleFCThSMG7( real* DC,
                                           unsigned int kFC,
                                           real nu,
                                           real diffusivity_coarse,
-                                          OffFC offFC);
+                                          ICellNeigh neighborFineToCoarse);
 
 __global__ void scaleFCThS7(real* DC,
                                        real* DF,
@@ -2412,7 +2398,7 @@ __global__ void scaleFCThS27(  real* DC,
                                           unsigned int kFC,
                                           real nu,
                                           real diffusivity_coarse,
-                                          OffFC offFC);
+                                          ICellNeigh neighborFineToCoarse);
 
 __global__ void DragLiftPost27(  real* DD,
                                             int* k_Q,

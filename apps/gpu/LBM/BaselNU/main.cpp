@@ -14,9 +14,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-//#include "metis.h"
-
-#include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "Core/Input/ConfigFileReader/ConfigFileReader.h"
@@ -133,7 +130,7 @@ void multipleLevel(const std::string& configPath)
 
 		gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
-		gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+		gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
 		//////////////////////////////////////////////////////////////////////////
 
