@@ -102,7 +102,7 @@ namespace grid_generator
         .def("add_geometry", py::overload_cast<Object*>(&MultipleGridBuilder::addGeometry), py::arg("solid_object"))
         .def("add_geometry", py::overload_cast<Object*, uint>(&MultipleGridBuilder::addGeometry), py::arg("solid_object"), py::arg("level"))
         .def("get_number_of_levels", &MultipleGridBuilder::getNumberOfLevels)
-        .def("build_grids", &MultipleGridBuilder::buildGrids, py::arg("lbm_or_gks"), py::arg("enable_thin_walls"))
+        .def("build_grids", &MultipleGridBuilder::buildGrids, py::arg("enable_thin_walls"))
         .def("set_subdomain_box", &MultipleGridBuilder::setSubDomainBox, py::arg("bounding_box"))
         .def("find_communication_indices", &MultipleGridBuilder::findCommunicationIndices)
         .def("set_communication_process", &MultipleGridBuilder::setCommunicationProcess)

@@ -94,7 +94,7 @@ protected:
 ////////////////////////////////////////////////////////////////////////////////
 inline void IBcumulantK17LBMKernel::forwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
     LBMReal m2 = mfa + mfc;
     LBMReal m1 = mfc - mfa;
     LBMReal m0 = m2 + mfb;
@@ -112,7 +112,7 @@ inline void IBcumulantK17LBMKernel::forwardInverseChimeraWithK(LBMReal& mfa, LBM
 ////////////////////////////////////////////////////////////////////////////////
 inline void IBcumulantK17LBMKernel::backwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
     LBMReal m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 - vv) * c1o2) * K;
     LBMReal m1 = (((mfa - mfc) - c2o1 * mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (-v2)) * K;
     mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 + vv) * c1o2) * K;
@@ -128,7 +128,7 @@ inline void IBcumulantK17LBMKernel::backwardInverseChimeraWithK(LBMReal& mfa, LB
 ////////////////////////////////////////////////////////////////////////////////
 inline void IBcumulantK17LBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
     LBMReal m1 = (mfa + mfc) + mfb;
     LBMReal m2 = mfc - mfa;
     mfc = (mfc + mfa) + (v2 * m1 - c2o1 * vv * m2);
@@ -144,7 +144,7 @@ inline void IBcumulantK17LBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, L
 ////////////////////////////////////////////////////////////////////////////////
 inline void IBcumulantK17LBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
     LBMReal ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
     LBMReal mb = ((mfa - mfc) - mfa * v2) - c2o1 * mfb * vv;
     mfc = (mfc + mfa * (v2 + vv)) * c1o2 + mfb * (vv + c1o2);

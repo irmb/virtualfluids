@@ -224,7 +224,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 						//geq[dir] = p1*WEIGTH[dir] + gamma;
 						//geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho;
 						//geq[dir] = (p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho)*UbMath::c1o3;
-						geq[dir] = (gamma*rho)* vf::lbm::constant::c1o3;
+						geq[dir] = (gamma*rho)* vf::basics::constant::c1o3;
 					}
 
 
