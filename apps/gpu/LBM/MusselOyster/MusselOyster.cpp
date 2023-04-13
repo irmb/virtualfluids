@@ -13,11 +13,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "basics/Core/DataTypes.h"
-#include "basics/Core/VectorTypes.h"
+#include "basics/DataTypes.h"
+#include "basics/VectorTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 #include "logger/Logger.h"
 

@@ -2,7 +2,7 @@
 #define DATA_WRITER_H
 
 #include "PointerDefinitions.h"
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 
 #include <memory>
 #include <vector>

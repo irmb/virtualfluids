@@ -32,8 +32,8 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <pybind11/iostream.h>
-#include <basics/Core/Logger/Logger.h>
-#include <basics/Core/Logger/implementations/LoggerImp.h>
+#include <basics/Logger/Logger.h>
+#include <basics/Logger/implementations/LoggerImp.h>
 
 namespace logger
 {

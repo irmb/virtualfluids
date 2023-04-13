@@ -42,10 +42,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 
 

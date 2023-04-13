@@ -38,7 +38,7 @@
 #include <omp.h>
 #include <cmath>
 
-#include "Core/Timer/Timer.h"
+#include "Timer/Timer.h"
 
 #include "grid/NodeValues.h"
 #include "grid/Grid.h"

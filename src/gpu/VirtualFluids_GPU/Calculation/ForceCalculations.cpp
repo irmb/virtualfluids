@@ -9,7 +9,7 @@
 #include <sstream>
 #include "GPU/CudaMemoryManager.h"
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 //using namespace std;
 //////////////////////////////////////////////////////////////////////////
 

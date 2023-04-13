@@ -50,7 +50,7 @@
 
 //#include "metis.h"
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"

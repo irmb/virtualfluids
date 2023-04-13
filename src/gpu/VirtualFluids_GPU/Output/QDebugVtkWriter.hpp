@@ -4,7 +4,7 @@
 #include <array>
 #include <vector>
 
-#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/StringUtilities/StringUtil.h"
 #include "basics/utilities/UbSystem.h"
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "lbm/constants/D3Q27.h"

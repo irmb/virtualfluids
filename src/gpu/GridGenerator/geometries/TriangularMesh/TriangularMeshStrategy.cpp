@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "TriangularMeshStrategy.h"
 
-#include "Core/Timer/Timer.h"
+#include "Timer/Timer.h"
 
 #include "basics/geometry3d/GbTriFaceMesh3D.h"
 

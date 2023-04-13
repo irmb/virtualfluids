@@ -43,7 +43,7 @@
 #include "GridGenerator_export.h"
 
 #include "basics/PointerDefinitions.h"
-#include "basics/Core/DataTypes.h"
+#include "basics/DataTypes.h"
 
 #include <logger/Logger.h>
 

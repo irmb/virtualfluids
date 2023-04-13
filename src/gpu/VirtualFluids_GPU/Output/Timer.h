@@ -2,7 +2,7 @@
 #define TIMER_H
 #include <cuda_runtime.h>
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "Parameter/Parameter.h"
 #include "logger/Logger.h"
 

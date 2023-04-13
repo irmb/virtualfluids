@@ -14,9 +14,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "Core/Input/Input.h"
-#include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
+#include "Input/Input.h"
+#include "StringUtilities/StringUtil.h"
+#include "Input/ConfigFileReader/ConfigFileReader.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"

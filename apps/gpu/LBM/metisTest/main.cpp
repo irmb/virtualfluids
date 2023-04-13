@@ -15,8 +15,8 @@
 
 #include "metis.h"
 
-#include "Core/Input/Input.h"
-#include "Core/StringUtilities/StringUtil.h"
+#include "Input/Input.h"
+#include "StringUtilities/StringUtil.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
