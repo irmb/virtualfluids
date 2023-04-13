@@ -2,7 +2,7 @@
 #include "D3Q27System.h"
 
 //using namespace UbMath;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetInterpolationProcessor::CompressibleOffsetInterpolationProcessor(real omegaC, real omegaF)
@@ -62,7 +62,7 @@ void CompressibleOffsetInterpolationProcessor::calcMoments(const real* const f, 
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
 
    real drho = 0.0;
    D3Q27System::calcCompMacroscopicValues(f,drho,vx1,vx2,vx3);

@@ -32,7 +32,7 @@
 //======================================================================================
 
 #include "TurbulentViscosityKernels.h"
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 #include "Parameter/Parameter.h"
 #include "cuda/CudaGrid.h"
 #include <cuda_runtime.h>
@@ -40,7 +40,7 @@
 #include "LBM/LB.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 __host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
 {

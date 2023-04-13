@@ -23,7 +23,6 @@ with usage of the GPU:
  - CUDA [developer.nvidia.com/cuda-zone](https://developer.nvidia.com/cuda-zone):
     * Minimum CUDA Version 9.0
     * Minimum Compute Capability 3.0, because of maximal number of Blocks in x direction
-    * Recommended Compute Capability 6.0, because of atomics for double precision floating point data (GKS only)
 
 
 ### Build VirtualFluids

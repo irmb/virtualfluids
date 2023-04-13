@@ -1,4 +1,3 @@
-
 #define _USE_MATH_DEFINES
 #include <exception>
 #include <fstream>
@@ -18,7 +17,6 @@
 #include "basics/Core/VectorTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/LbmOrGks.h"
 #include "basics/Core/Logger/Logger.h"
 #include "basics/Core/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
@@ -235,15 +233,15 @@ void multipleLevel(std::filesystem::path& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xGridMin, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 1);
                 }
 
                 if (generatePart == 1) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
 
@@ -327,31 +325,31 @@ void multipleLevel(std::filesystem::path& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xGridMin, xGridMax, ySplit, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
                 if (generatePart == 0) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 2);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 3);
                 }
                 if (generatePart == 2) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 3);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 2);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 1);
                 }
 
@@ -474,71 +472,71 @@ void multipleLevel(std::filesystem::path& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, ySplit, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
                 if (generatePart == 0) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 2);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 4);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 3);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 5);
                 }
                 if (generatePart == 2) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 3);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 6);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 2);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 7);
                 }
                 if (generatePart == 4) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 5);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 6);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
                 if (generatePart == 5) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 4);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 7);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 1);
                 }
                 if (generatePart == 6) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 7);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 4);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 2);
                 }
                 if (generatePart == 7) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 6);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 5);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 3);
                 }
 
@@ -620,7 +618,7 @@ void multipleLevel(std::filesystem::path& configPath)
                     new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
             }
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////

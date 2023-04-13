@@ -35,7 +35,7 @@
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 

@@ -11,12 +11,10 @@
 #include "Chimera.h"
 #include "MacroscopicQuantities.h"
 
-namespace vf
-{
-namespace lbm
+namespace vf::lbm
 {
 
-using namespace constant;
+using namespace vf::basics::constant;
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -448,6 +446,5 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
 }
 
 
-}
 }
 

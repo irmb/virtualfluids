@@ -35,9 +35,9 @@
 
 #include "LBM/LB.h"
 
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 namespace vf::gpu
 {
