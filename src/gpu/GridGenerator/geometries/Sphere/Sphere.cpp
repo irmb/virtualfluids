@@ -44,18 +44,14 @@ Sphere::Sphere(const double& centerX, const double& centerY, const double& cente
 
 }
 
-Sphere::~Sphere()
-{
-}
-
 SPtr<Sphere> Sphere::makeShared(double centerX, double centerY, double centerZ, double radius)
 {
-    return SPtr<Sphere>(new Sphere(centerX, centerY, centerZ, radius));
+    return std::make_shared<Sphere>(centerX, centerY, centerZ, radius);
 }
 
-Object* Sphere::clone() const
+SPtr<Object> Sphere::clone() const
 {
-    return new Sphere(centerX, centerY, centerZ, radius);
+    return std::make_shared<Sphere>(centerX, centerY, centerZ, radius);
 }
 
 double Sphere::getX1Centroid()

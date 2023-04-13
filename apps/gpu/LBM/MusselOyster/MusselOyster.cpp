@@ -194,10 +194,10 @@ void multipleLevel(std::filesystem::path &configPath)
         // height MUSSEL = 35.0
         // height Oyster = 72.0
 
-        TriangularMesh *bivalveSTL = TriangularMesh::make(stlPath + bivalveType + ".stl");
-        TriangularMesh *bivalveRef_1_STL = nullptr;
+        auto bivalveSTL = std::make_shared<TriangularMesh>(stlPath + bivalveType + ".stl");
+        auto bivalveRef_1_STL = nullptr;
         if (useLevels)
-            bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
+            bivalveRef_1_STL = std::make_shared<TriangularMesh>(stlPath + bivalveType + "_Level1.stl");
 
         if (para->getNumprocs() > 1) {
             const uint generatePart = vf::gpu::Communicator::getInstance().getPID();

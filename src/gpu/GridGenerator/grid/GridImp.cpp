@@ -36,6 +36,7 @@
 #include <sstream>
 # include <algorithm>
 #include <cmath>
+#include <vector>
 
 #include "global.h"
 
@@ -60,7 +61,7 @@ int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 using namespace vf::gpu;
 
-GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution distribution, uint level)
+GridImp::GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution distribution, uint level)
             : object(object),
     startX(startX),
     startY(startY),
@@ -91,7 +92,7 @@ GridImp::GridImp(Object* object, real startX, real startY, real startZ, real end
     initalNumberOfNodesAndSize();
 }
 
-SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level)
+SPtr<GridImp> GridImp::makeShared(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level)
 {
     Distribution distribution = DistributionHelper::getDistribution(d3Qxx);
     SPtr<GridImp> grid(new GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, distribution, level));
@@ -515,7 +516,7 @@ bool GridImp::cellContainsOnly(Cell &cell, char typeA, char typeB) const
     return true;
 }
 
-const Object * GridImp::getObject() const
+SPtr<const Object> GridImp::getObject() const
 {
     return this->object;
 }
@@ -812,12 +813,12 @@ uint GridImp::getLevel() const
     return this->level;
 }
 
-void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
+void GridImp::setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy)
 {
     this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;
 }
 
-TriangularMeshDiscretizationStrategy * GridImp::getTriangularMeshDiscretizationStrategy()
+SPtr<TriangularMeshDiscretizationStrategy> GridImp::getTriangularMeshDiscretizationStrategy()
 {
     return this->triangularMeshDiscretizationStrategy;
 }
@@ -1748,7 +1749,7 @@ real* GridImp::getDistribution() const
     return this->distribution.f;
 }
 
-int* GridImp::getDirection() const
+const std::vector<int>& GridImp::getDirection() const
 {
     return this->distribution.dirs;
 }

@@ -52,7 +52,7 @@ class GRIDGENERATOR_EXPORT Grid
 public:
     virtual ~Grid() = default;
 
-    virtual const Object* getObject() const = 0;
+    virtual SPtr<const Object> getObject() const = 0;
 
     virtual real getDelta() const = 0;
     virtual uint getSparseSize() const = 0;
@@ -99,7 +99,7 @@ public:
     virtual uint *getFC_offset() const = 0;
 
     virtual real *getDistribution() const = 0;
-    virtual int* getDirection() const = 0;
+    virtual const std::vector<int> &getDirection() const = 0;
     virtual int getStartDirection() const = 0;
     virtual int getEndDirection() const = 0;
 

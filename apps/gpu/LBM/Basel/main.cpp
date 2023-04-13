@@ -112,10 +112,10 @@ void multipleLevel(const std::string& configPath)
 
 #ifdef _WIN32
 		//Baumbart
-		TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		auto BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 #else
 		//Phoenix
-		TriangularMesh* BaselSTL = TriangularMesh::make(gridpath + "/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		auto BaselSTL = std::make_shared<TriangularMesh>(gridpath + "/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 #endif
 
 

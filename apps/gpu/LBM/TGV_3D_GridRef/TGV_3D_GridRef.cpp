@@ -178,7 +178,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setNumberOfLayers(0, 0);
 
-    auto fineGrid = new Cuboid(-PI * 0.5, -PI * 0.5, -PI * 0.5, 
+    auto fineGrid = std::make_shared<Cuboid>(-PI * 0.5, -PI * 0.5, -PI * 0.5, 
                                      0.0,  PI * 0.5,       0.0);
 
     gridBuilder->addGrid(fineGrid, 1);

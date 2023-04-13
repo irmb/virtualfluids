@@ -79,9 +79,9 @@ TriangularMesh::TriangularMesh()
     this->minmax = BoundingBox::makeInvalidMinMaxBox();  // blame Lenz
 }
 
-Object* TriangularMesh::clone() const
+SPtr<Object> TriangularMesh::clone() const
 {
-    auto mesh = new TriangularMesh();
+    auto mesh = std::make_shared<TriangularMesh>();
     mesh->setTriangles(this->triangleVec);
     return mesh;
 }
@@ -238,9 +238,9 @@ void TriangularMesh::scale(double offset)
         const int vertexTriangleID = (int)vertexID % 3;
 
         Vertex intersection;
-        Vertex p = this->triangleVec[triangleID].v1 + this->triangleVec[triangleID].normal * offset;
+        // Vertex p = this->triangleVec[triangleID].v1 + this->triangleVec[triangleID].normal * offset; // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/85
         Vertex lineOrigin = this->triangleVec[triangleID].get(vertexTriangleID);
-        //bool b = intersectPlane(this->triangleVec[triangleID].normal, p, lineOrigin, averrageNormal, intersection);
+        // bool b = intersectPlane(this->triangleVec[triangleID].normal, p, lineOrigin, averrageNormal, intersection);
         triangles[triangleID].set(vertexTriangleID, intersection);
         triangles[triangleID].calcNormal();
 

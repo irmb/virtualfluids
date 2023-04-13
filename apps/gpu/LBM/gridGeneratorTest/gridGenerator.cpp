@@ -195,13 +195,13 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            // TriangularMesh* sphereSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
+            // auto sphereSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
 
-            TriangularMesh* sphereRef_1_STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_1.stl");
+            auto sphereRef_1_STL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_1.stl");
 
-            // TriangularMesh* sphereRef_2_STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_2.stl");
+            // auto sphereRef_2_STL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/Sphere/SphereRef_2.stl");
 
-            Object* sphere = new Sphere( 0, 0, 0, 0.5*D );
+            auto sphere = std::make_shared<Sphere>( 0, 0, 0, 0.5*D );
 
             gridBuilder->addCoarseGrid(-2.0*D, -2.5*D, -2.5*D,
                                         9.0*D,  2.5*D,  2.5*D, dx);  // DrivAer
@@ -280,21 +280,21 @@ void multipleLevel(const std::string& configPath)
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            TriangularMesh* DrivAerSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
-            //TriangularMesh* DrivAerSTL = TriangularMesh::make("stl/DrivAer_Fastback_Coarse.stl");
+            auto DrivAerSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+            //auto triangularMesh = std::make_shared<TriangularMesh>("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+            //auto triangularMesh = std::make_shared<TriangularMesh>("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+            //auto DrivAerSTL = std::make_shared<TriangularMesh>("stl/DrivAer_Fastback_Coarse.stl");
 
-            TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
-            //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("stl/DrivAer_REF_BOX_Adrea.stl");
+            auto DrivAerRefBoxSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+            //auto DrivAerRefBoxSTL = std::make_shared<TriangularMesh>("stl/DrivAer_REF_BOX_Adrea.stl");
 
             real z0 = 0.318;
 
             gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
                                         15.0,  5.0, 5.0 - z0, dx);  // DrivAer
 
-            //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-            //Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
+            //auto floorBox = std::make_shared<Cuboid>( -0.3, -1, -1, 4.0, 1, 0.2 );
+            //auto wakeBox  = std::make_shared<Cuboid>(  3.5, -1, -1, 5.5, 1, 0.8 );
 
             //Conglomerate* refRegion = new Conglomerate();
 
@@ -383,11 +383,11 @@ void multipleLevel(const std::string& configPath)
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            TriangularMesh* STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1.stl");
-            //TriangularMesh* STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_winglet.stl");
+            auto STL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/PaperPlane_1.stl");
+            //auto STL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_winglet.stl");
 
-            TriangularMesh* RefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_ref.stl");
-            //TriangularMesh* RefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_winglet_ref.stl");
+            auto RefBoxSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_ref.stl");
+            //auto RefBoxSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/PaperPlane_1_winglet_ref.stl");
 
             gridBuilder->addCoarseGrid(- 0.5, -0.3, -0.3,
                                          1.0,  0.3,  0.3, dx);
@@ -462,7 +462,7 @@ void multipleLevel(const std::string& configPath)
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            TriangularMesh* STL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/STL_Group_Test_2_Cylinders.stl");
+            auto STL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/STL_Group_Test_2_Cylinders.stl");
 
             gridBuilder->addCoarseGrid(- 2.0, -4.5, -2.0,
                                          4.0,  4.5,  2.0, dx);
@@ -518,34 +518,34 @@ void multipleLevel(const std::string& configPath)
 
             std::vector<uint> ignorePatches = { 152, 153, 154 };
 
-            //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
-            TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
+            //auto VW370_SERIE_STL = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+            auto VW370_SERIE_STL = std::make_shared<TriangularMesh>("stl/VW370_SERIE.stl", ignorePatches);
 
-            //TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
+            //auto DLC_RefBox = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
 
-            //TriangularMesh* DLC_RefBox_1 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
-            //TriangularMesh* DLC_RefBox_2 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
-            //TriangularMesh* DLC_RefBox_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
-            //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
+            //auto DLC_RefBox_1 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
+            //auto DLC_RefBox_2 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
+            //auto DLC_RefBox_3 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
+            //auto DLC_RefBox_4 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
 
-            //TriangularMesh* DLC_RefBox_Level_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_3.stl");
-            //TriangularMesh* DLC_RefBox_Level_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_4.stl");
-            //TriangularMesh* DLC_RefBox_Level_5 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_5.stl");
+            //auto DLC_RefBox_Level_3 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_3.stl");
+            //auto DLC_RefBox_Level_4 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_4.stl");
+            //auto DLC_RefBox_Level_5 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_5.stl");
 
-            TriangularMesh* DLC_RefBox_Level_3 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_3.stl");
-            TriangularMesh* DLC_RefBox_Level_4 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_4.stl");
-            TriangularMesh* DLC_RefBox_Level_5 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_5.stl");
+            auto DLC_RefBox_Level_3 = std::make_shared<TriangularMesh>("stl/DLC/DLC_RefBox_Level_3.stl");
+            auto DLC_RefBox_Level_4 = std::make_shared<TriangularMesh>("stl/DLC/DLC_RefBox_Level_4.stl");
+            auto DLC_RefBox_Level_5 = std::make_shared<TriangularMesh>("stl/DLC/DLC_RefBox_Level_5.stl");
 
-            //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
-            //TriangularMesh* DLC_RefBox = TriangularMesh::make("stl/DLC_RefBox.lnx.stl");
-            //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
+            //auto VW370_SERIE_STL = std::make_shared<TriangularMesh>("stl/VW370_SERIE.stl", ignorePatches);
+            //auto DLC_RefBox = std::make_shared<TriangularMesh>("stl/DLC_RefBox.lnx.stl");
+            //auto DLC_RefBox_4 = std::make_shared<TriangularMesh>("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
 
             gridBuilder->addCoarseGrid(-30.0, -20.0,  0.0 - z0,
                                         50.0,  20.0, 25.0 - z0, dx);
 
             gridBuilder->setNumberOfLayers(10,8);
-            gridBuilder->addGrid( new Cuboid( - 6.6, -6, -0.7, 20.6 , 6, 5.3  ), 1 );
-            gridBuilder->addGrid( new Cuboid( -3.75, -3, -0.7, 11.75, 3, 2.65 ), 2 );
+            gridBuilder->addGrid( std::make_shared<Cuboid>( - 6.6, -6, -0.7, 20.6 , 6, 5.3  ), 1 );
+            gridBuilder->addGrid( std::make_shared<Cuboid>( -3.75, -3, -0.7, 11.75, 3, 2.65 ), 2 );
 
             gridBuilder->setNumberOfLayers(10,8);
             gridBuilder->addGrid(DLC_RefBox_Level_3, 3);
@@ -674,8 +674,8 @@ void multipleLevel(const std::string& configPath)
 
             logging::Logger::addStream(&logFile2);
 
-            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+            auto triangularMesh = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
+            //auto triangularMesh = std::make_shared<TriangularMesh>("stl/ShpereNotOptimal.lnx.stl");
 
             // all
             //gridBuilder->addCoarseGrid(-2, -2, -2,

@@ -95,7 +95,7 @@ void multipleLevel(const std::string& configPath)
 		real dx = 4.0;
 		real vx = 0.05;
 
-		TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		auto BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 
 		gridBuilder->addCoarseGrid(-256.0, -256.0, -8.0,
 			                        256.0, 256.0, 160.0, dx);
@@ -104,14 +104,14 @@ void multipleLevel(const std::string& configPath)
 
 		//////////////////////////////////////////////////////////////////////////
 
-		Cuboid* refBoxMX = new Cuboid( -300, -300, - 20, 
-			                           -254,  300,  200 );
-		Cuboid* refBoxPX = new Cuboid(  254, -300, - 20, 
-			                            300,  300,  200 );
-		Cuboid* refBoxMY = new Cuboid( -300, -300, - 20, 
-			                            300, -254,  200 );
-		Cuboid* refBoxPY = new Cuboid( -300,  254, - 20, 
-			                            300,  300,  200 );
+		Cuboid* refBoxMX = std::make_shared<Cuboid>( -300, -300, - 20,
+			                                         -254,  300,  200 );
+		Cuboid* refBoxPX = std::make_shared<Cuboid>( 254, -300, - 20, 
+			                                         300,  300,  200 );
+		Cuboid* refBoxMY = std::make_shared<Cuboid>( -300, -300, - 20, 
+			                                          300, -254,  200 );
+		Cuboid* refBoxPY = std::make_shared<Cuboid>( -300,  254, - 20, 
+			                                          300,  300,  200 );
 
 		Conglomerate* refRegion = new Conglomerate();
 		

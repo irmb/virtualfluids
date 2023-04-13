@@ -50,16 +50,16 @@ class GRIDGENERATOR_EXPORT GridFactory
 public:
     static SPtr<GridFactory> make()
     {
-        return SPtr<GridFactory>(new GridFactory());
+        return std::make_shared<GridFactory>();
     }
 
-    SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
+    SPtr<Grid> makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
     {
         SPtr<GridImp> grid;
         
         grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
 
-        grid->setTriangularMeshDiscretizationStrategy(new PointInObjectDiscretizationStrategy());
+        grid->setTriangularMeshDiscretizationStrategy(std::make_shared<PointInObjectDiscretizationStrategy>()); // Probably a bug, as this->triangularMeshDiscretizationStrategy is never used. Until ad5efd332a1d6808fccdf8e54fa547630eff401b this line was ``grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);``
 
         return grid;
     }
@@ -69,19 +69,19 @@ public:
         switch (triangularMeshDiscretizationMethod)
         {
         case TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE:
-            triangularMeshDiscretizationStrategy = new PointUnderTriangleStrategy();
+            triangularMeshDiscretizationStrategy = std::make_shared<PointUnderTriangleStrategy>();
             break;
         case TriangularMeshDiscretizationMethod::RAYCASTING:
-            triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
+            triangularMeshDiscretizationStrategy = std::make_shared<RayCastingDiscretizationStrategy>();
             break;
         case TriangularMeshDiscretizationMethod::POINT_IN_OBJECT:
-            triangularMeshDiscretizationStrategy = new PointInObjectDiscretizationStrategy();
+            triangularMeshDiscretizationStrategy = std::make_shared<PointInObjectDiscretizationStrategy>();
             break;
         }
     }
 
 private:
-    TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
+    SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 };
 
 
