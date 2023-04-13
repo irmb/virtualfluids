@@ -14,7 +14,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "basics/DataTypes.h"
-#include "basics/VectorTypes.h"
 #include "basics/PointerDefinitions.h"
 
 #include "basics/StringUtilities/StringUtil.h"
