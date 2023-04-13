@@ -36,7 +36,7 @@
 #include <string>
 #include <fstream>
 
-#include "basics/basics/utilities/UbTuple.h"
+#include "basics/utilities/UbTuple.h"
 
 #include "geometries/Vertex/Vertex.h"
 

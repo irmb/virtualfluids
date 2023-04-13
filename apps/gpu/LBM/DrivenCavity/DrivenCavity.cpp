@@ -42,7 +42,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
 
 #include <logger/Logger.h>

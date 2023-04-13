@@ -48,8 +48,6 @@
 
 #include "Core/StringUtilities/StringUtil.h"
 
-#include "Core/VectorTypes.h"
-
 #include <basics/config/ConfigurationFile.h>
 #include "basics/constants/NumericConstants.h"
 

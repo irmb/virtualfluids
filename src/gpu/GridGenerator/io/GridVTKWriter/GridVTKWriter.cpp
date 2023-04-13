@@ -38,8 +38,8 @@
 #include <sstream>
 #include <memory>
 
-#include "basics/basics/writer/WbWriterVtkXmlBinary.h"
-#include "basics/basics/container/CbArray3D.h"
+#include "basics/writer/WbWriterVtkXmlBinary.h"
+#include "basics/container/CbArray3D.h"
 
 #include "geometries/Vertex/Vertex.h"
 
