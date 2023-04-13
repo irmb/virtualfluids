@@ -167,6 +167,7 @@ typedef struct QforPrecursorBC{
    int numberOfBCnodes=0;
    int sizeQ;
    int numberOfPrecursorNodes=0;
+   uint streamIndex=0;
    uint nPrecursorReads=0;
    uint timeStepsBetweenReads;
    size_t numberOfQuantities;

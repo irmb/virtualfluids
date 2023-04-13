@@ -4,6 +4,7 @@
 #include "Parameter/Parameter.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "GPU/CudaMemoryManager.h"
+#include "Parameter/CudaStreamManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
 
@@ -370,6 +371,8 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             cudaMemoryManager->cudaCopyPrecursorBC(level);
             cudaMemoryManager->cudaAllocPrecursorData(level);
+            para->getParD(level)->precursorBC.streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::Precursor);
+            
 
             // read first timestep of precursor into next and copy to next on device
             for(auto reader : para->getParH(level)->transientBCInputFileReader)
