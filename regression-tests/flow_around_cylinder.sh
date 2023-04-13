@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #################################
-# Driven Cavity Regression Test
+# Regression Test for Flow Around Cylinder
 #################################
 
 # build VirtualFluids accordingly to our specific test scenario.
