@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <basics/constants/NumericConstants.h>
+
 #include <lbm/refinement/Interpolation_CF.h>
 #include <lbm/refinement/Interpolation_FC.h>
 #include <lbm/refinement/Coefficients.h>
@@ -44,14 +46,14 @@ void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3
     vf::lbm::Coefficients coefficients;
     calculateCoefficients(coefficients, icellC, omegaC, xoff, yoff, zoff);
 
-     vf::lbm::interpolate_cf(icellF.BSW, omegaF, vf::lbm::constant::c1o2, coefficients, -0.25, -0.25, -0.25);
-     vf::lbm::interpolate_cf(icellF.BNE, omegaF, vf::lbm::constant::c1o2, coefficients,  0.25,  0.25, -0.25);
-     vf::lbm::interpolate_cf(icellF.TNW, omegaF, vf::lbm::constant::c1o2, coefficients, -0.25,  0.25,  0.25);
-     vf::lbm::interpolate_cf(icellF.TSE, omegaF, vf::lbm::constant::c1o2, coefficients,  0.25, -0.25,  0.25);
-     vf::lbm::interpolate_cf(icellF.BNW, omegaF, vf::lbm::constant::c1o2, coefficients, -0.25,  0.25, -0.25);
-     vf::lbm::interpolate_cf(icellF.BSE, omegaF, vf::lbm::constant::c1o2, coefficients,  0.25, -0.25, -0.25);
-     vf::lbm::interpolate_cf(icellF.TSW, omegaF, vf::lbm::constant::c1o2, coefficients, -0.25, -0.25,  0.25);
-     vf::lbm::interpolate_cf(icellF.TNE, omegaF, vf::lbm::constant::c1o2, coefficients,  0.25,  0.25,  0.25);
+     vf::lbm::interpolate_cf(icellF.BSW, omegaF, vf::basics::constant::c1o2, coefficients, -0.25, -0.25, -0.25);
+     vf::lbm::interpolate_cf(icellF.BNE, omegaF, vf::basics::constant::c1o2, coefficients,  0.25,  0.25, -0.25);
+     vf::lbm::interpolate_cf(icellF.TNW, omegaF, vf::basics::constant::c1o2, coefficients, -0.25,  0.25,  0.25);
+     vf::lbm::interpolate_cf(icellF.TSE, omegaF, vf::basics::constant::c1o2, coefficients,  0.25, -0.25,  0.25);
+     vf::lbm::interpolate_cf(icellF.BNW, omegaF, vf::basics::constant::c1o2, coefficients, -0.25,  0.25, -0.25);
+     vf::lbm::interpolate_cf(icellF.BSE, omegaF, vf::basics::constant::c1o2, coefficients,  0.25, -0.25, -0.25);
+     vf::lbm::interpolate_cf(icellF.TSW, omegaF, vf::basics::constant::c1o2, coefficients, -0.25, -0.25,  0.25);
+     vf::lbm::interpolate_cf(icellF.TNE, omegaF, vf::basics::constant::c1o2, coefficients,  0.25,  0.25,  0.25);
 }
 
 void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
@@ -59,5 +61,5 @@ void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3
     vf::lbm::Coefficients coefficients;
     calculateCoefficients(coefficients, icellF, omegaF, xoff, yoff, zoff);
 
-    vf::lbm::interpolate_fc(icellC, vf::lbm::constant::c2o1, omegaC, coefficients);
+    vf::lbm::interpolate_fc(icellC, vf::basics::constant::c2o1, omegaC, coefficients);
 }
