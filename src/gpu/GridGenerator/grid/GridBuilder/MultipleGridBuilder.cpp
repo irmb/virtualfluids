@@ -551,7 +551,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
 
             // compute the sub grid distances 
             // this works for STL and Sphere objects, but not yet for other primitives!
-            grids[level]->findQs(solidObject);
+            grids[level]->findQs(solidObject.get());
         }
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
