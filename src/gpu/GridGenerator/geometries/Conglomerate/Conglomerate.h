@@ -33,9 +33,12 @@
 #ifndef CONGLOMERATE_H
 #define CONGLOMERATE_H
 
+#include <array>
+
 #include "global.h"
 
 #include "geometries/Object.h"
+#include "basics/PointerDefinitions.h"
 
 #define MAX_NUMBER_OF_OBJECTS 20
 
