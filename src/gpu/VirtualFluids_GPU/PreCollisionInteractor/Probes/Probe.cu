@@ -308,6 +308,9 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
+    //!Skip empty probes
+    if(probeStruct->nPoints==0) return;
+
     //! if tAvg==1 the probe will be evaluated in every sub-timestep of each respective level
     //! else, the probe will only be evaluated in each synchronous time step tAvg
 
@@ -335,6 +338,9 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
+        
+        if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(para, t);
+
         if(this->outputTimeSeries)
         {
             probeStruct->lastTimestepInOldTimeseries = probeStruct->timestepInTimeseries > 0 ? probeStruct->timestepInTimeseries - 1: 0;
@@ -422,7 +428,6 @@ void Probe::write(Parameter* para, int level, int t)
         {
             this->writeGridFile(para, level, t_write, i);
         }
-        if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(para, t);
     }
 
 }
