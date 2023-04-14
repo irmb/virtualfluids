@@ -31,7 +31,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
         std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
 }
 
-GridGenerator::~GridGenerator() = default;
+GridGenerator::~GridGenerator() {}
 
 void GridGenerator::setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams> &&indexRearrangement)
 {
@@ -58,15 +58,15 @@ void GridGenerator::initalGridInformations()
 void GridGenerator::allocArrays_CoordNeighborGeo()
 {
     const uint numberOfLevels = builder->getNumberOfGridLevels();
-    std::cout << "Number of Level: " << numberOfLevels << std::endl;
+    VF_LOG_INFO("Number of Level: {}", numberOfLevels);
     int numberOfNodesGlobal = 0;
-    std::cout << "Number of Nodes: " << std::endl;
+    VF_LOG_INFO("Number of Nodes: ");
 
     for (uint level = 0; level < numberOfLevels; level++)
     {
         const uint numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
         numberOfNodesGlobal += numberOfNodesPerLevel;
-        std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
+        VF_LOG_INFO("Level {} = {} Nodes", level, numberOfNodesPerLevel);
 
         setNumberOfNodes(numberOfNodesPerLevel, level);
 
@@ -99,11 +99,9 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         cudaMemoryManager->cudaCopyCoord(level);
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaCopyBodyForce(level);
-
-        //std::cout << verifyNeighborIndices(level);
     }
-    std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
-    std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
+    VF_LOG_INFO("Number of Nodes: {}", numberOfNodesGlobal);
+    VF_LOG_TRACE("-----finish Coord, Neighbor, Geo------");
 }
 
 void GridGenerator::allocArrays_taggedFluidNodes() {
@@ -202,7 +200,7 @@ void GridGenerator::sortFluidNodeTags() {
 
 void GridGenerator::allocArrays_BoundaryValues()
 {
-    std::cout << "------read BoundaryValues------" << std::endl;
+    VF_LOG_TRACE("-----alloc BoundaryValues------");
     int blocks;
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -908,7 +906,7 @@ void GridGenerator::initalValuesDomainDecompostion()
 
 void GridGenerator::allocArrays_BoundaryQs()
 {
-    std::cout << "------read BoundaryQs-------" << std::endl;
+    VF_LOG_TRACE("allocArrays_BoundaryQs()");
 
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
@@ -927,9 +925,8 @@ void GridGenerator::allocArrays_BoundaryQs()
 
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            //cout << "vor advec diff" << endl;
-            if (para->getDiffOn() == true) {
+            // advection - diffusion
+            if (para->getDiffOn()) {
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor setzen von kTemp" << endl;
                 para->getParH(i)->TempPress.kTemp = numberOfPressureValues;
@@ -937,7 +934,6 @@ void GridGenerator::allocArrays_BoundaryQs()
                 VF_LOG_INFO("size TempPress.kTemp: {}: {}", i, para->getParH(i)->TempPress.kTemp);
                 //////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaAllocTempPressBC(i);
-                //cout << "nach alloc" << endl;
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfPressureValues; m++)
                 {
@@ -946,9 +942,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     para->getParH(i)->TempPress.k[m] = para->getParH(i)->pressureBC.k[m];
                 }
                 //////////////////////////////////////////////////////////////////////////
-                //cout << "vor copy" << endl;
                 cudaMemoryManager->cudaCopyTempPressBCHD(i);
-                //cout << "nach copy" << endl;
                 //////////////////////////////////////////////////////////////////////////
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1012,9 +1006,6 @@ void GridGenerator::allocArrays_BoundaryQs()
                 //////////////////////////////////////////////////////////////////////////
                 para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
                 para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
-                std::cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
-                std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-                std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
                 VF_LOG_INFO("size TempVel.kTemp: {}",  para->getParH(i)->TempVel.kTemp);
                 VF_LOG_INFO("getTemperatureInit: {}",  para->getTemperatureInit());
                 VF_LOG_INFO("getTemperatureBC: {}",  para->getTemperatureBC());
@@ -1146,8 +1137,7 @@ void GridGenerator::allocArrays_BoundaryQs()
         }
     }
 
-
-    std::cout << "-----finish BoundaryQs------" << std::endl;
+    VF_LOG_TRACE("-----finish BoundaryQs------");
 }
 
 void GridGenerator::allocArrays_OffsetScale()
@@ -1157,8 +1147,8 @@ void GridGenerator::allocArrays_OffsetScale()
         const uint numberOfNodesPerLevelCF = builder->getNumberOfNodesCF(level);
         const uint numberOfNodesPerLevelFC = builder->getNumberOfNodesFC(level);
 
-        std::cout << "number of nodes CF Level " << level << " : " << numberOfNodesPerLevelCF << std::endl;
-        std::cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << std::endl;
+        VF_LOG_INFO("number of nodes CF Level {}: {}", level, numberOfNodesPerLevelCF);
+        VF_LOG_INFO("number of nodes FC Level {}: {}", level, numberOfNodesPerLevelFC);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size CF

@@ -35,7 +35,7 @@ private:
 public:
     GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para,
                std::shared_ptr<CudaMemoryManager> cudaMemoryManager);
-    ~GridReader() override;
+     ~GridReader() {};
     void allocArrays_CoordNeighborGeo() override;
     void allocArrays_BoundaryValues() override;
     void allocArrays_OffsetScale() override;
