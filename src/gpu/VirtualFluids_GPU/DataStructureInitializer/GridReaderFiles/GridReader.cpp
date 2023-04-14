@@ -190,8 +190,8 @@ void GridReader::allocArrays_OffsetScale()
 		cudaMemoryManager->cudaCopyInterfaceOffFC(i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
-    VF_LOG_INFO("Number of Nodes CF = {}", AnzahlKnotenGesCF);
-    VF_LOG_INFO("Number of Nodes FC = {}", AnzahlKnotenGesFC);
+    VF_LOG_INFO("Total number of Nodes CF = {}", AnzahlKnotenGesCF);
+    VF_LOG_INFO("Total number of Nodes FC = {}", AnzahlKnotenGesFC);
 
     delete obj_offCF;
     delete obj_offFC;
