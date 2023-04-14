@@ -255,6 +255,8 @@ void GridGenerator::allocArrays_BoundaryValues()
         {
             blocks = (numberOfStressValues / para->getParH(level)->numberofthreads) + 1;
             para->getParH(level)->stressBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+            para->getParH(level)->stressBC.kArray = numberOfStressValues;
+
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
             builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ,
@@ -268,6 +270,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
         }
         para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
+        para->getParD(level)->stressBC.kArray = para->getParH(level)->stressBC.kArray;
         para->getParH(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
         para->getParD(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
     }
