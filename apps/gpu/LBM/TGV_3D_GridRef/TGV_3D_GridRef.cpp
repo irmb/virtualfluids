@@ -46,7 +46,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
 #include "Core/Logger/Logger.h"
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
@@ -179,14 +178,14 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setNumberOfLayers(0, 0);
 
-    auto fineGrid = new Cuboid(-PI * 0.5, -PI * 0.5, -PI * 0.5, 
+    auto fineGrid = std::make_shared<Cuboid>(-PI * 0.5, -PI * 0.5, -PI * 0.5, 
                                      0.0,  PI * 0.5,       0.0);
 
     gridBuilder->addGrid(fineGrid, 1);
 
 	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

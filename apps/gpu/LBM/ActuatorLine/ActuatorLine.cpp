@@ -97,8 +97,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LbmOrGks lbmOrGks = LBM;
-
 std::string path(".");
 
 std::string simulationName("ActuatorLine");
@@ -161,14 +159,14 @@ void multipleLevel(const std::string& configPath)
 							   L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( new Cuboid(   turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
-                                        turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    gridBuilder->addGrid( std::make_shared<Cuboid>( turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
+                                                    turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

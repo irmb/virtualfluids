@@ -38,18 +38,14 @@ VerticalCylinder::VerticalCylinder(const double& centerX, const double& centerY,
 
 }
 
-VerticalCylinder::~VerticalCylinder()
-{
-}
-
 SPtr<VerticalCylinder> VerticalCylinder::makeShared(double centerX, double centerY, double centerZ, double radius, double height)
 {
-    return SPtr<VerticalCylinder>(new VerticalCylinder(centerX, centerY, centerZ, radius, height));
+    return std::make_shared<VerticalCylinder>(centerX, centerY, centerZ, radius, height);
 }
 
-Object* VerticalCylinder::clone() const
+SPtr<Object> VerticalCylinder::clone() const
 {
-    return new VerticalCylinder(centerX, centerY, centerZ, radius, height);
+    return std::make_shared<VerticalCylinder>(centerX, centerY, centerZ, radius, height);
 }
 
 double VerticalCylinder::getX1Centroid()

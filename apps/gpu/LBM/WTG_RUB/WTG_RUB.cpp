@@ -47,7 +47,6 @@
 
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
-#include "Core/LbmOrGks.h"
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
 
@@ -89,8 +88,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-LbmOrGks lbmOrGks = LBM;
 
 // const real L  = 1.0;
 
@@ -176,8 +173,8 @@ void multipleLevel(const std::string& configPath)
     real z_min = 0.0 + z_offset;
     real z_max = 160.0 + z_offset;
 
-    //TriangularMesh *RubSTL      = TriangularMesh::make(inputPath + "stl/Var02_0deg_FD_b.stl");
-    TriangularMesh *RubSTL      = TriangularMesh::make(inputPath + "stl/" + chooseVariation() + ".stl");
+    //auto RubSTL      = std::make_shared<TriangularMesh>(inputPath + "stl/Var02_0deg_FD_b.stl");
+    auto RubSTL      = std::make_shared<TriangularMesh>(inputPath + "stl/" + chooseVariation() + ".stl");
     std::vector<real> originOfCityXY = { 600.0, y_max / 2, z_offset };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,7 +210,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -410,18 +407,18 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FG5 -> dx = 1,25 mm;   lvl 5
         //
         // FineGrid Level 1 ->dx = 2 cm; lvl 1
-        auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+        auto FG1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
 
         // FineGrid Level 2 -> dx = 1 cm; lvl 2
-        auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
-        auto FG2_2 = new Cuboid(500, -20,  5 + z_offset, 680, 210, 50 + z_offset);
+        auto FG2_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
+        auto FG2_2 = std::make_shared<Cuboid>(500, -20,  5 + z_offset, 680, 210, 50 + z_offset);
         auto FG2   = new Conglomerate();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
 
         // FineGrid Level 3 ->dx = 5 mm; lvl 3
-        auto FG3_1 = new Cuboid(517, -20, -5 + z_offset, 665, 200, 30 + z_offset);
-        auto FG3_2 = new Cuboid(550, 58, -5 + z_offset, 650, 132, 40 + z_offset);
+        auto FG3_1 = std::make_shared<Cuboid>(517, -20, -5 + z_offset, 665, 200, 30 + z_offset);
+        auto FG3_2 = std::make_shared<Cuboid>(550, 58, -5 + z_offset, 650, 132, 40 + z_offset);
         auto FG3   = new Conglomerate();
         FG3->add(FG3_1);
         FG3->add(FG3_2);
@@ -436,19 +433,19 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
                     gridBuilder->addGrid(FG3, 3);
                     if (maxLevel >= 4) {
                         if (rotationOfCity == 0.0) {
-                            TriangularMesh *FG4 = TriangularMesh::make(inputPath + "stl/FG4_0deg.stl");
+                            auto FG4 = std::make_shared<TriangularMesh>(inputPath + "stl/FG4_0deg.stl");
                             gridBuilder->addGrid(FG4, 4);
                         } else {
-                            TriangularMesh *FG4 = TriangularMesh::make(inputPath + "stl/FG4_63deg.stl");
+                            auto FG4 = std::make_shared<TriangularMesh>(inputPath + "stl/FG4_63deg.stl");
                             gridBuilder->addGrid(FG4, 4);
                         }
 
                         if (maxLevel == 5) {
                             if (rotationOfCity == 0.0) {
-                                TriangularMesh *FG5 = TriangularMesh::make(inputPath + "stl/FG5_0deg.stl");
+                                auto FG5 = std::make_shared<TriangularMesh>(inputPath + "stl/FG5_0deg.stl");
                                 gridBuilder->addGrid(FG5, 5);
                             } else {
-                                TriangularMesh *FG5 = TriangularMesh::make(inputPath + "stl/FG5_63deg.stl");
+                                auto FG5 = std::make_shared<TriangularMesh>(inputPath + "stl/FG5_63deg.stl");
                                 gridBuilder->addGrid(FG5, 5);
                             }
                         }
@@ -469,9 +466,9 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FG3 -> dx = 1,25 mm;   lvl 3
         //
         // FineGrid Level 1 -> dx = 5 mm; lvl 1
-        //auto FG1_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
-        auto FG1_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 20 + z_offset);
-        auto FG1_2 = new Cuboid(500, -20,  5 + z_offset, 680, 210, 50 + z_offset);
+        //auto FG1_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
+        auto FG1_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 20 + z_offset);
+        auto FG1_2 = std::make_shared<Cuboid>(500, -20,  5 + z_offset, 680, 210, 50 + z_offset);
         auto FG1   = new Conglomerate();
         FG1->add(FG1_1);
         FG1->add(FG1_2);
@@ -482,19 +479,19 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
             gridBuilder->addGrid(FG1, 1);
             if (maxLevel >= 2) {
                 if (rotationOfCity == 0.0) {
-                    TriangularMesh *FG2 = TriangularMesh::make(inputPath + "stl/FG4_0deg.stl");
+                    auto FG2 = std::make_shared<TriangularMesh>(inputPath + "stl/FG4_0deg.stl");
                     gridBuilder->addGrid(FG2, 2);
                 } else {
-                    TriangularMesh *FG2 = TriangularMesh::make(inputPath + "stl/FG4_63deg.stl");
+                    auto FG2 = std::make_shared<TriangularMesh>(inputPath + "stl/FG4_63deg.stl");
                     gridBuilder->addGrid(FG2, 2);
                 }
 
                 if (maxLevel == 3) {
                     if (rotationOfCity == 0.0) {
-                        TriangularMesh *FG3 = TriangularMesh::make(inputPath + "stl/FG5_0deg.stl");
+                        auto FG3 = std::make_shared<TriangularMesh>(inputPath + "stl/FG5_0deg.stl");
                         gridBuilder->addGrid(FG3, 3);
                     } else {
-                        TriangularMesh *FG3 = TriangularMesh::make(inputPath + "stl/FG5_63deg.stl");
+                        auto FG3 = std::make_shared<TriangularMesh>(inputPath + "stl/FG5_63deg.stl");
                         gridBuilder->addGrid(FG3, 3);
                     }
                 }
@@ -514,18 +511,18 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FG4 -> dx = 1.0 mm;   lvl 4
         //
         //// FineGrid Level 1 ->dx = 8.0 mm; lvl 1
-        // auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+        // auto FG1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
 
         // FineGrid Level 1 -> dx = 8.0 mm; lvl 1
-        auto FG1_1 = new Cuboid(-20, -20, -5 + z_offset, 780, 200, 30 + z_offset);
-        auto FG1_2 = new Cuboid(500, -20, 5 + z_offset, 720, 210, 75 + z_offset);
+        auto FG1_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 780, 200, 30 + z_offset);
+        auto FG1_2 = std::make_shared<Cuboid>(500, -20, 5 + z_offset, 720, 210, 75 + z_offset);
         auto FG1 = new Conglomerate();
         FG1->add(FG1_1);
         FG1->add(FG1_2);
 
         // FineGrid Level 2 -> dx = 4.0 mm; lvl 2
-        auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
-        auto FG2_2 = new Cuboid(520, -20, 5 + z_offset, 700, 210, 50 + z_offset);
+        auto FG2_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
+        auto FG2_2 = std::make_shared<Cuboid>(520, -20, 5 + z_offset, 700, 210, 50 + z_offset);
         auto FG2 = new Conglomerate();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
@@ -538,19 +535,19 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
                 gridBuilder->addGrid(FG2, 2);
                 if (maxLevel >= 3) {
                     if (rotationOfCity == 0.0) {
-                        TriangularMesh *FG3 = TriangularMesh::make(inputPath + "stl/FG4_0deg.stl");
+                        auto FG3 = std::make_shared<TriangularMesh>(inputPath + "stl/FG4_0deg.stl");
                         gridBuilder->addGrid(FG3, 3);
                     } else {
-                        TriangularMesh *FG3 = TriangularMesh::make(inputPath + "stl/FG4_63deg.stl");
+                        auto FG3 = std::make_shared<TriangularMesh>(inputPath + "stl/FG4_63deg.stl");
                         gridBuilder->addGrid(FG3, 3);
                     }
 
                     if (maxLevel == 4) {
                         if (rotationOfCity == 0.0) {
-                            TriangularMesh *FG4 = TriangularMesh::make(inputPath + "stl/FG5_0deg.stl");
+                            auto FG4 = std::make_shared<TriangularMesh>(inputPath + "stl/FG5_0deg.stl");
                             gridBuilder->addGrid(FG4, 4);
                         } else {
-                            TriangularMesh *FG4 = TriangularMesh::make(inputPath + "stl/FG5_63deg.stl");
+                            auto FG4 = std::make_shared<TriangularMesh>(inputPath + "stl/FG5_63deg.stl");
                             gridBuilder->addGrid(FG4, 4);
                         }
                     }
@@ -569,11 +566,11 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FG2 -> dx = 1 cm;      lvl 2
         //
         // FineGrid Level 1 ->dx = 2 cm; lvl 1
-        auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+        auto FG1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
 
         // FineGrid Level 2 -> dx = 1 cm; lvl 2
-        auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
-        auto FG2_2 = new Cuboid(500, -20, 5 + z_offset, 680, 210, 50 + z_offset);
+        auto FG2_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
+        auto FG2_2 = std::make_shared<Cuboid>(500, -20, 5 + z_offset, 680, 210, 50 + z_offset);
         auto FG2 = new Conglomerate();
         FG2->add(FG2_1);
         FG2->add(FG2_2);

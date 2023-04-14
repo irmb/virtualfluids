@@ -33,6 +33,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+#include "PointerDefinitions.h"
 #include "global.h"
 #include "geometries/Object.h"
 
@@ -40,11 +41,10 @@ class GRIDGENERATOR_EXPORT Sphere : public Object
 {
 public:
     Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);
-    virtual ~Sphere();
 
     static SPtr<Sphere> makeShared(double centerX, double centerY, double centerZ, double radius);
 
-    Object* clone() const override;
+    SPtr<Object> clone() const override;
 
     double getX1Centroid() override;
     double getX1Minimum() override;

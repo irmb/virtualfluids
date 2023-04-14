@@ -17,7 +17,6 @@
 #include "basics/Core/VectorTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/LbmOrGks.h"
 #include "basics/Core/Logger/Logger.h"
 #include "basics/Core/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
@@ -195,10 +194,10 @@ void multipleLevel(std::filesystem::path &configPath)
         // height MUSSEL = 35.0
         // height Oyster = 72.0
 
-        TriangularMesh *bivalveSTL = TriangularMesh::make(stlPath + bivalveType + ".stl");
-        TriangularMesh *bivalveRef_1_STL = nullptr;
+        auto bivalveSTL = std::make_shared<TriangularMesh>(stlPath + bivalveType + ".stl");
+        auto bivalveRef_1_STL = nullptr;
         if (useLevels)
-            bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
+            bivalveRef_1_STL = std::make_shared<TriangularMesh>(stlPath + bivalveType + "_Level1.stl");
 
         if (para->getNumprocs() > 1) {
             const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
@@ -233,7 +232,7 @@ void multipleLevel(std::filesystem::path &configPath)
                         std::make_shared<BoundingBox>(xGridMin, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
                 }
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
@@ -298,7 +297,7 @@ void multipleLevel(std::filesystem::path &configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
@@ -416,7 +415,7 @@ void multipleLevel(std::filesystem::path &configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, ySplit, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
                 if (generatePart == 0) {
@@ -544,7 +543,7 @@ void multipleLevel(std::filesystem::path &configPath)
 
             gridBuilder->addGeometry(bivalveSTL);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////

@@ -811,21 +811,6 @@ void QVeloDevEQ27(unsigned int numberOfThreads,
 							 unsigned long long numberOfLBnodes, 
 							 bool isEvenTimestep);
 
-void QVeloStreetDevEQ27(
-	uint  numberOfThreads,
-	real* veloXfraction,
-	real* veloYfraction,
-	int*  naschVelo,
-	real* DD,
-	int*  naschIndex,
-	int   numberOfStreetNodes,
-	real  velocityRatio,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	uint  size_Mat,
-	bool  isEvenTimestep);
-
 void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);

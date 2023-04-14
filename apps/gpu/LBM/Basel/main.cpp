@@ -14,9 +14,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-//#include "metis.h"
-
-#include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "Core/Input/ConfigFileReader/ConfigFileReader.h"
@@ -115,10 +112,10 @@ void multipleLevel(const std::string& configPath)
 
 #ifdef _WIN32
 		//Baumbart
-		TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		auto BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 #else
 		//Phoenix
-		TriangularMesh* BaselSTL = TriangularMesh::make(gridpath + "/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		auto BaselSTL = std::make_shared<TriangularMesh>(gridpath + "/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 #endif
 
 
@@ -130,7 +127,7 @@ void multipleLevel(const std::string& configPath)
 		//Merged for Wind in X Direction
 		gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
-		gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+		gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
 		//////////////////////////////////////////////////////////////////////////
 

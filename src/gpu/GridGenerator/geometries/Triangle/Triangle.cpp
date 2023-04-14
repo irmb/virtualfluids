@@ -40,7 +40,6 @@ using namespace vf::gpu;
 
 Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal), patchIndex(INVALID_INDEX) {}
 Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3), patchIndex(INVALID_INDEX) { calcNormal(); }
-Triangle::Triangle(){}
 
 void Triangle::set(const Vertex &v1, const Vertex &v2, const Vertex &v3)
 {

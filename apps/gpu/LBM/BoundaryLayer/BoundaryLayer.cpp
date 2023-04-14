@@ -51,7 +51,7 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -100,7 +100,7 @@ std::string path(".");
 
 std::string simulationName("BoundaryLayer");
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
@@ -141,8 +141,6 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    LbmOrGks lbmOrGks = LBM;
 
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
@@ -283,7 +281,7 @@ void multipleLevel(const std::string& configPath)
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
-        gridBuilder->addGrid( new Cuboid( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
+        gridBuilder->addGrid( std::make_shared<Cuboid>( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
         para->setMaxLevel(2);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
@@ -299,28 +297,28 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
     }
 
-	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
     
     if(nProcs > 1){
         if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
         }
 
         if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
         if (isFirstSubDomain && !readPrecursor) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
         }
 
         if (isLastSubDomain && !readPrecursor) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
     }

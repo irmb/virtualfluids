@@ -43,8 +43,8 @@ struct Vertex;
 class GRIDGENERATOR_EXPORT Object
 {
 public:
-    virtual ~Object() {}
-    virtual Object* clone() const = 0;
+    virtual ~Object() = default;
+    virtual SPtr<Object> clone() const = 0;
 
     virtual double getX1Centroid() = 0;
     virtual double getX1Minimum()  = 0;

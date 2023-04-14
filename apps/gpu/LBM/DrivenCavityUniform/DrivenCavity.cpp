@@ -42,7 +42,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
 #include "Core/Logger/Logger.h"
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
@@ -117,13 +116,13 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        // gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        // gridBuilder->addGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-        gridBuilder->buildGrids(LbmOrGks::LBM, false);
+        gridBuilder->buildGrids(false);
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units

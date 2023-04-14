@@ -14,9 +14,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-//#include "metis.h"
-
-#include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "Core/Input/ConfigFileReader/ConfigFileReader.h"
@@ -106,20 +103,20 @@ void multipleLevel(const std::string& configPath)
         real dx = 1.0;
         real vx = 0.05;
 
-        TriangularMesh* BaselSTL;
+        SPtr<TriangularMesh> BaselSTL;
 
 		if (generatePart == 0)
-			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl"); //Phoenix
-			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl"); //Baumbart
+			BaselSTL = std::make_shared<TriangularMesh>("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl"); //Phoenix
+			//BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl"); //Baumbart
 		if (generatePart == 1)
-			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl"); //Phoenix
-			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl"); //Baumbart
+			BaselSTL = std::make_shared<TriangularMesh>("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl"); //Phoenix
+			//BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl"); //Baumbart
 		if (generatePart == 2)
-			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl"); //Phoenix
-			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl"); //Baumbart
+			BaselSTL = std::make_shared<TriangularMesh>("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl"); //Phoenix
+			//BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl"); //Baumbart
 		if (generatePart == 3)
-			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl"); //Phoenix
-			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl"); //Baumbart
+			BaselSTL = std::make_shared<TriangularMesh>("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl"); //Phoenix
+			//BaselSTL = std::make_shared<TriangularMesh>("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl"); //Baumbart
 
 		real lengthInXDirection = 512.0;
 		real lengthInYDirection = 512.0;
@@ -144,7 +141,7 @@ void multipleLevel(const std::string& configPath)
 
 		gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-        gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
 		//////////////////////////////////////////////////////////////////////////
 
