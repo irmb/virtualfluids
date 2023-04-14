@@ -177,5 +177,5 @@ void Conglomerate::findInnerNodes(SPtr<GridImp> grid)
         addObjects[i]->findInnerNodes(grid);
 
     if( numberOfSubtractObjects > 0 )
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Warning: Conglomerate::substract() is currently nut fully implemented!\n";
+        VF_LOG_WARNING("Warning: Conglomerate::substract() is currently nut fully implemented!");
 }

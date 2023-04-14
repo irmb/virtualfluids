@@ -43,12 +43,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "Core/StringUtilities/StringUtil.h"
-
-#include "Core/VectorTypes.h"
+#include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
 #include "basics/constants/NumericConstants.h"
@@ -105,12 +103,6 @@ using namespace vf::basics::constant;
 
 void multipleLevel(const std::string& configPath)
 {
-
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     auto gridFactory = GridFactory::make();
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 

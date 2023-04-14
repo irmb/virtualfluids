@@ -39,7 +39,7 @@
 
 #include <curand_kernel.h>
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
 

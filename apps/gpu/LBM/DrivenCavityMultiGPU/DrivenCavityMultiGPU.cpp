@@ -12,14 +12,12 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "basics/Core/DataTypes.h"
-#include "basics/Core/VectorTypes.h"
+#include "basics/DataTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/Logger/Logger.h"
-#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -64,11 +62,6 @@
 
 void multipleLevel(std::filesystem::path& configPath)
 {
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();

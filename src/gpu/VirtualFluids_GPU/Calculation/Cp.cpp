@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include <cassert>
 
 //#include <math.h>

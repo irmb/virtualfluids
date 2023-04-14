@@ -8,7 +8,7 @@
 #define __device__
 #endif
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 #include "constants/NumericConstants.h"
 #include "constants/D3Q27.h"

@@ -11,7 +11,7 @@
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 namespace QDebugWriter
 {

@@ -8,7 +8,7 @@
 #include "VirtualFluids_GPU_export.h"
 
 #include "CommunicationRoutine.h"
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 //////////////////////////////////
 #ifdef VF_DOUBLE_ACCURACY

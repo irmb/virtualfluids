@@ -325,7 +325,6 @@ EnstrophyAnalyzer::EnstrophyAnalyzer(SPtr<Parameter> para, uint analyzeIter)
 
 void EnstrophyAnalyzer::writeToFile( std::string filename )
 {
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "EnstrophyAnalyzer::writeToFile( " << filename << " )" << "\n";
 	std::cout << "EnstrophyAnalyzer::writeToFile( " << filename << " )" << "\n";
 
     std::ofstream file;
@@ -338,7 +337,6 @@ void EnstrophyAnalyzer::writeToFile( std::string filename )
     file.close();
 
 	std::cout << "done!\n";
-	//*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
 

@@ -2,7 +2,7 @@
 #define VIRTUALFLUIDSPYTHONBINDINGS_KERNELCONFIGSTRUCTS_H
 
 #include <string>
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 struct LBMKernelConfiguration {
     KernelFactory::KernelType kernelType;

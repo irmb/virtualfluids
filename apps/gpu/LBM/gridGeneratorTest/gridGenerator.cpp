@@ -14,7 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
@@ -58,17 +58,6 @@
 
 void multipleLevel(const std::string& configPath)
 {
-    std::ofstream logFile( "F:/Work/Computations/out/Sphere/gridGeneratorLog.txt" );
-    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    logging::Logger::addStream(&logFile);
-
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
-
     auto gridFactory = GridFactory::make();
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
@@ -672,7 +661,6 @@ void multipleLevel(const std::string& configPath)
                 logFile2.open( "F:/Work/Computations/gridGenerator/grid/1/gridGeneratorLog.txt" );
                 //logFile2.open( "grid/1/gridGeneratorLog.txt" );
 
-            logging::Logger::addStream(&logFile2);
 
             auto triangularMesh = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
             //auto triangularMesh = std::make_shared<TriangularMesh>("stl/ShpereNotOptimal.lnx.stl");
@@ -820,18 +808,17 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+            std::cout << "Bad alloc: " << e.what() << std::flush;
         }
         catch (const std::exception& e)
         {
-
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+            std::cout << e.what() << std::flush;
         }
         catch (...)
         {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+            std::cout << "unknown exeption" << std::endl;
         }
+
     }
 
    MPI_Finalize();

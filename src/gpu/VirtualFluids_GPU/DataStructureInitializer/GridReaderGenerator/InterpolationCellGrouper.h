@@ -6,7 +6,7 @@
 #ifndef InterpolationCellGrouper_H
 #define InterpolationCellGrouper_H
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 #include <memory>
 #include <vector>

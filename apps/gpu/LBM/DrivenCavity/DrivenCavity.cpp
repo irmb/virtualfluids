@@ -41,9 +41,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 
 #include <logger/Logger.h>
@@ -90,15 +88,6 @@ int main()
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
-
-        //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
         //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator

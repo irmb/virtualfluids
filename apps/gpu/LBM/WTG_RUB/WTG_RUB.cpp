@@ -45,10 +45,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
-#include "Core/VectorTypes.h"
-#include "Core/Logger/Logger.h"
+
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,6 @@
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 
-#include <logger/Logger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,11 +129,6 @@ std::string chooseVariation();
 
 void multipleLevel(const std::string& configPath)
 {
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
@@ -233,8 +227,8 @@ void multipleLevel(const std::string& configPath)
 	//const real vx = velocityLB / (real)sqrt(2.0); // LB units
 	//const real vy = velocityLB / (real)sqrt(2.0); // LB units
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+    VF_LOG_INFO("velocityLB [dx/dt] = " << velocityLB);
+    VF_LOG_INFO("viscosityLB [dx^2/dt] = " << viscosityLB);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
