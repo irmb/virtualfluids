@@ -39,7 +39,7 @@
 
 #include <lbm/constants/D3Q27.h>
 #include <lbm/KernelParameter.h>
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 #include <lbm/constants/D3Q27.h>
 
