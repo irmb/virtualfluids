@@ -215,7 +215,7 @@ protected:
     std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(Statistic::LAST)] = {};
     const bool hasDeviceQuantityArray;    //!> flag initiating memCopy in Point and PlaneProbe. Other probes are only based on thrust reduce functions and therefore dont need explict memCopy in interact()
-    const bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
+    const bool outputTimeSeries;        //!> flag initiating time series output in Point and WallModelProbe.
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> timeseriesFileNames;
 
