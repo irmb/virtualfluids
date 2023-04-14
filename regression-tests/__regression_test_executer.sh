@@ -13,9 +13,8 @@ download_reference_data () {
 # 1. REFERENCE_DATA_DIR - to download the reference data and compare against
 # 2. CMAKE_FLAGS - cmake flags for the build of VirtualFluids
 # 3. APPLICATION - the application to be executed
-# 4. PATH_TO_DIR - the path to the produced data to be compared
+# 4. RESULT_DATA_DIR - the path to the produced data to be compared
 run_regression_test () {
-
     download_reference_data $1
 
     rm -rf build && mkdir -p build
@@ -27,5 +26,4 @@ run_regression_test () {
 
     # execute fieldcompare (A more comprehensive manual can be found here https://gitlab.com/dglaeser/fieldcompare)
     fieldcompare dir $4 reference_data/$1 --include-files "*.vtu"
-
 }

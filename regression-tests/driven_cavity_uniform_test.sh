@@ -13,7 +13,7 @@ CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECT
 APPLICATION=./build/bin/DrivenCavityUniform
 
 # 4. set the path to the produced data
-PATH_TO_DIR=output/DrivenCavity_uniform
+RESULT_DATA_DIR=output/DrivenCavity_uniform
 
 
-run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$PATH_TO_DIR"
+run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"

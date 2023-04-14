@@ -261,7 +261,7 @@ build-regression-tests-ci:
 
   needs: []
 
-trigger:regression-tests:
+trigger-regression-tests:
   stage: test
   needs:
     - build-regression-tests-ci

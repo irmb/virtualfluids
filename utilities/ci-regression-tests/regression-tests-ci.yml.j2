@@ -17,7 +17,7 @@ stages:
     - pip install fieldcompare
 
 {% for regression_test in regression_tests %}
-regression-test:{{ regression_test }}:
+run-regression-test-{{ regression_test }}:
   extends: .regression-test
 
   script:
