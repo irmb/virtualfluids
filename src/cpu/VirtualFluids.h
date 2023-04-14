@@ -121,6 +121,8 @@
 #include <BoundaryConditions/NoSlipBCAlgorithm.h>
 #include <BoundaryConditions/NonEqDensityBCAlgorithm.h>
 #include <BoundaryConditions/NonReflectingOutflowBCAlgorithm.h>
+#include <BoundaryConditions/NonReflectingOutflowBCAlgorithmWithRelaxation.h>
+#include <BoundaryConditions/NonReflectingInflowBCAlgorithm.h>
 #include <BoundaryConditions/SlipBCAdapter.h>
 #include <BoundaryConditions/SlipBCAlgorithm.h>
 #include <BoundaryConditions/ThinWallBCProcessor.h>
@@ -204,6 +206,8 @@
 #include <CoProcessors/ShearStressCoProcessor.h>
 #include <CoProcessors/TimeseriesCoProcessor.h>
 #include <CoProcessors/TurbulenceIntensityCoProcessor.h>
+#include <CoProcessors/TimeAveragedValuesCoProcessor.h>
+
 //#include <CoProcessors/MeanValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
 #include <CoProcessors/LineTimeSeriesCoProcessor.h>
@@ -265,6 +269,7 @@
 #include <geometry3d/GbCylinder3D.h>
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/GbHalfSpaceKrischan3D.h>
+#include <geometry3d/GbImplicitSurface.h>
 #include <geometry3d/GbLine3D.h>
 #include <geometry3d/GbMeshTools3D.h>
 #include <geometry3d/GbObject3D.h>

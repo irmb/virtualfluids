@@ -4,66 +4,66 @@
 
 D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA() = default;
 //////////////////////////////////////////////////////////////////////////
-D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA(const size_t &nx1, const size_t &nx2, const size_t &nx3, LBMReal value)
+D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA(const size_t &nx1, const size_t &nx2, const size_t &nx3, real value)
 {
     this->NX1 = nx1;
     this->NX2 = nx2;
     this->NX3 = nx3;
 
-    d.E = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.W = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.N = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.S = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.T = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.B = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.NE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.SW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.SE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.NW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TN = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BS = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BN = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TS = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TNE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TNW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TSE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.TSW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BNE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BNW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BSE = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.BSW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.E = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.W = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.N = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.S = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.T = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.B = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.NE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.SW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.SE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.NW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TN = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BS = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BN = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TS = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TNE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TNW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TSE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.TSW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BNE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BNW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BSE = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
+    d.BSW = CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(
+        new CbArray3D<real, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
     d.REST =
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx1, nx2, nx3, value));
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(nx1, nx2, nx3, value));
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSoA::~D3Q27EsoTwist3DSoA() = default;
@@ -85,114 +85,120 @@ void D3Q27EsoTwist3DSoA::swap()
     std::swap(d.TSW, d.BNE);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::getDistribution(LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::getDistribution(real *const f, size_t x1, size_t x2, size_t x3)
 {
+    using namespace vf::lbm::dir;
+
     size_t x1p = x1 + 1;
     size_t x2p = x2 + 1;
     size_t x3p = x3 + 1;
 
-    f[D3Q27System::DIR_P00]   = (*d.E)(x1, x2, x3);
-    f[D3Q27System::DIR_0P0]   = (*d.N)(x1, x2, x3);
-    f[D3Q27System::DIR_00P]   = (*d.T)(x1, x2, x3);
-    f[D3Q27System::DIR_PP0]  = (*d.NE)(x1, x2, x3);
-    f[D3Q27System::DIR_MP0]  = (*d.NW)(x1p, x2, x3);
-    f[D3Q27System::DIR_P0P]  = (*d.TE)(x1, x2, x3);
-    f[D3Q27System::DIR_M0P]  = (*d.TW)(x1p, x2, x3);
-    f[D3Q27System::DIR_0PP]  = (*d.TN)(x1, x2, x3);
-    f[D3Q27System::DIR_0MP]  = (*d.TS)(x1, x2p, x3);
-    f[D3Q27System::DIR_PPP] = (*d.TNE)(x1, x2, x3);
-    f[D3Q27System::DIR_MPP] = (*d.TNW)(x1p, x2, x3);
-    f[D3Q27System::DIR_PMP] = (*d.TSE)(x1, x2p, x3);
-    f[D3Q27System::DIR_MMP] = (*d.TSW)(x1p, x2p, x3);
+    f[DIR_P00]   = (*d.E)(x1, x2, x3);
+    f[DIR_0P0]   = (*d.N)(x1, x2, x3);
+    f[DIR_00P]   = (*d.T)(x1, x2, x3);
+    f[DIR_PP0]  = (*d.NE)(x1, x2, x3);
+    f[DIR_MP0]  = (*d.NW)(x1p, x2, x3);
+    f[DIR_P0P]  = (*d.TE)(x1, x2, x3);
+    f[DIR_M0P]  = (*d.TW)(x1p, x2, x3);
+    f[DIR_0PP]  = (*d.TN)(x1, x2, x3);
+    f[DIR_0MP]  = (*d.TS)(x1, x2p, x3);
+    f[DIR_PPP] = (*d.TNE)(x1, x2, x3);
+    f[DIR_MPP] = (*d.TNW)(x1p, x2, x3);
+    f[DIR_PMP] = (*d.TSE)(x1, x2p, x3);
+    f[DIR_MMP] = (*d.TSW)(x1p, x2p, x3);
 
-    f[D3Q27System::DIR_M00]   = (*d.W)(x1p, x2, x3);
-    f[D3Q27System::DIR_0M0]   = (*d.S)(x1, x2p, x3);
-    f[D3Q27System::DIR_00M]   = (*d.B)(x1, x2, x3p);
-    f[D3Q27System::DIR_MM0]  = (*d.SW)(x1p, x2p, x3);
-    f[D3Q27System::DIR_PM0]  = (*d.SE)(x1, x2p, x3);
-    f[D3Q27System::DIR_M0M]  = (*d.BW)(x1p, x2, x3p);
-    f[D3Q27System::DIR_P0M]  = (*d.BE)(x1, x2, x3p);
-    f[D3Q27System::DIR_0MM]  = (*d.BS)(x1, x2p, x3p);
-    f[D3Q27System::DIR_0PM]  = (*d.BN)(x1, x2, x3p);
-    f[D3Q27System::DIR_MMM] = (*d.BSW)(x1p, x2p, x3p);
-    f[D3Q27System::DIR_PMM] = (*d.BSE)(x1, x2p, x3p);
-    f[D3Q27System::DIR_MPM] = (*d.BNW)(x1p, x2, x3p);
-    f[D3Q27System::DIR_PPM] = (*d.BNE)(x1, x2, x3p);
+    f[DIR_M00]   = (*d.W)(x1p, x2, x3);
+    f[DIR_0M0]   = (*d.S)(x1, x2p, x3);
+    f[DIR_00M]   = (*d.B)(x1, x2, x3p);
+    f[DIR_MM0]  = (*d.SW)(x1p, x2p, x3);
+    f[DIR_PM0]  = (*d.SE)(x1, x2p, x3);
+    f[DIR_M0M]  = (*d.BW)(x1p, x2, x3p);
+    f[DIR_P0M]  = (*d.BE)(x1, x2, x3p);
+    f[DIR_0MM]  = (*d.BS)(x1, x2p, x3p);
+    f[DIR_0PM]  = (*d.BN)(x1, x2, x3p);
+    f[DIR_MMM] = (*d.BSW)(x1p, x2p, x3p);
+    f[DIR_PMM] = (*d.BSE)(x1, x2p, x3p);
+    f[DIR_MPM] = (*d.BNW)(x1p, x2, x3p);
+    f[DIR_PPM] = (*d.BNE)(x1, x2, x3p);
 
-    f[D3Q27System::DIR_000] = (*d.REST)(x1, x2, x3);
+    f[DIR_000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::setDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
+    using namespace vf::lbm::dir;
+
     size_t x1p = x1 + 1;
     size_t x2p = x2 + 1;
     size_t x3p = x3 + 1;
 
-    (*d.E)(x1, x2, x3)     = f[D3Q27System::INV_P00];
-    (*d.N)(x1, x2, x3)     = f[D3Q27System::INV_0P0];
-    (*d.T)(x1, x2, x3)     = f[D3Q27System::INV_00P];
-    (*d.NE)(x1, x2, x3)    = f[D3Q27System::INV_PP0];
-    (*d.NW)(x1p, x2, x3)   = f[D3Q27System::INV_MP0];
-    (*d.TE)(x1, x2, x3)    = f[D3Q27System::INV_P0P];
-    (*d.TW)(x1p, x2, x3)   = f[D3Q27System::INV_M0P];
-    (*d.TN)(x1, x2, x3)    = f[D3Q27System::INV_0PP];
-    (*d.TS)(x1, x2p, x3)   = f[D3Q27System::INV_0MP];
-    (*d.TNE)(x1, x2, x3)   = f[D3Q27System::INV_PPP];
-    (*d.TNW)(x1p, x2, x3)  = f[D3Q27System::INV_MPP];
-    (*d.TSE)(x1, x2p, x3)  = f[D3Q27System::INV_PMP];
-    (*d.TSW)(x1p, x2p, x3) = f[D3Q27System::INV_MMP];
+    (*d.E)(x1, x2, x3)     = f[INV_P00];
+    (*d.N)(x1, x2, x3)     = f[INV_0P0];
+    (*d.T)(x1, x2, x3)     = f[INV_00P];
+    (*d.NE)(x1, x2, x3)    = f[INV_PP0];
+    (*d.NW)(x1p, x2, x3)   = f[INV_MP0];
+    (*d.TE)(x1, x2, x3)    = f[INV_P0P];
+    (*d.TW)(x1p, x2, x3)   = f[INV_M0P];
+    (*d.TN)(x1, x2, x3)    = f[INV_0PP];
+    (*d.TS)(x1, x2p, x3)   = f[INV_0MP];
+    (*d.TNE)(x1, x2, x3)   = f[INV_PPP];
+    (*d.TNW)(x1p, x2, x3)  = f[INV_MPP];
+    (*d.TSE)(x1, x2p, x3)  = f[INV_PMP];
+    (*d.TSW)(x1p, x2p, x3) = f[INV_MMP];
 
-    (*d.W)(x1p, x2, x3)     = f[D3Q27System::INV_M00];
-    (*d.S)(x1, x2p, x3)     = f[D3Q27System::INV_0M0];
-    (*d.B)(x1, x2, x3p)     = f[D3Q27System::INV_00M];
-    (*d.SW)(x1p, x2p, x3)   = f[D3Q27System::INV_MM0];
-    (*d.SE)(x1, x2p, x3)    = f[D3Q27System::INV_PM0];
-    (*d.BW)(x1p, x2, x3p)   = f[D3Q27System::INV_M0M];
-    (*d.BE)(x1, x2, x3p)    = f[D3Q27System::INV_P0M];
-    (*d.BS)(x1, x2p, x3p)   = f[D3Q27System::INV_0MM];
-    (*d.BN)(x1, x2, x3p)    = f[D3Q27System::INV_0PM];
-    (*d.BSW)(x1p, x2p, x3p) = f[D3Q27System::INV_MMM];
-    (*d.BSE)(x1, x2p, x3p)  = f[D3Q27System::INV_PMM];
-    (*d.BNW)(x1p, x2, x3p)  = f[D3Q27System::INV_MPM];
-    (*d.BNE)(x1, x2, x3p)   = f[D3Q27System::INV_PPM];
+    (*d.W)(x1p, x2, x3)     = f[INV_M00];
+    (*d.S)(x1, x2p, x3)     = f[INV_0M0];
+    (*d.B)(x1, x2, x3p)     = f[INV_00M];
+    (*d.SW)(x1p, x2p, x3)   = f[INV_MM0];
+    (*d.SE)(x1, x2p, x3)    = f[INV_PM0];
+    (*d.BW)(x1p, x2, x3p)   = f[INV_M0M];
+    (*d.BE)(x1, x2, x3p)    = f[INV_P0M];
+    (*d.BS)(x1, x2p, x3p)   = f[INV_0MM];
+    (*d.BN)(x1, x2, x3p)    = f[INV_0PM];
+    (*d.BSW)(x1p, x2p, x3p) = f[INV_MMM];
+    (*d.BSE)(x1, x2p, x3p)  = f[INV_PMM];
+    (*d.BNW)(x1p, x2, x3p)  = f[INV_MPM];
+    (*d.BNE)(x1, x2, x3p)   = f[INV_PPM];
 
-    (*d.REST)(x1, x2, x3) = f[D3Q27System::DIR_000];
+    (*d.REST)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3)
 {
-    f[D3Q27System::INV_P00]   = (*d.E)(x1, x2, x3);
-    f[D3Q27System::INV_0P0]   = (*d.N)(x1, x2, x3);
-    f[D3Q27System::INV_00P]   = (*d.T)(x1, x2, x3);
-    f[D3Q27System::INV_PP0]  = (*d.NE)(x1, x2, x3);
-    f[D3Q27System::INV_MP0]  = (*d.NW)(x1 + 1, x2, x3);
-    f[D3Q27System::INV_P0P]  = (*d.TE)(x1, x2, x3);
-    f[D3Q27System::INV_M0P]  = (*d.TW)(x1 + 1, x2, x3);
-    f[D3Q27System::INV_0PP]  = (*d.TN)(x1, x2, x3);
-    f[D3Q27System::INV_0MP]  = (*d.TS)(x1, x2 + 1, x3);
-    f[D3Q27System::INV_PPP] = (*d.TNE)(x1, x2, x3);
-    f[D3Q27System::INV_MPP] = (*d.TNW)(x1 + 1, x2, x3);
-    f[D3Q27System::INV_PMP] = (*d.TSE)(x1, x2 + 1, x3);
-    f[D3Q27System::INV_MMP] = (*d.TSW)(x1 + 1, x2 + 1, x3);
+    using namespace vf::lbm::dir;
 
-    f[D3Q27System::INV_M00]   = (*d.W)(x1 + 1, x2, x3);
-    f[D3Q27System::INV_0M0]   = (*d.S)(x1, x2 + 1, x3);
-    f[D3Q27System::INV_00M]   = (*d.B)(x1, x2, x3 + 1);
-    f[D3Q27System::INV_MM0]  = (*d.SW)(x1 + 1, x2 + 1, x3);
-    f[D3Q27System::INV_PM0]  = (*d.SE)(x1, x2 + 1, x3);
-    f[D3Q27System::INV_M0M]  = (*d.BW)(x1 + 1, x2, x3 + 1);
-    f[D3Q27System::INV_P0M]  = (*d.BE)(x1, x2, x3 + 1);
-    f[D3Q27System::INV_0MM]  = (*d.BS)(x1, x2 + 1, x3 + 1);
-    f[D3Q27System::INV_0PM]  = (*d.BN)(x1, x2, x3 + 1);
-    f[D3Q27System::INV_MMM] = (*d.BSW)(x1 + 1, x2 + 1, x3 + 1);
-    f[D3Q27System::INV_PMM] = (*d.BSE)(x1, x2 + 1, x3 + 1);
-    f[D3Q27System::INV_MPM] = (*d.BNW)(x1 + 1, x2, x3 + 1);
-    f[D3Q27System::INV_PPM] = (*d.BNE)(x1, x2, x3 + 1);
+    f[INV_P00]   = (*d.E)(x1, x2, x3);
+    f[INV_0P0]   = (*d.N)(x1, x2, x3);
+    f[INV_00P]   = (*d.T)(x1, x2, x3);
+    f[INV_PP0]  = (*d.NE)(x1, x2, x3);
+    f[INV_MP0]  = (*d.NW)(x1 + 1, x2, x3);
+    f[INV_P0P]  = (*d.TE)(x1, x2, x3);
+    f[INV_M0P]  = (*d.TW)(x1 + 1, x2, x3);
+    f[INV_0PP]  = (*d.TN)(x1, x2, x3);
+    f[INV_0MP]  = (*d.TS)(x1, x2 + 1, x3);
+    f[INV_PPP] = (*d.TNE)(x1, x2, x3);
+    f[INV_MPP] = (*d.TNW)(x1 + 1, x2, x3);
+    f[INV_PMP] = (*d.TSE)(x1, x2 + 1, x3);
+    f[INV_MMP] = (*d.TSW)(x1 + 1, x2 + 1, x3);
 
-    f[D3Q27System::DIR_000] = (*d.REST)(x1, x2, x3);
+    f[INV_M00]   = (*d.W)(x1 + 1, x2, x3);
+    f[INV_0M0]   = (*d.S)(x1, x2 + 1, x3);
+    f[INV_00M]   = (*d.B)(x1, x2, x3 + 1);
+    f[INV_MM0]  = (*d.SW)(x1 + 1, x2 + 1, x3);
+    f[INV_PM0]  = (*d.SE)(x1, x2 + 1, x3);
+    f[INV_M0M]  = (*d.BW)(x1 + 1, x2, x3 + 1);
+    f[INV_P0M]  = (*d.BE)(x1, x2, x3 + 1);
+    f[INV_0MM]  = (*d.BS)(x1, x2 + 1, x3 + 1);
+    f[INV_0PM]  = (*d.BN)(x1, x2, x3 + 1);
+    f[INV_MMM] = (*d.BSW)(x1 + 1, x2 + 1, x3 + 1);
+    f[INV_PMM] = (*d.BSE)(x1, x2 + 1, x3 + 1);
+    f[INV_MPM] = (*d.BNW)(x1 + 1, x2, x3 + 1);
+    f[INV_PPM] = (*d.BNE)(x1, x2, x3 + 1);
+
+    f[DIR_000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     //(*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::DIR_P00];
     //(*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::DIR_0P0];
@@ -225,7 +231,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInv(const LBMReal *const f, size_t x1, s
     //(*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSoA::setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                      unsigned long int direction)
 {
     // bool directionFlag = false;
@@ -288,7 +294,7 @@ void D3Q27EsoTwist3DSoA::setDistributionForDirection(const LBMReal *const f, siz
     //#endif //DEBUG
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction)
+void D3Q27EsoTwist3DSoA::setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction)
 {
     // switch (direction)
     //{
@@ -378,7 +384,7 @@ void D3Q27EsoTwist3DSoA::setDistributionForDirection(LBMReal f, size_t x1, size_
     //}
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                         unsigned long int direction)
 {
     //   bool directionFlag = false;
@@ -444,7 +450,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(const LBMReal *const f, 
     //#endif //DEBUG
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                         unsigned long int direction)
 {
     // switch (direction)
@@ -535,7 +541,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(LBMReal f, size_t x1, si
     //}
 }
 //////////////////////////////////////////////////////////////////////////
-LBMReal D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/,
+real D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/,
                                                            int /*direction*/)
 {
     // switch (direction)

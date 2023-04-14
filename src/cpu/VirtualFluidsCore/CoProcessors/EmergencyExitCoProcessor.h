@@ -25,10 +25,10 @@ public:
                              SPtr<MPIIORestartCoProcessor> rp, std::shared_ptr<vf::mpi::Communicator> comm);
     ~EmergencyExitCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
     void writeMetafile(int status);
     bool readMetafile();
     void checkMetafile();

@@ -15,7 +15,6 @@
 
 #include "metis.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 
@@ -66,7 +65,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 	Communicator* comm = Communicator::getInstanz();
 
 	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-	para->setNumprocs(comm->getNummberOfProcess());
+	para->setNumprocs(comm->getNumberOfProcess());
 	para->setDevices(StringUtil::toUintVector(input->getValue("Devices")));
 	para->setMyID(comm->getPID());
 	
@@ -319,7 +318,7 @@ void multipleLevel(const std::string& configPath)
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-        gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
         //////////////////////////////////////////////////////////////////////////
 

@@ -39,8 +39,9 @@ from typing import overload, Union
 import numpy as np
 import numpy.typing as npt
 import pyfluids.bindings.basics
-from . import grid_generator as grid_generator, probes as probes
 
+from  pyfluids.bindings.gpu import grid_generator as grid_generator
+from pyfluids.bindings.gpu import probes as probes
 
 class PreCollisionInteractor:
     def __init__(self, *args, **kwargs) -> None: ...
@@ -48,7 +49,6 @@ class PreCollisionInteractor:
 
 class FileCollection:
     def __init__(self, *args, **kwargs) -> None: ...
-
 
 class ActuatorFarm(PreCollisionInteractor):
     def __init__(self, number_of_blades_per_turbine: int, density: float, number_of_nodes_per_blade: int, epsilon: float, level: int, delta_t: float, delta_x: float, use_host_arrays: bool) -> None: ...
@@ -127,7 +127,7 @@ class ActuatorFarm(PreCollisionInteractor):
     @property
     def number_of_indices(self) -> int: ...
     @property
-    def number_of_nodes(self) -> int: ...
+    def number_of_grid_nodes(self) -> int: ...
     @property
     def number_of_nodes_per_blade(self) -> int: ...
     @property

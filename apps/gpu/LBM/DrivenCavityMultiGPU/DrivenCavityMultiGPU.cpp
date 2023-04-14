@@ -16,7 +16,6 @@
 #include "basics/Core/VectorTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/LbmOrGks.h"
 #include "basics/Core/Logger/Logger.h"
 #include "basics/Core/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
@@ -51,25 +50,13 @@
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 #include "utilities/communication.h"
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//          U s e r    s e t t i n g s
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-const std::string outPath("output/DrivenCavity_Results/");
-const std::string gridPath = "output/DrivenCavity_Results/grid/";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +78,7 @@ void multipleLevel(std::filesystem::path& configPath)
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
     config.load(configPath.string());
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
@@ -99,9 +86,6 @@ void multipleLevel(std::filesystem::path& configPath)
 
     bool useGridGenerator = true;
     bool useLevels        = true;
-    // para->setUseStreams(useStreams);                  // set in config
-    // para->useReducedCommunicationAfterFtoC = true;    // set in config
-    para->setCalcTurbulenceIntensity(false);
 
     if (para->getNumprocs() == 1) {
         para->useReducedCommunicationAfterFtoC = false;
@@ -109,38 +93,31 @@ void multipleLevel(std::filesystem::path& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const real L        = 1.0;
-    const real Re       = 1000.0; // 1000
+    const std::string outPath("output/" + std::to_string(para->getNumprocs()) + "GPU/");
+    const std::string gridPath = "output/";
+    std::string simulationName("DrivenCavityMultiGPU");
+
+    const real L = 1.0;
+    const real Re = 1000.0;
     const real velocity = 1.0;
-    const real dt       = (real)1.0e-3; // 0.5e-3;
-    const uint nx       = 128;
-    std::string simulationName("DrivenCavityChimMultiGPU");
+    const real velocityLB = 0.05; // LB units
+    const uint nx = 64;
 
     // para->setTimestepOut(10000);   // set in config
     // para->setTimestepEnd(10000);   // set in config
 
     const real dxGrid      = L / real(nx);
-    const real velocityLB  = velocity * dt / dxGrid;       // LB units
+    const real dt  = velocityLB / velocity * dxGrid;
     const real vxLB        = velocityLB / (real)sqrt(2.0); // LB units
     const real vyLB        = velocityLB / (real)sqrt(2.0); // LB units
     const real viscosityLB = nx * velocityLB / Re;         // LB units
 
-    para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-        rho = (real)1.0;
-        vx  = (real)(coordX * velocityLB);
-        vy  = (real)(coordY * velocityLB);
-        vz  = (real)(coordZ * velocityLB);
-    });
-
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(velocity / velocityLB);
-    para->setDensityRatio((real)1.0); // correct value?
+    para->setDensityRatio((real)1.0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    para->setCalcDragLift(false);
-    para->setUseWale(false);
 
     if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
     para->setOutputPrefix(simulationName);
@@ -148,9 +125,8 @@ void multipleLevel(std::filesystem::path& configPath)
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
-    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -159,7 +135,7 @@ void multipleLevel(std::filesystem::path& configPath)
     VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
     VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
     VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
-
+    VF_LOG_INFO("dt [s]                           = {}", dt);
     VF_LOG_INFO("simulation parameters:");
     VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
 
@@ -187,7 +163,7 @@ void multipleLevel(std::filesystem::path& configPath)
             const real ySplit = 0.0;
             const real zSplit = 0.0;
 
-            if (communicator.getNummberOfProcess() == 2) {
+            if (communicator.getNumberOfProcess() == 2) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zSplit + overlap,
@@ -211,7 +187,7 @@ void multipleLevel(std::filesystem::path& configPath)
                         std::make_shared<BoundingBox>(xGridMin, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
                 }
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
@@ -228,13 +204,13 @@ void multipleLevel(std::filesystem::path& configPath)
                 if (generatePart == 0)
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
                 if (generatePart == 1)
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcess() == 4) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, yGridMax,
@@ -270,7 +246,7 @@ void multipleLevel(std::filesystem::path& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
@@ -305,20 +281,20 @@ void multipleLevel(std::filesystem::path& configPath)
                 }
                 if (generatePart == 2) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 }
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                 if (generatePart == 3) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 }
                 if (generatePart == 1) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcess() == 8) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
@@ -382,7 +358,7 @@ void multipleLevel(std::filesystem::path& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, ySplit, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
                 if (generatePart == 0) {
@@ -474,22 +450,22 @@ void multipleLevel(std::filesystem::path& configPath)
                 if (generatePart == 4) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 }
                 if (generatePart == 5) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 }
                 if (generatePart == 6) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 }
                 if (generatePart == 7) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
                 }
                 //////////////////////////////////////////////////////////////////////////
             }
@@ -507,7 +483,7 @@ void multipleLevel(std::filesystem::path& configPath)
                 gridBuilder->addGrid(level1, 1);
             }
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
@@ -515,7 +491,7 @@ void multipleLevel(std::filesystem::path& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
 
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->writeGridsToVtk(outPath + "/grid/");

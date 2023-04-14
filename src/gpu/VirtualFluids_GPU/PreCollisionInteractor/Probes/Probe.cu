@@ -37,7 +37,7 @@
 #include <helper_cuda.h>
 
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include <Core/StringUtilities/StringUtil.h>
 
@@ -45,7 +45,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 __host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int array)
 {

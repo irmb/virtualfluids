@@ -32,7 +32,7 @@ CascadeCompSP27::CascadeCompSP27(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 CascadeCompSP27::CascadeCompSP27()

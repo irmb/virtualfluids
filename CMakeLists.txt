@@ -52,9 +52,6 @@ option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
 option(BUILD_USE_MPI "include MPI library support" ON)
 
 # vf gpu
-option(BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
-option(BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
-option(BUILD_JSONCPP         "Builds json cpp "            OFF)
 option(BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
@@ -78,7 +75,7 @@ endif()
 option(BUILD_VF_PYTHON_BINDINGS "" OFF)
 
 option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
-
+option(BUILD_VF_ALL_SAMPLES "Build All Samples" OFF)
 
 #################################################################################
 #  MACROS
@@ -100,7 +97,7 @@ IF( BUILD_VF_DOUBLE_ACCURACY )
 ENDIF()
 
 # set gpu features
-if(BUILD_VF_GPU OR BUILD_VF_GKS)
+if(BUILD_VF_GPU)
     include(CheckLanguage)
     check_language(CUDA)
 
@@ -137,6 +134,8 @@ if(BUILD_VF_GPU OR BUILD_VF_GKS)
     message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
     message(STATUS "CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
     set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}" CACHE STRING "Cuda Architecture (compute capabilitiy)")
+
+    set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 endif()
 
 
@@ -212,15 +211,19 @@ add_subdirectory(src/lbm)
 #  VIRTUAL FLUIDS CPU / GPU
 #################################################################################
 if (BUILD_VF_CPU)
-    include (cpu.cmake)
+    include(cpu.cmake)
 endif()
-if(BUILD_VF_GPU OR BUILD_VF_GKS)
+if(BUILD_VF_GPU)
     add_subdirectory(src/cuda)
-    include (gpu.cmake)
+    include(gpu.cmake)
 endif()
 
 if (BUILD_VF_PYTHON_BINDINGS)
-    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.6.0)
+    find_package(pybind11)
+    if(NOT pybind11_FOUND)
+        message("Did not find pybind in includes, fall back to shipped version.")
+        add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.10.3)
+    endif()
     add_subdirectory(pythonbindings)
 endif()
 

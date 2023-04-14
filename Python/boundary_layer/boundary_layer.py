@@ -119,7 +119,7 @@ logger.vf_log_info(f"viscosity [10^8 dx^2/dt] = {viscosity_LB*1e8}")
 logger.vf_log_info(f"u* /(dx/dt) = {u_star*dt/dx}")
 logger.vf_log_info(f"dpdx  = {pressure_gradient}")
 logger.vf_log_info(f"dpdx /(dx/dt^2) = {pressure_gradient_LB}")
-    
+
 #%%
 
 #%%
@@ -139,13 +139,15 @@ para.set_timestep_start_out(int(t_start_out/dt))
 para.set_timestep_out(int(t_out/dt))
 para.set_timestep_end(int(t_end/dt))
 para.set_is_body_force(config.get_bool_value("bodyForce"))
+para.set_devices(np.arange(10))
+para.set_max_dev(communicator.get_number_of_process())
 #%%
 tm_factory = gpu.TurbulenceModelFactory(para)
 tm_factory.read_config_file(config)
 #%%
 grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
-grid_builder.build_grids(basics.LbmOrGks.LBM, False)
+grid_builder.build_grids(False)
 
 sampling_offset = 2
 if read_precursor:
@@ -164,13 +166,7 @@ bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
 bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
 para.set_outflow_pressure_correction_factor(0.0); 
 #%%
-def init_func(coord_x, coord_y, coord_z):
-    return [
-        0.0, 
-        (u_star/0.4 * np.log(np.maximum(coord_z,z0)/z0) + 2.0*np.sin(np.pi*16*coord_x/length[0])*np.sin(np.pi*8*coord_z/boundary_layer_height)/(np.square(coord_z/boundary_layer_height)+1))  * dt / dx, 
-        2.0*np.sin(np.pi*16.*coord_x/length[0])*np.sin(np.pi*8.*coord_z/boundary_layer_height)/(np.square(coord_z/boundary_layer_height)+1.)  * dt / dx, 
-        8.0*u_star/0.4*(np.sin(np.pi*8.0*coord_y/boundary_layer_height)*np.sin(np.pi*8.0*coord_z/boundary_layer_height)+np.sin(np.pi*8.0*coord_x/length[0]))/(np.square(length[2]/2.0-coord_z)+1.) * dt / dx]
-para.set_initial_condition(init_func)
+para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, dx/dx)
 
 #%%
 planar_average_probe = gpu.probes.PlanarAverageProbe("horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')

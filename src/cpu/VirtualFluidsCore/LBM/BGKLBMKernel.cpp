@@ -6,6 +6,7 @@
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "Block3D.h"
+#include "basics/constants/NumericConstants.h"
 
 #define PROOF_CORRECTNESS
 
@@ -40,7 +41,9 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
 void BGKLBMKernel::calculate(int step)
 {
     using namespace D3Q27System;
-    using namespace UbMath;
+ //   using namespace UbMath;
+   using namespace vf::basics::constant;
+   using namespace vf::lbm::dir;
 
     // initializing of forcing stuff
     if (withForcing) {
@@ -67,9 +70,9 @@ void BGKLBMKernel::calculate(int step)
         std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal feq[D3Q27System::ENDF + 1];
-    LBMReal drho, vx1, vx2, vx3;
+    real f[D3Q27System::ENDF + 1];
+    real feq[D3Q27System::ENDF + 1];
+    real drho, vx1, vx2, vx3;
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
     const int bcArrayMaxX2 = (int)bcArray->getNX2();
     const int bcArrayMaxX3 = (int)bcArray->getNX3();
@@ -135,7 +138,7 @@ void BGKLBMKernel::calculate(int step)
                     vx3 = f[DIR_00P] - f[DIR_00M] + f[DIR_P0P] - f[DIR_M0M] - f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] - f[DIR_0MM] - f[DIR_0PM] + f[DIR_0MP] + f[DIR_PPP] +
                           f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] - f[DIR_PPM] - f[DIR_MMM] - f[DIR_PMM] - f[DIR_MPM];
 
-                    LBMReal cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+                    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
                     feq[DIR_000] = c8o27 * (drho - cu_sq);
                     feq[DIR_P00]    = c2o27 * (drho + 3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);
@@ -244,10 +247,10 @@ void BGKLBMKernel::calculate(int step)
                     }
                     //////////////////////////////////////////////////////////////////////////
 #ifdef PROOF_CORRECTNESS
-                    LBMReal rho_post = f[DIR_000] + f[DIR_P00] + f[DIR_M00] + f[DIR_0P0] + f[DIR_0M0] + f[DIR_00P] + f[DIR_00M] + f[DIR_PP0] + f[DIR_MM0] + f[DIR_PM0] +
+                    real rho_post = f[DIR_000] + f[DIR_P00] + f[DIR_M00] + f[DIR_0P0] + f[DIR_0M0] + f[DIR_00P] + f[DIR_00M] + f[DIR_PP0] + f[DIR_MM0] + f[DIR_PM0] +
                                        f[DIR_MP0] + f[DIR_P0P] + f[DIR_M0M] + f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] + f[DIR_0MM] + f[DIR_0PM] + f[DIR_0MP] + f[DIR_PPP] +
                                        f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] + f[DIR_PPM] + f[DIR_MMM] + f[DIR_PMM] + f[DIR_MPM];
-                    LBMReal dif = drho - rho_post;
+                    real dif = drho - rho_post;
 #ifdef SINGLEPRECISION
                     if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
@@ -263,35 +266,35 @@ void BGKLBMKernel::calculate(int step)
                     //////////////////////////////////////////////////////////////////////////
                     // write distribution
                     //////////////////////////////////////////////////////////////////////////
-                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)     = f[D3Q27System::INV_P00];
-                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)     = f[D3Q27System::INV_0P0];
-                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)     = f[D3Q27System::INV_00P];
-                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)    = f[D3Q27System::INV_PP0];
-                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)   = f[D3Q27System::INV_MP0];
-                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)    = f[D3Q27System::INV_P0P];
-                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)   = f[D3Q27System::INV_M0P];
-                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)    = f[D3Q27System::INV_0PP];
-                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)   = f[D3Q27System::INV_0MP];
-                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)   = f[D3Q27System::INV_PPP];
-                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)  = f[D3Q27System::INV_MPP];
-                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)  = f[D3Q27System::INV_PMP];
-                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[D3Q27System::INV_MMP];
+                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)     = f[INV_P00];
+                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)     = f[INV_0P0];
+                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)     = f[INV_00P];
+                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)    = f[INV_PP0];
+                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)   = f[INV_MP0];
+                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)    = f[INV_P0P];
+                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)   = f[INV_M0P];
+                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)    = f[INV_0PP];
+                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)   = f[INV_0MP];
+                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)   = f[INV_PPP];
+                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)  = f[INV_MPP];
+                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)  = f[INV_PMP];
+                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[INV_MMP];
 
-                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     = f[D3Q27System::INV_M00];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     = f[D3Q27System::INV_0M0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     = f[D3Q27System::INV_00M];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   = f[D3Q27System::INV_MM0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    = f[D3Q27System::INV_PM0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   = f[D3Q27System::INV_M0M];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    = f[D3Q27System::INV_P0M];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   = f[D3Q27System::INV_0MM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    = f[D3Q27System::INV_0PM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[D3Q27System::INV_MMM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  = f[D3Q27System::INV_PMM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  = f[D3Q27System::INV_MPM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   = f[D3Q27System::INV_PPM];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     = f[INV_M00];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     = f[INV_0M0];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     = f[INV_00M];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   = f[INV_MM0];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    = f[INV_PM0];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   = f[INV_M0M];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    = f[INV_P0M];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   = f[INV_0MM];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    = f[INV_0PM];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[INV_MMM];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  = f[INV_PMM];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  = f[INV_MPM];
+                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   = f[INV_PPM];
 
-                    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::DIR_000];
+                    (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
                     //////////////////////////////////////////////////////////////////////////
                 }
             }
@@ -299,4 +302,4 @@ void BGKLBMKernel::calculate(int step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-double BGKLBMKernel::getCalculationTime() { return 0.0; }
+real BGKLBMKernel::getCalculationTime() { return 0.0; }

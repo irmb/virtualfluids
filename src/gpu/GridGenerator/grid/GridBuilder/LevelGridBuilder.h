@@ -38,7 +38,7 @@
 #include <memory>
 #include <array>
 
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
 #include "gpu/GridGenerator/global.h"
 
@@ -47,7 +47,7 @@
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 struct Vertex;
 class  Grid;
@@ -81,7 +81,7 @@ public:
     GRIDGENERATOR_EXPORT  ~LevelGridBuilder() override;
 
     GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
-    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx, real q = 0.5);
+    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx);
     GRIDGENERATOR_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);

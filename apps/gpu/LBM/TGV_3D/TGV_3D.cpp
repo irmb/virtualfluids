@@ -46,7 +46,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
 #include "Core/Logger/Logger.h"
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
@@ -124,7 +123,7 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel( "CumulantK17Comp" );
+std::string kernel( "CumulantK17" );
 
 //std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 std::string path("D:/out/TGV_3D/"); //TESLA03
@@ -156,7 +155,7 @@ void multipleLevel(const std::string& configPath)
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +183,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

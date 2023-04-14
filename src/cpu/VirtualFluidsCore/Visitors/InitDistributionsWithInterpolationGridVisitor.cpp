@@ -16,7 +16,7 @@
 using namespace std;
 
 InitDistributionsWithInterpolationGridVisitor::InitDistributionsWithInterpolationGridVisitor(
-    SPtr<Grid3D> oldGrid, InterpolationProcessorPtr iProcessor, LBMReal nu)
+    SPtr<Grid3D> oldGrid, InterpolationProcessorPtr iProcessor, real nu)
     : oldGrid(oldGrid), iProcessor(iProcessor), nu(nu)
 {
 }
@@ -119,11 +119,11 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
         MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
@@ -141,11 +141,11 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
         SPtr<EsoTwist3D> newDistributions =
             dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getLocalDistributions();
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getNonLocalDistributions();
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getZeroDistributions();
 
         MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
@@ -165,10 +165,10 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
 {
     D3Q27ICell icellC;
     D3Q27ICell icellF;
-    LBMReal xoff, yoff, zoff;
+    real xoff, yoff, zoff;
 
-    LBMReal omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    LBMReal omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -265,11 +265,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
         MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
@@ -285,10 +285,10 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
     } else if (newBlockRank == newGridRank && newBlock->isActive()) {
         D3Q27ICell icellC;
         D3Q27ICell icellF;
-        LBMReal xoff, yoff, zoff;
+        real xoff, yoff, zoff;
 
-        LBMReal omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        LBMReal omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -313,11 +313,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 
         SPtr<EsoTwist3D> oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
 
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
         MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
@@ -393,12 +393,12 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToCoarse(SPtr<Block3D> oldBlock,
                                                                                       SPtr<Block3D> newBlock)
 {
-    LBMReal icellC[27];
+    real icellC[27];
     D3Q27ICell icellF;
-    LBMReal xoff, yoff, zoff;
+    real xoff, yoff, zoff;
 
-    LBMReal omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    LBMReal omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -496,11 +496,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
         MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
@@ -514,12 +514,12 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
         MPI_Send(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, newBlockRank, 0, MPI_COMM_WORLD);
     } else if (newBlockRank == newGridRank && newBlock->isActive()) {
-        LBMReal icellC[27];
+        real icellC[27];
         D3Q27ICell icellF;
-        LBMReal xoff, yoff, zoff;
+        real xoff, yoff, zoff;
 
-        LBMReal omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        LBMReal omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -544,11 +544,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
 
         SPtr<EsoTwist3D> oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
 
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-        CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
         MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),

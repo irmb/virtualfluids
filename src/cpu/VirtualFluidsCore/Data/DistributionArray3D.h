@@ -55,39 +55,39 @@ public:
     //! \param x1 coordinate x1
     //! \param x2 coordinate x2
     //! \param x3 coordinate x3
-    virtual void getDistribution(LBMReal *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void getDistribution(real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! set distribution
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x2 coordinate x2
     //! \param x3 coordinate x3
-    virtual void setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void setDistribution(const real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! get distribution in inverse order
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x2 coordinate x2
     //! \param x3 coordinate x3
-    virtual void getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! set distribution in inverse order
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x1 coordinate x2
     //! \param x1 coordinate x3
-    virtual void setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! set distribution in inverse order
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x1 coordinate x2
     //! \param x1 coordinate x3
-    virtual void setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+    virtual void setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                              unsigned long int direction)                               = 0;
-    virtual void setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction) = 0;
-    virtual LBMReal getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)      = 0;
-    virtual void setDistributionInvForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
+    virtual void setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) = 0;
+    virtual real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)      = 0;
+    virtual void setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                 unsigned long int direction)                            = 0;
-    virtual void setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
+    virtual void setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                 unsigned long int direction)                            = 0;
-    virtual LBMReal getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)         = 0;
+    virtual real getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)         = 0;
     virtual void swap()                                                                                 = 0;
 
 protected:

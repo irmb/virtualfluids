@@ -7,14 +7,14 @@
 #include "LBMSystem.h"
 
 struct D3Q27ICell {
-    LBMReal TSW[27];
-    LBMReal TNW[27];
-    LBMReal TNE[27];
-    LBMReal TSE[27];
-    LBMReal BSW[27];
-    LBMReal BNW[27];
-    LBMReal BNE[27];
-    LBMReal BSE[27];
+    real TSW[27];
+    real TNW[27];
+    real TNE[27];
+    real TSE[27];
+    real BSW[27];
+    real BNW[27];
+    real BNE[27];
+    real BSE[27];
 };
 
 class InterpolationProcessor;
@@ -28,34 +28,34 @@ public:
     InterpolationProcessor();
     virtual ~InterpolationProcessor();
     virtual InterpolationProcessorPtr clone()                                    = 0;
-    virtual void setOmegas(LBMReal omegaC, LBMReal omegaF)                       = 0;
+    virtual void setOmegas(real omegaC, real omegaF)                       = 0;
     virtual void interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF) = 0;
-    virtual void interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF, LBMReal xoff, LBMReal yoff,
-                                         LBMReal zoff)                           = 0;
-    virtual void interpolateFineToCoarse(D3Q27ICell &icellF, LBMReal *icellC)    = 0;
-    virtual void interpolateFineToCoarse(D3Q27ICell &icellF, LBMReal *icellC, LBMReal xoff, LBMReal yoff,
-                                         LBMReal zoff)                           = 0;
+    virtual void interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF, real xoff, real yoff,
+                                         real zoff)                           = 0;
+    virtual void interpolateFineToCoarse(D3Q27ICell &icellF, real *icellC)    = 0;
+    virtual void interpolateFineToCoarse(D3Q27ICell &icellF, real *icellC, real xoff, real yoff,
+                                         real zoff)                           = 0;
 
     static void readICell(SPtr<DistributionArray3D> f, D3Q27ICell &icell, int x1, int x2, int x3);
     static void writeICell(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3);
     static void writeICellInv(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3);
-    static void writeINode(SPtr<DistributionArray3D> f, const LBMReal *const inode, int x1, int x2, int x3);
-    static void writeINodeInv(SPtr<DistributionArray3D> f, const LBMReal *const inode, int x1, int x2, int x3);
+    static void writeINode(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2, int x3);
+    static void writeINodeInv(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2, int x3);
     static bool iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3);
     static int iCellHowManySolids(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3);
 
     bool findNeighborICell(const SPtr<BCArray3D> bcArray, SPtr<DistributionArray3D> f, D3Q27ICell &icell, int maxX1,
-                           int maxX2, int maxX3, int x1, int x2, int x3, LBMReal &xoff, LBMReal &yoff, LBMReal &zoff);
+                           int maxX2, int maxX3, int x1, int x2, int x3, real &xoff, real &yoff, real &zoff);
 
 protected:
-    virtual void calcInterpolatedCoefficiets(const D3Q27ICell &icell, LBMReal omega, LBMReal eps_new) {}
-    virtual void calcInterpolatedNodeFC(LBMReal *f, LBMReal omega) {}
-    virtual void calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal &vx1, LBMReal &vx2, LBMReal &vx3) {}
-    virtual void calcInterpolatedShearStress(LBMReal x, LBMReal y, LBMReal z, LBMReal &tauxx, LBMReal &tauyy,
-                                             LBMReal &tauzz, LBMReal &tauxy, LBMReal &tauxz, LBMReal &tauyz)
+    virtual void calcInterpolatedCoefficiets(const D3Q27ICell &icell, real omega, real eps_new) {}
+    virtual void calcInterpolatedNodeFC(real *f, real omega) {}
+    virtual void calcInterpolatedVelocity(real x, real y, real z, real &vx1, real &vx2, real &vx3) {}
+    virtual void calcInterpolatedShearStress(real x, real y, real z, real &tauxx, real &tauyy,
+                                             real &tauzz, real &tauxy, real &tauxz, real &tauyz)
     {
     }
-    virtual void setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff) {}
+    virtual void setOffsets(real xoff, real yoff, real zoff) {}
     friend class InterpolationHelper;
 
 private:

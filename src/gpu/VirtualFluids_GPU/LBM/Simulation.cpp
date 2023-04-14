@@ -139,9 +139,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // CUDA streams
     if (para->getUseStreams()) {
-        para->getStreamManager()->registerStream(CudaStreamIndex::SubDomainBorder);
-        para->getStreamManager()->registerStream(CudaStreamIndex::Bulk);
-        para->getStreamManager()->launchStreams();
+        para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::SubDomainBorder);
+        para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::Bulk);
         para->getStreamManager()->createCudaEvents();
     }
     //////////////////////////////////////////////////////////////////////////
@@ -648,7 +647,7 @@ void Simulation::run()
                            para->getParD(0)->neighborZ,
                            para->getParD(0)->numberOfNodes,
                            para->getParD(0)->numberofthreads,
-                           para->getParD(0)->distributionsAD27.f[0],
+                           para->getParD(0)->distributionsAD.f[0],
                            para->getParD(0)->isEvenTimestep);
             getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut1,
@@ -660,7 +659,7 @@ void Simulation::run()
                             para->getParD(0)->neighborZ,
                             para->getParD(0)->numberOfNodes,
                             para->getParD(0)->numberofthreads,
-                            para->getParD(0)->distributionsAD27.f[0],
+                            para->getParD(0)->distributionsAD.f[0],
                             para->getParD(0)->isEvenTimestep);
             getLastCudaError("PlaneConcThS27 execution failed");
             PlaneConcThS27( para->getParD(0)->ConcPlaneOut2,
@@ -672,7 +671,7 @@ void Simulation::run()
                             para->getParD(0)->neighborZ,
                             para->getParD(0)->numberOfNodes,
                             para->getParD(0)->numberofthreads,
-                            para->getParD(0)->distributionsAD27.f[0],
+                            para->getParD(0)->distributionsAD.f[0],
                             para->getParD(0)->isEvenTimestep);
             getLastCudaError("PlaneConcThS27 execution failed");
             //////////////////////////////////////////////////////////////////////////////////
@@ -837,7 +836,7 @@ void Simulation::run()
                {
                   if (para->getDiffMod() == 7)
                   {
-                     CalcMacThS7(   para->getParD(lev)->Conc,
+                     CalcMacThS7(   para->getParD(lev)->concentration,
                                     para->getParD(lev)->typeOfGridNode,
                                     para->getParD(lev)->neighborX,
                                     para->getParD(lev)->neighborY,
@@ -852,13 +851,13 @@ void Simulation::run()
                   {
                      CalcConcentration27(
                                     para->getParD(lev)->numberofthreads,
-                                    para->getParD(lev)->Conc,
+                                    para->getParD(lev)->concentration,
                                     para->getParD(lev)->typeOfGridNode,
                                     para->getParD(lev)->neighborX,
                                     para->getParD(lev)->neighborY,
                                     para->getParD(lev)->neighborZ,
                                     para->getParD(lev)->numberOfNodes,
-                                    para->getParD(lev)->distributionsAD27.f[0],
+                                    para->getParD(lev)->distributionsAD.f[0],
                                     para->getParD(lev)->isEvenTimestep);
                   }
 
@@ -1214,7 +1213,7 @@ Simulation::~Simulation()
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
         {
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc_Full));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc));
+            checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.temp));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.k));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.temp));

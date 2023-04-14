@@ -69,17 +69,17 @@ void BCAlgorithm::setCompressible(bool c)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setCollFactor(LBMReal cf) { collFactor = cf; }
+void BCAlgorithm::setCollFactor(real cf) { collFactor = cf; }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setCollFactorL(LBMReal cf) { collFactorL = cf; }
+void BCAlgorithm::setCollFactorL(real cf) { collFactorL = cf; }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setCollFactorG(LBMReal cf) { collFactorG = cf; }
+void BCAlgorithm::setCollFactorG(real cf) { collFactorG = cf; }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setCollFactorPh(LBMReal cf) { collFactorPh = cf; }
+void BCAlgorithm::setCollFactorPh(real cf) { collFactorPh = cf; }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setDensityRatio(LBMReal dr) { densityRatio = dr; }
+void BCAlgorithm::setDensityRatio(real dr) { densityRatio = dr; }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setPhiBound(LBMReal phiL, LBMReal phiH)
+void BCAlgorithm::setPhiBound(real phiL, real phiH)
 {
     this->phiL = phiL;
     this->phiH = phiH;

@@ -4,6 +4,7 @@
 #include "Parameter/Parameter.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "GPU/CudaMemoryManager.h"
+#include "Parameter/CudaStreamManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
 
@@ -370,6 +371,8 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             cudaMemoryManager->cudaCopyPrecursorBC(level);
             cudaMemoryManager->cudaAllocPrecursorData(level);
+            para->getParD(level)->precursorBC.streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::Precursor);
+            
 
             // read first timestep of precursor into next and copy to next on device
             for(auto reader : para->getParH(level)->transientBCInputFileReader)
@@ -933,7 +936,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //preprocessing
             real* QQ = para->getParH(i)->pressureBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->pressureBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->pressureBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
 
             builder->getPressureQs(Q.q27, i);
@@ -980,7 +983,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //preprocessing
             real* QQ = para->getParH(i)->slipBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->slipBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->slipBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
 
             builder->getSlipQs(Q.q27, i);
@@ -1000,9 +1003,9 @@ void GridGenerator::allocArrays_BoundaryQs()
             //preprocessing
             real* QQ = para->getParH(i)->stressBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->stressBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->stressBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
-
+            
             builder->getStressQs(Q.q27, i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaCopyStressBC(i);
@@ -1020,7 +1023,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //preprocessing
             real* QQ = para->getParH(i)->velocityBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->velocityBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
             builder->getVelocityQs(Q.q27, i);
 
@@ -1120,7 +1123,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //preprocessing
             real* QQ = para->getParH(i)->geometryBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->geometryBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->geometryBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
             //////////////////////////////////////////////////////////////////
 
@@ -1179,25 +1182,13 @@ void GridGenerator::allocArrays_OffsetScale()
         std::cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << std::endl;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(level)->K_CF = numberOfNodesPerLevelCF;
-        para->getParD(level)->K_CF = para->getParH(level)->K_CF;
-        para->getParH(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParD(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParH(level)->mem_size_kCF = sizeof(uint)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF = sizeof(uint)* para->getParD(level)->K_CF;
-        para->getParH(level)->mem_size_kCF_off = sizeof(real)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF_off = sizeof(real)* para->getParD(level)->K_CF;
+        //size CF
+        para->getParH(level)->coarseToFine.numberOfCells = numberOfNodesPerLevelCF;
+        para->getParD(level)->coarseToFine.numberOfCells = para->getParH(level)->coarseToFine.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(level)->K_FC = numberOfNodesPerLevelFC;
-        para->getParD(level)->K_FC = para->getParH(level)->K_FC;
-        para->getParH(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParD(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParH(level)->mem_size_kFC = sizeof(uint)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC = sizeof(uint)* para->getParD(level)->K_FC;
-        para->getParH(level)->mem_size_kFC_off = sizeof(real)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
+        //size FC
+        para->getParH(level)->fineToCoarse.numberOfCells = numberOfNodesPerLevelFC;
+        para->getParD(level)->fineToCoarse.numberOfCells = para->getParH(level)->fineToCoarse.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
         cudaMemoryManager->cudaAllocInterfaceCF(level);
@@ -1206,9 +1197,9 @@ void GridGenerator::allocArrays_OffsetScale()
         cudaMemoryManager->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
-        builder->getOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
-        builder->getOffsetFC(para->getParH(level)->offFC.xOffFC, para->getParH(level)->offFC.yOffFC, para->getParH(level)->offFC.zOffFC, level);
-        builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
+        builder->getOffsetCF(para->getParH(level)->neighborCoarseToFine.x, para->getParH(level)->neighborCoarseToFine.y, para->getParH(level)->neighborCoarseToFine.z, level);
+        builder->getOffsetFC(para->getParH(level)->neighborFineToCoarse.x, para->getParH(level)->neighborFineToCoarse.y, para->getParH(level)->neighborFineToCoarse.z, level);
+        builder->getGridInterfaceIndices(para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.fineCellIndices, level);
 
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk
@@ -1362,31 +1353,31 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
 }
 
 void GridGenerator::getPointersToBoundaryConditions(QforBoundaryConditions& boundaryConditionStruct, real* subgridDistances, const unsigned int numberOfBCnodes){
-    boundaryConditionStruct.q27[DIR_P00] =    &subgridDistances[DIR_P00   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M00] =    &subgridDistances[DIR_M00   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0P0] =    &subgridDistances[DIR_0P0   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0M0] =    &subgridDistances[DIR_0M0   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_00P] =    &subgridDistances[DIR_00P   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_00M] =    &subgridDistances[DIR_00M   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PP0] =   &subgridDistances[DIR_PP0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MM0] =   &subgridDistances[DIR_MM0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PM0] =   &subgridDistances[DIR_PM0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MP0] =   &subgridDistances[DIR_MP0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_P0P] =   &subgridDistances[DIR_P0P  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M0M] =   &subgridDistances[DIR_M0M  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_P0M] =   &subgridDistances[DIR_P0M  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M0P] =   &subgridDistances[DIR_M0P  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0PP] =   &subgridDistances[DIR_0PP  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0MM] =   &subgridDistances[DIR_0MM  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0PM] =   &subgridDistances[DIR_0PM  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0MP] =   &subgridDistances[DIR_0MP  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000* numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PPP] =  &subgridDistances[DIR_PPP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MMP] =  &subgridDistances[DIR_MMP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PMP] =  &subgridDistances[DIR_PMP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MPP] =  &subgridDistances[DIR_MPP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PPM] =  &subgridDistances[DIR_PPM * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MMM] =  &subgridDistances[DIR_MMM * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PMM] =  &subgridDistances[DIR_PMM * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MPM] =  &subgridDistances[DIR_MPM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P00] = &subgridDistances[DIR_P00 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M00] = &subgridDistances[DIR_M00 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0P0] = &subgridDistances[DIR_0P0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0M0] = &subgridDistances[DIR_0M0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00P] = &subgridDistances[DIR_00P * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00M] = &subgridDistances[DIR_00M * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PP0] = &subgridDistances[DIR_PP0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MM0] = &subgridDistances[DIR_MM0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PM0] = &subgridDistances[DIR_PM0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MP0] = &subgridDistances[DIR_MP0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0P] = &subgridDistances[DIR_P0P * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0M] = &subgridDistances[DIR_M0M * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0M] = &subgridDistances[DIR_P0M * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0P] = &subgridDistances[DIR_M0P * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PP] = &subgridDistances[DIR_0PP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MM] = &subgridDistances[DIR_0MM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PM] = &subgridDistances[DIR_0PM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MP] = &subgridDistances[DIR_0MP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPP] = &subgridDistances[DIR_PPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMP] = &subgridDistances[DIR_MMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMP] = &subgridDistances[DIR_PMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPP] = &subgridDistances[DIR_MPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPM] = &subgridDistances[DIR_PPM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMM] = &subgridDistances[DIR_MMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMM] = &subgridDistances[DIR_PMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPM] = &subgridDistances[DIR_MPM * numberOfBCnodes];
 }

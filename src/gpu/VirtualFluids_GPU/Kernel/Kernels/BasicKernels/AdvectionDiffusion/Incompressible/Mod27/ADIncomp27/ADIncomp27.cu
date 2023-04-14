@@ -20,7 +20,7 @@ void ADIncomp27::run()
         para->getParD(level)->neighborY, 
         para->getParD(level)->neighborZ,
         para->getParD(level)->distributions.f[0], 
-        para->getParD(level)->distributionsAD27.f[0], 
+        para->getParD(level)->distributionsAD.f[0], 
         para->getParD(level)->numberOfNodes,
         para->getParD(level)->isEvenTimestep);
     getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
@@ -33,7 +33,6 @@ ADIncomp27::ADIncomp27(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitIncompAD27);
 
-	myKernelGroup = ADKernel27;
 }
 
 ADIncomp27::ADIncomp27()

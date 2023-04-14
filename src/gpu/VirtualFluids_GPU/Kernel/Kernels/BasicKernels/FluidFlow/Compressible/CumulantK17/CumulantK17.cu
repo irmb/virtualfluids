@@ -94,7 +94,9 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
                                                                                                                         para->getParD(level)->isEvenTimestep,
                                                                                                                         indices,
                                                                                                                         size_indices);
-            break;	case CollisionTemplate::ApplyBodyForce:
+            break;
+
+        case CollisionTemplate::ApplyBodyForce:
             LB_Kernel_CumulantK17 < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,
                                                                                                                         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                                                                         para->getParD(level)->distributions.f[0],
@@ -110,7 +112,8 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
                                                                                                                         para->getParD(level)->isEvenTimestep,
                                                                                                                         indices,
                                                                                                                         size_indices);
-            break;	default:
+            break;
+        default:
             throw std::runtime_error("Invalid CollisionTemplate in CumulantK17::runOnIndices()");
             break;
     }
@@ -126,7 +129,7 @@ CumulantK17<turbulenceModel>::CumulantK17(std::shared_ptr<Parameter> para, int l
 
     myPreProcessorTypes.push_back(InitCompSP27);
 
-    myKernelGroup = BasicKernel;
+    
 
     this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
     this->kernelUsesFluidNodeIndices = true;

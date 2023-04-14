@@ -41,12 +41,12 @@ void InterpolationProcessor::writeICellInv(SPtr<DistributionArray3D> f, const D3
     f->setDistributionInv(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeINode(SPtr<DistributionArray3D> f, const LBMReal *const inode, int x1, int x2, int x3)
+void InterpolationProcessor::writeINode(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2, int x3)
 {
     f->setDistribution(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeINodeInv(SPtr<DistributionArray3D> f, const LBMReal *const inode, int x1, int x2,
+void InterpolationProcessor::writeINodeInv(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2,
                                            int x3)
 {
     f->setDistributionInv(inode, x1, x2, x3);
@@ -65,7 +65,7 @@ bool InterpolationProcessor::iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1
 //////////////////////////////////////////////////////////////////////////
 bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SPtr<DistributionArray3D> f,
                                                D3Q27ICell &icell, int maxX1, int maxX2, int maxX3, int x1, int x2,
-                                               int x3, LBMReal &xoff, LBMReal &yoff, LBMReal &zoff)
+                                               int x3, real &xoff, real &yoff, real &zoff)
 {
     m_maxX1 = maxX1;
     m_maxX2 = maxX2;

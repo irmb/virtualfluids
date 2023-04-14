@@ -50,7 +50,6 @@
 
 //#include "metis.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 
@@ -181,7 +180,7 @@ void multipleLevel(const std::string& configPath)
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
@@ -231,7 +230,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setPeriodicBoundaryCondition(sideLengthX == 1, sideLengthY == 1, sideLengthZ == 1);
 
-	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     if( mpiWorldSize > 1 )
     {
@@ -242,12 +241,12 @@ void multipleLevel(const std::string& configPath)
         int rankPZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ + 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
         int rankMZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ - 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
 
-        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
-        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
-        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
-        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
-        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ, GKS );
-        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX );
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX );
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY );
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY );
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ );
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ );
 
         if( sideLengthX > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
         if( sideLengthY > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);

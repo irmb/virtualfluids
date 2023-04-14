@@ -8,9 +8,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ __global__ void scaleFC_0817_comp_27( real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffFC offFC)
+												 ICellNeigh offFC)
 {
    real 
 	   *fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -183,9 +183,9 @@ __global__ void scaleFC_0817_comp_27( real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -1231,7 +1231,7 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
 												  unsigned int nyC, 
 												  unsigned int nxF, 
 												  unsigned int nyF,
-												  OffFC offFC)
+												  ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -1393,9 +1393,9 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -5420,7 +5420,7 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int nyC, 
 														unsigned int nxF, 
 														unsigned int nyF,
-														OffFC offFC)
+														ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -5582,9 +5582,9 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -9608,7 +9608,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
     unsigned int nyC,
     unsigned int nxF,
     unsigned int nyF,
-    OffFC offFC,
+    ICellNeigh offFC,
     const unsigned k)
 {
     real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF,
@@ -9741,9 +9741,9 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
 
     if (k < kFC) {
         //////////////////////////////////////////////////////////////////////////
-        xoff    = offFC.xOffFC[k];
-        yoff    = offFC.yOffFC[k];
-        zoff    = offFC.zOffFC[k];
+        xoff    = offFC.x[k];
+        yoff    = offFC.y[k];
+        zoff    = offFC.z[k];
         xoff_sq = xoff * xoff;
         yoff_sq = yoff * yoff;
         zoff_sq = zoff * zoff;
@@ -11094,7 +11094,7 @@ __global__ void scaleFC_RhoSq_comp_27(real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffFC offFC)
+												 ICellNeigh offFC)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -11187,7 +11187,7 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 															 unsigned int nyC, 
 															 unsigned int nxF, 
 															 unsigned int nyF,
-															 OffFC offFC)
+															 ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -11329,9 +11329,9 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -12487,7 +12487,7 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffFC offFC)
+												 ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -12631,9 +12631,9 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -14347,7 +14347,7 @@ __global__ void scaleFC_NSPress_27(   real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffFC offFC)
+												 ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -14488,9 +14488,9 @@ __global__ void scaleFC_NSPress_27(   real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -15553,7 +15553,7 @@ __global__ void scaleFC_Fix_27(   real* DC,
                                              unsigned int nyC, 
                                              unsigned int nxF, 
                                              unsigned int nyF,
-                                             OffFC offFC)
+                                             ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -15695,9 +15695,9 @@ __global__ void scaleFC_Fix_27(   real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -16913,7 +16913,7 @@ __global__ void scaleFCpress27(real* DC,
                                           unsigned int nyC, 
                                           unsigned int nxF, 
                                           unsigned int nyF,
-                                          OffFC offFC)
+                                          ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -17057,9 +17057,9 @@ __global__ void scaleFCpress27(real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -17838,7 +17838,7 @@ __global__ void scaleFCLast27( real* DC,
                                           unsigned int nyC, 
                                           unsigned int nxF, 
                                           unsigned int nyF,
-                                          OffFC offFC)
+                                          ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -17982,9 +17982,9 @@ __global__ void scaleFCLast27( real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -19231,7 +19231,7 @@ __global__ void scaleFCThSMG7(    real* DC,
                                              unsigned int kFC, 
                                              real nu,
                                              real diffusivity_coarse,
-                                             OffFC offFC)
+                                             ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -19392,9 +19392,9 @@ __global__ void scaleFCThSMG7(    real* DC,
 
    if(k<kFC){
       //////////////////////////////////////////////////////////////////////////
-      real xoff = offFC.xOffFC[k];
-      real yoff = offFC.yOffFC[k];
-      real zoff = offFC.zOffFC[k];      
+      real xoff = offFC.x[k];
+      real yoff = offFC.y[k];
+      real zoff = offFC.z[k];      
       real xoff_sq = xoff * xoff;
       real yoff_sq = yoff * yoff;
       real zoff_sq = zoff * zoff;
@@ -20889,7 +20889,7 @@ __global__ void scaleFCThS27(     real* DC,
                                              unsigned int kFC, 
                                              real nu,
                                              real diffusivity_coarse,
-											 OffFC offFC)
+											 ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -21110,9 +21110,9 @@ __global__ void scaleFCThS27(     real* DC,
 
    if(k<kFC){
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offFC.xOffFC[k];
-      yoff    = offFC.yOffFC[k];
-      zoff    = offFC.zOffFC[k];
+      xoff    = offFC.x[k];
+      yoff    = offFC.y[k];
+      zoff    = offFC.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -22012,7 +22012,7 @@ __global__ void scaleFCEff27(real* DC,
                                         unsigned int nyC, 
                                         unsigned int nxF, 
                                         unsigned int nyF,
-                                        OffFC offFC)
+                                        ICellNeigh offFC)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
@@ -22156,9 +22156,9 @@ __global__ void scaleFCEff27(real* DC,
    if(k<kFC)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff = offFC.xOffFC[k];
-      yoff = offFC.yOffFC[k];
-      zoff = offFC.zOffFC[k];      
+      xoff = offFC.x[k];
+      yoff = offFC.y[k];
+      zoff = offFC.z[k];      
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;

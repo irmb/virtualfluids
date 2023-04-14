@@ -2541,39 +2541,6 @@ void QVeloDevEQ27(
     getLastCudaError("QVeloDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void QVeloStreetDevEQ27(
-    uint  numberOfThreads,
-    real* veloXfraction,
-    real* veloYfraction,
-    int*  naschVelo,
-    real* DD,
-    int*  naschIndex,
-    int   numberOfStreetNodes,
-    real  velocityRatio,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    uint  numberOfLBnodes,
-    bool  isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfStreetNodes);
-
-    QVeloStreetDeviceEQ27 << < grid.grid, grid.threads >> > (
-        veloXfraction,
-        veloYfraction,
-        naschVelo,
-        DD,
-        naschIndex,
-        numberOfStreetNodes,
-        velocityRatio,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
@@ -3563,7 +3530,7 @@ void ScaleCFEff27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -3589,7 +3556,7 @@ void ScaleCFEff27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCFEff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3616,7 +3583,7 @@ void ScaleCFLast27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -3642,7 +3609,7 @@ void ScaleCFLast27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCFLast27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3669,7 +3636,7 @@ void ScaleCFpress27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -3695,7 +3662,7 @@ void ScaleCFpress27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCFpress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3722,7 +3689,7 @@ void ScaleCF_Fix_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -3748,7 +3715,7 @@ void ScaleCF_Fix_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3775,7 +3742,7 @@ void ScaleCF_Fix_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -3801,7 +3768,7 @@ void ScaleCF_Fix_comp_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_Fix_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3828,7 +3795,7 @@ void ScaleCF_0817_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF,
+    ICellNeigh neighborCoarseToFine,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
@@ -3855,7 +3822,7 @@ void ScaleCF_0817_comp_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_0817_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3883,7 +3850,7 @@ void ScaleCF_comp_D3Q27F3_2018(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -3910,7 +3877,7 @@ void ScaleCF_comp_D3Q27F3_2018(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_comp_D3Q27F3_2018 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3938,7 +3905,7 @@ void ScaleCF_comp_D3Q27F3(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF,
+    ICellNeigh neighborCoarseToFine,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
@@ -3966,7 +3933,7 @@ void ScaleCF_comp_D3Q27F3(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_comp_D3Q27F3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -3993,7 +3960,7 @@ void ScaleCF_staggered_time_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -4019,13 +3986,13 @@ void ScaleCF_staggered_time_comp_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_staggered_time_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream)
+void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->kCF);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  coarseToFine->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
     scaleCF_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
@@ -4040,76 +4007,50 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
         parameterDeviceC->numberOfNodes,
         parameterDeviceF->numberOfNodes,
         parameterDeviceC->isEvenTimestep,
-        icellCF->ICellCFC,
-        icellCF->ICellCFF,
-        icellCF->kCF,
+        coarseToFine->coarseCellIndices,
+        coarseToFine->fineCellIndices,
+        coarseToFine->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
-        parameterDeviceC->vis,
+        parameterDeviceC->viscosity,
         parameterDeviceC->nx,
         parameterDeviceC->ny,
         parameterDeviceF->nx,
         parameterDeviceF->ny,
-        offsetCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_RhoSq_27 execution failed");
 }
 
-template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream)
+template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellCF->kCF);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  coarseToFine->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-    if(hasTurbulentViscosity)
-    {
-        scaleCF_compressible<true><<<grid, threads, 0, stream>>>(
-            parameterDeviceC->distributions.f[0],
-            parameterDeviceF->distributions.f[0],
-            parameterDeviceC->neighborX,
-            parameterDeviceC->neighborY,
-            parameterDeviceC->neighborZ,
-            parameterDeviceF->neighborX,
-            parameterDeviceF->neighborY,
-            parameterDeviceF->neighborZ,
-            parameterDeviceC->numberOfNodes,
-            parameterDeviceF->numberOfNodes,
-            parameterDeviceC->isEvenTimestep,
-            icellCF->ICellCFC,
-            icellCF->ICellCFF,
-            icellCF->kCF,
-            parameterDeviceC->omega,
-            parameterDeviceF->omega,
-            parameterDeviceC->turbViscosity,
-            parameterDeviceF->turbViscosity,
-            offsetCF);
-    }
-    else
-    {
-        scaleCF_compressible<false><<<grid, threads, 0, stream>>>(
-            parameterDeviceC->distributions.f[0],
-            parameterDeviceF->distributions.f[0],
-            parameterDeviceC->neighborX,
-            parameterDeviceC->neighborY,
-            parameterDeviceC->neighborZ,
-            parameterDeviceF->neighborX,
-            parameterDeviceF->neighborY,
-            parameterDeviceF->neighborZ,
-            parameterDeviceC->numberOfNodes,
-            parameterDeviceF->numberOfNodes,
-            parameterDeviceC->isEvenTimestep,
-            icellCF->ICellCFC,
-            icellCF->ICellCFF,
-            icellCF->kCF,
-            parameterDeviceC->omega,
-            parameterDeviceF->omega,
-            parameterDeviceC->turbViscosity,
-            parameterDeviceF->turbViscosity,
-            offsetCF);
-    }
+    scaleCF_compressible<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
+        parameterDeviceC->distributions.f[0],
+        parameterDeviceF->distributions.f[0],
+        parameterDeviceC->neighborX,
+        parameterDeviceC->neighborY,
+        parameterDeviceC->neighborZ,
+        parameterDeviceF->neighborX,
+        parameterDeviceF->neighborY,
+        parameterDeviceF->neighborZ,
+        parameterDeviceC->numberOfNodes,
+        parameterDeviceF->numberOfNodes,
+        parameterDeviceC->isEvenTimestep,
+        coarseToFine->coarseCellIndices,
+        coarseToFine->fineCellIndices,
+        coarseToFine->numberOfCells,
+        parameterDeviceC->omega,
+        parameterDeviceF->omega,
+        parameterDeviceC->turbViscosity,
+        parameterDeviceF->turbViscosity,
+        neighborCoarseToFine);
 
     getLastCudaError("scaleCF_compressible execution failed");
 }
-template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream);
-template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellCF * icellCF, OffCF& offsetCF, CUstream_st *stream);
+template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream);
+template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream);
 
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_RhoSq_3rdMom_comp_27(
@@ -4135,7 +4076,7 @@ void ScaleCF_RhoSq_3rdMom_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF,
+    ICellNeigh neighborCoarseToFine,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
@@ -4162,7 +4103,7 @@ void ScaleCF_RhoSq_3rdMom_comp_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_RhoSq_3rdMom_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4189,7 +4130,7 @@ void ScaleCF_AA2016_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF,
+    ICellNeigh neighborCoarseToFine,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
@@ -4216,7 +4157,7 @@ void ScaleCF_AA2016_comp_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_AA2016_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4243,7 +4184,7 @@ void ScaleCF_NSPress_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -4269,7 +4210,7 @@ void ScaleCF_NSPress_27(
         nyC,
         nxF,
         nyF,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCF_NSPress_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4293,7 +4234,7 @@ void ScaleCFThSMG7(
     real nu,
     real diffusivity_fine,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -4316,7 +4257,7 @@ void ScaleCFThSMG7(
         kCF,
         nu,
         diffusivity_fine,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCFThSMG7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4385,7 +4326,7 @@ void ScaleCFThS27(
     real nu,
     real diffusivity_fine,
     unsigned int numberOfThreads,
-    OffCF offCF)
+    ICellNeigh neighborCoarseToFine)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
@@ -4408,7 +4349,7 @@ void ScaleCFThS27(
         kCF,
         nu,
         diffusivity_fine,
-        offCF);
+        neighborCoarseToFine);
     getLastCudaError("scaleCFThS27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4486,7 +4427,7 @@ void ScaleFCEff27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4512,7 +4453,7 @@ void ScaleFCEff27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFCEff27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4539,7 +4480,7 @@ void ScaleFCLast27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4565,7 +4506,7 @@ void ScaleFCLast27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("Kernel execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4592,7 +4533,7 @@ void ScaleFCpress27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4618,7 +4559,7 @@ void ScaleFCpress27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFCpress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4645,7 +4586,7 @@ void ScaleFC_Fix_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4671,7 +4612,7 @@ void ScaleFC_Fix_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_Fix_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4698,7 +4639,7 @@ void ScaleFC_Fix_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4724,7 +4665,7 @@ void ScaleFC_Fix_comp_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_Fix_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4751,7 +4692,7 @@ void ScaleFC_0817_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC,
+    ICellNeigh neighborFineToCoarse,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
@@ -4778,7 +4719,7 @@ void ScaleFC_0817_comp_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_0817_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4806,7 +4747,7 @@ void ScaleFC_comp_D3Q27F3_2018(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4833,7 +4774,7 @@ void ScaleFC_comp_D3Q27F3_2018(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_comp_D3Q27F3_2018 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4861,7 +4802,7 @@ void ScaleFC_comp_D3Q27F3(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC,
+    ICellNeigh neighborFineToCoarse,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
@@ -4889,7 +4830,7 @@ void ScaleFC_comp_D3Q27F3(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_comp_D3Q27F3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -4916,7 +4857,7 @@ void ScaleFC_staggered_time_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -4942,13 +4883,13 @@ void ScaleFC_staggered_time_comp_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_staggered_time_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream)
+void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  fineToCoarse->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
     scaleFC_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
@@ -4963,75 +4904,50 @@ void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
         parameterDeviceC->numberOfNodes,
         parameterDeviceF->numberOfNodes,
         parameterDeviceC->isEvenTimestep,
-        icellFC->ICellFCC,
-        icellFC->ICellFCF,
-        icellFC->kFC,
+        fineToCoarse->coarseCellIndices,
+        fineToCoarse->fineCellIndices,
+        fineToCoarse->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
-        parameterDeviceC->vis,
+        parameterDeviceC->viscosity,
         parameterDeviceC->nx,
         parameterDeviceC->ny,
         parameterDeviceF->nx,
         parameterDeviceF->ny,
-        offsetFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_RhoSq_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream)
+template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  icellFC->kFC);
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  fineToCoarse->numberOfCells);
     dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
 
-    if(hasTurbulentViscosity)
-    {
-        scaleFC_compressible<true><<<grid, threads, 0, stream>>>(
-            parameterDeviceC->distributions.f[0],
-            parameterDeviceF->distributions.f[0],
-            parameterDeviceC->neighborX,
-            parameterDeviceC->neighborY,
-            parameterDeviceC->neighborZ,
-            parameterDeviceF->neighborX,
-            parameterDeviceF->neighborY,
-            parameterDeviceF->neighborZ,
-            parameterDeviceC->numberOfNodes,
-            parameterDeviceF->numberOfNodes,
-            parameterDeviceC->isEvenTimestep,
-            icellFC->ICellFCC,
-            icellFC->ICellFCF,
-            icellFC->kFC,
-            parameterDeviceC->omega,
-            parameterDeviceF->omega,
-            parameterDeviceC->turbViscosity,
-            parameterDeviceF->turbViscosity,
-            offsetFC);
-    }
-    else
-    {
-        scaleFC_compressible<false><<<grid, threads, 0, stream>>>(
-            parameterDeviceC->distributions.f[0],
-            parameterDeviceF->distributions.f[0],
-            parameterDeviceC->neighborX,
-            parameterDeviceC->neighborY,
-            parameterDeviceC->neighborZ,
-            parameterDeviceF->neighborX,
-            parameterDeviceF->neighborY,
-            parameterDeviceF->neighborZ,
-            parameterDeviceC->numberOfNodes,
-            parameterDeviceF->numberOfNodes,
-            parameterDeviceC->isEvenTimestep,
-            icellFC->ICellFCC,
-            icellFC->ICellFCF,
-            icellFC->kFC,
-            parameterDeviceC->omega,
-            parameterDeviceF->omega,
-            parameterDeviceC->turbViscosity,
-            parameterDeviceF->turbViscosity,
-            offsetFC);
-    }
+    scaleFC_compressible<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
+        parameterDeviceC->distributions.f[0],
+        parameterDeviceF->distributions.f[0],
+        parameterDeviceC->neighborX,
+        parameterDeviceC->neighborY,
+        parameterDeviceC->neighborZ,
+        parameterDeviceF->neighborX,
+        parameterDeviceF->neighborY,
+        parameterDeviceF->neighborZ,
+        parameterDeviceC->numberOfNodes,
+        parameterDeviceF->numberOfNodes,
+        parameterDeviceC->isEvenTimestep,
+        fineToCoarse->coarseCellIndices,
+        fineToCoarse->fineCellIndices,
+        fineToCoarse->numberOfCells,
+        parameterDeviceC->omega,
+        parameterDeviceF->omega,
+        parameterDeviceC->turbViscosity,
+        parameterDeviceF->turbViscosity,
+        neighborFineToCoarse);
+
     getLastCudaError("scaleFC_compressible execution failed");
 }
-template void ScaleFC_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream);
-template void ScaleFC_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICellFC * icellFC, OffFC &offsetFC, CUstream_st *stream);
+template void ScaleFC_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream);
+template void ScaleFC_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream);
 
 //////////////////////////////////////////////////////////////////////////
 void ScaleFC_RhoSq_3rdMom_comp_27(
@@ -5057,7 +4973,7 @@ void ScaleFC_RhoSq_3rdMom_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC,
+    ICellNeigh neighborFineToCoarse,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
@@ -5084,7 +5000,7 @@ void ScaleFC_RhoSq_3rdMom_comp_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_RhoSq_3rdMom_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5111,7 +5027,7 @@ void ScaleFC_AA2016_comp_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC,
+    ICellNeigh neighborFineToCoarse,
     CUstream_st *stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
@@ -5138,7 +5054,7 @@ void ScaleFC_AA2016_comp_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_AA2016_comp_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5165,7 +5081,7 @@ void ScaleFC_NSPress_27(
     unsigned int nxF,
     unsigned int nyF,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -5191,7 +5107,7 @@ void ScaleFC_NSPress_27(
         nyC,
         nxF,
         nyF,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFC_NSPress_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5215,7 +5131,7 @@ void ScaleFCThSMG7(
     real nu,
     real diffusivity_coarse,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -5238,7 +5154,7 @@ void ScaleFCThSMG7(
         kFC,
         nu,
         diffusivity_coarse,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFCThSMG7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -5307,7 +5223,7 @@ void ScaleFCThS27(
     real nu,
     real diffusivity_coarse,
     unsigned int numberOfThreads,
-    OffFC offFC)
+    ICellNeigh neighborFineToCoarse)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
 
@@ -5330,7 +5246,7 @@ void ScaleFCThS27(
         kFC,
         nu,
         diffusivity_coarse,
-        offFC);
+        neighborFineToCoarse);
     getLastCudaError("scaleFCThS27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////

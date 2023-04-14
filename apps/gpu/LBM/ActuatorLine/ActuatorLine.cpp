@@ -83,6 +83,7 @@
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -95,8 +96,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-LbmOrGks lbmOrGks = LBM;
 
 std::string path(".");
 
@@ -146,7 +145,7 @@ void multipleLevel(const std::string& configPath)
     const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
     const float tOutProbe           =  config.getValue<real>("tOutProbe");
         
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
 
@@ -168,7 +167,7 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(L_y/10);
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -193,7 +192,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->setMainKernel("CumulantK17");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -282,7 +281,7 @@ int main( int argc, char* argv[])
     {
         try
         {
-            vf::logging::Logger::initalizeLogger();
+            vf::logging::Logger::initializeLogger();
 
             if( argc > 1){ path = argv[1]; }
 

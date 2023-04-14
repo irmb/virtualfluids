@@ -36,6 +36,7 @@
 
 #include <PointerDefinitions.h>
 #include <vector>
+#include "lbm/constants/D3Q27.h"
 
 class Grid3D;
 class UbScheduler;
@@ -53,7 +54,7 @@ public:
     virtual ~Calculator();
     //! control of coProcessors
     void addCoProcessor(SPtr<CoProcessor> coProcessor);
-    void coProcess(double step);
+    void coProcess(real step);
 
     virtual void calculate() = 0;
 

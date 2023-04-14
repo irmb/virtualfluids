@@ -51,31 +51,31 @@ public:
 	virtual ~RheologyModelLBMKernel();
 	void calculate(int step);
 	virtual SPtr<LBMKernel> clone() { UB_THROW(UbException("SPtr<LBMKernel> clone() - belongs in the derived class")); };
-	double getCalculationTime();
+	real getCalculationTime();
 
 	void swapDistributions();
 
 protected:
 	void initDataSet();
 
-	virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const { UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class")); }
+	virtual real getRheologyCollFactor(real omegaInf, real shearRate, real drho) const { UB_THROW(UbException("real getRheologyCollFactor() - belongs in the derived class")); }
 
-	LBMReal f[D3Q27System::ENDF + 1];
+	real f[D3Q27System::ENDF + 1];
 
 	UbTimer timer;
 
-	LBMReal OxyyMxzz;
+	real OxyyMxzz;
 	
-	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
-	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
+	CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
+	CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
+	CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
 
 	mu::value_type muX1, muX2, muX3;
 	mu::value_type muDeltaT;
 	mu::value_type muNu;
-	LBMReal forcingX1;
-	LBMReal forcingX2;
-	LBMReal forcingX3;
+	real forcingX1;
+	real forcingX2;
+	real forcingX3;
 
 	bool test;
 };

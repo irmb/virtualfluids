@@ -36,7 +36,7 @@
 
 using namespace std;
 /*==========================================================*/
-DensityBCAdapter::DensityBCAdapter(const double &dens, const double &startTime, const double &endTime)
+DensityBCAdapter::DensityBCAdapter(const real &dens, const real &startTime, const real &endTime)
 {
     this->densBCs.emplace_back(dens, startTime, endTime);
     this->init();
@@ -54,7 +54,7 @@ DensityBCAdapter::DensityBCAdapter(const std::vector<BCFunction> &densBCs)
     this->init();
 }
 /*==========================================================*/
-DensityBCAdapter::DensityBCAdapter(const mu::Parser &function, const double &startTime, const double &endTime)
+DensityBCAdapter::DensityBCAdapter(const mu::Parser &function, const real &startTime, const real &endTime)
 {
     this->densBCs.emplace_back(function, startTime, endTime);
     this->init();
@@ -96,11 +96,11 @@ void DensityBCAdapter::init()
     }
 }
 /*==========================================================*/
-void DensityBCAdapter::init(const D3Q27Interactor *const & /*interactor*/, const double &time)
+void DensityBCAdapter::init(const D3Q27Interactor *const & /*interactor*/, const real &time)
 {
     this->timeStep           = time;
     this->tmpDensityFunction = NULL;
-    double maxEndtime        = -Ub::inf;
+    real maxEndtime        = -Ub::inf;
 
     // aktuelle Densityfunction bestimmen
     for (size_t pos = 0; pos < densBCs.size(); ++pos) {
@@ -111,8 +111,8 @@ void DensityBCAdapter::init(const D3Q27Interactor *const & /*interactor*/, const
 
         if (UbMath::greaterEqual(this->timeStep, densBCs[pos].getStartTime())) {
             if (UbMath::lessEqual(this->timeStep, densBCs[pos].getEndTime()) ||
-                UbMath::equal(densBCs[pos].getEndTime(), (double)BCFunction::INFCONST) ||
-                UbMath::equal(densBCs[pos].getEndTime(), (double)BCFunction::INFTIMEDEPENDENT)) {
+                UbMath::equal(densBCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
+                UbMath::equal(densBCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
                 tmpDensityFunction = &densBCs[pos].getFunction();
                 break;
             }
@@ -130,30 +130,30 @@ void DensityBCAdapter::init(const D3Q27Interactor *const & /*interactor*/, const
                          << "\", timedependant=" << (this->isTimeDependent() ? "true" : "false"));
 }
 /*==========================================================*/
-void DensityBCAdapter::update(const D3Q27Interactor *const &interactor, const double &time)
+void DensityBCAdapter::update(const D3Q27Interactor *const &interactor, const real &time)
 {
     this->init(interactor, time);
 }
 /*==========================================================*/
 void DensityBCAdapter::adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
-                                           const double & /*worldX1*/, const double & /*worldX2*/,
-                                           const double & /*worldX3*/, const double &q, const int &fdirection,
-                                           const double & /*time*/)
+                                           const real & /*worldX1*/, const real & /*worldX2*/,
+                                           const real & /*worldX3*/, const real &q, const int &fdirection,
+                                           const real & /*time*/)
 {
     bc->setDensityBoundaryFlag(D3Q27System::INVDIR[fdirection], secondaryBcOption);
-    bc->setQ((float)q, fdirection);
+    bc->setQ((real)q, fdirection);
 }
 /*==========================================================*/
-void DensityBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const double &worldX1,
-                               const double &worldX2, const double &worldX3, const double &time)
+void DensityBCAdapter::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+                               const real &worldX2, const real &worldX3, const real &time)
 {
     this->setNodeDensity(interactor, bc, worldX1, worldX2, worldX3, time);
     bc->setBcAlgorithmType(algorithmType);
 }
 /*==========================================================*/
 void DensityBCAdapter::setNodeDensity(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
-                                      const double &worldX1, const double &worldX2, const double &worldX3,
-                                      const double &timestep)
+                                      const real &worldX1, const real &worldX2, const real &worldX3,
+                                      const real &timestep)
 {
     // Geschwindigkeiten setzen
     try {
@@ -164,7 +164,7 @@ void DensityBCAdapter::setNodeDensity(const D3Q27Interactor & /*interactor*/, SP
         this->timeStep = timestep;
 
         if (tmpDensityFunction)
-            bc->setBoundaryDensity((float)tmpDensityFunction->Eval());
+            bc->setBoundaryDensity((real)tmpDensityFunction->Eval());
     } catch (mu::Parser::exception_type &e) {
         stringstream error;
         error << "mu::parser exception occurs, message(" << e.GetMsg() << "), formula("
@@ -176,7 +176,7 @@ void DensityBCAdapter::setNodeDensity(const D3Q27Interactor & /*interactor*/, SP
     }
 }
 /*==========================================================*/
-double DensityBCAdapter::getDensity(const double &x1, const double &x2, const double &x3, const double &timeStep)
+real DensityBCAdapter::getDensity(const real &x1, const real &x2, const real &x3, const real &timeStep)
 {
     this->x1       = x1;
     this->x2       = x2;

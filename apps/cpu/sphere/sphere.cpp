@@ -7,6 +7,8 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////
 void run(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
@@ -25,20 +27,20 @@ void run(string configname)
       //const int refineLevel = config.getValue<int>("level");
 
       string outputPath = "d:/temp/sphereBlock_5_SBB";
-      double availMem = 8e9;
-      double outstep = 10000;
-      double endstep = 1e6;
+      real availMem = 8e9;
+      real outstep = 10000;
+      real endstep = 1e6;
       int numOfThreads = 4;
       omp_set_num_threads(numOfThreads);
       int refineLevel = 0;
 
-      LBMReal radius = 5;
-      LBMReal uLB = 1e-3;
-      LBMReal Re = 1;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = (uLB*2.0*radius)/Re;
+      real radius = 5;
+      real uLB = 1e-3;
+      real Re = 1;
+      real rhoLB = 0.0;
+      real nuLB = (uLB*2.0*radius)/Re;
 
-      double dp_LB = 1e-6;
+      real dp_LB = 1e-6;
 //      double rhoLBinflow = dp_LB*3.0;
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
@@ -46,7 +48,7 @@ void run(string configname)
       SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
       
-      double H = 50;
+      real H = 50;
       mu::Parser fct;
       fct.SetExpr("U");
       fct.DefineConst("U", uLB);
@@ -67,7 +69,7 @@ void run(string configname)
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(denBCAdapter);
 
-      double dx = 1;
+      real dx = 1;
 
       const int blocknx1 = 50;
       const int blocknx2 = 50;
@@ -77,7 +79,7 @@ void run(string configname)
       const int gridNx2 = H;
       const int gridNx3 = H;
 
-      double L1, L2, L3;
+      real L1, L2, L3;
       L1 = gridNx1;
       L2 = gridNx2;
       L3 = gridNx3;
@@ -97,15 +99,15 @@ void run(string configname)
       if (true)
       {
          //bounding box
-         double d_minX1 = 0.0;
-         double d_minX2 = 0.0;
-         double d_minX3 = 0.0;
+         real d_minX1 = 0.0;
+         real d_minX2 = 0.0;
+         real d_minX3 = 0.0;
 
-         double d_maxX1 = L1;
-         double d_maxX2 = L2;
-         double d_maxX3 = L3;
+         real d_maxX1 = L1;
+         real d_maxX2 = L2;
+         real d_maxX3 = L3;
 
-         double blockLength = blocknx1*dx;
+         real blockLength = blocknx1*dx;
 
          if (myid == 0)
          {
@@ -126,7 +128,7 @@ void run(string configname)
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
-         double off = 0.0;
+         real off = 0.0;
          SPtr<GbObject3D> refCube(new GbCuboid3D(sphere->getX1Minimum() - off, sphere->getX2Minimum() - off, sphere->getX3Minimum(),
             sphere->getX1Maximum() + off, sphere->getX2Maximum() + off, sphere->getX3Maximum()));
          if (myid == 0) GbSystem3D::writeGeoObject(refCube.get(), outputPath + "/geo/refCube", WbWriterVtkXmlBinary::getInstance());
@@ -180,7 +182,7 @@ void run(string configname)
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
 
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(sphereInt);
          intHelper.addInteractor(addWallYminInt);
@@ -202,8 +204,8 @@ void run(string configname)
          int gl = 3;
          unsigned long nod = nob * (blocknx1 + gl) * (blocknx2 + gl) * (blocknx3 + gl);
 
-         double needMemAll = double(nod*(27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-         double needMem = needMemAll / double(comm->getNumberOfProcesses());
+         real needMemAll = real(nod*(27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+         real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
          if (myid == 0)
          {
@@ -285,7 +287,7 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      double area = UbMath::PI * radius * radius;
+      real area = UbMath::PI * radius * radius;
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, uLB, area);
       fp->addInteractor(sphereInt);

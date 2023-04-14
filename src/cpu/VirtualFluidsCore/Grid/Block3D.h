@@ -38,6 +38,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "lbm/constants/D3Q27.h"
 
 class Block3DConnector;
 class LBMKernel;
@@ -134,7 +135,7 @@ public:
     bool hasInterpolationFlagFC(int dir);
     bool hasInterpolationFlagFC();
 
-    double getWorkLoad();
+    real getWorkLoad();
 
     std::string toString();
 

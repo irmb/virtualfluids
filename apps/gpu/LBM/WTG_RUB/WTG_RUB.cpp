@@ -47,7 +47,6 @@
 
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
-#include "Core/LbmOrGks.h"
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
 
@@ -89,8 +88,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-LbmOrGks lbmOrGks = LBM;
 
 // const real L  = 1.0;
 
@@ -213,7 +210,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +224,7 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -778,7 +775,7 @@ int main( int argc, char* argv[])
 {
     try
     {
-        vf::logging::Logger::initalizeLogger();
+        vf::logging::Logger::initializeLogger();
 
         // assuming that the config files is stored parallel to this file.
         std::filesystem::path filePath = __FILE__;

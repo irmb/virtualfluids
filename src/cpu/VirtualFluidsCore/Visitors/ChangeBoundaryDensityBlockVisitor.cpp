@@ -7,7 +7,7 @@
 #include "D3Q27System.h"
 #include "LBMKernel.h"
 
-ChangeBoundaryDensityBlockVisitor::ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity)
+ChangeBoundaryDensityBlockVisitor::ChangeBoundaryDensityBlockVisitor(real oldBoundaryDensity, real newBoundaryDensity)
     : Block3DVisitor(0, D3Q27System::MAXLEVEL), oldBoundaryDensity(oldBoundaryDensity),
       newBoundaryDensity(newBoundaryDensity)
 {
@@ -35,7 +35,7 @@ void ChangeBoundaryDensityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> b
                         bcPtr = bcArray->getBC(x1, x2, x3);
                         if (bcPtr) {
                             if (bcPtr->hasDensityBoundary()) {
-                                float bcDensity = (float)bcPtr->getBoundaryDensity();
+                                real bcDensity = (real)bcPtr->getBoundaryDensity();
                                 if (bcDensity == oldBoundaryDensity) {
                                     bcPtr->setBoundaryDensity(newBoundaryDensity);
                                 }

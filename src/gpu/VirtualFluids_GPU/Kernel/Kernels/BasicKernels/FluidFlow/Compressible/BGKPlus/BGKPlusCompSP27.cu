@@ -32,7 +32,7 @@ BGKPlusCompSP27::BGKPlusCompSP27(std::shared_ptr<Parameter> para, int level)
 
 	myPreProcessorTypes.push_back(InitCompSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 BGKPlusCompSP27::BGKPlusCompSP27()

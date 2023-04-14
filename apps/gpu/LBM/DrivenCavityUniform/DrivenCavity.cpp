@@ -42,7 +42,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
 #include "Core/Logger/Logger.h"
 #include "Core/VectorTypes.h"
 #include "PointerDefinitions.h"
@@ -69,13 +68,14 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 int main()
 {
     try {
-         vf::logging::Logger::initalizeLogger();
+         vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ int main()
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-        gridBuilder->buildGrids(LbmOrGks::LBM, false);
+        gridBuilder->buildGrids(false);
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -154,7 +154,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel("CumulantK17");
+        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions

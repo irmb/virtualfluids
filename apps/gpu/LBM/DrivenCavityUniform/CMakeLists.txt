@@ -1,4 +1,4 @@
-PROJECT(DrivenCavity LANGUAGES CUDA CXX)
+PROJECT(DrivenCavityUniform LANGUAGES CUDA CXX)
 
 #LIST(APPEND CS_COMPILER_FLAGS_CXX "-DOMPI_SKIP_MPICXX" )
 
@@ -6,4 +6,5 @@ vf_add_library(BUILDTYPE binary PRIVATE_LINK basics VirtualFluids_GPU GridGenera
 
 set_source_files_properties(DrivenCavity.cpp PROPERTIES LANGUAGE CUDA)
 
-set_target_properties(DrivenCavity PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(DrivenCavityUniform PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+

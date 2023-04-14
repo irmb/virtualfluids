@@ -51,7 +51,7 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -89,6 +89,7 @@
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
@@ -99,7 +100,7 @@ std::string path(".");
 
 std::string simulationName("BoundaryLayer");
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
@@ -120,12 +121,12 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    const int  nProcs = communicator.getNummberOfProcess();
+    const int  nProcs = communicator.getNumberOfProcess();
     const uint procID = vf::gpu::Communicator::getInstance().getPID();
     std::vector<uint> devices(10);
     std::iota(devices.begin(), devices.end(), 0);
@@ -140,8 +141,6 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    LbmOrGks lbmOrGks = LBM;
 
     const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
 
@@ -230,7 +229,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams = (nProcs > 1 ? true: false);
     // useStreams=false;
     para->setUseStreams(useStreams);
-    para->setMainKernel("CumulantK17");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );
@@ -278,7 +277,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(true)// Add refinement
+    if(false)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
@@ -298,28 +297,28 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
     }
 
-	gridBuilder->buildGrids(lbmOrGks, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
     
     if(nProcs > 1){
         if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
         }
 
         if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
         if (isFirstSubDomain && !readPrecursor) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
         }
 
         if (isLastSubDomain && !readPrecursor) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX, lbmOrGks);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
     }
@@ -344,14 +343,14 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0, dx,     // wall model settinng
-                                            0.5f);                      // q
+                                            samplingOffset, z0, dx);    // wall model settinng
+
     para->setHasWallModelMonitor(true);   
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipBounceBack); 
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity); 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     para->setOutflowPressureCorrectionFactor(0.0); 
@@ -449,7 +448,7 @@ int main( int argc, char* argv[])
     {
         try
         {
-            vf::logging::Logger::initalizeLogger();
+            vf::logging::Logger::initializeLogger();
 
             if( argc > 1){ path = argv[1]; }
 
