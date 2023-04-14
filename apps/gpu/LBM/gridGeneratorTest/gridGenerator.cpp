@@ -808,16 +808,17 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-
+            std::cout << "Bad alloc: " << e.what() << std::flush;
         }
         catch (const std::exception& e)
         {
-
+            std::cout << e.what() << std::flush;
         }
         catch (...)
         {
-
+            std::cout << "unknown exeption" << std::endl;
         }
+
     }
 
    MPI_Finalize();

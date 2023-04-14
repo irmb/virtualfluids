@@ -45,7 +45,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 #include "basics/constants/NumericConstants.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 using namespace vf::basics::constant;
 

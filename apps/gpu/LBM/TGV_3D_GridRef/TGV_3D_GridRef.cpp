@@ -347,7 +347,7 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-            std::cout << e.what() << std::flush;
+            std::cout << "Bad alloc: " << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::exception& e)

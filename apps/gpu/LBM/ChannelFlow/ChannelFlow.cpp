@@ -49,7 +49,7 @@
 
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 

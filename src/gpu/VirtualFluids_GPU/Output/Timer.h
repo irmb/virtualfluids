@@ -4,7 +4,7 @@
 
 #include "DataTypes.h"
 #include "Parameter/Parameter.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 namespace vf::gpu{
     class Communicator;

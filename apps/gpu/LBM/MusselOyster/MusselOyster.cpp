@@ -18,7 +18,7 @@
 
 #include "basics/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
