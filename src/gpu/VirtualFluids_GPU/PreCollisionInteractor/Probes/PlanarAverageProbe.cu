@@ -16,11 +16,11 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 #include <algorithm>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 ///////////////////////////////////////////////////////////////////////////////////
 /// Functors for thrust reductions
 ///////////////////////////////////////////////////////////////////////////////////

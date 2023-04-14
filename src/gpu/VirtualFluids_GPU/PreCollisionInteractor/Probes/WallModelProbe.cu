@@ -14,9 +14,9 @@
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 typedef thrust::device_vector<real>::iterator valIterator;
 typedef thrust::device_vector<uint>::iterator indIterator;
 ///////////////////////////////////////////////////////////////////////////////////

@@ -104,7 +104,6 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
         std::vector<std::string> fnamesMedianLong = writeUnstrucuredGridMedianLT(para, level, fnamesMed);
         for(auto fname : fnamesMedianLong)
             this->fileNamesForCollectionFileMedian.push_back(fname.substr( fname.find_last_of('/') + 1 ));
-
     }
 }
 
@@ -135,6 +134,7 @@ std::vector<std::string> FileWriter::getNodeDataNames(std::shared_ptr<Parameter>
         nodedatanames.push_back("Fy");
         nodedatanames.push_back("Fz");
     }
+
     if(para->getUseTurbulentViscosity())
     {
         nodedatanames.push_back("nut");
@@ -153,7 +153,6 @@ std::vector<std::string> FileWriter::getNodeDataNames(std::shared_ptr<Parameter>
 
 std::vector<std::string> FileWriter::getMedianNodeDataNames(std::shared_ptr<Parameter> para)
 {
-
     std::vector<std::string> nodedatanames;
     
     if(para->getDiffOn()) 
@@ -170,19 +169,16 @@ std::vector<std::string> FileWriter::getMedianNodeDataNames(std::shared_ptr<Para
 
 std::string VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
-
     std::string filename = makeCollectionFileName(para->getFName(), para->getMyProcessID(), timestep);
     auto nodedatanames = this->getNodeDataNames(para);
     std::vector<std::string> celldatanames;
     std::string pFileName= WbWriterVtkXmlBinary::getInstance()->writeParallelFile(filename, this->fileNamesForCollectionFile, nodedatanames, celldatanames);
     this->fileNamesForCollectionFile.clear();
     return pFileName;
-
 }
 
 std::string VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
-
     std::string filename = makeMedianCollectionFileName(para->getFName(), para->getMyProcessID(), timestep);
     std::vector<std::string> nodedatanames = getMedianNodeDataNames(para);
     std::vector<std::string> celldatanames;
@@ -260,7 +256,7 @@ std::vector<std::string> FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Para
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
 
                 if(para->getDiffOn())
-                    nodedata[firstConcNode][dn1] = (double)para->getParH(level)->Conc[pos];
+                    nodedata[firstConcNode][dn1] = (double)para->getParH(level)->concentration[pos];
 
                 if(para->getIsBodyForce())
                 {
