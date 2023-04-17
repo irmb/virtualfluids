@@ -1,6 +1,8 @@
 #ifndef BASICS_CONFIGURATIONFILE_H
 #define BASICS_CONFIGURATIONFILE_H
 
+#include "Logger.h"
+#include <filesystem>
 #include <map>
 #include <vector>
 #include <sstream>
@@ -67,6 +69,26 @@ public:
    //! get value with key and default value
    template<class T>
    T getValue(const std::string& key, T defaultValue) const;
+
+   static ConfigurationFile loadConfig(int argc, char *argv[], std::filesystem::path configPath, std::string defaultConfigName = "config.txt")
+   {
+      // the config file's default name can be replaced by passing a command line argument
+
+      std::string configName = defaultConfigName;
+
+      if (argc > 1) 
+      {
+         configName = argv[1];
+         VF_LOG_INFO("Using configFile command line argument: {}", configName);
+      } else {
+         VF_LOG_INFO("Using default config name: {}", configName);
+      }
+
+      configPath.replace_filename(configName);
+      vf::basics::ConfigurationFile config;
+      config.load(configPath.string());
+      return config;
+   }
 
 private:
    //! the container
