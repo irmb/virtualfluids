@@ -102,23 +102,7 @@ int main(int argc, char *argv[])
         GridScalingFactory scalingFactory = GridScalingFactory();
         vf::basics::ConfigurationFile config;
         if (useConfigFile) {
-            //////////////////////////////////////////////////////////////////////////
-            // read simulation parameters from config file
-            //////////////////////////////////////////////////////////////////////////
-
-            // assuming that a config files is stored parallel to this file.
-            std::filesystem::path configPath = __FILE__;
-
-            // the config file's default name can be replaced by passing a command line argument
-            std::string configName("config.txt");
-            if (argc == 2) {
-                configName = argv[1];
-                std::cout << "Using configFile command line argument: " << configName << std::endl;
-            }
-
-            configPath.replace_filename(configName);
-            config.load(configPath.string());
-
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, __FILE__, "config.txt");
             para = std::make_shared<Parameter>(&config);
         } else {
             para = std::make_shared<Parameter>();
