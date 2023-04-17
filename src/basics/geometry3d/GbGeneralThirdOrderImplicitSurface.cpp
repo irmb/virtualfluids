@@ -192,14 +192,27 @@ bool GbGeneralThirdOrderImplicitSurface::isPointInGbObject3D(const double& x1, c
 	// 	if (f < 10.0E-15 && f > -10.0E-15)
 		//if (fabs(f) <= 10e-15)
 	 //if (f <= 0)
-	if (f1 <= 0. && f2 >= 0.)
-{
-	return true;
-}
-else
-{
-	return false;
-}
+	 if (UbMath::less(x1, this->getX1Minimum()))
+        return false;
+    else if (UbMath::less(x2, this->getX2Minimum()))
+        return false;
+    else if (UbMath::less(x3, this->getX3Minimum()))
+        return false;
+    else if (UbMath::greater(x1, this->getX1Maximum()))
+        return false;
+    else if (UbMath::greater(x2, this->getX2Maximum()))
+        return false;
+    else if (UbMath::greater(x3, this->getX3Maximum()))
+        return false;
+	 if (UbMath::lessEqual(f1,0.) && UbMath::greaterEqual(f2,0.) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		} 
+
 }
 
 /*==========================================================*/

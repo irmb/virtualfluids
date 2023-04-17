@@ -163,6 +163,9 @@ void run(string configname)
         SPtr<BCProcessor> bcProc(new BCProcessor());
         kernel->setBCProcessor(bcProc);
 
+       
+
+        
 
             SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(
                 comm, MetisPartitioningGridVisitor::LevelIntersected, DIR_00M, MetisPartitioner::RECURSIVE));
@@ -177,6 +180,8 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
+
+        
             //GbGyroidThirdOrderPtr tpms;
             // // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
             // // dx));
@@ -255,11 +260,25 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
+        if (refineLevel > 0)
+         {
+             //refinement area
+            //SPtr<GbObject3D> refCube(new  GbCuboid3D(TPMSOrigin[0],TPMSOrigin[1],TPMSOrigin[2],TPMSL[0],TPMSL[1],TPMSL[2]));
+            //if (myid == 0) GbSystem3D::writeGeoObject(refCube.get(), pathname + "/geo/refCube", WbWriterVtkXmlASCII::getInstance());
+            
+            if (myid == 0) UBLOG(logINFO, "Refinement - start");
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
+            //refineHelper.addGbObject(sphere, refineLevel);
+            refineHelper.addGbObject(tpms, refineLevel);
+            refineHelper.refine();
+            if (myid == 0) UBLOG(logINFO, "Refinement - end");
+         }
+
             SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname,
                                                                   WbWriterVtkXmlBinary::getInstance(), comm));
 
             ppblocks->process(0);
-
+            
             // GbObject3DPtr solidcube(new GbCuboid3D(0, g_minX2, g_minX3, TPMSL[0], g_maxX2, g_maxX3));
             // if (myid == 0) GbSystem3D::writeGeoObject(solidcube.get(), pathname + "/geo/solidcube",
             // WbWriterVtkXmlBinary::getInstance());
