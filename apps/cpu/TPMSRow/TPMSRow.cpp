@@ -177,10 +177,18 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
-            GbGyroidThirdOrderPtr tpms;
-            // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
-            // dx));
-            tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
+            //GbGyroidThirdOrderPtr tpms;
+            // // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
+            // // dx));
+            // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
+            //                                                   TPMSOrigin[0] + TPMSL[0],
+            //                                                   TPMSOrigin[1] + TPMSL[1],
+            //                                                   TPMSOrigin[2] + TPMSL[2],
+            //                                                   UnitEdgeLength, dx, 2.5e-4));
+
+            
+            GbGeneralThirdOrderImplicitSurfacePtr tpms;
+            tpms = GbGeneralThirdOrderImplicitSurfacePtr(new GbGeneralThirdOrderImplicitSurface(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
                                                               TPMSOrigin[0] + TPMSL[0],
                                                               TPMSOrigin[1] + TPMSL[1],
                                                               TPMSOrigin[2] + TPMSL[2],
