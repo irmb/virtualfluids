@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, __FILE__, "configMusselOyster.txt");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/MusselOyster/configMusselOyster.txt");
             multipleLevel(config);
 
             //////////////////////////////////////////////////////////////////////////

@@ -657,7 +657,7 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, __FILE__, "config.txt");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/SphereScaling/config.txt");
             multipleLevel(config);
 
             //////////////////////////////////////////////////////////////////////////

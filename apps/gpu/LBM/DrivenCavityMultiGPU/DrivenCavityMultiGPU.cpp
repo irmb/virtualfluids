@@ -516,7 +516,7 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, __FILE__, "configDrivenCavityMultiGPU.txt");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/DrivenCavityMultiGPU/configDrivenCavityMultiGPU.txt");
             multipleLevel(config);
 
             //////////////////////////////////////////////////////////////////////////
