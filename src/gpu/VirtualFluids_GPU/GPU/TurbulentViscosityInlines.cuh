@@ -38,9 +38,9 @@
 #include <cuda_runtime.h>
 
 #include "LBM/LB.h" 
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 __inline__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
 {

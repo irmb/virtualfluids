@@ -8,7 +8,7 @@
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include <basics/Core/StringUtilities/StringUtil.h>
+#include <basics/StringUtilities/StringUtil.h>
 
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager)
 {

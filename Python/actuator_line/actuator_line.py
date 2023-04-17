@@ -46,10 +46,7 @@ output_path.mkdir(exist_ok=True)
 
 #%%
 logger.Logger.initialize_logger()
-basics.logger.Logger.add_stdout()
-basics.logger.Logger.set_debug_level(basics.logger.Level.INFO_LOW)
-basics.logger.Logger.time_stamp(basics.logger.TimeStamp.ENABLE)
-basics.logger.Logger.enable_printed_rank_numbers(True)
+
 #%%
 grid_factory = gpu.grid_generator.GridFactory.make()
 grid_builder = gpu.grid_generator.MultipleGridBuilder.make_shared(grid_factory)
@@ -147,7 +144,7 @@ grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
 grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
-grid_builder.build_grids(basics.LbmOrGks.LBM, False)
+grid_builder.build_grids(False)
 
 sampling_offset = 2
 if read_precursor:

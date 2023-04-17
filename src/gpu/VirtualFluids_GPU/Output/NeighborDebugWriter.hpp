@@ -9,7 +9,7 @@
 #include "lbm/constants/D3Q27.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"
 #include "gpu/VirtualFluids_GPU/Communication/Communicator.h"
 

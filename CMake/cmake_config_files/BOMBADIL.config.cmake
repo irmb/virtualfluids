@@ -48,25 +48,6 @@ set(LIGGGHTS_RELEASE_LIBRARY "d:/Tools/LIGGGHTS/build/Release/liggghts.lib")
   # SET(METIS_RELEASE_LIBRARY "/mnt/d/Tools/metis-5.1.0/build/Linux-x86_64/libmetis/libmetis.a") 
 #ENDIF()
 
-#################################################################################
-#  PE  
-#################################################################################
-IF(${USE_DEM_COUPLING})
-  SET(PE_BINARY_DIR "d:/Tools/waLBerla/walberlaGit/build" CACHE PATH "pe binary dir")
-  SET(PE_ROOT "d:/Tools/waLBerla/walberlaGit" CACHE PATH "pe root")
- 
-  SET(PE_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/pe/Debug/pe.lib) 
-  SET(PE_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/pe/Release/pe.lib)
-  SET(BLOCKFOREST_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/blockforest/Debug/blockforest.lib) 
-  SET(BLOCKFOREST_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/blockforest/Release/blockforest.lib)
-  SET(DOMAIN_DECOMPOSITION_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/domain_decomposition/Debug/domain_decomposition.lib) 
-  SET(DOMAIN_DECOMPOSITION_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/domain_decomposition/Release/domain_decomposition.lib)
-  SET(GEOMETRY_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/geometry/Debug/geometry.lib) 
-  SET(GEOMETRY_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/geometry/Release/geometry.lib)
-  SET(CORE_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/core/Debug/core.lib) 
-  SET(CORE_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/core/Release/core.lib)
-
- ENDIF()
 
 ##################################################################################
 #  FETOL

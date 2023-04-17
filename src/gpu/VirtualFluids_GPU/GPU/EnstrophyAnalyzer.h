@@ -7,7 +7,7 @@
 
 
 #include "PointerDefinitions.h"
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "VirtualFluids_GPU_export.h"
 
 class Parameter;

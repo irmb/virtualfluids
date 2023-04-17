@@ -27,7 +27,6 @@ SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
-SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
 SET(USE_LIGGGHTS OFF CACHE BOOL "include LIGGGHTS library support")
 

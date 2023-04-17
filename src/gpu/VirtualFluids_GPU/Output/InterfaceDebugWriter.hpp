@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <sstream>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"

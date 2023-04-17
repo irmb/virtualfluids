@@ -19,9 +19,9 @@
 #include "Parameter/Parameter.h"
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 __global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, unsigned long long numberOfLBnodes);
@@ -139,7 +139,6 @@ KineticEnergyAnalyzer::KineticEnergyAnalyzer(SPtr<Parameter> para, uint analyzeI
 
 void KineticEnergyAnalyzer::writeToFile(std::string filename)
 {
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 	std::cout << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 
     std::ofstream file;
@@ -151,7 +150,6 @@ void KineticEnergyAnalyzer::writeToFile(std::string filename)
 
     file.close();
 
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 	std::cout << "done!\n";
 }
 

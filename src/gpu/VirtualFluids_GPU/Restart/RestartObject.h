@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 class Parameter;
 

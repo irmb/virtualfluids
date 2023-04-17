@@ -845,20 +845,6 @@ __global__ void QVeloDeviceEQ27(real* VeloX,
                                            unsigned long long numberOfLBnodes,
                                            bool isEvenTimestep);
 
-__global__ void QVeloStreetDeviceEQ27(
-    real* veloXfraction,
-    real* veloYfraction,
-    int*  naschVelo,
-    real* DD,
-    int*  naschIndex,
-    int   numberOfStreetNodes,
-    real  velocityRatio,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool  isEvenTimestep);
-
 //Slip BCs
 __global__ void QSlipDevice27(real* DD,
                                          int* k_Q,

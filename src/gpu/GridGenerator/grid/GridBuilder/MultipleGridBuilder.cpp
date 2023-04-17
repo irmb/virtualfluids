@@ -61,7 +61,7 @@ SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> grid
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
-    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
+    boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
 
     startX -= 0.5 * delta;
     startY -= 0.5 * delta;
@@ -70,11 +70,11 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
     endY   += 0.5 * delta;
     endZ   += 0.5 * delta;
 
-    const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta, 0);
+    const auto grid = this->makeGrid(std::make_shared<Cuboid>(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta, 0);
     addGridToList(grid);
 }
 
-void MultipleGridBuilder::addGeometry(Object* solidObject)
+void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject)
 {
     this->solidObject = solidObject;
 
@@ -85,7 +85,7 @@ void MultipleGridBuilder::addGeometry(Object* solidObject)
     }
 }
 
-void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
+void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject, uint level)
 {
     this->solidObject = solidObject;
     auto gridShape = solidObject->clone();
@@ -94,7 +94,7 @@ void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
     this->addGrid(gridShape, level);
 }
 
-void MultipleGridBuilder::addGrid(Object* gridShape)
+void MultipleGridBuilder::addGrid(SPtr<Object> gridShape)
 {
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
@@ -104,7 +104,7 @@ void MultipleGridBuilder::addGrid(Object* gridShape)
     addGridToListIfValid(grid);
 }
 
-void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
+void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
 {
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
@@ -140,13 +140,13 @@ void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
     //eraseGridsFromListIfInvalid(oldGridSize);
 }
 
-void MultipleGridBuilder::addFineGridToList(uint level, Object* gridShape)
+void MultipleGridBuilder::addFineGridToList(uint level, SPtr<Object> gridShape)
 {
     const auto grid = makeGrid(gridShape, level, 0);
     grids.push_back(grid);
 }
 
-void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, Object* gridShape)
+void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, SPtr<Object> gridShape)
 {
     if (levelDifference > 0)
     {
@@ -156,7 +156,7 @@ void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint 
         for (int i = levelDifference - 1; i >= 0; i--)
         {
             const real scalingFactor = nodesBetweenGrids * spacings[i] * calculateDelta(levelFine);
-            Object* gridShapeClone = gridShape->clone();
+            SPtr<Object> gridShapeClone = gridShape->clone();
             gridShapeClone->scale(scalingFactor);
 
             const auto grid = makeGrid(gridShapeClone, level++, 0);
@@ -193,7 +193,7 @@ void MultipleGridBuilder::addGridToListIfValid(SPtr<Grid> grid)
     addGridToList(grid);
 }
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
+SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
 {
     return gridFactory->makeGrid(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level);
 }
@@ -203,9 +203,9 @@ bool MultipleGridBuilder::coarseGridExists() const
     return !grids.empty();
 }
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level, uint levelFine)
+SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uint levelFine)
 {
-    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
+    boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
 
     const real delta = calculateDelta(level);
 
@@ -213,11 +213,11 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level, uint lev
 
 	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
 
-	SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0], 
-                                                   staggeredCoordinates[1], 
-                                                   staggeredCoordinates[2], 
-                                                   staggeredCoordinates[3], 
-                                                   staggeredCoordinates[4], 
+	SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
+                                                   staggeredCoordinates[1],
+                                                   staggeredCoordinates[2],
+                                                   staggeredCoordinates[3],
+                                                   staggeredCoordinates[4],
                                                    staggeredCoordinates[5], delta, level);
 
     newGrid->setOddStart( xOddStart, yOddStart, zOddStart );
@@ -233,7 +233,7 @@ real MultipleGridBuilder::calculateDelta(uint level) const
     return delta;
 }
 
-std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart) const
+std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart) const
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -466,7 +466,7 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
 //      => MultipleGridBuilder::findCommunicationIndices(...)
 //      => LevelGridBuilder::setCommunicationProcess(...)
 //
-void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
+void MultipleGridBuilder::buildGrids(bool enableThinWalls )
 {
     //////////////////////////////////////////////////////////////////////////
 
@@ -490,7 +490,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //
     for( int level = (int)grids.size()-1; level >= 0; level-- ) {
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
+        VF_LOG_INFO("Start initializing level {}", level);
 
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
@@ -502,7 +502,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         else
             grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done initializing level " << level << "\n";
+        VF_LOG_INFO("Done initializing level {}", level);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -516,8 +516,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //
     if (solidObject)
     {
-
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
+        VF_LOG_TRACE("Start with Q Computation");
 
         // Currently the solid object is only used on the finest grid,
         // because refinement into solid objects is not yet implemented.
@@ -529,13 +528,13 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         //for( uint level = 0; level < grids.size(); level++ )
         uint level = (uint)grids.size() - 1;
         {
-            // the Grid::mesh(...) method distinguishes inside and ouside regions
+            // the Grid::mesh(...) method distinguishes inside and outside regions
             // of the solid domain.:
             //      => set inner nodes to INVALID_SOLID
             //      => close needle sells
             //      => set one layer of STOPPER_SOLID nodes in the solid domain
             //      => set one layer of BC_SOLID nodes in the fluid domain
-            grids[level]->mesh(solidObject);
+            grids[level]->mesh(solidObject.get());
 
             // if thin walls are enables additional BC_SOLID nodes are found by
             // Grid::findOs(...). To prevent the actual Q computation, 
@@ -544,18 +543,17 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
             // additionally some needle cells are closed in this process.
             if (enableThinWalls) {
                 grids[level]->enableFindSolidBoundaryNodes();
-                grids[level]->findQs(solidObject);
+                grids[level]->findQs(solidObject.get());
                 grids[level]->closeNeedleCellsThinWall();
                 grids[level]->enableComputeQs();
             }
 
             // compute the sub grid distances 
             // this works for STL and Sphere objects, but not yet for other primitives!
-            if( lbmOrGks == LBM )
-                grids[level]->findQs(solidObject);
+            grids[level]->findQs(solidObject.get());
         }
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
+        VF_LOG_TRACE("Done with Q Computation");
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -566,7 +564,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
     //
     for (size_t i = 0; i < grids.size() - 1; i++)
-        grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
+        grids[i]->findGridInterface(grids[i + 1]);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -574,7 +572,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // and INVALID_OUT_OF_GRID
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->limitToSubDomain( this->subDomainBox, lbmOrGks );
+            grids[i]->limitToSubDomain( this->subDomainBox);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -588,12 +586,10 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //      => computes the sparse indices
     //      => generates neighbor connectivity taking into account periodic boundaries
     //      => undates the interface connectivity to sparse indices (overwrites matrix indices!)
-    if (lbmOrGks == LBM) {
-        for (size_t i = 0; i < grids.size() - 1; i++)
-           grids[i]->findSparseIndices(grids[i + 1]);
+    for (size_t i = 0; i < grids.size() - 1; i++)
+        grids[i]->findSparseIndices(grids[i + 1]);
 
-        grids[grids.size() - 1]->findSparseIndices(nullptr);
-    }
+    grids[grids.size() - 1]->findSparseIndices(nullptr);
 
     //////////////////////////////////////////////////////////////////////////
 }
@@ -606,24 +602,24 @@ GRIDGENERATOR_EXPORT void MultipleGridBuilder::setNumberOfLayers(uint numberOfLa
 
 void MultipleGridBuilder::emitNoCoarseGridExistsWarning()
 {
-    *logging::out << logging::Logger::WARNING << "No Coarse grid was added before. Actual Grid is not added, please create coarse grid before.\n";
+    VF_LOG_WARNING("No Coarse grid was added before. Actual Grid is not added, please create coarse grid before.");
 }
 
 
 void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
 {
-    *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
+    VF_LOG_WARNING("Grid lies not inside of coarse grid. Actual Grid is not added.");
 }
 
-void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOrGks)
+void MultipleGridBuilder::findCommunicationIndices(int direction)
 {
-    *logging::out << logging::Logger::INFO_HIGH << "Start findCommunicationIndices()\n";
+    VF_LOG_TRACE("Start findCommunicationIndices()");
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->findCommunicationIndices(direction, this->subDomainBox, lbmOrGks);
+            grids[i]->findCommunicationIndices(direction, this->subDomainBox);
 
-    *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
+    VF_LOG_TRACE("Done findCommunicationIndices()");
 }
 
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const

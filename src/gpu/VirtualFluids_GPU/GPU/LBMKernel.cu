@@ -2541,39 +2541,6 @@ void QVeloDevEQ27(
     getLastCudaError("QVeloDeviceEQ27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void QVeloStreetDevEQ27(
-    uint  numberOfThreads,
-    real* veloXfraction,
-    real* veloYfraction,
-    int*  naschVelo,
-    real* DD,
-    int*  naschIndex,
-    int   numberOfStreetNodes,
-    real  velocityRatio,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    uint  numberOfLBnodes,
-    bool  isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfStreetNodes);
-
-    QVeloStreetDeviceEQ27 << < grid.grid, grid.threads >> > (
-        veloXfraction,
-        veloYfraction,
-        naschVelo,
-        DD,
-        naschIndex,
-        numberOfStreetNodes,
-        velocityRatio,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);

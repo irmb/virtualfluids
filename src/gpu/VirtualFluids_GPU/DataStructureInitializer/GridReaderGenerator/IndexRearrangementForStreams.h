@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 class Parameter;
 class GridBuilder;

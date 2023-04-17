@@ -43,10 +43,10 @@
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
 #include "Kernel/Utilities/DistributionHelper.cuh"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 

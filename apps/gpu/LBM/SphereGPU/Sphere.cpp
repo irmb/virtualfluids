@@ -42,13 +42,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+#include <logger/Logger.h>
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
-#include "logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -94,15 +91,6 @@ int main(int argc, char *argv[])
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
-
-        //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
         //////////////////////////////////////////////////////////////////////////
         // setup simulation parameters (with or without config file)
@@ -153,7 +141,7 @@ int main(int argc, char *argv[])
                                     8.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // use primitive
-        // Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
+        // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
 
         // use stl
         std::string stlPath = "./apps/gpu/LBM/SphereGPU/sphere02.stl";
@@ -161,7 +149,7 @@ int main(int argc, char *argv[])
             stlPath = config.getValue<std::string>("STLPath");
         }
         std::cout << "Reading stl from " << stlPath << "." << std::endl;
-        Object *sphere = TriangularMesh::make(stlPath);
+        auto sphere = std::make_shared<TriangularMesh>(stlPath);
 
         gridBuilder->addGeometry(sphere);
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -171,7 +159,7 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         // gridBuilder->setNumberOfLayers(10, 8);
-        // gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, 2.0 * dSphere), 1);
+        // gridBuilder->addGrid(std::make_shared<Sphere>(0.0, 0.0, 0.0, 2.0 * dSphere), 1);
         // para->setMaxLevel(2);
         // scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleK17);
 
@@ -179,7 +167,7 @@ int main(int argc, char *argv[])
         // build grid
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->buildGrids(LBM, false);  // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->buildGrids(false);  // buildGrids() has to be called before setting the BCs!!!!
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units

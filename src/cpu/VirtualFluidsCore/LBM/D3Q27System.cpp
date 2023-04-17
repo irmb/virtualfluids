@@ -5,7 +5,7 @@
 namespace D3Q27System
 {
 //using namespace UbMath;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
 // index            0   1   2   3   4   5  6   7   8   9   10  11  12  13  14  15  16  17   18  19  20  21  22  23  24  25
 // f:               E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW
