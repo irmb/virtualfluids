@@ -27,6 +27,7 @@ pythonbindings/pymuparser/bindings*
 output/
 logs/
 reference_data/
+generated/
 
 # grid
 .grid/

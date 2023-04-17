@@ -82,7 +82,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
     int numNodesInBufferSend = 0;
 
 #pragma omp parallel for
-    for (uint i = 0; i < edgeNodes.size(); i++) {
+    for (int i = 0; i < (int)edgeNodes.size(); i++) {
         indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
         indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
         numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;

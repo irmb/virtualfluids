@@ -37,15 +37,15 @@
 #include <helper_cuda.h>
 
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
-#include <Core/StringUtilities/StringUtil.h>
+#include <StringUtilities/StringUtil.h>
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 __device__ void calculatePointwiseQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {

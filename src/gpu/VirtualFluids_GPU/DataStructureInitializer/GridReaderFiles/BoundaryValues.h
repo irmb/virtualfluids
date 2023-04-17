@@ -42,7 +42,6 @@ public:
 	void setPressValues(real *RhoBC, int* kN, int level) const;
 	void setVelocityValues(real *vx, real *vy, real *vz, int level) const;
 	void setOutflowValues(real *RhoBC, int* kN, int level) const;
-	void setStreetVelocityFractions(real *vxf, real *vyf, int level) const;
 
 private:
 	void init();

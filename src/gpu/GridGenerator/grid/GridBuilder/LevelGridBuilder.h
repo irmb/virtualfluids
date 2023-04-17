@@ -38,7 +38,7 @@
 #include <memory>
 #include <array>
 
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
 #include "gpu/GridGenerator/global.h"
 
@@ -47,7 +47,7 @@
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 struct Vertex;
 class  Grid;

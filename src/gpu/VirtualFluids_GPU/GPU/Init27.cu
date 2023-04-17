@@ -1,9 +1,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -358,7 +358,7 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
 
             //////////////////////////////////////////////////////////////////////////
 
-            // the following code is copy and pasted from VirtualFluidsCore/Visitors/InitDistributionsBlockVisitor.cpp
+            // the following code is copy and pasted from VirtualFluidsVisitors/InitDistributionsBlockVisitor.cpp
             // i.e. Konstantins code
 
             real ax = dvx1dx;

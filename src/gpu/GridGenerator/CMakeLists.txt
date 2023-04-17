@@ -1,6 +1,6 @@
 project(GridGenerator LANGUAGES CXX)
 
-vf_add_library(PRIVATE_LINK basics OpenMP::OpenMP_CXX)
+vf_add_library(PUBLIC_LINK basics logger OpenMP::OpenMP_CXX)
 vf_add_tests()
 
 if(NOT MSVC) 

@@ -1,7 +1,7 @@
 #ifndef INDEX_EXCHANGE
 #define INDEX_EXCHANGE
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 namespace vf::gpu
 {

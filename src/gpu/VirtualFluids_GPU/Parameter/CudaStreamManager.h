@@ -33,7 +33,7 @@
 #include <map>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 
 enum class CudaStreamIndex
     {

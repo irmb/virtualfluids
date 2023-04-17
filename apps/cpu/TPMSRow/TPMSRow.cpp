@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace vf::lbm::dir;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 void run(string configname)
 {

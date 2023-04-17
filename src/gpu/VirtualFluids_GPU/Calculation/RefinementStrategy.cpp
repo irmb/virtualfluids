@@ -1,7 +1,7 @@
 #include "RefinementStrategy.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 std::function<void(UpdateGrid27 *updateGrid, Parameter *para, int level)>
     getFunctionForRefinementAndExchange(const bool useStreams, const int numberOfMpiProcesses, const int maxLevel,

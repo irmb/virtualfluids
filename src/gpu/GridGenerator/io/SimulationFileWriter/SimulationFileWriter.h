@@ -40,8 +40,6 @@
 #include <vector>
 #include <array>
 
-#include "Core/NonCreatable.h"
-
 #include "gpu/GridGenerator/global.h"
 
 class UnstructuredGridBuilder;
@@ -57,7 +55,7 @@ enum class FILEFORMAT
     BINARY, ASCII
 };
 
-class SimulationFileWriter : private NonCreatable
+class SimulationFileWriter
 {
 public:
     GRIDGENERATOR_EXPORT static void write(const std::string& folder, SPtr<GridBuilder> builder, FILEFORMAT format);

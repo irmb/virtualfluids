@@ -41,10 +41,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+#include <logger/Logger.h>
+
 #include "PointerDefinitions.h"
 
 #include <logger/Logger.h>
@@ -93,15 +92,6 @@ int main()
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-        //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator
         //////////////////////////////////////////////////////////////////////////
 
@@ -117,13 +107,13 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        // gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        // gridBuilder->addGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-        gridBuilder->buildGrids(LbmOrGks::LBM, false);
+        gridBuilder->buildGrids(false);
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units

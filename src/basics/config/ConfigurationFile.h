@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include <basics/basics/utilities/UbException.h>
+#include <basics/utilities/UbException.h>
 
 //! \brief  Simple configuration file
 //! \details The Configuration class presented here can read and keep values of any configuration file written in a format like this:
