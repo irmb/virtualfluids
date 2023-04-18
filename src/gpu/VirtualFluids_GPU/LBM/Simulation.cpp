@@ -531,37 +531,37 @@ void Simulation::calculateTimestep(uint timestep)
     ////////////////////////////////////////////////////////////////////////////////
     if (para->getCalcMedian() && ((int)timestep >= para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()))
     {
-      for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-      {
-          //CalcMedSP27(para->getParD(lev)->vx_SP_Med,
-                //      para->getParD(lev)->vy_SP_Med,
-                //      para->getParD(lev)->vz_SP_Med,
-                //      para->getParD(lev)->rho_SP_Med,
-                //      para->getParD(lev)->press_SP_Med,
-                //      para->getParD(lev)->geoSP,
-                //      para->getParD(lev)->neighborX_SP,
-                //      para->getParD(lev)->neighborY_SP,
-                //      para->getParD(lev)->neighborZ_SP,
-                //      para->getParD(lev)->size_Mat_SP,
-                //      para->getParD(lev)->numberofthreads,
-                //      para->getParD(lev)->d0SP.f[0],
-                //      para->getParD(lev)->evenOrOdd);
-          //getLastCudaError("CalcMacSP27 execution failed");
-          CalcMedCompSP27(para->getParD(lev)->vx_SP_Med,
-                          para->getParD(lev)->vy_SP_Med,
-                          para->getParD(lev)->vz_SP_Med,
-                          para->getParD(lev)->rho_SP_Med,
-                          para->getParD(lev)->press_SP_Med,
-                          para->getParD(lev)->typeOfGridNode,
-                          para->getParD(lev)->neighborX,
-                          para->getParD(lev)->neighborY,
-                          para->getParD(lev)->neighborZ,
-                          para->getParD(lev)->numberOfNodes,
-                          para->getParD(lev)->numberofthreads,
-                          para->getParD(lev)->distributions.f[0],
-                          para->getParD(lev)->isEvenTimestep);
-          getLastCudaError("CalcMacMedCompSP27 execution failed");
-      }
+        for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+        {
+            //CalcMedSP27(para->getParD(lev)->vx_SP_Med,
+                  //      para->getParD(lev)->vy_SP_Med,
+                  //      para->getParD(lev)->vz_SP_Med,
+                  //      para->getParD(lev)->rho_SP_Med,
+                  //      para->getParD(lev)->press_SP_Med,
+                  //      para->getParD(lev)->geoSP,
+                  //      para->getParD(lev)->neighborX_SP,
+                  //      para->getParD(lev)->neighborY_SP,
+                  //      para->getParD(lev)->neighborZ_SP,
+                  //      para->getParD(lev)->size_Mat_SP,
+                  //      para->getParD(lev)->numberofthreads,
+                  //      para->getParD(lev)->d0SP.f[0],
+                  //      para->getParD(lev)->evenOrOdd);
+            //getLastCudaError("CalcMacSP27 execution failed");
+            CalcMedCompSP27(para->getParD(lev)->vx_SP_Med,
+                            para->getParD(lev)->vy_SP_Med,
+                            para->getParD(lev)->vz_SP_Med,
+                            para->getParD(lev)->rho_SP_Med,
+                            para->getParD(lev)->press_SP_Med,
+                            para->getParD(lev)->typeOfGridNode,
+                            para->getParD(lev)->neighborX,
+                            para->getParD(lev)->neighborY,
+                            para->getParD(lev)->neighborZ,
+                            para->getParD(lev)->numberOfNodes,
+                            para->getParD(lev)->numberofthreads,
+                            para->getParD(lev)->distributions.f[0],
+                            para->getParD(lev)->isEvenTimestep);
+            getLastCudaError("CalcMacMedCompSP27 execution failed");
+        }
     }
     if (para->getCalcTurbulenceIntensity()) {
         for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
@@ -721,270 +721,271 @@ void Simulation::calculateTimestep(uint timestep)
 void Simulation::readAndWriteFiles(uint timestep)
 {
     VF_LOG_INFO("Write files t = {} ...", timestep);
+
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
     {
-    //////////////////////////////////////////////////////////////////////////
-    //exchange data for valid post process
-    updateGrid27->exchangeData(lev);
+        //////////////////////////////////////////////////////////////////////////
+        //exchange data for valid post process
+        updateGrid27->exchangeData(lev);
 
-    //////////////////////////////////////////////////////////////////////////
-    //if (para->getD3Qxx()==19)
-    //{
-        //CalcMac(para->getParD(lev)->vx,     para->getParD(lev)->vy,       para->getParD(lev)->vz,      para->getParD(lev)->rho,
-        //        para->getParD(lev)->geo,    para->getParD(lev)->size_Mat, para->getParD(lev)->gridNX,  para->getParD(lev)->gridNY,
-        //        para->getParD(lev)->gridNZ, para->getParD(lev)->d0.f[0],  para->getParD(lev)->evenOrOdd);
-    //}
-    //else if (para->getD3Qxx()==27)
-    //{
-       //if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
-       //{
-          // unsigned int tdiff = t - t_prev;
-          // CalcMacMedSP27(para->getParD(lev)->vx_SP_Med,
-       //                      para->getParD(lev)->vy_SP_Med,
-       //                      para->getParD(lev)->vz_SP_Med,
-       //                      para->getParD(lev)->rho_SP_Med,
-       //                      para->getParD(lev)->press_SP_Med,
-       //                      para->getParD(lev)->geoSP,
-       //                      para->getParD(lev)->neighborX_SP,
-       //                      para->getParD(lev)->neighborY_SP,
-       //                      para->getParD(lev)->neighborZ_SP,
-       //                      tdiff,
-       //                      para->getParD(lev)->size_Mat_SP,
-       //                      para->getParD(lev)->numberofthreads,
-       //                      para->getParD(lev)->evenOrOdd);
-          // getLastCudaError("CalcMacMedSP27 execution failed");
-       //}
-       //CalcMacSP27(para->getParD(lev)->vx_SP,
-    //                        para->getParD(lev)->vy_SP,
-    //                        para->getParD(lev)->vz_SP,
-    //                        para->getParD(lev)->rho,
-    //                        para->getParD(lev)->pressure,
-    //                        para->getParD(lev)->geoSP,
-    //                        para->getParD(lev)->neighborX_SP,
-    //                        para->getParD(lev)->neighborY_SP,
-    //                        para->getParD(lev)->neighborZ_SP,
-    //                        para->getParD(lev)->size_Mat_SP,
-    //                        para->getParD(lev)->numberofthreads,
-    //                        para->getParD(lev)->d0SP.f[0],
-    //                        para->getParD(lev)->evenOrOdd);
-    //            getLastCudaError("CalcMacSP27 execution failed");
-               CalcMacCompSP27(para->getParD(lev)->velocityX,
-                               para->getParD(lev)->velocityY,
-                               para->getParD(lev)->velocityZ,
-                               para->getParD(lev)->rho,
-                               para->getParD(lev)->pressure,
-                               para->getParD(lev)->typeOfGridNode,
-                               para->getParD(lev)->neighborX,
-                               para->getParD(lev)->neighborY,
-                               para->getParD(lev)->neighborZ,
-                               para->getParD(lev)->numberOfNodes,
-                               para->getParD(lev)->numberofthreads,
-                               para->getParD(lev)->distributions.f[0],
-                               para->getParD(lev)->isEvenTimestep);
-               getLastCudaError("CalcMacSP27 execution failed");
-            // // overwrite with wall nodes
-            //    SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
-            //                                para->getParD(lev)->velocityX,
-            //                                para->getParD(lev)->velocityY,
-            //                                para->getParD(lev)->velocityZ,
-            //                                para->getParD(lev)->geometryBC.Vx,
-            //                                para->getParD(lev)->geometryBC.Vy,
-            //                                para->getParD(lev)->geometryBC.Vz,
-            //                                para->getParD(lev)->geometryBC.numberOfBCnodes,
-            //                                para->getParD(lev)->geometryBC.k,
-            //                                para->getParD(lev)->rho,
-            //                                para->getParD(lev)->pressure,
-            //                                para->getParD(lev)->typeOfGridNode,
-            //                                para->getParD(lev)->neighborX,
-            //                                para->getParD(lev)->neighborY,
-            //                                para->getParD(lev)->neighborZ,
-            //                                para->getParD(lev)->size_Mat,
-            //                                para->getParD(lev)->distributions.f[0],
-            //                                para->getParD(lev)->isEvenTimestep);
-            //   getLastCudaError("SetOutputWallVelocitySP27 execution failed");
-            //    SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
-            //                                para->getParD(lev)->velocityX,
-            //                                para->getParD(lev)->velocityY,
-            //                                para->getParD(lev)->velocityZ,
-            //                                para->getParD(lev)->velocityBC.Vx,
-            //                                para->getParD(lev)->velocityBC.Vy,
-            //                                para->getParD(lev)->velocityBC.Vz,
-            //                                para->getParD(lev)->velocityBC.numberOfBCnodes,
-            //                                para->getParD(lev)->velocityBC.k,
-            //                                para->getParD(lev)->rho,
-            //                                para->getParD(lev)->pressure,
-            //                                para->getParD(lev)->typeOfGridNode,
-            //                                para->getParD(lev)->neighborX,
-            //                                para->getParD(lev)->neighborY,
-            //                                para->getParD(lev)->neighborZ,
-            //                                para->getParD(lev)->size_Mat,
-            //                                para->getParD(lev)->distributions.f[0],
-            //                                para->getParD(lev)->isEvenTimestep);
-            //   getLastCudaError("SetOutputWallVelocitySP27 execution failed");
-             //}
-               cudaMemoryManager->cudaCopyPrint(lev);
-           if (para->getCalcMedian())
-           {
-               cudaMemoryManager->cudaCopyMedianPrint(lev);
-           }
-           //////////////////////////////////////////////////////////////////////////
-           //TODO: implement flag to write ASCII data
-           if (para->getWriteVeloASCIIfiles())
-               VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, timestep);
-           //////////////////////////////////////////////////////////////////////////
-           if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
-           {
-               std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
-               if (this->kineticEnergyAnalyzer) this->kineticEnergyAnalyzer->writeToFile(fname);
-               if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
-           }
-           //////////////////////////////////////////////////////////////////////////
-           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-           if (para->getDiffOn()==true)
-           {
-              if (para->getDiffMod() == 7)
-              {
-                 CalcMacThS7(   para->getParD(lev)->concentration,
-                                para->getParD(lev)->typeOfGridNode,
-                                para->getParD(lev)->neighborX,
-                                para->getParD(lev)->neighborY,
-                                para->getParD(lev)->neighborZ,
-                                para->getParD(lev)->numberOfNodes,
-                                para->getParD(lev)->numberofthreads,
-                                para->getParD(lev)->distributionsAD7.f[0],
-                                para->getParD(lev)->isEvenTimestep);
-                 getLastCudaError("CalcMacTh7 execution failed");
-              }
-              else if (para->getDiffMod() == 27)
-              {
-                 CalcConcentration27(
-                                para->getParD(lev)->numberofthreads,
-                                para->getParD(lev)->concentration,
-                                para->getParD(lev)->typeOfGridNode,
-                                para->getParD(lev)->neighborX,
-                                para->getParD(lev)->neighborY,
-                                para->getParD(lev)->neighborZ,
-                                para->getParD(lev)->numberOfNodes,
-                                para->getParD(lev)->distributionsAD.f[0],
-                                para->getParD(lev)->isEvenTimestep);
-              }
-              cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
-              //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
-           }
-           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-           ////print cp
-           //if ((para->getParH(lev)->cpTop.size() > 0) && (t > para->getTStartOut()))
-           //{
-              // printCpTopIntermediateStep(para, t, lev);
-           //}
-           ////////////////////////////////////////////////////////////////////////////////
-           //MeasurePointWriter::writeSpacialAverageForXZSlices(para, lev, t);
-           ////////////////////////////////////////////////////////////////////////////////
-           //MeasurePointWriter::writeTestAcousticXY(para, lev, t);
-           //MeasurePointWriter::writeTestAcousticYZ(para, lev, t);
-           //MeasurePointWriter::writeTestAcousticXZ(para, lev, t);
-           ////////////////////////////////////////////////////////////////////////
+        // ////////////////////////////////////////////////////////////////////////
+        // if (para->getD3Qxx()==19)
+        // {
+        //     CalcMac(para->getParD(lev)->vx,     para->getParD(lev)->vy,       para->getParD(lev)->vz,      para->getParD(lev)->rho,
+        //             para->getParD(lev)->geo,    para->getParD(lev)->size_Mat, para->getParD(lev)->gridNX,  para->getParD(lev)->gridNY,
+        //             para->getParD(lev)->gridNZ, para->getParD(lev)->d0.f[0],  para->getParD(lev)->evenOrOdd);
+        // }
+        // else if (para->getD3Qxx()==27)
+        // {
+        //    if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
+        //    {
+        //         unsigned int tdiff = t - t_prev;
+        //         CalcMacMedSP27(para->getParD(lev)->vx_SP_Med,
+        //                           para->getParD(lev)->vy_SP_Med,
+        //                           para->getParD(lev)->vz_SP_Med,
+        //                           para->getParD(lev)->rho_SP_Med,
+        //                           para->getParD(lev)->press_SP_Med,
+        //                           para->getParD(lev)->geoSP,
+        //                           para->getParD(lev)->neighborX_SP,
+        //                           para->getParD(lev)->neighborY_SP,
+        //                           para->getParD(lev)->neighborZ_SP,
+        //                           tdiff,
+        //                           para->getParD(lev)->size_Mat_SP,
+        //                           para->getParD(lev)->numberofthreads,
+        //                           para->getParD(lev)->evenOrOdd);
+        //         getLastCudaError("CalcMacMedSP27 execution failed");
+        //    }
+        //    CalcMacSP27(para->getParD(lev)->vx_SP,
+        //                        para->getParD(lev)->vy_SP,
+        //                        para->getParD(lev)->vz_SP,
+        //                        para->getParD(lev)->rho,
+        //                        para->getParD(lev)->pressure,
+        //                        para->getParD(lev)->geoSP,
+        //                        para->getParD(lev)->neighborX_SP,
+        //                        para->getParD(lev)->neighborY_SP,
+        //                        para->getParD(lev)->neighborZ_SP,
+        //                        para->getParD(lev)->size_Mat_SP,
+        //                        para->getParD(lev)->numberofthreads,
+        //                        para->getParD(lev)->d0SP.f[0],
+        //                        para->getParD(lev)->evenOrOdd);
+        //     getLastCudaError("CalcMacSP27 execution failed");
+            CalcMacCompSP27(para->getParD(lev)->velocityX,
+                            para->getParD(lev)->velocityY,
+                            para->getParD(lev)->velocityZ,
+                            para->getParD(lev)->rho,
+                            para->getParD(lev)->pressure,
+                            para->getParD(lev)->typeOfGridNode,
+                            para->getParD(lev)->neighborX,
+                            para->getParD(lev)->neighborY,
+                            para->getParD(lev)->neighborZ,
+                            para->getParD(lev)->numberOfNodes,
+                            para->getParD(lev)->numberofthreads,
+                            para->getParD(lev)->distributions.f[0],
+                            para->getParD(lev)->isEvenTimestep);
+            getLastCudaError("CalcMacSP27 execution failed");
+        //     // overwrite with wall nodes
+        //     SetOutputWallVelocitySP27( para->getParD(lev)->numberofthreads,
+        //                                para->getParD(lev)->velocityX,
+        //                                para->getParD(lev)->velocityY,
+        //                                para->getParD(lev)->velocityZ,
+        //                                para->getParD(lev)->geometryBC.Vx,
+        //                                para->getParD(lev)->geometryBC.Vy,
+        //                                para->getParD(lev)->geometryBC.Vz,
+        //                                para->getParD(lev)->geometryBC.numberOfBCnodes,
+        //                                para->getParD(lev)->geometryBC.k,
+        //                                para->getParD(lev)->rho,
+        //                                para->getParD(lev)->pressure,
+        //                                para->getParD(lev)->typeOfGridNode,
+        //                                para->getParD(lev)->neighborX,
+        //                                para->getParD(lev)->neighborY,
+        //                                para->getParD(lev)->neighborZ,
+        //                                para->getParD(lev)->size_Mat,
+        //                                para->getParD(lev)->distributions.f[0],
+        //                                para->getParD(lev)->isEvenTimestep);
+        //     getLastCudaError("SetOutputWallVelocitySP27 execution failed");
+        //     SetOutputWallVelocitySP27( para->getParD(lev)->numberofthreads,
+        //                                para->getParD(lev)->velocityX,
+        //                                para->getParD(lev)->velocityY,
+        //                                para->getParD(lev)->velocityZ,
+        //                                para->getParD(lev)->velocityBC.Vx,
+        //                                para->getParD(lev)->velocityBC.Vy,
+        //                                para->getParD(lev)->velocityBC.Vz,
+        //                                para->getParD(lev)->velocityBC.numberOfBCnodes,
+        //                                para->getParD(lev)->velocityBC.k,
+        //                                para->getParD(lev)->rho,
+        //                                para->getParD(lev)->pressure,
+        //                                para->getParD(lev)->typeOfGridNode,
+        //                                para->getParD(lev)->neighborX,
+        //                                para->getParD(lev)->neighborY,
+        //                                para->getParD(lev)->neighborZ,
+        //                                para->getParD(lev)->size_Mat,
+        //                                para->getParD(lev)->distributions.f[0],
+        //                                para->getParD(lev)->isEvenTimestep);
+        //     getLastCudaError("SetOutputWallVelocitySP27 execution failed");
+        // }
+
+        cudaMemoryManager->cudaCopyPrint(lev);
+        if (para->getCalcMedian())
+        {
+            cudaMemoryManager->cudaCopyMedianPrint(lev);
         }
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////test print press mirror
-        //if (t > para->getTStartOut())
+        //////////////////////////////////////////////////////////////////////////
+        //TODO: implement flag to write ASCII data
+        if (para->getWriteVeloASCIIfiles())
+            VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, timestep);
+        //////////////////////////////////////////////////////////////////////////
+        if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
+        {
+            std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
+            if (this->kineticEnergyAnalyzer) this->kineticEnergyAnalyzer->writeToFile(fname);
+            if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
+        }
+        //////////////////////////////////////////////////////////////////////////
+        if (para->getDiffOn()==true)
+        {
+            if (para->getDiffMod() == 7)
+            {
+               CalcMacThS7( para->getParD(lev)->concentration,
+                            para->getParD(lev)->typeOfGridNode,
+                            para->getParD(lev)->neighborX,
+                            para->getParD(lev)->neighborY,
+                            para->getParD(lev)->neighborZ,
+                            para->getParD(lev)->numberOfNodes,
+                            para->getParD(lev)->numberofthreads,
+                            para->getParD(lev)->distributionsAD7.f[0],
+                            para->getParD(lev)->isEvenTimestep);
+               getLastCudaError("CalcMacTh7 execution failed");
+            }
+            else if (para->getDiffMod() == 27)
+            {
+               CalcConcentration27(
+                              para->getParD(lev)->numberofthreads,
+                              para->getParD(lev)->concentration,
+                              para->getParD(lev)->typeOfGridNode,
+                              para->getParD(lev)->neighborX,
+                              para->getParD(lev)->neighborY,
+                              para->getParD(lev)->neighborZ,
+                              para->getParD(lev)->numberOfNodes,
+                              para->getParD(lev)->distributionsAD.f[0],
+                              para->getParD(lev)->isEvenTimestep);
+            }
+            cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
+            //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////print cp
+        //if ((para->getParH(lev)->cpTop.size() > 0) && (t > para->getTStartOut()))
         //{
-        //    ////////////////////////////////////////////////////////////////////////////////
-        //    //Level 7
-        //    CalcCPtop27(para->getParD(7)->d0SP.f[0],
-        //        para->getParD(7)->cpTopIndex,
-        //        para->getParD(7)->numberOfPointsCpTop,
-        //        para->getParD(7)->cpPressTop,
-        //        para->getParD(7)->neighborX_SP,
-        //        para->getParD(7)->neighborY_SP,
-        //        para->getParD(7)->neighborZ_SP,
-        //        para->getParD(7)->size_Mat_SP,
-        //        para->getParD(7)->evenOrOdd,
-        //        para->getParD(7)->numberofthreads);
-        //    //////////////////////////////////////////////////////////////////////////////////
-        //    calcPressForMirror(para, 7);
-        //    ////////////////////////////////////////////////////////////////////////////////
-        //    //Level 8
-        //    CalcCPtop27(para->getParD(8)->d0SP.f[0],
-        //        para->getParD(8)->cpTopIndex,
-        //        para->getParD(8)->numberOfPointsCpTop,
-        //        para->getParD(8)->cpPressTop,
-        //        para->getParD(8)->neighborX_SP,
-        //        para->getParD(8)->neighborY_SP,
-        //        para->getParD(8)->neighborZ_SP,
-        //        para->getParD(8)->size_Mat_SP,
-        //        para->getParD(8)->evenOrOdd,
-        //        para->getParD(8)->numberofthreads);
-        //    //////////////////////////////////////////////////////////////////////////////////
-        //    calcPressForMirror(para, 8);
-        //    ////////////////////////////////////////////////////////////////////////////////
-        //    //print press mirror
-        //    printScalars(para, false);
-        //    ////////////////////////////////////////////////////////////////////////////////
+           // printCpTopIntermediateStep(para, t, lev);
         //}
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //t_prev = t;
-        //////////////////////////////////////////////////////////////////////////
-        ////Data Analysis
-        ////AnalysisData::writeAnalysisData(para, t);
-        //AnalysisData::writeAnalysisDataX(para, t);
-        //AnalysisData::writeAnalysisDataZ(para, t);
-        //////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////
+        //MeasurePointWriter::writeSpacialAverageForXZSlices(para, lev, t);
+        ////////////////////////////////////////////////////////////////////////////////
+        //MeasurePointWriter::writeTestAcousticXY(para, lev, t);
+        //MeasurePointWriter::writeTestAcousticYZ(para, lev, t);
+        //MeasurePointWriter::writeTestAcousticXZ(para, lev, t);
         ////////////////////////////////////////////////////////////////////////
-        //pressure difference
-        ////////////////////////////////////////////////////////////////////////
-           //if (para->getMyID() == para->getPressInID())       calcPressure(para,  "in", 0);
-           //else if (para->getMyID() == para->getPressOutID()) calcPressure(para, "out", 0);
-        ////////////////////////////////////////////////////////////////////////
-        //flow rate
-        ////////////////////////////////////////////////////////////////////////
-          //calcFlowRate(para, 0);
-        ////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////
-        //calculate 2nd, 3rd and higher order moments
-        ////////////////////////////////////////////////////////////////////////
-        if (para->getCalc2ndOrderMoments())  calc2ndMoments(para.get(), cudaMemoryManager.get());
-        if (para->getCalc3rdOrderMoments())  calc3rdMoments(para.get(), cudaMemoryManager.get());
-        if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para.get(), cudaMemoryManager.get());
-        ////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////
-        //calculate median on host
-        ////////////////////////////////////////////////////////////////////////
-        if (para->getCalcMedian() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0))
-        {
-            unsigned int tdiff = timestep - previousTimestepForAveraging;
-            calcMedian(para.get(), tdiff);
-            /////////////////////////////////
-            //added for incremental averaging
-            previousTimestepForAveraging = timestep;
-            resetMedian(para.get());
-            /////////////////////////////////
-        }
-        if (para->getCalcTurbulenceIntensity())
-        {
-            uint t_diff = timestep - previousTimestepForTurbulenceIntensityCalculation;
-            calcTurbulenceIntensity(para.get(), cudaMemoryManager.get(), t_diff);
-            //writeAllTiDatafToFile(para.get(), t);
-        }
-        ////////////////////////////////////////////////////////////////////////
-        dataWriter->writeTimestep(para, timestep);
-        ////////////////////////////////////////////////////////////////////////
-        if (para->getCalcTurbulenceIntensity()) {
-            previousTimestepForTurbulenceIntensityCalculation = timestep;
-            resetVelocityFluctuationsAndMeans(para.get(), cudaMemoryManager.get());
-        }
-        ////////////////////////////////////////////////////////////////////////
-        if (para->getCalcDragLift()) 
-        {
-            vf::lbm::dragLift::writeTotalDragLiftToFile(para.get(), timestep);
-            vf::lbm::dragLift::writeForcesToFile(para.get(), timestep);
-            vf::lbm::dragLift::writeForcesToVtk(para.get(), timestep);
-        }
-        ////////////////////////////////////////////////////////////////////////
-        if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
-        ////////////////////////////////////////////////////////////////////////
-        VF_LOG_INFO("... done");
-        ////////////////////////////////////////////////////////////////////////
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////test print press mirror
+    //if (t > para->getTStartOut())
+    //{
+    //    ////////////////////////////////////////////////////////////////////////////////
+    //    //Level 7
+    //    CalcCPtop27(para->getParD(7)->d0SP.f[0],
+    //        para->getParD(7)->cpTopIndex,
+    //        para->getParD(7)->numberOfPointsCpTop,
+    //        para->getParD(7)->cpPressTop,
+    //        para->getParD(7)->neighborX_SP,
+    //        para->getParD(7)->neighborY_SP,
+    //        para->getParD(7)->neighborZ_SP,
+    //        para->getParD(7)->size_Mat_SP,
+    //        para->getParD(7)->evenOrOdd,
+    //        para->getParD(7)->numberofthreads);
+    //    //////////////////////////////////////////////////////////////////////////////////
+    //    calcPressForMirror(para, 7);
+    //    ////////////////////////////////////////////////////////////////////////////////
+    //    //Level 8
+    //    CalcCPtop27(para->getParD(8)->d0SP.f[0],
+    //        para->getParD(8)->cpTopIndex,
+    //        para->getParD(8)->numberOfPointsCpTop,
+    //        para->getParD(8)->cpPressTop,
+    //        para->getParD(8)->neighborX_SP,
+    //        para->getParD(8)->neighborY_SP,
+    //        para->getParD(8)->neighborZ_SP,
+    //        para->getParD(8)->size_Mat_SP,
+    //        para->getParD(8)->evenOrOdd,
+    //        para->getParD(8)->numberofthreads);
+    //    //////////////////////////////////////////////////////////////////////////////////
+    //    calcPressForMirror(para, 8);
+    //    ////////////////////////////////////////////////////////////////////////////////
+    //    //print press mirror
+    //    printScalars(para, false);
+    //    ////////////////////////////////////////////////////////////////////////////////
+    //}
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //t_prev = t;
+    //////////////////////////////////////////////////////////////////////////
+    ////Data Analysis
+    ////AnalysisData::writeAnalysisData(para, t);
+    //AnalysisData::writeAnalysisDataX(para, t);
+    //AnalysisData::writeAnalysisDataZ(para, t);
+    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    //pressure difference
+    ////////////////////////////////////////////////////////////////////////
+    //if (para->getMyID() == para->getPressInID())       calcPressure(para,  "in", 0);
+    //else if (para->getMyID() == para->getPressOutID()) calcPressure(para, "out", 0);
+    ////////////////////////////////////////////////////////////////////////
+    //flow rate
+    ////////////////////////////////////////////////////////////////////////
+    //calcFlowRate(para, 0);
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    //calculate 2nd, 3rd and higher order moments
+    ////////////////////////////////////////////////////////////////////////
+    if (para->getCalc2ndOrderMoments())  calc2ndMoments(para.get(), cudaMemoryManager.get());
+    if (para->getCalc3rdOrderMoments())  calc3rdMoments(para.get(), cudaMemoryManager.get());
+    if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para.get(), cudaMemoryManager.get());
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    //calculate median on host
+    ////////////////////////////////////////////////////////////////////////
+    if (para->getCalcMedian() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0))
+    {
+        unsigned int tdiff = timestep - previousTimestepForAveraging;
+        calcMedian(para.get(), tdiff);
+        /////////////////////////////////
+        //added for incremental averaging
+        previousTimestepForAveraging = timestep;
+        resetMedian(para.get());
+        /////////////////////////////////
+    }
+    if (para->getCalcTurbulenceIntensity())
+    {
+        uint t_diff = timestep - previousTimestepForTurbulenceIntensityCalculation;
+        calcTurbulenceIntensity(para.get(), cudaMemoryManager.get(), t_diff);
+        //writeAllTiDatafToFile(para.get(), t);
+    }
+    ////////////////////////////////////////////////////////////////////////
+    dataWriter->writeTimestep(para, timestep);
+    ////////////////////////////////////////////////////////////////////////
+    if (para->getCalcTurbulenceIntensity()) {
+        previousTimestepForTurbulenceIntensityCalculation = timestep;
+        resetVelocityFluctuationsAndMeans(para.get(), cudaMemoryManager.get());
+    }
+    ////////////////////////////////////////////////////////////////////////
+    if (para->getCalcDragLift()) 
+    {
+        vf::lbm::dragLift::writeTotalDragLiftToFile(para.get(), timestep);
+        vf::lbm::dragLift::writeForcesToFile(para.get(), timestep);
+        vf::lbm::dragLift::writeForcesToVtk(para.get(), timestep);
+    }
+    ////////////////////////////////////////////////////////////////////////
+    if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
+    ////////////////////////////////////////////////////////////////////////
+    VF_LOG_INFO("... done");
+    ////////////////////////////////////////////////////////////////////////
 }
 
 void Simulation::porousMedia()
