@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source ./regression-tests/__regression_test_executer.sh
 
 # 1. set reference data directory (must match the folder structure in https://github.com/irmb/test_data)
@@ -14,3 +16,5 @@ RESULT_DATA_DIR=output/Sphere
 
 
 run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
+
+# fieldcompare dir output/Sphere reference_data/regression_tests/gpu/SphereInChannel --include-files "*.vtu"
