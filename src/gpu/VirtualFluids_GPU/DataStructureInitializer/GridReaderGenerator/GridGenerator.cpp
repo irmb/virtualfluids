@@ -324,7 +324,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         const auto numberOfPrecursorValues = int(builder->getPrecursorSize(level));
         VF_LOG_INFO("size precursor level {}: {}", level, numberOfPrecursorValues);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
+        auto blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
         para->getParH(level)->precursorBC.sizeQ = blocks * para->getParH(level)->numberofthreads;
         para->getParD(level)->precursorBC.sizeQ = para->getParH(level)->precursorBC.sizeQ;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
