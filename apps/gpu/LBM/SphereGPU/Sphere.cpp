@@ -84,17 +84,17 @@ int main(int argc, char *argv[])
 
         const real L = 1.0;
         const real dSphere = 0.2;
-        const real Re = 1000.0; // related to the sphere's diameter
+        const real Re = 300.0; // related to the sphere's diameter
         const real velocity = 1.0;
         const real dt = (real)0.5e-3;
-        const uint nx = 64;
+        const uint nx = 50;
 
-        const uint timeStepOut = 1000;
+        const uint timeStepOut = 10000;
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
         // setup simulation parameters (with or without config file)
-        //////////////////////////////////////////////////////////////////////////
+        //////////////////////////
 
         vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();;
         SPtr<Parameter> para;
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 
         real dx = L / real(nx);
         gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L,
-                                    8.0 * L,  0.6 * L,  0.6 * L, dx);
+                                    3.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // use primitive
         // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
