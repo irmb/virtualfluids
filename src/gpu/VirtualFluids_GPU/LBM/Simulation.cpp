@@ -977,9 +977,7 @@ void Simulation::readAndWriteFiles(uint timestep)
     ////////////////////////////////////////////////////////////////////////
     if (para->getCalcDragLift()) 
     {
-        vf::lbm::dragLift::writeTotalDragLiftToFile(para.get(), timestep);
-        vf::lbm::dragLift::writeForcesToFile(para.get(), timestep);
-        vf::lbm::dragLift::writeForcesToVtk(para.get(), timestep);
+        printDragLift(para.get(), cudaMemoryManager.get(), timestep);
     }
     ////////////////////////////////////////////////////////////////////////
     if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
