@@ -84,7 +84,7 @@ const std::string simulationName("MusselOyster");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(vf::basics::ConfigurationFile& config)
+void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
     vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
 
@@ -583,8 +583,9 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
+            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
             vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/MusselOyster/configMusselOyster.txt");
-            multipleLevel(config);
+            runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////
         } catch (const spdlog::spdlog_ex &ex) {

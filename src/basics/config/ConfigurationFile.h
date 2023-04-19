@@ -70,20 +70,20 @@ public:
    template<class T>
    T getValue(const std::string& key, T defaultValue) const;
 
-   static ConfigurationFile loadConfig(int argc, char *argv[], std::filesystem::path configPath = "./config.txt")
+   static ConfigurationFile loadConfig(int argc, char *argv[], std::string configPath = "./config.txt")
    {
       // the config file's default path can be replaced by passing a command line argument
 
       if (argc > 1) 
       {
          configPath = argv[1];
-         VF_LOG_INFO("Using command line argument for config path: {}", configPath.string());
+         VF_LOG_INFO("Using command line argument for config path: {}", configPath);
       } else {
-         VF_LOG_INFO("Using default config path: {}", configPath.string());
+         VF_LOG_INFO("Using default config path: {}", configPath);
       }
 
       vf::basics::ConfigurationFile config;
-      config.load(configPath.string());
+      config.load(configPath);
       return config;
    }
 
