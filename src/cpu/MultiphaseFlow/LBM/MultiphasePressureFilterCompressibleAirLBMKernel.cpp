@@ -94,7 +94,7 @@ SPtr<LBMKernel> MultiphasePressureFilterCompressibleAirLBMKernel::clone()
 //////////////////////////////////////////////////////////////////////////
 void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
 //	using namespace UbMath;
-	using namespace vf::lbm::constant;
+	using namespace vf::basics::constant;
 
 	real m2 = mfa + mfc;
 	real m1 = mfc - mfa;
@@ -109,7 +109,7 @@ void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardInverseChimeraWit
 ////////////////////////////////////////////////////////////////////////////////
 void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardInverseChimeraWithKincompressible(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K, real oneMinusRho) {
 //	using namespace UbMath;
-	using namespace vf::lbm::constant;
+	using namespace vf::basics::constant;
 
 	real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
 	real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
@@ -122,7 +122,7 @@ void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardInverseChimeraWi
 ////////////////////////////////////////////////////////////////////////////////
 void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
 //	using namespace UbMath;
-	using namespace vf::lbm::constant;
+	using namespace vf::basics::constant;
 
 	real m1 = (mfa + mfc) + mfb;
 	real m2 = mfc - mfa;
@@ -134,7 +134,7 @@ void  MultiphasePressureFilterCompressibleAirLBMKernel::forwardChimera(real& mfa
 
 void  MultiphasePressureFilterCompressibleAirLBMKernel::backwardChimera(real& mfa, real& mfb, real& mfc, real vv, real v2) {
 //	using namespace UbMath;
-	using namespace vf::lbm::constant;
+	using namespace vf::basics::constant;
 
 	real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
 	real mb = ((mfa - mfc) - mfa * v2) - c2o1 * mfb * vv;
@@ -149,7 +149,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 	using namespace D3Q27System;
 //	using namespace UbMath;
 	using namespace vf::lbm::dir;
-	using namespace vf::lbm::constant;
+	using namespace vf::basics::constant;
 
 	forcingX1 = 0.0;
 	forcingX2 = 0.0;

@@ -45,13 +45,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -109,14 +107,6 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
         // setup logger
         //////////////////////////////////////////////////////////////////////////
-
-        std::ofstream logFile("output/log_process" + std::to_string(vf::gpu::Communicator::getInstance().getPID()) +
-                              ".txt");
-        logging::Logger::addStream(&logFile);
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
         vf::logging::Logger::changeLogPath("output/vflog_process" +
                                            std::to_string(vf::gpu::Communicator::getInstance().getPID()) + ".txt");
@@ -203,7 +193,7 @@ int main(int argc, char *argv[])
             // build grids
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             //////////////////////////////////////////////////////////////////////////
             // configure communication neighbors

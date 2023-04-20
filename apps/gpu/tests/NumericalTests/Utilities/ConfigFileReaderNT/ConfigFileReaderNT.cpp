@@ -1,7 +1,7 @@
 #include "ConfigFileReaderNT.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 #include <memory>
 #include <fstream>
@@ -391,23 +391,16 @@ int calcNumberOfSimulations(ConfigFilePtr input, ConfigDataPtr configData)
     return counter;
 }
 
-ConfigDataPtr vf::gpu::tests::readConfigFile(const std::string aFilePath)
+ConfigDataPtr vf::gpu::tests::readConfigFile(const std::string aFilePath, const std::string &pathNumericalTests)
 {
-    // If PATH_NUMERICAL_TESTS is not defined, the grid definitions for the tests needs to be placed in the project root
-    // directories.
-#ifdef PATH_NUMERICAL_TESTS
-    auto pathNumericalTests = TOSTRING(PATH_NUMERICAL_TESTS) + std::string("/");
-#else
-    auto pathNumericalTests = TOSTRING(SOURCE_ROOT) + std::string("/");
-#endif
-    std::cout << pathNumericalTests << "\n";
-
     auto configData = std::make_shared<ConfigDataStruct>();
     auto input      = std::make_shared<vf::basics::ConfigurationFile>();
     input->load(aFilePath);
 
     if (!checkConfigFile(input))
         exit(1);
+
+    std::cout << pathNumericalTests << "\n";
 
     configData->viscosity            = StringUtil::toDoubleVector(input->getValue<std::string>("Viscosity"));
     configData->kernelsToTest        = readKernelList(input);

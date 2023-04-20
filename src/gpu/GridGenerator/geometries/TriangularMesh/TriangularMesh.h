@@ -87,7 +87,7 @@ private:
     static void eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles);
 
 public:
-    Object* clone() const override;
+    SPtr<Object> clone() const override;
     double getX1Centroid() override { throw "Not implemented in TriangularMesh"; }
     double getX1Minimum() override { return minmax.minX; }
     double getX1Maximum() override { return minmax.maxX; }

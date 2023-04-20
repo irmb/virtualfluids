@@ -1,5 +1,7 @@
 #include "KernelFactoryImp.h"
 
+#include <logger/Logger.h>
+
 #include "Parameter/Parameter.h"
 
 #include "Kernel/Utilities/KernelTypes.h"
@@ -94,7 +96,7 @@ void KernelFactoryImp::setKernelAtLevel(std::vector<std::shared_ptr<Kernel>> ker
 
 std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
-    printf("Instantiating Kernel: %s\n", kernel.c_str());
+    VF_LOG_INFO("Instantiating Kernel: {}", kernel);
     std::shared_ptr<KernelImp> newKernel;
     std::shared_ptr<CheckParameterStrategy> checkStrategy;
 

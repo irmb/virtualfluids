@@ -42,7 +42,7 @@
 #define PROOF_CORRECTNESS
 
 //using namespace UbMath;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 RheologyModelLBMKernel::RheologyModelLBMKernel() : forcingX1(0), forcingX2(0), forcingX3(0)
 {

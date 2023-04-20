@@ -8,7 +8,7 @@
 #define __device__
 #endif
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 
 namespace vf::lbm

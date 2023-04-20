@@ -2,7 +2,7 @@
 #include "D3Q27System.h"
 
 //using namespace UbMath;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquarePressureInterpolationProcessor()
     

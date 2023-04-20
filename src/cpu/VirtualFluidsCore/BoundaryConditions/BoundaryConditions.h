@@ -197,59 +197,59 @@ public:
 
         switch (direction) {
             case DIR_P00:
-                return (float)(vf::lbm::constant::c4o9 *
+                return (float)(vf::basics::constant::c4o9 *
                                (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
             case DIR_M00:
-                return (float)(vf::lbm::constant::c4o9 *
+                return (float)(vf::basics::constant::c4o9 *
                                (-bcVelocityX1)); // z.B. aus paper manfred MRT LB models in three dimensions (2002)
             case DIR_0P0:
-                return (float)(vf::lbm::constant::c4o9 * (+bcVelocityX2));
+                return (float)(vf::basics::constant::c4o9 * (+bcVelocityX2));
             case DIR_0M0:
-                return (float)(vf::lbm::constant::c4o9 * (-bcVelocityX2));
+                return (float)(vf::basics::constant::c4o9 * (-bcVelocityX2));
             case DIR_00P:
-                return (float)(vf::lbm::constant::c4o9 * (+bcVelocityX3));
+                return (float)(vf::basics::constant::c4o9 * (+bcVelocityX3));
             case DIR_00M:
-                return (float)(vf::lbm::constant::c4o9 * (-bcVelocityX3));
+                return (float)(vf::basics::constant::c4o9 * (-bcVelocityX3));
             case DIR_PP0:
-                return (float)(vf::lbm::constant::c1o9 * (+bcVelocityX1 + bcVelocityX2));
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 + bcVelocityX2));
             case DIR_MM0:
-                return (float)(vf::lbm::constant::c1o9 * (-bcVelocityX1 - bcVelocityX2));
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 - bcVelocityX2));
             case DIR_PM0:
-                return (float)(vf::lbm::constant::c1o9 * (+bcVelocityX1 - bcVelocityX2));
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 - bcVelocityX2));
             case DIR_MP0:
-                return (float)(vf::lbm::constant::c1o9 * (-bcVelocityX1 + bcVelocityX2));
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 + bcVelocityX2));
             case DIR_P0P:
-                return (float)(vf::lbm::constant::c1o9 * (+bcVelocityX1 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 + bcVelocityX3));
             case DIR_M0M:
-                return (float)(vf::lbm::constant::c1o9 * (-bcVelocityX1 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 - bcVelocityX3));
             case DIR_P0M:
-                return (float)(vf::lbm::constant::c1o9 * (+bcVelocityX1 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 - bcVelocityX3));
             case DIR_M0P:
-                return (float)(vf::lbm::constant::c1o9 * (-bcVelocityX1 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 + bcVelocityX3));
             case DIR_0PP:
-                return (float)(vf::lbm::constant::c1o9 * (+bcVelocityX2 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX2 + bcVelocityX3));
             case DIR_0MM:
-                return (float)(vf::lbm::constant::c1o9 * (-bcVelocityX2 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX2 - bcVelocityX3));
             case DIR_0PM:
-                return (float)(vf::lbm::constant::c1o9 * (+bcVelocityX2 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX2 - bcVelocityX3));
             case DIR_0MP:
-                return (float)(vf::lbm::constant::c1o9 * (-bcVelocityX2 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX2 + bcVelocityX3));
             case DIR_PPP:
-                return (float)(vf::lbm::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             case DIR_MMM:
-                return (float)(vf::lbm::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
             case DIR_PPM:
-                return (float)(vf::lbm::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
             case DIR_MMP:
-                return (float)(vf::lbm::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
             case DIR_PMP:
-                return (float)(vf::lbm::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
             case DIR_MPM:
-                return (float)(vf::lbm::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
             case DIR_PMM:
-                return (float)(vf::lbm::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
             case DIR_MPP:
-                return (float)(vf::lbm::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             default:
                 throw UbException(UB_EXARGS, "unknown error");
         }

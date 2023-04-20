@@ -38,10 +38,10 @@
 #include <cuda_runtime.h>
 
 #include "LBM/LB.h" 
-#include "Core/DataTypes.h"
-#include <lbm/constants/NumericConstants.h>
+#include "DataTypes.h"
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 class Parameter;
 

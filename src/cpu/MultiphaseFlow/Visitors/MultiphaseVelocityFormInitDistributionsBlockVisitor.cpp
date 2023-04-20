@@ -233,7 +233,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 						feq[dir] =  WEIGTH[dir] * (1 + 3 * velProd + 4.5 * velSq1 - 1.5 * (vx1Sq + vx2Sq + vx3Sq));
 						//geq[dir] = p1*WEIGTH1[dir] + gamma;
 						//geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho;
-						geq[dir] = p1 * WEIGTH[dir] / (vf::lbm::constant::c1o3) + gamma ;
+						geq[dir] = p1 * WEIGTH[dir] / (vf::basics::constant::c1o3) + gamma ;
 					}
 
 

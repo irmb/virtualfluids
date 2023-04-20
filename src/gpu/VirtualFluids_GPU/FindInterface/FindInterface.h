@@ -5,11 +5,11 @@
 #include "lbm/constants/D3Q27.h"
 
 
-void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC, 
+void interpolation(InterpolationCells &intCF, InterpolationCells &intFC, 
                                unsigned int LxCoarse, unsigned int LyCoarse, unsigned int LzCoarse, 
                                unsigned int LxFine, unsigned int LyFine, unsigned int LzFine, 
                                unsigned int dNx, unsigned int dNy, unsigned int dNz, 
                                unsigned int *kCoarse, unsigned int *kFine, bool* needInterface,
-                               OffsetCF &offCF, OffsetFC &offFC);
+                               InterpolationCellNeighbor &offCF, InterpolationCellNeighbor &offFC);
 
 #endif

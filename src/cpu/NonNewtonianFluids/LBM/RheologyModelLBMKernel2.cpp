@@ -11,7 +11,7 @@
 #define PROOF_CORRECTNESS
 
 using namespace UbMath;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 
 RheologyModelLBMKernel2::RheologyModelLBMKernel2() : forcingX1(0), forcingX2(0), forcingX3(0)
@@ -381,7 +381,7 @@ void RheologyModelLBMKernel2::calculate(int step)
 						m1 = mfcca - mfaca;
 						m0 = m2 + mfbca;
 						mfaca = m0;
-						m0 += vf::lbm::constant::c1o3 * oMdrho;
+						m0 += vf::basics::constant::c1o3 * oMdrho;
 						mfbca = m1 - m0 * vvx;
 						mfcca = m2 - 2. * m1 * vvx + vx2 * m0;
 						////////////////////////////////////////////////////////////////////////////////////
@@ -412,7 +412,7 @@ void RheologyModelLBMKernel2::calculate(int step)
 						m1 = mfcac - mfaac;
 						m0 = m2 + mfbac;
 						mfaac = m0;
-						m0 += vf::lbm::constant::c1o3 * oMdrho;
+						m0 += vf::basics::constant::c1o3 * oMdrho;
 						mfbac = m1 - m0 * vvx;
 						mfcac = m2 - 2. * m1 * vvx + vx2 * m0;
 						////////////////////////////////////////////////////////////////////////////////////
@@ -445,18 +445,18 @@ void RheologyModelLBMKernel2::calculate(int step)
 						//LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
 						//LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-						real CUMcbb = mfcbb - ((mfcaa + vf::lbm::constant::c1o3) * mfabb + 2. * mfbba * mfbab);
-						real CUMbcb = mfbcb - ((mfaca + vf::lbm::constant::c1o3) * mfbab + 2. * mfbba * mfabb);
-						real CUMbbc = mfbbc - ((mfaac + vf::lbm::constant::c1o3) * mfbba + 2. * mfbab * mfabb);
+						real CUMcbb = mfcbb - ((mfcaa + vf::basics::constant::c1o3) * mfabb + 2. * mfbba * mfbab);
+						real CUMbcb = mfbcb - ((mfaca + vf::basics::constant::c1o3) * mfbab + 2. * mfbba * mfabb);
+						real CUMbbc = mfbbc - ((mfaac + vf::basics::constant::c1o3) * mfbba + 2. * mfbab * mfabb);
 
-						real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + vf::lbm::constant::c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-						real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + vf::lbm::constant::c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-						real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + vf::lbm::constant::c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+						real CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + vf::basics::constant::c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+						real CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + vf::basics::constant::c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+						real CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + vf::basics::constant::c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
 
 						//Cum 5.
-						real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - vf::lbm::constant::c1o3 * (mfbca + mfbac) * oMdrho;
-						real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - vf::lbm::constant::c1o3 * (mfcba + mfabc) * oMdrho;
-						real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - vf::lbm::constant::c1o3 * (mfacb + mfcab) * oMdrho;
+						real CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - vf::basics::constant::c1o3 * (mfbca + mfbac) * oMdrho;
+						real CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - vf::basics::constant::c1o3 * (mfcba + mfabc) * oMdrho;
+						real CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - vf::basics::constant::c1o3 * (mfacb + mfcab) * oMdrho;
 
 						//Cum 6.
 						real CUMccc = mfccc + ((-4. * mfbbb * mfbbb
@@ -466,7 +466,7 @@ void RheologyModelLBMKernel2::calculate(int step)
 							+ (4. * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
 								+ 2. * (mfcaa * mfaca * mfaac)
 								+ 16. * mfbba * mfbab * mfabb)
-							- vf::lbm::constant::c1o3 * (mfacc + mfcac + mfcca) * oMdrho - c1o9 * oMdrho * oMdrho
+							- vf::basics::constant::c1o3 * (mfacc + mfcac + mfcca) * oMdrho - c1o9 * oMdrho * oMdrho
 							- c1o9 * (mfcaa + mfaca + mfaac) * oMdrho * (1. - 2. * oMdrho) - c1o27 * oMdrho * oMdrho * (-2. * oMdrho)
 							+ (2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 								+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) + c1o27 * oMdrho;
@@ -488,7 +488,7 @@ void RheologyModelLBMKernel2::calculate(int step)
 						//non Newtonian fluid collision factor
 //						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
 
-						real shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * vf::lbm::constant::c1o3) * (mfcaa - mfaaa * vf::lbm::constant::c1o3) + (mfaca - mfaaa * vf::lbm::constant::c1o3) * (mfaca - mfaaa * vf::lbm::constant::c1o3) + (mfaac - mfaaa * vf::lbm::constant::c1o3) * (mfaac - mfaaa * vf::lbm::constant::c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<real>::val();
+						real shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * vf::basics::constant::c1o3) * (mfcaa - mfaaa * vf::basics::constant::c1o3) + (mfaca - mfaaa * vf::basics::constant::c1o3) * (mfaca - mfaaa * vf::basics::constant::c1o3) + (mfaac - mfaaa * vf::basics::constant::c1o3) * (mfaac - mfaaa * vf::basics::constant::c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<real>::val();
 
 						//collFactorF = getRheologyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -529,9 +529,9 @@ void RheologyModelLBMKernel2::calculate(int step)
 
 
 						// linear combinations back
-						mfcaa = vf::lbm::constant::c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-						mfaca = vf::lbm::constant::c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
-						mfaac = vf::lbm::constant::c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz);
+						mfcaa = vf::basics::constant::c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
+						mfaca = vf::basics::constant::c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
+						mfaac = vf::basics::constant::c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz);
 
 						//3.
 						// linear combinations
@@ -591,18 +591,18 @@ void RheologyModelLBMKernel2::calculate(int step)
 						//mfbcb = CUMbcb + ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
 						//mfbbc = CUMbbc + ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-						mfcbb = CUMcbb + ((mfcaa + vf::lbm::constant::c1o3) * mfabb + 2. * mfbba * mfbab);
-						mfbcb = CUMbcb + ((mfaca + vf::lbm::constant::c1o3) * mfbab + 2. * mfbba * mfabb);
-						mfbbc = CUMbbc + ((mfaac + vf::lbm::constant::c1o3) * mfbba + 2. * mfbab * mfabb);
+						mfcbb = CUMcbb + ((mfcaa + vf::basics::constant::c1o3) * mfabb + 2. * mfbba * mfbab);
+						mfbcb = CUMbcb + ((mfaca + vf::basics::constant::c1o3) * mfbab + 2. * mfbba * mfabb);
+						mfbbc = CUMbbc + ((mfaac + vf::basics::constant::c1o3) * mfbba + 2. * mfbab * mfabb);
 
-						mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + vf::lbm::constant::c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
-						mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + vf::lbm::constant::c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
-						mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + vf::lbm::constant::c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
+						mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + vf::basics::constant::c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
+						mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + vf::basics::constant::c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
+						mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + vf::basics::constant::c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
 
 						//5.
-						mfbcc = CUMbcc + (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) + vf::lbm::constant::c1o3 * (mfbca + mfbac) * oMdrho;
-						mfcbc = CUMcbc + (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) + vf::lbm::constant::c1o3 * (mfcba + mfabc) * oMdrho;
-						mfccb = CUMccb + (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) + vf::lbm::constant::c1o3 * (mfacb + mfcab) * oMdrho;
+						mfbcc = CUMbcc + (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) + vf::basics::constant::c1o3 * (mfbca + mfbac) * oMdrho;
+						mfcbc = CUMcbc + (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) + vf::basics::constant::c1o3 * (mfcba + mfabc) * oMdrho;
+						mfccb = CUMccb + (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) + vf::basics::constant::c1o3 * (mfacb + mfcab) * oMdrho;
 
 						//6.
 						mfccc = CUMccc - ((-4. * mfbbb * mfbbb
@@ -612,7 +612,7 @@ void RheologyModelLBMKernel2::calculate(int step)
 							+ (4. * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
 								+ 2. * (mfcaa * mfaca * mfaac)
 								+ 16. * mfbba * mfbab * mfabb)
-							- vf::lbm::constant::c1o3 * (mfacc + mfcac + mfcca) * oMdrho - c1o9 * oMdrho * oMdrho
+							- vf::basics::constant::c1o3 * (mfacc + mfcac + mfcca) * oMdrho - c1o9 * oMdrho * oMdrho
 							- c1o9 * (mfcaa + mfaca + mfaac) * oMdrho * (1. - 2. * oMdrho) - c1o27 * oMdrho * oMdrho * (-2. * oMdrho)
 							+ (2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 								+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) - c1o27 * oMdrho;
@@ -644,9 +644,9 @@ void RheologyModelLBMKernel2::calculate(int step)
 						mfabb = m1;
 						mfabc = m2;
 						////////////////////////////////////////////////////////////////////////////////////
-						m0 = mfacc * c1o2 + mfacb * (vvz - c1o2) + (mfaca + vf::lbm::constant::c1o3 * oMdrho) * (vz2 - vvz) * c1o2;
-						m1 = -mfacc - 2. * mfacb * vvz + mfaca * (1. - vz2) - vf::lbm::constant::c1o3 * oMdrho * vz2;
-						m2 = mfacc * c1o2 + mfacb * (vvz + c1o2) + (mfaca + vf::lbm::constant::c1o3 * oMdrho) * (vz2 + vvz) * c1o2;
+						m0 = mfacc * c1o2 + mfacb * (vvz - c1o2) + (mfaca + vf::basics::constant::c1o3 * oMdrho) * (vz2 - vvz) * c1o2;
+						m1 = -mfacc - 2. * mfacb * vvz + mfaca * (1. - vz2) - vf::basics::constant::c1o3 * oMdrho * vz2;
+						m2 = mfacc * c1o2 + mfacb * (vvz + c1o2) + (mfaca + vf::basics::constant::c1o3 * oMdrho) * (vz2 + vvz) * c1o2;
 						mfaca = m0;
 						mfacb = m1;
 						mfacc = m2;
@@ -674,9 +674,9 @@ void RheologyModelLBMKernel2::calculate(int step)
 						mfbcc = m2;
 						////////////////////////////////////////////////////////////////////////////////////
 						////////////////////////////////////////////////////////////////////////////////////
-						m0 = mfcac * c1o2 + mfcab * (vvz - c1o2) + (mfcaa + vf::lbm::constant::c1o3 * oMdrho) * (vz2 - vvz) * c1o2;
-						m1 = -mfcac - 2. * mfcab * vvz + mfcaa * (1. - vz2) - vf::lbm::constant::c1o3 * oMdrho * vz2;
-						m2 = mfcac * c1o2 + mfcab * (vvz + c1o2) + (mfcaa + vf::lbm::constant::c1o3 * oMdrho) * (vz2 + vvz) * c1o2;
+						m0 = mfcac * c1o2 + mfcab * (vvz - c1o2) + (mfcaa + vf::basics::constant::c1o3 * oMdrho) * (vz2 - vvz) * c1o2;
+						m1 = -mfcac - 2. * mfcab * vvz + mfcaa * (1. - vz2) - vf::basics::constant::c1o3 * oMdrho * vz2;
+						m2 = mfcac * c1o2 + mfcab * (vvz + c1o2) + (mfcaa + vf::basics::constant::c1o3 * oMdrho) * (vz2 + vvz) * c1o2;
 						mfcaa = m0;
 						mfcab = m1;
 						mfcac = m2;

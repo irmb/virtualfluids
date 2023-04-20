@@ -13,7 +13,7 @@
 #include <sstream>
 #include <cmath>
 
-#include <Core/StringUtilities/StringUtil.h>
+#include <StringUtilities/StringUtil.h>
 
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
@@ -379,7 +379,7 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
                 nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
-                nodedata[6][dn1] = (double)para->getParH(level)->Conc[pos];
+                nodedata[6][dn1] = (double)para->getParH(level)->concentration[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];
                 number3 = para->getParH(level)->neighborY[number2];

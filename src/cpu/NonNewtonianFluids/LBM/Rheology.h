@@ -38,7 +38,7 @@
 #include <LBMSystem.h>
 #include <UbMath.h>
 #include <math.h> 
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 class Rheology
 {
@@ -89,10 +89,10 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline real Rheology::getBinghamCollFactor(real omegaInf, real shearRate, real drho)
 {
-	real cs2 = vf::lbm::constant::one_over_sqrt3 * vf::lbm::constant::one_over_sqrt3;
-	real rho = vf::lbm::constant::c1o1 + drho;
+	real cs2 = vf::basics::constant::one_over_sqrt3 * vf::basics::constant::one_over_sqrt3;
+	real rho = vf::basics::constant::c1o1 + drho;
 	//analytical solution
-	real omega = omegaInf * (vf::lbm::constant::c1o1 - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<real>::val()));
+	real omega = omegaInf * (vf::basics::constant::c1o1 - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<real>::val()));
 	
 	//LBMReal omega = cs2 * cs2 * shearRate * shearRate * omegaInf * rho * rho / (cs2 * cs2 * shearRate * shearRate * rho * rho + cs2 * shearRate * omegaInf * rho * tau0+omegaInf*omegaInf*tau0*tau0);
 	
@@ -120,10 +120,10 @@ inline real Rheology::getBinghamCollFactor(real omegaInf, real shearRate, real d
 
 inline real Rheology::getBinghamCollFactorOld(real omegaInf, real shearRate, real drho)
 {
-	const real cs2 = vf::lbm::constant::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
-	real rho = vf::lbm::constant::c1o1 + drho;
+	const real cs2 = vf::basics::constant::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	real rho = vf::basics::constant::c1o1 + drho;
 
-	if (rho * cs2 * (vf::lbm::constant::c1o1 / omegaInf - vf::lbm::constant::c1o2) * shearRate < tau0)
+	if (rho * cs2 * (vf::basics::constant::c1o1 / omegaInf - vf::basics::constant::c1o2) * shearRate < tau0)
 		return 0.0;
 	else
 		return omegaInf;
@@ -131,8 +131,8 @@ inline real Rheology::getBinghamCollFactorOld(real omegaInf, real shearRate, rea
 //////////////////////////////////////////////////////////////////////////
 inline real Rheology::getHerschelBulkleyCollFactor(real omegaInf, real shearRate, real drho)
 {
-	real cs2 = vf::lbm::constant::one_over_sqrt3 * vf::lbm::constant::one_over_sqrt3;
-	real rho = vf::lbm::constant::c1o1 + drho;
+	real cs2 = vf::basics::constant::one_over_sqrt3 * vf::basics::constant::one_over_sqrt3;
+	real rho = vf::basics::constant::c1o1 + drho;
 	real gammaDot = shearRate;
 	real omega = omegaInf;
 	real epsilon = 1;
@@ -152,7 +152,7 @@ inline real Rheology::getHerschelBulkleyCollFactor(real omegaInf, real shearRate
 		real numerator = (2.0 * gammaDotPowN * k * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * (omega - 2.0) * rho + 2.0 * omegaInf * tau0);
 		real denominator = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<real>::val();
 		omega = omega - omega * numerator / denominator;
-		omega = (omega < vf::lbm::constant::c0o1) ? vf::lbm::constant::c1o2 * omegaOld : omega;
+		omega = (omega < vf::basics::constant::c0o1) ? vf::basics::constant::c1o2 * omegaOld : omega;
         //omega = (omega < omegaMin) ? UbMath::c1o2 * (omegaOld-omegaMin)+omegaMin : omega;
 		epsilon = std::abs(omega - omegaOld);
 	}
@@ -162,17 +162,17 @@ inline real Rheology::getHerschelBulkleyCollFactor(real omegaInf, real shearRate
 //////////////////////////////////////////////////////////////////////////
 inline real Rheology::getHerschelBulkleyCollFactorBackward(real shearRate, real drho)
 {
-	real rho = vf::lbm::constant::c1o1 + drho;
+	real rho = vf::basics::constant::c1o1 + drho;
 	real gamma = shearRate + UbMath::Epsilon<real>::val();
-	real cs2 = vf::lbm::constant::one_over_sqrt3 * vf::lbm::constant::one_over_sqrt3;
+	real cs2 = vf::basics::constant::one_over_sqrt3 * vf::basics::constant::one_over_sqrt3;
 
-	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + vf::lbm::constant::c1o2);
+	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + vf::basics::constant::c1o2);
 }
 //////////////////////////////////////////////////////////////////////////
 inline real Rheology::getPowellEyringCollFactor(real omegaInf, real shearRate, real drho)
 {
 //	using namespace UbMath;
-	using namespace vf::lbm::constant;
+	using namespace vf::basics::constant;
 
 	real cs2 = c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
 	real rho = c1o1 + drho;

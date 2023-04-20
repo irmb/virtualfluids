@@ -111,7 +111,7 @@ void IBcumulantK17LBMKernel::calculate(int step)
     //!
 
     using namespace std;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     //initializing of forcing stuff
     if (withForcing)

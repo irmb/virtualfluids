@@ -41,9 +41,8 @@ class GRIDGENERATOR_EXPORT Cuboid : public Object
 {
 public:              
     Cuboid(const double& minX1, const double& minX2, const double& minX3, const double& maxX1,const double& maxX2, const double& maxX3);
-    virtual ~Cuboid();
 
-    Object* clone() const override;
+    SPtr<Object> clone() const override;
 
     double getX1Centroid() override;
     double getX1Minimum() override;

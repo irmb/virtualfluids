@@ -40,11 +40,10 @@ class GRIDGENERATOR_EXPORT VerticalCylinder : public Object
 {
 public:
     VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height);
-    virtual ~VerticalCylinder();
 
     static SPtr<VerticalCylinder> makeShared(double centerX, double centerY, double centerZ, double radius, double height);
 
-    Object* clone() const override;
+    SPtr<Object> clone() const override;
 
     double getX1Centroid() override;
     double getX1Minimum() override;

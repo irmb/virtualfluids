@@ -82,7 +82,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
     int numNodesInBufferSend = 0;
 
 #pragma omp parallel for
-    for (uint i = 0; i < edgeNodes.size(); i++) {
+    for (int i = 0; i < (int)edgeNodes.size(); i++) {
         indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
         indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
         numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
@@ -777,7 +777,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, vf::gpu::Communicator& comm, C
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
     {
-        GetSendFsPreDev27(para->getParD(level)->distributionsAD27.f[0],
+        GetSendFsPreDev27(para->getParD(level)->distributionsAD.f[0],
                           para->getParD(level)->sendProcessNeighborADX[i].f[0],
                           para->getParD(level)->sendProcessNeighborADX[i].index,
                           para->getParD(level)->sendProcessNeighborADX[i].numberOfNodes,
@@ -838,7 +838,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, vf::gpu::Communicator& comm, C
     {
         cudaMemoryManager->cudaCopyProcessNeighborADXFsHD(level, i);
         //////////////////////////////////////////////////////////////////////////
-        SetRecvFsPreDev27(para->getParD(level)->distributionsAD27.f[0],
+        SetRecvFsPreDev27(para->getParD(level)->distributionsAD.f[0],
                           para->getParD(level)->recvProcessNeighborADX[i].f[0],
                           para->getParD(level)->recvProcessNeighborADX[i].index,
                           para->getParD(level)->recvProcessNeighborADX[i].numberOfNodes,
@@ -858,7 +858,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, vf::gpu::Communicator& comm, 
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
     {
-        GetSendFsPostDev27(para->getParD(level)->distributionsAD27.f[0],
+        GetSendFsPostDev27(para->getParD(level)->distributionsAD.f[0],
                            para->getParD(level)->sendProcessNeighborADX[i].f[0],
                            para->getParD(level)->sendProcessNeighborADX[i].index,
                            para->getParD(level)->sendProcessNeighborADX[i].numberOfNodes,
@@ -919,7 +919,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, vf::gpu::Communicator& comm, 
     {
         cudaMemoryManager->cudaCopyProcessNeighborADXFsHD(level, i);
         //////////////////////////////////////////////////////////////////////////
-        SetRecvFsPostDev27(para->getParD(level)->distributionsAD27.f[0],
+        SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0],
                            para->getParD(level)->recvProcessNeighborADX[i].f[0],
                            para->getParD(level)->recvProcessNeighborADX[i].index,
                            para->getParD(level)->recvProcessNeighborADX[i].numberOfNodes,
@@ -946,7 +946,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, vf::gpu::Communicator& comm, C
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
     {
-        GetSendFsPreDev27(para->getParD(level)->distributionsAD27.f[0],
+        GetSendFsPreDev27(para->getParD(level)->distributionsAD.f[0],
                           para->getParD(level)->sendProcessNeighborADY[i].f[0],
                           para->getParD(level)->sendProcessNeighborADY[i].index,
                           para->getParD(level)->sendProcessNeighborADY[i].numberOfNodes,
@@ -1007,7 +1007,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, vf::gpu::Communicator& comm, C
     {
         cudaMemoryManager->cudaCopyProcessNeighborADYFsHD(level, i);
         //////////////////////////////////////////////////////////////////////////
-        SetRecvFsPreDev27(para->getParD(level)->distributionsAD27.f[0],
+        SetRecvFsPreDev27(para->getParD(level)->distributionsAD.f[0],
                           para->getParD(level)->recvProcessNeighborADY[i].f[0],
                           para->getParD(level)->recvProcessNeighborADY[i].index,
                           para->getParD(level)->recvProcessNeighborADY[i].numberOfNodes,
@@ -1027,7 +1027,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, vf::gpu::Communicator& comm, 
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
     {
-        GetSendFsPostDev27(para->getParD(level)->distributionsAD27.f[0],
+        GetSendFsPostDev27(para->getParD(level)->distributionsAD.f[0],
                            para->getParD(level)->sendProcessNeighborADY[i].f[0],
                            para->getParD(level)->sendProcessNeighborADY[i].index,
                            para->getParD(level)->sendProcessNeighborADY[i].numberOfNodes,
@@ -1088,7 +1088,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, vf::gpu::Communicator& comm, 
     {
         cudaMemoryManager->cudaCopyProcessNeighborADYFsHD(level, i);
         //////////////////////////////////////////////////////////////////////////
-        SetRecvFsPostDev27(para->getParD(level)->distributionsAD27.f[0],
+        SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0],
                            para->getParD(level)->recvProcessNeighborADY[i].f[0],
                            para->getParD(level)->recvProcessNeighborADY[i].index,
                            para->getParD(level)->recvProcessNeighborADY[i].numberOfNodes,
@@ -1115,7 +1115,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, vf::gpu::Communicator& comm, C
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
     {
-        GetSendFsPreDev27(para->getParD(level)->distributionsAD27.f[0],
+        GetSendFsPreDev27(para->getParD(level)->distributionsAD.f[0],
                           para->getParD(level)->sendProcessNeighborADZ[i].f[0],
                           para->getParD(level)->sendProcessNeighborADZ[i].index,
                           para->getParD(level)->sendProcessNeighborADZ[i].numberOfNodes,
@@ -1176,7 +1176,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, vf::gpu::Communicator& comm, C
     {
         cudaMemoryManager->cudaCopyProcessNeighborADZFsHD(level, i);
         //////////////////////////////////////////////////////////////////////////
-        SetRecvFsPreDev27(para->getParD(level)->distributionsAD27.f[0],
+        SetRecvFsPreDev27(para->getParD(level)->distributionsAD.f[0],
                           para->getParD(level)->recvProcessNeighborADZ[i].f[0],
                           para->getParD(level)->recvProcessNeighborADZ[i].index,
                           para->getParD(level)->recvProcessNeighborADZ[i].numberOfNodes,
@@ -1196,7 +1196,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, vf::gpu::Communicator& comm, 
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
     {
-        GetSendFsPostDev27(para->getParD(level)->distributionsAD27.f[0],
+        GetSendFsPostDev27(para->getParD(level)->distributionsAD.f[0],
                            para->getParD(level)->sendProcessNeighborADZ[i].f[0],
                            para->getParD(level)->sendProcessNeighborADZ[i].index,
                            para->getParD(level)->sendProcessNeighborADZ[i].numberOfNodes,
@@ -1257,7 +1257,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, vf::gpu::Communicator& comm, 
     {
         cudaMemoryManager->cudaCopyProcessNeighborADZFsHD(level, i);
         //////////////////////////////////////////////////////////////////////////
-        SetRecvFsPostDev27(para->getParD(level)->distributionsAD27.f[0],
+        SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0],
                            para->getParD(level)->recvProcessNeighborADZ[i].f[0],
                            para->getParD(level)->recvProcessNeighborADZ[i].index,
                            para->getParD(level)->recvProcessNeighborADZ[i].numberOfNodes,

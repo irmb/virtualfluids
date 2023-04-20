@@ -42,8 +42,7 @@ struct LBMSimulationParameter;
 class Parameter;
 struct CUstream_st;
 
-using gridScalingFC = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, OffFC&, CUstream_st *stream)>;
-using gridScalingCF = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, OffCF&, CUstream_st *stream)>;
+using gridScaling = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICells *, ICellNeigh&, CUstream_st *stream)>;
 
 class GridScalingFactory
 {
@@ -59,11 +58,11 @@ public:
 
     void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType);
 
-    [[nodiscard]] gridScalingFC getGridScalingFC(bool hasTurbulentViscosity) const;
-    [[nodiscard]] gridScalingCF getGridScalingCF(bool hasTurbulentViscosity) const;
+    [[nodiscard]] gridScaling getGridScalingFC(bool hasTurbulentViscosity) const;
+    [[nodiscard]] gridScaling getGridScalingCF(bool hasTurbulentViscosity) const;
 
 private:
-    GridScaling gridScaling = GridScaling::NotSpecified;
+    GridScaling gridScalingType = GridScaling::NotSpecified;
 };
 
 #endif

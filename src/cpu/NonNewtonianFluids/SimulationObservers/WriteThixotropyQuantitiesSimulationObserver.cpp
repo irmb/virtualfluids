@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file WriteMultiphaseQuantitiesSimulationObserver.h
-//! \ingroup SimulationObservers
+//! \file WriteMultiphaseQuantitiesCoProcessor.h
+//! \ingroup CoProcessors
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "WriteThixotropyQuantitiesSimulationObserver.h"
+#include "WriteThixotropyQuantitiesCoProcessor.h"
 #include "LBMKernel.h"
-#include "BCSet.h"
+#include "BCProcessor.h"
 #include "UbScheduler.h"
 #include "DataSet3D.h"
 #include "D3Q27System.h"
@@ -42,17 +42,17 @@
 #include <algorithm> 
 #include <numeric>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
-//#include "ThixotropyExpLBMKernel.h"
-#include "NonNewtonianFluids/LBM/Rheology.h"
+#include "ThixotropyExpLBMKernel.h"
+#include "Rheology.h"
 
 using namespace std;
 
-WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver()
+WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm) : SimulationObserver(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
+WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm) : CoProcessor(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
 {
 	gridRank = comm->getProcessID();
 	minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -66,20 +66,20 @@ WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulation
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesSimulationObserver::init()
+void WriteThixotropyQuantitiesCoProcessor::init()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesSimulationObserver::update(real step)
+void WriteThixotropyQuantitiesCoProcessor::process(real step)
 {
 	if (scheduler->isDue(step))
 		collectData(step);
 
-	UBLOG(logDEBUG3, "WriteThixotropyQuantitiesSimulationObserver::update:" << step);
+	UBLOG(logDEBUG3, "WriteThixotropyQuantitiesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesSimulationObserver::collectData(real step)
+void WriteThixotropyQuantitiesCoProcessor::collectData(real step)
 {
 	int istep = static_cast<int>(step);
 	//ConcentrationSum = 0;
@@ -118,7 +118,7 @@ void WriteThixotropyQuantitiesSimulationObserver::collectData(real step)
 
 		vector<string> filenames;
 		filenames.push_back(piece);
-		if (step == SimulationObserver::scheduler->getMinBegin())
+		if (step == CoProcessor::scheduler->getMinBegin())
 		{
 			WbWriterVtkXmlASCII::getInstance()->writeCollection(cfilePath, filenames, istep, false);
 		}
@@ -126,13 +126,13 @@ void WriteThixotropyQuantitiesSimulationObserver::collectData(real step)
 		{
 			WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
 		}
-		UBLOG(logINFO, "WriteThixotropyQuantitiesSimulationObserver step: " << istep);
+		UBLOG(logINFO, "WriteThixotropyQuantitiesCoProcessor step: " << istep);
 	}
 
 	clearData();
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesSimulationObserver::clearData()
+void WriteThixotropyQuantitiesCoProcessor::clearData()
 {
 	nodes.clear();
 	cells.clear();
@@ -140,7 +140,7 @@ void WriteThixotropyQuantitiesSimulationObserver::clearData()
 	data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
+void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
 	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);;
 	UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
@@ -153,16 +153,8 @@ void WriteThixotropyQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
 	datanames.resize(0);
 	datanames.push_back("viscosity");
 	//datanames.push_back("lambda");
-	datanames.push_back("ShearRate");
+	//datanames.push_back("ShearRate");
 	datanames.push_back("omega");
-
-	datanames.push_back("MP");
-    datanames.push_back("MXXMYY");
-    datanames.push_back("MXXMZZ");
-    datanames.push_back("MXY");
-    datanames.push_back("MXZ");
-    datanames.push_back("MYZ");
-
 	//datanames.push_back("Fluxx");
 	//datanames.push_back("Fluxy");
 	//datanames.push_back("Fluxz");
@@ -178,7 +170,7 @@ void WriteThixotropyQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
 	data.resize(datanames.size());
 
    SPtr<ILBMKernel> kernel = block->getKernel();
-   SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();          
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
    SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions(); 
 	//SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
 	//LBMReal collFactorF = staticPointerCast<ThixotropyExpLBMKernel>(kernel)->getCollisionFactorF();
@@ -256,21 +248,11 @@ void WriteThixotropyQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
 					//LBMReal omega = Rheology::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
 					//LBMReal omega = Rheology::getPowellEyringCollFactor(collFactor, shearRate, rho);
 					real omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
-					real viscosity = (omega == 0) ? 0 : vf::lbm::constant::c1o3 * (vf::lbm::constant::c1o1/omega- vf::lbm::constant::c1o2);
-                    std::array<real, 6> moments = D3Q27System::getSecondMoments(f, omega);
-
+					real viscosity = (omega == 0) ? 0 : vf::basics::constant::c1o3 * (vf::basics::constant::c1o1/omega- vf::basics::constant::c1o2);
 
 					
 					data[index++].push_back(viscosity);
-                    data[index++].push_back(shearRate);
 					data[index++].push_back(omega);
-
-					data[index++].push_back(moments[0]);
-                    data[index++].push_back(moments[1]);
-                    data[index++].push_back(moments[2]);
-                    data[index++].push_back(moments[3]);
-                    data[index++].push_back(moments[4]);
-                    data[index++].push_back(moments[5]);
 				}
 			}
 		}

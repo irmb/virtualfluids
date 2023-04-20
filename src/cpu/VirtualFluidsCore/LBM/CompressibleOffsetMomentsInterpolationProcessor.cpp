@@ -2,7 +2,7 @@
 #include "D3Q27System.h"
 
 //using namespace UbMath;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
     
@@ -489,7 +489,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
 
    real eps_new = c1o2;
    real o = omega;

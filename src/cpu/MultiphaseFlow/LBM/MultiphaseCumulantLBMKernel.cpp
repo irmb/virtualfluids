@@ -85,7 +85,7 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
     using namespace D3Q27System;
 //    using namespace UbMath;
     using namespace vf::lbm::dir;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     forcingX1 = 0.0;
     forcingX2 = 0.0;

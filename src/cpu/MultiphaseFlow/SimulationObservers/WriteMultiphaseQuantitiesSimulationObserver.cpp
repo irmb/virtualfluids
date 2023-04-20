@@ -149,7 +149,7 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
     using namespace D3Q27System;
  //   using namespace UbMath;
     using namespace vf::lbm::dir;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
     //double level   = (double)block->getLevel();

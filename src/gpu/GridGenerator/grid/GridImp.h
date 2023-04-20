@@ -36,8 +36,6 @@
 #include <array>
 #include <vector>
 
-#include "Core/LbmOrGks.h"
-
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/distributions/Distribution.h"
@@ -74,10 +72,10 @@ class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, publi
 {
 protected:
     GridImp() = default;
-    GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
+    GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
 public:
-    static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    static SPtr<GridImp> makeShared(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
     ~GridImp() override = default;
 
 private:
@@ -113,7 +111,7 @@ private:
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
-    Object* object;
+    SPtr<Object> object;
     GridInterface *gridInterface;
 
     int *sparseIndices;
@@ -132,7 +130,7 @@ private:
 
     uint numberOfLayers;
 
-    TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy;
+    SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 
     uint numberOfSolidBoundaryNodes = 0;
 
@@ -166,19 +164,19 @@ public:
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    void findGridInterface(SPtr<Grid> grid) override;
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
 
     void freeMemory() override;
 
     uint getLevel(real levelNull) const;
     uint getLevel() const;
 
-    void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy);
-    TriangularMeshDiscretizationStrategy *getTriangularMeshDiscretizationStrategy();
+    void setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy);
+    SPtr<TriangularMeshDiscretizationStrategy> getTriangularMeshDiscretizationStrategy();
 
     uint getNumberOfSolidBoundaryNodes() const override;
     void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
@@ -217,7 +215,7 @@ public:
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
-    void findGridInterfaceCF(uint index, GridImp &finerGrid, LbmOrGks lbmOrGks);
+    void findGridInterfaceCF(uint index, GridImp &finerGrid);
     void findGridInterfaceFC(uint index, GridImp &finerGrid);
     void findOverlapStopper(uint index, GridImp &finerGrid);
     void findInvalidBoundaryNodes(uint index);
@@ -231,7 +229,7 @@ public:
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
-    const Object* getObject() const override;
+    SPtr<const Object> getObject() const override;
 
     Field getField() const;
     char getFieldEntry(uint index) const override;
@@ -243,7 +241,7 @@ public:
     uint getSparseSize() const override;
     int getSparseIndex(uint matrixIndex) const override;
     real* getDistribution() const override;
-    int* getDirection() const override;
+    const std::vector<int>& getDirection() const override;
     int getStartDirection() const override;
     int getEndDirection() const override;
 
@@ -355,7 +353,7 @@ private:
     void allocateQs();
 
 public:
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override;
     void findCommunicationIndex(uint index, real coordinate, real limit, int direction);
 
     uint getNumberOfSendNodes(int direction) override;

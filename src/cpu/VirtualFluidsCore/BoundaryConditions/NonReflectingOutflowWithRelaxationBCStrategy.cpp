@@ -61,7 +61,7 @@ void NonReflectingOutflowWithRelaxationBCStrategy::applyBC()
 
     using namespace D3Q27System;
  //   using namespace UbMath;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     LBMReal f[ENDF + 1];
     LBMReal ftemp[ENDF + 1];

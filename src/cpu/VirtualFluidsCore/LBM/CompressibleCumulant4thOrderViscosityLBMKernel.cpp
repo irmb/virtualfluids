@@ -10,7 +10,7 @@
 #define PROOF_CORRECTNESS
 
 //using namespace UbMath;
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderViscosityLBMKernel()

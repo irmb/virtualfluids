@@ -8,9 +8,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 													 unsigned int nyC, 
 													 unsigned int nxF, 
 													 unsigned int nyF,
-													 OffCF offCF)
+													 ICellNeigh offCF)
 {
 	real
 		*fP00dest, *fM00dest, *f0P0dest, *f0M0dest, *f00Pdest, *f00Mdest, *fPP0dest, *fMM0dest, *fPM0dest,
@@ -198,9 +198,9 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -4383,7 +4383,7 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffCF offCF)
+												 ICellNeigh offCF)
 {
 	real
 		*fP00dest, *fM00dest, *f0P0dest, *f0M0dest, *f00Pdest, *f00Mdest, *fPP0dest, *fMM0dest, *fPM0dest,
@@ -4545,9 +4545,9 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;

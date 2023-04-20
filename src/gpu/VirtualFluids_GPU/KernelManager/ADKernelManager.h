@@ -33,7 +33,7 @@
 #ifndef ADVECTION_DIFFUSION_H
 #define ADVECTION_DIFFUSION_H
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 
