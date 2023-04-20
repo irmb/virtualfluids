@@ -47,7 +47,7 @@
 
 using namespace std;
 
-WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver()
+WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver() = default;
 {
 
 }
