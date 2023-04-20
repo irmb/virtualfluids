@@ -306,9 +306,9 @@ void MultiphaseVelocityBC::setNodeVelocity( const D3Q27Interactor& interactor, S
 /*==========================================================*/
 UbTupleDouble3 MultiphaseVelocityBC::getVelocity(const real& x1, const real& x2, const real& x3, const real& timeStep) const
 {
-	real vx1 = vf::lbm::constant::c0o1;
-	real vx2 = vf::lbm::constant::c0o1;
-	real vx3 = vf::lbm::constant::c0o1;
+	real vx1 = vf::basics::constant::c0o1;
+	real vx2 = vf::basics::constant::c0o1;
+	real vx3 = vf::basics::constant::c0o1;
    this->x1 = x1;
    this->x2 = x2;
    this->x3 = x3;

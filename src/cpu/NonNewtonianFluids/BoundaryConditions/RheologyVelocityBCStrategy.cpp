@@ -51,7 +51,7 @@ void RheologyVelocityBCStrategy::addDistributions(SPtr<DistributionArray3D> dist
 //////////////////////////////////////////////////////////////////////////
 void RheologyVelocityBCStrategy::applyBC()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     real f[D3Q27System::ENDF+1];
     real feq[D3Q27System::ENDF+1];

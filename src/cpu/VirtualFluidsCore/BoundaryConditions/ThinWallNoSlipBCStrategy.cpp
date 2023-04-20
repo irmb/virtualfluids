@@ -66,9 +66,9 @@ void ThinWallNoSlipBCStrategy::applyBC()
             const int invDir = D3Q27System::INVDIR[fdir];
             if (pass == 1) {
                 real q = bcPtr->getQ(invDir);
-                fReturn   = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q)) * vf::lbm::constant::c1o2 *
+                fReturn   = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * vf::basics::constant::c1o2 *
                           (f[invDir] - f[fdir] +
-                           (f[invDir] + f[fdir] - collFactor * (feq[fdir] + feq[invDir])) / (vf::lbm::constant::c1o1 - collFactor));
+                           (f[invDir] + f[fdir] - collFactor * (feq[fdir] + feq[invDir])) / (vf::basics::constant::c1o1 - collFactor));
                 // distributionsTemp->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 +
                 // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
                 fTemp[fdir] = fReturn;

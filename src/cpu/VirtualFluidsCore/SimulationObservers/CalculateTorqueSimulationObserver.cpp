@@ -216,7 +216,7 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForces(int x1, int x2, int 
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromMoments(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz)
 {
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
    UbTupleDouble3 force(0.0, 0.0, 0.0);
 
 
@@ -251,7 +251,7 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromMoments(int x1, i
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromStressTensor(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz)
 {
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
    UbTupleDouble3 force(0.0, 0.0, 0.0);
 
    if (bc) {

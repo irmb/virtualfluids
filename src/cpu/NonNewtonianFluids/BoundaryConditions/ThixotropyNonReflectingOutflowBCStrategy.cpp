@@ -71,7 +71,7 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
 {
    using namespace vf::lbm::dir;
    using namespace D3Q27System;
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
 
    real f[ENDF + 1];
    real ftemp[ENDF + 1];

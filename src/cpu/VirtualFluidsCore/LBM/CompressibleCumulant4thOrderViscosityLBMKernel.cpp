@@ -16,8 +16,8 @@ using namespace vf::basics::constant;
 CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderViscosityLBMKernel()
 {
    this->compressible = true;
-   this->bulkViscosity = vf::lbm::constant::c0o1;
-   this->OxxPyyPzz = vf::lbm::constant::c1o1;
+   this->bulkViscosity = vf::basics::constant::c0o1;
+   this->OxxPyyPzz = vf::basics::constant::c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulant4thOrderViscosityLBMKernel::~CompressibleCumulant4thOrderViscosityLBMKernel(void)

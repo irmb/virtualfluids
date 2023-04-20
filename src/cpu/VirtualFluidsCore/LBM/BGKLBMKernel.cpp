@@ -302,4 +302,4 @@ void BGKLBMKernel::calculate(int step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-real BGKLBMKernel::getCalculationTime() { return vf::lbm::constant::c0o1; }
+real BGKLBMKernel::getCalculationTime() { return vf::basics::constant::c0o1; }

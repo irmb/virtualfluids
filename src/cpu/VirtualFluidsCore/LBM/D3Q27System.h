@@ -1398,7 +1398,7 @@ static inline real getShearRate(const real *const f, real collFactorF)
 static inline std::array<real,6> getSecondMoments(const real *const f, real collFactorF)
 {
     using namespace vf::lbm::dir;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     real mfcbb = f[DIR_P00];
     real mfbcb = f[DIR_0P0];
@@ -1723,7 +1723,7 @@ static inline std::array<real,6> getSecondMoments(const real *const f, real coll
 static inline std::array<real, 6> getStressTensor(const real *const f, real collFactorF)
 {
     using namespace vf::lbm::dir;
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
     real mfcbb = f[DIR_P00];
     real mfbcb = f[DIR_0P0];

@@ -36,7 +36,7 @@ void SlipBCStrategy::applyBC()
     vx2 = vx2 - amp * val<2>(normale); // normale zeigt von struktur weg!
     vx3 = vx3 - amp * val<3>(normale); // normale zeigt von struktur weg!
 
-    rho = vf::lbm::constant::c1o1 + drho * compressibleFactor;
+    rho = vf::basics::constant::c1o1 + drho * compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {
@@ -46,7 +46,7 @@ void SlipBCStrategy::applyBC()
          const int invDir = D3Q27System::INVDIR[fdir];
          real q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          //vx3=0;
-         real velocity = vf::lbm::constant::c0o1;
+         real velocity = vf::basics::constant::c0o1;
          switch (invDir)
          {
          case DIR_P00: velocity = (vf::basics::constant::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
@@ -77,7 +77,7 @@ void SlipBCStrategy::applyBC()
          case DIR_MPP: velocity = (vf::basics::constant::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
-         real fReturn = ((vf::lbm::constant::c1o1-q)/(vf::lbm::constant::c1o1+q))*((f[invDir]-feq[invDir])/(vf::lbm::constant::c1o1-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(vf::lbm::constant::c1o1+q));
+         real fReturn = ((vf::basics::constant::c1o1-q)/(vf::basics::constant::c1o1+q))*((f[invDir]-feq[invDir])/(vf::basics::constant::c1o1-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(vf::basics::constant::c1o1+q));
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }

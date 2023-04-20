@@ -42,7 +42,7 @@
 #include "UbTuple.h"
 #include "Vector3D.h"
 #include <PointerDefinitions.h>
-#include "lbm/constants/NumericConstants.h"
+#include "basics/constants/NumericConstants.h"
 
 //! Difenition of baundary conditions in grid generation
 class BoundaryConditions
@@ -327,13 +327,13 @@ protected:
     long long densityBoundaryFlags{ 0 };
     long long wallModelBoundaryFlags{ 0 };
 
-    float bcVelocityX1{ vf::lbm::constant::c0o1 };
-    float bcVelocityX2{ vf::lbm::constant::c0o1 };
-    float bcVelocityX3{ vf::lbm::constant::c0o1 };
-    float bcDensity{ vf::lbm::constant::c0o1 };
-    float bcPhaseField{ vf::lbm::constant::c0o1 };
+    float bcVelocityX1{ vf::basics::constant::c0o1 };
+    float bcVelocityX2{ vf::basics::constant::c0o1 };
+    float bcVelocityX3{ vf::basics::constant::c0o1 };
+    float bcDensity{ vf::basics::constant::c0o1 };
+    float bcPhaseField{ vf::basics::constant::c0o1 };
 
-    float nx1{ vf::lbm::constant::c0o1 }, nx2{ vf::lbm::constant::c0o1 }, nx3{ vf::lbm::constant::c0o1 };
+    float nx1{ vf::basics::constant::c0o1 }, nx2{ vf::basics::constant::c0o1 }, nx3{ vf::basics::constant::c0o1 };
 
     char algorithmType { -1 };
 

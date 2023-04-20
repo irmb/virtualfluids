@@ -91,8 +91,8 @@ void ThixotropyNoSlipBCStrategy::applyBC()
 			//quadratic bounce back
 			const int invDir = D3Q27System::INVDIR[fdir];
 			real q = bcPtr->getQ(invDir);
-			real fReturnf = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q))*((f[invDir] - feq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + feq[invDir]) + ((q / (vf::lbm::constant::c1o1 + q))*(f[invDir] + f[fdir]));
-			real fReturnh = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q))*((h[invDir] - heq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + heq[invDir]) + ((q / (vf::lbm::constant::c1o1 + q))*(h[invDir] + h[fdir]));
+			real fReturnf = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q))*((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) + ((q / (vf::basics::constant::c1o1 + q))*(f[invDir] + f[fdir]));
+			real fReturnh = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q))*((h[invDir] - heq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + heq[invDir]) + ((q / (vf::basics::constant::c1o1 + q))*(h[invDir] + h[fdir]));
 
 			distributions->setDistributionForDirection(fReturnf, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 			distributionsH->setDistributionForDirection(fReturnh, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);

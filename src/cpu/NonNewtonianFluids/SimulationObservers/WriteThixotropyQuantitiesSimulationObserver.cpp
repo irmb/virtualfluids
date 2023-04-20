@@ -30,9 +30,9 @@
 //! \ingroup CoProcessors
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "WriteThixotropyQuantitiesCoProcessor.h"
+#include "WriteThixotropyQuantitiesSimulationObserver.h"
 #include "LBMKernel.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "UbScheduler.h"
 #include "DataSet3D.h"
 #include "D3Q27System.h"
@@ -42,17 +42,17 @@
 #include <algorithm> 
 #include <numeric>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
-#include "ThixotropyExpLBMKernel.h"
-#include "Rheology.h"
+#include "LBM/ThixotropyExpLBMKernel.h"
+#include "LBM/Rheology.h"
 
 using namespace std;
 
-WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor()
+WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm) : CoProcessor(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
+WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm) : SimulationObserver(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
 {
 	gridRank = comm->getProcessID();
 	minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -66,20 +66,20 @@ WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor(SPtr<
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::init()
+void WriteThixotropyQuantitiesSimulationObserver::init()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::process(real step)
+void WriteThixotropyQuantitiesSimulationObserver::update(real step)
 {
 	if (scheduler->isDue(step))
 		collectData(step);
 
-	UBLOG(logDEBUG3, "WriteThixotropyQuantitiesCoProcessor::update:" << step);
+	UBLOG(logDEBUG3, "WriteThixotropyQuantitiesSimulationObserver::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::collectData(real step)
+void WriteThixotropyQuantitiesSimulationObserver::collectData(real step)
 {
 	int istep = static_cast<int>(step);
 	//ConcentrationSum = 0;
@@ -118,7 +118,7 @@ void WriteThixotropyQuantitiesCoProcessor::collectData(real step)
 
 		vector<string> filenames;
 		filenames.push_back(piece);
-		if (step == CoProcessor::scheduler->getMinBegin())
+		if (step == SimulationObserver::scheduler->getMinBegin())
 		{
 			WbWriterVtkXmlASCII::getInstance()->writeCollection(cfilePath, filenames, istep, false);
 		}
@@ -126,13 +126,13 @@ void WriteThixotropyQuantitiesCoProcessor::collectData(real step)
 		{
 			WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
 		}
-		UBLOG(logINFO, "WriteThixotropyQuantitiesCoProcessor step: " << istep);
+		UBLOG(logINFO, "WriteThixotropyQuantitiesSimulationObserver step: " << istep);
 	}
 
 	clearData();
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::clearData()
+void WriteThixotropyQuantitiesSimulationObserver::clearData()
 {
 	nodes.clear();
 	cells.clear();
@@ -140,7 +140,7 @@ void WriteThixotropyQuantitiesCoProcessor::clearData()
 	data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
+void WriteThixotropyQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
 {
 	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);;
 	UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
@@ -170,7 +170,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 	data.resize(datanames.size());
 
    SPtr<ILBMKernel> kernel = block->getKernel();
-   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+   SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();          
    SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions(); 
 	//SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
 	//LBMReal collFactorF = staticPointerCast<ThixotropyExpLBMKernel>(kernel)->getCollisionFactorF();

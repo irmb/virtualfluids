@@ -66,8 +66,8 @@ void NoSlipBCStrategy::applyBC()
             // quadratic bounce back
             const int invDir = D3Q27System::INVDIR[fdir];
             real q        = bcPtr->getQ(invDir);
-            real fReturn = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + feq[invDir]) +
-                              ((q / (vf::lbm::constant::c1o1 + q)) * (f[invDir] + f[fdir]));
+            real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) +
+                              ((q / (vf::basics::constant::c1o1 + q)) * (f[invDir] + f[fdir]));
             distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
                                                        x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
                                                        fdir);

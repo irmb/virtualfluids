@@ -65,15 +65,15 @@ void VelocityBCStrategy::applyBC()
     //DEBUG
     //int blockID = block->getGlobalID();
 
-    rho = vf::lbm::constant::c1o1 + drho * compressibleFactor;
+    rho = vf::basics::constant::c1o1 + drho * compressibleFactor;
 
     for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
         if (bcPtr->hasVelocityBoundaryFlag(fdir)) {
             const int invDir = D3Q27System::INVDIR[fdir];
             real q        = bcPtr->getQ(invDir);
             real velocity = bcPtr->getBoundaryVelocity(invDir);
-            real fReturn = ((vf::lbm::constant::c1o1 - q) / (vf::lbm::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::lbm::constant::c1o1 - collFactor) + feq[invDir]) +
-                              ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::lbm::constant::c1o1 + q));
+            real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) +
+                              ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::basics::constant::c1o1 + q));
             distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
                                                        x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
                                                        fdir);

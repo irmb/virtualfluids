@@ -32,4 +32,4 @@ SPtr<LBMKernel> VoidLBMKernel::clone()
 //////////////////////////////////////////////////////////////////////////
 void VoidLBMKernel::calculate(int step) {}
 //////////////////////////////////////////////////////////////////////////
-real VoidLBMKernel::getCalculationTime() { return vf::lbm::constant::c0o1; }
+real VoidLBMKernel::getCalculationTime() { return vf::basics::constant::c0o1; }

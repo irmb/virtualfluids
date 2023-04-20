@@ -37,7 +37,7 @@ void IncompressibleOffsetInterpolationProcessor::setOffsets(real xoff, real yoff
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    setOffsets(xoff, yoff, zoff);
    calcInterpolatedCoefficiets(icellC, omegaC, c1o2);
@@ -54,7 +54,7 @@ void IncompressibleOffsetInterpolationProcessor::interpolateCoarseToFine(D3Q27IC
 void IncompressibleOffsetInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
-   calcInterpolatedCoefficiets(icellF, omegaF, vf::lbm::constant::c2o1);
+   calcInterpolatedCoefficiets(icellF, omegaF, vf::basics::constant::c2o1);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const real* const f
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
 
    //UBLOG(logINFO,"D3Q27System::DIR_M0M  = " << D3Q27System::DIR_M0M);
    //UBLOG(logINFO,"BW  = " << BW);;
@@ -106,7 +106,7 @@ void IncompressibleOffsetInterpolationProcessor::calcMoments(const real* const f
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    real        vx1_SWT,vx2_SWT,vx3_SWT;
    real        vx1_NWT,vx2_NWT,vx3_NWT;
@@ -536,7 +536,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(real* f, r
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
 
    real rho  = press ;//+ (2.*axx*x+axy*y+axz*z+axyz*y*z+ax + 2.*byy*y+bxy*x+byz*z+bxyz*x*z+by + 2.*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
    real vx1  = a0 + c1o4*( xs*ax + ys*ay + zs*az) + c1o16*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + c1o64*(xs*ys*zs*axyz);
@@ -583,7 +583,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(real* f, r
 //Position SWB -0.25, -0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBSW()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_SWT * (c9o64 + c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
       press_NWT * (c3o64 + c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -598,7 +598,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressBSW()
 //Position SWT -0.25, -0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTSW()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_SWT * (c27o64 + c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
       press_NWT * (c9o64 + c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
@@ -613,7 +613,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressTSW()
 //Position SET 0.25, -0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTSE()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_SET * (c27o64 - c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
       press_NET * (c9o64 - c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
@@ -628,7 +628,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressTSE()
 //Position SEB 0.25, -0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBSE()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_SET * (c9o64 - c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
       press_NET * (c3o64 - c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -643,7 +643,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressBSE()
 //Position NWB -0.25, 0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBNW()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_NWT * (c9o64 + c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
       press_NET * (c3o64 - c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
@@ -658,7 +658,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressBNW()
 //Position NWT -0.25, 0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTNW()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_NWT * (c27o64 + c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
       press_NET * (c9o64 - c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -673,7 +673,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressTNW()
 //Position NET 0.25, 0.25, 0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressTNE()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_NET * (c27o64 - c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
       press_NWT * (c9o64 + c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -688,7 +688,7 @@ real IncompressibleOffsetInterpolationProcessor::calcPressTNE()
 //Position NEB 0.25, 0.25, -0.25
 real IncompressibleOffsetInterpolationProcessor::calcPressBNE()
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
    return   press_NET * (c9o64 - c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
       press_NWT * (c3o64 + c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
@@ -705,7 +705,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(real* f,
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
-   using namespace vf::lbm::constant;
+   using namespace vf::basics::constant;
 
    real press  =  press_NET * (c4o32 - c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
       press_NWT * (c4o32 + c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
@@ -801,7 +801,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedVelocity(real x
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolationProcessor::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
 {
-    using namespace vf::lbm::constant;
+    using namespace vf::basics::constant;
 
 	tauxx=ax+c2o1*axx*x+axy*y+axz*z+axyz*y*z;
 	tauyy=by+c2o1*byy*y+bxy*x+byz*z+bxyz*x*z;
