@@ -2,7 +2,7 @@
 
 #include "mpi.h"
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
@@ -178,7 +178,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
 
     SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-    SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
 
     SPtr<ILBMKernel> newKernel = newBlock->getKernel();
     if (!newKernel)
@@ -279,7 +279,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
                  (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
-        SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
         MPI_Send(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, newBlockRank, 0, MPI_COMM_WORLD);
     } else if (newBlockRank == newGridRank && newBlock->isActive()) {
@@ -408,7 +408,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
 
     SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-    SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
 
     SPtr<ILBMKernel> newKernel = newBlock->getKernel();
     if (!newKernel)
@@ -510,7 +510,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
                  (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
-        SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
         MPI_Send(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, newBlockRank, 0, MPI_COMM_WORLD);
     } else if (newBlockRank == newGridRank && newBlock->isActive()) {

@@ -11,7 +11,7 @@
 
 class GbObject3D;
 class Grid3D;
-class BCAdapter;
+class BC;
 class GbTriFaceMesh3D;
 class Block3D;
 
@@ -24,11 +24,11 @@ public:
     D3Q27TriFaceMeshInteractor();
     D3Q27TriFaceMeshInteractor(SPtr<Grid3D> grid, std::string name = "D3Q27TriFaceMeshInteractor");
     D3Q27TriFaceMeshInteractor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type);
-    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter,
+    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BC> BC,
                                int type);
-    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter,
+    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BC> BC,
                                int type, Interactor3D::Accuracy a);
-    // D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, D3Q27BoundaryConditionAdapterPtr bcAdapter, int
+    // D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, D3Q27BoundaryConditionAdapterPtr BC, int
     // type, std::string name="D3Q27TriFaceMeshInteractor");
 
     ~D3Q27TriFaceMeshInteractor() override;

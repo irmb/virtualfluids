@@ -1,7 +1,8 @@
 #include "VoidLBMKernel.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "DataSet3D.h"
 #include "VoidData3D.h"
+#include "D3Q27System.h"
 
 VoidLBMKernel::VoidLBMKernel() = default;
 //////////////////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ SPtr<LBMKernel> VoidLBMKernel::clone()
     kernel->setNX(nx);
     dynamicPointerCast<VoidLBMKernel>(kernel)->initDataSet();
     kernel->setCollisionFactor(this->collFactor);
-    kernel->setBCProcessor(bcProcessor->clone(kernel));
+    kernel->setBCSet(bcSet->clone(kernel));
     kernel->setWithForcing(withForcing);
     kernel->setForcingX1(muForcingX1);
     kernel->setForcingX2(muForcingX2);
@@ -31,4 +32,4 @@ SPtr<LBMKernel> VoidLBMKernel::clone()
 //////////////////////////////////////////////////////////////////////////
 void VoidLBMKernel::calculate(int step) {}
 //////////////////////////////////////////////////////////////////////////
-real VoidLBMKernel::getCalculationTime() { return 0.0; }
+real VoidLBMKernel::getCalculationTime() { return vf::lbm::constant::c0o1; }

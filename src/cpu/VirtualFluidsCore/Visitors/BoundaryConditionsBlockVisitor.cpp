@@ -32,25 +32,18 @@
 //=======================================================================================
 
 #include "BoundaryConditionsBlockVisitor.h"
-#include "BCAdapter.h"
+#include "BC.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"
-#include "BCAdapter.h"
+#include "BC.h"
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "ILBMKernel.h"
-
-#include "ThixotropyDensityBCAlgorithm.h"
-#include "ThixotropyVelocityBCAlgorithm.h"
-#include "ThixotropyNoSlipBCAlgorithm.h"
-#include "ThixotropyNonReflectingOutflowBCAlgorithm.h"
-#include "ThixotropyVelocityWithDensityBCAlgorithm.h"
-
 
 BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
@@ -67,13 +60,13 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
             throw UbException(UB_EXARGS, "LBMKernel in " + block->toString() + "is not exist!");
         }
 
-        SPtr<BCProcessor> bcProcessor = kernel->getBCProcessor();
+        SPtr<BCSet> bcSet = kernel->getBCSet();
 
-        if (!bcProcessor) {
+        if (!bcSet) {
             throw UbException(UB_EXARGS, "Boundary Conditions Processor is not exist!");
         }
 
-        SPtr<BCArray3D> bcArray = bcProcessor->getBCArray();
+        SPtr<BCArray3D> bcArray = bcSet->getBCArray();
 
         bool compressible = kernel->getCompressible();
         real collFactor = kernel->getCollisionFactor();
@@ -86,7 +79,7 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
         int maxX3 = (int)bcArray->getNX3();
         SPtr<BoundaryConditions> bcPtr;
 
-        bcProcessor->clearBC();
+        bcSet->clearBC();
 
         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
@@ -95,8 +88,8 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                 for (int x1 = minX1; x1 < maxX1; x1++) {
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
                         if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL) {
-                            char alg              = bcPtr->getBcAlgorithmType();
-                            SPtr<BCAlgorithm> bca = bcMap[alg];
+                            char alg              = bcPtr->getBCStrategyType();
+                            SPtr<BCStrategy> bca = bcMap[alg];
 
                             if (bca) {
                                 bca = bca->clone();
@@ -104,27 +97,10 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                                 bca->setNodeIndex(x1, x2, x3);
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
-
-                                if (alg == BCAlgorithm::ThixotropyVelocityBCAlgorithm)
-                                    std::static_pointer_cast<ThixotropyVelocityBCAlgorithm>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::ThixotropyDensityBCAlgorithm)
-                                    std::static_pointer_cast<ThixotropyDensityBCAlgorithm>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::ThixotropyNoSlipBCAlgorithm)
-                                    std::static_pointer_cast<ThixotropyNoSlipBCAlgorithm>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::ThixotropyNonReflectingOutflowBCAlgorithm)
-                                    std::static_pointer_cast<ThixotropyNonReflectingOutflowBCAlgorithm>(bca)
-                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::ThixotropyVelocityWithDensityBCAlgorithm)
-                                    std::static_pointer_cast<ThixotropyVelocityWithDensityBCAlgorithm>(bca)
-                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-
                                 bca->setCollFactor(collFactor);
                                 bca->setCompressible(compressible);
                                 bca->setBcArray(bcArray);
-                                bcProcessor->addBC(bca);
+                                bcSet->addBC(bca);
                             }
                         }
                     }
@@ -134,7 +110,7 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitor::addBC(SPtr<BCAdapter> bc)
+void BoundaryConditionsBlockVisitor::addBC(SPtr<BC> bc)
 {
-    bcMap.insert(std::make_pair(bc->getBcAlgorithmType(), bc->getAlgorithm()));
+    bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getAlgorithm()));
 }

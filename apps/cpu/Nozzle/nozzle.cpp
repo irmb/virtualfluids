@@ -4,7 +4,7 @@
 
 #include "VirtualFluids.h"
 
-#include "LiggghtsCouplingCoProcessor.h"
+#include "LiggghtsCouplingSimulationObserver.h"
 #include "LiggghtsCouplingWrapper.h"
 #include "IBcumulantK17LBMKernel.h"
 
@@ -119,10 +119,10 @@ int main(int argc, char *argv[])
     //SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(d_part, 1., 2400, d_part / dx, uRef);
     
 
-    //SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-    //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
-    SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-    noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+    //SPtr<BC> noSlipBC(new NoSlipBC());
+    //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+    SPtr<BC> noSlipBC(new NoSlipBC());
+    noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
 
 
@@ -158,10 +158,10 @@ int main(int argc, char *argv[])
     //    fct.DefineConst("NplusOne", N + 1.0);
     
 
-    //SPtr<BCAdapter> inflowConcreteBCAdapter(new VelocityBCAdapter(false, false, true, fct, 0, BCFunction::INFCONST));
-    //inflowConcreteBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-    SPtr<BCAdapter> inflowConcreteBCAdapter(new MultiphaseVelocityBCAdapter(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
-    inflowConcreteBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+    //SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
+    //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+    SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
+    inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
     
         // air inflow boundary condition
@@ -258,23 +258,23 @@ int main(int argc, char *argv[])
     fctVx3.DefineConst("NplusOne", N + 1.0);
     
 
-    //SPtr<BCAdapter> inflowAirBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-    //inflowAirBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-    SPtr<BCAdapter> inflowAirBCAdapter(new MultiphaseVelocityBCAdapter(true, false, true, fctVx1, fctVx3, fctVx3, phiL, 0, BCFunction::INFCONST));
-    inflowAirBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+    //SPtr<BC> inflowAirBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
+    //inflowAirBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+    SPtr<BC> inflowAirBC(new MultiphaseVelocityBC(true, false, true, fctVx1, fctVx3, fctVx3, phiL, 0, BCFunction::INFCONST));
+    inflowAirBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
-    SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
-    //outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
-    //SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
-    outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+    SPtr<BC> outflowBC(new DensityBC(rhoLB));
+    //outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+    //SPtr<BC> outflowBC(new DensityBC(rhoLB));
+    outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
     //////////////////////////////////////////////////////////////////////////////////
     // BC visitor
     //BoundaryConditionsBlockVisitor bcVisitor;♣
     MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-    bcVisitor.addBC(noSlipBCAdapter);
-    bcVisitor.addBC(inflowConcreteBCAdapter);
-    bcVisitor.addBC(inflowAirBCAdapter);
-    bcVisitor.addBC(outflowBCAdapter);
+    bcVisitor.addBC(noSlipBC);
+    bcVisitor.addBC(inflowConcreteBC);
+    bcVisitor.addBC(inflowAirBC);
+    bcVisitor.addBC(outflowBC);
 
     // SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
     // SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
@@ -297,8 +297,8 @@ int main(int argc, char *argv[])
     kernel->setMultiphaseModelParameters(beta, kappa);
     kernel->setContactAngle(theta);
 
-    SPtr<BCProcessor> bcProc = make_shared<BCProcessor>();
-    kernel->setBCProcessor(bcProc);
+    SPtr<BCSet> bcProc = make_shared<BCSet>();
+    kernel->setBCSet(bcProc);
 
     SPtr<Grid3D> grid = make_shared<Grid3D>(comm);
     grid->setPeriodicX1(false);
@@ -338,80 +338,80 @@ int main(int argc, char *argv[])
     meshNozzleAirDistributor->readMeshFromSTLFileASCII(geoPath + "/01_Nozzle_Air_Distributor.stl", false);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirDistributor:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAirDistributor.get(), outputPath + "/geo/meshNozzleAirDistributor", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleAirDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirDistributor, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+    SPtr<Interactor3D> intrNozzleAirDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirDistributor, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
     ///////////////////////////////////////////////////////////
     SPtr<GbTriFaceMesh3D> meshNozzleAirInlet = std::make_shared<GbTriFaceMesh3D>();
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:start");
     meshNozzleAirInlet->readMeshFromSTLFileASCII(geoPath + "/02_Nozzle_Air_Inlet.stl", false);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAirInlet.get(), outputPath + "/geo/meshNozzleAirInlet", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirInlet, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+    SPtr<Interactor3D> intrNozzleAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirInlet, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
     ///////////////////////////////////////////////////////////
     SPtr<GbTriFaceMesh3D> meshNozzleSpacer = std::make_shared<GbTriFaceMesh3D>();
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleSpacer:start");
     meshNozzleSpacer->readMeshFromSTLFileASCII(geoPath + "/03_Nozzle_Spacer.stl", true);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleSpacer:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleSpacer.get(), outputPath + "/geo/meshNozzleSpacer", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleSpacer = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleSpacer, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+    SPtr<Interactor3D> intrNozzleSpacer = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleSpacer, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
     ///////////////////////////////////////////////////////////
     SPtr<GbTriFaceMesh3D> meshNozzleAccDistributor = std::make_shared<GbTriFaceMesh3D>();
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccDistributor:start");
     meshNozzleAccDistributor->readMeshFromSTLFileASCII(geoPath + "/04_Nozzle_Acc_Distributor.stl", false);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccDistributor:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAccDistributor.get(), outputPath + "/geo/meshNozzleAccDistributor", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleAccDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccDistributor, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+    SPtr<Interactor3D> intrNozzleAccDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccDistributor, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
     ///////////////////////////////////////////////////////////
     SPtr<GbTriFaceMesh3D> meshNozzleAccInlet = std::make_shared<GbTriFaceMesh3D>();
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccInlet:start");
     meshNozzleAccInlet->readMeshFromSTLFileASCII(geoPath + "/05_Nozzle_Acc_Inlet.stl", false);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccInlet:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAccInlet.get(), outputPath + "/geo/meshNozzleAccInlet", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleAccInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccInlet, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+    SPtr<Interactor3D> intrNozzleAccInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccInlet, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
     ///////////////////////////////////////////////////////////
     SPtr<GbTriFaceMesh3D> meshNozzleVolcanNozzle1 = std::make_shared<GbTriFaceMesh3D>();
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle1:start");
     meshNozzleVolcanNozzle1->readMeshFromSTLFileBinary(geoPath + "/06_1_Nozzle_Volcan_Nozzle.stl", true);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle1:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle1.get(), outputPath + "/geo/meshNozzleVolcanNozzle1", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleVolcanNozzle1 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
+    SPtr<Interactor3D> intrNozzleVolcanNozzle1 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle1, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
     ///////////////////////////////////////////////////////////
     SPtr<GbTriFaceMesh3D> meshNozzleVolcanNozzle2 = std::make_shared<GbTriFaceMesh3D>();
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle2:start");
     meshNozzleVolcanNozzle2->readMeshFromSTLFileBinary(geoPath + "/06_2_Nozzle_Volcan_Nozzle.stl", true);
     if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle2:end");
     if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle2.get(), outputPath + "/geo/meshNozzleVolcanNozzle2", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::POINTS);
+    SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
     ///////////////////////////////////////////////////////////
     //box
-    SPtr<D3Q27Interactor> intrBox = SPtr<D3Q27Interactor>(new D3Q27Interactor(gridCube, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+    SPtr<D3Q27Interactor> intrBox = SPtr<D3Q27Interactor>(new D3Q27Interactor(gridCube, grid, noSlipBC, Interactor3D::INVERSESOLID));
     ///////////////////////////////////////////////////////////
     //inflow
     GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, 0.20105, -1.30181+0.0005, 0.390872-0.00229, 0.23, 0.013));
     if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlBinary::getInstance());
-    SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBCAdapter, Interactor3D::SOLID));
+    SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBC, Interactor3D::SOLID));
     ///////////////////////////////////////////////////////////
     //outflow
     GbCylinder3DPtr geoOutflow(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, -0.22, -1.30181+0.0005, 0.390872-0.00229, -0.21, 0.013));
     //GbCylinder3DPtr geoOutflow(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, g_minX3, -1.30181+0.0005, 0.390872-0.00229, -0.21, 0.013));
     if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), outputPath + "/geo/geoOutflow", WbWriterVtkXmlBinary::getInstance());
-    SPtr<D3Q27Interactor> intrOutflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowBCAdapter, Interactor3D::SOLID));
+    SPtr<D3Q27Interactor> intrOutflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowBC, Interactor3D::SOLID));
     ///////////////////////////////////////////////////////////
     //SPtr<GbTriFaceMesh3D> geoAirInlet = std::make_shared<GbTriFaceMesh3D>();
     //if (myid == 0) UBLOG(logINFO, "Read Air_Inlet:start");
     //geoAirInlet->readMeshFromSTLFileASCII(geoPath + "/Air_Inlet.stl", true);
     //if (myid == 0) UBLOG(logINFO, "Read Air_Inlet:end");
     //if (myid == 0) GbSystem3D::writeGeoObject(geoAirInlet.get(), outputPath + "/geo/geoAirInlet", WbWriterVtkXmlBinary::getInstance());
-    //SPtr<Interactor3D> intrAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(geoAirInlet, grid, inflowAirBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
+    //SPtr<Interactor3D> intrAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(geoAirInlet, grid, inflowAirBC, Interactor3D::SOLID, Interactor3D::EDGES);
     /////////////////////////////////////////////////////////////
     //Fluid area
     GbCylinder3DPtr geoFluidArea(new GbCylinder3D(-1.30181+0.0005, 0.390872-0.00229, g_minX3, -1.30181+0.0005, 0.390872-0.00229, g_maxX3, 0.013));
     if (myid == 0) GbSystem3D::writeGeoObject(geoFluidArea.get(), outputPath + "/geo/geoFluidArea", WbWriterVtkXmlBinary::getInstance());
-    SPtr<D3Q27Interactor> intrFluidArea = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoFluidArea, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+    SPtr<D3Q27Interactor> intrFluidArea = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoFluidArea, grid, noSlipBC, Interactor3D::INVERSESOLID));
     ///////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////
     GbCylinder3DPtr geoAirInflow(new GbCylinder3D(-1.31431 - 0.0005, 0.388587, 0.1383275, -1.31431, 0.388587, 0.1383275, 0.002765));
     if (myid == 0) GbSystem3D::writeGeoObject(geoAirInflow.get(), outputPath + "/geo/geoAirInlet", WbWriterVtkXmlBinary::getInstance());
-    SPtr<Interactor3D> intrAirInflow = std::make_shared<D3Q27Interactor>(geoAirInflow, grid, inflowAirBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES);
+    SPtr<Interactor3D> intrAirInflow = std::make_shared<D3Q27Interactor>(geoAirInflow, grid, inflowAirBC, Interactor3D::SOLID, Interactor3D::EDGES);
     ///////////////////////////////////////////////////////////
 
     InteractorsHelper intHelper(grid, metisVisitor, true);
@@ -435,9 +435,9 @@ int main(int argc, char *argv[])
 
     intHelper.selectBlocks();
 
-    SPtr<CoProcessor> ppblocks = make_shared<WriteBlocksCoProcessor>(
+    SPtr<SimulationObserver> ppblocks = make_shared<WriteBlocksSimulationObserver>(
          grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
-     ppblocks->process(0);
+     ppblocks->update(0);
      ppblocks.reset();
 
      if (myid == 0) UBLOG(logINFO, Utilities::toString(grid, comm->getNumberOfProcesses()));
@@ -496,14 +496,14 @@ int main(int argc, char *argv[])
     //wrapper.runUpto(1000);
 
     SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1); 
-    SPtr<LiggghtsCouplingCoProcessor> lcCoProcessor =
-        make_shared<LiggghtsCouplingCoProcessor>(grid, lScheduler, comm, wrapper, demSubsteps, units);
+    SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver =
+        make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, units);
 
     // boundary conditions grid
     {
         SPtr<UbScheduler> geoSch(new UbScheduler(1));
-        SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
-        ppgeo->process(0);
+        SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
+        ppgeo->update(0);
         ppgeo.reset();
     }
 
@@ -518,25 +518,25 @@ int main(int argc, char *argv[])
     omp_set_num_threads(numOfThreads);
 
     SPtr<UbScheduler> nupsSch = std::make_shared<UbScheduler>(10, 10, 100);
-    SPtr<NUPSCounterCoProcessor> nupsCoProcessor = make_shared<NUPSCounterCoProcessor>(grid, nupsSch, numOfThreads, comm);
+    SPtr<NUPSCounterSimulationObserver> nupsSimulationObserver = make_shared<NUPSCounterSimulationObserver>(grid, nupsSch, numOfThreads, comm);
 
     //// write data for visualization of macroscopic quantities
     SPtr < UbScheduler> visSch(new UbScheduler(vtkSteps));
     //SPtr<UbScheduler> visSch(new UbScheduler(1, 8700, 8800));
    // visSch->addSchedule(1, 8700, 8800);
-    SPtr<WriteMultiphaseQuantitiesCoProcessor> writeMQCoProcessor(
-        new WriteMultiphaseQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(),
+    SPtr<WriteMultiphaseQuantitiesSimulationObserver> writeMQSimulationObserver(
+        new WriteMultiphaseQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(),
                                                   SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-    writeMQCoProcessor->process(0);
+    writeMQSimulationObserver->update(0);
 
     int endTime = 1000000;
-    SPtr<Calculator> calculator(new BasicCalculator(grid, lScheduler, endTime));
-    calculator->addCoProcessor(nupsCoProcessor);
-   // calculator->addCoProcessor(lcCoProcessor);
-    calculator->addCoProcessor(writeMQCoProcessor);
+    SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));
+    simulation->addSimulationObserver(nupsSimulationObserver);
+   // Simulation->addSimulationObserver(lcSimulationObserver);
+    simulation->addSimulationObserver(writeMQSimulationObserver);
 
     if (myid == 0) UBLOG(logINFO, "Simulation-start");
-    calculator->calculate();
+    simulation->run();
     if (myid == 0) UBLOG(logINFO, "Simulation-end");
 
 

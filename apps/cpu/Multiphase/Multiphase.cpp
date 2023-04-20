@@ -112,10 +112,10 @@ void run(string configname)
         kernel->setContactAngle(theta);
         kernel->setInterfaceWidth(interfaceWidth);
 
-        SPtr<BCProcessor> bcProc(new BCProcessor());
-        // BCProcessorPtr bcProc(new ThinWallBCProcessor());
+        SPtr<BCSet> bcProc(new BCSet());
+        // BCSetPtr bcProc(new ThinWallBCSet());
 
-        kernel->setBCProcessor(bcProc);
+        kernel->setBCSet(bcProc);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
          //grid->setPeriodicX1(true);
@@ -129,15 +129,15 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-        //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
-        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //SPtr<MPIIORestartSimulationObserver> rcp(new MPIIORestartSimulationObserver(grid, rSch, pathname, comm));
+        SPtr<MPIIOMigrationSimulationObserver> rcp(new MPIIOMigrationSimulationObserver(grid, rSch, metisVisitor, pathname, comm));
+        //SPtr<MPIIOMigrationBESimulationObserver> rcp(new MPIIOMigrationBESimulationObserver(grid, rSch, pathname, comm));
         //rcp->setNu(nuLB);
         //rcp->setNuLG(nuL, nuG);
         //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
-        rcp->setBCProcessor(bcProc);
+        rcp->setBCSet(bcProc);
         //////////////////////////////////////////////////////////////////////////
         // BC Adapter
         //////////////////////////////////////////////////////////////////////////////
@@ -149,22 +149,22 @@ void run(string configname)
         fctF1.DefineConst("R", 8.0);
         fctF1.DefineConst("x0", 0.0);
         fctF1.DefineConst("z0", 0.0);
-        //SPtr<BCAdapter> velBCAdapterF1(
-        //    new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, BCFunction::INFCONST));
+        //SPtr<BC> velBCF1(
+        //    new MultiphaseVelocityBC(false, true, false, fctF1, phiH, 0.0, BCFunction::INFCONST));
 
         mu::Parser fctF2;
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", uLB);
 
         real startTime = 30;
-        SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(true, false, false, fctF1, phiH, 0.0, startTime));
-        SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(true, false, false, fctF2, phiH, startTime, endTime));
+        SPtr<BC> velBCF1(new MultiphaseVelocityBC(true, false, false, fctF1, phiH, 0.0, startTime));
+        SPtr<BC> velBCF2(new MultiphaseVelocityBC(true, false, false, fctF2, phiH, startTime, endTime));
 
-        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+        SPtr<BC> noSlipBC(new NoSlipBC());
+        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
-        SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-        denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+        SPtr<BC> denBC(new DensityBC(rhoLB));
+        denBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
 
         mu::Parser fctPhi_F1;
         fctPhi_F1.SetExpr("phiH");
@@ -178,13 +178,13 @@ void run(string configname)
         fctvel_F2_init.SetExpr("U");
         fctvel_F2_init.DefineConst("U", 0);
 
-        velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+        velBCF1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBCAdapter);
-        bcVisitor.addBC(denBCAdapter); //Ohne das BB?
-        bcVisitor.addBC(velBCAdapterF1);
+        bcVisitor.addBC(noSlipBC);
+        bcVisitor.addBC(denBC); //Ohne das BB?
+        bcVisitor.addBC(velBCF1);
 
         SPtr<D3Q27Interactor> inflowF1Int;
         SPtr<D3Q27Interactor> cylInt;
@@ -265,16 +265,16 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
+            SPtr<WriteBlocksSimulationObserver> ppblocks(new WriteBlocksSimulationObserver(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-            SPtr<Interactor3D> tubes(new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::POINTS));
+            SPtr<Interactor3D> tubes(new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS));
 
             //inflowF1Int =
-            //    SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            //inflowF1Int->addBCAdapter(velBCAdapterF2);
+            //    SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, noSlipBC, Interactor3D::SOLID));
+            //inflowF1Int->addBC(velBCF2);
 
-            SPtr<D3Q27Interactor> outflowInt(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> outflowInt(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
             // Create boundary conditions geometry
             GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_minX3 - dx, g_minX1, g_maxX2 + dx, g_maxX3));
@@ -291,17 +291,17 @@ void run(string configname)
             GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
 
             // Add boundary conditions to grid generator
-            SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
 
 
-            cylInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, velBCAdapterF1, Interactor3D::SOLID));
-            cylInt->addBCAdapter(velBCAdapterF2);
-            //SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            cylInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, velBCF1, Interactor3D::SOLID));
+            cylInt->addBC(velBCF2);
+            //SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBC, Interactor3D::SOLID));
 
 
             InteractorsHelper intHelper(grid, metisVisitor, true);
@@ -322,7 +322,7 @@ void run(string configname)
 
             intHelper.selectBlocks();
 
-            ppblocks->process(0);
+            ppblocks->update(0);
             ppblocks.reset();
 
             unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -400,7 +400,7 @@ void run(string configname)
                 //}
             //    SPtr<Block3D> block = grid->getBlock(0, 0, 0, 0);
             //    SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
-            //    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+            //    SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
             //    for (int ix3 = 0; ix3 <= 13; ix3++) {
             //        for (int ix2 = 0; ix2 <= 13; ix2++) {
@@ -415,9 +415,9 @@ void run(string configname)
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
-                SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(
+                SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(
                     grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-                ppgeo->process(0);
+                ppgeo->update(0);
                 ppgeo.reset();
             }
 
@@ -455,16 +455,16 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-        SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
-            //SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
+        SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
+            //SPtr<WriteMacroscopicQuantitiesSimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-        pp->process(0);
+        pp->update(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-        SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+        SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
         SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-        auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+        auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
         timeDepBC->addInteractor(cylInt);
 
 #ifdef _OPENMP
@@ -472,18 +472,18 @@ void run(string configname)
 #endif
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-        SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-        calculator->addCoProcessor(npr);
-        calculator->addCoProcessor(pp);
-        calculator->addCoProcessor(timeDepBC);
-        calculator->addCoProcessor(rcp);
+        SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+        simulation->addSimulationObserver(npr);
+        simulation->addSimulationObserver(pp);
+        simulation->addSimulationObserver(timeDepBC);
+        simulation->addSimulationObserver(rcp);
 
 
 
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
-        calculator->calculate();
+        simulation->run();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
     } catch (std::exception &e) {
