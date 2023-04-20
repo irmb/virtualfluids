@@ -18,6 +18,10 @@
 
 FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
 
+# timezone
+ARG TZ
+ENV TZ="$TZ"
+
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&   \
     apt-get install -y  \
