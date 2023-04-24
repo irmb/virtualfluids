@@ -162,6 +162,7 @@ inline void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData(in
 
 	(*this->zeroDistributionsToh)(x1To, x2To, x3To) = (*this->zeroDistributionsFromh)(x1From, x2From, x3From);
 
-    (*this->pressureTo)(x1To, x2To, x3To) = (*this->pressureFrom)(x1From, x2From, x3From);
+    if (this->pressureTo) 
+		(*this->pressureTo)(x1To, x2To, x3To) = (*this->pressureFrom)(x1From, x2From, x3From);
 }
 #endif

@@ -29,9 +29,14 @@ SET(VFCPU_USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 SET(VFCPU_USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(VFCPU_USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
-SET(VFCPU_ENABLE_LiggghtsCoupling OFF CACHE BOOL "enable coupling with LIGGGHTS library")
-SET(VFCPU_ENABLE_NonNewtonianFluids OFF CACHE BOOL "enable non-Newtonian fluids module")
-SET(VFCPU_ENABLE_MultiphaseFlow OFF CACHE BOOL "enable multiphase flow module")
+SET(VFCPU_ENABLE_LiggghtsCoupling ON CACHE BOOL "enable coupling with LIGGGHTS library")
+SET(VFCPU_ENABLE_NonNewtonianFluids ON CACHE BOOL "enable non-Newtonian fluids module")
+SET(VFCPU_ENABLE_MultiphaseFlow ON CACHE BOOL "enable multiphase flow module")
+
+if(BUILD_VF_ALL_SAMPLES)
+    set(VFCPU_ENABLE_NonNewtonianFluids ON)
+    set(VFCPU_ENABLE_MultiphaseFlow ON)
+endif() 
 
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)

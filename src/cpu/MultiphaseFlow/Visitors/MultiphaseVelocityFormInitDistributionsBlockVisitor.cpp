@@ -48,6 +48,7 @@ MultiphaseVelocityFormInitDistributionsBlockVisitor::MultiphaseVelocityFormInitD
 	this->setVx2(0.0);
 	this->setVx3(0.0);
 	this->setRho(0.0);
+    this->setPhi(0.0);
 	this->setPressure(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -207,7 +208,8 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					vx3 = muVx3.Eval();
 					phi = muPhi.Eval();
 					pres = muPressure.Eval();
-					(*pressure)(ix1, ix2, ix3) = pres;
+                    if (pressure) 
+						(*pressure)(ix1, ix2, ix3) = pres;
 
 					
 					//rho = phi*1.0 + (1.0-phi)/densityRatio;
@@ -223,7 +225,7 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					real vx1Sq = vx1*vx1;
 					real vx2Sq = vx2*vx2;
 					real vx3Sq = vx3*vx3;
-					for (int dir = STARTF; dir < (ENDF+1); dir++)
+					for (int dir = STARTF; dir <= ENDF; dir++)
 					{
 						real velProd = DX1[dir]*vx1 + DX2[dir]*vx2 + DX3[dir]*vx3;
 						real velSq1 = velProd*velProd;
@@ -236,65 +238,65 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 						geq[dir] = p1 * WEIGTH[dir] / (vf::basics::constant::c1o3) + gamma ;
 					}
 
-
-					f[DIR_P00]    =  geq[DIR_P00]    ;
-					f[DIR_00M]    =  geq[DIR_00M]    ;
-					f[DIR_0P0]    =  geq[DIR_0P0]    ;
-					f[DIR_0M0]    =  geq[DIR_0M0]    ;
-					f[DIR_00P]    =  geq[DIR_00P]    ;
-					f[DIR_00M]    =  geq[DIR_00M]    ;
-					f[DIR_PP0]   =  geq[DIR_PP0]   ;
-					f[DIR_MM0]   =  geq[DIR_MM0]   ;
-					f[DIR_PM0]   =  geq[DIR_PM0]   ;
-					f[DIR_MP0]   =  geq[DIR_MP0]   ;
-					f[DIR_P0P]   =  geq[DIR_P0P]   ;
-					f[DIR_M0M]   =  geq[DIR_M0M]   ;
-					f[DIR_P0M]   =  geq[DIR_P0M]   ;
-					f[DIR_M0P]   =  geq[DIR_M0P]   ;
-					f[DIR_0PP]   =  geq[DIR_0PP]   ;
-					f[DIR_0MM]   =  geq[DIR_0MM]   ;
-					f[DIR_0PM]   =  geq[DIR_0PM]   ;
-					f[DIR_0MP]   =  geq[DIR_0MP]   ;
-					f[DIR_PPP]  =  geq[DIR_PPP]  ;
-					f[DIR_MPP]  =  geq[DIR_MPP]  ;
-					f[DIR_PMP]  =  geq[DIR_PMP]  ;
-					f[DIR_MMP]  =  geq[DIR_MMP]  ;
-					f[DIR_PPM]  =  geq[DIR_PPM]  ;
-					f[DIR_MPM]  =  geq[DIR_MPM]  ;
-					f[DIR_PMM]  =  geq[DIR_PMM]  ;
-					f[DIR_MMM]  =  geq[DIR_MMM]  ;
-					f[DIR_000] =  geq[DIR_000] ;
+					f[DIR_000] = geq[DIR_000];
+					f[DIR_P00] = geq[DIR_P00];
+					f[DIR_M00] = geq[DIR_M00];
+					f[DIR_0P0] = geq[DIR_0P0];
+					f[DIR_0M0] = geq[DIR_0M0];
+					f[DIR_00P] = geq[DIR_00P];
+					f[DIR_00M] = geq[DIR_00M];
+					f[DIR_PP0] = geq[DIR_PP0];
+					f[DIR_MM0] = geq[DIR_MM0];
+					f[DIR_PM0] = geq[DIR_PM0];
+					f[DIR_MP0] = geq[DIR_MP0];
+					f[DIR_P0P] = geq[DIR_P0P];
+					f[DIR_M0M] = geq[DIR_M0M];
+					f[DIR_P0M] = geq[DIR_P0M];
+					f[DIR_M0P] = geq[DIR_M0P];
+					f[DIR_0PP] = geq[DIR_0PP];
+					f[DIR_0MM] = geq[DIR_0MM];
+					f[DIR_0PM] = geq[DIR_0PM];
+					f[DIR_0MP] = geq[DIR_0MP];
+					f[DIR_PPP] = geq[DIR_PPP];
+					f[DIR_MPP] = geq[DIR_MPP];
+					f[DIR_PMP] = geq[DIR_PMP];
+					f[DIR_MMP] = geq[DIR_MMP];
+					f[DIR_PPM] = geq[DIR_PPM];
+					f[DIR_MPM] = geq[DIR_MPM];
+					f[DIR_PMM] = geq[DIR_PMM];
+					f[DIR_MMM] = geq[DIR_MMM];
+					
 
 					distributionsF->setDistribution(f, ix1, ix2, ix3);
 					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
 
-					f[DIR_000] = phi * feq[DIR_000];        // / rho;
-					f[DIR_P00] = phi * feq[DIR_P00]    ;// / rho;
-					f[DIR_M00] = phi * feq[DIR_M00]    ;// / rho;
-					f[DIR_0P0] = phi * feq[DIR_0P0]    ;// / rho;
-					f[DIR_0M0] = phi * feq[DIR_0M0]    ;// / rho;
-					f[DIR_00P] = phi * feq[DIR_00P]    ;// / rho;
-					f[DIR_00M] = phi * feq[DIR_00M]    ;// / rho;
-					f[DIR_PP0] = phi * feq[DIR_PP0]   ;// / rho;
-					f[DIR_MM0] = phi * feq[DIR_MM0]   ;// / rho;
-					f[DIR_PM0] = phi * feq[DIR_PM0]   ;// / rho;
-					f[DIR_MP0] = phi * feq[DIR_MP0]   ;// / rho;
-					f[DIR_P0P] = phi * feq[DIR_P0P]   ;// / rho;
-					f[DIR_M0M] = phi * feq[DIR_M0M]   ;// / rho;
-					f[DIR_P0M] = phi * feq[DIR_P0M]   ;// / rho;
-					f[DIR_M0P] = phi * feq[DIR_M0P]   ;// / rho;
-					f[DIR_0PP] = phi * feq[DIR_0PP]   ;// / rho;
-					f[DIR_0MM] = phi * feq[DIR_0MM]   ;// / rho;
-					f[DIR_0PM] = phi * feq[DIR_0PM]   ;// / rho;
-					f[DIR_0MP] = phi * feq[DIR_0MP]   ;// / rho;
-					f[DIR_PPP] = phi * feq[DIR_PPP]  ;// / rho;
-					f[DIR_MPP] = phi * feq[DIR_MPP]  ;// / rho;
-					f[DIR_PMP] = phi * feq[DIR_PMP]  ;// / rho;
-					f[DIR_MMP] = phi * feq[DIR_MMP]  ;// / rho;
-					f[DIR_PPM] = phi * feq[DIR_PPM]  ;// / rho;
-					f[DIR_MPM] = phi * feq[DIR_MPM]  ;// / rho;
-					f[DIR_PMM] = phi * feq[DIR_PMM]  ;// / rho;
-					f[DIR_MMM] =  phi * feq[DIR_MMM]  ;// / rho;
+					f[DIR_000] = phi * feq[DIR_000];// / rho;
+					f[DIR_P00] = phi * feq[DIR_P00];// / rho;
+					f[DIR_M00] = phi * feq[DIR_M00];// / rho;
+					f[DIR_0P0] = phi * feq[DIR_0P0];// / rho;
+					f[DIR_0M0] = phi * feq[DIR_0M0];// / rho;
+					f[DIR_00P] = phi * feq[DIR_00P];// / rho;
+					f[DIR_00M] = phi * feq[DIR_00M];// / rho;
+					f[DIR_PP0] = phi * feq[DIR_PP0];// / rho;
+					f[DIR_MM0] = phi * feq[DIR_MM0];// / rho;
+					f[DIR_PM0] = phi * feq[DIR_PM0];// / rho;
+					f[DIR_MP0] = phi * feq[DIR_MP0];// / rho;
+					f[DIR_P0P] = phi * feq[DIR_P0P];// / rho;
+					f[DIR_M0M] = phi * feq[DIR_M0M];// / rho;
+					f[DIR_P0M] = phi * feq[DIR_P0M];// / rho;
+					f[DIR_M0P] = phi * feq[DIR_M0P];// / rho;
+					f[DIR_0PP] = phi * feq[DIR_0PP];// / rho;
+					f[DIR_0MM] = phi * feq[DIR_0MM];// / rho;
+					f[DIR_0PM] = phi * feq[DIR_0PM];// / rho;
+					f[DIR_0MP] = phi * feq[DIR_0MP];// / rho;
+					f[DIR_PPP] = phi * feq[DIR_PPP];// / rho;
+					f[DIR_MPP] = phi * feq[DIR_MPP];// / rho;
+					f[DIR_PMP] = phi * feq[DIR_PMP];// / rho;
+					f[DIR_MMP] = phi * feq[DIR_MMP];// / rho;
+					f[DIR_PPM] = phi * feq[DIR_PPM];// / rho;
+					f[DIR_MPM] = phi * feq[DIR_MPM];// / rho;
+					f[DIR_PMM] = phi * feq[DIR_PMM];// / rho;
+					f[DIR_MMM] = phi * feq[DIR_MMM];// / rho;
 					
 
 					distributionsH->setDistribution(f, ix1, ix2, ix3);

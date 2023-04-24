@@ -129,6 +129,8 @@ public:
     real getPhaseFieldRelaxation() const;
     void setMobility(real mob);
     void setInterfaceWidth(real w);
+    void setSigma(real sigma);
+    real getSigma() const;
 
 protected:
     SPtr<DataSet3D> dataSet;
@@ -159,6 +161,7 @@ protected:
     real densityRatio;
     real beta;
     real kappa;
+    real sigma;
     real contactAngle;
     real phiL;
     real phiH;
