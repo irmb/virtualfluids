@@ -162,11 +162,12 @@ public:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
     [[nodiscard]] virtual boundaryCondition getVelocityBoundaryConditionPost(bool isGeometryBC = false) const;
-    [[nodiscard]] virtual boundaryCondition getNoSlipBoundaryConditionPost(bool isGeometryBC = false) const;
-    [[nodiscard]] virtual boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
-    [[nodiscard]] virtual boundaryCondition getPressureBoundaryConditionPre() const;
-    [[nodiscard]] virtual boundaryCondition getGeometryBoundaryConditionPost() const;
-    [[nodiscard]] virtual boundaryConditionWithParameter getStressBoundaryConditionPost() const;
+    [[nodiscard]] boundaryCondition getNoSlipBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] boundaryCondition getPressureBoundaryConditionPre() const;
+    [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
+
+    [[nodiscard]] boundaryConditionWithParameter getStressBoundaryConditionPost() const;
     [[nodiscard]] precursorBoundaryConditionFunc getPrecursorBoundaryConditionPost() const;
 
 private:

@@ -113,10 +113,10 @@ private:
 
     SPtr<Parameter> para;
 
-    boundaryCondition pressureBoundaryConditionPre = nullptr;
     boundaryCondition velocityBoundaryConditionPost = nullptr;
     boundaryCondition noSlipBoundaryConditionPost = nullptr;
     boundaryCondition slipBoundaryConditionPost = nullptr;
+    boundaryCondition pressureBoundaryConditionPre = nullptr;
     boundaryCondition geometryBoundaryConditionPost = nullptr;
     boundaryConditionWithParameter stressBoundaryConditionPost = nullptr;
     precursorBoundaryCondition precursorBoundaryConditionPost = nullptr;
