@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <sys/types.h>
 #include <vector>
 
 #include "Utilities/testUtilitiesGPU.h"
@@ -613,7 +612,7 @@ private:
     };
 };
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noRecvIndices)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreUnchanged)
 {
     ri.sendIndicesForCommAfterFtoCPositions = {};
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
@@ -624,7 +623,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noRecvIndices)
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someRecvIndices)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
 {
     ri.sendIndicesForCommAfterFtoCPositions = { 0, 2, 4, 6 };
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
@@ -635,7 +634,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someRecvIndices)
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allRecvIndices)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
 {
     ri.sendIndicesForCommAfterFtoCPositions = { 0, 1, 2, 3, 4, 5, 6 };
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
@@ -646,7 +645,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allRecvIndices)
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noRecvIndices_callWithX)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreUnchanged)
 {
     setUpParaInX();
 
@@ -662,7 +661,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noRecvIndices_callW
                                 recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someRecvIndices_callWithX)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreReorderedCorrectly)
 {
     setUpParaInX();
 
@@ -678,7 +677,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someRecvIndices_cal
                                 recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allRecvIndices_callWithX)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreReorderedCorrectly)
 {
     setUpParaInX();
 
