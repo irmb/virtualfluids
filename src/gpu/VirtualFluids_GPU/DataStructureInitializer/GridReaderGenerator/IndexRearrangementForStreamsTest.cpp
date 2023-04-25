@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <vector>
 
-#include "Logger/Logger.h"
 #include "Utilities/testUtilitiesGPU.h"
 
 #include "Communication/Communicator.h"
@@ -602,9 +601,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::WARNING);
-
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
