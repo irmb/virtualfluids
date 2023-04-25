@@ -7,14 +7,14 @@
 struct ICell3D {
     ICell3D(int size);
 
-    std::vector<LBMReal> TSW;
-    std::vector<LBMReal> TNW;
-    std::vector<LBMReal> TNE;
-    std::vector<LBMReal> TSE;
-    std::vector<LBMReal> BSW;
-    std::vector<LBMReal> BNW;
-    std::vector<LBMReal> BNE;
-    std::vector<LBMReal> BSE;
+    std::vector<real> TSW;
+    std::vector<real> TNW;
+    std::vector<real> TNE;
+    std::vector<real> TSE;
+    std::vector<real> BSW;
+    std::vector<real> BNW;
+    std::vector<real> BNE;
+    std::vector<real> BSE;
 };
 
 inline ICell3D::ICell3D(int size)

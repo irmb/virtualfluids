@@ -6,7 +6,7 @@
 class D3Q27EsoTwist3DSplittedVectorEx : public D3Q27EsoTwist3DSplittedVector
 {
 public:
-    D3Q27EsoTwist3DSplittedVectorEx(int nx1, int nx2, int nx3, LBMReal value);
+    D3Q27EsoTwist3DSplittedVectorEx(int nx1, int nx2, int nx3, real value);
 
 protected:
 private:

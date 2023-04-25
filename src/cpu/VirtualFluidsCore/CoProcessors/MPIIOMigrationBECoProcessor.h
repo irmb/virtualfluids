@@ -13,6 +13,7 @@ class UbScheduler;
 namespace vf::mpi {class Communicator;}
 class BCProcessor;
 class LBMKernel;
+class Grid3DVisitor;
 
 //! \class MPIWriteBlocksBECoProcessor
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating
@@ -26,15 +27,16 @@ class MPIIOMigrationBECoProcessor : public MPIIOCoProcessor
         ShearStressVal      = 5,
         RelaxationFactor    = 6,
         PhaseField1         = 7,
-        PhaseField2 = 8
+        PhaseField2         = 8,
+        PressureField = 9
     };
 
 public:
-    MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
+    MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path,
                                 std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIOMigrationBECoProcessor() override;
     //! Each timestep writes the grid into the files
-    void process(double step) override;
+    void process(real step) override;
     //! Reads the grid from the files before grid reconstruction
     void restart(int step);
     //! Writes the blocks of the grid into the file cpBlocks.bin
@@ -71,16 +73,12 @@ public:
     void setBCProcessor(SPtr<BCProcessor> bcProcessor);
     //! The function truncates the data files
     void clearAllFiles(int step);
-    void setNu(double nu);
-    void setNuLG(double cfL, double cfG);
-    void setDensityRatio(double dr);
+    void setNu(real nu);
+    void setNuLG(real cfL, real cfG);
+    void setDensityRatio(real dr);
 
-    void blocksExchange(int tagN, int ind1, int ind2, int doubleCountInBlock, std::vector<double> &pV,
-                        std::vector<double> *rawDataReceive);
-
-protected:
-    // std::string path;
-    // std::shared_ptr<vf::mpi::Communicator> comm;
+    void blocksExchange(int tagN, int ind1, int ind2, int doubleCountInBlock, std::vector<real> &pV,
+                        std::vector<real> *rawDataReceive);
 
 private:
     // MPI_Datatype gridParamType, block3dType;
@@ -93,10 +91,11 @@ private:
     MPIIODataStructures::boundCondParam boundCondParamStr;
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCProcessor> bcProcessor;
-    double nue;
-    double nuL;
-    double nuG;
-    double densityRatio;
+    SPtr<Grid3DVisitor> metisVisitor;
+    real nue;
+    real nuL;
+    real nuG;
+    real densityRatio;
 
 };
 

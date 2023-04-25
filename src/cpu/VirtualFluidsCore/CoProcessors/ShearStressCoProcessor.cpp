@@ -38,7 +38,7 @@ ShearStressCoProcessor::ShearStressCoProcessor(SPtr<Grid3D> grid, const std::str
 //////////////////////////////////////////////////////////////////////////
 ShearStressCoProcessor::~ShearStressCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::process(double step)
+void ShearStressCoProcessor::process(real step)
 {
     if (step == 0) {
         initDistance();
@@ -49,7 +49,7 @@ void ShearStressCoProcessor::process(double step)
     UBLOG(logDEBUG3, "D3Q27ShearStressCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::collectData(double step)
+void ShearStressCoProcessor::collectData(real step)
 {
     using namespace std;
 
@@ -122,12 +122,13 @@ void ShearStressCoProcessor::clearData()
     data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::calculateShearStress(double timeStep)
+void ShearStressCoProcessor::calculateShearStress(real timeStep)
 {
+    using namespace vf::lbm::dir;
     using namespace D3Q27System;
 
-    LBMReal f[27];
-    LBMReal vx, vy, vz, sxx, syy, szz, sxy, syz, sxz;
+    real f[27];
+    real vx, vy, vz, sxx, syy, szz, sxy, syz, sxz;
 
     for (SPtr<D3Q27Interactor> interactor : interactors) {
         typedef std::map<SPtr<Block3D>, std::set<std::vector<int>>> TransNodeIndicesMap;
@@ -141,7 +142,7 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
             int ghostLayer     = kernel->getGhostLayerWidth();
-            LBMReal collFactor = kernel->getCollisionFactor();
+            real collFactor = kernel->getCollisionFactor();
 
             int minX1 = ghostLayer;
             int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
@@ -160,8 +161,8 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
                     continue;
 
                 if (bcArray->isFluid(ix1, ix2, ix3)) {
-                    double q        = (*ssv)(normalq, ix1, ix2, ix3);
-                    double numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
+                    real q        = (*ssv)(normalq, ix1, ix2, ix3);
+                    real numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
                     if (q == 0 || numPoint != 3)
                         continue;
                     // if (q==0)continue;
@@ -172,34 +173,34 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
                     //////////////////////////////////////////////////////////////////////////
                     // compute velocity
                     //////////////////////////////////////////////////////////////////////////
-                    vx = ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[BSE] - f[TNW]) + (f[BNE] - f[TSW]))) +
-                          (((f[BE] - f[TW]) + (f[TE] - f[BW])) + ((f[SE] - f[NW]) + (f[NE] - f[SW]))) + (f[E] - f[W]));
+                    vx = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
+                          (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00]));
 
-                    vy = ((((f[TNE] - f[BSW]) + (f[BNW] - f[TSE])) + ((f[TNW] - f[BSE]) + (f[BNE] - f[TSW]))) +
-                          (((f[BN] - f[TS]) + (f[TN] - f[BS])) + ((f[NW] - f[SE]) + (f[NE] - f[SW]))) + (f[N] - f[S]));
+                    vy = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
+                          (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_0P0] - f[DIR_0M0]));
 
-                    vz = ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[TNW] - f[BSE]) + (f[TSW] - f[BNE]))) +
-                          (((f[TS] - f[BN]) + (f[TN] - f[BS])) + ((f[TW] - f[BE]) + (f[TE] - f[BW]))) + (f[T] - f[B]));
+                    vz = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
+                          (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[DIR_00P] - f[DIR_00M]));
 
                     sxy = 3.0 * collFactor / (collFactor - 1.0) *
-                          (((f[TNE] + f[BSW]) - (f[TSE] + f[BNW])) + (-(f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
-                           (((f[NE] + f[SW]) - (f[SE] + f[NW]))) - vx * vy);
+                          (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + (-(f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
+                           (((f[DIR_PP0] + f[DIR_MM0]) - (f[DIR_PM0] + f[DIR_MP0]))) - vx * vy);
 
                     sxz = 3.0 * collFactor / (collFactor - 1.0) *
-                          (((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + (-(f[BSE] + f[TNW]) - (f[TSW] + f[BNE])) +
-                           ((f[TE] + f[BW]) - (f[BE] + f[TW])) - vx * vz);
+                          (((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + (-(f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
+                           ((f[DIR_P0P] + f[DIR_M0M]) - (f[DIR_P0M] + f[DIR_M0P])) - vx * vz);
 
                     syz = 3.0 * collFactor / (collFactor - 1.0) *
-                          (((f[TNE] + f[BSW]) - (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) - (f[TSW] + f[BNE])) +
-                           (-(f[BN] + f[TS]) + (f[TN] + f[BS])) - vy * vz);
+                          (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
+                           (-(f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) - vy * vz);
 
-                    LBMReal dxxMyy = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
-                                     (((f[TE] + f[BW]) + (f[BE] + f[TW])) - ((f[BN] + f[TS]) + (f[TN] + f[BS])) +
-                                      ((f[E] + f[W]) - (f[N] + f[S])) - vx * vx + vy * vy);
+                    real dxxMyy = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
+                                     (((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) +
+                                      ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_0P0] + f[DIR_0M0])) - vx * vx + vy * vy);
 
-                    LBMReal dxxMzz = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
-                                     ((((f[NE] + f[SW]) + (f[SE] + f[NW])) - ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-                                      ((f[E] + f[W]) - (f[T] + f[B])) - vx * vx + vz * vz);
+                    real dxxMzz = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
+                                     ((((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
+                                      ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_00P] + f[DIR_00M])) - vx * vx + vz * vz);
 
                     // LBMReal dyyMzz =3.0/2.0 *collFactor/(collFactor-1.0)*((((f[NE] + f[SW]) + (f[SE] +
                     // f[NW]))-((f[TE] + f[BW])+(f[BE]+ f[TW])))
@@ -249,7 +250,7 @@ void ShearStressCoProcessor::addData()
             UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
             //         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
             UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-            double dx                 = grid->getDeltaX(block);
+            real dx                 = grid->getDeltaX(block);
 
             SPtr<ILBMKernel> kernel                 = block->getKernel();
             SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -257,7 +258,7 @@ void ShearStressCoProcessor::addData()
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
             int ghostLayer     = kernel->getGhostLayerWidth();
-            LBMReal collFactor = kernel->getCollisionFactor();
+            real collFactor = kernel->getCollisionFactor();
 
             int minX1 = ghostLayer;
             int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
@@ -281,8 +282,8 @@ void ShearStressCoProcessor::addData()
                     continue;
 
                 if (bcArray->isFluid(ix1, ix2, ix3)) {
-                    double q        = (*ssv)(normalq, ix1, ix2, ix3);
-                    double numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
+                    real q        = (*ssv)(normalq, ix1, ix2, ix3);
+                    real numPoint = (*ssv)(numberOfPoint, ix1, ix2, ix3);
                     if (q == 0 || numPoint != 3)
                         continue;
                     // if (q==0)continue;
@@ -293,7 +294,7 @@ void ShearStressCoProcessor::addData()
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
                     //////get normal and distance//////
-                    double A, B, C;
+                    real A, B, C;
                     A = (*ssv)(normalX1, ix1, ix2, ix3);
                     B = (*ssv)(normalX2, ix1, ix2, ix3);
                     C = (*ssv)(normalX3, ix1, ix2, ix3);
@@ -306,35 +307,35 @@ void ShearStressCoProcessor::addData()
                     // vtySonja = (*av)(ix1,ix2,ix3,AvVy)-normals[1]*temp;
                     // vtzSonja = (*av)(ix1,ix2,ix3,AvVz)-normals[2]*temp;
 
-                    double vtx = (B * B * (*ssv)(AvVx, ix1, ix2, ix3) + C * C * (*ssv)(AvVx, ix1, ix2, ix3) -
+                    real vtx = (B * B * (*ssv)(AvVx, ix1, ix2, ix3) + C * C * (*ssv)(AvVx, ix1, ix2, ix3) -
                                   A * B * (*ssv)(AvVy, ix1, ix2, ix3) - A * C * (*ssv)(AvVy, ix1, ix2, ix3)) /
                                  (A * A + B * B + C * C);
-                    double vty = (-(A * B * (*ssv)(AvVx, ix1, ix2, ix3)) + A * A * (*ssv)(AvVy, ix1, ix2, ix3) +
+                    real vty = (-(A * B * (*ssv)(AvVx, ix1, ix2, ix3)) + A * A * (*ssv)(AvVy, ix1, ix2, ix3) +
                                   C * C * (*ssv)(AvVy, ix1, ix2, ix3) - B * C * (*ssv)(AvVz, ix1, ix2, ix3)) /
                                  (A * A + B * B + C * C);
-                    double vtz = (-(A * C * (*ssv)(AvVx, ix1, ix2, ix3)) - B * C * (*ssv)(AvVy, ix1, ix2, ix3) +
+                    real vtz = (-(A * C * (*ssv)(AvVx, ix1, ix2, ix3)) - B * C * (*ssv)(AvVy, ix1, ix2, ix3) +
                                   A * A * (*ssv)(AvVz, ix1, ix2, ix3) + B * B * (*ssv)(AvVz, ix1, ix2, ix3)) /
                                  (A * A + B * B + C * C);
 
-                    double normVt = sqrt(vtx * vtx + vty * vty + vtz * vtz) + 1e-100;
-                    double nvtx   = vtx / normVt;
-                    double nvty   = vty / normVt;
-                    double nvtz   = vtz / normVt;
+                    real normVt = sqrt(vtx * vtx + vty * vty + vtz * vtz) + 1e-100;
+                    real nvtx   = vtx / normVt;
+                    real nvty   = vty / normVt;
+                    real nvtz   = vtz / normVt;
 
-                    double sx   = 0.5 * ((*ssv)(AvSxx, ix1, ix2, ix3) * nvtx + (*ssv)(AvSxy, ix1, ix2, ix3) * nvty +
+                    real sx   = 0.5 * ((*ssv)(AvSxx, ix1, ix2, ix3) * nvtx + (*ssv)(AvSxy, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSxz, ix1, ix2, ix3) * nvtz);
-                    double sy   = 0.5 * ((*ssv)(AvSxy, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyy, ix1, ix2, ix3) * nvty +
+                    real sy   = 0.5 * ((*ssv)(AvSxy, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyy, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSyz, ix1, ix2, ix3) * nvtz);
-                    double sz   = 0.5 * ((*ssv)(AvSxz, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyz, ix1, ix2, ix3) * nvty +
+                    real sz   = 0.5 * ((*ssv)(AvSxz, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyz, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSzz, ix1, ix2, ix3) * nvtz);
-                    double sabs = sqrt(sx * sx + sy * sy + sz * sz);
+                    real sabs = sqrt(sx * sx + sy * sy + sz * sz);
 
-                    double viscosity = (1.0 / 3.0) * (1.0 / collFactor - 0.5);
-                    double rho       = 1.0;
-                    double utau      = sqrt(viscosity / rho * sabs);
+                    real viscosity = (1.0 / 3.0) * (1.0 / collFactor - 0.5);
+                    real rho       = 1.0;
+                    real utau      = sqrt(viscosity / rho * sabs);
 
                     // double q=(*av)(ix1,ix2,ix3,normalq) ;
-                    double yPlus = (utau * q) / viscosity;
+                    real yPlus = (utau * q) / viscosity;
 
                     data[index++].push_back(yPlus);
                     data[index++].push_back(utau);
@@ -344,7 +345,7 @@ void ShearStressCoProcessor::addData()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::reset(double step)
+void ShearStressCoProcessor::reset(real step)
 {
     if (Resetscheduler->isDue(step))
         resetData(step);
@@ -352,7 +353,7 @@ void ShearStressCoProcessor::reset(double step)
     UBLOG(logDEBUG3, "resetCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::resetData(double /*step*/)
+void ShearStressCoProcessor::resetData(real /*step*/)
 {
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (const auto &block : blockVector[level]) {
@@ -404,14 +405,16 @@ void ShearStressCoProcessor::resetData(double /*step*/)
 //////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::addInteractor(SPtr<D3Q27Interactor> interactor) { interactors.push_back(interactor); }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block, double &A,
-                                       double &B, double &C, double &D, double &ii)
+void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block, real &A,
+                                       real &B, real &C, real &D, real &ii)
 {
-    double x1plane = 0.0, y1plane = 0.0, z1plane = 0.0;
-    double x2plane = 0.0, y2plane = 0.0, z2plane = 0.0;
-    double x3plane = 0.0, y3plane = 0.0, z3plane = 0.0;
+    using namespace vf::lbm::dir;
+
+    real x1plane = 0.0, y1plane = 0.0, z1plane = 0.0;
+    real x2plane = 0.0, y2plane = 0.0, z2plane = 0.0;
+    real x3plane = 0.0, y3plane = 0.0, z3plane = 0.0;
     SPtr<BoundaryConditions> bcPtr;
-    double dx                               = grid->getDeltaX(block);
+    real dx                               = grid->getDeltaX(block);
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
@@ -562,32 +565,32 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 "ix2=" + UbSystem::toString(ix2) + "ix3=" + UbSystem::toString(ix3) +
                                                 "GlobalID=" + UbSystem::toString(block->getGlobalID()) +
                                                 "dx=" + UbSystem::toString(dx) +
-                                                "T=" + UbSystem::toString(bcPtr->getQ(D3Q27System::T)) +
-                                                "B=" + UbSystem::toString(bcPtr->getQ(D3Q27System::B)) +
-                                                "E=" + UbSystem::toString(bcPtr->getQ(D3Q27System::E)) +
-                                                "W=" + UbSystem::toString(bcPtr->getQ(D3Q27System::W)) +
-                                                "N=" + UbSystem::toString(bcPtr->getQ(D3Q27System::N)) +
-                                                "S=" + UbSystem::toString(bcPtr->getQ(D3Q27System::S)) +
-                                                "NE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NE)) +
-                                                "SW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SW)) +
-                                                "SE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SE)) +
-                                                "NW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NW)) +
-                                                "TE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TE)) +
-                                                "BW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BW)) +
-                                                "BE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BE)) +
-                                                "TW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TW)) +
-                                                "TN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TN)) +
-                                                "BS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BS)) +
-                                                "BN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BN)) +
-                                                "TS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TS)) +
-                                                "TNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNE)) +
-                                                "TNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNW)) +
-                                                "TSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSE)) +
-                                                "TSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSW)) +
-                                                "BNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNE)) +
-                                                "BNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNW)) +
-                                                "BSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSE)) +
-                                                "BSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSW) * dx)));
+                                                "T=" + UbSystem::toString(bcPtr->getQ(DIR_00P)) +
+                                                "B=" + UbSystem::toString(bcPtr->getQ(DIR_00M)) +
+                                                "E=" + UbSystem::toString(bcPtr->getQ(DIR_P00)) +
+                                                "W=" + UbSystem::toString(bcPtr->getQ(DIR_M00)) +
+                                                "N=" + UbSystem::toString(bcPtr->getQ(DIR_0P0)) +
+                                                "S=" + UbSystem::toString(bcPtr->getQ(DIR_0M0)) +
+                                                "NE=" + UbSystem::toString(bcPtr->getQ(DIR_PP0)) +
+                                                "SW=" + UbSystem::toString(bcPtr->getQ(DIR_MM0)) +
+                                                "SE=" + UbSystem::toString(bcPtr->getQ(DIR_PM0)) +
+                                                "NW=" + UbSystem::toString(bcPtr->getQ(DIR_MP0)) +
+                                                "TE=" + UbSystem::toString(bcPtr->getQ(DIR_P0P)) +
+                                                "BW=" + UbSystem::toString(bcPtr->getQ(DIR_M0M)) +
+                                                "BE=" + UbSystem::toString(bcPtr->getQ(DIR_P0M)) +
+                                                "TW=" + UbSystem::toString(bcPtr->getQ(DIR_M0P)) +
+                                                "TN=" + UbSystem::toString(bcPtr->getQ(DIR_0PP)) +
+                                                "BS=" + UbSystem::toString(bcPtr->getQ(DIR_0MM)) +
+                                                "BN=" + UbSystem::toString(bcPtr->getQ(DIR_0PM)) +
+                                                "TS=" + UbSystem::toString(bcPtr->getQ(DIR_0MP)) +
+                                                "TNE=" + UbSystem::toString(bcPtr->getQ(DIR_PPP)) +
+                                                "TNW=" + UbSystem::toString(bcPtr->getQ(DIR_MPP)) +
+                                                "TSE=" + UbSystem::toString(bcPtr->getQ(DIR_PMP)) +
+                                                "TSW=" + UbSystem::toString(bcPtr->getQ(DIR_MMP)) +
+                                                "BNE=" + UbSystem::toString(bcPtr->getQ(DIR_PPM)) +
+                                                "BNW=" + UbSystem::toString(bcPtr->getQ(DIR_MPM)) +
+                                                "BSE=" + UbSystem::toString(bcPtr->getQ(DIR_PMM)) +
+                                                "BSW=" + UbSystem::toString(bcPtr->getQ(DIR_MMM) * dx)));
         }
     }
 
@@ -597,18 +600,18 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                 for (int k = z; k <= z + 1; k++) {
                     Vector3D pointplane1 = grid->getNodeCoordinates(block, i, j, k);
 
-                    double iph = pointplane1[0];
-                    double jph = pointplane1[1];
-                    double kph = pointplane1[2];
+                    real iph = pointplane1[0];
+                    real jph = pointplane1[1];
+                    real kph = pointplane1[2];
 
                     if (!bcArray->isSolid(i, j, k)) {
                         SPtr<BoundaryConditions> bcPtrIn = bcArray->getBC(i, j, k);
                         if (bcPtrIn) {
                             for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
                                 if (ii <= 2) {
-                                    LBMReal q = bcPtrIn->getQ(fdir);
+                                    real q = bcPtrIn->getQ(fdir);
                                     if (q != 999.00000) {
-                                        if (fdir == D3Q27System::E) {
+                                        if (fdir == DIR_P00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (i + q <= x + 1) {
                                                 if (ii == 0) {
@@ -634,7 +637,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::W) {
+                                        if (fdir == DIR_M00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (i - q >= x) {
                                                 if (ii == 0) {
@@ -660,7 +663,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::N) {
+                                        if (fdir == DIR_0P0) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (j + q <= y + 1) {
                                                 if (ii == 0) {
@@ -686,7 +689,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::S) {
+                                        if (fdir == DIR_0M0) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (j - q >= y) {
                                                 if (ii == 0) {
@@ -713,7 +716,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                             }
                                         }
 
-                                        if (fdir == D3Q27System::T) {
+                                        if (fdir == DIR_00P) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (k + q <= z + 1) {
                                                 if (ii == 0) {
@@ -739,7 +742,7 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                                                 }
                                             }
                                         }
-                                        if (fdir == D3Q27System::B) {
+                                        if (fdir == DIR_00M) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (k - q >= z) {
                                                 if (ii == 0) {
@@ -788,32 +791,32 @@ void ShearStressCoProcessor::findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> g
                     UB_EXARGS, "ii is=" + UbSystem::toString(ii) + "  ix1=" + UbSystem::toString(ix1) +
                                    " ix2=" + UbSystem::toString(ix2) + " ix3=" + UbSystem::toString(ix3) +
                                    " Block3D::GlobalID=" + UbSystem::toString(block->getGlobalID()) + " dx=" +
-                                   UbSystem::toString(dx) + " T=" + UbSystem::toString(bcPtr->getQ(D3Q27System::T)) +
-                                   " B=" + UbSystem::toString(bcPtr->getQ(D3Q27System::B)) +
-                                   " E=" + UbSystem::toString(bcPtr->getQ(D3Q27System::E)) +
-                                   " W=" + UbSystem::toString(bcPtr->getQ(D3Q27System::W)) +
-                                   " N=" + UbSystem::toString(bcPtr->getQ(D3Q27System::N)) +
-                                   " S=" + UbSystem::toString(bcPtr->getQ(D3Q27System::S)) +
-                                   " NE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NE)) +
-                                   " SW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SW)) +
-                                   " SE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::SE)) +
-                                   " NW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::NW)) +
-                                   " TE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TE)) +
-                                   " BW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BW)) +
-                                   " BE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BE)) +
-                                   " TW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TW)) +
-                                   " TN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TN)) +
-                                   " BS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BS)) +
-                                   " BN=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BN)) +
-                                   " TS=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TS)) +
-                                   " TNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNE)) +
-                                   " TNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TNW)) +
-                                   " TSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSE)) +
-                                   " TSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::TSW)) +
-                                   " BNE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNE)) +
-                                   " BNW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BNW)) +
-                                   " BSE=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSE)) +
-                                   " BSW=" + UbSystem::toString(bcPtr->getQ(D3Q27System::BSW))));
+                                   UbSystem::toString(dx) + " T=" + UbSystem::toString(bcPtr->getQ(DIR_00P)) +
+                                   " B=" + UbSystem::toString(bcPtr->getQ(DIR_00M)) +
+                                   " E=" + UbSystem::toString(bcPtr->getQ(DIR_P00)) +
+                                   " W=" + UbSystem::toString(bcPtr->getQ(DIR_M00)) +
+                                   " N=" + UbSystem::toString(bcPtr->getQ(DIR_0P0)) +
+                                   " S=" + UbSystem::toString(bcPtr->getQ(DIR_0M0)) +
+                                   " NE=" + UbSystem::toString(bcPtr->getQ(DIR_PP0)) +
+                                   " SW=" + UbSystem::toString(bcPtr->getQ(DIR_MM0)) +
+                                   " SE=" + UbSystem::toString(bcPtr->getQ(DIR_PM0)) +
+                                   " NW=" + UbSystem::toString(bcPtr->getQ(DIR_MP0)) +
+                                   " TE=" + UbSystem::toString(bcPtr->getQ(DIR_P0P)) +
+                                   " BW=" + UbSystem::toString(bcPtr->getQ(DIR_M0M)) +
+                                   " BE=" + UbSystem::toString(bcPtr->getQ(DIR_P0M)) +
+                                   " TW=" + UbSystem::toString(bcPtr->getQ(DIR_M0P)) +
+                                   " TN=" + UbSystem::toString(bcPtr->getQ(DIR_0PP)) +
+                                   " BS=" + UbSystem::toString(bcPtr->getQ(DIR_0MM)) +
+                                   " BN=" + UbSystem::toString(bcPtr->getQ(DIR_0PM)) +
+                                   " TS=" + UbSystem::toString(bcPtr->getQ(DIR_0MP)) +
+                                   " TNE=" + UbSystem::toString(bcPtr->getQ(DIR_PPP)) +
+                                   " TNW=" + UbSystem::toString(bcPtr->getQ(DIR_MPP)) +
+                                   " TSE=" + UbSystem::toString(bcPtr->getQ(DIR_PMP)) +
+                                   " TSW=" + UbSystem::toString(bcPtr->getQ(DIR_MMP)) +
+                                   " BNE=" + UbSystem::toString(bcPtr->getQ(DIR_PPM)) +
+                                   " BNW=" + UbSystem::toString(bcPtr->getQ(DIR_MPM)) +
+                                   " BSE=" + UbSystem::toString(bcPtr->getQ(DIR_PMM)) +
+                                   " BSW=" + UbSystem::toString(bcPtr->getQ(DIR_MMM))));
             }
         }
     }
@@ -835,6 +838,8 @@ bool ShearStressCoProcessor::checkUndefindedNodes(SPtr<BCArray3D> bcArray, int i
 //////////////////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::initDistance()
 {
+    using namespace vf::lbm::dir;
+
     for (const auto &interactor : interactors) {
         //      typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
         for (const auto &t : interactor->getBcNodeIndicesMap()) {
@@ -852,7 +857,7 @@ void ShearStressCoProcessor::initDistance()
             SPtr<ShearStressValuesArray3D> ssv      = kernel->getDataSet()->getShearStressValues();
 
             int ghostLayer = kernel->getGhostLayerWidth();
-            //         LBMReal collFactor = kernel->getCollisionFactor();
+            //         real collFactor = kernel->getCollisionFactor();
 
             int minX1 = ghostLayer;
             int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
@@ -876,22 +881,22 @@ void ShearStressCoProcessor::initDistance()
                         continue;
                     int numberOfCorner = 0;
 
-                    if (bc->getQ(D3Q27System::T) != 999.000) {
+                    if (bc->getQ(DIR_00P) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::B) != 999.000) {
+                    if (bc->getQ(DIR_00M) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::E) != 999.000) {
+                    if (bc->getQ(DIR_P00) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::W) != 999.000) {
+                    if (bc->getQ(DIR_M00) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::N) != 999.000) {
+                    if (bc->getQ(DIR_0P0) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(D3Q27System::S) != 999.000) {
+                    if (bc->getQ(DIR_0M0) != 999.000) {
                         numberOfCorner++;
                     }
                     // if(bc->hasVelocityBoundary()||bc->hasDensityBoundary())continue;
@@ -901,17 +906,17 @@ void ShearStressCoProcessor::initDistance()
                         continue;
 
                     //////get normal and distance//////
-                    double A, B, C, D, ii = 0.0;
+                    real A, B, C, D, ii = 0.0;
                     findPlane(ix1, ix2, ix3, grid, block, A, B, C, D, ii);
                     Vector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-                    double ix1ph         = pointplane1[0];
-                    double ix2ph         = pointplane1[1];
-                    double ix3ph         = pointplane1[2];
-                    double normalDis;
+                    real ix1ph         = pointplane1[0];
+                    real ix2ph         = pointplane1[1];
+                    real ix3ph         = pointplane1[2];
+                    real normalDis;
                     if (ii != 3) {
                         UB_THROW(UbException(UB_EXARGS, "not enough points to create plane" + UbSystem::toString(ii)));
                     } else {
-                        double s = A * ix1ph + B * ix2ph + C * ix3ph +
+                        real s = A * ix1ph + B * ix2ph + C * ix3ph +
                                    D; // The sign of s = Ax + By + Cz + D determines which side the point (x,y,z) lies
                                       // with respect to the plane. If s > 0 then the point lies on the same side as the
                                       // normal (A,B,C). If s < 0 then it lies on the opposite side, if s = 0 then the

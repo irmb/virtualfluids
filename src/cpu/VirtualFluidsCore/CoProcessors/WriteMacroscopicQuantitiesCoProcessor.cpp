@@ -72,7 +72,7 @@ void WriteMacroscopicQuantitiesCoProcessor::init()
 {}
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesCoProcessor::process(double step)
+void WriteMacroscopicQuantitiesCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -81,7 +81,7 @@ void WriteMacroscopicQuantitiesCoProcessor::process(double step)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
+void WriteMacroscopicQuantitiesCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -143,7 +143,7 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-    double level   = (double)block->getLevel();
+    real level   = (real)block->getLevel();
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -162,8 +162,8 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
 
     // knotennummerierung faengt immer bei 0 an!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
@@ -182,13 +182,13 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     int maxX2 = (int)(distributions->getNX2());
     int maxX3 = (int)(distributions->getNX3());
 
-    // int minX1 = 1;
-    // int minX2 = 1;
-    // int minX3 = 1;
+     //int minX1 = 1;
+     //int minX2 = 1;
+     //int minX3 = 1;
 
-    // int maxX1 = (int)(distributions->getNX1());
-    // int maxX2 = (int)(distributions->getNX2());
-    // int maxX3 = (int)(distributions->getNX3());
+     //int maxX1 = (int)(distributions->getNX1());
+     //int maxX2 = (int)(distributions->getNX2());
+     //int maxX3 = (int)(distributions->getNX3());
 
     // nummern vergeben und node vector erstellen + daten sammeln
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
@@ -202,12 +202,12 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
-                if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
+                if (/* !bcArray->isUndefined(ix1, ix2, ix3) &&*/ !bcArray->isSolid(ix1, ix2, ix3)) {
                     int index                  = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
                     Vector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-                    nodes.push_back(UbTupleFloat3(float(worldCoordinates[0]), float(worldCoordinates[1]),
-                                                  float(worldCoordinates[2])));
+                    nodes.push_back(UbTupleFloat3(real(worldCoordinates[0]), real(worldCoordinates[1]),
+                                                  real(worldCoordinates[2])));
 
                     distributions->getDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);

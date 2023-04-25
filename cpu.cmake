@@ -27,7 +27,8 @@ SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
-SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
+
+SET(USE_LIGGGHTS OFF CACHE BOOL "include LIGGGHTS library support")
 
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
@@ -81,6 +82,10 @@ add_subdirectory(src/cpu/VirtualFluidsCore)
 
 if(BUILD_VF_PYTHON_BINDINGS)
     add_subdirectory(src/cpu/simulationconfig)
+endif()
+
+if(USE_LIGGGHTS)
+    add_subdirectory(src/cpu/LiggghtsCoupling)
 endif()
 
 set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")

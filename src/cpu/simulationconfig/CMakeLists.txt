@@ -1,7 +1,7 @@
 project(simulationconfig)
 
 
-vf_add_library(NAME simulationconfig PUBLIC_LINK VirtualFluidsCore basics muparser)
+vf_add_library(NAME simulationconfig PUBLIC_LINK VirtualFluidsCore basics muparser lbm)
 
 set_target_properties(simulationconfig PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

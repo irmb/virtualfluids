@@ -39,14 +39,14 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "BCAdapter.h"
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "LBMKernel.h"
 
 MultiphaseBoundaryConditionsBlockVisitor::MultiphaseBoundaryConditionsBlockVisitor() :
-Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
 
 }
@@ -77,12 +77,12 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
       SPtr<BCArray3D> bcArray = bcProcessor->getBCArray();
 
       bool compressible = kernel->getCompressible();
-      double collFactorL = kernel->getCollisionFactorL();
-	  double collFactorG = kernel->getCollisionFactorG();
-	  double collFactorPh = 1.0/kernel->getPhaseFieldRelaxation();
-	  double densityRatio = kernel->getDensityRatio();
-	  LBMReal phiL = kernel->getPhiL();
-	  LBMReal phiH = kernel->getPhiH();
+      real collFactorL = kernel->getCollisionFactorL();
+	  real collFactorG = kernel->getCollisionFactorG();
+	  real collFactorPh = 1.0/kernel->getPhaseFieldRelaxation();
+	  real densityRatio = kernel->getDensityRatio();
+	  real phiL = kernel->getPhiL();
+	  real phiH = kernel->getPhiH();
       //int level = block->getLevel();
 
       int minX1 = 0;

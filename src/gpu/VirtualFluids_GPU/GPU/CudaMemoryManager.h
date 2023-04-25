@@ -18,19 +18,22 @@
 
 class Parameter;
 class PorousMedia;
-class ActuatorLine;
+class ActuatorFarm;
 class Probe;
+class VelocitySetter;
+class PrecursorWriter;
 
 class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
 public:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);
+    virtual ~CudaMemoryManager() = default;
 
     void setMemsizeGPU(double admem, bool reset);
     double getMemsizeGPU();
 
-    void cudaAllocFull(int lev);
-    void cudaFreeFull(int lev);
+    //void cudaAllocFull(int lev); //DEPRECATED: related to full matrix
+    //void cudaFreeFull(int lev);  //DEPRECATED: related to full matrix
 
     void cudaCopyPrint(int lev);
     void cudaCopyMedianPrint(int lev);
@@ -90,28 +93,22 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     //3D domain decomposition
-    void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
-                                      int streamIndex);
-    void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
-                                      int streamIndex);
-    void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
+    void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
+    virtual void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
     //
-    void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
-                                      int streamIndex);
-    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
-                                      int streamIndex);
-    void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
+    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
+    virtual void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
     //
-    void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
-                                      int streamIndex);
-    void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
-                                      int streamIndex);
-    void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
+    void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
+    virtual void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
 
     //////////////////////////////////////////////////////////////////////////
@@ -181,6 +178,13 @@ public:
     void cudaAllocStressBC(int lev);
     void cudaCopyStressBC(int lev);
     void cudaFreeStressBC(int lev);
+
+    void cudaAllocPrecursorBC(int lev);
+    void cudaAllocPrecursorData(int lev);
+    void cudaCopyPrecursorBC(int lev);
+    void cudaCopyPrecursorData(int lev);
+    void cudaFreePrecursorBC(int lev);
+    void cudaFreePrecursorData(int lev);
 
     void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
     void cudaCopyWallModel(int lev,  bool hasWallModelMonitor);
@@ -345,42 +349,44 @@ public:
     void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
 
-    void cudaAllocFluidNodeIndices(int lev);
-    void cudaCopyFluidNodeIndices(int lev);
-    void cudaFreeFluidNodeIndices(int lev);
-    void cudaAllocFluidNodeIndicesBorder(int lev);
-    void cudaCopyFluidNodeIndicesBorder(int lev);
-    void cudaFreeFluidNodeIndicesBorder(int lev);
+    void cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
+    void cudaCopyTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
+    void cudaFreeTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
 
-    // Actuator Line
-    void cudaAllocBladeRadii(ActuatorLine* actuatorLine);
-    void cudaCopyBladeRadiiHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeRadiiDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeRadii(ActuatorLine* actuatorLine);
+    // ActuatorFarm
+    void cudaAllocBladeGeometries(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeGeometriesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeGeometriesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeGeometries(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeCoords(ActuatorLine* actuatorLine);
-    void cudaCopyBladeCoordsHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeCoordsDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeCoords(ActuatorLine* actuatorLine);
+    void cudaAllocBladeOrientations(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeOrientationsHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeOrientationsDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeOrientations(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeIndices(ActuatorLine* actuatorLine);
-    void cudaCopyBladeIndicesHtoD(ActuatorLine* actuatorLine);
-    void cudaFreeBladeIndices(ActuatorLine* actuatorLine);
+    void cudaAllocBladeCoords(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeCoordsHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeCoordsDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeCoords(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeVelocities(ActuatorLine* actuatorLine);
-    void cudaCopyBladeVelocitiesHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeVelocitiesDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeVelocities(ActuatorLine* actuatorLine);
+    void cudaAllocBladeIndices(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeIndicesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeIndices(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeForces(ActuatorLine* actuatorLine);
-    void cudaCopyBladeForcesHtoD(ActuatorLine* actuatorLine);
-    void cudaCopyBladeForcesDtoH(ActuatorLine* actuatorLine);
-    void cudaFreeBladeForces(ActuatorLine* actuatorLine);
+    void cudaAllocBladeVelocities(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeVelocitiesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeVelocitiesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeVelocities(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocSphereIndices(ActuatorLine* actuatorLine);
-    void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
-    void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
+    void cudaAllocBladeForces(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeForcesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyBladeForcesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeBladeForces(ActuatorFarm* actuatorFarm);
 
+    void cudaAllocSphereIndices(ActuatorFarm* actuatorFarm);
+    void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
+    // Probes
     void cudaAllocProbeDistances(Probe* probe, int level);
     void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
     void cudaCopyProbeDistancesDtoH(Probe* probe, int level);
@@ -400,6 +406,12 @@ public:
     void cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level);
     void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
+
+    //Precursor Writer
+    void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWriter* writer, int level);
+    void cudaFreePrecursorWriter(PrecursorWriter* writer, int level);
 
 private:
     std::shared_ptr<Parameter> parameter;

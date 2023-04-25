@@ -8,9 +8,11 @@ using namespace std;
 
 void run(string configname)
 {
+    using namespace vf::lbm::dir;
+
     try {
 
-        //Sleep(20000);
+        //Sleep(30000);
 
         vf::basics::ConfigurationFile config;
         config.load(configname);
@@ -20,37 +22,37 @@ void run(string configname)
         string geoFile             = config.getValue<string>("geoFile");
         int numOfThreads           = config.getValue<int>("numOfThreads");
         vector<int> blocknx        = config.getVector<int>("blocknx");
-        vector<double> boundingBox = config.getVector<double>("boundingBox");
+        vector<real> boundingBox = config.getVector<real>("boundingBox");
         // vector<double>  length = config.getVector<double>("length");
-        double uLB = config.getValue<double>("uLB");
+        real uLB = config.getValue<real>("uLB");
         // double uF2                         = config.getValue<double>("uF2");
-        double nuL             = config.getValue<double>("nuL");
-        double nuG             = config.getValue<double>("nuG");
-        double densityRatio    = config.getValue<double>("densityRatio");
-        double sigma           = config.getValue<double>("sigma");
-        int interfaceThickness = config.getValue<int>("interfaceThickness");
-        double radius          = config.getValue<double>("radius");
-        double theta           = config.getValue<double>("contactAngle");
-        double gr              = config.getValue<double>("gravity");
-        double phiL            = config.getValue<double>("phi_L");
-        double phiH            = config.getValue<double>("phi_H");
-        double tauH            = config.getValue<double>("Phase-field Relaxation");
-        double mob             = config.getValue<double>("Mobility");
+        real nuL             = config.getValue<real>("nuL");
+        real nuG             = config.getValue<real>("nuG");
+        real densityRatio    = config.getValue<real>("densityRatio");
+        real sigma           = config.getValue<real>("sigma");
+        int interfaceWidth = config.getValue<int>("interfaceWidth");
+        //double radius          = config.getValue<double>("radius");
+        real theta           = config.getValue<real>("contactAngle");
+        real gr              = config.getValue<real>("gravity");
+        real phiL            = config.getValue<real>("phi_L");
+        real phiH            = config.getValue<real>("phi_H");
+        real tauH            = config.getValue<real>("Phase-field Relaxation");
+        real mob             = config.getValue<real>("Mobility");
 
-        double endTime     = config.getValue<double>("endTime");
-        double outTime     = config.getValue<double>("outTime");
-        double availMem    = config.getValue<double>("availMem");
+        real endTime     = config.getValue<real>("endTime");
+        real outTime     = config.getValue<real>("outTime");
+        real availMem    = config.getValue<real>("availMem");
         int refineLevel    = config.getValue<int>("refineLevel");
-        double Re          = config.getValue<double>("Re");
-        double dx          = config.getValue<double>("dx");
+        real Re          = config.getValue<real>("Re");
+        real dx          = config.getValue<real>("dx");
         bool logToFile     = config.getValue<bool>("logToFile");
-        double restartStep = config.getValue<double>("restartStep");
-        double cpStart     = config.getValue<double>("cpStart");
-        double cpStep      = config.getValue<double>("cpStep");
+        real restartStep = config.getValue<real>("restartStep");
+        real cpStart     = config.getValue<real>("cpStart");
+        real cpStep      = config.getValue<real>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
 
-        double beta  = 12 * sigma / interfaceThickness;
-        double kappa = 1.5 * interfaceThickness * sigma;
+        real beta = 12 * sigma / interfaceWidth;
+        real kappa = 1.5 * interfaceWidth * sigma;
 
         SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
@@ -76,8 +78,8 @@ void run(string configname)
         // Sleep(30000);
 
         // LBMReal dLB = 0; // = length[1] / dx;
-        LBMReal rhoLB = 0.0;
-        LBMReal nuLB  = nuL; //(uLB*dLB) / Re;
+        real rhoLB = 0.0;
+        real nuLB  = nuL; //(uLB*dLB) / Re;
 
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
@@ -85,9 +87,12 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
+       // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -99,29 +104,43 @@ void run(string configname)
         kernel->setPhaseFieldRelaxation(tauH);
         kernel->setMobility(mob);
 
+        //nuL, nuG, densityRatio, beta, kappa, theta,
+
+        kernel->setCollisionFactorMultiphase(nuL, nuG);
+        kernel->setDensityRatio(densityRatio);
+        kernel->setMultiphaseModelParameters(beta, kappa);
+        kernel->setContactAngle(theta);
+        kernel->setInterfaceWidth(interfaceWidth);
+
         SPtr<BCProcessor> bcProc(new BCProcessor());
         // BCProcessorPtr bcProc(new ThinWallBCProcessor());
 
         kernel->setBCProcessor(bcProc);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
-        // grid->setPeriodicX1(true);
-        // grid->setPeriodicX2(true);
-        // grid->setPeriodicX3(true);
+         //grid->setPeriodicX1(true);
+         //grid->setPeriodicX2(true);
+         //grid->setPeriodicX3(true);
+        grid->setGhostLayerWidth(2);
+
+       
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
+
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
-        rcp->setNu(nuLB);
-        rcp->setNuLG(nuL, nuG);
-        rcp->setDensityRatio(densityRatio);
+        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
+        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //rcp->setNu(nuLB);
+        //rcp->setNuLG(nuL, nuG);
+        //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
-
+        // BC Adapter
+        //////////////////////////////////////////////////////////////////////////////
         mu::Parser fctF1;
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
@@ -137,9 +156,35 @@ void run(string configname)
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", uLB);
 
-        double startTime = 500;
+        real startTime = 30;
         SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(true, false, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(true, false, false, fctF2, phiH, startTime, endTime));
+
+        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+
+        SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
+        denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+
+        mu::Parser fctPhi_F1;
+        fctPhi_F1.SetExpr("phiH");
+        fctPhi_F1.DefineConst("phiH", phiH);
+
+        mu::Parser fctPhi_F2;
+        fctPhi_F2.SetExpr("phiL");
+        fctPhi_F2.DefineConst("phiL", phiL);
+
+        mu::Parser fctvel_F2_init;
+        fctvel_F2_init.SetExpr("U");
+        fctvel_F2_init.DefineConst("U", 0);
+
+        velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+        //////////////////////////////////////////////////////////////////////////////////
+        // BC visitor
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        bcVisitor.addBC(noSlipBCAdapter);
+        bcVisitor.addBC(denBCAdapter); //Ohne das BB?
+        bcVisitor.addBC(velBCAdapterF1);
 
         SPtr<D3Q27Interactor> inflowF1Int;
         SPtr<D3Q27Interactor> cylInt;
@@ -156,13 +201,13 @@ void run(string configname)
             double g_maxX2 = length[1] / 2.0;
             double g_maxX3 = length[2] / 2.0;*/
 
-            double g_minX1 = boundingBox[0];
-            double g_minX2 = boundingBox[2];
-            double g_minX3 = boundingBox[4];
+            real g_minX1 = boundingBox[0];
+            real g_minX2 = boundingBox[2];
+            real g_minX3 = boundingBox[4];
 
-            double g_maxX1 = boundingBox[1];
-            double g_maxX2 = boundingBox[3];
-            double g_maxX3 = boundingBox[5];
+            real g_maxX1 = boundingBox[1];
+            real g_maxX2 = boundingBox[3];
+            real g_maxX3 = boundingBox[5];
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
@@ -220,34 +265,6 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            // BC Adapter
-            //////////////////////////////////////////////////////////////////////////////
-            SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-            noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
-
-            SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-            denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
-
-            mu::Parser fctPhi_F1;
-            fctPhi_F1.SetExpr("phiH");
-            fctPhi_F1.DefineConst("phiH", phiH);
-
-            mu::Parser fctPhi_F2;
-            fctPhi_F2.SetExpr("phiL");
-            fctPhi_F2.DefineConst("phiL", phiL);
-
-            mu::Parser fctvel_F2_init;
-            fctvel_F2_init.SetExpr("U");
-            fctvel_F2_init.DefineConst("U", 0);
-
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-            //////////////////////////////////////////////////////////////////////////////////
-            // BC visitor
-            MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-            bcVisitor.addBC(noSlipBCAdapter);
-            bcVisitor.addBC(denBCAdapter); //Ohne das BB?
-            bcVisitor.addBC(velBCAdapterF1);
-
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
@@ -286,8 +303,7 @@ void run(string configname)
             cylInt->addBCAdapter(velBCAdapterF2);
             //SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-            SPtr<Grid3DVisitor> metisVisitor(
-                new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW));
+
             InteractorsHelper intHelper(grid, metisVisitor, true);
             intHelper.addInteractor(cylInt);
             intHelper.addInteractor(tubes);
@@ -316,9 +332,9 @@ void run(string configname)
             unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
             unsigned long long numberOfNodesPerBlockWithGhostLayer =
                 numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-            double needMemAll =
-                double(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-            double needMem = needMemAll / double(comm->getNumberOfProcesses());
+            real needMemAll =
+                real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+            real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
             if (myid == 0) {
                 UBLOG(logINFO, "Number of blocks = " << numberOfBlocks);
@@ -335,8 +351,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
-                needMem);
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, availMem, needMem);
 
             grid->accept(kernelVisitor);
 
@@ -347,16 +362,56 @@ void run(string configname)
 
             intHelper.setBC();
 
-            grid->accept(bcVisitor);
-
             // initialization of distributions
             mu::Parser fct1;
             fct1.SetExpr("phiL");
             fct1.DefineConst("phiL", phiL);
-            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio, interfaceThickness, radius);
+            //MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
+            MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
             initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
+///////////////////////////////////////////////////////////////////////////////////////////
+            //{
+                // std::vector<std::vector<SPtr<Block3D>>> blockVector;
+                // int gridRank = comm->getProcessID();
+                // int minInitLevel = grid->getCoarsestInitializedLevel();
+                // int maxInitLevel = grid->getFinestInitializedLevel();
+                // blockVector.resize(maxInitLevel + 1);
+                // for (int level = minInitLevel; level <= maxInitLevel; level++) {
+                //    grid->getBlocks(level, gridRank, true, blockVector[level]);
+                //}
+                //    for (int level = minInitLevel; level <= maxInitLevel; level++) {
+                //    for (SPtr<Block3D> block : blockVector[level]) {
+                //        if (block) {
+                //            int ix1 = block->getX1();
+                //            int ix2 = block->getX2();
+                //            int ix3 = block->getX3();
+                //            int level = block->getLevel();
 
+                //            for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+                //                SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
+
+                //                if (!neighBlock) {
+
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            //    SPtr<Block3D> block = grid->getBlock(0, 0, 0, 0);
+            //    SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
+            //    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+
+            //    for (int ix3 = 0; ix3 <= 13; ix3++) {
+            //        for (int ix2 = 0; ix2 <= 13; ix2++) {
+            //            for (int ix1 = 0; ix1 <= 13; ix1++) {
+            //                if (ix1 == 0 || ix2 == 0 || ix3 == 0 || ix1 == 13 || ix2 == 13 || ix3 == 13)
+            //                    bcArray->setUndefined(ix1, ix2, ix3);
+            //            }
+            //        }
+            //    }
+            //}
+            ////////////////////////////////////////////////////////////////////////////////////////////
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
@@ -388,11 +443,16 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
 
-        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        grid->accept(setConnsVisitor);
+      //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+      //  grid->accept(setConnsVisitor);
 
-        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //grid->accept(setConnsVisitor);
+       //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+
+        grid->accept(bcVisitor);
+
+        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(

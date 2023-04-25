@@ -52,20 +52,20 @@ SPtr<BCAlgorithm> ThinWallNoSlipBCAlgorithm::clone()
 //////////////////////////////////////////////////////////////////////////
 void ThinWallNoSlipBCAlgorithm::applyBC()
 {
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal feq[D3Q27System::ENDF + 1];
+    real f[D3Q27System::ENDF + 1];
+    real feq[D3Q27System::ENDF + 1];
     distributions->getDistributionInv(f, x1, x2, x3);
-    LBMReal rho, vx1, vx2, vx3;
+    real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     calcFeqFct(feq, rho, vx1, vx2, vx3);
 
-    LBMReal fReturn;
+    real fReturn;
 
     for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
         if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
             const int invDir = D3Q27System::INVDIR[fdir];
             if (pass == 1) {
-                LBMReal q = bcPtr->getQ(invDir);
+                real q = bcPtr->getQ(invDir);
                 fReturn   = ((1.0 - q) / (1.0 + q)) * 0.5 *
                           (f[invDir] - f[fdir] +
                            (f[invDir] + f[fdir] - collFactor * (feq[fdir] + feq[invDir])) / (1.0 - collFactor));

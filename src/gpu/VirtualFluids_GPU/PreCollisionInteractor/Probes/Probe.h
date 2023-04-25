@@ -43,10 +43,13 @@
 #ifndef Probe_H
 #define Probe_H
 
+#include <iostream>
+
 #include <cuda.h>
 
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
+#include "WbWriterVtkXmlBinary.h"
 
 //=======================================================================================
 //! \note How to add new Statistics 
@@ -90,9 +93,9 @@ enum class Statistic{
 
 typedef struct PostProcessingVariable{
     std::string name;
-    real conversionFactor;
+    std::function<real(int)> conversionFactor;
     PostProcessingVariable( std::string _name, 
-                            real        _conversionFactor): 
+                            std::function<real(int)>  _conversionFactor): 
     name(_name), conversionFactor(_conversionFactor){};
 } PostProcessingVariable;
 
@@ -105,6 +108,7 @@ struct ProbeStruct{
     real *quantitiesArrayH, *quantitiesArrayD;
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
+    bool isEvenTAvg = true;
 };
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,
@@ -149,12 +153,13 @@ public:
         outputTimeSeries(_outputTimeSeries),        
         PreCollisionInteractor()
     {
-        assert("Output starts before averaging!" && tStartOut>=tStartAvg);
+        if (_tStartOut<_tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
     
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
+    virtual void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -166,6 +171,10 @@ public:
 
     void setFileNameToNOut(){this->fileNameLU = false;}
     void setTStartTmpAveraging(uint _tStartTmpAveraging){this->tStartTmpAveraging = _tStartTmpAveraging;}
+
+protected:
+    virtual WbWriterVtkXmlBinary* getWriter(){ return WbWriterVtkXmlBinary::getInstance(); };
+    real getNondimensionalConversionFactor(int level);
 
 private:
     virtual bool isAvailableStatistic(Statistic _variable) = 0;
@@ -182,12 +191,15 @@ private:
                         int level);
     virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) = 0;
 
-    void write(Parameter* para, int level, int t);
-    void writeCollectionFile(Parameter* para, int t);
-    void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
+    virtual void write(Parameter* para, int level, int t);
+    virtual void writeParallelFile(Parameter* para, int t);
+    virtual void writeGridFile(Parameter* para, int level, int t, uint part);
+
     std::vector<std::string> getVarNames();
-    
-private:
+    std::string makeGridFileName(int level, int id, int t, uint part);
+    std::string makeParallelFileName(int id, int t);
+
+protected:
     const std::string probeName;
     const std::string outputPath;
 
@@ -196,24 +208,24 @@ private:
     bool hasDeviceQuantityArray;    //!> flag initiating memCopy in Point and PlaneProbe. Other probes are only based on thrust reduce functions and therefore dont need explict memCopy in interact()
     bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
     std::vector<std::string> fileNamesForCollectionFile;
-    std::vector<std::string> varNames;
 
     bool fileNameLU = true; //!> if true, written file name contains time step in LU, else is the number of the written probe files
 
 protected:
     uint tStartAvg;
     uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
-    uint tAvg;
+    uint tAvg;  //! for tAvg==1 the probe will be evaluated in every sub-timestep of each respective level, else, the probe will only be evaluated in each synchronous time step 
     uint tStartOut;
     uint tOut;
 
     uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
 
-    real velocityRatio;
-    real densityRatio;
-    real forceRatio;
-    real stressRatio;
-    real accelerationRatio;
+    std::function<real(int)> velocityRatio;
+    std::function<real(int)> densityRatio;
+    std::function<real(int)> forceRatio;
+    std::function<real(int)> stressRatio;
+    std::function<real(int)> viscosityRatio;
+    std::function<real(int)> nondimensional;
 };
 
 #endif

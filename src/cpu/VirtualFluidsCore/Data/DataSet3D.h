@@ -40,10 +40,11 @@
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
 
-using AverageValuesArray3D     = CbArray4D<LBMReal, IndexerX4X3X2X1>;
-using ShearStressValuesArray3D = CbArray4D<LBMReal, IndexerX4X3X2X1>;
-using RelaxationFactorArray3D  = CbArray3D<LBMReal, IndexerX3X2X1>;
-using PhaseFieldArray3D        = CbArray3D<LBMReal, IndexerX3X2X1>;
+using AverageValuesArray3D     = CbArray4D<real, IndexerX4X3X2X1>;
+using ShearStressValuesArray3D = CbArray4D<real, IndexerX4X3X2X1>;
+using RelaxationFactorArray3D  = CbArray3D<real, IndexerX3X2X1>;
+using PhaseFieldArray3D        = CbArray3D<real, IndexerX3X2X1>;
+using PressureFieldArray3D     = CbArray3D<real, IndexerX3X2X1>;
 
 //! A class provides an interface for data structures in the kernel.
 class DataSet3D
@@ -88,6 +89,9 @@ public:
     SPtr<PhaseFieldArray3D> getPhaseField2() const;
     void setPhaseField2(SPtr<PhaseFieldArray3D> values);
 
+    SPtr<PressureFieldArray3D> getPressureField() const;
+    void setPressureField(SPtr<PressureFieldArray3D> values);
+
 protected:
 private:
     SPtr<DistributionArray3D> fdistributions;
@@ -103,8 +107,10 @@ private:
     SPtr<ShearStressValuesArray3D> shearStressValues;
 
     SPtr<RelaxationFactorArray3D> relaxationFactor;
+    
     SPtr<PhaseFieldArray3D> phaseField;
     SPtr<PhaseFieldArray3D> phaseField2;
+    SPtr<PressureFieldArray3D> pressureField;
 };
 
 inline SPtr<DistributionArray3D> DataSet3D::getFdistributions() const { return fdistributions; }
@@ -161,5 +167,9 @@ inline void DataSet3D::setPhaseField(SPtr<PhaseFieldArray3D> values) { phaseFiel
 inline SPtr<PhaseFieldArray3D> DataSet3D::getPhaseField2() const { return phaseField2; }
 
 inline void DataSet3D::setPhaseField2(SPtr<PhaseFieldArray3D> values) { phaseField2 = values; }
+
+inline SPtr<PressureFieldArray3D> DataSet3D::getPressureField() const { return pressureField; }
+
+inline void DataSet3D::setPressureField(SPtr<PressureFieldArray3D> values) { pressureField = values; }
 
 #endif

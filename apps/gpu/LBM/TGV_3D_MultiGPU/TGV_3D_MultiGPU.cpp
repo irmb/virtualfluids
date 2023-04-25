@@ -1,7 +1,38 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TGV_3d_MuitiGPU.cpp
+//! \ingroup TGV_3D_MultiGPU
+//! \author Martin Schoenherr
+//=======================================================================================
 //#define MPI_LOGGING
 
 //Martin Branch
-
 #include <mpi.h>
 #if defined( MPI_LOGGING )
 	#include <mpe.h>
@@ -19,8 +50,7 @@
 
 //#include "metis.h"
 
-#include "Core/LbmOrGks.h"
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
@@ -97,7 +127,7 @@ bool useWale = false;
 int mpirank;
 int mpiWorldSize;
 
-std::string kernel( "CumulantK20Comp" );
+std::string kernel( "CumulantK17CompChim" );
 
 //std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 //std::string path("results/"); //PHOENIX
@@ -109,12 +139,12 @@ std::string simulationName("TGV_3D");
 
 void multipleLevel(const std::string& configPath)
 {
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int sideLengthX, sideLengthY, sideLengthZ, rankX, rankY, rankZ;
 
-    
+
     if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
     else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
     else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
@@ -126,17 +156,6 @@ void multipleLevel(const std::string& configPath)
     rankY = ( mpirank % ( sideLengthX * sideLengthY ) ) /   sideLengthX;
     rankZ =   mpirank                                   / ( sideLengthY * sideLengthX );
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    logging::Logger::addStream(&std::cout);
-    
-    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(mpirank) + ".log" );
-    logging::Logger::addStream(&logFile);
-
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
@@ -147,10 +166,10 @@ void multipleLevel(const std::string& configPath)
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
+
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
@@ -194,13 +213,13 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addCoarseGrid(  rankX   *LX - PI - xOverlap,      rankY   *LY - PI - yOverlap,      rankZ   *LZ - PI - zOverlap,
                                 (rankX+1)*LX - PI + xOverlap,     (rankY+1)*LY - PI + yOverlap,     (rankZ+1)*LZ - PI + zOverlap, dx);
 
-    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI, 
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI,
                                                                  rankY*LY - PI, (rankY+1)*LY - PI,
                                                                  rankZ*LZ - PI, (rankZ+1)*LZ - PI  ) );
 
     gridBuilder->setPeriodicBoundaryCondition(sideLengthX == 1, sideLengthY == 1, sideLengthZ == 1);
 
-	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     if( mpiWorldSize > 1 )
     {
@@ -211,12 +230,12 @@ void multipleLevel(const std::string& configPath)
         int rankPZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ + 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
         int rankMZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ - 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
 
-        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
-        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
-        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
-        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
-        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ, GKS );
-        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX );
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX );
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY );
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY );
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ );
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ );
 
         if( sideLengthX > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
         if( sideLengthY > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);
@@ -249,23 +268,21 @@ void multipleLevel(const std::string& configPath)
 
     //para->setDevices(std::vector<uint>{0,1});
     para->setDevices(devices);
-	
+
 	para->setMaxDev(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     para->setOutputPath( path );
     para->setOutputPrefix( simulationName );
 
-    para->setPathAndFilename(para->getOutputPath() + "/" + para->getOutputPrefix());
-
     para->setPrintFiles(true);
 
- //   para->setTimestepEnd( 40 * lround(L/velocity) );	
+ //   para->setTimestepEnd( 40 * lround(L/velocity) );
 	//para->setTimestepOut(  5 * lround(L/velocity) );
 	para->setTimestepOut(  100  );
 
-    para->setTimestepEnd( 1000 );	
+    para->setTimestepEnd( 1000 );
 	//para->setTimestepOut(    1 );
 
     para->setVelocityLB( velocity );
@@ -310,7 +327,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
@@ -318,7 +335,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
-    
+
     sim.addKineticEnergyAnalyzer( 10 );
     sim.addEnstrophyAnalyzer( 10 );
 
@@ -331,11 +348,11 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
+    std::string str, str2;
     if ( argv != NULL )
     {
         //str = static_cast<std::string>(argv[0]);
-        
+
         try
         {
             MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
@@ -407,14 +424,14 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::exception& e)
         {
-                
+
             *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);

@@ -27,8 +27,8 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, 
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
                                                              std::shared_ptr<vf::mpi::Communicator> comm, int options,
-                                                             std::vector<int> levels, std::vector<double> &levelCoords,
-                                                             std::vector<double> &bounds, bool timeAveraging)
+                                                             std::vector<int> levels, std::vector<real> &levelCoords,
+                                                             std::vector<real> &bounds, bool timeAveraging)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm), options(options), levels(levels),
       levelCoords(levelCoords), bounds(bounds), timeAveraging(timeAveraging)
 {
@@ -59,8 +59,8 @@ void TimeAveragedValuesCoProcessor::init()
         calcMacros = &calcIncompMacroscopicValues;
     }
 
-    double begin        = scheduler->getMinBegin();
-    double gridTimeStep = grid->getTimeStep();
+    real begin        = scheduler->getMinBegin();
+    real gridTimeStep = grid->getTimeStep();
 
     if (gridTimeStep == begin || gridTimeStep == 0) {
         initData();
@@ -116,7 +116,7 @@ void TimeAveragedValuesCoProcessor::initData()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::process(double step)
+void TimeAveragedValuesCoProcessor::process(real step)
 {
     if (step == minStep) {
         initData();
@@ -149,7 +149,7 @@ void TimeAveragedValuesCoProcessor::process(double step)
     UBLOG(logDEBUG3, "AverageValuesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::collectData(double step)
+void TimeAveragedValuesCoProcessor::collectData(real step)
 {
     int istep = int(step);
 
@@ -195,7 +195,7 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
     //   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-    double dx                 = grid->getDeltaX(block);
+    real dx                 = grid->getDeltaX(block);
     int level                 = block->getLevel();
 
     // Diese Daten werden geschrieben:
@@ -267,8 +267,8 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
     maxX2 -= 2;
     maxX3 -= 2;
 
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
 
     // D3Q27BoundaryConditionPtr bcPtr;
 
@@ -352,7 +352,7 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
+void TimeAveragedValuesCoProcessor::calculateAverageValues(real timeSteps)
 {
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         int i;
@@ -384,7 +384,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                 maxX2 -= 2;
                 maxX3 -= 2;
 
-                LBMReal rho {0.}, ux {0.}, uy {0.}, uz {0.}, uxx {0.}, uzz {0.}, uyy {0.}, uxy {0.}, uxz {0.}, uyz {0.}, rhof {0.};
+                real rho {0.}, ux {0.}, uy {0.}, uz {0.}, uxx {0.}, uzz {0.}, uyy {0.}, uxy {0.}, uxz {0.}, uyz {0.}, rhof {0.};
 
                 for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
                     for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
@@ -413,7 +413,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                                     (*av)(Vz, ix1, ix2, ix3) = uz;
                                 }
 
-                                // fluctuations
+                                // mean fluctuations
                                 if ((options & Fluctuations) == Fluctuations) {
                                     uxx = (*af)(Vxx, ix1, ix2, ix3) / timeSteps;
                                     uyy = (*af)(Vyy, ix1, ix2, ix3) / timeSteps;
@@ -431,7 +431,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                                 }
 
                                 if ((options & Triplecorrelations) == Triplecorrelations) {
-                                    // triple-correlations
+                                    // mean triple-correlations
                                     (*at)(Vxxx, ix1, ix2, ix3) =
                                         (*at)(Vxxx, ix1, ix2, ix3) / timeSteps - 3.0 * uxx * ux + 2.0 * ux * ux * ux;
                                     (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) / timeSteps -
@@ -463,14 +463,14 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
+void TimeAveragedValuesCoProcessor::calculateSubtotal(real step)
 {
     if (scheduler->isDue(step)) {
 
         // DEBUG/////////////////////
         // UBLOG(logINFO, "calculateSubtotal::step = " << step);
         ////////////////////////////
-        LBMReal f[27];
+        real f[27];
 
         //#ifdef _OPENMP
         //#pragma omp parallel private (f)
@@ -518,7 +518,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                                         //////////////////////////////////////////////////////////////////////////
                                         // compute velocity
                                         //////////////////////////////////////////////////////////////////////////
-                                        LBMReal vx, vy, vz, rho;
+                                        real vx, vy, vz, rho;
                                         calcMacros(f, rho, vx, vy, vz);
                                         // double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
 
@@ -574,7 +574,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::planarAverage(double step)
+void TimeAveragedValuesCoProcessor::planarAverage(real step)
 {
     std::ofstream ostr;
 
@@ -625,11 +625,11 @@ void TimeAveragedValuesCoProcessor::planarAverage(double step)
 
     for (int i = 0; i < size; i++) {
         int level    = levels[i];
-        double dx    = grid->getDeltaX(level);
-        double start = levelCoords[k];
-        double stop  = levelCoords[k + 1];
+        real dx    = grid->getDeltaX(level);
+        real start = levelCoords[k];
+        real stop  = levelCoords[k + 1];
 
-        for (double j = start; j < stop; j += dx) {
+        for (real j = start; j < stop; j += dx) {
             IntegrateValuesHelper intValHelp(grid, comm, bounds[0], bounds[1], j, bounds[3], bounds[4], j + dx, level);
 
             std::vector<IntegrateValuesHelper::CalcNodes> cnodes = intValHelp.getCNodes();
@@ -640,46 +640,46 @@ void TimeAveragedValuesCoProcessor::planarAverage(double step)
             calculateAverageValuesForPlane(cnodes);
 
             if (root) {
-                double numberOfFluidsNodes = intValHelp.getNumberOfFluidsNodes();
+                real numberOfFluidsNodes = intValHelp.getNumberOfFluidsNodes();
                 if (numberOfFluidsNodes > 0) {
                     ostr << j + 0.5 * dx << std::setprecision(15);
 
                     // mean density
                     if ((options & Density) == Density) {
-                        double rho  = saRho / numberOfFluidsNodes;
-                        double rhoF = saRhoF / numberOfFluidsNodes;
+                        real rho  = saRho / numberOfFluidsNodes;
+                        real rhoF = saRhoF / numberOfFluidsNodes;
                         ostr << ";" << rho << ";" << rhoF;
                     }
 
                     // mean velocity
                     if ((options & Velocity) == Velocity) {
-                        double Vx = saVx / numberOfFluidsNodes;
-                        double Vy = saVy / numberOfFluidsNodes;
-                        double Vz = saVz / numberOfFluidsNodes;
+                        real Vx = saVx / numberOfFluidsNodes;
+                        real Vy = saVy / numberOfFluidsNodes;
+                        real Vz = saVz / numberOfFluidsNodes;
                         ostr << ";" << Vx << ";" << Vy << ";" << Vz;
                     }
                     // fluctuations
                     if ((options & Fluctuations) == Fluctuations) {
-                        double Vxx = saVxx / numberOfFluidsNodes;
-                        double Vyy = saVyy / numberOfFluidsNodes;
-                        double Vzz = saVzz / numberOfFluidsNodes;
-                        double Vxy = saVxy / numberOfFluidsNodes;
-                        double Vxz = saVxz / numberOfFluidsNodes;
-                        double Vyz = saVyz / numberOfFluidsNodes;
+                        real Vxx = saVxx / numberOfFluidsNodes;
+                        real Vyy = saVyy / numberOfFluidsNodes;
+                        real Vzz = saVzz / numberOfFluidsNodes;
+                        real Vxy = saVxy / numberOfFluidsNodes;
+                        real Vxz = saVxz / numberOfFluidsNodes;
+                        real Vyz = saVyz / numberOfFluidsNodes;
                         ostr << ";" << Vxx << ";" << Vyy << ";" << Vzz << ";" << Vxy << ";" << Vxz << ";" << Vyz;
                     }
                     // triple-correlations
                     if ((options & Triplecorrelations) == Triplecorrelations) {
-                        double Vxxx = saVxxx / numberOfFluidsNodes;
-                        double Vxxy = saVxxy / numberOfFluidsNodes;
-                        double Vxxz = saVxxz / numberOfFluidsNodes;
-                        double Vyyy = saVyyy / numberOfFluidsNodes;
-                        double Vyyx = saVyyx / numberOfFluidsNodes;
-                        double Vyyz = saVyyz / numberOfFluidsNodes;
-                        double Vzzz = saVzzz / numberOfFluidsNodes;
-                        double Vzzx = saVzzx / numberOfFluidsNodes;
-                        double Vzzy = saVzzy / numberOfFluidsNodes;
-                        double Vxyz = saVxyz / numberOfFluidsNodes;
+                        real Vxxx = saVxxx / numberOfFluidsNodes;
+                        real Vxxy = saVxxy / numberOfFluidsNodes;
+                        real Vxxz = saVxxz / numberOfFluidsNodes;
+                        real Vyyy = saVyyy / numberOfFluidsNodes;
+                        real Vyyx = saVyyx / numberOfFluidsNodes;
+                        real Vyyz = saVyyz / numberOfFluidsNodes;
+                        real Vzzz = saVzzz / numberOfFluidsNodes;
+                        real Vzzx = saVzzx / numberOfFluidsNodes;
+                        real Vzzy = saVzzy / numberOfFluidsNodes;
+                        real Vxyz = saVxyz / numberOfFluidsNodes;
                         ostr << ";" << Vxxx << ";" << Vxxy << ";" << Vxxz << ";" << Vyyy << ";" << Vyyx << ";" << Vyyz
                              << ";" << Vzzz << ";" << Vzzx << ";" << Vzzy << ";" << Vxyz;
                     }
@@ -766,30 +766,30 @@ void TimeAveragedValuesCoProcessor::calculateAverageValuesForPlane(
     saRho  = 0;
     saRhoF = 0;
 
-    double lsaVx = 0;
-    double lsaVy = 0;
-    double lsaVz = 0;
+    real lsaVx = 0;
+    real lsaVy = 0;
+    real lsaVz = 0;
 
-    double lsaVxx = 0;
-    double lsaVyy = 0;
-    double lsaVzz = 0;
-    double lsaVxy = 0;
-    double lsaVxz = 0;
-    double lsaVyz = 0;
+    real lsaVxx = 0;
+    real lsaVyy = 0;
+    real lsaVzz = 0;
+    real lsaVxy = 0;
+    real lsaVxz = 0;
+    real lsaVyz = 0;
 
-    double lsaVxxx = 0;
-    double lsaVxxy = 0;
-    double lsaVxxz = 0;
-    double lsaVyyy = 0;
-    double lsaVyyx = 0;
-    double lsaVyyz = 0;
-    double lsaVzzz = 0;
-    double lsaVzzx = 0;
-    double lsaVzzy = 0;
-    double lsaVxyz = 0;
+    real lsaVxxx = 0;
+    real lsaVxxy = 0;
+    real lsaVxxz = 0;
+    real lsaVyyy = 0;
+    real lsaVyyx = 0;
+    real lsaVyyz = 0;
+    real lsaVzzz = 0;
+    real lsaVzzx = 0;
+    real lsaVzzy = 0;
+    real lsaVxyz = 0;
 
-    double lsaRho  = 0;
-    double lsaRhoF = 0;
+    real lsaRho  = 0;
+    real lsaRhoF = 0;
 
     for (IntegrateValuesHelper::CalcNodes cn : cnodes) {
         SPtr<ILBMKernel> kernel                               = cn.block->getKernel();
@@ -799,30 +799,30 @@ void TimeAveragedValuesCoProcessor::calculateAverageValuesForPlane(
         SPtr<AverageValuesArray3D> averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
 
         for (UbTupleInt3 node : cn.nodes) {
-            double aRho  = (*averagedDensity)(Rho, val<1>(node), val<2>(node), val<3>(node));
-            double aRhoF = (*averagedDensity)(RhoF, val<1>(node), val<2>(node), val<3>(node));
+            real aRho  = (*averagedDensity)(Rho, val<1>(node), val<2>(node), val<3>(node));
+            real aRhoF = (*averagedDensity)(RhoF, val<1>(node), val<2>(node), val<3>(node));
 
-            double aVx = (*averagedVelocity)(Vx, val<1>(node), val<2>(node), val<3>(node));
-            double aVy = (*averagedVelocity)(Vy, val<1>(node), val<2>(node), val<3>(node));
-            double aVz = (*averagedVelocity)(Vz, val<1>(node), val<2>(node), val<3>(node));
+            real aVx = (*averagedVelocity)(Vx, val<1>(node), val<2>(node), val<3>(node));
+            real aVy = (*averagedVelocity)(Vy, val<1>(node), val<2>(node), val<3>(node));
+            real aVz = (*averagedVelocity)(Vz, val<1>(node), val<2>(node), val<3>(node));
 
-            double aVxx = (*averagedFluctuations)(Vxx, val<1>(node), val<2>(node), val<3>(node));
-            double aVyy = (*averagedFluctuations)(Vyy, val<1>(node), val<2>(node), val<3>(node));
-            double aVzz = (*averagedFluctuations)(Vzz, val<1>(node), val<2>(node), val<3>(node));
-            double aVxy = (*averagedFluctuations)(Vxy, val<1>(node), val<2>(node), val<3>(node));
-            double aVxz = (*averagedFluctuations)(Vxz, val<1>(node), val<2>(node), val<3>(node));
-            double aVyz = (*averagedFluctuations)(Vyz, val<1>(node), val<2>(node), val<3>(node));
+            real aVxx = (*averagedFluctuations)(Vxx, val<1>(node), val<2>(node), val<3>(node));
+            real aVyy = (*averagedFluctuations)(Vyy, val<1>(node), val<2>(node), val<3>(node));
+            real aVzz = (*averagedFluctuations)(Vzz, val<1>(node), val<2>(node), val<3>(node));
+            real aVxy = (*averagedFluctuations)(Vxy, val<1>(node), val<2>(node), val<3>(node));
+            real aVxz = (*averagedFluctuations)(Vxz, val<1>(node), val<2>(node), val<3>(node));
+            real aVyz = (*averagedFluctuations)(Vyz, val<1>(node), val<2>(node), val<3>(node));
 
-            double aVxxx = (*averagedTriplecorrelations)(Vxxx, val<1>(node), val<2>(node), val<3>(node));
-            double aVxxy = (*averagedTriplecorrelations)(Vxxy, val<1>(node), val<2>(node), val<3>(node));
-            double aVxxz = (*averagedTriplecorrelations)(Vxxz, val<1>(node), val<2>(node), val<3>(node));
-            double aVyyy = (*averagedTriplecorrelations)(Vyyy, val<1>(node), val<2>(node), val<3>(node));
-            double aVyyx = (*averagedTriplecorrelations)(Vyyx, val<1>(node), val<2>(node), val<3>(node));
-            double aVyyz = (*averagedTriplecorrelations)(Vyyz, val<1>(node), val<2>(node), val<3>(node));
-            double aVzzz = (*averagedTriplecorrelations)(Vzzz, val<1>(node), val<2>(node), val<3>(node));
-            double aVzzx = (*averagedTriplecorrelations)(Vzzx, val<1>(node), val<2>(node), val<3>(node));
-            double aVzzy = (*averagedTriplecorrelations)(Vzzy, val<1>(node), val<2>(node), val<3>(node));
-            double aVxyz = (*averagedTriplecorrelations)(Vxyz, val<1>(node), val<2>(node), val<3>(node));
+            real aVxxx = (*averagedTriplecorrelations)(Vxxx, val<1>(node), val<2>(node), val<3>(node));
+            real aVxxy = (*averagedTriplecorrelations)(Vxxy, val<1>(node), val<2>(node), val<3>(node));
+            real aVxxz = (*averagedTriplecorrelations)(Vxxz, val<1>(node), val<2>(node), val<3>(node));
+            real aVyyy = (*averagedTriplecorrelations)(Vyyy, val<1>(node), val<2>(node), val<3>(node));
+            real aVyyx = (*averagedTriplecorrelations)(Vyyx, val<1>(node), val<2>(node), val<3>(node));
+            real aVyyz = (*averagedTriplecorrelations)(Vyyz, val<1>(node), val<2>(node), val<3>(node));
+            real aVzzz = (*averagedTriplecorrelations)(Vzzz, val<1>(node), val<2>(node), val<3>(node));
+            real aVzzx = (*averagedTriplecorrelations)(Vzzx, val<1>(node), val<2>(node), val<3>(node));
+            real aVzzy = (*averagedTriplecorrelations)(Vzzy, val<1>(node), val<2>(node), val<3>(node));
+            real aVxyz = (*averagedTriplecorrelations)(Vxyz, val<1>(node), val<2>(node), val<3>(node));
 
             lsaRho += aRho;
             lsaRhoF += aRhoF;
@@ -850,8 +850,8 @@ void TimeAveragedValuesCoProcessor::calculateAverageValuesForPlane(
             lsaVxyz += aVxyz;
         }
     }
-    std::vector<double> values;
-    std::vector<double> rvalues;
+    std::vector<real> values;
+    std::vector<real> rvalues;
 
     values.push_back(lsaRho);
     values.push_back(lsaRhoF);

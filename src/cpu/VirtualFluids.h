@@ -121,6 +121,8 @@
 #include <BoundaryConditions/NoSlipBCAlgorithm.h>
 #include <BoundaryConditions/NonEqDensityBCAlgorithm.h>
 #include <BoundaryConditions/NonReflectingOutflowBCAlgorithm.h>
+#include <BoundaryConditions/NonReflectingOutflowBCAlgorithmWithRelaxation.h>
+#include <BoundaryConditions/NonReflectingInflowBCAlgorithm.h>
 #include <BoundaryConditions/SlipBCAdapter.h>
 #include <BoundaryConditions/SlipBCAlgorithm.h>
 #include <BoundaryConditions/ThinWallBCProcessor.h>
@@ -144,6 +146,7 @@
 #include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
+#include <BoundaryConditions/MultiphaseSlipBCAlgorithm.h> 
 
 #include <Connectors/Block3DConnector.h>
 //#include <Connectors/Block3DConnectorFactory.h>
@@ -161,6 +164,7 @@
 #include <Connectors/TwoDistributionsFullDirectConnector.h>
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
 
+
 #include <Data/D3Q27EsoTwist3DSplittedVector.h>
 #include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
 #include <Data/DataSet3D.h>
@@ -173,7 +177,6 @@
 #include <Grid/Block3D.h>
 #include <Grid/Calculator.h>
 #include <Grid/Grid3D.h>
-#include <Grid/Grid3DSystem.h>
 
 #include <Interactors/D3Q27Interactor.h>
 #include <Interactors/D3Q27TriFaceMeshInteractor.h>
@@ -203,6 +206,8 @@
 #include <CoProcessors/ShearStressCoProcessor.h>
 #include <CoProcessors/TimeseriesCoProcessor.h>
 #include <CoProcessors/TurbulenceIntensityCoProcessor.h>
+#include <CoProcessors/TimeAveragedValuesCoProcessor.h>
+
 //#include <CoProcessors/MeanValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
 #include <CoProcessors/LineTimeSeriesCoProcessor.h>
@@ -251,6 +256,11 @@
 #include <LBM/MultiphaseCumulantLBMKernel.h>
 #include <LBM/MultiphaseScratchCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
+#include <MultiphaseSimpleVelocityBaseExternalPressureLBMKernel.h>
 
 
 
@@ -259,6 +269,7 @@
 #include <geometry3d/GbCylinder3D.h>
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/GbHalfSpaceKrischan3D.h>
+#include <geometry3d/GbImplicitSurface.h>
 #include <geometry3d/GbLine3D.h>
 #include <geometry3d/GbMeshTools3D.h>
 #include <geometry3d/GbObject3D.h>
@@ -341,6 +352,7 @@
 #include <Visitors/MultiphaseSetKernelBlockVisitor.h>
 #include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
 #include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
+#include <Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

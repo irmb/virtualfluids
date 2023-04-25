@@ -117,9 +117,9 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",     this->outputStress? this->stressRatio: this->forceRatio) );
         if(this->evaluatePressureGradient)
         {
-            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatMean",     this->accelerationRatio) ); 
-            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatMean",     this->accelerationRatio) );
-            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatMean",     this->accelerationRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatMean",     this->forceRatio) ); 
+            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatMean",     this->forceRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatMean",     this->forceRatio) );
         }
         break;
     case Statistic::SpatioTemporalMeans:
@@ -135,15 +135,14 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",     this->outputStress? this->stressRatio: this->forceRatio) );
         if(this->evaluatePressureGradient)
         {
-            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatTmpMean",     this->accelerationRatio) ); 
-            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatTmpMean",     this->accelerationRatio) );
-            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatTmpMean",     this->accelerationRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatTmpMean",     this->forceRatio) ); 
+            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatTmpMean",     this->forceRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatTmpMean",     this->forceRatio) );
         }
         break;
 
     default:
-        printf("Statistic unavailable in WallModelProbe\n");
-        assert(false);
+        throw std::runtime_error("WallModelProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;
@@ -156,10 +155,10 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    assert( para->getParD(level)->stressBC.numberOfBCnodes > 0 && para->getHasWallModelMonitor() );
+    if ( !para->getHasWallModelMonitor())                    throw std::runtime_error("WallModelProbe::findPoints(): !para->getHasWallModelMonitor() !");
 
     real dt = para->getTimeRatio();
-    uint nt = uint((para->getTEnd()-this->tStartAvg)/this->tAvg);
+    uint nt = uint((para->getTimestepEnd()-this->tStartAvg)/this->tAvg);
     
     for(uint t=0; t<nt; t++)
     {
@@ -170,13 +169,13 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
 
     if(this->evaluatePressureGradient)
     {
-        assert(para->getIsBodyForce());
+        if (!para->getIsBodyForce()) throw std::runtime_error("WallModelProbe::findPoints(): bodyforce not allocated!");
         // Find all fluid nodes
-        for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+        for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
         {
-            if( para->getParH(level)->typeOfGridNode[j] == GEO_FLUID) 
+            if( para->getParH(level)->typeOfGridNode[pos] == GEO_FLUID) 
             {
-                probeIndices_level.push_back(j);
+                probeIndices_level.push_back((int)pos);
             }
         }
     }
@@ -187,6 +186,10 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
 void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {   
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
+    real N = para->getParD(level)->stressBC.numberOfBCnodes;
+    if(N<1) return; //Skipping levels without StressBC
+    real n = (real)probeStruct->vals;
+    int nPoints = probeStruct->nPoints;
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<real> u_el_thrust    = thrust::device_pointer_cast(para->getParD(level)->stressBC.Vx);
@@ -212,10 +215,6 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     thrust::permutation_iterator<valIterator, indIterator> dpdy_iter_end  (dpdy_thrust, indices_thrust+probeStruct->nIndices);
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_begin(dpdz_thrust, indices_thrust);
     thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_end  (dpdz_thrust, indices_thrust+probeStruct->nIndices);
-
-    real N = para->getParD(level)->stressBC.numberOfBCnodes;
-    real n = (real)probeStruct->vals;
-    int nPoints = probeStruct->nPoints;
 
     if(probeStruct->quantitiesH[int(Statistic::SpatialMeans)])
     {
@@ -293,6 +292,7 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
             }
         }    
     }
+        
 
     this->tProbe += 1;
     getLastCudaError("WallModelProbe::calculateQuantities execution failed");

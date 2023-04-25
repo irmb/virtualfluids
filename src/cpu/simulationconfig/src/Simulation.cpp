@@ -33,6 +33,8 @@
 #include <simulationconfig/SimulationParameters.h>
 #include <simulationconfig/Simulation.h>
 
+#include <lbm/constants/D3Q27.h>
+
 
 Simulation::Simulation()
 {
@@ -120,7 +122,7 @@ void Simulation::run()
 
     auto metisVisitor = std::make_shared<MetisPartitioningGridVisitor>(communicator,
                                                                        MetisPartitioningGridVisitor::LevelBased,
-                                                                       D3Q27System::B, MetisPartitioner::RECURSIVE);
+                                                                       vf::lbm::dir::DIR_00M, MetisPartitioner::RECURSIVE);
 
     InteractorsHelper intHelper(grid, metisVisitor);
     for (auto const &interactor : interactors)

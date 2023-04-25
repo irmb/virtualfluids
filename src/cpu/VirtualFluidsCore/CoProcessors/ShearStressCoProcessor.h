@@ -31,33 +31,33 @@ public:
                            SPtr<UbScheduler> rs);
     ~ShearStressCoProcessor() override;
 
-    void process(double step) override;
+    void process(real step) override;
 
     void addInteractor(SPtr<D3Q27Interactor> interactor);
 
 protected:
     //! Computes average and shear stress values of macroscopic quantities
-    void calculateShearStress(double timeStep);
+    void calculateShearStress(real timeStep);
     //! Prepare data and write in .vtk file
-    void collectData(double step);
+    void collectData(real step);
     //! Reset data
-    void resetData(double step);
+    void resetData(real step);
     //! prepare data
     void addData();
     void clearData();
-    void reset(double step);
-    void findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block, double &A, double &B, double &C,
-                   double &D, double &ii);
+    void reset(real step);
+    void findPlane(int ix1, int ix2, int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block, real &A, real &B, real &C,
+                   real &D, real &ii);
     bool checkUndefindedNodes(SPtr<BCArray3D> bcArray, int ix1, int ix2, int ix3);
     void initDistance();
 
 private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::string path;
     std::vector<SPtr<D3Q27Interactor>> interactors;
-    std::vector<double> normals;
+    std::vector<real> normals;
     int gridRank;
     WbWriter *writer;
     SPtr<UbScheduler> Resetscheduler; // additional scheduler to restart averaging after a given interval

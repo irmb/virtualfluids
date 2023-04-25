@@ -8,7 +8,7 @@
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include <basics/Core/StringUtilities/StringUtil.h>
+#include <basics/StringUtilities/StringUtil.h>
 
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager)
 {
@@ -25,32 +25,32 @@ void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaMemoryM
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
         cudaMemoryManager->cudaCopyTurbulenceIntensityDH(lev, para->getParH(lev)->numberOfNodes);
 
-        for (uint i = 0; i < para->getParH(lev)->numberOfNodes; i++) {
+        for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++) {
             // mean velocity
-            para->getParH(lev)->vx_mean[i] = para->getParH(lev)->vx_mean[i] / (real)tdiff;
-            para->getParH(lev)->vy_mean[i] = para->getParH(lev)->vy_mean[i] / (real)tdiff;
-            para->getParH(lev)->vz_mean[i] = para->getParH(lev)->vz_mean[i] / (real)tdiff;
+            para->getParH(lev)->vx_mean[pos] = para->getParH(lev)->vx_mean[pos] / (real)tdiff;
+            para->getParH(lev)->vy_mean[pos] = para->getParH(lev)->vy_mean[pos] / (real)tdiff;
+            para->getParH(lev)->vz_mean[pos] = para->getParH(lev)->vz_mean[pos] / (real)tdiff;
 
             // fluctuations
-            para->getParH(lev)->vxx[i] = para->getParH(lev)->vxx[i] / (real)tdiff;
-            para->getParH(lev)->vyy[i] = para->getParH(lev)->vyy[i] / (real)tdiff;
-            para->getParH(lev)->vzz[i] = para->getParH(lev)->vzz[i] / (real)tdiff;
-            para->getParH(lev)->vxy[i] = para->getParH(lev)->vxy[i] / (real)tdiff;
-            para->getParH(lev)->vxz[i] = para->getParH(lev)->vxz[i] / (real)tdiff;
-            para->getParH(lev)->vyz[i] = para->getParH(lev)->vyz[i] / (real)tdiff;
+            para->getParH(lev)->vxx[pos] = para->getParH(lev)->vxx[pos] / (real)tdiff;
+            para->getParH(lev)->vyy[pos] = para->getParH(lev)->vyy[pos] / (real)tdiff;
+            para->getParH(lev)->vzz[pos] = para->getParH(lev)->vzz[pos] / (real)tdiff;
+            para->getParH(lev)->vxy[pos] = para->getParH(lev)->vxy[pos] / (real)tdiff;
+            para->getParH(lev)->vxz[pos] = para->getParH(lev)->vxz[pos] / (real)tdiff;
+            para->getParH(lev)->vyz[pos] = para->getParH(lev)->vyz[pos] / (real)tdiff;
 
-            para->getParH(lev)->vxx[i] =
-                para->getParH(lev)->vxx[i] - para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vx_mean[i];
-            para->getParH(lev)->vyy[i] =
-                para->getParH(lev)->vyy[i] - para->getParH(lev)->vy_mean[i] * para->getParH(lev)->vy_mean[i];
-            para->getParH(lev)->vzz[i] =
-                para->getParH(lev)->vzz[i] - para->getParH(lev)->vz_mean[i] * para->getParH(lev)->vz_mean[i];
-            para->getParH(lev)->vxy[i] =
-                para->getParH(lev)->vxy[i] - para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vy_mean[i];
-            para->getParH(lev)->vxz[i] =
-                para->getParH(lev)->vxz[i] - para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vz_mean[i];
-            para->getParH(lev)->vyz[i] =
-                para->getParH(lev)->vyz[i] - para->getParH(lev)->vy_mean[i] * para->getParH(lev)->vz_mean[i];
+            para->getParH(lev)->vxx[pos] =
+                para->getParH(lev)->vxx[pos] - para->getParH(lev)->vx_mean[pos] * para->getParH(lev)->vx_mean[pos];
+            para->getParH(lev)->vyy[pos] =
+                para->getParH(lev)->vyy[pos] - para->getParH(lev)->vy_mean[pos] * para->getParH(lev)->vy_mean[pos];
+            para->getParH(lev)->vzz[pos] =
+                para->getParH(lev)->vzz[pos] - para->getParH(lev)->vz_mean[pos] * para->getParH(lev)->vz_mean[pos];
+            para->getParH(lev)->vxy[pos] =
+                para->getParH(lev)->vxy[pos] - para->getParH(lev)->vx_mean[pos] * para->getParH(lev)->vy_mean[pos];
+            para->getParH(lev)->vxz[pos] =
+                para->getParH(lev)->vxz[pos] - para->getParH(lev)->vx_mean[pos] * para->getParH(lev)->vz_mean[pos];
+            para->getParH(lev)->vyz[pos] =
+                para->getParH(lev)->vyz[pos] - para->getParH(lev)->vy_mean[pos] * para->getParH(lev)->vz_mean[pos];
         }
     }
 }
@@ -146,14 +146,14 @@ void writeAllTiDatafToFile(Parameter *para, uint timestep)
     }
 }
 
-void writeTiStuffToFile(Parameter *para, uint timestep, int sizeOfTiArray, std::vector<real *> &data,
+void writeTiStuffToFile(Parameter *para, uint timestep, unsigned long long sizeOfTiArray, std::vector<real *> &data,
                         std::vector<std::string> &datanames)
 {
     ////////////////////////////////////////////////////////////////////////
     // set filename
     std::string names;
     std::for_each(datanames.begin(), datanames.end(), [&names](const std::string &s) { return names += "_" + s; });
-    std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_" +
+    std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + "_" +
                          StringUtil::toString<int>(timestep) + names + "_ti.txt";
     const char *fname = ffname.c_str();
     ////////////////////////////////////////////////////////////////////////
@@ -169,10 +169,10 @@ void writeTiStuffToFile(Parameter *para, uint timestep, int sizeOfTiArray, std::
     ostr << std::endl;
     ////////////////////////////////////////////////////////////////////////
     // fill file with data
-    for (int i = 0; i < sizeOfTiArray; i++) {
-        ostr << i;
+    for (size_t pos = 0; pos < sizeOfTiArray; pos++) {
+        ostr << pos;
         for (auto dataset : data)
-            ostr << "\t" << dataset[i];
+            ostr << "\t" << dataset[pos];
         ostr << std::endl;
     }
     ////////////////////////////////////////////////////////////////////////

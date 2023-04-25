@@ -75,8 +75,8 @@ public:
     virtual void addBCAdapter(const SPtr<BCAdapter> bcAdapter) { bcAdapters.push_back(bcAdapter); }
     void deleteBCAdapter() { bcAdapters.clear(); }
 
-    void initInteractor(const double &timeStep = 0) override;
-    void updateInteractor(const double &timestep = 0) override;
+    void initInteractor(const real &timeStep = 0) override;
+    void updateInteractor(const real &timestep = 0) override;
 
     void setReinitWithStoredQs(bool reinitWithStoredQsFlag) { this->reinitWithStoredQsFlag = reinitWithStoredQsFlag; }
 
@@ -112,9 +112,9 @@ protected:
     BcNodeIndicesMap bcNodeIndicesMap;
 
     void initRayVectors();
-    double rayX1[D3Q27System::FENDDIR + 1];
-    double rayX2[D3Q27System::FENDDIR + 1];
-    double rayX3[D3Q27System::FENDDIR + 1];
+    real rayX1[D3Q27System::FENDDIR + 1];
+    real rayX2[D3Q27System::FENDDIR + 1];
+    real rayX3[D3Q27System::FENDDIR + 1];
 };
 
 #endif

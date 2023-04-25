@@ -8,12 +8,13 @@
 #informations for Writing
 ##################################################
 Path=output/Sphere/
-Prefix=Sphere
+Prefix=Sphere01
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
 GridPath="grid/"
+#STLPath=./stl/Sphere/sphere02.stl
 
 ##################################################
 #number of grid levels

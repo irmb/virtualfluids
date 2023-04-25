@@ -37,6 +37,7 @@
 #include "Block3D.h"
 #include "Block3DConnector.h"
 #include "PointerDefinitions.h"
+#include "lbm/constants/D3Q27.h"
 
 //! A class provides an interface for connectors in shared memory
 class LocalBlock3DConnector : public Block3DConnector
@@ -63,7 +64,7 @@ public:
     bool isInterpolationConnectorCF() override { return false; }
     bool isInterpolationConnectorFC() override { return false; }
 
-    double getSendRecieveTime();
+    real getSendRecieveTime();
 
     void prepareForSendX1() override {}
     void prepareForSendX2() override {}

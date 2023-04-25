@@ -1,9 +1,41 @@
+r"""
+=======================================================================================
+ ____          ____    __    ______     __________   __      __       __        __
+ \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+      \    \  |    |   ________________________________________________________________
+       \    \ |    |  |  ______________________________________________________________|
+        \    \|    |  |  |         __          __     __     __     ______      _______
+         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+
+  This file is part of VirtualFluids. VirtualFluids is free software: you can
+  redistribute it and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+
+  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+
+! \file test_acousticscaling.py
+! \ingroup tests
+! \author Sven Marcus, Henry Korb
+=======================================================================================
+"""
 import unittest
 from typing import List
 
-from pyfluids.cpu.kernel import LBMKernel, KernelType
-from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
-
+from pyfluids import cpu
 from acousticscaling import OneDirectionalAcousticScaling
 
 
@@ -58,18 +90,18 @@ class OneDirectionalAcousticScalingTest(unittest.TestCase):
         self.assertEqual(self.grid_params.periodic_boundary_in_x2, actual_grid_params.periodic_boundary_in_x2)
         self.assertEqual(self.grid_params.periodic_boundary_in_x3, actual_grid_params.periodic_boundary_in_x3)
 
-    def assert_physical_params_scaled_by_factor(self, actual_params: PhysicalParameters, factor: int):
+    def assert_physical_params_scaled_by_factor(self, actual_params: cpu.parameters.PhysicalParameters, factor: int):
         self.assertEqual(self.physical_params.lattice_viscosity * factor, actual_params.lattice_viscosity)
         self.assertEqual(self.physical_params.bulk_viscosity_factor, actual_params.bulk_viscosity_factor)
 
-    def assert_runtime_params_scaled_by_factor(self, actual_params: RuntimeParameters, factor: int):
+    def assert_runtime_params_scaled_by_factor(self, actual_params: cpu.parameters.RuntimeParameters, factor: int):
         self.assertEqual(self.runtime_params.number_of_timesteps * factor, actual_params.number_of_timesteps)
         self.assertEqual(self.runtime_params.number_of_threads, actual_params.number_of_threads)
         self.assertEqual(self.runtime_params.timestep_log_interval, actual_params.timestep_log_interval)
 
-    def assert_kernel_forcing_scaled_by_factor(self, actual_kernel: LBMKernel, factor: int):
+    def assert_kernel_forcing_scaled_by_factor(self, actual_kernel: cpu.kernel.LBMKernel, factor: int):
         self.assertEqual(self.kernel.type, actual_kernel.type)
-        self.assertEqual(self.kernel.use_forcing, actual_kernel.use_forcing)
+        self.assertEqual(self.kernel.use_forcing, actual_kernel.cpu.parameters.use_forcing)
         self.assertAlmostEqual(self.kernel.forcing_in_x1 / factor, actual_kernel.forcing_in_x1)
         self.assertAlmostEqual(self.kernel.forcing_in_x2, actual_kernel.forcing_in_x2)
         self.assertAlmostEqual(self.kernel.forcing_in_x3, actual_kernel.forcing_in_x3)
@@ -80,14 +112,14 @@ class OneDirectionalAcousticScalingTest(unittest.TestCase):
 
     @staticmethod
     def make_kernel():
-        kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+        kernel = cpu.kernel.LBMKernel(cpu.kernel.KernelType.CompressibleCumulantFourthOrderViscosity)
         kernel.use_forcing = True
         kernel.forcing_in_x1 = 5e-10
         return kernel
 
     @staticmethod
     def make_runtime_params():
-        runtime_params = RuntimeParameters()
+        runtime_params = cpu.parameters.RuntimeParameters()
         runtime_params.number_of_threads = 4
         runtime_params.number_of_timesteps = 4_000_000
         runtime_params.timestep_log_interval = 1_000_000
@@ -95,13 +127,13 @@ class OneDirectionalAcousticScalingTest(unittest.TestCase):
 
     @staticmethod
     def make_physical_params():
-        physical_params = PhysicalParameters()
+        physical_params = cpu.parameters.PhysicalParameters()
         physical_params.lattice_viscosity = 1e-4
         return physical_params
 
     @staticmethod
     def make_grid_params():
-        grid_params = GridParameters()
+        grid_params = cpu.parameters.GridParameters()
         grid_params.node_distance = 1
         grid_params.number_of_nodes_per_direction = [1, 1, 16]
         grid_params.blocks_per_direction = [1, 1, 16]

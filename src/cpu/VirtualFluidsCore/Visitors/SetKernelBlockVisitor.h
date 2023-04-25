@@ -49,10 +49,10 @@ class SetKernelBlockVisitor : public Block3DVisitor
 public:
     enum Action { NewKernel, ChangeKernel, ChangeKernelWithData };
 
-    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem,
+    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, real availMem, real needMem,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
-    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int &numberOfProcesses,
+    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, int numberOfProcesses,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
     ~SetKernelBlockVisitor() override = default;
@@ -63,13 +63,13 @@ public:
 
 private:
     SPtr<LBMKernel> kernel;
-    LBMReal nue;
+    real nue;
     Action action;
     bool dataSetFlag;
 
     int numberOfProcesses{ 1 };
 
-    double getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) const;
+    real getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) const;
 
     void throwExceptionIfNotEnoughMemory(const SPtr<Grid3D> &grid);
 };

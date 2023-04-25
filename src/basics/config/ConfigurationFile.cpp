@@ -8,8 +8,9 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+#include <filesystem>
 
-#include <basics/basics/utilities/UbException.h>
+#include <basics/utilities/UbException.h>
 
 
 namespace vf::basics
@@ -26,7 +27,7 @@ bool ConfigurationFile::load(const std::string& file)
 
    if (!inFile.good())
    {
-      UB_THROW(UbException(UB_EXARGS, "Cannot read configuration file "+file+"!"));
+      UB_THROW(UbException(UB_EXARGS, "Cannot read configuration file " + file + "! Your current directory is " + std::filesystem::current_path().string() + "."));
    }
 
    while (inFile.good() && ! inFile.eof())

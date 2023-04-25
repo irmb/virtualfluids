@@ -56,10 +56,10 @@ void VelocityWithDensityBCAlgorithm::addDistributions(SPtr<DistributionArray3D> 
 void VelocityWithDensityBCAlgorithm::applyBC()
 {
    //velocity bc for non reflecting pressure bc
-   LBMReal f[D3Q27System::ENDF+1];
-   //LBMReal feq[D3Q27System::ENDF+1];
+   real f[D3Q27System::ENDF+1];
+   //real feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
-   LBMReal rho, vx1, vx2, vx3, drho;
+   real rho, vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    //calcFeqFct(feq, drho, vx1, vx2, vx3);
    
@@ -82,16 +82,17 @@ void VelocityWithDensityBCAlgorithm::applyBC()
         if (minX1 <= nX1 && maxX1 > nX1 && minX2 <= nX2 && maxX2 > nX2 && minX3 <= nX3 && maxX3 > nX3) {
             if (bcArray->isSolid(nX1, nX2, nX3)) {
                 const int invDir = D3Q27System::INVDIR[fdir];
-                //            LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
-                LBMReal velocity = bcPtr->getBoundaryVelocity(fdir);
-                //            LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 -
-                //            collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
-                //            q))-drho*D3Q27System::WEIGTH[invDir];
+                //LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
+                real velocity = bcPtr->getBoundaryVelocity(fdir);
+                
+                //LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 -
+                //collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
+                //q))-drho*D3Q27System::WEIGTH[invDir];
 
                 // if q=1
                 // LBMReal fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
                 // q))-drho*D3Q27System::WEIGTH[invDir];
-                LBMReal fReturn = (f[fdir] + f[invDir] - velocity * rho) / 2.0 - drho * D3Q27System::WEIGTH[invDir];
+                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / 2.0 - drho * D3Q27System::WEIGTH[invDir];
 
                 distributions->setDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
             }

@@ -39,8 +39,8 @@
 #include "basics/transmitter/TbTransmitterLocal.h"
 #include <PointerDefinitions.h>
 
-using VectorTransmitter    = TbTransmitter<CbVector<LBMReal>>;
+using VectorTransmitter    = TbTransmitter<CbVector<real>>;
 using vector_type          = VectorTransmitter::value_type;
-using VectorTransmitterPtr = SPtr<TbTransmitter<CbVector<LBMReal>>>;
+using VectorTransmitterPtr = SPtr<TbTransmitter<CbVector<real>>>;
 
 #endif // TransmitterType_h__

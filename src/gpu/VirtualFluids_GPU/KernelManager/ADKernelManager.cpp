@@ -56,7 +56,7 @@ void ADKernelManager::initAD(const int level) const
         para->getParD(level)->velocityY, 
         para->getParD(level)->velocityZ,
         para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->distributionsAD27.f[0],
+        para->getParD(level)->distributionsAD.f[0],
         para->getParD(level)->isEvenTimestep);
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = false;
@@ -72,7 +72,7 @@ void ADKernelManager::initAD(const int level) const
         para->getParD(level)->velocityY, 
         para->getParD(level)->velocityZ,
         para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->distributionsAD27.f[0],
+        para->getParD(level)->distributionsAD.f[0],
         para->getParD(level)->isEvenTimestep);
     //////////////////////////////////////////////////////////////////////////
     CalcConcentration27(
@@ -83,17 +83,17 @@ void ADKernelManager::initAD(const int level) const
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD27.f[0],
+        para->getParD(level)->distributionsAD.f[0],
         para->getParD(level)->isEvenTimestep);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
 {
-    for (uint j = 1; j <= para->getParH(level)->numberOfNodes; j++) {
-        const real coordX = para->getParH(level)->coordinateX[j];
-        const real coordY = para->getParH(level)->coordinateY[j];
-        const real coordZ = para->getParH(level)->coordinateZ[j];
+    for (size_t index = 1; index <= para->getParH(level)->numberOfNodes; index++) {
+        const real coordX = para->getParH(level)->coordinateX[index];
+        const real coordY = para->getParH(level)->coordinateY[index];
+        const real coordZ = para->getParH(level)->coordinateZ[index];
 
         real concentration;
 
@@ -104,7 +104,7 @@ void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryMan
             concentration = real(0.0);
         }
 
-        para->getParH(level)->concentration[j] = concentration;
+        para->getParH(level)->concentration[index] = concentration;
     }
 
     cudaMemoryManager->cudaCopyConcentrationHostToDevice(level);
@@ -173,7 +173,7 @@ void ADKernelManager::runADcollisionKernel(const int level)const
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
             para->getParD(level)->distributions.f[0],
-            para->getParD(level)->distributionsAD27.f[0],
+            para->getParD(level)->distributionsAD.f[0],
             para->getParD(level)->numberOfNodes,
             para->getParD(level)->forcing,
             para->getParD(level)->isEvenTimestep);
@@ -188,7 +188,7 @@ void ADKernelManager::runADslipBCKernel(const int level) const{
             para->getParD(level)->slipBC.normalY,
             para->getParD(level)->slipBC.normalZ,
             para->getParD(level)->distributions.f[0],
-            para->getParD(level)->distributionsAD27.f[0],
+            para->getParD(level)->distributionsAD.f[0],
             para->getParD(level)->slipBC.k,
             para->getParD(level)->slipBC.q27[0],
             para->getParD(level)->slipBC.numberOfBCnodes,
@@ -265,7 +265,7 @@ void ADKernelManager::runADpressureBCKernel(const int level) const{
             QADPressDev27(
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD27.f[0],
+                para->getParD(level)->distributionsAD.f[0],
                 para->getParD(level)->TempPress.temp,
                 para->getParD(level)->TempPress.velo,
                 para->getParD(level)->diffusivity,
@@ -346,7 +346,7 @@ void ADKernelManager::runADgeometryBCKernel(const int level) const
             QADBBDev27(
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD27.f[0],
+                para->getParD(level)->distributionsAD.f[0],
                 para->getParD(level)->Temp.temp,
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->Temp.k,
@@ -428,7 +428,7 @@ void ADKernelManager::runADveloBCKernel(const int level) const{
             QADVelDev27(
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD27.f[0],
+                para->getParD(level)->distributionsAD.f[0],
                 para->getParD(level)->TempVel.tempPulse,
                 para->getParD(level)->TempVel.velo,
                 para->getParD(level)->diffusivity,
@@ -498,7 +498,7 @@ void ADKernelManager::printAD(const int level, SPtr<CudaMemoryManager> cudaMemor
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,
         para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD27.f[0],
+        para->getParD(level)->distributionsAD.f[0],
         para->getParD(level)->isEvenTimestep);
 
     cudaMemoryManager->cudaCopyConcentrationDeviceToHost(level);

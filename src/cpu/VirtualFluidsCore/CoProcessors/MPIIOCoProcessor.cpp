@@ -55,7 +55,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
     //-----------------------------------------------------------------------
 
     MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-    int blocksBC[3]         = { 5, 38, 1 };
+    int blocksBC[3]         = { 5, 34, 1 };
     MPI_Aint offsetsBC[3], lbBC, extentBC;
 
     offsetsBC[0] = 0;
@@ -70,7 +70,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
 
     //---------------------------------------
 
-    MPI_Type_contiguous(8, MPI_CHAR, &arrayPresenceType);
+    MPI_Type_contiguous(9, MPI_CHAR, &arrayPresenceType);
     MPI_Type_commit(&arrayPresenceType);
 }
 
@@ -203,8 +203,8 @@ void MPIIOCoProcessor::writeBlocks(int step)
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
 
     if (comm->isRoot()) {
@@ -242,8 +242,8 @@ void MPIIOCoProcessor::readBlocks(int step)
                            << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
-    double start {0.};
-    double finish {0.};
+    real start {0.};
+    real finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -425,8 +425,7 @@ void MPIIOCoProcessor::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename6 =
-        path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
+    std::string filename6 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
     // MPI_File_delete(filename6.c_str(), info);
     int rc6 = MPI_File_open(MPI_COMM_WORLD, filename6.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc6 != MPI_SUCCESS)
@@ -469,6 +468,13 @@ void MPIIOCoProcessor::clearAllFiles(int step)
     int rc11 = MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc11 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename11);
+    MPI_File_set_size(file_handler, new_size);
+    MPI_File_close(&file_handler);
+
+    std::string filename12 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPressureField.bin";
+    int rc12 = MPI_File_open(MPI_COMM_WORLD, filename12.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc12 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename12);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 

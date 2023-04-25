@@ -9,7 +9,7 @@
 #include <sstream>
 #include "GPU/CudaMemoryManager.h"
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 //using namespace std;
 //////////////////////////////////////////////////////////////////////////
 
@@ -53,7 +53,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 	 {
 		 //////////////////////////////////////////////////////////////////////
 		 //measure the velocity
-		 int numberOfElements = para->getParH(lev)->numberOfNodes;
+		 unsigned long long numberOfElements = para->getParH(lev)->numberOfNodes;
 		 if (numberOfElements > 0)
 		 {
 			 CalcMacCompSP27(para->getParD(lev)->velocityX,
@@ -74,11 +74,11 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 			 cudaMemoryManager->cudaCopyPrint(lev);
 //			 para->cudaCopyForceVelo(i,numberOfElements);
 			 //////////////////////////////////////////////////////////////////
-			 for (int j = 0; j < numberOfElements; j++)
+			 for (size_t pos = 0; pos < numberOfElements; pos++)
 			 {
-				 tempVeloX += (double)para->getParH(lev)->velocityX[j];
-				 tempVeloY += (double)para->getParH(lev)->velocityY[j];
-				 tempVeloZ += (double)para->getParH(lev)->velocityZ[j];
+				 tempVeloX += (double)para->getParH(lev)->velocityX[pos];
+				 tempVeloY += (double)para->getParH(lev)->velocityY[pos];
+				 tempVeloZ += (double)para->getParH(lev)->velocityZ[pos];
 			 }
 			 tempVeloX /= (double)numberOfElements;
 			 tempVeloY /= (double)numberOfElements;
@@ -125,7 +125,7 @@ void ForceCalculations::printForcing(Parameter* para)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
-	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_forcing.txt";
+	std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyProcessID()) + "_forcing.txt";
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream

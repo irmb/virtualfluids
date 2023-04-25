@@ -47,18 +47,23 @@ GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, Gr
         if(!gridScalingFactory){
             throw std::runtime_error("There is more than one level, but no scalingFactory was provided.");
         }
-        checkScalingFunction(gridScalingFactory->getGridScalingFC(), this->para->getParD(0)->intFC, "scalingFineToCoarse");
-        this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC();
-    } else{
-        if (gridScalingFactory && gridScalingFactory->getGridScalingFC() != nullptr)
-            VF_LOG_WARNING("A scaling function for fine to coarse was provided, although there is only one level.");
+        checkScalingFunction(gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->fineToCoarse, "scalingFineToCoarse");
+        checkScalingFunction(gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity()), this->para->getParD(0)->coarseToFine, "scalingCoarseToFine");
+        this->scalingFineToCoarse = gridScalingFactory->getGridScalingFC(parameter->getUseTurbulentViscosity());
+        this->scalingCoarseToFine = gridScalingFactory->getGridScalingCF(parameter->getUseTurbulentViscosity());
     }
+    
+    if(this->scalingFineToCoarse == nullptr)
+        VF_LOG_TRACE("Function for scalingFineToCoarse is nullptr");
+    if(this->scalingCoarseToFine == nullptr)
+        VF_LOG_TRACE("Function for scalingCoarseToFine is nullptr");
 }
 
-void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCellFC* icellFC, int streamIndex) const{
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, InterpolationCells *fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex) const
+{
+    cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
-    this->scalingFineToCoarse(para->getParD(level).get(), para->getParD(level+1).get(), icellFC, stream);
+    this->scalingFineToCoarse(para->getParD(level).get(), para->getParD(level+1).get(), fineToCoarse, neighborFineToCoarse, stream);
 
     // ScaleFC_comp_D3Q27F3(
     //     para->getParD(level)->distributions.f[0],
@@ -289,21 +294,21 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intFC.ICellFCC,
-            para->getParD(level)->intFC.ICellFCF,
-            para->getParD(level)->K_FC,
-            para->getParD(level)->vis,
+            para->getParD(level)->fineToCoarse.coarseCellIndices,
+            para->getParD(level)->fineToCoarse.fineCellIndices,
+            para->getParD(level)->fineToCoarse.numberOfCells,
+            para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->offFC);
+            para->getParD(level)->neighborFineToCoarse);
     }
     else if (para->getDiffMod() == 27)
     {
         ScaleFCThS27(
             para->getParD(level)->distributions.f[0],
             para->getParD(level+1)->distributions.f[0],
-            para->getParD(level)->distributionsAD27.f[0],
-            para->getParD(level+1)->distributionsAD27.f[0],
+            para->getParD(level)->distributionsAD.f[0],
+            para->getParD(level+1)->distributionsAD.f[0],
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
@@ -313,19 +318,20 @@ void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intFC.ICellFCC,
-            para->getParD(level)->intFC.ICellFCF,
-            para->getParD(level)->K_FC,
-            para->getParD(level)->vis,
+            para->getParD(level)->fineToCoarse.coarseCellIndices,
+            para->getParD(level)->fineToCoarse.fineCellIndices,
+            para->getParD(level)->fineToCoarse.numberOfCells,
+            para->getParD(level)->viscosity,
             para->getParD(level)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->offFC);
+            para->getParD(level)->neighborFineToCoarse);
     }
 }
 
-void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCellCF* icellCF, OffCF &offCF, int streamIndex) const
+void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCells* coarseToFine, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex) const
 {
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+    cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
+    this->scalingCoarseToFine(para->getParD(level).get(), para->getParD(level+1).get(), coarseToFine, neighborFineToCoarse, stream);
 
     // ScaleCF_comp_D3Q27F3(
     //     para->getParD(level)->distributions.f[0],
@@ -405,32 +411,6 @@ void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, Interpol
     //     para->getParD(level)->numberofthreads,
     //     offCF,
     //     stream);
-
-    ScaleCF_RhoSq_comp_27(
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level + 1)->distributions.f[0],
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level + 1)->neighborX,
-        para->getParD(level + 1)->neighborY,
-        para->getParD(level + 1)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level + 1)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep,
-        icellCF->ICellCFC,
-        icellCF->ICellCFF,
-        icellCF->kCF,
-        para->getParD(level)->omega,
-        para->getParD(level + 1)->omega,
-        para->getParD(level)->vis,
-        para->getParD(level)->nx,
-        para->getParD(level)->ny,
-        para->getParD(level + 1)->nx,
-        para->getParD(level + 1)->ny,
-        para->getParD(level)->numberofthreads,
-        offCF,
-        stream);
 
     // ScaleCF_AA2016_comp_27(
     //     para->getParD(level)->distributions.f[0],
@@ -583,21 +563,21 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intCF.ICellCFC,
-            para->getParD(level)->intCF.ICellCFF,
-            para->getParD(level)->K_CF,
-            para->getParD(level)->vis,
+            para->getParD(level)->coarseToFine.coarseCellIndices,
+            para->getParD(level)->coarseToFine.fineCellIndices,
+            para->getParD(level)->coarseToFine.numberOfCells,
+            para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->offCF);
+            para->getParD(level)->neighborCoarseToFine);
     }
     else if (para->getDiffMod() == 27)
     {
         ScaleCFThS27(
             para->getParD(level)->distributions.f[0],
             para->getParD(level+1)->distributions.f[0],
-            para->getParD(level)->distributionsAD27.f[0],
-            para->getParD(level+1)->distributionsAD27.f[0],
+            para->getParD(level)->distributionsAD.f[0],
+            para->getParD(level+1)->distributionsAD.f[0],
             para->getParD(level)->neighborX,
             para->getParD(level)->neighborY,
             para->getParD(level)->neighborZ,
@@ -607,12 +587,12 @@ void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
             para->getParD(level)->numberOfNodes,
             para->getParD(level+1)->numberOfNodes,
             para->getParD(level)->isEvenTimestep,
-            para->getParD(level)->intCF.ICellCFC,
-            para->getParD(level)->intCF.ICellCFF,
-            para->getParD(level)->K_CF,
-            para->getParD(level)->vis,
+            para->getParD(level)->coarseToFine.coarseCellIndices,
+            para->getParD(level)->coarseToFine.fineCellIndices,
+            para->getParD(level)->coarseToFine.numberOfCells,
+            para->getParD(level)->viscosity,
             para->getParD(level+1)->diffusivity,
             para->getParD(level)->numberofthreads,
-            para->getParD(level)->offCF);
+            para->getParD(level)->neighborCoarseToFine);
     }
 }

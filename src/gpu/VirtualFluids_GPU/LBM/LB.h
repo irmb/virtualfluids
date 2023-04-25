@@ -1,10 +1,35 @@
-//  _    ___      __              __________      _     __        ______________   __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//////////////////////////////////////////////////////////////////////////
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file lb.h
+//! \ingroup LBM
+//! \author Martin Schoenherr
+//=======================================================================================#ifndef _LB_H_
 #ifndef _LB_H_
 #define _LB_H_
 
@@ -15,9 +40,9 @@
 
 //////////////////////////
 //porous media
-#define GEO_PM_0		 5
-#define GEO_PM_1		 6
-#define GEO_PM_2		 7
+#define GEO_PM_0         5
+#define GEO_PM_1         6
+#define GEO_PM_2         7
 //////////////////////////
 
 #define GEO_SOLID       15
@@ -45,132 +70,68 @@
 #define INTERFACE_B 5
 
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 
 #include <string>
 #include <vector>
 
-
-struct InitCondition
-{
-   real Re;
-   real factorPressBC {1.0};
-   real Diffusivity {0.001};
-   real Temp {0.0};
-   real TempBC {1.0};
-   real RealX {1.0};
-   real RealY {1.0};
-   int numprocs {1};
-   int myid {0};
-   int maxdev {1};
-   uint tDoCheckPoint {0};
-   uint tDoRestart {0};
-   uint tCalcMedStart {0};
-   uint tCalcMedEnd {10};
-   uint tend {10};
-   uint tout {1};
-   uint tStartOut {0};
-   uint PressInID {0};
-   uint PressOutID {0};
-   uint PressInZ {1};
-   uint PressOutZ {2};
-   std::vector<uint> devices {0, 1}; // one device with ID = 0
-   std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
-   std::vector<real> scaleLBMtoSI, translateLBMtoSI;
-   std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::string fname;
-   std::string oPath {"output/"};
-   std::string gridPath {"grid/"};
-   std::string oPrefix {"MyFile"};
-   std::string geometryFileC, geometryFileM, geometryFileF;
-   std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
-   std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
-   std::string slipBcPos, slipBcQs, slipBcValue;
-   std::string pressBcPos, pressBcQs, pressBcValue;
-   std::string geomBoundaryBcQs,velBcQs;
-   std::string geomBoundaryBcValues,velBcValues,pressBcValues,noSlipBcValues;
-   std::string propellerCylinder, propellerValues, propellerQs, measurePoints;
-   std::string inletBcQs, inletBcValues;
-   std::string outletBcQs, outletBcValues;
-   std::string topBcQs, topBcValues;
-   std::string bottomBcQs, bottomBcValues;
-   std::string frontBcQs, frontBcValues;
-   std::string backBcQs, backBcValues;
-   std::string wallBcQs, wallBcValues;
-   std::string periodicBcQs, periodicBcValues;
-   std::string numberNodes, LBMvsSI;
-   std::string cpTop, cpBottom, cpBottom2;
-   std::string concentration, streetVelocity;
-   std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
-   uint timeStepForMP {10};
-   real clockCycleForMP {1.0};
-   real vis {0.001};
-   real vis_ratio {1.0};
-   real u0 {0.01};
-   real u0_ratio {1.0};
-   real delta_rho {0.0};
-   real delta_press {1.0};
-   bool printFiles {false};
-   bool doRestart {false};
-   bool doCheckPoint {false};
-   bool readGeo {false};
-   bool isGeo, isProp, isCp;
-   bool GeometryValues {false};
-   bool is2ndOrderMoments {false};
-   bool is3rdOrderMoments {false};
-   bool isHighOrderMoments {false};
-   bool calcMedian {false};
-   bool isConc {false};
-   bool isWale {false};
-   bool isTurbulentViscosity {false};
-   bool isAMD {false};
-   real SGSConstant {0.0};
-   bool isMeasurePoints {false};
-   bool isInitNeq {false};
-   bool isGeoNormal, isInflowNormal, isOutflowNormal;
-   bool hasWallModelMonitor {false};
-   bool simulatePorousMedia {false};
-   bool streetVelocityFile {false};
+//! \brief An enumeration for selecting a turbulence model
+enum class TurbulenceModel {
+   //! - Smagorinsky
+   Smagorinsky,
+    //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
+   AMD,
+    //! - QR model by Verstappen 
+   QR,
+    //! - TODO: move the WALE model here from the old kernels
+    //WALE
+    //! - No turbulence model
+   None
 };
 
+//! \brief An enumeration for selecting a template of the collision kernel (CumulantK17)
+enum class CollisionTemplate {
+   //! - Default: plain collision without additional read/write
+   Default,
+   //!  - WriteMacroVars: collision \w write out macroscopic variables
+   WriteMacroVars,
+   //! - ApplyBodyForce: collision \w read and apply body force in the collision kernel
+   ApplyBodyForce,
+   //! - AllFeatures: collision \w write out macroscopic variables AND read and apply body force
+   AllFeatures,
+   //! - Border: collision on border nodes
+   SubDomainBorder
+};
+constexpr std::initializer_list<CollisionTemplate> all_CollisionTemplate  = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures, CollisionTemplate::SubDomainBorder};
+constexpr std::initializer_list<CollisionTemplate> bulk_CollisionTemplate = { CollisionTemplate::Default, CollisionTemplate::WriteMacroVars, CollisionTemplate::ApplyBodyForce, CollisionTemplate::AllFeatures};
+
 //Interface Cells
-typedef struct ICellCF{
-   uint* ICellCFF;
-   uint* ICellCFC;
-   uint kCF;
-} InterpolationCellCF;
+// example of old names (pre 2023) ICellCFC: interpolation from Coarse (C) to Fine (F), indices of the Coarse cells (C)
+typedef struct ICells{
+   uint* fineCellIndices;
+   uint* coarseCellIndices;
+   uint numberOfCells;
+} InterpolationCells;
 
-typedef struct ICellFC{
-   uint* ICellFCF;
-   uint* ICellFCC;
-   uint kFC;
-} InterpolationCellFC;
-
-//Offset of the interface cells at the wall
-typedef struct OffCF{
-   real* xOffCF;
-   real* yOffCF;
-   real* zOffCF;
-} OffsetCF;
-
-typedef struct OffFC{
-   real* xOffFC;
-   real* yOffFC;
-   real* zOffFC;
-} OffsetFC;
+//! \brief stores location of neighboring cell (necessary for refinement into the wall)
+typedef struct ICellNeigh{
+   real* x;
+   real* y;
+   real* z;
+} InterpolationCellNeighbor;
 
 // Distribution functions g 6
-typedef struct  Distri6 {
-	real* g[6];
+typedef struct  Distri6 { // ADD IN FUTURE RELEASE
+   real* g[6];
 } Distributions6;
 
 // Distribution functions f 7
-typedef struct  Distri7{
+typedef struct  Distri7{ // ADD IN FUTURE RELEASE
    real* f[7];
 } Distributions7;
 
 // Distribution functions f 19
-typedef struct  Distri19{
+typedef struct  Distri19{ // DEPRECATED
    real* f[19];
 } Distributions19;
 
@@ -201,15 +162,30 @@ typedef struct QforBC{
    real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 
+typedef struct QforPrecursorBC{
+   int* k;
+   int numberOfBCnodes=0;
+   int sizeQ;
+   int numberOfPrecursorNodes=0;
+   uint nPrecursorReads=0;
+   uint timeStepsBetweenReads;
+   size_t numberOfQuantities;
+   real* q27[27];
+   uint* planeNeighbor0PP, *planeNeighbor0PM, *planeNeighbor0MP, *planeNeighbor0MM;
+   real* weights0PP, *weights0PM, *weights0MP,  *weights0MM;
+   real* last, *current, *next;
+   real velocityX, velocityY, velocityZ;
+}QforPrecursorBoundaryConditions;
+
 //BCTemp
-typedef struct TempforBC{
+typedef struct TempforBC{  // ADD IN FUTURE RELEASE
    int* k;
    real* temp;
    int kTemp=0;
 }TempforBoundaryConditions;
 
 //BCTempVel
-typedef struct TempVelforBC{
+typedef struct TempVelforBC{  // ADD IN FUTURE RELEASE
    int* k;
    real* temp;
    real* tempPulse;
@@ -218,7 +194,7 @@ typedef struct TempVelforBC{
 }TempVelforBoundaryConditions;
 
 //BCTempPress
-typedef struct TempPressforBC{
+typedef struct TempPressforBC{  // ADD IN FUTURE RELEASE
    int* k;
    real* temp;
    real* velo;
@@ -236,56 +212,58 @@ typedef struct WMparas{
    real* Fz;
 }WallModelParameters;
 
+
 //measurePoints
-typedef struct MeasP{
-	std::string name;
-	uint k;
-	std::vector<real> Vx;
-	std::vector<real> Vy;
-	std::vector<real> Vz;
-	std::vector<real> Rho;
-	//real* Vx;
-	//real* Vy;
-	//real* Vz;
-	//real* Rho;
+typedef struct MeasP{ // ADD IN FUTURE RELEASE
+   std::string name;
+   uint k;
+   std::vector<real> Vx;
+   std::vector<real> Vy;
+   std::vector<real> Vz;
+   std::vector<real> Rho;
+   //real* Vx;
+   //real* Vy;
+   //real* Vz;
+   //real* Rho;
 }MeasurePoints;
 
 //Process Neighbors
 typedef struct PN27{
-	real* f[27];
-	uint memsizeFs;
-	int* index;
-	uint memsizeIndex;
-	uint rankNeighbor;
-	int numberOfNodes;
-	int numberOfFs;
+   real* f[27];
+   uint memsizeFs;
+   int* index;
+   uint memsizeIndex;
+   uint rankNeighbor;
+   int numberOfNodes;
+   int numberOfFs;
 }ProcessNeighbor27;
 
-typedef struct PN_F3 {
-	real* g[6];
-	uint memsizeGs;
-	int* index;
-	uint memsizeIndex;
-	uint rankNeighbor;
-	int numberOfNodes;
-	int numberOfGs;
+typedef struct PN_F3 { // ADD IN FUTURE RELEASE
+   real* g[6];
+   uint memsizeGs;
+   int* index;
+   uint memsizeIndex;
+   uint rankNeighbor;
+   int numberOfNodes;
+   int numberOfGs;
 }ProcessNeighborF3;
 
-//path line particles
+//path line particles // DEPRECATED
 typedef struct PLP{
-	bool *stuck, *hot;
-	real *coordXabsolut, *coordYabsolut, *coordZabsolut;
-	real *coordXlocal,   *coordYlocal,   *coordZlocal;
-	real *veloX,         *veloY,         *veloZ;
-	real *randomLocationInit;
-	uint *timestep;
-	uint *ID;
-	uint *cellBaseID;
-	uint numberOfParticles, numberOfTimestepsParticles;
-	uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
+   bool *stuck, *hot;
+   real *coordXabsolut, *coordYabsolut, *coordZabsolut;
+   real *coordXlocal,   *coordYlocal,   *coordZlocal;
+   real *veloX,         *veloY,         *veloZ;
+   real *randomLocationInit;
+   uint *timestep;
+   uint *ID;
+   uint *cellBaseID;
+   uint numberOfParticles, numberOfTimestepsParticles;
+   uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
 
 //////////////////////////////////////////////////////////////////////////
+// DEPRECATED
 inline int vectorPosition(int i, int j, int k, int Lx, int Ly )
 {
    //return((j+15)*(Lx+2*16)+(i+15));
@@ -293,7 +271,4 @@ inline int vectorPosition(int i, int j, int k, int Lx, int Ly )
 }
 //////////////////////////////////////////////////////////////////////////
 
-
 #endif
-
-

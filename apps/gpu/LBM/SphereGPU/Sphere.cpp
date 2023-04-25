@@ -42,10 +42,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+#include <logger/Logger.h>
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
 
@@ -70,6 +68,8 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -84,26 +84,17 @@ int main(int argc, char *argv[])
 
         const real L = 1.0;
         const real dSphere = 0.2;
-        const real Re = 1000.0; // related to the sphere's diameter
+        const real Re = 300.0; // related to the sphere's diameter
         const real velocity = 1.0;
         const real dt = (real)0.5e-3;
-        const uint nx = 64;
+        const uint nx = 50;
 
-        const uint timeStepOut = 1000;
+        const uint timeStepOut = 10000;
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-        //////////////////////////////////////////////////////////////////////////
         // setup simulation parameters (with or without config file)
-        //////////////////////////////////////////////////////////////////////////
+        //////////////////////////
 
         vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();;
         SPtr<Parameter> para;
@@ -111,24 +102,9 @@ int main(int argc, char *argv[])
         GridScalingFactory scalingFactory = GridScalingFactory();
         vf::basics::ConfigurationFile config;
         if (useConfigFile) {
-            //////////////////////////////////////////////////////////////////////////
-            // read simulation parameters from config file
-            //////////////////////////////////////////////////////////////////////////
-
-            // assuming that a config files is stored parallel to this file.
-            std::filesystem::path configPath = __FILE__;
-
-            // the config file's default name can be replaced by passing a command line argument
-            std::string configName("config.txt");
-            if (argc == 2) {
-                configName = argv[1];
-                std::cout << "Using configFile command line argument: " << configName << std::endl;
-            }
-
-            configPath.replace_filename(configName);
-            config.load(configPath.string());
-
-            para = std::make_shared<Parameter>(config);
+            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/SphereGPU/config.txt");
+            para = std::make_shared<Parameter>(&config);
         } else {
             para = std::make_shared<Parameter>();
         }
@@ -147,18 +123,18 @@ int main(int argc, char *argv[])
 
         real dx = L / real(nx);
         gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L,
-                                    8.0 * L,  0.6 * L,  0.6 * L, dx);
+                                    3.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // use primitive
-        Object *sphere = new Sphere(0.0, 0.0, 0.0, dSphere / 2.0);
+        // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
 
         // use stl
-        // std::string stlPath = "stl/sphere02.stl";
-        // if (useConfigFile && config.contains("STLPath")) {
-        //     stlPath = config.getValue<std::string>("STLPath");
-        // }
-        // std::cout << "Reading stl from " << stlPath << "." << std::endl;
-        // Object *sphere = TriangularMesh::make(stlPath);
+        std::string stlPath = "./apps/gpu/LBM/SphereGPU/sphere02.stl";
+        if (useConfigFile && config.contains("STLPath")) {
+            stlPath = config.getValue<std::string>("STLPath");
+        }
+        std::cout << "Reading stl from " << stlPath << "." << std::endl;
+        auto sphere = std::make_shared<TriangularMesh>(stlPath);
 
         gridBuilder->addGeometry(sphere);
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -168,7 +144,7 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         // gridBuilder->setNumberOfLayers(10, 8);
-        // gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, 2.0 * dSphere), 1);
+        // gridBuilder->addGrid(std::make_shared<Sphere>(0.0, 0.0, 0.0, 2.0 * dSphere), 1);
         // para->setMaxLevel(2);
         // scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleK17);
 
@@ -176,7 +152,7 @@ int main(int argc, char *argv[])
         // build grid
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->buildGrids(LBM, false);  // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->buildGrids(false);  // buildGrids() has to be called before setting the BCs!!!!
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -185,8 +161,9 @@ int main(int argc, char *argv[])
         const real velocityLB = velocity * dt / dx; // LB units
         const real viscosityLB =  (dSphere / dx) * velocityLB / Re; // LB units
 
-        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+        VF_LOG_INFO("LB parameters:");
+        VF_LOG_INFO("velocity LB [dx/dt]              = {}", velocityLB);
+        VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
 
         //////////////////////////////////////////////////////////////////////////
         // set parameters
@@ -221,7 +198,31 @@ int main(int argc, char *argv[])
         bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
         bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
         bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
-        
+
+        //////////////////////////////////////////////////////////////////////////
+        // setup probe(s)
+        //////////////////////////////////////////////////////////////////////////
+
+        const uint tStartAveraging = 0;
+        const uint tAveraging      = 100;
+        const uint tStartOutProbe  = 0;
+        const uint tOutProbe       = para->getTimestepOut();
+        SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>( "pointProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
+        std::vector<real> probeCoordsX = {0.3, 0.5};
+        std::vector<real> probeCoordsY = {0.0, 0.0};
+        std::vector<real> probeCoordsZ = {0.0, 0.0};
+        pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+
+        pointProbe->addStatistic(Statistic::Instantaneous);
+        pointProbe->addStatistic(Statistic::Means);
+        pointProbe->addStatistic(Statistic::Variances);
+        para->addProbe( pointProbe );
+
+        SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
+        planeProbe->setProbePlane(dSphere, 0, 0, 0.5, 0.1, 0.1);
+        planeProbe->addStatistic(Statistic::Means);
+        para->addProbe( planeProbe );
+
         //////////////////////////////////////////////////////////////////////////
         // setup to copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
@@ -236,14 +237,14 @@ int main(int argc, char *argv[])
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
         sim.run();
 
+    } catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
     } catch (const std::bad_alloc &e) {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     } catch (const std::exception &e) {
-        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-    } catch (std::string &s) {
-        *logging::out << logging::Logger::LOGGER_ERROR << s << "\n";
+        VF_LOG_CRITICAL("exception: {}", e.what());
     } catch (...) {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
     return 0;

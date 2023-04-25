@@ -9,6 +9,8 @@ using namespace std;
 
 void run(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       vf::basics::ConfigurationFile   config;
@@ -17,18 +19,18 @@ void run(string configname)
       string          pathname = config.getValue<string>("pathname");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      double          uLB = config.getValue<double>("uLB");
-      double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
-      double          availMem = config.getValue<double>("availMem");
+      real          uLB = config.getValue<real>("uLB");
+      real          endTime = config.getValue<real>("endTime");
+      real          outTime = config.getValue<real>("outTime");
+      real          availMem = config.getValue<real>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
-      double          Re = config.getValue<double>("Re");
-      double          dx = config.getValue<double>("dx");
-      vector<double>  length = config.getVector<double>("length");
+      real          Re = config.getValue<real>("Re");
+      real          dx = config.getValue<real>("dx");
+      vector<real>  length = config.getVector<real>("length");
       bool            logToFile = config.getValue<bool>("logToFile");
-      double          restartStep = config.getValue<double>("restartStep");
-      double          cpStart = config.getValue<double>("cpStart");
-      double          cpStep = config.getValue<double>("cpStep");
+      real          restartStep = config.getValue<real>("restartStep");
+      real          cpStart = config.getValue<real>("cpStart");
+      real          cpStep = config.getValue<real>("cpStep");
       bool            newStart = config.getValue<bool>("newStart");
 
       SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
@@ -56,9 +58,9 @@ void run(string configname)
 
       //Sleep(30000);
 
-      LBMReal dLB = length[1] / dx;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = (uLB*dLB) / Re;
+      real dLB = length[1] / dx;
+      real rhoLB = 0.0;
+      real nuLB = (uLB*dLB) / Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -72,27 +74,28 @@ void run(string configname)
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
-      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
+      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
-      double startTime = 5;
+      //double startTime = 5;
       mu::Parser fct1;
       fct1.SetExpr("U");
-      fct1.DefineConst("U", 0.00001);
-      SPtr<BCAdapter> velBCAdapter1(new VelocityBCAdapter(true, false, false, fct1, 0, startTime));
-      velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      fct1.DefineConst("U", uLB);
+      SPtr<BCAdapter> velBCAdapter1(new VelocityBCAdapter(true, false, false, fct1, 0, BCFunction::INFCONST));
+      //velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
-      mu::Parser fct2;
-      fct2.SetExpr("U");
-      fct2.DefineConst("U", uLB);
-      SPtr<BCAdapter> velBCAdapter2(new VelocityBCAdapter(true, false, false, fct2, startTime, BCFunction::INFCONST));
+      //mu::Parser fct2;
+      //fct2.SetExpr("U");
+      //fct2.DefineConst("U", uLB);
+      //SPtr<BCAdapter> velBCAdapter2(new VelocityBCAdapter(true, false, false, fct2, startTime, BCFunction::INFCONST));
 
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(denBCAdapter);
-      //bcVisitor.addBC(velBCAdapter);
+      //bcVisitor.addBC(velBCAdapter1);
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
@@ -107,11 +110,16 @@ void run(string configname)
       kernel->setBCProcessor(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathname + "/mig", comm));
+      //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
       migCoProcessor->setLBMKernel(kernel);
       migCoProcessor->setBCProcessor(bcProc);
+      migCoProcessor->setNu(nuLB);
+      migCoProcessor->setNuLG(0.01, 0.01);
+      migCoProcessor->setDensityRatio(1);
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<D3Q27Interactor> inflowInt;
@@ -120,13 +128,13 @@ void run(string configname)
       {
 
          //bounding box
-         double g_minX1 = 0.0;
-         double g_minX2 = -length[1] / 2.0;
-         double g_minX3 = -length[2] / 2.0;
+         real g_minX1 = 0.0;
+         real g_minX2 = -length[1] / 2.0;
+         real g_minX3 = -length[2] / 2.0;
 
-         double g_maxX1 = length[0];
-         double g_maxX2 = length[1] / 2.0;
-         double g_maxX3 = length[2] / 2.0;
+         real g_maxX1 = length[0];
+         real g_maxX2 = length[1] / 2.0;
+         real g_maxX3 = length[2] / 2.0;
 
          //geometry
          //x
@@ -139,7 +147,7 @@ void run(string configname)
          if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
 
-         double blockLength = blocknx[0] * dx;
+         real blockLength = blocknx[0] * dx;
 
 
 
@@ -157,7 +165,7 @@ void run(string configname)
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
          grid->setPeriodicX1(false);
-         grid->setPeriodicX2(true);
+         grid->setPeriodicX2(false);
          grid->setPeriodicX3(false);
 
          if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
@@ -208,13 +216,13 @@ void run(string configname)
          //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
          
          inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter1, Interactor3D::SOLID));
-         inflowInt->addBCAdapter(velBCAdapter2);
+         //inflowInt->addBCAdapter(velBCAdapter2);
 
 
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
 
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+         //SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(cylinderInt);
          intHelper.addInteractor(inflowInt);
@@ -229,8 +237,8 @@ void run(string configname)
          unsigned long long numberOfNodesPerBlock = (unsigned long long)(blocknx[0])* (unsigned long long)(blocknx[1])* (unsigned long long)(blocknx[2]);
          unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
          unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-         double needMemAll = double(numberOfNodesPerBlockWithGhostLayer*(27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-         double needMem = needMemAll / double(comm->getNumberOfProcesses());
+         real needMemAll = real(numberOfNodesPerBlockWithGhostLayer*(27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+         real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
          if (myid == 0)
          {
@@ -313,9 +321,9 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-      auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
-      timeDepBC->addInteractor(inflowInt);
+      //SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
+      //auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+      //timeDepBC->addInteractor(inflowInt);
 
       omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
@@ -324,7 +332,7 @@ void run(string configname)
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(pp);
       calculator->addCoProcessor(migCoProcessor);
-      calculator->addCoProcessor(timeDepBC);
+      //calculator->addCoProcessor(timeDepBC);
 
       if (myid == 0) VF_LOG_INFO("Simulation-start");
       calculator->calculate();
@@ -349,7 +357,7 @@ void run(string configname)
 int main(int argc, char *argv[])
 {
     try {
-        vf::logging::Logger::initalizeLogger();
+        vf::logging::Logger::initializeLogger();
 
         VF_LOG_INFO("Starting VirtualFluids...");
 

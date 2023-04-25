@@ -1,14 +1,16 @@
 #ifndef _MPI_STRUCTURES_H_
 #define _MPI_STRUCTURES_H_
 
+#include "lbm/constants/D3Q27.h"
+
 namespace MPIIODataStructures
 {
 //! \struct GridParam
 //! \brief Structure describes parameters of the grid
 //! \details The structure is nessasary to restore the grid correctly
 struct GridParam {
-    double trafoParams[33];
-    double deltaX;
+    real trafoParams[33];
+    real deltaX;
     int blockNx1;
     int blockNx2;
     int blockNx3;
@@ -57,11 +59,11 @@ struct dataSetParam {
 //! \brief Structure describes parameters of the dataSet in MPIIORestartCoProcessor format
 //! \details The structure is used when reading from the file
 struct DataSetRestart {
-    double collFactor;
-    double deltaT;
-    double collFactorL; // for Multiphase model
-    double collFactorG; // for Multiphase model
-    double densityRatio;// for Multiphase model
+    real collFactor;
+    real deltaT;
+    real collFactorL; // for Multiphase model
+    real collFactorG; // for Multiphase model
+    real densityRatio;// for Multiphase model
     int x1;
     int x2;
     int x3;
@@ -75,11 +77,11 @@ struct DataSetRestart {
 //! \brief Structure describes parameters of the dataSet in MPIIOMigrationCoProcessor format
 //! \details The structure is used to find the needed block in the grid when restoring a dataSet
 struct DataSetMigration {
-    double collFactor;
-    double deltaT;
-    double collFactorL; // for Multiphase model
-    double collFactorG; // for Multiphase model
-    double densityRatio;// for Multiphase model
+    real collFactor;
+    real deltaT;
+    real collFactorL; // for Multiphase model
+    real collFactorG; // for Multiphase model
+    real densityRatio;// for Multiphase model
     int globalID;
     int ghostLayerWidth;
     bool compressible;
@@ -113,19 +115,14 @@ struct BoundaryCondition {
     long long densityBoundaryFlags;
     long long wallModelBoundaryFlags;
 
-    float bcVelocityX1;
-    float bcVelocityX2;
-    float bcVelocityX3;
-    float bcDensity;
+    real bcVelocityX1;
+    real bcVelocityX2;
+    real bcVelocityX3;
+    real bcDensity;
+    real bcPhaseField;
 
-    float bcLodiDensity;
-    float bcLodiVelocityX1;
-    float bcLodiVelocityX2;
-    float bcLodiVelocityX3;
-    float bcLodiLentgh;
-
-    float nx1, nx2, nx3;
-    float q[26];
+    real nx1, nx2, nx3;
+    real q[26];
 
     char algorithmType;
 };
@@ -172,6 +169,7 @@ struct DSArraysPresence {
     bool isRelaxationFactorPresent;
     bool isPhaseField1Present;
     bool isPhaseField2Present;
+    bool isPressureFieldPresent;
 };
 } // namespace MPIIODataStructures
 #endif

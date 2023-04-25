@@ -73,8 +73,8 @@ struct Distribution
     typedef const Direction* const_iterator;
 
     real* f;
-    int *dirs;
-    Direction* directions;
+    std::vector<int> dirs;
+    std::vector<Direction> directions;
     int dir_start;
     int dir_end;
     const char* name;

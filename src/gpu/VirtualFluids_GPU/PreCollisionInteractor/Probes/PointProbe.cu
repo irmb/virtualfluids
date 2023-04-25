@@ -55,15 +55,14 @@ std::vector<PostProcessingVariable> PointProbe::getPostProcessingVariables(Stati
         postProcessingVariables.push_back( PostProcessingVariable("rho_mean", this->densityRatio ) );
         break;
     case Statistic::Variances:
-        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  pow(this->velocityRatio, 2.0)) );
-        postProcessingVariables.push_back( PostProcessingVariable("rho_var", pow(this->densityRatio,  2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  this->stressRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("rho_var", this->densityRatio) );
         break;
 
     default:
-        printf("Statistic unavailable in PointProbe\n");
-        assert(false);
+        throw std::runtime_error("PointProbe::getPostProcessingVariables: Statistic unavailable!");
         break;
     }
     return postProcessingVariables;
@@ -76,20 +75,20 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 {
 
     real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-    for(uint j=1; j<para->getParH(level)->numberOfNodes; j++ )
+    for(size_t pos = 1; pos < para->getParH(level)->numberOfNodes; pos++ )
     {    
         for(uint point=0; point<this->pointCoordsX.size(); point++)
         {
             real pointCoordX = this->pointCoordsX[point];
             real pointCoordY = this->pointCoordsY[point];
             real pointCoordZ = this->pointCoordsZ[point];
-            real distX = pointCoordX-para->getParH(level)->coordinateX[j];
-            real distY = pointCoordY-para->getParH(level)->coordinateY[j];
-            real distZ = pointCoordZ-para->getParH(level)->coordinateZ[j];
+            real distX = pointCoordX-para->getParH(level)->coordinateX[pos];
+            real distY = pointCoordY-para->getParH(level)->coordinateY[pos];
+            real distZ = pointCoordZ-para->getParH(level)->coordinateZ[pos];
             if( distX <=dx && distY <=dx && distZ <=dx &&
                 distX >0.f && distY >0.f && distZ >0.f)
             {
-                probeIndices_level.push_back(j);
+                probeIndices_level.push_back((int)pos);
                 distX_level.push_back( distX/dx );
                 distY_level.push_back( distY/dx );
                 distZ_level.push_back( distZ/dx );
@@ -114,7 +113,7 @@ void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
 void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ)
 {
     bool isSameLength = ( (_pointCoordsX.size()==_pointCoordsY.size()) && (_pointCoordsY.size()==_pointCoordsZ.size()));
-    assert("Probe: point lists have different lengths" && isSameLength);
+    if (!isSameLength) throw std::runtime_error("Probe::addProbePointsFromList(): point lists have different lengths!");
     this->pointCoordsX.insert(this->pointCoordsX.end(), _pointCoordsX.begin(),  _pointCoordsX.end());
     this->pointCoordsY.insert(this->pointCoordsY.end(), _pointCoordsY.begin(),  _pointCoordsY.end());
     this->pointCoordsZ.insert(this->pointCoordsZ.end(), _pointCoordsZ.begin(),  _pointCoordsZ.end());
@@ -141,4 +140,14 @@ void PointProbe::addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real po
     }
     printf("Added %u  points \n",  n_y*n_z);
 
+}
+
+void PointProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+{
+    for(int level=0; level<=para->getMaxLevel(); level++)
+    {
+        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
+        std::vector<uint> probeIndices( probeStruct->pointIndicesH, probeStruct->pointIndicesH+probeStruct->nIndices);
+        gridProvider->tagFluidNodeIndices( probeIndices, CollisionTemplate::WriteMacroVars, level);
+    }
 }

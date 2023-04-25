@@ -31,11 +31,11 @@ public:
     DecreaseViscosityCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, mu::Parser *nueFunc, std::shared_ptr<vf::mpi::Communicator> comm);
     ~DecreaseViscosityCoProcessor() override;
     //! calls collect PostprocessData.
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //! resets the collision factor depending on the current timestep.
-    void setViscosity(double step);
+    void setViscosity(real step);
     std::shared_ptr<vf::mpi::Communicator> comm;
 
 private:

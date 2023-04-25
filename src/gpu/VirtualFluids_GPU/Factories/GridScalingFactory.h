@@ -42,16 +42,15 @@ struct LBMSimulationParameter;
 class Parameter;
 struct CUstream_st;
 
-using gridScalingFC = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellFC *, CUstream_st *stream)>;
-using gridScalingCF = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICellCF *, OffCF, CUstream_st *stream)>;
+using gridScaling = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICells *, ICellNeigh&, CUstream_st *stream)>;
 
 class GridScalingFactory
 {
 public:
     //! \brief An enumeration for selecting a scaling function
     enum class GridScaling {
-        //! - ScaleK17 = scaling for cumulant K17 kernel
-        ScaleK17,
+        //! - ScaleCompressible = basic scaling for compressible fluid flow
+        ScaleCompressible,
         //! - DEPRECATED: ScaleRhoSq = scaling for cumulant kernel rho squared
         ScaleRhoSq,
         NotSpecified
@@ -59,11 +58,11 @@ public:
 
     void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType);
 
-    [[nodiscard]] gridScalingFC getGridScalingFC() const;
-    [[nodiscard]] gridScalingCF getGridScalingCF() const;
+    [[nodiscard]] gridScaling getGridScalingFC(bool hasTurbulentViscosity) const;
+    [[nodiscard]] gridScaling getGridScalingCF(bool hasTurbulentViscosity) const;
 
 private:
-    GridScaling gridScaling = GridScaling::NotSpecified;
+    GridScaling gridScalingType = GridScaling::NotSpecified;
 };
 
 #endif

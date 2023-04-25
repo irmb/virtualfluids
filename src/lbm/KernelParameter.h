@@ -8,12 +8,10 @@
 #define __device__
 #endif
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 
-namespace vf
-{
-namespace lbm
+namespace vf::lbm
 {
 
 struct Distribution27
@@ -35,9 +33,6 @@ struct KernelParameter
 };
 
 
-
-
-}
 }
 
 #endif

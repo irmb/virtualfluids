@@ -8,9 +8,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////
@@ -22,8 +22,8 @@ __global__ void scaleCF_0817_comp_27( real* DC,
 												 unsigned int* neighborFX,
 												 unsigned int* neighborFY,
 												 unsigned int* neighborFZ,
-												 unsigned int size_MatC, 
-												 unsigned int size_MatF, 
+												 unsigned long long numberOfLBnodesCoarse, 
+												 unsigned long long numberOfLBnodesFine, 
 												 bool isEvenTimestep,
 												 unsigned int* posCSWB, 
 												 unsigned int* posFSWB, 
@@ -35,7 +35,7 @@ __global__ void scaleCF_0817_comp_27( real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffCF offCF)
+												 ICellNeigh offCF)
 {
 	real
 		*fP00dest, *fM00dest, *f0P0dest, *f0M0dest, *f00Pdest, *f00Mdest, *fPP0dest, *fMM0dest, *fPM0dest,
@@ -43,33 +43,33 @@ __global__ void scaleCF_0817_comp_27( real* DC,
 		*f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
 
 
-	fP00dest = &DF[DIR_P00   *size_MatF];
-	fM00dest = &DF[DIR_M00   *size_MatF];
-	f0P0dest = &DF[DIR_0P0   *size_MatF];
-	f0M0dest = &DF[DIR_0M0   *size_MatF];
-	f00Pdest = &DF[DIR_00P   *size_MatF];
-	f00Mdest = &DF[DIR_00M   *size_MatF];
-	fPP0dest = &DF[DIR_PP0  *size_MatF];
-	fMM0dest = &DF[DIR_MM0  *size_MatF];
-	fPM0dest = &DF[DIR_PM0  *size_MatF];
-	fMP0dest = &DF[DIR_MP0  *size_MatF];
-	fP0Pdest = &DF[DIR_P0P  *size_MatF];
-	fM0Mdest = &DF[DIR_M0M  *size_MatF];
-	fP0Mdest = &DF[DIR_P0M  *size_MatF];
-	fM0Pdest = &DF[DIR_M0P  *size_MatF];
-	f0PPdest = &DF[DIR_0PP  *size_MatF];
-	f0MMdest = &DF[DIR_0MM  *size_MatF];
-	f0PMdest = &DF[DIR_0PM  *size_MatF];
-	f0MPdest = &DF[DIR_0MP  *size_MatF];
-	f000dest = &DF[DIR_000*size_MatF];
-	fMMMdest = &DF[DIR_MMM *size_MatF];
-	fMMPdest = &DF[DIR_MMP *size_MatF];
-	fMPPdest = &DF[DIR_MPP *size_MatF];
-	fMPMdest = &DF[DIR_MPM *size_MatF];
-	fPPMdest = &DF[DIR_PPM *size_MatF];
-	fPPPdest = &DF[DIR_PPP *size_MatF];
-	fPMPdest = &DF[DIR_PMP *size_MatF];
-	fPMMdest = &DF[DIR_PMM *size_MatF];
+	fP00dest = &DF[DIR_P00 * numberOfLBnodesFine];
+	fM00dest = &DF[DIR_M00 * numberOfLBnodesFine];
+	f0P0dest = &DF[DIR_0P0 * numberOfLBnodesFine];
+	f0M0dest = &DF[DIR_0M0 * numberOfLBnodesFine];
+	f00Pdest = &DF[DIR_00P * numberOfLBnodesFine];
+	f00Mdest = &DF[DIR_00M * numberOfLBnodesFine];
+	fPP0dest = &DF[DIR_PP0 * numberOfLBnodesFine];
+	fMM0dest = &DF[DIR_MM0 * numberOfLBnodesFine];
+	fPM0dest = &DF[DIR_PM0 * numberOfLBnodesFine];
+	fMP0dest = &DF[DIR_MP0 * numberOfLBnodesFine];
+	fP0Pdest = &DF[DIR_P0P * numberOfLBnodesFine];
+	fM0Mdest = &DF[DIR_M0M * numberOfLBnodesFine];
+	fP0Mdest = &DF[DIR_P0M * numberOfLBnodesFine];
+	fM0Pdest = &DF[DIR_M0P * numberOfLBnodesFine];
+	f0PPdest = &DF[DIR_0PP * numberOfLBnodesFine];
+	f0MMdest = &DF[DIR_0MM * numberOfLBnodesFine];
+	f0PMdest = &DF[DIR_0PM * numberOfLBnodesFine];
+	f0MPdest = &DF[DIR_0MP * numberOfLBnodesFine];
+	f000dest = &DF[DIR_000 * numberOfLBnodesFine];
+	fMMMdest = &DF[DIR_MMM * numberOfLBnodesFine];
+	fMMPdest = &DF[DIR_MMP * numberOfLBnodesFine];
+	fMPPdest = &DF[DIR_MPP * numberOfLBnodesFine];
+	fMPMdest = &DF[DIR_MPM * numberOfLBnodesFine];
+	fPPMdest = &DF[DIR_PPM * numberOfLBnodesFine];
+	fPPPdest = &DF[DIR_PPP * numberOfLBnodesFine];
+	fPMPdest = &DF[DIR_PMP * numberOfLBnodesFine];
+	fPMMdest = &DF[DIR_PMM * numberOfLBnodesFine];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -78,63 +78,63 @@ __global__ void scaleCF_0817_comp_27( real* DC,
 
 	if (isEvenTimestep == true)
 	{
-		fP00source = &DC[DIR_P00   *size_MatC];
-		fM00source = &DC[DIR_M00   *size_MatC];
-		f0P0source = &DC[DIR_0P0   *size_MatC];
-		f0M0source = &DC[DIR_0M0   *size_MatC];
-		f00Psource = &DC[DIR_00P   *size_MatC];
-		f00Msource = &DC[DIR_00M   *size_MatC];
-		fPP0source = &DC[DIR_PP0  *size_MatC];
-		fMM0source = &DC[DIR_MM0  *size_MatC];
-		fPM0source = &DC[DIR_PM0  *size_MatC];
-		fMP0source = &DC[DIR_MP0  *size_MatC];
-		fP0Psource = &DC[DIR_P0P  *size_MatC];
-		fM0Msource = &DC[DIR_M0M  *size_MatC];
-		fP0Msource = &DC[DIR_P0M  *size_MatC];
-		fM0Psource = &DC[DIR_M0P  *size_MatC];
-		f0PPsource = &DC[DIR_0PP  *size_MatC];
-		f0MMsource = &DC[DIR_0MM  *size_MatC];
-		f0PMsource = &DC[DIR_0PM  *size_MatC];
-		f0MPsource = &DC[DIR_0MP  *size_MatC];
-		f000source = &DC[DIR_000*size_MatC];
-		fMMMsource = &DC[DIR_MMM *size_MatC];
-		fMMPsource = &DC[DIR_MMP *size_MatC];
-		fMPPsource = &DC[DIR_MPP *size_MatC];
-		fMPMsource = &DC[DIR_MPM *size_MatC];
-		fPPMsource = &DC[DIR_PPM *size_MatC];
-		fPPPsource = &DC[DIR_PPP *size_MatC];
-		fPMPsource = &DC[DIR_PMP *size_MatC];
-		fPMMsource = &DC[DIR_PMM *size_MatC];
+		fP00source = &DC[DIR_P00 * numberOfLBnodesCoarse];
+		fM00source = &DC[DIR_M00 * numberOfLBnodesCoarse];
+		f0P0source = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+		f0M0source = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+		f00Psource = &DC[DIR_00P * numberOfLBnodesCoarse];
+		f00Msource = &DC[DIR_00M * numberOfLBnodesCoarse];
+		fPP0source = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+		fMM0source = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+		fPM0source = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+		fMP0source = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+		fP0Psource = &DC[DIR_P0P * numberOfLBnodesCoarse];
+		fM0Msource = &DC[DIR_M0M * numberOfLBnodesCoarse];
+		fP0Msource = &DC[DIR_P0M * numberOfLBnodesCoarse];
+		fM0Psource = &DC[DIR_M0P * numberOfLBnodesCoarse];
+		f0PPsource = &DC[DIR_0PP * numberOfLBnodesCoarse];
+		f0MMsource = &DC[DIR_0MM * numberOfLBnodesCoarse];
+		f0PMsource = &DC[DIR_0PM * numberOfLBnodesCoarse];
+		f0MPsource = &DC[DIR_0MP * numberOfLBnodesCoarse];
+		f000source = &DC[DIR_000 * numberOfLBnodesCoarse];
+		fMMMsource = &DC[DIR_MMM * numberOfLBnodesCoarse];
+		fMMPsource = &DC[DIR_MMP * numberOfLBnodesCoarse];
+		fMPPsource = &DC[DIR_MPP * numberOfLBnodesCoarse];
+		fMPMsource = &DC[DIR_MPM * numberOfLBnodesCoarse];
+		fPPMsource = &DC[DIR_PPM * numberOfLBnodesCoarse];
+		fPPPsource = &DC[DIR_PPP * numberOfLBnodesCoarse];
+		fPMPsource = &DC[DIR_PMP * numberOfLBnodesCoarse];
+		fPMMsource = &DC[DIR_PMM * numberOfLBnodesCoarse];
 	}
 	else
 	{
-		fP00source = &DC[DIR_M00   *size_MatC];
-		fM00source = &DC[DIR_P00   *size_MatC];
-		f0P0source = &DC[DIR_0M0   *size_MatC];
-		f0M0source = &DC[DIR_0P0   *size_MatC];
-		f00Psource = &DC[DIR_00M   *size_MatC];
-		f00Msource = &DC[DIR_00P   *size_MatC];
-		fPP0source = &DC[DIR_MM0  *size_MatC];
-		fMM0source = &DC[DIR_PP0  *size_MatC];
-		fPM0source = &DC[DIR_MP0  *size_MatC];
-		fMP0source = &DC[DIR_PM0  *size_MatC];
-		fP0Psource = &DC[DIR_M0M  *size_MatC];
-		fM0Msource = &DC[DIR_P0P  *size_MatC];
-		fP0Msource = &DC[DIR_M0P  *size_MatC];
-		fM0Psource = &DC[DIR_P0M  *size_MatC];
-		f0PPsource = &DC[DIR_0MM  *size_MatC];
-		f0MMsource = &DC[DIR_0PP  *size_MatC];
-		f0PMsource = &DC[DIR_0MP  *size_MatC];
-		f0MPsource = &DC[DIR_0PM  *size_MatC];
-		f000source = &DC[DIR_000*size_MatC];
-		fMMMsource = &DC[DIR_PPP *size_MatC];
-		fMMPsource = &DC[DIR_PPM *size_MatC];
-		fMPPsource = &DC[DIR_PMM *size_MatC];
-		fMPMsource = &DC[DIR_PMP *size_MatC];
-		fPPMsource = &DC[DIR_MMP *size_MatC];
-		fPPPsource = &DC[DIR_MMM *size_MatC];
-		fPMPsource = &DC[DIR_MPM *size_MatC];
-		fPMMsource = &DC[DIR_MPP *size_MatC];
+		fP00source = &DC[DIR_M00 * numberOfLBnodesCoarse];
+		fM00source = &DC[DIR_P00 * numberOfLBnodesCoarse];
+		f0P0source = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+		f0M0source = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+		f00Psource = &DC[DIR_00M * numberOfLBnodesCoarse];
+		f00Msource = &DC[DIR_00P * numberOfLBnodesCoarse];
+		fPP0source = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+		fMM0source = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+		fPM0source = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+		fMP0source = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+		fP0Psource = &DC[DIR_M0M * numberOfLBnodesCoarse];
+		fM0Msource = &DC[DIR_P0P * numberOfLBnodesCoarse];
+		fP0Msource = &DC[DIR_M0P * numberOfLBnodesCoarse];
+		fM0Psource = &DC[DIR_P0M * numberOfLBnodesCoarse];
+		f0PPsource = &DC[DIR_0MM * numberOfLBnodesCoarse];
+		f0MMsource = &DC[DIR_0PP * numberOfLBnodesCoarse];
+		f0PMsource = &DC[DIR_0MP * numberOfLBnodesCoarse];
+		f0MPsource = &DC[DIR_0PM * numberOfLBnodesCoarse];
+		f000source = &DC[DIR_000 * numberOfLBnodesCoarse];
+		fMMMsource = &DC[DIR_PPP * numberOfLBnodesCoarse];
+		fMMPsource = &DC[DIR_PPM * numberOfLBnodesCoarse];
+		fMPPsource = &DC[DIR_PMM * numberOfLBnodesCoarse];
+		fMPMsource = &DC[DIR_PMP * numberOfLBnodesCoarse];
+		fPPMsource = &DC[DIR_MMP * numberOfLBnodesCoarse];
+		fPPPsource = &DC[DIR_MMM * numberOfLBnodesCoarse];
+		fPMPsource = &DC[DIR_MPM * numberOfLBnodesCoarse];
+		fPMMsource = &DC[DIR_MPP * numberOfLBnodesCoarse];
 	}
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -188,9 +188,9 @@ __global__ void scaleCF_0817_comp_27( real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -4091,8 +4091,8 @@ __global__ void scaleCF_AA2016_comp_27(real* DC,
 												  unsigned int* neighborFX,
 												  unsigned int* neighborFY,
 												  unsigned int* neighborFZ,
-												  unsigned int size_MatC, 
-												  unsigned int size_MatF, 
+												  unsigned long long numberOfLBnodesCoarse, 
+												  unsigned long long numberOfLBnodesFine, 
 												  bool isEvenTimestep,
 												  unsigned int* posCSWB, 
 												  unsigned int* posFSWB, 
@@ -4104,101 +4104,101 @@ __global__ void scaleCF_AA2016_comp_27(real* DC,
 												  unsigned int nyC, 
 												  unsigned int nxF, 
 												  unsigned int nyF,
-												  OffCF offCF)
+												  ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -4270,9 +4270,9 @@ __global__ void scaleCF_AA2016_comp_27(real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -10974,8 +10974,8 @@ __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int* neighborFX,
 														unsigned int* neighborFY,
 														unsigned int* neighborFZ,
-														unsigned int size_MatC, 
-														unsigned int size_MatF, 
+														unsigned long long numberOfLBnodesCoarse, 
+														unsigned long long numberOfLBnodesFine, 
 														bool isEvenTimestep,
 														unsigned int* posCSWB, 
 														unsigned int* posFSWB, 
@@ -10987,101 +10987,101 @@ __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
 														unsigned int nyC, 
 														unsigned int nxF, 
 														unsigned int nyF,
-														OffCF offCF)
+														ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -11153,9 +11153,9 @@ __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -17849,8 +17849,8 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
 												 unsigned int* neighborFX,
 												 unsigned int* neighborFY,
 												 unsigned int* neighborFZ,
-												 unsigned int size_MatC, 
-												 unsigned int size_MatF, 
+												 unsigned long long numberOfLBnodesCoarse, 
+												 unsigned long long numberOfLBnodesFine, 
 												 bool isEvenTimestep,
 												 unsigned int* posCSWB, 
 												 unsigned int* posFSWB, 
@@ -17862,101 +17862,101 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffCF offCF)
+												 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -18008,9 +18008,9 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -18065,7 +18065,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SWB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SWB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_SWB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SWB);
 	  vx2_SWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SWB);
 	  vx3_SWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SWB);
@@ -18117,7 +18121,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SWT = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SWT =  ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                   (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                    ((f_NW + f_SE) + (f_NE + f_SW))) +
+                    ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                      f_ZERO;
       vx1_SWT  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SWT);
 	  vx2_SWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SWT);
 	  vx3_SWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SWT);
@@ -18169,7 +18177,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SET = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SET =  ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                   (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                    ((f_NW + f_SE) + (f_NE + f_SW))) +
+                    ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                      f_ZERO;
       vx1_SET  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SET);
 	  vx2_SET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SET);
 	  vx3_SET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SET);
@@ -18221,7 +18233,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_SEB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_SEB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                    ((f_NW + f_SE) + (f_NE + f_SW))) +
+                    ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                      f_ZERO;
       vx1_SEB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_SEB);
 	  vx2_SEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_SEB);
 	  vx3_SEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_SEB);
@@ -18283,7 +18299,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NWB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NWB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_NWB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NWB);
 	  vx2_NWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NWB);
 	  vx3_NWB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NWB);
@@ -18335,7 +18355,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NWT = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NWT = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_NWT  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NWT);
 	  vx2_NWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NWT);
 	  vx3_NWT  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NWT);
@@ -18387,7 +18411,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NET = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NET = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                     f_ZERO;
       vx1_NET  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NET);
 	  vx2_NET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NET);
 	  vx3_NET  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NET);
@@ -18439,7 +18467,11 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
 
-      drho_NEB = f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_ZERO+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      drho_NEB = ((((f_TNE + f_BSW) + (f_TSE + f_BNW)) + ((f_TNW + f_BSE) + (f_TSW + f_BNE))) +
+                  (((f_TS + f_BN) + (f_BS + f_TN)) + ((f_TW + f_BE) + (f_TE + f_BW)) +
+                   ((f_NW + f_SE) + (f_NE + f_SW))) +
+                   ((f_W + f_E) + (f_S + f_N) + (f_B + f_T))) +
+                   f_ZERO;
       vx1_NEB  = (((f_TNE-f_BSW)+(f_TSE-f_BNW)+(f_BNE-f_TSW)+(f_BSE-f_TNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W))/(c1o1 + drho_NEB);
 	  vx2_NEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S))/(c1o1 + drho_NEB);
 	  vx3_NEB  = (((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSE-f_BNW)+(f_TSW-f_BNE)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B))/(c1o1 + drho_NEB);
@@ -18853,11 +18885,15 @@ __global__ void scaleCF_RhoSq_comp_27(real* DC,
 	  //mfbab     = -c1o3 * (az + cx + axz*x + two*cxx*x + ayz*y + cxy*y + axyz*x*y + two*azz*z + cxz*z + cxyz*y*z)*eps_new/o;
 	  //mfbba     = -c1o3 * (ay + bx + axy*x + two*bxx*x + two*ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o;
 
-  	  mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1*axx*x - bxy*x + axy*y - c2o1*byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
-	  mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1*axx*x - cxz*x + axy*y - cyz*y - cxyz*x*y + axz*z - c2o1*czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+  	  mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1*axx*x - bxy*x + axy*y 
+	              - c2o1*byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+	  mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1*axx*x - cxz*x + axy*y 
+	              - cyz*y - cxyz*x*y + axz*z - c2o1*czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
 	 
-	  mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1*cyy*y + bxyz*x*y + c2o1*bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
-	  mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1*cxx*x + ayz*y + cxy*y + axyz*x*y + c2o1*azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
+	  mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1*cyy*y 
+	              + bxyz*x*y + c2o1*bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
+	  mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1*cxx*x + ayz*y + cxy*y 
+	              + axyz*x*y + c2o1*azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
 	  mfbba     = -c1o3 * (ay + bx + kxyAverage + axy*x + c2o1*bxx*x + c2o1*ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o * (c1o1 + press);
 
 	  // linear combinations back
@@ -22097,8 +22133,8 @@ __global__ void scaleCF_staggered_time_comp_27(   real* DC,
 															 unsigned int* neighborFX,
 															 unsigned int* neighborFY,
 															 unsigned int* neighborFZ,
-															 unsigned int size_MatC, 
-															 unsigned int size_MatF, 
+															 unsigned long long numberOfLBnodesCoarse, 
+															 unsigned long long numberOfLBnodesFine, 
 															 bool isEvenTimestep,
 															 unsigned int* posCSWB, 
 															 unsigned int* posFSWB, 
@@ -22110,101 +22146,101 @@ __global__ void scaleCF_staggered_time_comp_27(   real* DC,
 															 unsigned int nyC, 
 															 unsigned int nxF, 
 															 unsigned int nyF,
-															 OffCF offCF)
+															 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -22256,9 +22292,9 @@ __global__ void scaleCF_staggered_time_comp_27(   real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -26333,8 +26369,8 @@ __global__ void scaleCF_Fix_comp_27(  real* DC,
 												 unsigned int* neighborFX,
 												 unsigned int* neighborFY,
 												 unsigned int* neighborFZ,
-												 unsigned int size_MatC, 
-												 unsigned int size_MatF, 
+												 unsigned long long numberOfLBnodesCoarse, 
+												 unsigned long long numberOfLBnodesFine, 
 												 bool isEvenTimestep,
 												 unsigned int* posCSWB, 
 												 unsigned int* posFSWB, 
@@ -26346,101 +26382,101 @@ __global__ void scaleCF_Fix_comp_27(  real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffCF offCF)
+												 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -26495,9 +26531,9 @@ __global__ void scaleCF_Fix_comp_27(  real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -31100,8 +31136,8 @@ __global__ void scaleCF_NSPress_27(   real* DC,
 												 unsigned int* neighborFX,
 												 unsigned int* neighborFY,
 												 unsigned int* neighborFZ,
-												 unsigned int size_MatC, 
-												 unsigned int size_MatF, 
+												 unsigned long long numberOfLBnodesCoarse, 
+												 unsigned long long numberOfLBnodesFine, 
 												 bool isEvenTimestep,
 												 unsigned int* posCSWB, 
 												 unsigned int* posFSWB, 
@@ -31113,101 +31149,101 @@ __global__ void scaleCF_NSPress_27(   real* DC,
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
-												 OffCF offCF)
+												 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -31258,9 +31294,9 @@ __global__ void scaleCF_NSPress_27(   real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -35044,8 +35080,8 @@ __global__ void scaleCF_Fix_27(   real* DC,
                                              unsigned int* neighborFX,
                                              unsigned int* neighborFY,
                                              unsigned int* neighborFZ,
-                                             unsigned int size_MatC, 
-                                             unsigned int size_MatF, 
+                                             unsigned long long numberOfLBnodesCoarse, 
+                                             unsigned long long numberOfLBnodesFine, 
                                              bool isEvenTimestep,
                                              unsigned int* posCSWB, 
                                              unsigned int* posFSWB, 
@@ -35057,101 +35093,101 @@ __global__ void scaleCF_Fix_27(   real* DC,
                                              unsigned int nyC, 
                                              unsigned int nxF, 
                                              unsigned int nyF,
-                                             OffCF offCF)
+                                             ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -35203,9 +35239,9 @@ __global__ void scaleCF_Fix_27(   real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -39302,8 +39338,8 @@ __global__ void scaleCFpress27(   real* DC,
                                              unsigned int* neighborFX,
                                              unsigned int* neighborFY,
                                              unsigned int* neighborFZ,
-                                             unsigned int size_MatC, 
-                                             unsigned int size_MatF, 
+                                             unsigned long long numberOfLBnodesCoarse, 
+                                             unsigned long long numberOfLBnodesFine, 
                                              bool isEvenTimestep,
                                              unsigned int* posCSWB, 
                                              unsigned int* posFSWB, 
@@ -39315,101 +39351,101 @@ __global__ void scaleCFpress27(   real* DC,
                                              unsigned int nyC, 
                                              unsigned int nxF, 
                                              unsigned int nyF,
-                                             OffCF offCF)
+                                             ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -39460,9 +39496,9 @@ __global__ void scaleCFpress27(   real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -40976,8 +41012,8 @@ __global__ void scaleCFLast27( real* DC,
                                           unsigned int* neighborFX,
                                           unsigned int* neighborFY,
                                           unsigned int* neighborFZ,
-                                          unsigned int size_MatC, 
-                                          unsigned int size_MatF, 
+                                          unsigned long long numberOfLBnodesCoarse, 
+                                          unsigned long long numberOfLBnodesFine, 
                                           bool isEvenTimestep,
                                           unsigned int* posCSWB, 
                                           unsigned int* posFSWB, 
@@ -40989,101 +41025,101 @@ __global__ void scaleCFLast27( real* DC,
                                           unsigned int nyC, 
                                           unsigned int nxF, 
                                           unsigned int nyF,
-                                          OffCF offCF)
+                                          ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -41134,9 +41170,9 @@ __global__ void scaleCFLast27( real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -43213,140 +43249,140 @@ __global__ void scaleCFThSMG7(    real* DC,
                                              unsigned int* neighborFX,
                                              unsigned int* neighborFY,
                                              unsigned int* neighborFZ,
-                                             unsigned int size_MatC, 
-                                             unsigned int size_MatF, 
+                                             unsigned long long numberOfLBnodesCoarse, 
+                                             unsigned long long numberOfLBnodesFine, 
                                              bool isEvenTimestep,
                                              unsigned int* posCSWB, 
                                              unsigned int* posFSWB, 
                                              unsigned int kCF, 
                                              real nu,
                                              real diffusivity_fine,
-                                             OffCF offCF)
+                                             ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, /**fzeroF,*/ *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   //fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   //fzeroF = &DF[DIR_000 * size_MatF];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      //fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      //fzeroC = &DC[DIR_000 * size_MatC];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      //fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      //fzeroC = &DC[DIR_000 * size_MatC];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
 
    Distributions7 D7F;
-   D7F.f[0] = &DD7F[0*size_MatF];
-   D7F.f[1] = &DD7F[1*size_MatF];
-   D7F.f[2] = &DD7F[2*size_MatF];
-   D7F.f[3] = &DD7F[3*size_MatF];
-   D7F.f[4] = &DD7F[4*size_MatF];
-   D7F.f[5] = &DD7F[5*size_MatF];
-   D7F.f[6] = &DD7F[6*size_MatF];
+   D7F.f[0] = &DD7F[0*numberOfLBnodesFine];
+   D7F.f[1] = &DD7F[1*numberOfLBnodesFine];
+   D7F.f[2] = &DD7F[2*numberOfLBnodesFine];
+   D7F.f[3] = &DD7F[3*numberOfLBnodesFine];
+   D7F.f[4] = &DD7F[4*numberOfLBnodesFine];
+   D7F.f[5] = &DD7F[5*numberOfLBnodesFine];
+   D7F.f[6] = &DD7F[6*numberOfLBnodesFine];
                       
    Distributions7 D7C;
    if (isEvenTimestep==true)
    {
-      D7C.f[0] = &DD7C[0*size_MatC];
-      D7C.f[1] = &DD7C[1*size_MatC];
-      D7C.f[2] = &DD7C[2*size_MatC];
-      D7C.f[3] = &DD7C[3*size_MatC];
-      D7C.f[4] = &DD7C[4*size_MatC];
-      D7C.f[5] = &DD7C[5*size_MatC];
-      D7C.f[6] = &DD7C[6*size_MatC];
+      D7C.f[0] = &DD7C[0*numberOfLBnodesCoarse];
+      D7C.f[1] = &DD7C[1*numberOfLBnodesCoarse];
+      D7C.f[2] = &DD7C[2*numberOfLBnodesCoarse];
+      D7C.f[3] = &DD7C[3*numberOfLBnodesCoarse];
+      D7C.f[4] = &DD7C[4*numberOfLBnodesCoarse];
+      D7C.f[5] = &DD7C[5*numberOfLBnodesCoarse];
+      D7C.f[6] = &DD7C[6*numberOfLBnodesCoarse];
    }
    else
    {
-      D7C.f[0] = &DD7C[0*size_MatC];
-      D7C.f[2] = &DD7C[1*size_MatC];
-      D7C.f[1] = &DD7C[2*size_MatC];
-      D7C.f[4] = &DD7C[3*size_MatC];
-      D7C.f[3] = &DD7C[4*size_MatC];
-      D7C.f[6] = &DD7C[5*size_MatC];
-      D7C.f[5] = &DD7C[6*size_MatC];
+      D7C.f[0] = &DD7C[0*numberOfLBnodesCoarse];
+      D7C.f[2] = &DD7C[1*numberOfLBnodesCoarse];
+      D7C.f[1] = &DD7C[2*numberOfLBnodesCoarse];
+      D7C.f[4] = &DD7C[3*numberOfLBnodesCoarse];
+      D7C.f[3] = &DD7C[4*numberOfLBnodesCoarse];
+      D7C.f[6] = &DD7C[5*numberOfLBnodesCoarse];
+      D7C.f[5] = &DD7C[6*numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -43389,9 +43425,9 @@ __global__ void scaleCFThSMG7(    real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      real xoff = offCF.xOffCF[k];
-      real yoff = offCF.yOffCF[k];
-      real zoff = offCF.zOffCF[k];      
+      real xoff = offCF.x[k];
+      real yoff = offCF.y[k];
+      real zoff = offCF.z[k];      
       real xoff_sq = xoff * xoff;
       real yoff_sq = yoff * yoff;
       real zoff_sq = zoff * zoff;
@@ -44440,8 +44476,8 @@ __global__ void scaleCFThS7(   real* DC,
                                           unsigned int* neighborFX,
                                           unsigned int* neighborFY,
                                           unsigned int* neighborFZ,
-                                          unsigned int size_MatC, 
-                                          unsigned int size_MatF, 
+                                          unsigned long long numberOfLBnodesCoarse, 
+                                          unsigned long long numberOfLBnodesFine, 
                                           bool isEvenTimestep,
                                           unsigned int* posCSWB, 
                                           unsigned int* posFSWB, 
@@ -44451,128 +44487,128 @@ __global__ void scaleCFThS7(   real* DC,
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, /**fzeroF,*/ *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   //fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   //fzeroF = &DF[DIR_000 * size_MatF];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      //fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      //fzeroC = &DC[DIR_000 * size_MatC];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      //fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      //fzeroC = &DC[DIR_000 * size_MatC];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
 
    Distributions7 D7F;
-   D7F.f[0] = &DD7F[0*size_MatF];
-   D7F.f[1] = &DD7F[1*size_MatF];
-   D7F.f[2] = &DD7F[2*size_MatF];
-   D7F.f[3] = &DD7F[3*size_MatF];
-   D7F.f[4] = &DD7F[4*size_MatF];
-   D7F.f[5] = &DD7F[5*size_MatF];
-   D7F.f[6] = &DD7F[6*size_MatF];
+   D7F.f[0] = &DD7F[0*numberOfLBnodesFine];
+   D7F.f[1] = &DD7F[1*numberOfLBnodesFine];
+   D7F.f[2] = &DD7F[2*numberOfLBnodesFine];
+   D7F.f[3] = &DD7F[3*numberOfLBnodesFine];
+   D7F.f[4] = &DD7F[4*numberOfLBnodesFine];
+   D7F.f[5] = &DD7F[5*numberOfLBnodesFine];
+   D7F.f[6] = &DD7F[6*numberOfLBnodesFine];
                       
    Distributions7 D7C;
    if (isEvenTimestep==true)
    {
-      D7C.f[0] = &DD7C[0*size_MatC];
-      D7C.f[1] = &DD7C[1*size_MatC];
-      D7C.f[2] = &DD7C[2*size_MatC];
-      D7C.f[3] = &DD7C[3*size_MatC];
-      D7C.f[4] = &DD7C[4*size_MatC];
-      D7C.f[5] = &DD7C[5*size_MatC];
-      D7C.f[6] = &DD7C[6*size_MatC];
+      D7C.f[0] = &DD7C[0*numberOfLBnodesCoarse];
+      D7C.f[1] = &DD7C[1*numberOfLBnodesCoarse];
+      D7C.f[2] = &DD7C[2*numberOfLBnodesCoarse];
+      D7C.f[3] = &DD7C[3*numberOfLBnodesCoarse];
+      D7C.f[4] = &DD7C[4*numberOfLBnodesCoarse];
+      D7C.f[5] = &DD7C[5*numberOfLBnodesCoarse];
+      D7C.f[6] = &DD7C[6*numberOfLBnodesCoarse];
    }
    else
    {
-      D7C.f[0] = &DD7C[0*size_MatC];
-      D7C.f[2] = &DD7C[1*size_MatC];
-      D7C.f[1] = &DD7C[2*size_MatC];
-      D7C.f[4] = &DD7C[3*size_MatC];
-      D7C.f[3] = &DD7C[4*size_MatC];
-      D7C.f[6] = &DD7C[5*size_MatC];
-      D7C.f[5] = &DD7C[6*size_MatC];
+      D7C.f[0] = &DD7C[0*numberOfLBnodesCoarse];
+      D7C.f[2] = &DD7C[1*numberOfLBnodesCoarse];
+      D7C.f[1] = &DD7C[2*numberOfLBnodesCoarse];
+      D7C.f[4] = &DD7C[3*numberOfLBnodesCoarse];
+      D7C.f[3] = &DD7C[4*numberOfLBnodesCoarse];
+      D7C.f[6] = &DD7C[5*numberOfLBnodesCoarse];
+      D7C.f[5] = &DD7C[6*numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -45563,200 +45599,200 @@ __global__ void scaleCFThS27(     real* DC,
                                              unsigned int* neighborFX,
                                              unsigned int* neighborFY,
                                              unsigned int* neighborFZ,
-                                             unsigned int size_MatC, 
-                                             unsigned int size_MatF, 
+                                             unsigned long long numberOfLBnodesCoarse, 
+                                             unsigned long long numberOfLBnodesFine, 
                                              bool isEvenTimestep,
                                              unsigned int* posCSWB, 
                                              unsigned int* posFSWB, 
                                              unsigned int kCF, 
                                              real nu,
                                              real diffusivity_fine,
-											 OffCF offCF)
+											 ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, /**fzeroF,*/ *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   //fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   //fzeroF = &DF[DIR_000 * size_MatF];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      //fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      //fzeroC = &DC[DIR_000 * size_MatC];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      //fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      //fzeroC = &DC[DIR_000 * size_MatC];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
 
    Distributions27 D27F;
-   D27F.f[DIR_P00   ] = &DD27F[DIR_P00   *size_MatF];
-   D27F.f[DIR_M00   ] = &DD27F[DIR_M00   *size_MatF];
-   D27F.f[DIR_0P0   ] = &DD27F[DIR_0P0   *size_MatF];
-   D27F.f[DIR_0M0   ] = &DD27F[DIR_0M0   *size_MatF];
-   D27F.f[DIR_00P   ] = &DD27F[DIR_00P   *size_MatF];
-   D27F.f[DIR_00M   ] = &DD27F[DIR_00M   *size_MatF];
-   D27F.f[DIR_PP0  ] = &DD27F[DIR_PP0  *size_MatF];
-   D27F.f[DIR_MM0  ] = &DD27F[DIR_MM0  *size_MatF];
-   D27F.f[DIR_PM0  ] = &DD27F[DIR_PM0  *size_MatF];
-   D27F.f[DIR_MP0  ] = &DD27F[DIR_MP0  *size_MatF];
-   D27F.f[DIR_P0P  ] = &DD27F[DIR_P0P  *size_MatF];
-   D27F.f[DIR_M0M  ] = &DD27F[DIR_M0M  *size_MatF];
-   D27F.f[DIR_P0M  ] = &DD27F[DIR_P0M  *size_MatF];
-   D27F.f[DIR_M0P  ] = &DD27F[DIR_M0P  *size_MatF];
-   D27F.f[DIR_0PP  ] = &DD27F[DIR_0PP  *size_MatF];
-   D27F.f[DIR_0MM  ] = &DD27F[DIR_0MM  *size_MatF];
-   D27F.f[DIR_0PM  ] = &DD27F[DIR_0PM  *size_MatF];
-   D27F.f[DIR_0MP  ] = &DD27F[DIR_0MP  *size_MatF];
-   D27F.f[DIR_000] = &DD27F[DIR_000*size_MatF];
-   D27F.f[DIR_PPP ] = &DD27F[DIR_PPP *size_MatF];
-   D27F.f[DIR_MMP ] = &DD27F[DIR_MMP *size_MatF];
-   D27F.f[DIR_PMP ] = &DD27F[DIR_PMP *size_MatF];
-   D27F.f[DIR_MPP ] = &DD27F[DIR_MPP *size_MatF];
-   D27F.f[DIR_PPM ] = &DD27F[DIR_PPM *size_MatF];
-   D27F.f[DIR_MMM ] = &DD27F[DIR_MMM *size_MatF];
-   D27F.f[DIR_PMM ] = &DD27F[DIR_PMM *size_MatF];
-   D27F.f[DIR_MPM ] = &DD27F[DIR_MPM *size_MatF];
+   D27F.f[DIR_P00] = &DD27F[DIR_P00 * numberOfLBnodesFine];
+   D27F.f[DIR_M00] = &DD27F[DIR_M00 * numberOfLBnodesFine];
+   D27F.f[DIR_0P0] = &DD27F[DIR_0P0 * numberOfLBnodesFine];
+   D27F.f[DIR_0M0] = &DD27F[DIR_0M0 * numberOfLBnodesFine];
+   D27F.f[DIR_00P] = &DD27F[DIR_00P * numberOfLBnodesFine];
+   D27F.f[DIR_00M] = &DD27F[DIR_00M * numberOfLBnodesFine];
+   D27F.f[DIR_PP0] = &DD27F[DIR_PP0 * numberOfLBnodesFine];
+   D27F.f[DIR_MM0] = &DD27F[DIR_MM0 * numberOfLBnodesFine];
+   D27F.f[DIR_PM0] = &DD27F[DIR_PM0 * numberOfLBnodesFine];
+   D27F.f[DIR_MP0] = &DD27F[DIR_MP0 * numberOfLBnodesFine];
+   D27F.f[DIR_P0P] = &DD27F[DIR_P0P * numberOfLBnodesFine];
+   D27F.f[DIR_M0M] = &DD27F[DIR_M0M * numberOfLBnodesFine];
+   D27F.f[DIR_P0M] = &DD27F[DIR_P0M * numberOfLBnodesFine];
+   D27F.f[DIR_M0P] = &DD27F[DIR_M0P * numberOfLBnodesFine];
+   D27F.f[DIR_0PP] = &DD27F[DIR_0PP * numberOfLBnodesFine];
+   D27F.f[DIR_0MM] = &DD27F[DIR_0MM * numberOfLBnodesFine];
+   D27F.f[DIR_0PM] = &DD27F[DIR_0PM * numberOfLBnodesFine];
+   D27F.f[DIR_0MP] = &DD27F[DIR_0MP * numberOfLBnodesFine];
+   D27F.f[DIR_000] = &DD27F[DIR_000 * numberOfLBnodesFine];
+   D27F.f[DIR_PPP] = &DD27F[DIR_PPP * numberOfLBnodesFine];
+   D27F.f[DIR_MMP] = &DD27F[DIR_MMP * numberOfLBnodesFine];
+   D27F.f[DIR_PMP] = &DD27F[DIR_PMP * numberOfLBnodesFine];
+   D27F.f[DIR_MPP] = &DD27F[DIR_MPP * numberOfLBnodesFine];
+   D27F.f[DIR_PPM] = &DD27F[DIR_PPM * numberOfLBnodesFine];
+   D27F.f[DIR_MMM] = &DD27F[DIR_MMM * numberOfLBnodesFine];
+   D27F.f[DIR_PMM] = &DD27F[DIR_PMM * numberOfLBnodesFine];
+   D27F.f[DIR_MPM] = &DD27F[DIR_MPM * numberOfLBnodesFine];
 
    Distributions27 D27C;
    if (isEvenTimestep==true)
    {
-      D27C.f[DIR_P00   ] = &DD27C[DIR_P00   *size_MatC];
-      D27C.f[DIR_M00   ] = &DD27C[DIR_M00   *size_MatC];
-      D27C.f[DIR_0P0   ] = &DD27C[DIR_0P0   *size_MatC];
-      D27C.f[DIR_0M0   ] = &DD27C[DIR_0M0   *size_MatC];
-      D27C.f[DIR_00P   ] = &DD27C[DIR_00P   *size_MatC];
-      D27C.f[DIR_00M   ] = &DD27C[DIR_00M   *size_MatC];
-      D27C.f[DIR_PP0  ] = &DD27C[DIR_PP0  *size_MatC];
-      D27C.f[DIR_MM0  ] = &DD27C[DIR_MM0  *size_MatC];
-      D27C.f[DIR_PM0  ] = &DD27C[DIR_PM0  *size_MatC];
-      D27C.f[DIR_MP0  ] = &DD27C[DIR_MP0  *size_MatC];
-      D27C.f[DIR_P0P  ] = &DD27C[DIR_P0P  *size_MatC];
-      D27C.f[DIR_M0M  ] = &DD27C[DIR_M0M  *size_MatC];
-      D27C.f[DIR_P0M  ] = &DD27C[DIR_P0M  *size_MatC];
-      D27C.f[DIR_M0P  ] = &DD27C[DIR_M0P  *size_MatC];
-      D27C.f[DIR_0PP  ] = &DD27C[DIR_0PP  *size_MatC];
-      D27C.f[DIR_0MM  ] = &DD27C[DIR_0MM  *size_MatC];
-      D27C.f[DIR_0PM  ] = &DD27C[DIR_0PM  *size_MatC];
-      D27C.f[DIR_0MP  ] = &DD27C[DIR_0MP  *size_MatC];
-      D27C.f[DIR_000] = &DD27C[DIR_000*size_MatC];
-      D27C.f[DIR_PPP ] = &DD27C[DIR_PPP *size_MatC];
-      D27C.f[DIR_MMP ] = &DD27C[DIR_MMP *size_MatC];
-      D27C.f[DIR_PMP ] = &DD27C[DIR_PMP *size_MatC];
-      D27C.f[DIR_MPP ] = &DD27C[DIR_MPP *size_MatC];
-      D27C.f[DIR_PPM ] = &DD27C[DIR_PPM *size_MatC];
-      D27C.f[DIR_MMM ] = &DD27C[DIR_MMM *size_MatC];
-      D27C.f[DIR_PMM ] = &DD27C[DIR_PMM *size_MatC];
-      D27C.f[DIR_MPM ] = &DD27C[DIR_MPM *size_MatC];
+      D27C.f[DIR_P00] = &DD27C[DIR_P00 * numberOfLBnodesCoarse];
+      D27C.f[DIR_M00] = &DD27C[DIR_M00 * numberOfLBnodesCoarse];
+      D27C.f[DIR_0P0] = &DD27C[DIR_0P0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_0M0] = &DD27C[DIR_0M0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_00P] = &DD27C[DIR_00P * numberOfLBnodesCoarse];
+      D27C.f[DIR_00M] = &DD27C[DIR_00M * numberOfLBnodesCoarse];
+      D27C.f[DIR_PP0] = &DD27C[DIR_PP0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_MM0] = &DD27C[DIR_MM0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_PM0] = &DD27C[DIR_PM0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_MP0] = &DD27C[DIR_MP0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_P0P] = &DD27C[DIR_P0P * numberOfLBnodesCoarse];
+      D27C.f[DIR_M0M] = &DD27C[DIR_M0M * numberOfLBnodesCoarse];
+      D27C.f[DIR_P0M] = &DD27C[DIR_P0M * numberOfLBnodesCoarse];
+      D27C.f[DIR_M0P] = &DD27C[DIR_M0P * numberOfLBnodesCoarse];
+      D27C.f[DIR_0PP] = &DD27C[DIR_0PP * numberOfLBnodesCoarse];
+      D27C.f[DIR_0MM] = &DD27C[DIR_0MM * numberOfLBnodesCoarse];
+      D27C.f[DIR_0PM] = &DD27C[DIR_0PM * numberOfLBnodesCoarse];
+      D27C.f[DIR_0MP] = &DD27C[DIR_0MP * numberOfLBnodesCoarse];
+      D27C.f[DIR_000] = &DD27C[DIR_000 * numberOfLBnodesCoarse];
+      D27C.f[DIR_PPP] = &DD27C[DIR_PPP * numberOfLBnodesCoarse];
+      D27C.f[DIR_MMP] = &DD27C[DIR_MMP * numberOfLBnodesCoarse];
+      D27C.f[DIR_PMP] = &DD27C[DIR_PMP * numberOfLBnodesCoarse];
+      D27C.f[DIR_MPP] = &DD27C[DIR_MPP * numberOfLBnodesCoarse];
+      D27C.f[DIR_PPM] = &DD27C[DIR_PPM * numberOfLBnodesCoarse];
+      D27C.f[DIR_MMM] = &DD27C[DIR_MMM * numberOfLBnodesCoarse];
+      D27C.f[DIR_PMM] = &DD27C[DIR_PMM * numberOfLBnodesCoarse];
+      D27C.f[DIR_MPM] = &DD27C[DIR_MPM * numberOfLBnodesCoarse];
    }
    else
    {
-      D27C.f[DIR_M00   ] = &DD27C[DIR_P00   *size_MatC];
-      D27C.f[DIR_P00   ] = &DD27C[DIR_M00   *size_MatC];
-      D27C.f[DIR_0M0   ] = &DD27C[DIR_0P0   *size_MatC];
-      D27C.f[DIR_0P0   ] = &DD27C[DIR_0M0   *size_MatC];
-      D27C.f[DIR_00M   ] = &DD27C[DIR_00P   *size_MatC];
-      D27C.f[DIR_00P   ] = &DD27C[DIR_00M   *size_MatC];
-      D27C.f[DIR_MM0  ] = &DD27C[DIR_PP0  *size_MatC];
-      D27C.f[DIR_PP0  ] = &DD27C[DIR_MM0  *size_MatC];
-      D27C.f[DIR_MP0  ] = &DD27C[DIR_PM0  *size_MatC];
-      D27C.f[DIR_PM0  ] = &DD27C[DIR_MP0  *size_MatC];
-      D27C.f[DIR_M0M  ] = &DD27C[DIR_P0P  *size_MatC];
-      D27C.f[DIR_P0P  ] = &DD27C[DIR_M0M  *size_MatC];
-      D27C.f[DIR_M0P  ] = &DD27C[DIR_P0M  *size_MatC];
-      D27C.f[DIR_P0M  ] = &DD27C[DIR_M0P  *size_MatC];
-      D27C.f[DIR_0MM  ] = &DD27C[DIR_0PP  *size_MatC];
-      D27C.f[DIR_0PP  ] = &DD27C[DIR_0MM  *size_MatC];
-      D27C.f[DIR_0MP  ] = &DD27C[DIR_0PM  *size_MatC];
-      D27C.f[DIR_0PM  ] = &DD27C[DIR_0MP  *size_MatC];
-      D27C.f[DIR_000] = &DD27C[DIR_000*size_MatC];
-      D27C.f[DIR_MMM ] = &DD27C[DIR_PPP *size_MatC];
-      D27C.f[DIR_PPM ] = &DD27C[DIR_MMP *size_MatC];
-      D27C.f[DIR_MPM ] = &DD27C[DIR_PMP *size_MatC];
-      D27C.f[DIR_PMM ] = &DD27C[DIR_MPP *size_MatC];
-      D27C.f[DIR_MMP ] = &DD27C[DIR_PPM *size_MatC];
-      D27C.f[DIR_PPP ] = &DD27C[DIR_MMM *size_MatC];
-      D27C.f[DIR_MPP ] = &DD27C[DIR_PMM *size_MatC];
-      D27C.f[DIR_PMP ] = &DD27C[DIR_MPM *size_MatC];
+      D27C.f[DIR_M00] = &DD27C[DIR_P00 * numberOfLBnodesCoarse];
+      D27C.f[DIR_P00] = &DD27C[DIR_M00 * numberOfLBnodesCoarse];
+      D27C.f[DIR_0M0] = &DD27C[DIR_0P0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_0P0] = &DD27C[DIR_0M0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_00M] = &DD27C[DIR_00P * numberOfLBnodesCoarse];
+      D27C.f[DIR_00P] = &DD27C[DIR_00M * numberOfLBnodesCoarse];
+      D27C.f[DIR_MM0] = &DD27C[DIR_PP0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_PP0] = &DD27C[DIR_MM0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_MP0] = &DD27C[DIR_PM0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_PM0] = &DD27C[DIR_MP0 * numberOfLBnodesCoarse];
+      D27C.f[DIR_M0M] = &DD27C[DIR_P0P * numberOfLBnodesCoarse];
+      D27C.f[DIR_P0P] = &DD27C[DIR_M0M * numberOfLBnodesCoarse];
+      D27C.f[DIR_M0P] = &DD27C[DIR_P0M * numberOfLBnodesCoarse];
+      D27C.f[DIR_P0M] = &DD27C[DIR_M0P * numberOfLBnodesCoarse];
+      D27C.f[DIR_0MM] = &DD27C[DIR_0PP * numberOfLBnodesCoarse];
+      D27C.f[DIR_0PP] = &DD27C[DIR_0MM * numberOfLBnodesCoarse];
+      D27C.f[DIR_0MP] = &DD27C[DIR_0PM * numberOfLBnodesCoarse];
+      D27C.f[DIR_0PM] = &DD27C[DIR_0MP * numberOfLBnodesCoarse];
+      D27C.f[DIR_000] = &DD27C[DIR_000 * numberOfLBnodesCoarse];
+      D27C.f[DIR_MMM] = &DD27C[DIR_PPP * numberOfLBnodesCoarse];
+      D27C.f[DIR_PPM] = &DD27C[DIR_MMP * numberOfLBnodesCoarse];
+      D27C.f[DIR_MPM] = &DD27C[DIR_PMP * numberOfLBnodesCoarse];
+      D27C.f[DIR_PMM] = &DD27C[DIR_MPP * numberOfLBnodesCoarse];
+      D27C.f[DIR_MMP] = &DD27C[DIR_PPM * numberOfLBnodesCoarse];
+      D27C.f[DIR_PPP] = &DD27C[DIR_MMM * numberOfLBnodesCoarse];
+      D27C.f[DIR_MPP] = &DD27C[DIR_PMM * numberOfLBnodesCoarse];
+      D27C.f[DIR_PMP] = &DD27C[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -45799,9 +45835,9 @@ __global__ void scaleCFThS27(     real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -45856,33 +45892,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_SWB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -45943,33 +45979,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_SWT = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46030,33 +46066,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_SET = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46117,33 +46153,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_SEB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46214,33 +46250,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_NWB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46301,33 +46337,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_NWT = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46388,33 +46424,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_NET = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46475,33 +46511,33 @@ __global__ void scaleCFThS27(     real* DC,
       f_BSE  = fbseC[kbs];
       f_BNW  = fbnwC[kbw];
       ////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27C.f[DIR_P00   ])[kzero];//ke
-      f27W    =  (D27C.f[DIR_M00   ])[kw   ];
-      f27N    =  (D27C.f[DIR_0P0   ])[kzero];//kn
-      f27S    =  (D27C.f[DIR_0M0   ])[ks   ];
-      f27T    =  (D27C.f[DIR_00P   ])[kzero];//kt
-      f27B    =  (D27C.f[DIR_00M   ])[kb   ];
-      f27NE   =  (D27C.f[DIR_PP0  ])[kzero];//kne
-      f27SW   =  (D27C.f[DIR_MM0  ])[ksw  ];
-      f27SE   =  (D27C.f[DIR_PM0  ])[ks   ];//kse
-      f27NW   =  (D27C.f[DIR_MP0  ])[kw   ];//knw
-      f27TE   =  (D27C.f[DIR_P0P  ])[kzero];//kte
-      f27BW   =  (D27C.f[DIR_M0M  ])[kbw  ];
-      f27BE   =  (D27C.f[DIR_P0M  ])[kb   ];//kbe
-      f27TW   =  (D27C.f[DIR_M0P  ])[kw   ];//ktw
-      f27TN   =  (D27C.f[DIR_0PP  ])[kzero];//ktn
-      f27BS   =  (D27C.f[DIR_0MM  ])[kbs  ];
-      f27BN   =  (D27C.f[DIR_0PM  ])[kb   ];//kbn
-      f27TS   =  (D27C.f[DIR_0MP  ])[ks   ];//kts
+      f27E    =  (D27C.f[DIR_P00])[kzero];//ke
+      f27W    =  (D27C.f[DIR_M00])[kw   ];
+      f27N    =  (D27C.f[DIR_0P0])[kzero];//kn
+      f27S    =  (D27C.f[DIR_0M0])[ks   ];
+      f27T    =  (D27C.f[DIR_00P])[kzero];//kt
+      f27B    =  (D27C.f[DIR_00M])[kb   ];
+      f27NE   =  (D27C.f[DIR_PP0])[kzero];//kne
+      f27SW   =  (D27C.f[DIR_MM0])[ksw  ];
+      f27SE   =  (D27C.f[DIR_PM0])[ks   ];//kse
+      f27NW   =  (D27C.f[DIR_MP0])[kw   ];//knw
+      f27TE   =  (D27C.f[DIR_P0P])[kzero];//kte
+      f27BW   =  (D27C.f[DIR_M0M])[kbw  ];
+      f27BE   =  (D27C.f[DIR_P0M])[kb   ];//kbe
+      f27TW   =  (D27C.f[DIR_M0P])[kw   ];//ktw
+      f27TN   =  (D27C.f[DIR_0PP])[kzero];//ktn
+      f27BS   =  (D27C.f[DIR_0MM])[kbs  ];
+      f27BN   =  (D27C.f[DIR_0PM])[kb   ];//kbn
+      f27TS   =  (D27C.f[DIR_0MP])[ks   ];//kts
       f27ZERO =  (D27C.f[DIR_000])[kzero];//kzero
-      f27TNE   = (D27C.f[DIR_PPP ])[kzero];//ktne
-      f27TSW   = (D27C.f[DIR_MMP ])[ksw  ];//ktsw
-      f27TSE   = (D27C.f[DIR_PMP ])[ks   ];//ktse
-      f27TNW   = (D27C.f[DIR_MPP ])[kw   ];//ktnw
-      f27BNE   = (D27C.f[DIR_PPM ])[kb   ];//kbne
-      f27BSW   = (D27C.f[DIR_MMM ])[kbsw ];
-      f27BSE   = (D27C.f[DIR_PMM ])[kbs  ];//kbse
-      f27BNW   = (D27C.f[DIR_MPM ])[kbw  ];//kbnw
+      f27TNE   = (D27C.f[DIR_PPP])[kzero];//ktne
+      f27TSW   = (D27C.f[DIR_MMP])[ksw  ];//ktsw
+      f27TSE   = (D27C.f[DIR_PMP])[ks   ];//ktse
+      f27TNW   = (D27C.f[DIR_MPP])[kw   ];//ktnw
+      f27BNE   = (D27C.f[DIR_PPM])[kb   ];//kbne
+      f27BSW   = (D27C.f[DIR_MMM])[kbsw ];
+      f27BSE   = (D27C.f[DIR_PMM])[kbs  ];//kbse
+      f27BNW   = (D27C.f[DIR_MPM])[kbw  ];//kbnw
 
       Conc_C_NEB = f27E + f27W + f27N + f27S + f27T + f27B + f27NE + f27SW + f27SE + f27NW + 
                    f27TE + f27BW + f27BE + f27TW + f27TN + f27BS + f27BN + f27TS + f27ZERO + 
@@ -46620,32 +46656,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -46698,32 +46734,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -46776,32 +46812,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -46854,32 +46890,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -46942,32 +46978,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -47020,32 +47056,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -47098,32 +47134,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
 
 
 
@@ -47176,32 +47212,32 @@ __global__ void scaleCFThS27(     real* DC,
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D27F.f[DIR_000])[kzero] =   c8o27* Conc_F*(c1o1-cu_sq);
-      (D27F.f[DIR_P00   ])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27F.f[DIR_M00   ])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
-      (D27F.f[DIR_0P0   ])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
-      (D27F.f[DIR_0M0   ])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
-      (D27F.f[DIR_00P   ])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
-      (D27F.f[DIR_00M   ])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
-      (D27F.f[DIR_PP0  ])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_MM0  ])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_PM0  ])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      (D27F.f[DIR_MP0  ])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      (D27F.f[DIR_P0P  ])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_M0M  ])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_P0M  ])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      (D27F.f[DIR_M0P  ])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      (D27F.f[DIR_0PP  ])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      (D27F.f[DIR_0MM  ])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0PM  ])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      (D27F.f[DIR_0MP  ])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PPP ])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MMM ])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PPM ])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MMP ])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_PMP ])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      (D27F.f[DIR_MPM ])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      (D27F.f[DIR_PMM ])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      (D27F.f[DIR_MPP ])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_F*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27F.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_F*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27F.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_F*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
+      (D27F.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_F*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
+      (D27F.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_F*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
+      (D27F.f[DIR_00M])[kb   ] =   c2o27* (c3o1*(        -Mz)+Conc_F*(c1o1+c9o2*(        -vx3)*(        -vx3)-cu_sq));
+      (D27F.f[DIR_PP0])[kzero] =   c1o54* (c3o1*( Mx +My    )+Conc_F*(c1o1+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_MM0])[ksw  ] =   c1o54* (c3o1*(-Mx -My    )+Conc_F*(c1o1+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_PM0])[ks   ] =   c1o54* (c3o1*( Mx -My    )+Conc_F*(c1o1+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      (D27F.f[DIR_MP0])[kw   ] =   c1o54* (c3o1*(-Mx +My    )+Conc_F*(c1o1+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      (D27F.f[DIR_P0P])[kzero] =   c1o54* (c3o1*( Mx     +Mz)+Conc_F*(c1o1+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_M0M])[kbw  ] =   c1o54* (c3o1*(-Mx     -Mz)+Conc_F*(c1o1+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_P0M])[kb   ] =   c1o54* (c3o1*( Mx     -Mz)+Conc_F*(c1o1+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      (D27F.f[DIR_M0P])[kw   ] =   c1o54* (c3o1*(-Mx     +Mz)+Conc_F*(c1o1+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      (D27F.f[DIR_0PP])[kzero] =   c1o54* (c3o1*(     My +Mz)+Conc_F*(c1o1+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      (D27F.f[DIR_0MM])[kbs  ] =   c1o54* (c3o1*(    -My -Mz)+Conc_F*(c1o1+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0PM])[kb   ] =   c1o54* (c3o1*(     My -Mz)+Conc_F*(c1o1+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      (D27F.f[DIR_0MP])[ks   ] =   c1o54* (c3o1*(    -My +Mz)+Conc_F*(c1o1+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PPP])[kzero] =   c1o216*(c3o1*( Mx +My +Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MMM])[kbsw ] =   c1o216*(c3o1*(-Mx -My -Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PPM])[kb   ] =   c1o216*(c3o1*( Mx +My -Mz)+Conc_F*(c1o1+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MMP])[ksw  ] =   c1o216*(c3o1*(-Mx -My +Mz)+Conc_F*(c1o1+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_PMP])[ks   ] =   c1o216*(c3o1*( Mx -My +Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      (D27F.f[DIR_MPM])[kbw  ] =   c1o216*(c3o1*(-Mx +My -Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      (D27F.f[DIR_PMM])[kbs  ] =   c1o216*(c3o1*( Mx -My -Mz)+Conc_F*(c1o1+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      (D27F.f[DIR_MPP])[kw   ] =   c1o216*(c3o1*(-Mx +My +Mz)+Conc_F*(c1o1+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47251,8 +47287,8 @@ __global__ void scaleCFEff27(real* DC,
                                         unsigned int* neighborFX,
                                         unsigned int* neighborFY,
                                         unsigned int* neighborFZ,
-									             unsigned int size_MatC, 
-									             unsigned int size_MatF, 
+									             unsigned long long numberOfLBnodesCoarse, 
+									             unsigned long long numberOfLBnodesFine, 
 									             bool isEvenTimestep,
                                         unsigned int* posCSWB, 
                                         unsigned int* posFSWB, 
@@ -47264,101 +47300,101 @@ __global__ void scaleCFEff27(real* DC,
 									             unsigned int nyC, 
 									             unsigned int nxF, 
                                         unsigned int nyF,
-                                        OffCF offCF)
+                                        ICellNeigh offCF)
 {
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -47409,9 +47445,9 @@ __global__ void scaleCFEff27(real* DC,
    if(k<kCF)
    {
       //////////////////////////////////////////////////////////////////////////
-      xoff    = offCF.xOffCF[k];
-      yoff    = offCF.yOffCF[k];
-      zoff    = offCF.zOffCF[k];
+      xoff    = offCF.x[k];
+      yoff    = offCF.y[k];
+      zoff    = offCF.z[k];
       xoff_sq = xoff * xoff;
       yoff_sq = yoff * yoff;
       zoff_sq = zoff * zoff;
@@ -48961,8 +48997,8 @@ __global__ void scaleCF27(real* DC,
                                      unsigned int* neighborFX,
                                      unsigned int* neighborFY,
                                      unsigned int* neighborFZ,
-                                     unsigned int size_MatC, 
-                                     unsigned int size_MatF, 
+                                     unsigned long long numberOfLBnodesCoarse, 
+                                     unsigned long long numberOfLBnodesFine, 
                                      bool isEvenTimestep,
                                      unsigned int* posCSWB, 
                                      unsigned int* posFSWB, 
@@ -48978,96 +49014,96 @@ __global__ void scaleCF27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00   *size_MatF];
-   fwF    = &DF[DIR_M00   *size_MatF];
-   fnF    = &DF[DIR_0P0   *size_MatF];
-   fsF    = &DF[DIR_0M0   *size_MatF];
-   ftF    = &DF[DIR_00P   *size_MatF];
-   fbF    = &DF[DIR_00M   *size_MatF];
-   fneF   = &DF[DIR_PP0  *size_MatF];
-   fswF   = &DF[DIR_MM0  *size_MatF];
-   fseF   = &DF[DIR_PM0  *size_MatF];
-   fnwF   = &DF[DIR_MP0  *size_MatF];
-   fteF   = &DF[DIR_P0P  *size_MatF];
-   fbwF   = &DF[DIR_M0M  *size_MatF];
-   fbeF   = &DF[DIR_P0M  *size_MatF];
-   ftwF   = &DF[DIR_M0P  *size_MatF];
-   ftnF   = &DF[DIR_0PP  *size_MatF];
-   fbsF   = &DF[DIR_0MM  *size_MatF];
-   fbnF   = &DF[DIR_0PM  *size_MatF];
-   ftsF   = &DF[DIR_0MP  *size_MatF];
-   fzeroF = &DF[DIR_000*size_MatF];
-   ftneF  = &DF[DIR_PPP *size_MatF];
-   ftswF  = &DF[DIR_MMP *size_MatF];
-   ftseF  = &DF[DIR_PMP *size_MatF];
-   ftnwF  = &DF[DIR_MPP *size_MatF];
-   fbneF  = &DF[DIR_PPM *size_MatF];
-   fbswF  = &DF[DIR_MMM *size_MatF];
-   fbseF  = &DF[DIR_PMM *size_MatF];
-   fbnwF  = &DF[DIR_MPM *size_MatF];
+   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
+   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
+   fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
+   ftF    = &DF[DIR_00P * numberOfLBnodesFine];
+   fbF    = &DF[DIR_00M * numberOfLBnodesFine];
+   fneF   = &DF[DIR_PP0 * numberOfLBnodesFine];
+   fswF   = &DF[DIR_MM0 * numberOfLBnodesFine];
+   fseF   = &DF[DIR_PM0 * numberOfLBnodesFine];
+   fnwF   = &DF[DIR_MP0 * numberOfLBnodesFine];
+   fteF   = &DF[DIR_P0P * numberOfLBnodesFine];
+   fbwF   = &DF[DIR_M0M * numberOfLBnodesFine];
+   fbeF   = &DF[DIR_P0M * numberOfLBnodesFine];
+   ftwF   = &DF[DIR_M0P * numberOfLBnodesFine];
+   ftnF   = &DF[DIR_0PP * numberOfLBnodesFine];
+   fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
+   fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
+   ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
+   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
+   ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
+   ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
+   ftnwF  = &DF[DIR_MPP * numberOfLBnodesFine];
+   fbneF  = &DF[DIR_PPM * numberOfLBnodesFine];
+   fbswF  = &DF[DIR_MMM * numberOfLBnodesFine];
+   fbseF  = &DF[DIR_PMM * numberOfLBnodesFine];
+   fbnwF  = &DF[DIR_MPM * numberOfLBnodesFine];
 
    real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00   *size_MatC];
-      fwC    = &DC[DIR_M00   *size_MatC];
-      fnC    = &DC[DIR_0P0   *size_MatC];
-      fsC    = &DC[DIR_0M0   *size_MatC];
-      ftC    = &DC[DIR_00P   *size_MatC];
-      fbC    = &DC[DIR_00M   *size_MatC];
-      fneC   = &DC[DIR_PP0  *size_MatC];
-      fswC   = &DC[DIR_MM0  *size_MatC];
-      fseC   = &DC[DIR_PM0  *size_MatC];
-      fnwC   = &DC[DIR_MP0  *size_MatC];
-      fteC   = &DC[DIR_P0P  *size_MatC];
-      fbwC   = &DC[DIR_M0M  *size_MatC];
-      fbeC   = &DC[DIR_P0M  *size_MatC];
-      ftwC   = &DC[DIR_M0P  *size_MatC];
-      ftnC   = &DC[DIR_0PP  *size_MatC];
-      fbsC   = &DC[DIR_0MM  *size_MatC];
-      fbnC   = &DC[DIR_0PM  *size_MatC];
-      ftsC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      ftneC  = &DC[DIR_PPP *size_MatC];
-      ftswC  = &DC[DIR_MMP *size_MatC];
-      ftseC  = &DC[DIR_PMP *size_MatC];
-      ftnwC  = &DC[DIR_MPP *size_MatC];
-      fbneC  = &DC[DIR_PPM *size_MatC];
-      fbswC  = &DC[DIR_MMM *size_MatC];
-      fbseC  = &DC[DIR_PMM *size_MatC];
-      fbnwC  = &DC[DIR_MPM *size_MatC];
+      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    } 
    else
    {
-      fwC    = &DC[DIR_P00   *size_MatC];
-      feC    = &DC[DIR_M00   *size_MatC];
-      fsC    = &DC[DIR_0P0   *size_MatC];
-      fnC    = &DC[DIR_0M0   *size_MatC];
-      fbC    = &DC[DIR_00P   *size_MatC];
-      ftC    = &DC[DIR_00M   *size_MatC];
-      fswC   = &DC[DIR_PP0  *size_MatC];
-      fneC   = &DC[DIR_MM0  *size_MatC];
-      fnwC   = &DC[DIR_PM0  *size_MatC];
-      fseC   = &DC[DIR_MP0  *size_MatC];
-      fbwC   = &DC[DIR_P0P  *size_MatC];
-      fteC   = &DC[DIR_M0M  *size_MatC];
-      ftwC   = &DC[DIR_P0M  *size_MatC];
-      fbeC   = &DC[DIR_M0P  *size_MatC];
-      fbsC   = &DC[DIR_0PP  *size_MatC];
-      ftnC   = &DC[DIR_0MM  *size_MatC];
-      ftsC   = &DC[DIR_0PM  *size_MatC];
-      fbnC   = &DC[DIR_0MP  *size_MatC];
-      fzeroC = &DC[DIR_000*size_MatC];
-      fbswC  = &DC[DIR_PPP *size_MatC];
-      fbneC  = &DC[DIR_MMP *size_MatC];
-      fbnwC  = &DC[DIR_PMP *size_MatC];
-      fbseC  = &DC[DIR_MPP *size_MatC];
-      ftswC  = &DC[DIR_PPM *size_MatC];
-      ftneC  = &DC[DIR_MMM *size_MatC];
-      ftnwC  = &DC[DIR_PMM *size_MatC];
-      ftseC  = &DC[DIR_MPM *size_MatC];
+      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
+      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
+      fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
+      fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
+      ftC    = &DC[DIR_00M * numberOfLBnodesCoarse];
+      fswC   = &DC[DIR_PP0 * numberOfLBnodesCoarse];
+      fneC   = &DC[DIR_MM0 * numberOfLBnodesCoarse];
+      fnwC   = &DC[DIR_PM0 * numberOfLBnodesCoarse];
+      fseC   = &DC[DIR_MP0 * numberOfLBnodesCoarse];
+      fbwC   = &DC[DIR_P0P * numberOfLBnodesCoarse];
+      fteC   = &DC[DIR_M0M * numberOfLBnodesCoarse];
+      ftwC   = &DC[DIR_P0M * numberOfLBnodesCoarse];
+      fbeC   = &DC[DIR_M0P * numberOfLBnodesCoarse];
+      fbsC   = &DC[DIR_0PP * numberOfLBnodesCoarse];
+      ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
+      ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
+      fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
+      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
+      fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
+      fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
+      fbseC  = &DC[DIR_MPP * numberOfLBnodesCoarse];
+      ftswC  = &DC[DIR_PPM * numberOfLBnodesCoarse];
+      ftneC  = &DC[DIR_MMM * numberOfLBnodesCoarse];
+      ftnwC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
+      ftseC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
    }
 
    ////////////////////////////////////////////////////////////////////////////////

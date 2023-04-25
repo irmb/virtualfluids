@@ -22,8 +22,8 @@ void allocParticles(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//all level store the same number of time steps
-		para->getParH(lev)->plp.numberOfTimestepsParticles = para->getTOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
-		para->getParD(lev)->plp.numberOfTimestepsParticles = para->getTOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
+		para->getParH(lev)->plp.numberOfTimestepsParticles = para->getTimestepOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
+		para->getParD(lev)->plp.numberOfTimestepsParticles = para->getTimestepOut() * (unsigned int)pow(2,para->getParticleBasicLevel());
 		//////////////////////////////////////////////////////////////////////////
 		//all level store the same number of Particles
 		para->getParH(lev)->plp.numberOfParticles = para->getNumberOfParticles();
@@ -141,12 +141,12 @@ void initParticles(Parameter* para)
 			para->getParH(lev)->plp.coordZabsolut[i] = (real)zCoordVec[i]; 
 
 			// find IDs
-			for (unsigned int ii = 0; ii < para->getParH(lev)->numberOfNodes; ii++)
+			for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++)
 			{
-				if ((para->getParH(lev)->coordinateX[ii] <= para->getParH(lev)->plp.coordXabsolut[i]) &&
-					((para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordinateX[ii]) <= dx))
+				if ((para->getParH(lev)->coordinateX[index] <= para->getParH(lev)->plp.coordXabsolut[i]) &&
+					((para->getParH(lev)->plp.coordXabsolut[i] - para->getParH(lev)->coordinateX[index]) <= dx))
 				{
-					tempID.push_back(ii);
+					tempID.push_back((int)index);
 				}
 			}
 
@@ -455,7 +455,7 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 		int counter2 = 0;
 		//////////////////////////////////////////////////////////////////////////
 		//redefine fluid nodes
-		for (uint index = 0; index < para->getParH(lev)->numberOfNodes; index++)
+		for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++)
 		{
 			if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
 			{

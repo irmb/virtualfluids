@@ -67,17 +67,17 @@ public:
 
     LBMUnitConverter() = default;
 
-    LBMUnitConverter(const double &refLengthWorld, const double &csWorld, const double &rhoWorld,
-                     const double &refLengthLb, const double &csLb = 1.0 / std::sqrt(3.0), const double &rhoLb = 1.0)
+    LBMUnitConverter(const real &refLengthWorld, const real &csWorld, const real &rhoWorld,
+                     const real &refLengthLb, const real &csLb = 1.0 / std::sqrt(3.0), const real &rhoLb = 1.0)
     {
         this->init(refLengthWorld, csWorld, rhoWorld, csWorld, refLengthLb, rhoLb, csLb);
     }
 
-    LBMUnitConverter(const double &refLengthWorld, WORLD_MATERIAL worldMaterial, const double &refLengthLb,
-                     const double &csLb = 1.0 / std::sqrt(3.0), const double &rhoLb = 1.0)
+    LBMUnitConverter(const real &refLengthWorld, WORLD_MATERIAL worldMaterial, const real &refLengthLb,
+                     const real &csLb = 1.0 / std::sqrt(3.0), const real &rhoLb = 1.0)
     {
-        double csWorld;
-        double rhoWorld;
+        real csWorld;
+        real rhoWorld;
 
         if (worldMaterial == WATER) {
             csWorld  = 1484 /*m/s*/;
@@ -97,53 +97,42 @@ public:
         this->init(refLengthWorld, csWorld, rhoWorld, csWorld, refLengthLb, rhoLb, csLb);
     }
 
-    LBMUnitConverter(int /*dummy*/, double uReal, double uLB, double nuReal, double nuLB)
-    {
-        factorVelocityLbToW  = uReal / uLB;
-        factorViscosityLbToW = nuReal / nuLB;
-        factorDensityLbToW   = factorViscosityLbToW * factorVelocityLbToW * factorVelocityLbToW;
-        factorPressureLbToW  = factorDensityLbToW;
-    }
-
     virtual ~LBMUnitConverter() = default;
 
-    double getRefRhoLb() { return refRhoLb; }
+    real getRefRhoLb() { return refRhoLb; }
 
-    double getFactorLentghLbToW() { return factorLengthLbToW; }
-    double getFactorLentghWToLb() { return 1.0 / this->getFactorLentghLbToW(); }
+    real getFactorLentghLbToW() { return factorLengthLbToW; }
+    real getFactorLentghWToLb() { return 1.0 / this->getFactorLentghLbToW(); }
 
-    double getFactorTimeLbToW() { return factorTimeLbToW; }
-    double getFactorTimeWToLb() { return 1.0 / this->getFactorTimeLbToW(); }
+    real getFactorTimeLbToW() { return factorTimeLbToW; }
+    real getFactorTimeWToLb() { return 1.0 / this->getFactorTimeLbToW(); }
 
-    double getFactorVelocityLbToW() { return factorLengthLbToW / factorTimeLbToW; }
-    double getFactorVelocityWToLb() { return 1.0 / this->getFactorVelocityLbToW(); }
+    real getFactorVelocityLbToW() { return factorLengthLbToW / factorTimeLbToW; }
+    real getFactorVelocityWToLb() { return 1.0 / this->getFactorVelocityLbToW(); }
 
-    double getFactorViscosityLbToW() { return factorLengthLbToW * factorLengthLbToW / factorTimeLbToW; }
-    double getFactorViscosityWToLb() { return 1.0 / this->getFactorViscosityLbToW(); }
+    real getFactorViscosityLbToW() { return factorLengthLbToW * factorLengthLbToW / factorTimeLbToW; }
+    real getFactorViscosityWToLb() { return 1.0 / this->getFactorViscosityLbToW(); }
 
-    double getFactorDensityLbToW() { return this->factorMassLbToW / std::pow(factorLengthLbToW, 3.0); }
-    double getFactorDensityWToLb() { return 1.0 / this->getFactorDensityLbToW(); }
+    real getFactorDensityLbToW() { return this->factorMassLbToW / std::pow(factorLengthLbToW, 3.0); }
+    real getFactorDensityWToLb() { return 1.0 / this->getFactorDensityLbToW(); }
 
-    double getFactorPressureLbToW()
-    {
-        return this->factorMassLbToW / (std::pow(factorTimeLbToW, 2.0) * factorLengthLbToW);
-    }
-    double getFactorPressureWToLb() { return 1.0 / this->getFactorPressureLbToW(); }
+    real getFactorPressureLbToW(){ return this->factorMassLbToW / (factorLengthLbToW * factorTimeLbToW * factorTimeLbToW); }
+    real getFactorPressureWToLb() { return 1.0 / this->getFactorPressureLbToW(); }
 
-    double getFactorMassLbToW() { return this->factorMassLbToW; }
-    double getFactorMassWToLb() { return 1.0 / this->getFactorMassLbToW(); }
+    real getFactorMassLbToW() { return this->factorMassLbToW; }
+    real getFactorMassWToLb() { return 1.0 / this->getFactorMassLbToW(); }
 
-    double getFactorForceLbToW() { return factorMassLbToW * factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
-    double getFactorForceWToLb() { return 1.0 / this->getFactorForceLbToW(); }
+    real getFactorForceLbToW() { return factorMassLbToW * factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
+    real getFactorForceWToLb() { return 1.0 / this->getFactorForceLbToW(); }
 
-    double getFactorAccLbToW() { return factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
-    double getFactorAccWToLb() { return 1.0 / this->getFactorAccLbToW(); }
+    real getFactorTorqueLbToW() { return factorMassLbToW * factorLengthLbToW * factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW);}
+    real getFactorTorqueWToLb() { return 1.0 / this->getFactorTorqueLbToW(); }
 
-    double getFactorTimeLbToW(double deltaX) const { return factorTimeWithoutDx * deltaX; }
-    //////////////////////////////////////////////////////////////////////////
-    double getFactorVelocityLbToW2() { return factorVelocityLbToW; }
-    double getFactorDensityLbToW2() { return factorDensityLbToW; }
-    double getFactorPressureLbToW2() { return factorPressureLbToW; }
+    real getFactorAccLbToW() { return factorLengthLbToW / (factorTimeLbToW * factorTimeLbToW); }
+    real getFactorAccWToLb() { return 1.0 / this->getFactorAccLbToW(); }
+
+    real getFactorTimeLbToW(real deltaX) const { return factorTimeWithoutDx * deltaX; }
+
 
     /*==========================================================*/
     friend inline std::ostream &operator<<(std::ostream &os, LBMUnitConverter c)
@@ -196,8 +185,8 @@ public:
         return out.str();
     }
 
-    void init(const double &refLengthWorld, const double & /*csWorld*/, const double &rhoWorld, const double &vWorld,
-              const double &refLengthLb, const double &rhoLb, const double &vLb)
+    void init(const real &refLengthWorld, const real & /*csWorld*/, const real &rhoWorld, const real &vWorld,
+              const real &refLengthLb, const real &rhoLb, const real &vLb)
     {
         factorLengthLbToW   = refLengthWorld / refLengthLb;
         factorTimeLbToW     = vLb / vWorld * factorLengthLbToW;
@@ -207,16 +196,11 @@ public:
     }
 
 protected:
-    double factorLengthLbToW{ 1.0 };
-    double factorTimeLbToW{ 1.0 };
-    double factorMassLbToW{ 1.0 };
-    double refRhoLb{ 1.0 };
-    double factorTimeWithoutDx{ 0.0 };
-
-    double factorVelocityLbToW{ 1.0 };
-    double factorViscosityLbToW{ 1.0 };
-    double factorDensityLbToW{ 1.0 };
-    double factorPressureLbToW{ 1.0 };
+    real factorLengthLbToW{ 1.0 };
+    real factorTimeLbToW{ 1.0 };
+    real factorMassLbToW{ 1.0 };
+    real refRhoLb{ 1.0 };
+    real factorTimeWithoutDx{ 0.0 };
 };
 
 #endif // LBMUNITCONVERTER_H

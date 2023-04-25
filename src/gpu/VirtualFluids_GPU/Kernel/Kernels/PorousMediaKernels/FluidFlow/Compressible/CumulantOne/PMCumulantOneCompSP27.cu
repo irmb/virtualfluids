@@ -11,7 +11,7 @@ std::shared_ptr<PMCumulantOneCompSP27> PMCumulantOneCompSP27::getNewInstance(std
 
 void PMCumulantOneCompSP27::run()
 {
-	int size_Mat = para->getParD(level)->numberOfNodes;
+	int size_Mat = (int)para->getParD(level)->numberOfNodes;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
@@ -30,7 +30,8 @@ void PMCumulantOneCompSP27::run()
 	dim3 threads(numberOfThreads, 1, 1);
 
 	for (int i = 0; i < pm.size(); i++) {
-		LB_Kernel_PM_Cum_One_Comp_SP_27 << < grid, threads >> >(para->getParD(level)->omega,
+		LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid, threads >>>(
+			para->getParD(level)->omega,
 			para->getParD(level)->neighborX,
 			para->getParD(level)->neighborY,
 			para->getParD(level)->neighborZ,
@@ -56,7 +57,7 @@ PMCumulantOneCompSP27::PMCumulantOneCompSP27(std::shared_ptr<Parameter> para, st
 
 	myPreProcessorTypes.push_back(InitSP27);
 
-	myKernelGroup = BasicKernel;
+	
 }
 
 PMCumulantOneCompSP27::PMCumulantOneCompSP27()

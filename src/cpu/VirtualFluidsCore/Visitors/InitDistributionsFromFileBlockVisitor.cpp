@@ -5,14 +5,14 @@
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "InitDensityLBMKernel.h"
 #include "LBMKernel.h"
 #include <basics/utilities/UbFileInputASCII.h>
 
-InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(/*LBMReal nu, */ LBMReal rho,
+InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(/*LBMReal nu, */ real rho,
                                                                              std::string filename)
-    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), /*nu(nu),*/ rho(rho)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), /*nu(nu),*/ rho(rho)
 {
     UbFileInputASCII in(filename);
     if (!in) {
@@ -23,7 +23,7 @@ InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(/*L
     int nodesX2 = in.readInteger();
     int nodesX3 = in.readInteger();
 
-    matrix = CbArray4D<LBMReal, IndexerX4X3X2X1>(3, nodesX1, nodesX2, nodesX3, 0);
+    matrix = CbArray4D<real, IndexerX4X3X2X1>(3, nodesX1, nodesX2, nodesX3, 0);
 
     for (int x3 = 0; x3 < nodesX3; x3++)
         for (int x2 = 0; x2 < nodesX2; x2++)
@@ -52,11 +52,11 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
     //   LBMReal o = LBMSystem::calcCollisionFactor(nu, block->getLevel());
 
     // Funktionszeiger
-    typedef void (*CalcFeqsFct)(LBMReal *const & /*feq[27]*/, const LBMReal & /*(d)rho*/, const LBMReal & /*vx1*/,
-                                const LBMReal & /*vx2*/, const LBMReal & /*vx3*/);
+    typedef void (*CalcFeqsFct)(real *const & /*feq[27]*/, const real & /*(d)rho*/, const real & /*vx1*/,
+                                const real & /*vx2*/, const real & /*vx3*/);
     CalcFeqsFct calcFeqsFct = NULL;
 
-    LBMReal vx1, vx2, vx3;
+    real vx1, vx2, vx3;
 
     int gridRank  = grid->getRank();
     int blockRank = block->getRank();
@@ -76,7 +76,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
         SPtr<BCArray3D> bcArray        = kernel->getBCProcessor()->getBCArray();
         SPtr<EsoTwist3D> distributions = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
-        LBMReal f[D3Q27System::ENDF + 1];
+        real f[D3Q27System::ENDF + 1];
 
         //      size_t nx1 = distributions->getNX1();
         //      size_t nx2 = distributions->getNX2();
@@ -202,7 +202,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
                     // f_TSW = -eps_new *((ay + bx) / (36.*o)) - f_TNE; double f_TSE = -eps_new *((az + cx) / (36.*o)) -
                     // f_TNE; double f_TNW = -eps_new *((bz + cy) / (36.*o)) - f_TNE;
 
-                    // f[E] = f_E + feq[E];
+                    // f[DIR_P00] = f_E + feq[DIR_P00];
                     // f[W] = f_E + feq[W];
                     // f[N] = f_N + feq[N];
                     // f[S] = f_N + feq[S];

@@ -10,7 +10,7 @@ public:
     ~VoidLBMKernel() override;
     SPtr<LBMKernel> clone() override;
     void calculate(int step) override;
-    double getCalculationTime() override;
+    real getCalculationTime() override;
     void initDataSet();
 
 protected:

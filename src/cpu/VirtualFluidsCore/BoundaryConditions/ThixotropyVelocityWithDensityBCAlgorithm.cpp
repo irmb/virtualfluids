@@ -64,33 +64,35 @@ void ThixotropyVelocityWithDensityBCAlgorithm::addDistributionsH(SPtr<Distributi
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyVelocityWithDensityBCAlgorithm::applyBC()
 {
+    using namespace vf::lbm::dir;
+
    //velocity bc for non reflecting pressure bc
-   LBMReal f[D3Q27System::ENDF+1];
+   real f[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
    
-   LBMReal h[D3Q27System::ENDF + 1];
+   real h[D3Q27System::ENDF + 1];
    distributionsH->getDistributionInv(h, x1, x2, x3);
 
-   LBMReal rho, vx1, vx2, vx3, drho;
+   real rho, vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    
    rho = 1.0+drho*compressibleFactor;
   
    ///////////////////////////////////////////////////////////////////
    // Rheology
-   LBMReal lambda = D3Q27System::getDensity(h);
+   real lambda = D3Q27System::getDensity(h);
 
    int nx1 = x1;
    int nx2 = x2;
    int nx3 = x3;
 
    //flag points in direction of fluid
-   if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::E)) { nx1 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::W)) { nx1 += 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::N)) { nx2 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::S)) { nx2 += 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::T)) { nx3 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::B)) { nx3 += 1; }
+   if (bcPtr->hasVelocityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_M00)) { nx1 += 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(DIR_00M)) { nx3 += 1; }
    else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
@@ -112,16 +114,16 @@ void ThixotropyVelocityWithDensityBCAlgorithm::applyBC()
          if (bcArray->isSolid(nX1,nX2,nX3))
          {
             const int invDir = D3Q27System::INVDIR[fdir];
-            LBMReal velocity = bcPtr->getBoundaryVelocity(fdir);
+            real velocity = bcPtr->getBoundaryVelocity(fdir);
 
-            LBMReal fReturn = (f[fdir] + f[invDir] - velocity*rho) / 2.0 - drho*D3Q27System::WEIGTH[invDir];
+            real fReturn = (f[fdir] + f[invDir] - velocity*rho) / 2.0 - drho*D3Q27System::WEIGTH[invDir];
             distributions->setDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
          }
       }
       
       if (bcPtr->hasVelocityBoundaryFlag(fdir))
       {
-         LBMReal htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
+         real htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
          htemp = D3Q27System::getCompFeqForDirection(fdir, lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
          distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
       }

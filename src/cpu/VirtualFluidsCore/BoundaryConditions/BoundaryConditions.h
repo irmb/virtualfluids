@@ -192,61 +192,63 @@ public:
     float getBoundaryVelocityX3() { return this->bcVelocityX3; }
     float getBoundaryVelocity(const int &direction)
     {
+        using namespace vf::lbm::dir;
+
         switch (direction) {
-            case D3Q27System::E:
-                return (float)(UbMath::c4o9 *
+            case DIR_P00:
+                return (float)(vf::basics::constant::c4o9 *
                                (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
-            case D3Q27System::W:
-                return (float)(UbMath::c4o9 *
+            case DIR_M00:
+                return (float)(vf::basics::constant::c4o9 *
                                (-bcVelocityX1)); // z.B. aus paper manfred MRT LB models in three dimensions (2002)
-            case D3Q27System::N:
-                return (float)(UbMath::c4o9 * (+bcVelocityX2));
-            case D3Q27System::S:
-                return (float)(UbMath::c4o9 * (-bcVelocityX2));
-            case D3Q27System::T:
-                return (float)(UbMath::c4o9 * (+bcVelocityX3));
-            case D3Q27System::B:
-                return (float)(UbMath::c4o9 * (-bcVelocityX3));
-            case D3Q27System::NE:
-                return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
-            case D3Q27System::SW:
-                return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
-            case D3Q27System::SE:
-                return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
-            case D3Q27System::NW:
-                return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
-            case D3Q27System::TE:
-                return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
-            case D3Q27System::BW:
-                return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
-            case D3Q27System::BE:
-                return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
-            case D3Q27System::TW:
-                return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
-            case D3Q27System::TN:
-                return (float)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::BS:
-                return (float)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::BN:
-                return (float)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::TS:
-                return (float)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::TNE:
-                return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::BSW:
-                return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::BNE:
-                return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::TSW:
-                return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::TSE:
-                return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
-            case D3Q27System::BNW:
-                return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::BSE:
-                return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
-            case D3Q27System::TNW:
-                return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+            case DIR_0P0:
+                return (float)(vf::basics::constant::c4o9 * (+bcVelocityX2));
+            case DIR_0M0:
+                return (float)(vf::basics::constant::c4o9 * (-bcVelocityX2));
+            case DIR_00P:
+                return (float)(vf::basics::constant::c4o9 * (+bcVelocityX3));
+            case DIR_00M:
+                return (float)(vf::basics::constant::c4o9 * (-bcVelocityX3));
+            case DIR_PP0:
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 + bcVelocityX2));
+            case DIR_MM0:
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 - bcVelocityX2));
+            case DIR_PM0:
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 - bcVelocityX2));
+            case DIR_MP0:
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 + bcVelocityX2));
+            case DIR_P0P:
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 + bcVelocityX3));
+            case DIR_M0M:
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 - bcVelocityX3));
+            case DIR_P0M:
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 - bcVelocityX3));
+            case DIR_M0P:
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 + bcVelocityX3));
+            case DIR_0PP:
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX2 + bcVelocityX3));
+            case DIR_0MM:
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX2 - bcVelocityX3));
+            case DIR_0PM:
+                return (float)(vf::basics::constant::c1o9 * (+bcVelocityX2 - bcVelocityX3));
+            case DIR_0MP:
+                return (float)(vf::basics::constant::c1o9 * (-bcVelocityX2 + bcVelocityX3));
+            case DIR_PPP:
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+            case DIR_MMM:
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+            case DIR_PPM:
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+            case DIR_MMP:
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+            case DIR_PMP:
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+            case DIR_MPM:
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+            case DIR_PMM:
+                return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+            case DIR_MPP:
+                return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             default:
                 throw UbException(UB_EXARGS, "unknown error");
         }
@@ -279,30 +281,6 @@ public:
 
     void setBoundaryDensity(float density) { this->bcDensity = density; }
     float getBoundaryDensity() { return this->bcDensity; }
-
-    ////Lodi extension
-    void setDensityLodiDensity(const float &bcLodiDensity) { this->bcLodiDensity = bcLodiDensity; }
-    void setDensityLodiVelocityX1(const float &bcLodiVelocityX1) { this->bcLodiVelocityX1 = bcLodiVelocityX1; }
-    void setDensityLodiVelocityX2(const float &bcLodiVelocityX2) { this->bcLodiVelocityX2 = bcLodiVelocityX2; }
-    void setDensityLodiVelocityX3(const float &bcLodiVelocityX3) { this->bcLodiVelocityX3 = bcLodiVelocityX3; }
-    void setDensityLodiLength(const float &bcLodiLentgh) { this->bcLodiLentgh = bcLodiLentgh; }
-    float getDensityLodiDensity() const { return this->bcLodiDensity; }
-    float getDensityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    float getDensityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    float getDensityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    float getDensityLodiLength() const { return this->bcLodiLentgh; }
-
-    float &densityLodiDensity() { return this->bcLodiDensity; }
-    float &densityLodiVelocityX1() { return this->bcLodiVelocityX1; }
-    float &densityLodiVelocityX2() { return this->bcLodiVelocityX2; }
-    float &densityLodiVelocityX3() { return this->bcLodiVelocityX3; }
-    float &densityLodiLentgh() { return this->bcLodiLentgh; }
-
-    const float &densityLodiDensity() const { return this->bcLodiDensity; }
-    const float &densityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    const float &densityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    const float &densityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    const float &densityLodiLentgh() const { return this->bcLodiLentgh; }
 
     /*======================= Qs =============================*/
     void setQ(const float &val, const int &direction) { q[direction] = val; }
@@ -353,13 +331,6 @@ protected:
     float bcVelocityX3{ 0.0f };
     float bcDensity{ 0.0f };
     float bcPhaseField{ 0.0f };
-
-    //FIXME: remove LODI variables, don't forget to adjust MPIIOCoProcessors
-    float bcLodiDensity{ 0.0f };
-    float bcLodiVelocityX1{ 0.0f };
-    float bcLodiVelocityX2{ 0.0f };
-    float bcLodiVelocityX3{ 0.0f };
-    float bcLodiLentgh{ 0.0f };
 
     float nx1{ 0.0f }, nx2{ 0.0f }, nx3{ 0.0f };
 

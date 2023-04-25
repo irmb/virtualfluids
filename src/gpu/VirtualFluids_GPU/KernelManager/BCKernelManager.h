@@ -41,6 +41,7 @@
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 
+
 class CudaMemoryManager;
 class BoundaryConditionFactory;
 class Parameter;
@@ -48,6 +49,7 @@ struct LBMSimulationParameter;
 
 using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
 using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
+using precursorBoundaryCondition = std::function<void(LBMSimulationParameter *, QforPrecursorBoundaryConditions *, real tRatio, real velocityRatio)>;
 
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
@@ -84,7 +86,10 @@ public:
     //! \brief calls the device function of the pressure boundary condition (post-collision)
     void runPressureBCKernelPost(const int level) const;
 
-    //! \brief calls the device function of the outflow boundary condition (pre-collision)
+	//! \brief calls the device function of the precursor boundary condition
+	void runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);
+
+    //! \brief calls the device function of the outflow boundary condition
     void runOutflowBCKernelPre(const int level) const;
 
     //! \brief calls the device function of the stress wall model (post-collision)
@@ -96,12 +101,15 @@ private:
     //! \param boundaryCondition: a kernel function for the boundary condition
     //! \param bcStruct: a struct containing the grid nodes which are part of the boundary condition
     //! \param bcName: the name of the checked boundary condition
-    template <typename bcFunction>
-    void checkBoundaryCondition(const bcFunction &boundaryCondition, const QforBoundaryConditions &bcStruct, const std::string &bcName)
+    template <typename bcFunction, typename QforBC>
+    void checkBoundaryCondition(const bcFunction &boundaryCondition, const QforBC &bcStruct, const std::string &bcName)
     {
         if (!boundaryCondition && bcStruct.numberOfBCnodes > 0)
             throw std::runtime_error("The boundary condition " + bcName + " was not set!");
     }
+
+    void runDistributionPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);
+    void runVelocityPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);
 
     SPtr<Parameter> para;
 
@@ -111,5 +119,6 @@ private:
     boundaryCondition slipBoundaryConditionPost = nullptr;
     boundaryCondition geometryBoundaryConditionPost = nullptr;
     boundaryConditionWithParameter stressBoundaryConditionPost = nullptr;
+    precursorBoundaryCondition precursorBoundaryConditionPost = nullptr;
 };
 #endif

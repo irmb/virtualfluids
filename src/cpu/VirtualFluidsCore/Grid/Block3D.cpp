@@ -34,7 +34,7 @@
 #include "Block3D.h"
 
 #include "Block3DConnector.h"
-#include "Grid3DSystem.h"
+#include "D3Q27System.h"
 #include "LBMKernel.h"
 
 int Block3D::counter = 0;
@@ -257,33 +257,36 @@ int Block3D::getNumberOfRemoteConnectors()
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfLocalConnectorsForSurfaces()
 {
+    using namespace vf::lbm::dir;
+
     int count = 0;
 
     if (connectors.size() < 6)
         return count;
 
-    for (int dir = 0; dir <= 5; dir++) // Hard coding. It works if you have 0...5 for E, N ... B
-    {
-        SPtr<Block3DConnector> connector = this->connectors[dir];
-        if (this->connectors[dir]) {
-            if (connector->isLocalConnector())
+    for (SPtr<Block3DConnector> c : connectors) {
+        if (c) {
+            if (c->getSendDir() >= (int)DIR_P00 && c->getSendDir() <= (int)DIR_00M && c->isLocalConnector())
                 count++;
         }
     }
+
     return count;
 }
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getNumberOfRemoteConnectorsForSurfaces()
 {
+    using namespace vf::lbm::dir;
+
     int count = 0;
-    for (int dir = 0; dir <= 5; dir++) // Hard coding. It works if you have 0...5 for E, N ... B
-    {
-        SPtr<Block3DConnector> connector = this->connectors[dir];
-        if (this->connectors[dir]) {
-            if (connector->isRemoteConnector())
+
+    for (SPtr<Block3DConnector> c : connectors) {
+        if (c) {
+            if (c->getSendDir() >= (int)DIR_P00 && c->getSendDir() <= (int)DIR_00M && c->isRemoteConnector())
                 count++;
         }
     }
+
     return count;
 }
 void Block3D::setCollectionOfInterpolationFlagCF(int flags) { interpolationFlagCF = flags; }
@@ -318,10 +321,10 @@ void Block3D::deleteInterpolationFlag()
     interpolationFlagCF = 0;
 }
 //////////////////////////////////////////////////////////////////////////
-double Block3D::getWorkLoad()
+real Block3D::getWorkLoad()
 {
-    double l = kernel->getCalculationTime();
-    l *= static_cast<double>(1 << level);
+    real l = kernel->getCalculationTime();
+    l *= static_cast<real>(1 << level);
     return l;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -335,13 +338,13 @@ std::string Block3D::toString()
     for (std::size_t i = 0; i < connectors.size(); i++)
         if (connectors[i]) {
             if (connectors[i]->isLocalConnector())
-                ss << "l." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "l." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isRemoteConnector())
-                ss << "r." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "r." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isInterpolationConnectorCF())
-                ss << "cf." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "cf." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isInterpolationConnectorFC())
-                ss << "fc." << Grid3DSystem::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "fc." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
         }
     return ss.str();
 }

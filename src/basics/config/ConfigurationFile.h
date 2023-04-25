@@ -1,6 +1,8 @@
 #ifndef BASICS_CONFIGURATIONFILE_H
 #define BASICS_CONFIGURATIONFILE_H
 
+#include "Logger.h"
+#include <filesystem>
 #include <map>
 #include <vector>
 #include <sstream>
@@ -9,7 +11,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include <basics/basics/utilities/UbException.h>
+#include <basics/utilities/UbException.h>
 
 //! \brief  Simple configuration file
 //! \details The Configuration class presented here can read and keep values of any configuration file written in a format like this:
@@ -63,6 +65,27 @@ public:
    //! get value with key
    template<class T>
    T getValue(const std::string& key) const;
+
+   //! get value with key and default value
+   template<class T>
+   T getValue(const std::string& key, T defaultValue) const;
+
+   static ConfigurationFile loadConfig(int argc, char *argv[], std::string configPath = "./config.txt")
+   {
+      // the config file's default path can be replaced by passing a command line argument
+
+      if (argc > 1) 
+      {
+         configPath = argv[1];
+         VF_LOG_INFO("Using command line argument for config path: {}", configPath);
+      } else {
+         VF_LOG_INFO("Using default config path: {}", configPath);
+      }
+
+      vf::basics::ConfigurationFile config;
+      config.load(configPath);
+      return config;
+   }
 
 private:
    //! the container
@@ -136,6 +159,19 @@ T ConfigurationFile::getValue(const std::string& key) const
    }
 
    return x;
+}
+
+template<class T>
+T ConfigurationFile::getValue(const std::string& key, T defaultValue) const
+{
+   if (contains(key))
+   {
+      return getValue<T>(key);
+   }
+   else
+   {
+      return defaultValue;
+   }
 }
 
 }

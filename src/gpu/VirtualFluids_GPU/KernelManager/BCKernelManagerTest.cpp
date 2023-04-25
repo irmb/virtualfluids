@@ -67,6 +67,12 @@ TEST_F(BCKernelManagerTest_BCsNotSpecified, stressBoundaryConditionPost_NotSpeci
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
+TEST_F(BCKernelManagerTest_BCsNotSpecified, precursorBoundaryConditionPost_NotSpecified)
+{
+    para->getParD(0)->precursorBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+}
+
 class BoundaryConditionFactoryMock : public BoundaryConditionFactory
 {
 public:

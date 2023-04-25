@@ -34,8 +34,7 @@
 #define GRID_IMP_H
 
 #include <array>
-
-#include "Core/LbmOrGks.h"
+#include <vector>
 
 #include "gpu/GridGenerator/global.h"
 
@@ -52,10 +51,11 @@ class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
+
 #ifdef __GNUC__
     #ifndef __clang__
         #pragma push
-        #pragma diag_suppress = 3156
+        #pragma nv_diag_suppress = 3156
     #endif
 #endif
 
@@ -72,10 +72,11 @@ class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, publi
 {
 protected:
     GridImp() = default;
-    GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
+    GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
 public:
-    static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    static SPtr<GridImp> makeShared(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    ~GridImp() override = default;
 
 private:
     void initalNumberOfNodesAndSize();
@@ -90,6 +91,7 @@ private:
 
     bool nodeInPreviousCellIs(int index, char type) const;
     bool nodeInCellIs(Cell& cell, char type) const override;
+
 
     uint getXIndex(real x) const;
     uint getYIndex(real y) const;
@@ -109,15 +111,16 @@ private:
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
-    Field field;
-    Object* object;
+    SPtr<Object> object;
     GridInterface *gridInterface;
 
-    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
 
-    std::vector<uint> fluidNodeIndices;
-    std::vector<uint> fluidNodeIndicesBorder;
+    std::vector<uint> fluidNodeIndices;                 // run on CollisionTemplate::Default
+    std::vector<uint> fluidNodeIndicesBorder;           // run on subdomain border nodes (CollisionTemplate::SubDomainBorder)
+    std::vector<uint> fluidNodeIndicesMacroVars;        // run on CollisionTemplate::MacroVars
+    std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
+    std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -127,11 +130,17 @@ private:
 
     uint numberOfLayers;
 
-    TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy;
+    SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 
     uint numberOfSolidBoundaryNodes = 0;
 
     bool enableFixRefinementIntoTheWall;
+
+    std::vector<SideType> bcAlreadySet;
+
+protected:
+    Field field;
+    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
 
 public:
     void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
@@ -143,9 +152,9 @@ public:
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
 
-    bool getPeriodicityX() override;
-    bool getPeriodicityY() override;
-    bool getPeriodicityZ() override;
+    bool getPeriodicityX() const override;
+    bool getPeriodicityY() const override;
+    bool getPeriodicityZ() const override;
 
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) override;
 
@@ -155,19 +164,19 @@ public:
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    void findGridInterface(SPtr<Grid> grid) override;
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
 
     void freeMemory() override;
 
     uint getLevel(real levelNull) const;
     uint getLevel() const;
 
-    void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy);
-    TriangularMeshDiscretizationStrategy *getTriangularMeshDiscretizationStrategy();
+    void setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy);
+    SPtr<TriangularMeshDiscretizationStrategy> getTriangularMeshDiscretizationStrategy();
 
     uint getNumberOfSolidBoundaryNodes() const override;
     void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
@@ -178,6 +187,9 @@ public:
     void setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid) override;
 
     void setNumberOfLayers(uint numberOfLayers) override;
+
+    std::vector<SideType> getBCAlreadySet() override;
+    void addBCalreadySet(SideType side) override;
 
 public:
     Distribution distribution;
@@ -203,7 +215,7 @@ public:
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
-    void findGridInterfaceCF(uint index, GridImp &finerGrid, LbmOrGks lbmOrGks);
+    void findGridInterfaceCF(uint index, GridImp &finerGrid);
     void findGridInterfaceFC(uint index, GridImp &finerGrid);
     void findOverlapStopper(uint index, GridImp &finerGrid);
     void findInvalidBoundaryNodes(uint index);
@@ -213,10 +225,11 @@ public:
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
     bool hasNeighborOfType(uint index, char type) const;
+    bool nodeHasBC(uint index) const override;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
-    const Object* getObject() const override;
+    SPtr<const Object> getObject() const override;
 
     Field getField() const;
     char getFieldEntry(uint index) const override;
@@ -228,7 +241,7 @@ public:
     uint getSparseSize() const override;
     int getSparseIndex(uint matrixIndex) const override;
     real* getDistribution() const override;
-    int* getDirection() const override;
+    const std::vector<int>& getDirection() const override;
     int getStartDirection() const override;
     int getEndDirection() const override;
 
@@ -253,6 +266,8 @@ public:
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
 
     bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override;
+    
+    bool isStopperForBC(uint index) const override;
 
     int *getNeighborsX() const override;
     int* getNeighborsY() const override;
@@ -270,22 +285,23 @@ public:
     void print() const;
 
 public:
-    virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
+    void findSparseIndices(SPtr<Grid> fineGrid) override;
 
     void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();
     void setNeighborIndices(uint index);
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override;
+protected:
+    virtual void setStopperNeighborCoords(uint index);
 private:
-    void setStopperNeighborCoords(uint index);
     void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     
 
-    int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
+    virtual int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
     static real getMinimumOnNodes(const real &minExact, const real &decimalStart, const real &delta);
     static real getMaximumOnNodes(const real &maxExact, const real &decimalStart, const real &delta);
@@ -337,7 +353,7 @@ private:
     void allocateQs();
 
 public:
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override;
     void findCommunicationIndex(uint index, real coordinate, real limit, int direction);
 
     uint getNumberOfSendNodes(int direction) override;
@@ -360,6 +376,19 @@ public:
     uint getNumberOfFluidNodesBorder() const override;
     void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;
 
+    void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) override;
+    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) override;
+    void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) override;
+    void sortFluidNodeIndicesMacroVars() override;
+    void sortFluidNodeIndicesApplyBodyForce() override;
+    void sortFluidNodeIndicesAllFeatures() override;
+
+    uint getNumberOfFluidNodeIndicesMacroVars() const override;
+    uint getNumberOfFluidNodeIndicesApplyBodyForce() const override;
+    uint getNumberOfFluidNodeIndicesAllFeatures() const override; 
+    void getFluidNodeIndicesMacroVars(uint *fluidNodeIndicesMacroVars) const override;
+    void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const override;
+    void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const override;
 
 public:
     struct CommunicationIndices {

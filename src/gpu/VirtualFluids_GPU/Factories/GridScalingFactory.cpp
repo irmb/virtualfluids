@@ -3,35 +3,39 @@
 
 void GridScalingFactory::setScalingFactory(const GridScalingFactory::GridScaling gridScalingType)
 {
-    this->gridScaling = gridScalingType;
+    this->gridScalingType = gridScalingType;
 }
 
-gridScalingFC GridScalingFactory::getGridScalingFC() const
+gridScaling GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) const
 {
     // for descriptions of the scaling types refer to the header
-    switch (gridScaling) {
+    switch (gridScalingType) {
         case GridScaling::ScaleRhoSq:
             return ScaleFC_RhoSq_comp_27;
             break;
-        case GridScaling::ScaleK17:
-            return ScaleFC_K17_redesigned;
+        case GridScaling::ScaleCompressible:
+            if(hasTurbulentViscosity)   return ScaleFC_compressible<true>;
+            else                        return ScaleFC_compressible<false>;
             break;
         default:
             return nullptr;
     }
 }
 
-// gridScalingCF GridScalingFactory::getGridScalingCF() const
-// {
-//     // for descriptions of the scaling types refer to the header
-//     switch (gridScaling) {
-//         case GridScaling::ScaleRhoSq:
-//             return ScaleCF_RhoSq_comp_27;
-//             break;
-//         case GridScaling::ScaleK17:
-//             return ScaleCF_K17_redesigned;
-//             break;
-//         default:
-//             return nullptr;
-//     }
-// }
+gridScaling GridScalingFactory::getGridScalingCF(bool hasTurbulentViscosity) const
+{
+    // for descriptions of the scaling types refer to the header
+    switch (gridScalingType) {
+        case GridScaling::ScaleRhoSq:
+            return ScaleCF_RhoSq_comp_27;
+            break;
+        case GridScaling::ScaleCompressible:
+            {
+                if(hasTurbulentViscosity)   return ScaleCF_compressible<true>;
+                else                        return ScaleCF_compressible<false>;
+                break;
+            }
+        default:
+            return nullptr;
+    }
+}

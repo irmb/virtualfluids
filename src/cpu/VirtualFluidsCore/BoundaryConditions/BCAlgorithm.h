@@ -69,7 +69,9 @@ public:
     static const char RheologyPowellEyringModelNoSlipBCAlgorithm           = 18;
     static const char RheologyBinghamModelVelocityBCAlgorithm              = 19;
     static const char MultiphaseNoSlipBCAlgorithm                  = 20;
-
+    static const char MultiphaseVelocityBCAlgorithm                      = 21;
+    static const char NonReflectingInflowBCAlgorithm = 22;
+    static const char NonReflectingOutflowBCAlgorithmWithRelaxation = 23;
 
 public:
     BCAlgorithm() = default;
@@ -82,13 +84,13 @@ public:
     void setNodeIndex(int x1, int x2, int x3);
     void setBcPointer(SPtr<BoundaryConditions> bcPtr);
     void setCompressible(bool c);
-    void setCollFactor(LBMReal cf);
+    void setCollFactor(real cf);
 
-    void setCollFactorL(LBMReal cf);
-    void setCollFactorG(LBMReal cf);
-    void setCollFactorPh(LBMReal cf);
-    void setDensityRatio(LBMReal dr);
-    void setPhiBound(LBMReal phiL, LBMReal phiH);
+    void setCollFactorL(real cf);
+    void setCollFactorG(real cf);
+    void setCollFactorPh(real cf);
+    void setDensityRatio(real dr);
+    void setPhiBound(real phiL, real phiH);
 
     char getType();
     bool isPreCollision();
@@ -111,18 +113,18 @@ protected:
     SPtr<BCArray3D> bcArray;
     SPtr<Block3D> block;
 
-    LBMReal collFactor;
-    LBMReal collFactorL, collFactorG, collFactorPh;
-    LBMReal densityRatio;
-    LBMReal phiL, phiH;
+    real collFactor;
+    real collFactorL, collFactorG, collFactorPh;
+    real densityRatio;
+    real phiL, phiH;
     int x1, x2, x3;
 
-    LBMReal compressibleFactor;
+    real compressibleFactor;
 
-    using CalcMacrosFct    = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
-    using CalcFeqForDirFct = LBMReal (*)(const int &, const LBMReal &, const LBMReal &, const LBMReal &,
-                                         const LBMReal &);
-    using CalcFeqFct = void (*)(LBMReal *const &, const LBMReal &, const LBMReal &, const LBMReal &, const LBMReal &);
+    using CalcMacrosFct    = void (*)(const real *const &, real &, real &, real &, real &);
+    using CalcFeqForDirFct = real (*)(const int &, const real &, const real &, const real &,
+                                         const real &);
+    using CalcFeqFct = void (*)(real *const &, const real &, const real &, const real &, const real &);
 
     CalcFeqForDirFct calcFeqsForDirFct;
     CalcMacrosFct calcMacrosFct;

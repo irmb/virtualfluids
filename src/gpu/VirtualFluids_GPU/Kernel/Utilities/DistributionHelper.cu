@@ -2,8 +2,7 @@
 
 #include <cuda_runtime.h>
 
-
-#include <lbm/constants/NumericConstants.h>
+#include "basics/constants/NumericConstants.h"
 #include "lbm/constants/D3Q27.h"
 using namespace vf::lbm::dir;
 
@@ -79,11 +78,5 @@ __device__ void DistributionWrapper::write()
     (distribution_references.f[DIR_MMM])[kbsw] = distribution.f[vf::lbm::dir::MMM];
     (distribution_references.f[DIR_000])[k]   = distribution.f[vf::lbm::dir::ZZZ];
 }
-
-__device__ bool isValidFluidNode(uint nodeType)
-{
-    return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
-}
-
 
 }

@@ -38,7 +38,7 @@
 #include <omp.h>
 #include <cmath>
 
-#include "Core/Timer/Timer.h"
+#include "Timer/Timer.h"
 
 #include "grid/NodeValues.h"
 #include "grid/Grid.h"
@@ -59,13 +59,13 @@ void SimulationFileWriter::write(const std::string& folder, SPtr<GridBuilder> bu
 {
     SimulationFileWriter::folder = folder;
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start writing simulation files to " << folder << ":\n";
+    VF_LOG_INFO("Start writing simulation files to {}", folder);
     auto timer = Timer::makeStart();
 
     write(builder, format);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Time writing files: " << timer->getCurrentRuntimeInSeconds() << " sec\n";
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done writing simulation Files!\n";
+    VF_LOG_INFO("    Time writing files: {} sec", timer->getCurrentRuntimeInSeconds());
+    VF_LOG_INFO("Done writing simulation Files!");
 }
 
 
@@ -79,7 +79,7 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
     writeLevel(numberOfLevel);
     //auto qs = createBCVectors(builder->getGrid(0));
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Coordinate and neighbor files:\n";
+    VF_LOG_INFO("   Coordinate and neighbor files:");
     for (uint level = 0; level < numberOfLevel; level++)
     {
         writeNumberNodes(builder, level);
@@ -95,10 +95,10 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
         }
     }
     
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Boundary Condition files:\n";
+    VF_LOG_INFO("   Boundary Condition files:");
     writeBoundaryQsFile(builder);
     
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Communication files:\n";
+    VF_LOG_INFO("    Communication files:");
     writeCommunicationFiles(builder);
 
     closeFiles();
@@ -417,10 +417,10 @@ void SimulationFileWriter::writeGridInterfaceToFile(SPtr<GridBuilder> builder, u
     }
 }
 
-void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine)
+void SimulationFileWriter::writeGridInterfaceToFile(uint numberOfNodes, std::ofstream &coarseFile, uint *coarse,
+                                                    std::ofstream &fineFile, uint *fine)
 {
-    for (uint index = 0; index < numberOfNodes; index++)
-    {
+    for (uint index = 0; index < numberOfNodes; index++) {
         coarseFile << coarse[index] << " \n";
         fineFile << fine[index] << " \n";
     }
@@ -428,16 +428,14 @@ void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, st
     fineFile << "\n";
 }
 
-void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, std::ofstream & offsetFile, real* offset_X, real* offset_Y, real* offset_Z)
+void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, std::ofstream &offsetFile, real *offset_X,
+                                                          real *offset_Y, real *offset_Z)
 {
-    for (uint index = 0; index < numberOfNodes; index++)
-    {
+    for (uint index = 0; index < numberOfNodes; index++) {
         offsetFile << offset_X[index] << " " << offset_Y[index] << " " << offset_Z[index] << " \n";
     }
     offsetFile << "\n";
 }
-
-
 
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/

@@ -8,6 +8,8 @@ using namespace std;
 
 void bflow(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       vf::basics::ConfigurationFile   config;
@@ -18,30 +20,26 @@ void bflow(string configname)
       string          geoFile = config.getValue<string>("geoFile");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      //double          nuLB = config.getValue<double>("nuLB");
-      double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
-      double          availMem = config.getValue<double>("availMem");
+      vector<real>  boundingBox = config.getVector<real>("boundingBox");
+      real          endTime = config.getValue<real>("endTime");
+      real          outTime = config.getValue<real>("outTime");
+      real          availMem = config.getValue<real>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
-      double          restartStep = config.getValue<double>("restartStep");
-      double          deltax = config.getValue<double>("deltax");
-      double          cpStep = config.getValue<double>("cpStep");
-      double          cpStart = config.getValue<double>("cpStart");
+      real          restartStep = config.getValue<real>("restartStep");
+      real          deltax = config.getValue<real>("deltax");
+      real          cpStep = config.getValue<real>("cpStep");
+      real          cpStart = config.getValue<real>("cpStart");
       bool            newStart = config.getValue<bool>("newStart");
-      double          OmegaLB = config.getValue<double>("OmegaLB");
-      double          tau0 = config.getValue<double>("tau0");
-      double          scaleFactor = config.getValue<double>("scaleFactor");
-      double          resolution = config.getValue<double>("resolution");
+      real          OmegaLB = config.getValue<real>("OmegaLB");
+      real          tau0 = config.getValue<real>("tau0");
+      real          N = config.getValue<real>("N");
+      real          mu = config.getValue<real>("mu");
+
 
       vf::basics::ConfigurationFile   viscosity;
-      //viscosity.load(viscosityPath + "/viscosity.cfg");
-      //double nuLB = viscosity.getValue<double>("nuLB");
 
-      //outputPath = outputPath + "/rheometerBingham_" + config.getValue<string>("resolution") + "_" + config.getValue<string>("OmegaLB");
-
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -62,107 +60,75 @@ void bflow(string configname)
          }
       }
 
-      LBMReal rhoLB = 0.0;
+      real rhoLB = 0.0;
 
-      //akoustic
-       //OmegaLB /= scaleFactor;
-       //nuLB *=scaleFactor;
-       //endTime *= scaleFactor;
-       ////outTime = endTime;
-       //cpStart = endTime;
-       //cpStep  = endTime;
+      //double N  = 70; //rpm
+      real Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
+      //double mu    = 5; //Pa s
+      real R     = 0.165 / 2.0; //m
+      real rho = 2150;// 970; //kg/m^3
+      real Re    = Omega * R * R * rho / mu;
 
-//diffusive
-      //OmegaLB /= scaleFactor * scaleFactor;
-      //tau0 /= scaleFactor * scaleFactor;
-      //endTime *= scaleFactor * scaleFactor;
-      //outTime = endTime;
-      //cpStart = endTime;
-      //cpStep = endTime;
+      //double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
 
-      //double Re = 1.38230076758;
-      double N  = 80; //rpm
-      double Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
-      double mu    = 1; //Pa s
-      double R     = 0.165 / 2.0; //m
-      double rho   = 970; //kg/m^3
-      double Re    = Omega * R * R * rho / mu;
+      real dx = deltax * 1e-3;
+      real nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
 
-      double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
+      real Bm = tau0/(mu*Omega);
+      real tau0LB = Bm*nuLB*OmegaLB;
+
+
+      //double dx = 1.0 * 1e-3;
+      //double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
+
+      //acustic scaling
+      // OmegaLB /= 2.0;
+      // nuLB    *= 2.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
-      // double uWorld = (N * PI) / 30.0; //0.0037699111843
-      // double rhoWorld = 2350.0; //kg/m^3
-      //double R0 = boundingBox[0] * 0.5;
-
-      //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(deltax, uWorld*R0, rhoWorld, 1.0, uLB));
-      //if (myid == 0) UBLOG(logINFO, conv->toString());
+      //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(1, 1461, 970, 1e3));
+      //UBLOG(logINFO, conv->toString());
 
       //bounding box
 
-      double g_minX1 = boundingBox[0];
-      double g_maxX1 = boundingBox[1];
+      real g_minX1 = boundingBox[0];
+      real g_maxX1 = boundingBox[1];
 
-      double g_minX2 = boundingBox[2];
-      double g_maxX2 = boundingBox[3];
+      real g_minX2 = boundingBox[2];
+      real g_maxX2 = boundingBox[3];
       
-      double g_minX3 = boundingBox[4];
-      double g_maxX3 = boundingBox[5];
-
-      //double g_minX1 = -boundingBox[0]/2.0;
-      //double g_minX2 = -boundingBox[1] / 2.0;
-      //double g_minX3 = -boundingBox[2]/2.0;
-
-      //double g_maxX1 = boundingBox[0]/2.0;
-      //double g_maxX2 = boundingBox[1]/2.0;
-      //double g_maxX3 = boundingBox[2]/2.0;
-
-//      double blockLength = 3.0 * deltax;
-
-      // double d = 2.0 * radius;
-      // double U = uLB;
-      // double Gamma = U / d;
-
-      // double muWorld = 20; //Pa*s
-      // double k = 0.0015; // muWorld / rhoWorld * conv->getFactorViscosityWToLb(); //(U * d) / (Re);
-
-      // //double k = (U * d) / (Re * std::pow(Gamma, n - 1));
-      // double yielStressWorld = 20; //Pa
-      // double tau0 = 1e-6;// 3e-6;//yielStressWorld * conv->getFactorPressureWToLb(); //Bn * k * std::pow(Gamma, n);
-
-      //double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
-      //double tau0 = 3e-6; //Bn * k * std::pow(Gamma, n);
-
-      //double forcing = 8e-7;
-
-      //double omegaMin = 1.0e-8;
+      real g_minX3 = boundingBox[4];
+      real g_maxX3 = boundingBox[5];
 
       SPtr<Rheology> thix = Rheology::getInstance();
       //thix->setPowerIndex(n);
       //thix->setViscosityParameter(k);
-      thix->setYieldStress(tau0);
+      thix->setYieldStress(tau0LB);
       //thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
+      //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SlipBCAlgorithm()));
 
       //// rotation around X-axis
       mu::Parser fctVy;
-      fctVy.SetExpr("-Omega*(x3-z0-r)");
+      fctVy.SetExpr("-Omega*(x3-z0-r)/deltax");
       fctVy.DefineConst("Omega", OmegaLB);
       fctVy.DefineConst("r", 0.5 * (g_maxX3 - g_minX3));
       fctVy.DefineConst("z0", g_minX3);
+      fctVy.DefineConst("deltax", deltax);
 
       mu::Parser fctVz;
-      fctVz.SetExpr("Omega*(x2-y0-r)");
+      fctVz.SetExpr("Omega*(x2-y0-r)/deltax");
       fctVz.DefineConst("Omega", OmegaLB);
       fctVz.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
       fctVz.DefineConst("y0", g_minX2);
+      fctVz.DefineConst("deltax", deltax);
 
       mu::Parser fctVx;
       fctVx.SetExpr("0.0");
@@ -183,8 +149,8 @@ void bflow(string configname)
       //fctVy.SetExpr("0.0");
 
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
 
@@ -195,7 +161,7 @@ void bflow(string configname)
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBCAdapter);
+      //bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velocityBCAdapter);
       //bcVisitor.addBC(densityBCAdapter);
@@ -207,8 +173,8 @@ void bflow(string configname)
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel()); 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
@@ -225,10 +191,14 @@ void bflow(string configname)
       SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
+      ////////////////////////////////////////////
+      //METIS
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
+      ////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, outputPath, comm));
+      SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, outputPath, comm));
       //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, mSch, outputPath, comm));
       restartCoProcessor->setLBMKernel(kernel);
       restartCoProcessor->setBCProcessor(bcProc);
@@ -237,26 +207,33 @@ void bflow(string configname)
 
       ////stator
       // rotation around X-axis 
-      SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 3.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
-                                               g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
-          g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 0.5 * (g_maxX3 - g_minX3) * 0.5));
+       //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 3.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
+       //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
+       //    g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 0.5 * (g_maxX3 - g_minX3) * 0.5));
 
-       // rotation around Y-axis 
-      //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 + 0.5 * (g_maxX1 - g_minX1), g_minX2 - 3.0 * deltax, 
-      //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_minX1 + 0.5 * (g_maxX1 - g_minX1),
-      //                                         g_maxX2 + 3.0 * deltax, g_minX3 + 0.5 * (g_maxX3 - g_minX3),
-      //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
+      // SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 4.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
+      //                                          g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
+      //     g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 12.0*0.5));
 
-      SPtr<D3Q27Interactor> statorInt =
-          SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      ////  // rotation around Y-axis 
+      //// //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 + 0.5 * (g_maxX1 - g_minX1), g_minX2 - 3.0 * deltax, 
+      //// //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_minX1 + 0.5 * (g_maxX1 - g_minX1),
+      //// //                                         g_maxX2 + 3.0 * deltax, g_minX3 + 0.5 * (g_maxX3 - g_minX3),
+      //// //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
+
+      // SPtr<D3Q27Interactor> statorInt =
+      //    SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
       
-      //SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
-      //stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
+      SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
+      stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
+      //stator->scale(2.0, 2.0, 2.0);
+      //stator->translate(16.0, 0.0, 0.0);
       //stator->translate(4.0, -73.0, -6.0);
+
+      SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
+         new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+
       GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
-      
-      //SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
-      //    new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
 
       ////rotor (cylinder)
       // rotation around X-axis 
@@ -280,7 +257,7 @@ void bflow(string configname)
           g_maxX2 + deltax, g_maxX3 + deltax));
       if (myid == 0) GbSystem3D::writeGeoObject(wallXmin.get(), outputPath + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
 
-      GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 +  (double)blocknx[0]*deltax,
+      GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 +  (real)blocknx[0]*deltax,
           g_maxX2 + deltax, g_maxX3 + deltax));
       if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
@@ -291,27 +268,22 @@ void bflow(string configname)
       if (myid == 0)
       {
          UBLOG(logINFO, "Parameters:");
-         //UBLOG(logINFO, "forcing = " << forcing);
          UBLOG(logINFO, "N = " << N << " rpm");
          UBLOG(logINFO, "Omega = " << Omega << " rad/s");
+         UBLOG(logINFO, "mu = " << mu << " Pa s");
+         UBLOG(logINFO, "tau0 = " << tau0<< " Pa");
+         UBLOG(logINFO, "rho = " << rho<< " kg/m^3");
          UBLOG(logINFO, "Re = " << Re);
-         UBLOG(logINFO, "rho = " << rhoLB);
+         UBLOG(logINFO, "Bm = " << Bm);
+         UBLOG(logINFO, "rhoLB = " << rhoLB);
          UBLOG(logINFO, "uLB = " << OmegaLB);
          UBLOG(logINFO, "nuLB = " << nuLB);
-         // UBLOG(logINFO, "Re = " << (U * d) / (k * std::pow(Gamma, n - 1)));
-         // UBLOG(logINFO, "Bn = " << tau0 /(k * std::pow(Gamma, n)));
-         // UBLOG(logINFO, "k = " << k);
-         // UBLOG(logINFO, "n = " << n);
-         UBLOG(logINFO, "tau0 = " << tau0);
-         UBLOG(logINFO, "scaleFactor = " << scaleFactor);
-         UBLOG(logINFO, "deltax = " << deltax);
+         UBLOG(logINFO, "tau0LB = " << tau0LB);
+         UBLOG(logINFO, "deltax = " << deltax << " mm");
          UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
          UBLOG(logINFO, "blocknx = " << blocknx[0] << " " << blocknx[1] << " " << blocknx[2]);
-         UBLOG(logINFO, "resolution = " << resolution);
-         // UBLOG(logINFO, "boundingBox = " << boundingBox[0] << " " << boundingBox[1] << " " << boundingBox[2]);
-         // UBLOG(logINFO, "sphereCenter = " << sphereCenter[0] << " " << sphereCenter[1] << " " << sphereCenter[2]);
          UBLOG(logINFO, "output path = " << outputPath);
          UBLOG(logINFO, "Preprozess - start");
       }
@@ -335,17 +307,15 @@ void bflow(string configname)
          }
 
 
-         ////////////////////////////////////////////
-         //METIS
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
-         ////////////////////////////////////////////
+
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
-         intHelper.addInteractor(wallXminInt);
          intHelper.addInteractor(wallXmaxInt);
          intHelper.addInteractor(statorInt);
          intHelper.addInteractor(rotorInt);
+         intHelper.addInteractor(wallXminInt);
+         
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
@@ -358,8 +328,8 @@ void bflow(string configname)
          unsigned long nodb = (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nod = nob * (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nodg = nob * (blocknx[0] + gl) * (blocknx[1] + gl) * (blocknx[1] + gl);
-         double needMemAll = double(nodg * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-         double needMem = needMemAll / double(comm->getNumberOfProcesses());
+         real needMemAll = real(nodg * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+         real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
          if (myid == 0)
          {
@@ -403,16 +373,16 @@ void bflow(string configname)
       else
       {
          restartCoProcessor->restart((int)restartStep);
-         grid->setTimeStep(restartStep);
          
-         //SetBcBlocksBlockVisitor v1(wallXminInt);
-         //grid->accept(v1);
-         //wallXminInt->initInteractor();
-         //
-         //SetBcBlocksBlockVisitor v2(wallXmaxInt);
-         //grid->accept(v2);
-         //wallXmaxInt->initInteractor();
+         //restartCoProcessor->readBlocks((int)restartStep);
+         //restartCoProcessor->readDataSet((int)restartStep);
+         ////restartCoProcessor->readBoundaryConds((int)restartStep);
+         //grid->setTimeStep((int)restartStep);
          
+         SetBcBlocksBlockVisitor v2(wallXmaxInt);
+         grid->accept(v2);
+         wallXmaxInt->initInteractor();
+
          SetBcBlocksBlockVisitor v3(statorInt);
          grid->accept(v3);
          statorInt->initInteractor();
@@ -421,10 +391,16 @@ void bflow(string configname)
          grid->accept(v4);
          rotorInt->initInteractor();
 
+         SetBcBlocksBlockVisitor v1(wallXminInt);
+         grid->accept(v1);
+         wallXminInt->initInteractor();
 
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
+                                                               WbWriterVtkXmlBinary::getInstance(), comm));
+         ppblocks->process(1);
       }
       
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
 
       //set connectors
       //InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());
@@ -457,9 +433,9 @@ void bflow(string configname)
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(fp);
+      //calculator->addCoProcessor(fp);
       calculator->addCoProcessor(fp2);
-      calculator->addCoProcessor(writeMQCoProcessor);
+      //calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
 

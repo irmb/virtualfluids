@@ -87,117 +87,119 @@ D3Q27Interactor::~D3Q27Interactor() = default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::initRayVectors()
 {
+    using namespace vf::lbm::dir;
+
     int fdir;
-    double c1oS2 = UbMath::one_over_sqrt2;
-    double c1oS3 = UbMath::one_over_sqrt3;
-    fdir         = D3Q27System::E;
+    real c1oS2 = vf::basics::constant::one_over_sqrt2;
+    real c1oS3 = vf::basics::constant::one_over_sqrt3;
+    fdir         = DIR_P00;
     rayX1[fdir]  = 1.0;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::W;
+    fdir         = DIR_M00;
     rayX1[fdir]  = -1.0;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::N;
+    fdir         = DIR_0P0;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = 1.0;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::S;
+    fdir         = DIR_0M0;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = -1.0;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::T;
+    fdir         = DIR_00P;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = 1.0;
-    fdir         = D3Q27System::B;
+    fdir         = DIR_00M;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = -1.0;
-    fdir         = D3Q27System::NE;
+    fdir         = DIR_PP0;
     rayX1[fdir]  = c1oS2;
     rayX2[fdir]  = c1oS2;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::SW;
+    fdir         = DIR_MM0;
     rayX1[fdir]  = -c1oS2;
     rayX2[fdir]  = -c1oS2;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::SE;
+    fdir         = DIR_PM0;
     rayX1[fdir]  = c1oS2;
     rayX2[fdir]  = -c1oS2;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::NW;
+    fdir         = DIR_MP0;
     rayX1[fdir]  = -c1oS2;
     rayX2[fdir]  = c1oS2;
     rayX3[fdir]  = 0.0;
-    fdir         = D3Q27System::TE;
+    fdir         = DIR_P0P;
     rayX1[fdir]  = c1oS2;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = c1oS2;
-    fdir         = D3Q27System::BW;
+    fdir         = DIR_M0M;
     rayX1[fdir]  = -c1oS2;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = -c1oS2;
-    fdir         = D3Q27System::BE;
+    fdir         = DIR_P0M;
     rayX1[fdir]  = c1oS2;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = -c1oS2;
-    fdir         = D3Q27System::TW;
+    fdir         = DIR_M0P;
     rayX1[fdir]  = -c1oS2;
     rayX2[fdir]  = 0.0;
     rayX3[fdir]  = c1oS2;
-    fdir         = D3Q27System::TN;
+    fdir         = DIR_0PP;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = c1oS2;
     rayX3[fdir]  = c1oS2;
-    fdir         = D3Q27System::BS;
+    fdir         = DIR_0MM;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = -c1oS2;
     rayX3[fdir]  = -c1oS2;
-    fdir         = D3Q27System::BN;
+    fdir         = DIR_0PM;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = c1oS2;
     rayX3[fdir]  = -c1oS2;
-    fdir         = D3Q27System::TS;
+    fdir         = DIR_0MP;
     rayX1[fdir]  = 0.0;
     rayX2[fdir]  = -c1oS2;
     rayX3[fdir]  = c1oS2;
 
-    fdir        = D3Q27System::TNW;
+    fdir        = DIR_MPP;
     rayX1[fdir] = -c1oS3;
     rayX2[fdir] = c1oS3;
     rayX3[fdir] = c1oS3;
-    fdir        = D3Q27System::TNE;
+    fdir        = DIR_PPP;
     rayX1[fdir] = c1oS3;
     rayX2[fdir] = c1oS3;
     rayX3[fdir] = c1oS3;
-    fdir        = D3Q27System::TSW;
+    fdir        = DIR_MMP;
     rayX1[fdir] = -c1oS3;
     rayX2[fdir] = -c1oS3;
     rayX3[fdir] = c1oS3;
-    fdir        = D3Q27System::TSE;
+    fdir        = DIR_PMP;
     rayX1[fdir] = c1oS3;
     rayX2[fdir] = -c1oS3;
     rayX3[fdir] = c1oS3;
-    fdir        = D3Q27System::BNW;
+    fdir        = DIR_MPM;
     rayX1[fdir] = -c1oS3;
     rayX2[fdir] = c1oS3;
     rayX3[fdir] = -c1oS3;
-    fdir        = D3Q27System::BNE;
+    fdir        = DIR_PPM;
     rayX1[fdir] = c1oS3;
     rayX2[fdir] = c1oS3;
     rayX3[fdir] = -c1oS3;
-    fdir        = D3Q27System::BSW;
+    fdir        = DIR_MMM;
     rayX1[fdir] = -c1oS3;
     rayX2[fdir] = -c1oS3;
     rayX3[fdir] = -c1oS3;
-    fdir        = D3Q27System::BSE;
+    fdir        = DIR_PMM;
     rayX1[fdir] = c1oS3;
     rayX2[fdir] = -c1oS3;
     rayX3[fdir] = -c1oS3;
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27Interactor::initInteractor(const double &timeStep)
+void D3Q27Interactor::initInteractor(const real &timeStep)
 {
     UBLOG(logDEBUG5, "D3Q27Interactor::initInteractor - "
                          << " for timestep = " << timeStep);
@@ -222,7 +224,7 @@ void D3Q27Interactor::initInteractor(const double &timeStep)
     updateBlocks();
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27Interactor::updateInteractor(const double &timestep)
+void D3Q27Interactor::updateInteractor(const real &timestep)
 {
     UBLOG(logDEBUG5, "D3Q27Interactor::updateInteractor - for timestep = " << timestep);
 
@@ -262,9 +264,9 @@ void D3Q27Interactor::updateInteractor(const double &timestep)
             int x2          = (*setPos)[1];
             int x3          = (*setPos)[2];
             Vector3D coords = grid.lock()->getNodeCoordinates(block, x1, x2, x3);
-            double worldX1  = coords[0];
-            double worldX2  = coords[1];
-            double worldX3  = coords[2];
+            real worldX1  = coords[0];
+            real worldX2  = coords[1];
+            real worldX3  = coords[2];
 
             SPtr<BoundaryConditions> bc = bcArray->getBC(x1, x2, x3);
             if (bc) // may be that the BC has been deleted by the solid setting of another interactor
@@ -282,6 +284,8 @@ void D3Q27Interactor::updateInteractor(const double &timestep)
 // extendedBoundingGeoOfGeoObject MUST already have been magnified by delta_x_level in each direction for SOLID
 bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 {
+    using namespace vf::lbm::dir;
+
     if (!block)
         return false;
 
@@ -293,7 +297,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
     solidNodeIndicesMap[block]              = set<UbTupleInt3>();
     set<UbTupleInt3> &solidNodeIndices      = solidNodeIndicesMap[block];
 
-    double timestep    = 0;
+    real timestep    = 0;
     bool oneEntryGotBC = false;
     bool gotQs         = false;
     SPtr<BoundaryConditions> bc;
@@ -301,7 +305,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
     SPtr<ILBMKernel> kernel = block->getKernel();
     SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
-    double internX1, internX2, internX3;
+    real internX1, internX2, internX3;
 
     int startIX1 = 0;
     int startIX2 = 0;
@@ -310,7 +314,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
     int stopIX2  = (int)bcArray->getNX2();
     int stopIX3  = (int)bcArray->getNX3();
 
-    double dx = grid.lock()->getDeltaX(block);
+    real dx = grid.lock()->getDeltaX(block);
 
     // other boundingRect than in init, because here the boundrect has to be increased by one dx
     GbCuboid3D extendedBoundingGeoOfGeoObject(
@@ -318,7 +322,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
         geoObject3D->getX3Minimum() - 1.02 * dx, geoObject3D->getX1Maximum() + 1.02 * dx,
         geoObject3D->getX2Maximum() + 1.02 * dx, geoObject3D->getX3Maximum() + 1.02 * dx);
 
-    double deltaX1 = dx, deltaX2 = dx, deltaX3 = dx;
+    real deltaX1 = dx, deltaX2 = dx, deltaX3 = dx;
 
     if (geoObject3D->hasRaytracing() || (this->isInverseSolid() && geoObject3D->raytracingSupportsPointsInside())) {
         // if deltaX1==deltaX2==deltaX3 (must for LB!!)
@@ -326,20 +330,20 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
             throw UbException(
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
-        vector<double> distNeigh(D3Q27System::FENDDIR + 1, UbMath::sqrt2 * deltaX1);
-        distNeigh[D3Q27System::E] = distNeigh[D3Q27System::W] = distNeigh[D3Q27System::N] = deltaX1;
-        distNeigh[D3Q27System::S] = distNeigh[D3Q27System::T] = distNeigh[D3Q27System::B] = deltaX1;
-        distNeigh[D3Q27System::NE] = distNeigh[D3Q27System::NW] = distNeigh[D3Q27System::SW] =
-            distNeigh[D3Q27System::SE]                          = UbMath::sqrt2 * deltaX1;
-        distNeigh[D3Q27System::TE] = distNeigh[D3Q27System::TN] = distNeigh[D3Q27System::TW] =
-            distNeigh[D3Q27System::TS]                          = UbMath::sqrt2 * deltaX1;
-        distNeigh[D3Q27System::BE] = distNeigh[D3Q27System::BN] = distNeigh[D3Q27System::BW] =
-            distNeigh[D3Q27System::BS]                          = UbMath::sqrt2 * deltaX1;
-        distNeigh[D3Q27System::TNE] = distNeigh[D3Q27System::TNW] = distNeigh[D3Q27System::TSE] =
-            distNeigh[D3Q27System::TSW]                           = UbMath::sqrt3 * deltaX1;
-        distNeigh[D3Q27System::BNE] = distNeigh[D3Q27System::BNW] = distNeigh[D3Q27System::BSE] =
-            distNeigh[D3Q27System::BSW]                           = UbMath::sqrt3 * deltaX1;
-        double q;
+        vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::basics::constant::sqrt2 * deltaX1);
+        distNeigh[DIR_P00] = distNeigh[DIR_M00] = distNeigh[DIR_0P0] = deltaX1;
+        distNeigh[DIR_0M0] = distNeigh[DIR_00P] = distNeigh[DIR_00M] = deltaX1;
+        distNeigh[DIR_PP0] = distNeigh[DIR_MP0] = distNeigh[DIR_MM0] =
+            distNeigh[DIR_PM0]             = vf::basics::constant::sqrt2 * deltaX1;
+        distNeigh[DIR_P0P] = distNeigh[DIR_0PP] = distNeigh[DIR_M0P] =
+            distNeigh[DIR_0MP]             = vf::basics::constant::sqrt2 * deltaX1;
+        distNeigh[DIR_P0M] = distNeigh[DIR_0PM] = distNeigh[DIR_M0M] =
+            distNeigh[DIR_0MM]             = vf::basics::constant::sqrt2 * deltaX1;
+        distNeigh[DIR_PPP] = distNeigh[DIR_MPP] = distNeigh[DIR_PMP] =
+            distNeigh[DIR_MMP]              = vf::basics::constant::sqrt3 * deltaX1;
+        distNeigh[DIR_PPM] = distNeigh[DIR_MPM] = distNeigh[DIR_PMM] =
+            distNeigh[DIR_MMM]              = vf::basics::constant::sqrt3 * deltaX1;
+        real q;
         bool pointOnBoundary = false;
 
         //#ifdef _OPENMP
@@ -487,19 +491,19 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
                         GbPoint3D pointA(internX1, internX2, internX3);
                         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
-                            double x1B = internX1 + D3Q27System::DX1[fdir] * deltaX1;
-                            double x2B = internX2 + D3Q27System::DX2[fdir] * deltaX2;
-                            double x3B = internX3 + D3Q27System::DX3[fdir] * deltaX3;
+                            real x1B = internX1 + D3Q27System::DX1[fdir] * deltaX1;
+                            real x2B = internX2 + D3Q27System::DX2[fdir] * deltaX2;
+                            real x3B = internX3 + D3Q27System::DX3[fdir] * deltaX3;
 
                             GbPoint3D pointB(x1B, x2B, x3B);
                             GbLine3D *clippedLine = this->geoObject3D->createClippedLine3D(pointA, pointB);
 
                             if (clippedLine) {
-                                double q = 0.0;
+                                real q = 0.0;
                                 if (!this->isInverseSolid()) // A is outside
                                 {
-                                    double distanceAB = pointA.getDistance(&pointB); // pointA to B
-                                    double distanceAP = UbMath::min(pointA.getDistance(clippedLine->getPoint1()),
+                                    real distanceAB = pointA.getDistance(&pointB); // pointA to B
+                                    real distanceAP = UbMath::min(pointA.getDistance(clippedLine->getPoint1()),
                                                                     pointA.getDistance(clippedLine->getPoint2()));
                                     q                 = distanceAP / distanceAB;
                                 } else {
@@ -507,8 +511,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                     if (!clippedLine->getPoint1()->equals(&pointB) &&
                                         !clippedLine->getPoint2()->equals(&pointB)) {
                                         // A is inside, a clipped line must not contain B
-                                        double distanceAB = pointA.getDistance(&pointB); // pointA to B
-                                        double distanceAP = clippedLine->getLength();
+                                        real distanceAB = pointA.getDistance(&pointB); // pointA to B
+                                        real distanceAP = clippedLine->getLength();
                                         q                 = distanceAP / distanceAB;
                                     } else if (this->geoObject3D->isPointInGbObject3D(
                                                    pointB.getX1Coordinate(), pointB.getX2Coordinate(),
@@ -569,11 +573,13 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt2> &lines)
 {
+    using namespace vf::lbm::dir;
+
     for (SPtr<Block3D> block : bcBlocks) {
         if (!block)
             continue;
 
-        double dx               = grid.lock()->getDeltaX(block);
+        real dx               = grid.lock()->getDeltaX(block);
         UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
         SPtr<ILBMKernel> kernel = block->getKernel();
@@ -603,142 +609,142 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
                     continue;
                 SPtr<BoundaryConditions> bc = bcArray->getBC(ix1, ix2, ix3);
 
-                double x1a = val<1>(blockOrg) - val<1>(orgDelta) + ix1 * dx;
-                double x2a = val<2>(blockOrg) - val<2>(orgDelta) + ix2 * dx;
-                double x3a = val<3>(blockOrg) - val<3>(orgDelta) + ix3 * dx;
+                real x1a = val<1>(blockOrg) - val<1>(orgDelta) + ix1 * dx;
+                real x2a = val<2>(blockOrg) - val<2>(orgDelta) + ix2 * dx;
+                real x3a = val<3>(blockOrg) - val<3>(orgDelta) + ix3 * dx;
                 nodes.push_back(makeUbTuple((float)x1a, (float)x2a, (float)x3a));
                 node1Index = nodes.size() - 1;
 
                 for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) {
                     if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
-                        double x1b, x2b, x3b, q = bc->getQ(dir);
+                        real x1b, x2b, x3b, q = bc->getQ(dir);
                         switch (dir) {
-                            case D3Q27System::E:
+                            case DIR_P00:
                                 x1b = x1a + q * dx;
                                 x2b = x2a;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::N:
+                            case DIR_0P0:
                                 x1b = x1a;
                                 x2b = x2a + q * dx;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::W:
+                            case DIR_M00:
                                 x1b = x1a - q * dx;
                                 x2b = x2a;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::S:
+                            case DIR_0M0:
                                 x1b = x1a;
                                 x2b = x2a - q * dx;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::NE:
+                            case DIR_PP0:
                                 x1b = x1a + q * dx;
                                 x2b = x2a + q * dx;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::NW:
+                            case DIR_MP0:
                                 x1b = x1a - q * dx;
                                 x2b = x2a + q * dx;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::SW:
+                            case DIR_MM0:
                                 x1b = x1a - q * dx;
                                 x2b = x2a - q * dx;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::SE:
+                            case DIR_PM0:
                                 x1b = x1a + q * dx;
                                 x2b = x2a - q * dx;
                                 x3b = x3a;
                                 break;
-                            case D3Q27System::T:
+                            case DIR_00P:
                                 x1b = x1a;
                                 x2b = x2a;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::TE:
+                            case DIR_P0P:
                                 x1b = x1a + q * dx;
                                 x2b = x2a;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::TN:
+                            case DIR_0PP:
                                 x1b = x1a;
                                 x2b = x2a + q * dx;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::TW:
+                            case DIR_M0P:
                                 x1b = x1a - q * dx;
                                 x2b = x2a;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::TS:
+                            case DIR_0MP:
                                 x1b = x1a;
                                 x2b = x2a - q * dx;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::B:
+                            case DIR_00M:
                                 x1b = x1a;
                                 x2b = x2a;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::BE:
+                            case DIR_P0M:
                                 x1b = x1a + q * dx;
                                 x2b = x2a;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::BN:
+                            case DIR_0PM:
                                 x1b = x1a;
                                 x2b = x2a + q * dx;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::BW:
+                            case DIR_M0M:
                                 x1b = x1a - q * dx;
                                 x2b = x2a;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::BS:
+                            case DIR_0MM:
                                 x1b = x1a;
                                 x2b = x2a - q * dx;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::TNE:
+                            case DIR_PPP:
                                 x1b = x1a + q * dx;
                                 x2b = x2a + q * dx;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::BSW:
+                            case DIR_MMM:
                                 x1b = x1a - q * dx;
                                 x2b = x2a - q * dx;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::BNE:
+                            case DIR_PPM:
                                 x1b = x1a + q * dx;
                                 x2b = x2a + q * dx;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::TSW:
+                            case DIR_MMP:
                                 x1b = x1a - q * dx;
                                 x2b = x2a - q * dx;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::TSE:
+                            case DIR_PMP:
                                 x1b = x1a + q * dx;
                                 x2b = x2a - q * dx;
                                 x3b = x3a + q * dx;
                                 break;
-                            case D3Q27System::BNW:
+                            case DIR_MPM:
                                 x1b = x1a - q * dx;
                                 x2b = x2a + q * dx;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::BSE:
+                            case DIR_PMM:
                                 x1b = x1a + q * dx;
                                 x2b = x2a - q * dx;
                                 x3b = x3a - q * dx;
                                 break;
-                            case D3Q27System::TNW:
+                            case DIR_MPP:
                                 x1b = x1a - q * dx;
                                 x2b = x2a + q * dx;
                                 x3b = x3a + q * dx;
@@ -760,6 +766,8 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
 ////////////////////////////////////////////////////////////////////////////
 vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
 {
+    using namespace vf::lbm::dir;
+
     vector<pair<GbPoint3D, GbPoint3D>> QsLineSet;
     pair<GbPoint3D, GbPoint3D> pointpair;
 
@@ -774,7 +782,7 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
         SPtr<BCArray3D> bcMatrix  = kernel->getBCProcessor()->getBCArray();
         UbTupleDouble3 nodeOffset = grid.lock()->getNodeOffset(block);
 
-        // Check whether top row is double in the system or not
+        // Check whether top row is real in the system or not
         bool include_N_Face  = false; // x1=[0..blocknx1[ && x3=[0..blocknx3[
         bool include_E_Face  = false; // x2=[0..blocknx2[ && x3=[0..blocknx3[
         bool include_T_Face  = false; // x1=[0..blocknx1[ && x2=[0..blocknx2[
@@ -782,17 +790,17 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
         bool include_TN_Edge = false; //(x1/x2/x3)=([0..blocknx1[/blocknx2/blocknx1)
         bool include_TE_Edge = false; //(x1/x2/x3)=(blocknx1/[0..blocknx2[/blocknx2)
         if (block) {
-            if (!block->getConnector(D3Q27System::N))
+            if (!block->getConnector(DIR_0P0))
                 include_N_Face = true;
-            if (!block->getConnector(D3Q27System::E))
+            if (!block->getConnector(DIR_P00))
                 include_E_Face = true;
-            if (!block->getConnector(D3Q27System::T))
+            if (!block->getConnector(DIR_00P))
                 include_T_Face = true;
-            if (!block->getConnector(D3Q27System::NE) && include_N_Face && include_E_Face)
+            if (!block->getConnector(DIR_PP0) && include_N_Face && include_E_Face)
                 include_NE_Edge = true;
-            if (!block->getConnector(D3Q27System::TN) && include_T_Face && include_N_Face)
+            if (!block->getConnector(DIR_0PP) && include_T_Face && include_N_Face)
                 include_TN_Edge = true;
-            if (!block->getConnector(D3Q27System::TE) && include_T_Face && include_E_Face)
+            if (!block->getConnector(DIR_P0P) && include_T_Face && include_E_Face)
                 include_TE_Edge = true;
         }
 
@@ -802,7 +810,7 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
         set<std::vector<int>> &transNodeIndicesSet = pos->second;
         set<std::vector<int>>::iterator setPos;
 
-        double x1, x2, x3, dx;
+        real x1, x2, x3, dx;
         grid.lock()->calcStartCoordinatesAndDelta(block, x1, x2, x3, dx);
 
         for (setPos = transNodeIndicesSet.begin(); setPos != transNodeIndicesSet.end(); ++setPos) {
@@ -824,142 +832,142 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
                     if (!bcMatrix->hasBC(ix1, ix2, ix3))
                         continue;
                     SPtr<BoundaryConditions> bc = bcMatrix->getBC(ix1, ix2, ix3);
-                    double x1a                  = x1 - val<1>(nodeOffset) + dx * ix1;
-                    double x2a                  = x2 - val<2>(nodeOffset) + dx * ix2;
-                    double x3a                  = x3 - val<3>(nodeOffset) + dx * ix3;
+                    real x1a                  = x1 - val<1>(nodeOffset) + dx * ix1;
+                    real x2a                  = x2 - val<2>(nodeOffset) + dx * ix2;
+                    real x3a                  = x3 - val<3>(nodeOffset) + dx * ix3;
                     pointpair.first.setX1(x1a);
                     pointpair.first.setX2(x2a);
                     pointpair.first.setX3(x3a);
                     for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) {
                         if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
-                            double x1b, x2b, x3b, q = bc->getQ(dir);
+                            real x1b, x2b, x3b, q = bc->getQ(dir);
                             switch (dir) {
-                                case D3Q27System::E:
+                                case DIR_P00:
                                     x1b = x1a + q * dx;
                                     x2b = x2a;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::N:
+                                case DIR_0P0:
                                     x1b = x1a;
                                     x2b = x2a + q * dx;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::W:
+                                case DIR_M00:
                                     x1b = x1a - q * dx;
                                     x2b = x2a;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::S:
+                                case DIR_0M0:
                                     x1b = x1a;
                                     x2b = x2a - q * dx;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::NE:
+                                case DIR_PP0:
                                     x1b = x1a + q * dx;
                                     x2b = x2a + q * dx;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::NW:
+                                case DIR_MP0:
                                     x1b = x1a - q * dx;
                                     x2b = x2a + q * dx;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::SW:
+                                case DIR_MM0:
                                     x1b = x1a - q * dx;
                                     x2b = x2a - q * dx;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::SE:
+                                case DIR_PM0:
                                     x1b = x1a + q * dx;
                                     x2b = x2a - q * dx;
                                     x3b = x3a;
                                     break;
-                                case D3Q27System::T:
+                                case DIR_00P:
                                     x1b = x1a;
                                     x2b = x2a;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::TE:
+                                case DIR_P0P:
                                     x1b = x1a + q * dx;
                                     x2b = x2a;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::TN:
+                                case DIR_0PP:
                                     x1b = x1a;
                                     x2b = x2a + q * dx;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::TW:
+                                case DIR_M0P:
                                     x1b = x1a - q * dx;
                                     x2b = x2a;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::TS:
+                                case DIR_0MP:
                                     x1b = x1a;
                                     x2b = x2a - q * dx;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::B:
+                                case DIR_00M:
                                     x1b = x1a;
                                     x2b = x2a;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::BE:
+                                case DIR_P0M:
                                     x1b = x1a + q * dx;
                                     x2b = x2a;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::BN:
+                                case DIR_0PM:
                                     x1b = x1a;
                                     x2b = x2a + q * dx;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::BW:
+                                case DIR_M0M:
                                     x1b = x1a - q * dx;
                                     x2b = x2a;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::BS:
+                                case DIR_0MM:
                                     x1b = x1a;
                                     x2b = x2a - q * dx;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::TNE:
+                                case DIR_PPP:
                                     x1b = x1a + q * dx;
                                     x2b = x2a + q * dx;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::BSW:
+                                case DIR_MMM:
                                     x1b = x1a - q * dx;
                                     x2b = x2a - q * dx;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::BNE:
+                                case DIR_PPM:
                                     x1b = x1a + q * dx;
                                     x2b = x2a + q * dx;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::TSW:
+                                case DIR_MMP:
                                     x1b = x1a - q * dx;
                                     x2b = x2a - q * dx;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::TSE:
+                                case DIR_PMP:
                                     x1b = x1a + q * dx;
                                     x2b = x2a - q * dx;
                                     x3b = x3a + q * dx;
                                     break;
-                                case D3Q27System::BNW:
+                                case DIR_MPM:
                                     x1b = x1a - q * dx;
                                     x2b = x2a + q * dx;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::BSE:
+                                case DIR_PMM:
                                     x1b = x1a + q * dx;
                                     x2b = x2a - q * dx;
                                     x3b = x3a - q * dx;
                                     break;
-                                case D3Q27System::TNW:
+                                case DIR_MPP:
                                     x1b = x1a - q * dx;
                                     x2b = x2a + q * dx;
                                     x3b = x3a + q * dx;

@@ -3,13 +3,16 @@ build/
 bin/
 cmake-build-debug/
 run/
+buildGCC
 
 # Python
 _skbuild/
 dist/
 *.egg-info/
-__pycache__/
+**/__pycache__/
 .venv/
+pythonbindings/pyfluids/bindings*
+pythonbindings/pymuparser/bindings*
 
 # IDE
 .vscode/
@@ -18,10 +21,13 @@ __pycache__/
 .idea/
 .ccache/
 .cache/
+.devcontainer/devcontainer.json
 
 # simulation results
 output/
 logs/
+reference_data/
+generated/
 
 # grid
 .grid/
@@ -37,3 +43,6 @@ stl/
 
 # Settings
 .gitconfig
+
+# User Settings
+CMakeUserPresets.json

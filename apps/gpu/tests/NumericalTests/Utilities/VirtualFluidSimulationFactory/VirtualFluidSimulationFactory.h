@@ -1,15 +1,17 @@
-#ifndef VIRTUAL_FLUID_SIMULATION_FACTORY_H
-#define VIRTUAL_FLUID_SIMULATION_FACTORY_H
+#ifndef VIRTUAL_FLUID_SIMULATION_FACTORY_IMP_H
+#define VIRTUAL_FLUID_SIMULATION_FACTORY_IMP_H
 
+#include "Utilities/TestSimulation/TestSimulation.h"
+#include <functional>
 #include <memory>
 #include <vector>
 
-class VirtualFluidSimulation;
-class TestSimulation;
-
-class VirtualFluidSimulationFactory
+namespace vf::gpu::tests
 {
-public:
-	virtual std::vector<std::shared_ptr<VirtualFluidSimulation> > makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation> > testSim) = 0;
-};
+std::shared_ptr<Parameter> makeParameter(std::shared_ptr<SimulationParameter> simPara);
+const std::function<void()> makeVirtualFluidSimulation(std::shared_ptr<Parameter> para,
+                                                       std::shared_ptr<InitialCondition> condition,
+                                                       std::shared_ptr<DataWriter> dataWriter);
+} // namespace vf::gpu::tests
+
 #endif

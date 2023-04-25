@@ -15,9 +15,8 @@
 
 #include "metis.h"
 
-#include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
-#include "Core/StringUtilities/StringUtil.h"
+#include "Input/Input.h"
+#include "StringUtilities/StringUtil.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -66,7 +65,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 	Communicator* comm = Communicator::getInstanz();
 
 	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-	para->setNumprocs(comm->getNummberOfProcess());
+	para->setNumprocs(comm->getNumberOfProcess());
 	para->setDevices(StringUtil::toUintVector(input->getValue("Devices")));
 	para->setMyID(comm->getPID());
 	
@@ -263,17 +262,6 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    logging::Logger::addStream(&logFile);
-
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
-
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
@@ -299,8 +287,8 @@ void multipleLevel(const std::string& configPath)
         real dx = 1.0 / 20.0;
         real vx = 0.05;
 
-        TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+        auto triangularMesh = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+        //auto triangularMesh = std::make_shared<TriangularMesh>("stl/ShpereNotOptimal.lnx.stl");
 
         // all
         //gridBuilder->addCoarseGrid(-2, -2, -2,  
@@ -319,7 +307,7 @@ void multipleLevel(const std::string& configPath)
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-        gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -784,7 +772,6 @@ int main( int argc, char* argv[])
             }
             catch (const std::exception& e)
             {
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
@@ -800,22 +787,17 @@ int main( int argc, char* argv[])
             }
             catch (const std::exception& e)
             {
-                
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
+                std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (const std::bad_alloc e)
             {
-                
-                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
+                std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
             {
-                *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
-                //std::cout << "unknown exeption" << std::endl;
+                std::cout << "unknown exeption" << std::endl;
             }
 
             std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;

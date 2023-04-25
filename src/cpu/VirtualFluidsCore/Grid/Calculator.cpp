@@ -77,7 +77,7 @@ Calculator::~Calculator() = default;
 //////////////////////////////////////////////////////////////////////////
 void Calculator::addCoProcessor(SPtr<CoProcessor> coProcessor) { coProcessors.push_back(coProcessor); }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::coProcess(double step)
+void Calculator::coProcess(real step)
 {
     for (SPtr<CoProcessor> cp : coProcessors) {
         cp->process(step);

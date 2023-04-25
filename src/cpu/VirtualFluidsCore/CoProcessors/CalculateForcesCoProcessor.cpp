@@ -14,7 +14,7 @@
 #include "UbScheduler.h"
 
 CalculateForcesCoProcessor::CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                       std::shared_ptr<vf::mpi::Communicator> comm, double v, double a)
+                                                       std::shared_ptr<vf::mpi::Communicator> comm, real v, real a)
     : CoProcessor(grid, s), path(path), comm(comm), v(v), a(a), forceX1global(0), forceX2global(0), forceX3global(0)
 {
     if (comm->getProcessID() == comm->getRoot()) {
@@ -57,7 +57,7 @@ CalculateForcesCoProcessor::CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<U
 //////////////////////////////////////////////////////////////////////////
 CalculateForcesCoProcessor::~CalculateForcesCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesCoProcessor::process(double step)
+void CalculateForcesCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -65,7 +65,7 @@ void CalculateForcesCoProcessor::process(double step)
     UBLOG(logDEBUG3, "D3Q27ForcesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesCoProcessor::collectData(double step)
+void CalculateForcesCoProcessor::collectData(real step)
 {
     calculateForces();
 
@@ -109,9 +109,9 @@ void CalculateForcesCoProcessor::calculateForces()
 
     for (SPtr<D3Q27Interactor> interactor : interactors) {
         for (BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap()) {
-            double forceX1 = 0.0;
-            double forceX2 = 0.0;
-            double forceX3 = 0.0;
+            real forceX1 = 0.0;
+            real forceX2 = 0.0;
+            real forceX3 = 0.0;
 
             SPtr<Block3D> block                             = t.first;
             std::set<std::vector<int>> &transNodeIndicesSet = t.second;
@@ -151,8 +151,8 @@ void CalculateForcesCoProcessor::calculateForces()
             }
             // if we have got discretization with more level
             // deltaX is LBM deltaX and equal LBM deltaT
-            double deltaX = LBMSystem::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
-            double deltaXquadrat = deltaX * deltaX;
+            real deltaX = LBMSystem::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
+            real deltaXquadrat = deltaX * deltaX;
             forceX1 *= deltaXquadrat;
             forceX2 *= deltaXquadrat;
             forceX3 *= deltaXquadrat;
@@ -164,8 +164,8 @@ void CalculateForcesCoProcessor::calculateForces()
             forceX3global += forceX3;
         }
     }
-    std::vector<double> values;
-    std::vector<double> rvalues;
+    std::vector<real> values;
+    std::vector<real> rvalues;
     values.push_back(forceX1global);
     values.push_back(forceX2global);
     values.push_back(forceX3global);
@@ -191,10 +191,10 @@ UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3, SPt
 
     if (bc) {
         // references to tuple "force"
-        double &forceX1 = val<1>(force);
-        double &forceX2 = val<2>(force);
-        double &forceX3 = val<3>(force);
-        double f, fnbr;
+        real &forceX1 = val<1>(force);
+        real &forceX2 = val<2>(force);
+        real &forceX3 = val<3>(force);
+        real f, fnbr;
 
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir)) {
@@ -217,9 +217,9 @@ UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3, SPt
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesCoProcessor::calculateCoefficients()
 {
-    double F1 = forceX1global;
-    double F2 = forceX2global;
-    double F3 = forceX3global;
+    real F1 = forceX1global;
+    real F2 = forceX2global;
+    real F3 = forceX3global;
 
     // return 2*F/(rho*v*v*a);
     C1 = 2.0 * F1 / (v * v * a);
@@ -229,7 +229,7 @@ void CalculateForcesCoProcessor::calculateCoefficients()
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesCoProcessor::addInteractor(SPtr<D3Q27Interactor> interactor) { interactors.push_back(interactor); }
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesCoProcessor::write(std::ofstream *fileObject, double value, char *separator)
+void CalculateForcesCoProcessor::write(std::ofstream *fileObject, real value, char *separator)
 {
     (*fileObject).width(12);
     //(*fileObject).precision(2);

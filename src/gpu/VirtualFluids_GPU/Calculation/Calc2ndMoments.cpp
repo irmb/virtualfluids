@@ -17,11 +17,11 @@ void alloc2ndMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void init2ndMoments(Parameter* para)
 {
-	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//init host arrays
-		for (unsigned int pos=0;pos<para->getParH(lev)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
 			para->getParH(lev)->kxyFromfcNEQ[pos]    = 0.0;
 			para->getParH(lev)->kyzFromfcNEQ[pos]    = 0.0;
@@ -116,7 +116,7 @@ void init3rdMoments(Parameter* para)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//init host arrays
-		for (unsigned int pos=0;pos<para->getParH(lev)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
 			para->getParH(lev)->CUMbbb[pos] = 0.0;
 			para->getParH(lev)->CUMabc[pos] = 0.0;
@@ -198,7 +198,7 @@ void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
@@ -211,11 +211,11 @@ void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManag
 
 void initHigherOrderMoments(Parameter* para)
 {
-	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//init host arrays
-		for (unsigned int pos=0;pos<para->getParH(lev)->numberOfNodes;pos++)
+		for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
 		{
 			para->getParH(lev)->CUMcbb[pos] = 0.0;
 			para->getParH(lev)->CUMbcb[pos] = 0.0;

@@ -31,10 +31,10 @@ public:
     ~TimeseriesCoProcessor() override;
 
     //! calls collectData.
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
-    void collectData(double step);
+    void collectData(real step);
 
     //! object that can compute spacial average values in 3D-subdomain.
     SPtr<IntegrateValuesHelper> h1;

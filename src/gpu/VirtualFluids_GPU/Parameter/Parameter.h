@@ -37,10 +37,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -51,6 +53,8 @@ namespace vf:: basics
 class ConfigurationFile;
 }
 class CudaStreamManager;
+
+class TransientBCInputFileReader;
 
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
@@ -63,258 +67,112 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of threads per GPU block
     uint numberofthreads;
-
-    // distributions///////////
-    // Distributions19 d0;
-    Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
     //! \brief store all distribution functions for the D3Q27
     Distributions27 distributions;
-
-    // distributions F3////////
-    Distributions6 g6;
-
-    // advection diffusion //////////////////
-    //! \brief store all distribution functions for the D3Q7 advection diffusion field
-    Distributions7 distributionsAD7;
-    //! \brief store all distribution functions for the D3Q27 advection diffusion field
-    Distributions27 distributionsAD27;
-    //! \brief stores a field of concentration values
-    real *Conc, *Conc_Full;
-    //! \brief stores the diffusivity
-    real diffusivity;
-    //! \brief stores the value for omega (for the diffusivity)
-    real omegaDiffusivity;
-    // BC NoSlip
-    TempforBoundaryConditions Temp;
-    // BC Velocity
-    TempVelforBoundaryConditions TempVel;
-    // BC Pressure
-    TempPressforBoundaryConditions TempPress;
-    // Plane Conc
-    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
-    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
-
-    // trafo///////////////////
-    real mTtoWx, mTtoWy, mTtoWz;
-    real cTtoWx, cTtoWy, cTtoWz;
-
-    // MGstrafo////////////////
-    real cStartx, cStarty, cStartz;
-    real cFx, cFy, cFz;
-
-    // typeOfGridNode (formerly known as "geo") /////////////////////
-    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+    //////////////////////////////////////////////////////////////////////////
     //! \brief stores the type for every lattice node (f.e. fluid node)
-    unsigned int *typeOfGridNode;
-
-    // k///////////////////////
-    unsigned int *k; // DEPRECATED: index for full matrix
-
-    // neighbor///////////////////////////////////////////////////////////////
+    uint *typeOfGridNode;
+    //////////////////////////////////////////////////////////////////////////
     //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
     //! \brief this information is important because we use an indirect addressing scheme
     uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
-
-    // coordinates////////////////////////////////////////////////////////////
-    //! \brief store the coordinates for every lattice node 
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the coordinates for every lattice node
     real *coordinateX, *coordinateY, *coordinateZ;
-
-    // body forces////////////
-    real *forceX_SP, *forceY_SP, *forceZ_SP;
-
-    // vel parab///////////////
-    real *vParab;
-
-    // turbulent viscosity ///
-    real *turbViscosity;
-    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
-
-    // turbulence intensity //
-    real *vx_mean, *vy_mean, *vz_mean;       // means
-    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
-    std::vector<real> turbulenceIntensity;
-
-    // macroscopic values//////
-    // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
+    //////////////////////////////////////////////////////////////////////////
     //! \brief store the macroscopic values (velocity, density, pressure)
     //! \brief for every lattice node
     real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
     //! \brief stores the value for omega
     real omega;
-    //! \brief stores the value for viscosity (on level 0)
-    real vis;
-
-    // derivations for iso test
-    real *dxxUx, *dyyUy, *dzzUz;
-
-    // median-macro-values/////
-    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
-    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
-    // Advection-Diffusion
-    real *Conc_Med, *Conc_Med_Out;
-
-    // grid////////////////////
-    unsigned int nx, ny, nz;
-    unsigned int gridNX, gridNY, gridNZ;
-
-    // size of matrix//////////
-    unsigned int size_Mat;
-    unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
-
-    // size of sparse matrix//////////
+    //! \brief stores the value for viscosity
+    real viscosity;
+    //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of nodes (based on indirect addressing scheme)
-    unsigned int numberOfNodes;
-    unsigned int size_Array_SP;
-
-    // size of Plane btw. 2 GPUs//////
-    unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
-    unsigned int sizePlaneST, sizePlaneRT, startT, endT;
-    bool isSetSendB, isSetRecvB, isSetSendT, isSetRecvT;
-    int *SendT, *SendB, *RecvT, *RecvB;
-
-    // size of Plane for PressMess
-    unsigned int sizePlanePress, startP;
-    unsigned int sizePlanePressIN, startPIN;
-    unsigned int sizePlanePressOUT, startPOUT;
-    bool isSetPress;
-
-    // memsizeSP/////////////////
+    unsigned long long numberOfNodes;
     //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
-    unsigned int mem_size_real_SP;
-    unsigned int mem_size_int_SP;
-
-    // memsize/////////////////
-    unsigned int mem_size_real;
-    unsigned int mem_size_int;
-    unsigned int mem_size_bool;
-    unsigned int mem_size_real_yz;
-
-    // print///////////////////
-    unsigned int startz, endz;
-    real Lx, Ly, Lz, dx;
-    real distX, distY, distZ;
-
-    // interface////////////////
-    bool need_interface[6];
-    unsigned int XdistKn, YdistKn, ZdistKn;
-    InterpolationCellCF intCF;
-    InterpolationCellFC intFC;
-    unsigned int K_CF;
-    unsigned int K_FC;
-    unsigned int mem_size_kCF;
-    unsigned int mem_size_kFC;
-
-    InterpolationCellFC intFCBorder;
-    InterpolationCellFC intFCBulk;
-    InterpolationCellCF intCFBorder;
-    InterpolationCellCF intCFBulk;
-
-    // offset//////////////////
-    OffsetCF offCF;
-    OffsetCF offCFBulk;
-    OffsetFC offFC;
-    unsigned int mem_size_kCF_off;
-    unsigned int mem_size_kFC_off;
-
-    // BC's////////////////////
-    //! \brief stores the boundary condition data
-    QforBoundaryConditions noSlipBC, velocityBC, outflowBC, slipBC, stressBC, pressureBC;
-    //! \brief number of lattice nodes for the boundary conditions
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead;
-
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED
-    QforBoundaryConditions propellerBC;
+    unsigned long long memSizeRealLBnodes, memSizeLonglongLBnodes;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the slip boundary condition data
+    QforBoundaryConditions slipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the no slip boundary condition data
+    QforBoundaryConditions noSlipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the velocity boundary condition data
+    QforBoundaryConditions velocityBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the geometry boundary condition data
     QforBoundaryConditions geometryBC;
-    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;
-    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;
-    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED
-    unsigned int kInletQread, kOutletQread;  // DEPRECATED
-
-    WallModelParameters wallModel;
-
-    // testRoundoffError
-    Distributions27 kDistTestRE;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the pressure boundary condition data
+    QforBoundaryConditions pressureBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the outflow boundary condition data
+    QforBoundaryConditions outflowBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the stress boundary condition data
+    QforBoundaryConditions stressBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the precursor boundary condition data
+    QforPrecursorBoundaryConditions precursorBC;
 
     //////////////////////////////////////////////////////////////////////////
-    // velocities to fit the force
-    real *VxForce, *VyForce, *VzForce;
-    //////////////////////////////////////////////////////////////////////////
-    //! \brief sets the forcing uniform on every fluid node in all three space dimensions
+    //! \brief sets a uniform forcing on each fluid node in all three spatial dimensions
     real *forcing;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores parameters for a wall model
+    WallModelParameters wallModel;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief allows reading values for a boundary condition from a file
+    std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief can be used for pressure correction at outflow boundary condition
+    real outflowPressureCorrectionFactor;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the values of body forces for all 3 dimensions
+    real *forceX_SP, *forceY_SP, *forceZ_SP;
 
-    // Measure Points/////////
-    std::vector<MeasurePoints> MP;
-    unsigned int *kMP;
-    real *VxMP;
-    real *VyMP;
-    real *VzMP;
-    real *RhoMP;
-    unsigned int memSizerealkMP, memSizeIntkMP, numberOfPointskMP;
-    unsigned int numberOfValuesMP;
 
-    // Drag Lift//////////////
-    double *DragPreX, *DragPostX;
-    double *DragPreY, *DragPostY;
-    double *DragPreZ, *DragPostZ;
-    std::vector<double> DragXvector;
-    std::vector<double> DragYvector;
-    std::vector<double> DragZvector;
-
-    // 2ndMoments////////////
-    real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
-
-    // 3rdMoments////////////
-    real *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
-
-    // HigherMoments/////////
-    real *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
-
-    // CpTop/////////////////
-    int *cpTopIndex;
-    double *cpPressTop;
-    unsigned int numberOfPointsCpTop;
-    std::vector<std::vector<double>> cpTop;
-    std::vector<double> pressMirror;
-    std::vector<bool> isOutsideInterface;
-    unsigned int numberOfPointsPressWindow;
-
-    // CpBottom/////////////
-    int *cpBottomIndex;
-    double *cpPressBottom;
-    unsigned int numberOfPointsCpBottom;
-    std::vector<std::vector<double>> cpBottom;
-
-    // CpBottom2////////////
-    int *cpBottom2Index;
-    double *cpPressBottom2;
-    unsigned int numberOfPointsCpBottom2;
-    std::vector<std::vector<double>> cpBottom2;
-
-    // Concentration////////
-    int *concIndex;
+    //////////////////////////////////////////////////////////////////////////
+    // Advection Diffusion
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the diffusivity
+    real diffusivity;
+    //! \brief stores the value for omega (for the diffusivity)
+    real omegaDiffusivity;
+    //! \brief stores a field of concentration values
     real *concentration;
-    unsigned int numberOfPointsConc;
+    //! \brief store all distribution functions for the D3Q27 advection diffusion field
+    Distributions27 distributionsAD;
+    //////////////////////////////////////////////////////////////////////////
 
-    // street X and Y velocity fractions///////
-    real *streetFractionXvelocity;
-    real *streetFractionYvelocity;
-    int *naschVelocity;
-    uint numberOfStreetNodes;
 
-    // deltaPhi
-    real deltaPhi;
+    //////////////////////////////////////////////////////////////////////////
+    // Grid Refinement
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the base-node-indices of coarse and fine refinement cells
+    InterpolationCells coarseToFine;
+    InterpolationCells fineToCoarse;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief distinguish between bulk and border interpolation cells (necessary for communication hiding)
+    InterpolationCells fineToCoarseBorder;
+    InterpolationCells fineToCoarseBulk;
+    InterpolationCells coarseToFineBorder;
+    InterpolationCells coarseToFineBulk;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores location of neighboring cell (necessary for refinement into the wall)
+    InterpolationCellNeighbor neighborCoarseToFine;
+    InterpolationCellNeighbor neighborCoarseToFineBulk;
+    InterpolationCellNeighbor neighborFineToCoarse;
+    InterpolationCellNeighbor neighborFineToCoarseBulk;
+    //////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////
-    // particles
-    PathLineParticles plp;
-    ////////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////
-    // 1D domain decomposition
-    std::vector<ProcessNeighbor27> sendProcessNeighbor;
-    std::vector<ProcessNeighbor27> recvProcessNeighbor;
-    ///////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    // Inter-GPU-Communication
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the base-node-indices of coarse and fine refinement cells
     // 3D domain decomposition
     std::vector<ProcessNeighbor27> sendProcessNeighborX;
     std::vector<ProcessNeighbor27> sendProcessNeighborY;
@@ -364,25 +222,253 @@ struct LBMSimulationParameter {
     std::vector<EdgeNodePositions> edgeNodesYtoZ;
 
     ///////////////////////////////////////////////////////
-    uint *fluidNodeIndices;
-    uint numberOfFluidNodes;
-    uint *fluidNodeIndicesBorder;
-    uint numberOfFluidNodesBorder;
+    std::map<CollisionTemplate, uint*>    taggedFluidNodeIndices = {{CollisionTemplate::Default,        nullptr},
+                                                                    {CollisionTemplate::SubDomainBorder,nullptr},
+                                                                    {CollisionTemplate::WriteMacroVars, nullptr},
+                                                                    {CollisionTemplate::ApplyBodyForce, nullptr},
+                                                                    {CollisionTemplate::AllFeatures,    nullptr}};
+    std::map<CollisionTemplate, uint >  numberOfTaggedFluidNodes = {{CollisionTemplate::Default,        0},
+                                                                    {CollisionTemplate::SubDomainBorder,0},
+                                                                    {CollisionTemplate::WriteMacroVars, 0},
+                                                                    {CollisionTemplate::ApplyBodyForce, 0},
+                                                                    {CollisionTemplate::AllFeatures,    0}};
+
+    std::vector<CollisionTemplate> allocatedBulkFluidNodeTags = {};
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // ADD IN FUTURE RELEASE
+    //////////////////////////////////////////////////////////////////////////
+
+    // distributions F3////////
+    Distributions6 g6;
+
+    // BC NoSlip
+    TempforBoundaryConditions Temp;
+    // BC Velocity
+    TempVelforBoundaryConditions TempVel;
+    // BC Pressure
+    TempPressforBoundaryConditions TempPress;
+
+    // Measure Points/////////
+    std::vector<MeasurePoints> MP;
+    unsigned int *kMP;
+    real *VxMP;
+    real *VyMP;
+    real *VzMP;
+    real *RhoMP;
+    unsigned int memSizerealkMP, memSizeIntkMP, numberOfPointskMP;
+    unsigned int numberOfValuesMP;
+
+    // Drag Lift//////////////
+    double *DragPreX, *DragPostX;
+    double *DragPreY, *DragPostY;
+    double *DragPreZ, *DragPostZ;
+    std::vector<double> DragXvector;
+    std::vector<double> DragYvector;
+    std::vector<double> DragZvector;
+
+    // 2ndMoments////////////
+    real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
+
+    // 3rdMoments////////////
+    real *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
+
+    // HigherMoments/////////
+    real *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
+
+    // CpTop/////////////////
+    int *cpTopIndex;
+    double *cpPressTop;
+    unsigned int numberOfPointsCpTop;
+    std::vector<std::vector<double>> cpTop;
+    std::vector<double> pressMirror;
+    std::vector<bool> isOutsideInterface;
+    unsigned int numberOfPointsPressWindow;
+
+    // CpBottom/////////////
+    int *cpBottomIndex;
+    double *cpPressBottom;
+    unsigned int numberOfPointsCpBottom;
+    std::vector<std::vector<double>> cpBottom;
+
+    // CpBottom2////////////
+    int *cpBottom2Index;
+    double *cpPressBottom2;
+    unsigned int numberOfPointsCpBottom2;
+    std::vector<std::vector<double>> cpBottom2;
+
+    //////////////////////////////////////////////////////////////////////////
+    // \brief velocities to fit the force
+    real *VxForce, *VyForce, *VzForce;
+
+    //! \brief stores indices for the concentration field
+    int *concIndex;
+    //    real *concentration;
+    unsigned int numberOfPointsConc;
+    //! \brief store all distribution functions for the D3Q7 advection diffusion field
+    Distributions7 distributionsAD7;
+    // Plane Conc
+    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
+    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
+
+    // turbulent viscosity ///
+    real *turbViscosity;
+    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
+
+    // turbulence intensity //
+    real *vx_mean, *vy_mean, *vz_mean;       // means
+    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
+    std::vector<real> turbulenceIntensity;
+
+    // median-macro-values/////
+    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
+    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
+    // Advection-Diffusion
+    real *Conc_Med, *Conc_Med_Out;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // DEPRECATED - planed to be taken out permanently
+    //////////////////////////////////////////////////////////////////////////
+
+    unsigned int size_Array_SP; //?? Deprecated
+
+    // distributions///////////
+    // Distributions19 d0;
+    Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
+
+    // typeOfGridNode (formerly known as "geo") /////////////////////
+    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
+
+    // k///////////////////////
+    unsigned int *k; // DEPRECATED: index for full matrix
+
+    // memsize/////////////////
+    //unsigned int mem_size_real_yz;
+    //unsigned int mem_size_bool;
+    //unsigned int mem_size_int;
+    //unsigned int mem_size_real;
+
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED  BCs that are not used any more
+    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED BCs that are not used any more
+    unsigned int kInletQread, kOutletQread;            // DEPRECATED
+
+    QforBoundaryConditions propellerBC;                                                 // DEPRECATED
+    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;     // DEPRECATED
+    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;           // DEPRECATED
+    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;        // DEPRECATED
+
+    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, // DEPRECATED
+    numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead; // DEPRECATED
+
+    //! \brief stores a full matrix field of concentration values
+    real *Conc_Full;
+
+
+
+    // trafo///////////////////
+    real mTtoWx, mTtoWy, mTtoWz;
+    real cTtoWx, cTtoWy, cTtoWz;
+
+    // MGstrafo////////////////
+    real cStartx, cStarty, cStartz;
+    real cFx, cFy, cFz;
+
+    // interface////////////////
+    bool need_interface[6];
+    unsigned int XdistKn, YdistKn, ZdistKn;
+
+    // vel parab///////////////
+    real *vParab;
+
+    // macroscopic values//////
+    // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
+
+    // derivations for iso test
+    real *dxxUx, *dyyUy, *dzzUz;
+
+    // grid////////////////////
+    unsigned int nx, ny, nz;
+    unsigned int gridNX, gridNY, gridNZ;
+
+    // size of matrix//////////
+    unsigned int size_Mat;
+    unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
+
+    // size of Plane btw. 2 GPUs//////
+    unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
+    unsigned int sizePlaneST, sizePlaneRT, startT, endT;
+    bool isSetSendB, isSetRecvB, isSetSendT, isSetRecvT;
+    int *SendT, *SendB, *RecvT, *RecvB;
+
+    // size of Plane for PressMess
+    unsigned int sizePlanePress, startP;
+    unsigned int sizePlanePressIN, startPIN;
+    unsigned int sizePlanePressOUT, startPOUT;
+    bool isSetPress;
+
+    // deltaPhi
+    real deltaPhi;
+
+    // particles
+    PathLineParticles plp;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // 1D domain decomposition
+    std::vector<ProcessNeighbor27> sendProcessNeighbor;
+    std::vector<ProcessNeighbor27> recvProcessNeighbor;
+
+    // print///////////////////
+    unsigned int startz, endz;
+    real Lx, Ly, Lz, dx;
+    real distX, distY, distZ;
+
+    // testRoundoffError
+    Distributions27 kDistTestRE;
+
+
+
+    //////////////////////////////////////////////////////////////////////////
 };
+
 
 //! \brief Class for LBM-parameter management
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
-    explicit Parameter(const vf::basics::ConfigurationFile &configData, const int numberOfProcesses = 1, const int myId = 0);
-    Parameter(const int numberOfProcesses = 1, const int myId = 0);
+    Parameter();
+    explicit Parameter(const vf::basics::ConfigurationFile* configData);
+    explicit Parameter(const int numberOfProcesses, const int myId);
+    explicit Parameter(const int numberOfProcesses, const int myId, std::optional<const vf::basics::ConfigurationFile*> configData);
     ~Parameter();
+
     void initLBMSimulationParameter();
 
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Host System
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
+
+    const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParHallLevels();
+    const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParDallLevels();
 
     void copyMeasurePointsArrayToVector(int lev);
 
@@ -401,7 +487,7 @@ public:
     void setDiffMod(int DiffMod);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
-    void setMaxLevel(int maxlevel);
+    void setMaxLevel(int numberOfLevels);
     void setParticleBasicLevel(int pbl);
     void setParticleInitLevel(int pil);
     void setNumberOfParticles(int nop);
@@ -430,7 +516,6 @@ public:
     void settimestepForMP(unsigned int timestepForMP);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
-    void setPathAndFilename(std::string fname);
     void setGridPath(std::string gridPath);
     void setGeometryFileC(std::string GeometryFileC);
     void setGeometryFileM(std::string GeometryFileM);
@@ -463,6 +548,7 @@ public:
     void setpressBcPos(std::string pressBcPos);
     void setpressBcQs(std::string pressBcQs);
     void setpressBcValue(std::string pressBcValue);
+    void setOutflowPressureCorrectionFactor(real correctionFactor);
     void setpressBcValues(std::string pressBcValues);
     void setvelBcQs(std::string velBcQs);
     void setvelBcValues(std::string velBcValues);
@@ -492,7 +578,6 @@ public:
     void setcpBottom(std::string cpBottom);
     void setcpBottom2(std::string cpBottom2);
     void setConcentration(std::string concFile);
-    void setStreetVelocity(std::string streetVelocity);
     void setPrintFiles(bool printfiles);
     void setReadGeo(bool readGeo);
     void setTemperatureInit(real Temp);
@@ -514,11 +599,10 @@ public:
     void setIsProp(bool isProp);
     void setIsCp(bool isCp);
     void setConcFile(bool concFile);
-    void setStreetVelocityFile(bool streetVelocityFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
+    void setTurbulenceModel(TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
-    void setUseAMD(bool useAMD);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
@@ -640,11 +724,13 @@ public:
     int getDiffMod();
     int getFactorNZ();
     int getD3Qxx();
+    //! \returns the maximum level of grid refinement
     int getMaxLevel();
     int getTimeCalcMedStart();
     int getTimeCalcMedEnd();
     int getMaxDev();
-    int getMyID();
+    //! \returns the ID of the current MPI process
+    int getMyProcessID();
     int getNumprocs();
     std::string getOutputPath();
     std::string getOutputPrefix();
@@ -710,21 +796,20 @@ public:
     std::string getcpBottom();
     std::string getcpBottom2();
     std::string getConcentration();
-    std::string getStreetVelocityFilePath();
     unsigned int getPressInID();
     unsigned int getPressOutID();
     unsigned int getPressInZ();
     unsigned int getPressOutZ();
-    unsigned int getMemSizereal(int level);
-    unsigned int getMemSizeInt(int level);
-    unsigned int getMemSizeBool(int level);
-    unsigned int getMemSizerealYZ(int level);
+//    unsigned int getMemSizereal(int level);    //DEPRECATED: related to full matrix
+//    unsigned int getMemSizeInt(int level);     //DEPRECATED: related to full matrix
+//    unsigned int getMemSizeBool(int level);    //DEPRECATED: related to full matrix
+//    unsigned int getMemSizerealYZ(int level);  //DEPRECATED: related to full matrix
     unsigned int getSizeMat(int level);
-    unsigned int getTStart();
-    unsigned int getTInit();
-    unsigned int getTEnd();
-    unsigned int getTOut();
-    unsigned int getTStartOut();
+    unsigned int getTimestepStart();
+    unsigned int getTimestepInit();
+    unsigned int getTimestepEnd();
+    unsigned int getTimestepOut();
+    unsigned int getTimestepStartOut();
     unsigned int getTimestepForMP();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
@@ -732,13 +817,36 @@ public:
     real getTemperatureBC();
     real getViscosity();
     real getVelocity();
+    //! \returns the viscosity ratio in SI/LB units
     real getViscosityRatio();
+    //! \returns the velocity ratio in SI/LB units
     real getVelocityRatio();
+    //! \returns the density ratio in SI/LB units
     real getDensityRatio();
-    real getPressRatio();
+    //! \returns the pressure ratio in SI/LB units
+    real getPressureRatio();
+    //! \returns the time ratio in SI/LB units
     real getTimeRatio();
+    //! \returns the length ratio in SI/LB units
     real getLengthRatio();
+    //! \returns the force ratio in SI/LB units
     real getForceRatio();
+    //! \returns the viscosity ratio in SI/LB units scaled to the respective level
+    real getScaledViscosityRatio(int level);
+    //! \returns the velocity ratio in SI/LB units scaled to the respective level
+    real getScaledVelocityRatio(int level);
+    //! \returns the density ratio in SI/LB units scaled to the respective level
+    real getScaledDensityRatio(int level);
+    //! \returns the pressure ratio in SI/LB units scaled to the respective level
+    real getScaledPressureRatio(int level);
+    //! \returns the stress ratio in SI/LB units scaled to the respective level
+    real getScaledStressRatio(int level);
+    //! \returns the time ratio in SI/LB units scaled to the respective level
+    real getScaledTimeRatio(int level);
+    //! \returns the length ratio in SI/LB units scaled to the respective level
+    real getScaledLengthRatio(int level);
+    //! \returns the force ratio in SI/LB units scaled to the respective level
+    real getScaledForceRatio(int level);
     real getRealX();
     real getRealY();
     real getRe();
@@ -766,9 +874,11 @@ public:
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
     std::vector<SPtr<PreCollisionInteractor>> getActuators();
+    //! \returns the probes, e.g. point or plane probe
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
+    unsigned int getTimeStep(int level, unsigned int t, bool isPostCollision);
     bool getDoCheckPoint();
     bool getDoRestart();
     bool overWritingRestart(unsigned int t);
@@ -783,11 +893,10 @@ public:
     bool getCalc3rdOrderMoments();
     bool getCalcHighOrderMoments();
     bool getConcFile();
-    bool isStreetVelocityFile();
     bool getUseMeasurePoints();
     bool getUseWale();
+    TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
-    bool getUseAMD();
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();
@@ -819,6 +928,7 @@ public:
     std::string getOutflowBoundaryNormalX();
     std::string getOutflowBoundaryNormalY();
     std::string getOutflowBoundaryNormalZ();
+    real getOutflowPressureCorrectionFactor();
     // CUDA random number
     curandState *getRandomState();
     // Kernel
@@ -860,7 +970,28 @@ private:
     void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
 
+    void setPathAndFilename(std::string fname);
+
+    void checkParameterValidityCumulantK17() const;
+
 private:
+    real Re;
+    real factorPressBC{ 1.0 };
+    real Diffusivity{ 0.001 };
+    real Temp{ 0.0 };
+    real TempBC{ 1.0 };
+    real RealX{ 1.0 };
+    real RealY{ 1.0 };
+    real clockCycleForMP{ 1.0 };
+    real vis{ 0.001 };
+    real vis_ratio{ 1.0 };
+    real u0{ 0.01 };
+    real u0_ratio{ 1.0 };
+    real delta_rho{ 0.0 };
+    real delta_press{ 1.0 };
+    real SGSConstant{ 0.0 };
+    real outflowPressureCorrectionFactor{ 0.0 };
+
     bool compOn{ false };
     bool diffOn{ false };
     bool isF3{ false };
@@ -870,17 +1001,88 @@ private:
     bool calcPlaneConc{ false };
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
+    bool printFiles{ false };
+    bool doRestart{ false };
+    bool doCheckPoint{ false };
+    bool readGeo{ false };
+    bool isGeo;
+    bool isProp;
+    bool isCp;
+    bool GeometryValues{ false };
+    bool is2ndOrderMoments{ false };
+    bool is3rdOrderMoments{ false };
+    bool isHighOrderMoments{ false };
+    bool calcMedian{ false };
+    bool isConc{ false };
+    bool isWale{ false };
+    bool isTurbulentViscosity{ false };
+    bool isMeasurePoints{ false };
+    bool isInitNeq{ false };
+    bool isGeoNormal, isInflowNormal, isOutflowNormal;
+    bool hasWallModelMonitor{ false };
+    bool simulatePorousMedia{ false };
+
     int diffMod{ 27 };
+    //! \property maximum level of grid refinement
     int maxlevel{ 0 };
     int coarse{ 0 };
     int fine{ 0 };
     int factor_gridNZ{ 2 };
     int D3Qxx{ 27 };
-    InitCondition ic;
+    int numprocs{ 1 };
+    int myProcessId{ 0 };
+    int maxdev{ 1 };
+
     double memsizeGPU;
-    unsigned int limitOfNodesForVTK;
-    unsigned int outputCount;
-    unsigned int timestep;
+    
+    uint limitOfNodesForVTK;
+    uint outputCount;
+    uint timestep;
+    uint tDoCheckPoint{ 0 };
+    uint tDoRestart{ 0 };
+    uint tCalcMedStart{ 0 };
+    uint tCalcMedEnd{ 10 };
+    uint tend{ 10 };
+    uint tout{ 1 };
+    uint tStartOut{ 0 };
+    uint PressInID{ 0 };
+    uint PressOutID{ 0 };
+    uint PressInZ{ 1 };
+    uint PressOutZ{ 2 };
+    uint timeStepForMP{ 10 };
+
+    std::vector<uint> devices{ 0, 1 }; // one device with ID = 0
+    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
+    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
+    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
+
+    std::string fname{ "output/simulation" };
+    std::string oPath{ "output/" };
+    std::string gridPath{ "grid/" };
+    std::string oPrefix{ "simulation" };
+    std::string geometryFileC, geometryFileM, geometryFileF;
+    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
+    std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
+    std::string slipBcPos, slipBcQs, slipBcValue;
+    std::string pressBcPos, pressBcQs, pressBcValue;
+    std::string geomBoundaryBcQs, velBcQs;
+    std::string geomBoundaryBcValues, velBcValues, pressBcValues, noSlipBcValues;
+    std::string propellerCylinder, propellerValues, propellerQs, measurePoints;
+    std::string inletBcQs, inletBcValues;
+    std::string outletBcQs, outletBcValues;
+    std::string topBcQs, topBcValues;
+    std::string bottomBcQs, bottomBcValues;
+    std::string frontBcQs, frontBcValues;
+    std::string backBcQs, backBcValues;
+    std::string wallBcQs, wallBcValues;
+    std::string periodicBcQs, periodicBcValues;
+    std::string numberNodes, LBMvsSI;
+    std::string cpTop, cpBottom, cpBottom2;
+    std::string concentration;
+    std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
+    
+    TurbulenceModel turbulenceModel{ TurbulenceModel::None };
+
 
     // Kernel
     std::string mainKernel{ "CumulantK17CompChim" };

@@ -35,6 +35,11 @@ void BoundaryConditionFactory::setStressBoundaryCondition(const StressBC boundar
     this->stressBoundaryCondition = boundaryConditionType;
 }
 
+void BoundaryConditionFactory::setPrecursorBoundaryCondition(const PrecursorBC boundaryConditionType)
+{
+    this->precursorBoundaryCondition = boundaryConditionType;
+}
+
 boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
     const VelocityBC &boundaryCondition =
@@ -99,8 +104,14 @@ boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool is
         case SlipBC::SlipCompressible:
             return QSlipDevComp27;
             break;
+        case SlipBC::SlipBounceBack:
+            return BBSlipDevComp27;
+            break;
         case SlipBC::SlipCompressibleTurbulentViscosity:
             return QSlipDevCompTurbulentViscosity27;
+            break;
+        case SlipBC::SlipPressureCompressibleTurbulentViscosity:
+            return QSlipPressureDevCompTurbulentViscosity27;
             break;
         default:
             return nullptr;
@@ -126,6 +137,22 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
         case PressureBC::OutflowNonReflective:
             return QPressNoRhoDev27;
             break;
+        case PressureBC::OutflowNonReflectivePressureCorrection:
+            return QPressZeroRhoOutflowDev27;
+        default:
+            return nullptr;
+    }
+}
+
+precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryConditionPost() const
+{
+    switch (this->precursorBoundaryCondition) {
+        case PrecursorBC::VelocityPrecursor:
+            return QPrecursorDevCompZeroPress;
+            break;
+        case PrecursorBC::DistributionsPrecursor:
+            return PrecursorDevDistributions;
+            break;
         default:
             return nullptr;
     }
@@ -136,6 +163,9 @@ boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryCondit
     switch (this->stressBoundaryCondition) {
         case StressBC::StressBounceBack:
             return BBStressDev27;
+            break;
+        case StressBC::StressPressureBounceBack:
+            return BBStressPressureDev27;
             break;
         case StressBC::StressCompressible:
             return QStressDevComp27;
