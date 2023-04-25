@@ -166,6 +166,7 @@ public:
     [[nodiscard]] virtual boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
     [[nodiscard]] virtual boundaryCondition getPressureBoundaryConditionPre() const;
     [[nodiscard]] virtual boundaryCondition getGeometryBoundaryConditionPost() const;
+    [[nodiscard]] virtual boundaryConditionWithParameter getStressBoundaryConditionPost() const;
     [[nodiscard]] precursorBoundaryConditionFunc getPrecursorBoundaryConditionPost() const;
 
 private:
