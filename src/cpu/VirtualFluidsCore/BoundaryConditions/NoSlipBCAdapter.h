@@ -43,18 +43,18 @@ public:
     NoSlipBCAdapter() : BCAdapter() {}
     NoSlipBCAdapter(const short &secondaryBcOption) : BCAdapter(secondaryBcOption) {}
 
-    void init(const D3Q27Interactor *const &interactor, const double &time = 0) override {}
-    void update(const D3Q27Interactor *const &interactor, const double &time = 0) override {}
+    void init(const D3Q27Interactor *const &interactor, const real &time = 0) override {}
+    void update(const D3Q27Interactor *const &interactor, const real &time = 0) override {}
 
     void adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
-                             const double & /*worldX1*/, const double & /*worldX2*/, const double & /*worldX3*/,
-                             const double &q, const int &fdirection, const double & /*time*/ = 0) override
+                             const real & /*worldX1*/, const real & /*worldX2*/, const real & /*worldX3*/,
+                             const real &q, const int &fdirection, const real & /*time*/ = 0) override
     {
         bc->setNoSlipBoundaryFlag(D3Q27System::INVDIR[fdirection], secondaryBcOption);
-        bc->setQ((float)q, fdirection);
+        bc->setQ((real)q, fdirection);
     }
-    void adaptBC(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc, const double & /*worldX1*/,
-                 const double & /*worldX2*/, const double & /*worldX3*/, const double & /*time*/ = 0) override
+    void adaptBC(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc, const real & /*worldX1*/,
+                 const real & /*worldX2*/, const real & /*worldX3*/, const real & /*time*/ = 0) override
     {
         bc->setBcAlgorithmType(algorithmType);
     }

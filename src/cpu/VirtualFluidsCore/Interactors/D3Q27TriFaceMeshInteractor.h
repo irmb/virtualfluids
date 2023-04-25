@@ -33,14 +33,14 @@ public:
 
     ~D3Q27TriFaceMeshInteractor() override;
 
-    void initInteractor(const double &timeStep = 0) override;
-    virtual void initInteractor2(const double &timeStep = 0);
+    void initInteractor(const real &timeStep = 0) override;
+    virtual void initInteractor2(const real &timeStep = 0);
 
-    void updateInteractor(const double &timestep = 0) override;
+    void updateInteractor(const real &timestep = 0) override;
 
-    void updateMovedGeometry(const double &timeStep = 0);
-    void setQs(const double &timeStep);
-    void refineBlockGridToLevel(int level, double startDistance, double stopDistance);
+    void updateMovedGeometry(const real &timeStep = 0);
+    void setQs(const real &timeStep);
+    void refineBlockGridToLevel(int level, real startDistance, real stopDistance);
 
     bool setDifferencesToGbObject3D(const SPtr<Block3D> block) override;
 
@@ -60,36 +60,36 @@ public:
     void calculateStresses();
     void calculateStressesAlternativ();
 
-    void calcStressesLine(UbTupleDouble6 &stresses, const double &weight, const UbTupleDouble6 &stvW,
+    void calcStressesLine(UbTupleDouble6 &stresses, const real &weight, const UbTupleDouble6 &stvW,
                           const UbTupleDouble6 &stvE);
-    void calcStressesFace(UbTupleDouble6 &stresses, const double &weightX, const double &weightY,
+    void calcStressesFace(UbTupleDouble6 &stresses, const real &weightX, const real &weightY,
                           const UbTupleDouble6 &stvSW, const UbTupleDouble6 &stvSE, const UbTupleDouble6 &stvNE,
                           const UbTupleDouble6 &stvNW);
-    void calcStressesCube(UbTupleDouble6 &stresses, const double &weightX, const double &weightY, const double &weightZ,
+    void calcStressesCube(UbTupleDouble6 &stresses, const real &weightX, const real &weightY, const real &weightZ,
                           const UbTupleDouble6 &stvBSW, const UbTupleDouble6 &stvBSE, const UbTupleDouble6 &stvBNE,
                           const UbTupleDouble6 &stvBNW, const UbTupleDouble6 &stvTSW, const UbTupleDouble6 &stvTSE,
                           const UbTupleDouble6 &stvTNE, const UbTupleDouble6 &stvTNW);
 
     void calculatePressure();
-    void calcPressureLine(double &p, const double &weight, const double &pW, const double &pE);
-    void calcPressureFace(double &p, const double &weightX, const double &weightY, const double &pSW, const double &pSE,
-                          const double &pNE, const double &pNW);
-    void calcPressureCube(double &p, const double &weightX, const double &weightY, const double &weightZ,
-                          const double &pBSW, const double &pBSE, const double &pBNE, const double &pBNW,
-                          const double &pTSW, const double &pTSE, const double &pTNE, const double &pTNW);
+    void calcPressureLine(real &p, const real &weight, const real &pW, const real &pE);
+    void calcPressureFace(real &p, const real &weightX, const real &weightY, const real &pSW, const real &pSE,
+                          const real &pNE, const real &pNW);
+    void calcPressureCube(real &p, const real &weightX, const real &weightY, const real &weightZ,
+                          const real &pBSW, const real &pBSE, const real &pBNE, const real &pBNW,
+                          const real &pTSW, const real &pTSE, const real &pTNE, const real &pTNW);
 
-    void setForceShift(double forceshift)
+    void setForceShift(real forceshift)
     {
         this->forceshift       = forceshift;
         this->forceshiftpolicy = true;
     }
-    void setVelocityShift(double velocityshift)
+    void setVelocityShift(real velocityshift)
     {
         this->velocityshift       = velocityshift;
         this->velocityshiftpolicy = true;
     }
-    double getForceShift() { return this->forceshift; }
-    double getVelocityShift() { return this->velocityshift; }
+    real getForceShift() { return this->forceshift; }
+    real getVelocityShift() { return this->velocityshift; }
     bool getForceShiftPolicy() { return forceshiftpolicy; }
     bool getVelocityShiftPolicy() { return velocityshiftpolicy; }
 
@@ -107,7 +107,7 @@ protected:
     bool useHalfSpace{ true };
     bool regardPIOTest{ true };
 
-    void reinitWithStoredQs(const double &timeStep);
+    void reinitWithStoredQs(const real &timeStep);
     //   bool reinitWithStoredQsFlag;
     std::map<SPtr<Block3D>, std::map<UbTupleInt3, std::vector<float>>>
         bcNodeIndicesAndQsMap; //!!! es kann sein, dass in diesem interactor

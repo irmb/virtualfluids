@@ -48,18 +48,18 @@ public:
     virtual ~ILBMKernel() = default;
 
     virtual void calculate(int step)    = 0;
-    virtual double getCalculationTime() = 0;
+    virtual real getCalculationTime() = 0;
     virtual void swapDistributions()    = 0;
 
     virtual bool getCompressible() const                                             = 0;
     virtual SPtr<BCProcessor> getBCProcessor() const                                 = 0;
     virtual void setBCProcessor(SPtr<BCProcessor> bcProcessor)                       = 0;
     virtual SPtr<DataSet3D> getDataSet() const                                       = 0;
-    virtual double getCollisionFactor() const                                        = 0;
-    virtual void setCollisionFactor(double collFactor)                               = 0;
+    virtual real getCollisionFactor() const                                        = 0;
+    virtual void setCollisionFactor(real collFactor)                               = 0;
     virtual bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const = 0;
     virtual int getGhostLayerWidth() const                                           = 0;
-    virtual LBMReal getDeltaT() const                                                = 0;
+    virtual real getDeltaT() const                                                = 0;
     virtual bool getWithForcing() const                                              = 0;
 };
 

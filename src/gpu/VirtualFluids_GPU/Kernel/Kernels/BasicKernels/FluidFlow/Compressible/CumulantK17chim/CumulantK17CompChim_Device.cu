@@ -33,11 +33,12 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include "basics/constants/NumericConstants.h"
+#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-#include "Kernel/Utilities/ChimeraTransformation.h"
+using namespace vf::gpu;
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void LB_Kernel_CumulantK17CompChim(

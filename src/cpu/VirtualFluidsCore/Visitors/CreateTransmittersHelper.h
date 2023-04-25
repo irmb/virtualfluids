@@ -55,7 +55,7 @@ public:
     enum TransmitterType { MPI, BOND, MPI2BOND };
 
 public:
-    using DataType       = CbVector<LBMReal>;
+    using DataType       = CbVector<real>;
     using TransmitterPtr = SPtr<TbTransmitter<DataType>>;
 
 public:

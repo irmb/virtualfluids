@@ -1,7 +1,7 @@
 #include "CollisionStrategy.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 std::function<void(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t)>
 getFunctionForCollisionAndExchange(const bool useStreams, const int numberOfMpiProcesses,

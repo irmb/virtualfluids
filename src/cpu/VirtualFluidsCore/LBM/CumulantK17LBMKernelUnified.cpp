@@ -46,7 +46,8 @@
 
 //#define PROOF_CORRECTNESS
 
-using namespace UbMath;
+//using namespace UbMath;
+using namespace vf::basics::constant;
 
 //////////////////////////////////////////////////////////////////////////
 CumulantK17LBMKernelUnified::CumulantK17LBMKernelUnified()
@@ -132,7 +133,7 @@ void CumulantK17LBMKernelUnified::calculate(int step)
     int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
     int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
 
-    LBMReal omega = collFactor;
+    real omega = collFactor;
 
     for (int x3 = minX3; x3 < maxX3; x3++)
     {
@@ -169,43 +170,43 @@ void CumulantK17LBMKernelUnified::calculate(int step)
                     // a b c
                     //-1 0 1
 
-                    LBMReal mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-                    LBMReal mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-                    LBMReal mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-                    LBMReal mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-                    LBMReal mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
-                    LBMReal mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-                    LBMReal mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
-                    LBMReal mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-                    LBMReal mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
-                    LBMReal mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-                    LBMReal mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
-                    LBMReal mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
-                    LBMReal mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                    real mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
+                    real mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
+                    real mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
+                    real mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
+                    real mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
+                    real mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
+                    real mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
+                    real mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
+                    real mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
+                    real mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
+                    real mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
+                    real mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
+                    real mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    LBMReal mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
-                    LBMReal mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
-                    LBMReal mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
-                    LBMReal mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
-                    LBMReal mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
-                    LBMReal mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
-                    LBMReal mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
-                    LBMReal mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
-                    LBMReal mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
-                    LBMReal mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                    LBMReal mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                    LBMReal mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                    LBMReal mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
+                    real mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
+                    real mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
+                    real mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
+                    real mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
+                    real mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
+                    real mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
+                    real mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
+                    real mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
+                    real mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
+                    real mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                    real mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                    real mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                    real mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    LBMReal mfbbb = (*this->restDistributions)(x1, x2, x3);
+                    real mfbbb = (*this->restDistributions)(x1, x2, x3);
 
                     
-                    LBMReal forces[3] = {0., 0., 0.};
+                    real forces[3] = {0., 0., 0.};
                     if (withForcing)
                     {
-                        muX1 = static_cast<double>(x1 - 1 + ix1 * maxX1);
-                        muX2 = static_cast<double>(x2 - 1 + ix2 * maxX2);
-                        muX3 = static_cast<double>(x3 - 1 + ix3 * maxX3);
+                        muX1 = static_cast<real>(x1 - 1 + ix1 * maxX1);
+                        muX2 = static_cast<real>(x2 - 1 + ix2 * maxX2);
+                        muX3 = static_cast<real>(x3 - 1 + ix3 * maxX3);
 
                         forcingX1 = muForcingX1.Eval();
                         forcingX2 = muForcingX2.Eval();
@@ -281,10 +282,10 @@ void CumulantK17LBMKernelUnified::calculate(int step)
                     //proof correctness
                     //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-                    LBMReal drho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+                    real drho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
                                         + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
                                         + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
-                    LBMReal dif = distribution.getDensity_() - drho_post;
+                    real dif = distribution.getDensity_() - drho_post;
 #ifdef SINGLEPRECISION
                     if (dif > 10.0E-7 || dif < -10.0E-7)
 #else

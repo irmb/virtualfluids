@@ -1,21 +1,53 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file ActuatorFarm.cu
+//! \ingroup PreCollisionInteractor
+//! \author Henrik Asmuth, Henry Korb
+//======================================================================================
 #include "ActuatorFarm.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include <cuda/CudaGrid.h>
+#include "cuda/CudaGrid.h"
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/DistributionHelper.cuh"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
-#include <lbm/constants/NumericConstants.h>
+#include "basics/constants/NumericConstants.h"
 #include <logger/Logger.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 
 
 __host__ __device__ __inline__ uint calcNode(uint bladeNode, uint numberOfBladeNodes, uint blade, uint numberOfBlades, uint turbine, uint numberOfTurbines)
@@ -30,7 +62,7 @@ __host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint
     uint x_off = turbine*numberOfBladeNodes*numberOfBlades;
     blade = (node - x_off)/numberOfBlades;
     uint y_off = numberOfBladeNodes*blade+x_off;
-    bladeNode = (node - y_off)/numberOfBladeNodes;
+    bladeNode = (node - y_off);
 }
 
 __host__ __device__ __forceinline__ real distSqrd(real distX, real distY, real distZ)
@@ -46,9 +78,9 @@ void swapArrays(real* &arr1, real* &arr2)
 }
 
 __host__ __device__ __inline__ void rotateFromBladeToGlobal(
-                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
+                            real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF, 
                             real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
-                            real& azimuth, real& yaw)
+                            real azimuth, real yaw)
 {
     real tmpX, tmpY, tmpZ;
 
@@ -59,8 +91,8 @@ __host__ __device__ __inline__ void rotateFromBladeToGlobal(
 
 __host__ __device__ __inline__ void rotateFromGlobalToBlade(
                             real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
-                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
-                            real& azimuth, real& yaw)
+                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
+                            real azimuth, real yaw)
 {
     real tmpX, tmpY, tmpZ;
 
@@ -79,17 +111,20 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                                       uint* bladeIndices, real velocityRatio, real invDeltaX)
 {
 
-    const uint node =  vf::gpu::getNodeIndex();
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = vf::gpu::getNodeIndex();
 
-    if(node>=numberOfBladeNodes*numberOfBlades*numberOfTurbines) return;
+    if(nodeIndex>=numberOfBladeNodes*numberOfBlades*numberOfTurbines) return;
 
     uint turbine, bladeNode, blade;
 
-    calcTurbineBladeAndBladeNode(node, bladeNode, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
+    calcTurbineBladeAndBladeNode(nodeIndex, bladeNode, numberOfBladeNodes, blade, numberOfBlades, turbine, numberOfTurbines);
 
-    real bladeCoordX_BF = bladeCoordsX[node];
-    real bladeCoordY_BF = bladeCoordsY[node];
-    real bladeCoordZ_BF = bladeCoordsZ[node];
+    real bladeCoordX_BF = bladeCoordsX[nodeIndex];
+    real bladeCoordY_BF = bladeCoordsY[nodeIndex];
+    real bladeCoordZ_BF = bladeCoordsZ[nodeIndex];
 
     real bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF;
 
@@ -108,12 +143,12 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     uint k, ke, kn, kt;
     uint kne, kte, ktn, ktne;
 
-    k = findNearestCellBSW(bladeIndices[node], 
+    k = findNearestCellBSW(bladeIndices[nodeIndex], 
                            gridCoordsX, gridCoordsY, gridCoordsZ, 
                            bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, 
                            neighborsX, neighborsY, neighborsZ, neighborsWSB);
         
-    bladeIndices[node] = k;
+    bladeIndices[nodeIndex] = k;
 
     getNeighborIndicesOfBSW(k, ke, kn, kt, kne, kte, ktn, ktne, neighborsX, neighborsY, neighborsZ);
 
@@ -135,9 +170,9 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                             bladeVelX_GF, bladeVelY_GF, bladeVelZ_GF, 
                             localAzimuth, yaw);
 
-    bladeVelocitiesX[node] = bladeVelX_BF;
-    bladeVelocitiesY[node] = bladeVelY_BF+omegas[turbine]*bladeCoordZ_BF;
-    bladeVelocitiesZ[node] = bladeVelZ_BF;
+    bladeVelocitiesX[nodeIndex] = bladeVelX_BF;
+    bladeVelocitiesY[nodeIndex] = bladeVelY_BF+omegas[turbine]*bladeCoordZ_BF;
+    bladeVelocitiesZ[nodeIndex] = bladeVelZ_BF;
 }
 
 
@@ -270,11 +305,11 @@ void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
     if(!para->getIsBodyForce()) throw std::runtime_error("try to allocate ActuatorFarm but BodyForce is not set in Parameter.");
     this->forceRatio = para->getForceRatio();
     this->initTurbineGeometries(cudaMemoryManager);
-    this->initBladeCoords(cudaMemoryManager);    
+    this->initBladeCoords(cudaMemoryManager);
     this->initBladeIndices(para, cudaMemoryManager);
     this->initBladeVelocities(cudaMemoryManager);
-    this->initBladeForces(cudaMemoryManager);    
-    this->initBoundingSpheres(para, cudaMemoryManager);  
+    this->initBladeForces(cudaMemoryManager);
+    this->initBoundingSpheres(para, cudaMemoryManager);
     this->streamIndex = 0;
 }
 
@@ -286,7 +321,7 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaMemoryManage
 
     if(useHostArrays) cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 
-    vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->numberOfNodes);
+    vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->numberOfGridNodes);
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads, 0, stream >>>(
         para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,        
@@ -343,6 +378,7 @@ void ActuatorFarm::calcForcesEllipticWing()
     real Cd = c0o1;
     real c0 = 20*c1o10;
     real c, Cn, Ct;
+
     for(uint turbine=0; turbine<this->numberOfTurbines; turbine++)
     {
         real diameter = this->diametersH[turbine];
@@ -388,7 +424,7 @@ void ActuatorFarm::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvid
 void ActuatorFarm::initTurbineGeometries(CudaMemoryManager* cudaMemoryManager)
 {
     this->numberOfTurbines = uint(this->preInitDiameters.size());
-    this->numberOfNodes = numberOfTurbines*numberOfBladeNodes*numberOfBlades;
+    this->numberOfGridNodes = numberOfTurbines*numberOfBladeNodes*numberOfBlades;
 
     cudaMemoryManager->cudaAllocBladeGeometries(this);
     cudaMemoryManager->cudaAllocBladeOrientations(this);
@@ -444,9 +480,9 @@ void ActuatorFarm::initBladeVelocities(CudaMemoryManager* cudaMemoryManager)
 {   
     cudaMemoryManager->cudaAllocBladeVelocities(this);
 
-    std::fill_n(this->bladeVelocitiesXH, this->numberOfNodes, c0o1);
-    std::fill_n(this->bladeVelocitiesYH, this->numberOfNodes, c0o1);
-    std::fill_n(this->bladeVelocitiesZH, this->numberOfNodes, c0o1);
+    std::fill_n(this->bladeVelocitiesXH, this->numberOfGridNodes, c0o1);
+    std::fill_n(this->bladeVelocitiesYH, this->numberOfGridNodes, c0o1);
+    std::fill_n(this->bladeVelocitiesZH, this->numberOfGridNodes, c0o1);
 
     cudaMemoryManager->cudaCopyBladeVelocitiesHtoD(this);
     swapArrays(this->bladeVelocitiesXDCurrentTimestep, this->bladeVelocitiesXDPreviousTimestep);
@@ -459,9 +495,9 @@ void ActuatorFarm::initBladeForces(CudaMemoryManager* cudaMemoryManager)
 {   
     cudaMemoryManager->cudaAllocBladeForces(this);
 
-    std::fill_n(this->bladeForcesXH, this->numberOfNodes, c0o1);
-    std::fill_n(this->bladeForcesYH, this->numberOfNodes, c0o1);
-    std::fill_n(this->bladeForcesZH, this->numberOfNodes, c0o1);
+    std::fill_n(this->bladeForcesXH, this->numberOfGridNodes, c0o1);
+    std::fill_n(this->bladeForcesYH, this->numberOfGridNodes, c0o1);
+    std::fill_n(this->bladeForcesZH, this->numberOfGridNodes, c0o1);
 
     cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
     swapArrays(this->bladeForcesXDCurrentTimestep, this->bladeForcesXDPreviousTimestep);
@@ -474,7 +510,7 @@ void ActuatorFarm::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMemo
 {   
     cudaMemoryManager->cudaAllocBladeIndices(this);
 
-    std::fill_n(this->bladeIndicesH, this->numberOfNodes, 1);
+    std::fill_n(this->bladeIndicesH, this->numberOfGridNodes, 1);
 
     cudaMemoryManager->cudaCopyBladeIndicesHtoD(this);
 }
@@ -496,14 +532,14 @@ void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaM
         uint minimumNumberOfNodesPerSphere = (uint)(c4o3*cPi*pow(sphereRadius-this->deltaX, c3o1)/pow(this->deltaX, c3o1));
         uint nodesInThisSphere = 0;
 
-        for (uint j = 1; j <= para->getParH(this->level)->numberOfNodes; j++)
+        for (size_t pos = 1; pos <= para->getParH(this->level)->numberOfNodes; pos++)
         {
-            const real distX = para->getParH(this->level)->coordinateX[j]-posX;
-            const real distY = para->getParH(this->level)->coordinateY[j]-posY;
-            const real distZ = para->getParH(this->level)->coordinateZ[j]-posZ;
+            const real distX = para->getParH(this->level)->coordinateX[pos]-posX;
+            const real distY = para->getParH(this->level)->coordinateY[pos]-posY;
+            const real distZ = para->getParH(this->level)->coordinateZ[pos]-posZ;
             if(distSqrd(distX,distY,distZ) < sphereRadiusSqrd) 
             {
-                nodesInSpheres.push_back(j);
+                nodesInSpheres.push_back((int)pos);
                 nodesInThisSphere++;
             }
         }
@@ -539,23 +575,23 @@ void ActuatorFarm::setAllYaws(real* _yaws)
 
 void ActuatorFarm::setAllBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)
 { 
-    std::copy_n(_bladeCoordsX, this->numberOfNodes, this->bladeCoordsXH);
-    std::copy_n(_bladeCoordsY, this->numberOfNodes, this->bladeCoordsYH);
-    std::copy_n(_bladeCoordsZ, this->numberOfNodes, this->bladeCoordsZH);
+    std::copy_n(_bladeCoordsX, this->numberOfGridNodes, this->bladeCoordsXH);
+    std::copy_n(_bladeCoordsY, this->numberOfGridNodes, this->bladeCoordsYH);
+    std::copy_n(_bladeCoordsZ, this->numberOfGridNodes, this->bladeCoordsZH);
 }
 
 void ActuatorFarm::setAllBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ)
 { 
-    std::copy_n(_bladeVelocitiesX, this->numberOfNodes, this->bladeVelocitiesXH);
-    std::copy_n(_bladeVelocitiesY, this->numberOfNodes, this->bladeVelocitiesYH);
-    std::copy_n(_bladeVelocitiesZ, this->numberOfNodes, this->bladeVelocitiesZH);
+    std::copy_n(_bladeVelocitiesX, this->numberOfGridNodes, this->bladeVelocitiesXH);
+    std::copy_n(_bladeVelocitiesY, this->numberOfGridNodes, this->bladeVelocitiesYH);
+    std::copy_n(_bladeVelocitiesZ, this->numberOfGridNodes, this->bladeVelocitiesZH);
 }
 
 void ActuatorFarm::setAllBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ)
 { 
-    std::copy_n(_bladeForcesX, this->numberOfNodes, this->bladeForcesXH);
-    std::copy_n(_bladeForcesY, this->numberOfNodes, this->bladeForcesYH);
-    std::copy_n(_bladeForcesZ, this->numberOfNodes, this->bladeForcesZH);
+    std::copy_n(_bladeForcesX, this->numberOfGridNodes, this->bladeForcesXH);
+    std::copy_n(_bladeForcesY, this->numberOfGridNodes, this->bladeForcesYH);
+    std::copy_n(_bladeForcesZ, this->numberOfGridNodes, this->bladeForcesZH);
 
 }void ActuatorFarm::setTurbineBladeCoords(uint turbine, real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)
 { 

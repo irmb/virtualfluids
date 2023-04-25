@@ -1,63 +1,93 @@
-//#define MPI_LOGGING
-
-//Martin Branch
-
-#include <mpi.h>
-#if defined( MPI_LOGGING )
-	#include <mpe.h>
-#endif
-
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <stdexcept>
-#include <fstream>
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TGV_3D.cpp
+//! \ingroup Applications
+//! \author Martin Schoenherr
+//=======================================================================================
 #define _USE_MATH_DEFINES
+#include <exception>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <math.h>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 
-//#include "metis.h"
+#include "mpi.h"
 
-#include "basics/Core/LbmOrGks.h"
-#include "basics/Core/StringUtilities/StringUtil.h"
-#include <basics/config/ConfigurationFile.h>
+//////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "DataTypes.h"
+#include <logger/Logger.h>
+
+#include "PointerDefinitions.h"
+
+//////////////////////////////////////////////////////////////////////////
+
+#include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+#include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
+#include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "GridGenerator/grid/GridFactory.h"
+
+#include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
+#include "GridGenerator/io/STLReaderWriter/STLReader.h"
+#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
+#include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
+
+//////////////////////////////////////////////////////////////////////////
+
 #include "VirtualFluids_GPU/Communication/Communicator.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "VirtualFluids_GPU/Parameter/Parameter.h"
 
-#include "global.h"
 
-#include "geometries/Sphere/Sphere.h"
-#include "geometries/VerticalCylinder/VerticalCylinder.h"
-#include "geometries/Cuboid/Cuboid.h"
-#include "geometries/TriangularMesh/TriangularMesh.h"
-#include "geometries/Conglomerate/Conglomerate.h"
-#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//          U s e r    s e t t i n g s
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "grid/GridBuilder/LevelGridBuilder.h"
-#include "grid/GridBuilder/MultipleGridBuilder.h"
-#include "grid/BoundaryConditions/Side.h"
-#include "grid/BoundaryConditions/BoundaryCondition.h"
-#include "grid/GridFactory.h"
-
-#include "io/SimulationFileWriter/SimulationFileWriter.h"
-#include "io/GridVTKWriter/GridVTKWriter.h"
-#include "io/STLReaderWriter/STLReader.h"
-#include "io/STLReaderWriter/STLWriter.h"
-
-#include "utilities/math/Math.h"
-#include "utilities/communication.h"
-#include "utilities/transformator/TransformatorImp.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // from https://stackoverflow.com/questions/865668/how-to-parse-command-line-arguments-in-c
@@ -92,25 +122,16 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel( "CumulantK17Comp" );
+std::string kernel( "CumulantK17" );
 
-std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
-//std::string path("E:/DrivenCavity/results/"); //TESLA03
+//std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
+std::string path("D:/out/TGV_3D/"); //TESLA03
 
 std::string simulationName("TGV_3D");
 //////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    //logging::Logger::addStream(&logFile);
-
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
@@ -124,7 +145,7 @@ void multipleLevel(const std::string& configPath)
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,9 +160,8 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = nx / ( 2.0 * PI ) * velocity / Re;
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity = " << velocity << " s\n";
-
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity = " << viscosity << "\n";
+    VF_LOG_INFO("velocity = {}", velocity);
+    VF_LOG_INFO("viscosity = {}", viscosity);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -152,7 +172,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,22 +331,17 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-            //std::cout << e.what() << std::flush;
+            std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::exception& e)
         {
-
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-            //std::cout << e.what() << std::flush;
+            std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (...)
         {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
-            //std::cout << "unknown exeption" << std::endl;
+            std::cout << "unknown exeption" << std::endl;
         }
 
         //std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;

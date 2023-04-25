@@ -3,6 +3,7 @@ build/
 bin/
 cmake-build-debug/
 run/
+buildGCC
 
 # Python
 _skbuild/
@@ -25,6 +26,8 @@ pythonbindings/pymuparser/bindings*
 # simulation results
 output/
 logs/
+reference_data/
+generated/
 
 # grid
 .grid/
@@ -40,3 +43,6 @@ stl/
 
 # Settings
 .gitconfig
+
+# User Settings
+CMakeUserPresets.json

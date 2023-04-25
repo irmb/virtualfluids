@@ -3,6 +3,7 @@
 #include "Block3D.h"
 #include "Grid3D.h"
 #include <geometry3d/GbObject3D.h>
+#include "lbm/constants/D3Q27.h"
 
 RefineInterGbObjectsBlockVisitor::RefineInterGbObjectsBlockVisitor() : Block3DVisitor(-1, -1) {}
 //////////////////////////////////////////////////////////////////////////
@@ -29,12 +30,12 @@ void RefineInterGbObjectsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bl
     UbTupleDouble3 coords = grid->getBlockWorldCoordinates(block);
     UbTupleDouble3 delta  = grid->getBlockLengths(block);
 
-    double cellMinX1 = val<1>(coords);
-    double cellMinX2 = val<2>(coords);
-    double cellMinX3 = val<3>(coords);
-    double cellMaxX1 = val<1>(coords) + val<1>(delta);
-    double cellMaxX2 = val<2>(coords) + val<2>(delta);
-    double cellMaxX3 = val<3>(coords) + val<3>(delta);
+    real cellMinX1 = val<1>(coords);
+    real cellMinX2 = val<2>(coords);
+    real cellMinX3 = val<3>(coords);
+    real cellMaxX1 = val<1>(coords) + val<1>(delta);
+    real cellMaxX2 = val<2>(coords) + val<2>(delta);
+    real cellMaxX3 = val<3>(coords) + val<3>(delta);
 
     bool insideInclude = false;
     for (size_t i = 0; i < includeGbObjects3D.size(); i++) {

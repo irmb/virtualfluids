@@ -35,6 +35,7 @@
 #define CoProcessor_H
 
 #include <PointerDefinitions.h>
+#include "lbm/constants/D3Q27.h"
 
 class Grid3D;
 class UbScheduler;
@@ -58,7 +59,7 @@ public:
     virtual ~CoProcessor();
     //! \brief Updates observer
     //! \param step is the actual time step
-    virtual void process(double step) = 0;
+    virtual void process(real step) = 0;
 
 protected:
     SPtr<Grid3D> grid;

@@ -31,7 +31,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
         std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
 }
 
-GridGenerator::~GridGenerator() = default;
+GridGenerator::~GridGenerator() {}
 
 void GridGenerator::setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams> &&indexRearrangement)
 {
@@ -58,15 +58,15 @@ void GridGenerator::initalGridInformations()
 void GridGenerator::allocArrays_CoordNeighborGeo()
 {
     const uint numberOfLevels = builder->getNumberOfGridLevels();
-    std::cout << "Number of Level: " << numberOfLevels << std::endl;
+    VF_LOG_INFO("Number of Level: {}", numberOfLevels);
     int numberOfNodesGlobal = 0;
-    std::cout << "Number of Nodes: " << std::endl;
+    VF_LOG_INFO("Number of Nodes: ");
 
     for (uint level = 0; level < numberOfLevels; level++)
     {
-        const int numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
+        const uint numberOfNodesPerLevel = builder->getNumberOfNodes(level) + 1;
         numberOfNodesGlobal += numberOfNodesPerLevel;
-        std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
+        VF_LOG_INFO("Level {} = {} Nodes", level, numberOfNodesPerLevel);
 
         setNumberOfNodes(numberOfNodesPerLevel, level);
 
@@ -99,11 +99,9 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         cudaMemoryManager->cudaCopyCoord(level);
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaCopyBodyForce(level);
-
-        //std::cout << verifyNeighborIndices(level);
     }
-    std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
-    std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
+    VF_LOG_INFO("Number of Nodes: {}", numberOfNodesGlobal);
+    VF_LOG_TRACE("-----finish Coord, Neighbor, Geo------");
 }
 
 void GridGenerator::allocArrays_taggedFluidNodes() {
@@ -202,20 +200,18 @@ void GridGenerator::sortFluidNodeTags() {
 
 void GridGenerator::allocArrays_BoundaryValues()
 {
-    std::cout << "------read BoundaryValues------" << std::endl;
-    int blocks;
+    VF_LOG_TRACE("-----alloc BoundaryValues------");
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPressureValues = int(builder->getPressureSize(level));
-        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size pressure level " << level << " : " << numberOfPressureValues << "\n";
+        VF_LOG_INFO("size pressure level {}: {}", level, numberOfPressureValues);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->pressureBC.numberOfBCnodes = 0;
         para->getParD(level)->outflowPressureCorrectionFactor = para->getOutflowPressureCorrectionFactor();
         if (numberOfPressureValues > 1)
         {
-            blocks = (numberOfPressureValues / para->getParH(level)->numberofthreads) + 1;
-            para->getParH(level)->pressureBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+            para->getParH(level)->pressureBC.numberOfBCnodes = numberOfPressureValues;
             cudaMemoryManager->cudaAllocPress(level);
             builder->getPressureValues(para->getParH(level)->pressureBC.RhoBC, para->getParH(level)->pressureBC.k, para->getParH(level)->pressureBC.kN, level);
             cudaMemoryManager->cudaCopyPress(level);
@@ -227,13 +223,13 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfSlipValues = int(builder->getSlipSize(level));
-        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size slip level " << level << " : " << numberOfSlipValues << "\n";
+        VF_LOG_INFO("size slip level {}: {}", level, numberOfSlipValues);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->slipBC.numberOfBCnodes = 0;
-        if (numberOfSlipValues > 1) {
-            blocks = (numberOfSlipValues / para->getParH(level)->numberofthreads) + 1;
-            para->getParH(level)->slipBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+        if (numberOfSlipValues > 1)
+        {
+            para->getParH(level)->slipBC.numberOfBCnodes = numberOfSlipValues;
             cudaMemoryManager->cudaAllocSlipBC(level);
             builder->getSlipValues(para->getParH(level)->slipBC.normalX, para->getParH(level)->slipBC.normalY,
                                    para->getParH(level)->slipBC.normalZ, para->getParH(level)->slipBC.k, level);
@@ -246,14 +242,13 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfStressValues = int(builder->getStressSize(level));
-        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size stress level " << level << " : " << numberOfStressValues << "\n";
+        VF_LOG_INFO("size stress level {}: {}", level, numberOfStressValues);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->stressBC.numberOfBCnodes = 0;
         if (numberOfStressValues > 1)
         {
-            blocks = (numberOfStressValues / para->getParH(level)->numberofthreads) + 1;
-            para->getParH(level)->stressBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+            para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
             builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ,
@@ -274,15 +269,14 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
-        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size velocity level " << level << " : " << numberOfVelocityValues << "\n";
+        VF_LOG_INFO("size velocity level {}: {}", level, numberOfVelocityValues);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         para->getParH(level)->velocityBC.numberOfBCnodes = 0;
 
         if (numberOfVelocityValues > 1)
         {
-            blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
-            para->getParH(level)->velocityBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+            para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocVeloBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,8 +294,8 @@ void GridGenerator::allocArrays_BoundaryValues()
                 //////////////////////////////////////////////////////////////////////////
                 para->getParH(level)->TempVel.kTemp = para->getParH(level)->velocityBC.numberOfBCnodes;
                 //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-                std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-                std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
+                VF_LOG_INFO("getTemperatureInit = {}", para->getTemperatureInit());
+                VF_LOG_INFO("getTemperatureBC = {}", para->getTemperatureBC());
                 //////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaAllocTempVeloBC(level);
                 //cout << "nach alloc " << endl;
@@ -328,9 +322,9 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPrecursorValues = int(builder->getPrecursorSize(level));
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "size precursor level " << level << " : " << numberOfPrecursorValues << "\n";
+        VF_LOG_INFO("size precursor level {}: {}", level, numberOfPrecursorValues);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
+        auto blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
         para->getParH(level)->precursorBC.sizeQ = blocks * para->getParH(level)->numberofthreads;
         para->getParD(level)->precursorBC.sizeQ = para->getParH(level)->precursorBC.sizeQ;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -426,14 +420,13 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->setUseGeometryValues(true);
         for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
             int numberOfGeometryValues = builder->getGeometrySize(level);
-            *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size geometry values, Level " << level << " : " << numberOfGeometryValues << "\n";
+            VF_LOG_INFO("size geometry values, Level {} : {}", level, numberOfGeometryValues);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             para->getParH(level)->geometryBC.numberOfBCnodes = 0;
             if (numberOfGeometryValues > 0)
-            {
-                blocks = (numberOfGeometryValues / para->getParH(level)->numberofthreads) + 1;
-                para->getParH(level)->geometryBC.numberOfBCnodes = blocks * para->getParH(level)->numberofthreads;
+            {;
+                para->getParH(level)->geometryBC.numberOfBCnodes = numberOfGeometryValues;
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaAllocGeomValuesBC(level);
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -521,8 +514,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParH(level)->sendProcessNeighborX.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE << "size of Data for X send buffer, \t\tLevel " << level << " : " << tempSend
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
                         para->getParD(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
@@ -536,8 +528,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->sendProcessNeighborX.back().memsizeFs = sizeof(real) * tempSend;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE << "size of Data for X receive buffer, \tLevel " << level << " : " << tempRecv
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for X receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->recvProcessNeighborX.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -587,8 +578,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         }
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Y send buffer, \t\tLevel " << level << " : " << tempSend
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborY.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -605,8 +595,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->sendProcessNeighborY.back().memsizeFs = sizeof(real) * tempSend;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Y receive buffer, \tLevel " << level << " : " << tempRecv
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Y receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->recvProcessNeighborY.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -656,8 +645,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         }
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Z send buffer, \t\tLevel " << level << " : " << tempSend
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborZ.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -674,8 +662,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->sendProcessNeighborZ.back().memsizeFs = sizeof(real) * tempSend;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Z receive buffer, \tLevel " << level << " : " << tempRecv
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Z receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->recvProcessNeighborZ.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -729,8 +716,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for X send buffer, \t\tLevel " << level << " : " << tempSend
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborF3X.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -749,8 +735,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                             sizeof(real) * para->getParH(level)->sendProcessNeighborF3X.back().numberOfGs;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for X receive buffer, \tLevel " << level << " : " << tempRecv
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for X recv buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->recvProcessNeighborF3X.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -795,8 +780,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Y send buffer, \t\tLevel " << level << " : " << tempSend
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborF3Y.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -815,8 +799,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                             sizeof(real) * para->getParH(level)->sendProcessNeighborF3Y.back().numberOfGs;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Y receive buffer, \tLevel " << level << " : " << tempRecv
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Y recv buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->recvProcessNeighborF3Y.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -861,8 +844,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Z send buffer, \t\tLevel " << level << " : " << tempSend
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborF3Z.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -881,8 +863,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                             sizeof(real) * para->getParH(level)->sendProcessNeighborF3Z.back().numberOfGs;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
-                        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of Data for Z receive buffer, \tLevel " << level << " : " << tempRecv
-                                  << " \t(neighbor rank: " << builder->getCommunicationProcess(direction) << ")\n";
+                        VF_LOG_INFO("size of Data for Z recv buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->recvProcessNeighborF3Z.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
@@ -920,37 +901,34 @@ void GridGenerator::initalValuesDomainDecompostion()
 
 void GridGenerator::allocArrays_BoundaryQs()
 {
-    std::cout << "------read BoundaryQs-------" << std::endl;
+    VF_LOG_TRACE("allocArrays_BoundaryQs()");
 
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
         const auto numberOfPressureValues = (int)builder->getPressureSize(i);
         if (numberOfPressureValues > 0)
         {
-            *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size Pressure:  " << i << " : " << numberOfPressureValues << "\n";
-            //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+            VF_LOG_INFO("size Pressure: {}: {}", i, numberOfPressureValues);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->pressureBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->pressureBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->pressureBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
 
             builder->getPressureQs(Q.q27, i);
 
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            //cout << "vor advec diff" << endl;
-            if (para->getDiffOn() == true) {
+            // advection - diffusion
+            if (para->getDiffOn()) {
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor setzen von kTemp" << endl;
                 para->getParH(i)->TempPress.kTemp = numberOfPressureValues;
                 para->getParD(i)->TempPress.kTemp = numberOfPressureValues;
-                std::cout << "Groesse TempPress.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
+                VF_LOG_INFO("size TempPress.kTemp: {}: {}", i, para->getParH(i)->TempPress.kTemp);
                 //////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaAllocTempPressBC(i);
-                //cout << "nach alloc" << endl;
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfPressureValues; m++)
                 {
@@ -959,9 +937,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     para->getParH(i)->TempPress.k[m] = para->getParH(i)->pressureBC.k[m];
                 }
                 //////////////////////////////////////////////////////////////////////////
-                //cout << "vor copy" << endl;
                 cudaMemoryManager->cudaCopyTempPressBCHD(i);
-                //cout << "nach copy" << endl;
                 //////////////////////////////////////////////////////////////////////////
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -974,13 +950,12 @@ void GridGenerator::allocArrays_BoundaryQs()
         int numberOfSlipValues = (int)builder->getSlipSize(i);
         if (numberOfSlipValues > 0)
         {
-            *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size Slip:  " << i << " : " << numberOfSlipValues << "\n";
-            //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+            VF_LOG_INFO("size Slip:  {}: {}", i, numberOfSlipValues);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->slipBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->slipBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->slipBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
 
             builder->getSlipQs(Q.q27, i);
@@ -994,15 +969,14 @@ void GridGenerator::allocArrays_BoundaryQs()
         int numberOfStressValues = (int)builder->getStressSize(i);
         if (numberOfStressValues > 0)
         {
-            *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size Stress:  " << i << " : " << numberOfStressValues << "\n";
-            //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+            VF_LOG_INFO("size Stress:  {}: {}", i, numberOfStressValues);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->stressBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->stressBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->stressBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
-
+            
             builder->getStressQs(Q.q27, i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaCopyStressBC(i);
@@ -1014,13 +988,12 @@ void GridGenerator::allocArrays_BoundaryQs()
         const auto numberOfVelocityNodes = int(builder->getVelocitySize(i));
         if (numberOfVelocityNodes > 0)
         {
-            *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size velocity level " << i << " : " << numberOfVelocityNodes << "\n";
-            //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << "\n";
+            VF_LOG_INFO("size velocity level {}: {}", i, numberOfVelocityNodes);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->velocityBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->velocityBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
             builder->getVelocityQs(Q.q27, i);
 
@@ -1028,12 +1001,11 @@ void GridGenerator::allocArrays_BoundaryQs()
                 //////////////////////////////////////////////////////////////////////////
                 para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
                 para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
-                std::cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
-                std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-                std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
+                VF_LOG_INFO("size TempVel.kTemp: {}",  para->getParH(i)->TempVel.kTemp);
+                VF_LOG_INFO("getTemperatureInit: {}",  para->getTemperatureInit());
+                VF_LOG_INFO("getTemperatureBC: {}",  para->getTemperatureBC());
                 //////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaAllocTempVeloBC(i);
-                //cout << "nach alloc " << "\n";
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfVelocityNodes; m++)
                 {
@@ -1042,11 +1014,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     para->getParH(i)->TempVel.velo[m] = para->getVelocity();
                     para->getParH(i)->TempVel.k[m] = para->getParH(i)->velocityBC.k[m];
                 }
-                //////////////////////////////////////////////////////////////////////////
-                //cout << "vor copy " << "\n";
                 cudaMemoryManager->cudaCopyTempVeloBCHD(i);
-                //cout << "nach copy " << "\n";
-                //////////////////////////////////////////////////////////////////////////
             }
             cudaMemoryManager->cudaCopyVeloBC(i);
         }
@@ -1056,7 +1024,7 @@ void GridGenerator::allocArrays_BoundaryQs()
         const auto numberOfPrecursorNodes = int(builder->getPrecursorSize(i));
         if (numberOfPrecursorNodes > 0)
         {
-            std::cout << "size velocity level " << i << " : " << numberOfPrecursorNodes << std::endl;
+            VF_LOG_INFO("size velocity level {}: {}", i, numberOfPrecursorNodes);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->precursorBC.q27[0];
@@ -1099,7 +1067,7 @@ void GridGenerator::allocArrays_BoundaryQs()
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
         const int numberOfGeometryNodes = builder->getGeometrySize(i);
-        *logging::out << logging::Logger::INFO_INTERMEDIATE  << "size of GeomBoundaryQs, Level " << i << " : " << numberOfGeometryNodes << "\n";
+        VF_LOG_INFO("size of GeomBoundaryQs, Level {}: {}", i, numberOfGeometryNodes);
 
         para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryNodes;
         para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
@@ -1120,7 +1088,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //preprocessing
             real* QQ = para->getParH(i)->geometryBC.q27[0];
             unsigned int sizeQ = para->getParH(i)->geometryBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
+            QforBoundaryConditions &Q = para->getParH(i)->geometryBC;
             getPointersToBoundaryConditions(Q, QQ, sizeQ);
             //////////////////////////////////////////////////////////////////
 
@@ -1164,8 +1132,7 @@ void GridGenerator::allocArrays_BoundaryQs()
         }
     }
 
-
-    std::cout << "-----finish BoundaryQs------" << std::endl;
+    VF_LOG_TRACE("-----finish BoundaryQs------");
 }
 
 void GridGenerator::allocArrays_OffsetScale()
@@ -1175,29 +1142,17 @@ void GridGenerator::allocArrays_OffsetScale()
         const uint numberOfNodesPerLevelCF = builder->getNumberOfNodesCF(level);
         const uint numberOfNodesPerLevelFC = builder->getNumberOfNodesFC(level);
 
-        std::cout << "number of nodes CF Level " << level << " : " << numberOfNodesPerLevelCF << std::endl;
-        std::cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << std::endl;
+        VF_LOG_INFO("number of nodes CF Level {}: {}", level, numberOfNodesPerLevelCF);
+        VF_LOG_INFO("number of nodes FC Level {}: {}", level, numberOfNodesPerLevelFC);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(level)->K_CF = numberOfNodesPerLevelCF;
-        para->getParD(level)->K_CF = para->getParH(level)->K_CF;
-        para->getParH(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParD(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParH(level)->mem_size_kCF = sizeof(uint)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF = sizeof(uint)* para->getParD(level)->K_CF;
-        para->getParH(level)->mem_size_kCF_off = sizeof(real)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF_off = sizeof(real)* para->getParD(level)->K_CF;
+        //size CF
+        para->getParH(level)->coarseToFine.numberOfCells = numberOfNodesPerLevelCF;
+        para->getParD(level)->coarseToFine.numberOfCells = para->getParH(level)->coarseToFine.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(level)->K_FC = numberOfNodesPerLevelFC;
-        para->getParD(level)->K_FC = para->getParH(level)->K_FC;
-        para->getParH(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParD(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParH(level)->mem_size_kFC = sizeof(uint)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC = sizeof(uint)* para->getParD(level)->K_FC;
-        para->getParH(level)->mem_size_kFC_off = sizeof(real)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
+        //size FC
+        para->getParH(level)->fineToCoarse.numberOfCells = numberOfNodesPerLevelFC;
+        para->getParD(level)->fineToCoarse.numberOfCells = para->getParH(level)->fineToCoarse.numberOfCells;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
         cudaMemoryManager->cudaAllocInterfaceCF(level);
@@ -1206,9 +1161,9 @@ void GridGenerator::allocArrays_OffsetScale()
         cudaMemoryManager->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
-        builder->getOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
-        builder->getOffsetFC(para->getParH(level)->offFC.xOffFC, para->getParH(level)->offFC.yOffFC, para->getParH(level)->offFC.zOffFC, level);
-        builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
+        builder->getOffsetCF(para->getParH(level)->neighborCoarseToFine.x, para->getParH(level)->neighborCoarseToFine.y, para->getParH(level)->neighborCoarseToFine.z, level);
+        builder->getOffsetFC(para->getParH(level)->neighborFineToCoarse.x, para->getParH(level)->neighborFineToCoarse.y, para->getParH(level)->neighborFineToCoarse.z, level);
+        builder->getGridInterfaceIndices(para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.fineCellIndices, level);
 
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk
@@ -1282,8 +1237,8 @@ std::string GridGenerator::verifyNeighborIndices(int level) const
     int wrongNeighbors = 0;
     int stopperNodes = 0;
 
-    for (uint index = 0; index < para->getParH(level)->numberOfNodes; index++)
-        oss << verifyNeighborIndex(level, index, invalidNodes, stopperNodes, wrongNeighbors);
+    for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
+        oss << verifyNeighborIndex(level, (int)index, invalidNodes, stopperNodes, wrongNeighbors);
 
 
     oss << "invalid nodes found: " << invalidNodes << "\n";
@@ -1362,31 +1317,31 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
 }
 
 void GridGenerator::getPointersToBoundaryConditions(QforBoundaryConditions& boundaryConditionStruct, real* subgridDistances, const unsigned int numberOfBCnodes){
-    boundaryConditionStruct.q27[DIR_P00] =    &subgridDistances[DIR_P00   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M00] =    &subgridDistances[DIR_M00   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0P0] =    &subgridDistances[DIR_0P0   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0M0] =    &subgridDistances[DIR_0M0   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_00P] =    &subgridDistances[DIR_00P   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_00M] =    &subgridDistances[DIR_00M   * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PP0] =   &subgridDistances[DIR_PP0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MM0] =   &subgridDistances[DIR_MM0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PM0] =   &subgridDistances[DIR_PM0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MP0] =   &subgridDistances[DIR_MP0  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_P0P] =   &subgridDistances[DIR_P0P  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M0M] =   &subgridDistances[DIR_M0M  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_P0M] =   &subgridDistances[DIR_P0M  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M0P] =   &subgridDistances[DIR_M0P  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0PP] =   &subgridDistances[DIR_0PP  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0MM] =   &subgridDistances[DIR_0MM  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0PM] =   &subgridDistances[DIR_0PM  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_0MP] =   &subgridDistances[DIR_0MP  * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000* numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PPP] =  &subgridDistances[DIR_PPP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MMP] =  &subgridDistances[DIR_MMP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PMP] =  &subgridDistances[DIR_PMP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MPP] =  &subgridDistances[DIR_MPP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PPM] =  &subgridDistances[DIR_PPM * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MMM] =  &subgridDistances[DIR_MMM * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_PMM] =  &subgridDistances[DIR_PMM * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_MPM] =  &subgridDistances[DIR_MPM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P00] = &subgridDistances[DIR_P00 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M00] = &subgridDistances[DIR_M00 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0P0] = &subgridDistances[DIR_0P0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0M0] = &subgridDistances[DIR_0M0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00P] = &subgridDistances[DIR_00P * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_00M] = &subgridDistances[DIR_00M * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PP0] = &subgridDistances[DIR_PP0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MM0] = &subgridDistances[DIR_MM0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PM0] = &subgridDistances[DIR_PM0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MP0] = &subgridDistances[DIR_MP0 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0P] = &subgridDistances[DIR_P0P * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0M] = &subgridDistances[DIR_M0M * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_P0M] = &subgridDistances[DIR_P0M * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_M0P] = &subgridDistances[DIR_M0P * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PP] = &subgridDistances[DIR_0PP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MM] = &subgridDistances[DIR_0MM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0PM] = &subgridDistances[DIR_0PM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_0MP] = &subgridDistances[DIR_0MP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000 * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPP] = &subgridDistances[DIR_PPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMP] = &subgridDistances[DIR_MMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMP] = &subgridDistances[DIR_PMP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPP] = &subgridDistances[DIR_MPP * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PPM] = &subgridDistances[DIR_PPM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MMM] = &subgridDistances[DIR_MMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_PMM] = &subgridDistances[DIR_PMM * numberOfBCnodes];
+    boundaryConditionStruct.q27[DIR_MPM] = &subgridDistances[DIR_MPM * numberOfBCnodes];
 }

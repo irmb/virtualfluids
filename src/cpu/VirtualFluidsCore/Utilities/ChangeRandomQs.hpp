@@ -27,10 +27,10 @@ namespace Utilities
                   if (bc->hasNoSlipBoundaryFlag(fdir))
                   {
                      const int invDir = D3Q27System::INVDIR[fdir];
-                     float q = (float) bc->getQ(invDir);
+                     real q = (real) bc->getQ(invDir);
                      //double r = (double)UbRandom::rand(-50, 50);
-                     float r = (float)UbRandom::rand(-10, 10);
-                     float q_temp = q + q/r;
+                     real r = (real)UbRandom::rand(-10, 10);
+                     real q_temp = q + q/r;
                      if (q_temp < 0.0)
                      {
                         q_temp = 0.0001f;

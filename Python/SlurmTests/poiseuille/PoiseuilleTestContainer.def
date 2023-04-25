@@ -30,10 +30,11 @@ Stage: build
     libomp-dev                 \
     libgl1
 
-    pip3 install setuptools wheel cmake numpy scipy pyvista
+    pip3 install setuptools wheel cmake numpy scipy pyvista scikit-build
 
     export PYTHONPATH=Python
-    python3 /setup.py bdist_wheel build_ext --build-temp=build
+    python3 /setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DBUILD_VF_DOUBLE_ACCURACY=ON
+
     pip3 install $(find dist/*.whl)
 
 

@@ -35,7 +35,7 @@ WriteMQFromSelectionCoProcessor::WriteMQFromSelectionCoProcessor(SPtr<Grid3D> gr
 //////////////////////////////////////////////////////////////////////////
 void WriteMQFromSelectionCoProcessor::init() {}
 //////////////////////////////////////////////////////////////////////////
-void WriteMQFromSelectionCoProcessor::process(double step)
+void WriteMQFromSelectionCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -43,7 +43,7 @@ void WriteMQFromSelectionCoProcessor::process(double step)
     UBLOG(logDEBUG3, "WriteMQFromSelectionCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteMQFromSelectionCoProcessor::collectData(double step)
+void WriteMQFromSelectionCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -53,12 +53,12 @@ void WriteMQFromSelectionCoProcessor::collectData(double step)
                 UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
                 UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
 
-                double minX1 = val<1>(org);
-                double minX2 = val<2>(org);
-                double minX3 = val<3>(org);
-                double maxX1 = val<1>(org) + val<1>(blockLengths);
-                double maxX2 = val<2>(org) + val<2>(blockLengths);
-                double maxX3 = val<3>(org) + val<3>(blockLengths);
+                real minX1 = val<1>(org);
+                real minX2 = val<2>(org);
+                real minX3 = val<3>(org);
+                real maxX1 = val<1>(org) + val<1>(blockLengths);
+                real maxX2 = val<2>(org) + val<2>(blockLengths);
+                real maxX3 = val<3>(org) + val<3>(blockLengths);
 
                 if (gbObject->isCellInsideOrCuttingGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3)) {
                     addDataMQ(block);
@@ -110,7 +110,7 @@ void WriteMQFromSelectionCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-    double level = (double)block->getLevel();
+    real level = (real)block->getLevel();
     //   double blockID = (double)block->getGlobalID();
 
     // Diese Daten werden geschrieben:
@@ -128,8 +128,8 @@ void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
     SPtr<ILBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal vx1, vx2, vx3, rho;
+    real f[D3Q27System::ENDF + 1];
+    real vx1, vx2, vx3, rho;
 
     if (block->getKernel()->getCompressible()) {
         calcMacros = &D3Q27System::calcCompMacroscopicValues;

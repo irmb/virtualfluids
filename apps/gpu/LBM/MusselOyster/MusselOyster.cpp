@@ -13,15 +13,12 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "basics/Core/DataTypes.h"
-#include "basics/Core/VectorTypes.h"
+#include "basics/DataTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/LbmOrGks.h"
-#include "basics/Core/Logger/Logger.h"
-#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +37,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -49,7 +45,8 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -87,23 +84,16 @@ const std::string simulationName("MusselOyster");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(std::filesystem::path &configPath)
+void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
     vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
 
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    vf::basics::ConfigurationFile config;
-    config.load(configPath.string());
     SPtr<Parameter> para =
-        std::make_shared<Parameter>(communicator.getNummberOfProcess(), communicator.getPID(), &config);
+        std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,8 +151,7 @@ void multipleLevel(std::filesystem::path &configPath)
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
     para->setUseStreams(useStreams);
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
+    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -196,10 +185,10 @@ void multipleLevel(std::filesystem::path &configPath)
         // height MUSSEL = 35.0
         // height Oyster = 72.0
 
-        TriangularMesh *bivalveSTL = TriangularMesh::make(stlPath + bivalveType + ".stl");
-        TriangularMesh *bivalveRef_1_STL = nullptr;
+        SPtr<TriangularMesh> bivalveSTL = std::make_shared<TriangularMesh>(stlPath + bivalveType + ".stl");
+        SPtr<TriangularMesh> bivalveRef_1_STL = nullptr;
         if (useLevels)
-            bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
+            bivalveRef_1_STL = std::make_shared<TriangularMesh>(stlPath + bivalveType + "_Level1.stl");
 
         if (para->getNumprocs() > 1) {
             const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
@@ -207,7 +196,7 @@ void multipleLevel(std::filesystem::path &configPath)
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
-            if (communicator.getNummberOfProcess() == 2) {
+            if (communicator.getNumberOfProcess() == 2) {
                 const real zSplit = 0.0; // round(((double)bbzp + bbzm) * 0.5);
 
                 if (generatePart == 0) {
@@ -234,15 +223,15 @@ void multipleLevel(std::filesystem::path &configPath)
                         std::make_shared<BoundingBox>(xGridMin, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
                 }
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 1);
                 }
 
                 if (generatePart == 1) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
 
@@ -258,7 +247,7 @@ void multipleLevel(std::filesystem::path &configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcess() == 4) {
 
                 const real xSplit = 100.0;
                 const real zSplit = 0.0;
@@ -299,30 +288,30 @@ void multipleLevel(std::filesystem::path &configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, yGridMin, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
                 if (generatePart == 0) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 2);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 3);
                 }
                 if (generatePart == 2) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 3);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 2);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 1);
                 }
 
@@ -348,7 +337,7 @@ void multipleLevel(std::filesystem::path &configPath)
                     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNummberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcess() == 8) {
                 real xSplit = 140.0; // 100.0 // mit groesserem Level 1 140.0
                 real ySplit = 32.0;  // 32.0
                 real zSplit = 0.0;
@@ -417,71 +406,71 @@ void multipleLevel(std::filesystem::path &configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, ySplit, yGridMax, zSplit, zGridMax));
 
-                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+                gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
                 if (generatePart == 0) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 2);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 4);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 3);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 5);
                 }
                 if (generatePart == 2) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 3);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 6);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 2);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 7);
                 }
                 if (generatePart == 4) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 5);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 6);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
                 }
                 if (generatePart == 5) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 4);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 7);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 1);
                 }
                 if (generatePart == 6) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 7);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 4);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 2);
                 }
                 if (generatePart == 7) {
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 6);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 5);
-                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MZ);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 3);
                 }
 
@@ -545,7 +534,7 @@ void multipleLevel(std::filesystem::path &configPath)
 
             gridBuilder->addGeometry(bivalveSTL);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
@@ -594,20 +583,9 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
-            //////////////////////////////////////////////////////////////////////////
-            // assuming that a config files is stored parallel to this file.
-            std::filesystem::path configPath = __FILE__;
-
-            // the config file's default name can be replaced by passing a command line argument
-            std::string configName("configMusselOyster.txt");
-            if (argc == 2) {
-                configName = argv[1];
-                std::cout << "Using configFile command line argument: " << configName << std::endl;
-            }
-
-            configPath.replace_filename(configName);
-
-            multipleLevel(configPath);
+            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/MusselOyster/configMusselOyster.txt");
+            runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////
         } catch (const spdlog::spdlog_ex &ex) {

@@ -13,7 +13,7 @@ class Grid3D;
 class SetForcingBlockVisitor : public Block3DVisitor
 {
 public:
-    SetForcingBlockVisitor(LBMReal forcingX1, LBMReal forcingX2, LBMReal forcingX3);
+    SetForcingBlockVisitor(real forcingX1, real forcingX2, real forcingX3);
 
     SetForcingBlockVisitor(const mu::Parser &muForcingX1, const mu::Parser &muForcingX2, const mu::Parser &muForcingX3);
 
@@ -25,9 +25,9 @@ public:
 
 private:
     int ftype;
-    LBMReal forcingX1;
-    LBMReal forcingX2;
-    LBMReal forcingX3;
+    real forcingX1;
+    real forcingX2;
+    real forcingX3;
     mu::Parser muForcingX1;
     mu::Parser muForcingX2;
     mu::Parser muForcingX3;

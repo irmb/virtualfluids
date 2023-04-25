@@ -34,8 +34,7 @@
 #define GRID_IMP_H
 
 #include <array>
-
-#include "Core/LbmOrGks.h"
+#include <vector>
 
 #include "gpu/GridGenerator/global.h"
 
@@ -51,6 +50,7 @@ class GridInterface;
 class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
+
 
 #ifdef __GNUC__
     #ifndef __clang__
@@ -72,11 +72,11 @@ class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, publi
 {
 protected:
     GridImp() = default;
-    GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
+    GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
 public:
-    static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
-    virtual ~GridImp() = default;
+    static SPtr<GridImp> makeShared(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::string d3Qxx, uint level);
+    ~GridImp() override = default;
 
 private:
     void initalNumberOfNodesAndSize();
@@ -91,6 +91,7 @@ private:
 
     bool nodeInPreviousCellIs(int index, char type) const;
     bool nodeInCellIs(Cell& cell, char type) const override;
+
 
     uint getXIndex(real x) const;
     uint getYIndex(real y) const;
@@ -110,7 +111,7 @@ private:
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
-    Object* object;
+    SPtr<Object> object;
     GridInterface *gridInterface;
 
     int *sparseIndices;
@@ -129,11 +130,13 @@ private:
 
     uint numberOfLayers;
 
-    TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy;
+    SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 
     uint numberOfSolidBoundaryNodes = 0;
 
     bool enableFixRefinementIntoTheWall;
+
+    std::vector<SideType> bcAlreadySet;
 
 protected:
     Field field;
@@ -149,9 +152,9 @@ public:
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
 
-    bool getPeriodicityX() override;
-    bool getPeriodicityY() override;
-    bool getPeriodicityZ() override;
+    bool getPeriodicityX() const override;
+    bool getPeriodicityY() const override;
+    bool getPeriodicityZ() const override;
 
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) override;
 
@@ -161,19 +164,19 @@ public:
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    void findGridInterface(SPtr<Grid> grid) override;
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
 
     void freeMemory() override;
 
     uint getLevel(real levelNull) const;
     uint getLevel() const;
 
-    void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy);
-    TriangularMeshDiscretizationStrategy *getTriangularMeshDiscretizationStrategy();
+    void setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy);
+    SPtr<TriangularMeshDiscretizationStrategy> getTriangularMeshDiscretizationStrategy();
 
     uint getNumberOfSolidBoundaryNodes() const override;
     void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
@@ -184,6 +187,9 @@ public:
     void setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid) override;
 
     void setNumberOfLayers(uint numberOfLayers) override;
+
+    std::vector<SideType> getBCAlreadySet() override;
+    void addBCalreadySet(SideType side) override;
 
 public:
     Distribution distribution;
@@ -209,7 +215,7 @@ public:
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
-    void findGridInterfaceCF(uint index, GridImp &finerGrid, LbmOrGks lbmOrGks);
+    void findGridInterfaceCF(uint index, GridImp &finerGrid);
     void findGridInterfaceFC(uint index, GridImp &finerGrid);
     void findOverlapStopper(uint index, GridImp &finerGrid);
     void findInvalidBoundaryNodes(uint index);
@@ -219,10 +225,11 @@ public:
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
     bool hasNeighborOfType(uint index, char type) const;
+    bool nodeHasBC(uint index) const override;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
-    const Object* getObject() const override;
+    SPtr<const Object> getObject() const override;
 
     Field getField() const;
     char getFieldEntry(uint index) const override;
@@ -234,7 +241,7 @@ public:
     uint getSparseSize() const override;
     int getSparseIndex(uint matrixIndex) const override;
     real* getDistribution() const override;
-    int* getDirection() const override;
+    const std::vector<int>& getDirection() const override;
     int getStartDirection() const override;
     int getEndDirection() const override;
 
@@ -259,6 +266,8 @@ public:
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
 
     bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const override;
+    
+    bool isStopperForBC(uint index) const override;
 
     int *getNeighborsX() const override;
     int* getNeighborsY() const override;
@@ -276,7 +285,7 @@ public:
     void print() const;
 
 public:
-    virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
+    void findSparseIndices(SPtr<Grid> fineGrid) override;
 
     void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();
@@ -344,7 +353,7 @@ private:
     void allocateQs();
 
 public:
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override;
     void findCommunicationIndex(uint index, real coordinate, real limit, int direction);
 
     uint getNumberOfSendNodes(int direction) override;

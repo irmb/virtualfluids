@@ -9,14 +9,16 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-#include <lbm/constants/NumericConstants.h>
+#include "basics/constants/NumericConstants.h"
 
 #include "lbm/MacroscopicQuantities.h"
 #include "../Kernel/Utilities/DistributionHelper.cuh"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void CalcTurbulenceIntensity(
@@ -34,19 +36,21 @@ __global__ void CalcTurbulenceIntensity(
    unsigned int* neighborX,
    unsigned int* neighborY,
    unsigned int* neighborZ,
-   unsigned int size_Mat, 
+   unsigned long long numberOfLBnodes, 
    bool isEvenTimestep)
 {
-   const unsigned k = vf::gpu::getNodeIndex();
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = getNodeIndex();
 
-   if (k >= size_Mat)
+   if (nodeIndex >= numberOfLBnodes)
        return;
 
-   if (!vf::gpu::isValidFluidNode(typeOfGridNode[k]))
+   if (!isValidFluidNode(typeOfGridNode[nodeIndex]))
        return;
 
-   vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY,
-                                              neighborZ);
+   DistributionWrapper distr_wrapper(distributions, numberOfLBnodes, isEvenTimestep, nodeIndex, neighborX, neighborY, neighborZ);
    const auto &distribution = distr_wrapper.distribution;
 
    // analogue to LBCalcMacCompSP27
@@ -58,16 +62,16 @@ __global__ void CalcTurbulenceIntensity(
 
    // compute subtotals:
    // fluctuations
-   vxx[k] = vxx[k] + vx * vx;
-   vyy[k] = vyy[k] + vy * vy;
-   vzz[k] = vzz[k] + vz * vz;
-   vxy[k] = vxy[k] + vx * vy;
-   vxz[k] = vxz[k] + vx * vz;
-   vyz[k] = vyz[k] + vy * vz;
+   vxx[nodeIndex] = vxx[nodeIndex] + vx * vx;
+   vyy[nodeIndex] = vyy[nodeIndex] + vy * vy;
+   vzz[nodeIndex] = vzz[nodeIndex] + vz * vz;
+   vxy[nodeIndex] = vxy[nodeIndex] + vx * vy;
+   vxz[nodeIndex] = vxz[nodeIndex] + vx * vz;
+   vyz[nodeIndex] = vyz[nodeIndex] + vy * vz;
 
    // velocity (for mean velocity)
-   vx_mean[k] = vx_mean[k] + vx;
-   vy_mean[k] = vy_mean[k] + vy;
-   vz_mean[k] = vz_mean[k] + vz; 
+   vx_mean[nodeIndex] = vx_mean[nodeIndex] + vx;
+   vy_mean[nodeIndex] = vy_mean[nodeIndex] + vy;
+   vz_mean[nodeIndex] = vz_mean[nodeIndex] + vz; 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

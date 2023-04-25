@@ -64,8 +64,7 @@ private:
 
 public:
     VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
-    VIRTUALFLUIDS_GPU_EXPORT ~GridGenerator() override;
-
+    ~GridGenerator() override;
     //! \brief overwrites the default IndexRearrangementForStreams
     void setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams>&& indexRearrangement);
 

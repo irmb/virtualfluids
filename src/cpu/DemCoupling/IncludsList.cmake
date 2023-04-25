@@ -1,8 +1,0 @@
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/DemCoupling)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/DemCoupling/physicsEngineAdapter)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/DemCoupling/physicsEngineAdapter/dummy)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/DemCoupling/physicsEngineAdapter/pe)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/DemCoupling/reconstructor)
-
-INCLUDE_DIRECTORIES(${PE_ROOT}/src)
-INCLUDE_DIRECTORIES(${PE_BINARY_DIR}/src)

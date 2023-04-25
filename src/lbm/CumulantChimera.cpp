@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-#include <basics/Core/DataTypes.h>
-#include <basics/Core/RealConstants.h>
+#include <basics/DataTypes.h>
 
 #include "constants/NumericConstants.h"
 #include "constants/D3Q27.h"
@@ -11,12 +10,10 @@
 #include "Chimera.h"
 #include "MacroscopicQuantities.h"
 
-namespace vf
-{
-namespace lbm
+namespace vf::lbm
 {
 
-using namespace constant;
+using namespace vf::basics::constant;
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -448,6 +445,5 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
 }
 
 
-}
 }
 

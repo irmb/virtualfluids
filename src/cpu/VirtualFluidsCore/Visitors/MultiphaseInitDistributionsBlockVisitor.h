@@ -45,7 +45,7 @@
 class MultiphaseInitDistributionsBlockVisitor : public Block3DVisitor
 {
 public:
-	typedef std::numeric_limits<LBMReal> D3Q27RealLim;
+	typedef std::numeric_limits<real> D3Q27RealLim;
 
 public:
 	MultiphaseInitDistributionsBlockVisitor();
@@ -56,7 +56,7 @@ public:
 	//! \param vx1 - velocity in x
 	//! \param vx2 - velocity in y
 	//! \param vx3 - velocity in z
-	MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0, LBMReal rho=0.0);
+	MultiphaseInitDistributionsBlockVisitor( real densityRatio, real vx1=0.0, real vx2=0.0, real vx3=0.0, real rho=0.0);
 	//////////////////////////////////////////////////////////////////////////
 	//automatic vars are: x1,x2, x3
 	//ussage example: setVx1("x1*0.01+x2*0.003")
@@ -74,12 +74,12 @@ public:
 	void setPhi( const std::string& muParserString);
 
 	//////////////////////////////////////////////////////////////////////////
-	void setVx1( LBMReal vx1 );
-	void setVx2( LBMReal vx2 );
-	void setVx3( LBMReal vx3 );
-	void setRho( LBMReal rho );
-	void setPhi( LBMReal rho );
-	void setNu( LBMReal nu );
+	void setVx1( real vx1 );
+	void setVx2( real vx2 );
+	void setVx3( real vx3 );
+	void setRho( real rho );
+	void setPhi( real rho );
+	void setNu( real nu );
 
 	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
 
@@ -93,8 +93,8 @@ private:
 	mu::Parser muRho;
 	mu::Parser muPhi;
 
-	LBMReal nu;
-	LBMReal densityRatio;
+	real nu;
+	real densityRatio;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

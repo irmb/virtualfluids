@@ -69,7 +69,7 @@ WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteBoundaryConditionsCoProcessor::process(double step)
+void WriteBoundaryConditionsCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -77,7 +77,7 @@ void WriteBoundaryConditionsCoProcessor::process(double step)
     UBLOG(logDEBUG3, "WriteBoundaryConditionsCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteBoundaryConditionsCoProcessor::collectData(double step)
+void WriteBoundaryConditionsCoProcessor::collectData(real step)
 {
     int istep = static_cast<int>(step);
 
@@ -134,9 +134,9 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
 {
     UbTupleDouble3 org        = grid->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-    double dx                 = grid->getDeltaX(block);
+    real dx                 = grid->getDeltaX(block);
 
-    double level = (double)block->getLevel();
+    real level = (real)block->getLevel();
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);

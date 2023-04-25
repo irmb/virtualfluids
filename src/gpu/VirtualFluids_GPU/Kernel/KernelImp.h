@@ -20,7 +20,6 @@ public:
 
     bool checkParameter();
     std::vector<PreProcessorType> getPreProcessorTypes();
-    KernelGroup getKernelGroup();
 
     void setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy> strategy);
     bool getKernelUsesFluidNodeIndices();
@@ -33,8 +32,6 @@ protected:
     std::shared_ptr<CheckParameterStrategy> checkStrategy;
     int level;
     std::vector<PreProcessorType> myPreProcessorTypes;
-    KernelGroup myKernelGroup;
-
     vf::cuda::CudaGrid cudaGrid;
 
     bool kernelUsesFluidNodeIndices = false;

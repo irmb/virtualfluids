@@ -8,6 +8,8 @@ using namespace std;
 
 void bflow(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       vf::basics::ConfigurationFile   config;
@@ -16,27 +18,27 @@ void bflow(string configname)
       string          pathname = config.getValue<string>("pathname");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      double          nuLB = config.getValue<double>("nuLB");
-      double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
-      double          availMem = config.getValue<double>("availMem");
+      vector<real>  boundingBox = config.getVector<real>("boundingBox");
+      real          nuLB = config.getValue<real>("nuLB");
+      real          endTime = config.getValue<real>("endTime");
+      real          outTime = config.getValue<real>("outTime");
+      real          availMem = config.getValue<real>("availMem");
       //int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
       //double          restartStep = config.getValue<double>("restartStep");
-      double          deltax = config.getValue<double>("deltax");
+      real          deltax = config.getValue<real>("deltax");
       //double          cpStep = config.getValue<double>("cpStep");
       //double          cpStepStart = config.getValue<double>("cpStepStart");
       //bool            newStart = config.getValue<bool>("newStart");
-      double          forcing = config.getValue<double>("forcing");
+      real          forcing = config.getValue<real>("forcing");
       //double          n = config.getValue<double>("n");
       //double          k = config.getValue<double>("k");
-      double          tau0 = config.getValue<double>("tau0");
-      double          velocity = config.getValue<double>("velocity");
-      double          n = config.getValue<double>("n");
+      real          tau0 = config.getValue<real>("tau0");
+      real          velocity = config.getValue<real>("velocity");
+      real          n = config.getValue<real>("n");
 //      double          Re = config.getValue<double>("Re");
 //      double          Bn = config.getValue<double>("Bn");
-      double          scaleFactor = config.getValue<double>("scaleFactor");
+      real          scaleFactor = config.getValue<real>("scaleFactor");
 
       SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -59,7 +61,7 @@ void bflow(string configname)
          }
       }
 
-      LBMReal rhoLB = 0.0;
+      real rhoLB = 0.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -72,17 +74,17 @@ void bflow(string configname)
       //double g_maxX2 = boundingBox[1];
       //double g_maxX3 = boundingBox[2]+1.0;
 
-      double g_minX1 = 0.0;
-      double g_minX2 = -boundingBox[1]/2.0;
-      double g_minX3 = -boundingBox[2]/2.0;
+      real g_minX1 = 0.0;
+      real g_minX2 = -boundingBox[1]/2.0;
+      real g_minX3 = -boundingBox[2]/2.0;
 
-      double g_maxX1 = boundingBox[0];
-      double g_maxX2 = boundingBox[1]/2.0;
-      double g_maxX3 = boundingBox[2]/2.0;
+      real g_maxX1 = boundingBox[0];
+      real g_maxX2 = boundingBox[1]/2.0;
+      real g_maxX3 = boundingBox[2]/2.0;
 
       
 
-      double blockLength = 3.0 * deltax;
+      real blockLength = 3.0 * deltax;
 
 //      double h = (g_maxX2) / 2.0;
 //      double dex = g_maxX1;
@@ -92,9 +94,9 @@ void bflow(string configname)
       //LBMReal n = 0.4;
 
 
-      double d = boundingBox[1];
-      double U = velocity;
-      double Gamma = U / d;
+      real d = boundingBox[1];
+      real U = velocity;
+      real Gamma = U / d;
 
       //double scaleFactor = 2.0;
 
@@ -108,7 +110,7 @@ void bflow(string configname)
 
       // Acoustic Scaling
 
-      double k = nuLB * scaleFactor;
+      real k = nuLB * scaleFactor;
       //double tau0 = 3e-5; 
       forcing /= scaleFactor;
       endTime *= scaleFactor;
@@ -116,9 +118,9 @@ void bflow(string configname)
 
       //outTime = endTime;
 
-      double beta = 14;
-      double c = 10; // 1.0 / 6.0;
-      double mu0 = 1e-4;
+      real beta = 14;
+      real c = 10; // 1.0 / 6.0;
+      real mu0 = 1e-4;
 
       SPtr<Rheology> thix = Rheology::getInstance();
       //Herschel-Bulkley
@@ -218,7 +220,7 @@ void bflow(string configname)
 
       ////////////////////////////////////////////
       //METIS
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::RECURSIVE));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
       ////////////////////////////////////////////
       /////delete solid blocks
       if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
@@ -240,8 +242,8 @@ void bflow(string configname)
       unsigned long nodb = (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
       unsigned long nod = nob * (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
       unsigned long nodg = nob * (blocknx[0] + gl) * (blocknx[1] + gl) * (blocknx[1] + gl);
-      double needMemAll = double(nodg * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-      double needMem = needMemAll / double(comm->getNumberOfProcesses());
+      real needMemAll = real(nodg * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+      real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
       if (myid == 0)
       {

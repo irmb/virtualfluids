@@ -13,7 +13,7 @@
 #include <sstream>
 #include <cmath>
 
-#include <Core/StringUtilities/StringUtil.h>
+#include <StringUtilities/StringUtil.h>
 
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
@@ -50,7 +50,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
 {
-    const unsigned int numberOfParts = para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
+    const unsigned int numberOfParts = (uint)para->getParH(level)->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
     std::vector<std::string> fname;
     std::vector<std::string> fnameMed;
 
@@ -217,8 +217,8 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
-            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
+            sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -340,8 +340,8 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
-            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
+            sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -379,7 +379,7 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
                 nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
-                nodedata[6][dn1] = (double)para->getParH(level)->Conc[pos];
+                nodedata[6][dn1] = (double)para->getParH(level)->concentration[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];
                 number3 = para->getParH(level)->neighborY[number2];
@@ -449,9 +449,9 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
     {
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
+        if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
         {
-            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+            sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         }
         else
         {
@@ -558,8 +558,8 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->numberOfNodes)
-            sizeOfNodes = para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1) * para->getlimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
+            sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
         //////////////////////////////////////////////////////////////////////////

@@ -66,12 +66,12 @@ public:
                                           WbWriter *const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteMacroscopicQuantitiesCoProcessor() override = default;
 
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //! Collect data for VTK-file
     //! \param step is a time step
-    void collectData(double step);
+    void collectData(real step);
     //! Collect data for VTK-file
     //! \param block is a time step
     void addDataMQ(SPtr<Block3D> block);
@@ -82,7 +82,7 @@ private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<real>> data;
     std::string path;
     WbWriter *writer;
     SPtr<LBMUnitConverter> conv;
@@ -92,7 +92,7 @@ private:
     int gridRank;
     std::shared_ptr<vf::mpi::Communicator> comm;
 
-    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;
 };
 

@@ -39,10 +39,11 @@
 
 #include <curand_kernel.h>
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
 
+#include "Logger.h"
 #include "Parameter/CudaStreamManager.h"
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
@@ -53,8 +54,8 @@ Parameter::Parameter(int numberOfProcesses, int myId) : Parameter(numberOfProces
 
 Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::basics::ConfigurationFile*> configData)
 {
-    this->ic.numprocs = numberOfProcesses;
-    this->ic.myProcessId = myId;
+    this->numprocs = numberOfProcesses;
+    this->myProcessId = myId;
 
     this->setQuadricLimiters(0.01, 0.01, 0.01);
     this->setForcing(0.0, 0.0, 0.0);
@@ -117,9 +118,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseConcFile"))
         this->setConcFile(configData.getValue<bool>("UseConcFile"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseStreetVelocityFile"))
-        this->setStreetVelocityFile(configData.getValue<bool>("UseStreetVelocityFile"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseMeasurePoints"))
         this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
@@ -358,13 +356,13 @@ void Parameter::initGridPaths(){
     // add missing slash to gridPath
     if (gridPath.back() != '/') {
         gridPath += "/";
-        ic.gridPath = gridPath;
+        this->gridPath = gridPath;
     }
 
     // for multi-gpu add process id (if not already there)
     if (this->getNumprocs() > 1) {
         gridPath += StringUtil::toString(this->getMyProcessID()) + "/";
-        ic.gridPath = gridPath;
+        this->gridPath = gridPath;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -405,7 +403,6 @@ void Parameter::initGridPaths(){
     this->setcpBottom(gridPath + "cpBottom.dat");
     this->setcpBottom2(gridPath + "cpBottom2.dat");
     this->setConcentration(gridPath + "conc.dat");
-    this->setStreetVelocity(gridPath + "streetVector.dat");
 
     //////////////////////////////////////////////////////////////////////////
     // Normals - Geometry
@@ -492,9 +489,9 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->gridNX           = getGridX().at(i);
         parH[i]->gridNY           = getGridY().at(i);
         parH[i]->gridNZ           = getGridZ().at(i);
-        parH[i]->vis              = ic.vis * pow(2.f, i);
-        parH[i]->diffusivity      = ic.Diffusivity * pow(2.f, i);
-        parH[i]->omega            = 1.0f / (3.0f * parH[i]->vis + 0.5f); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
+        parH[i]->viscosity        = this->vis * pow((real)2.0, i);
+        parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
+        parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
         parH[i]->nx               = parH[i]->gridNX + 2 * STARTOFFX;
         parH[i]->ny               = parH[i]->gridNY + 2 * STARTOFFY;
         parH[i]->nz               = parH[i]->gridNZ + 2 * STARTOFFZ;
@@ -502,17 +499,17 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->sizePlaneXY      = parH[i]->nx * parH[i]->ny;
         parH[i]->sizePlaneYZ      = parH[i]->ny * parH[i]->nz;
         parH[i]->sizePlaneXZ      = parH[i]->nx * parH[i]->nz;
-        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;
-        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat;
-        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;
-        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz;
+//        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat; //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
+//        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz; //DEPRECATED: related to full matrix
         parH[i]->isEvenTimestep        = true;
-        parH[i]->startz           = parH[i]->gridNZ * ic.myProcessId;
-        parH[i]->endz             = parH[i]->gridNZ * ic.myProcessId + parH[i]->gridNZ;
-        parH[i]->Lx               = (real)((1.f * parH[i]->gridNX - 1.f) / (pow(2.f, i)));
-        parH[i]->Ly               = (real)((1.f * parH[i]->gridNY - 1.f) / (pow(2.f, i)));
-        parH[i]->Lz               = (real)((1.f * parH[i]->gridNZ - 1.f) / (pow(2.f, i)));
-        parH[i]->dx               = (real)(1.f / (pow(2.f, i)));
+        parH[i]->startz           = parH[i]->gridNZ * this->myProcessId;
+        parH[i]->endz             = parH[i]->gridNZ * this->myProcessId + parH[i]->gridNZ;
+        parH[i]->Lx               = ((real)1.0 * parH[i]->gridNX - (real)1.0) / (pow((real)2.0, i));
+        parH[i]->Ly               = ((real)1.0 * parH[i]->gridNY - (real)1.0) / (pow((real)2.0, i));
+        parH[i]->Lz               = ((real)1.0 * parH[i]->gridNZ - (real)1.0) / (pow((real)2.0, i));
+        parH[i]->dx               = (real)1.0 / pow((real)2.0, i);
         parH[i]->XdistKn          = getDistX().at(i);
         parH[i]->YdistKn          = getDistY().at(i);
         parH[i]->ZdistKn          = getDistZ().at(i);
@@ -520,12 +517,12 @@ void Parameter::initLBMSimulationParameter()
             parH[i]->distX  = (real)getDistX().at(i);
             parH[i]->distY  = (real)getDistY().at(i);
             parH[i]->distZ  = (real)getDistZ().at(i);
-            parH[i]->mTtoWx = (real)1.0f;
-            parH[i]->mTtoWy = (real)1.0f;
-            parH[i]->mTtoWz = (real)1.0f;
-            parH[i]->cTtoWx = (real)0.0f;
-            parH[i]->cTtoWy = (real)0.0f;
-            parH[i]->cTtoWz = (real)0.0f;
+            parH[i]->mTtoWx = (real)1.0;
+            parH[i]->mTtoWy = (real)1.0;
+            parH[i]->mTtoWz = (real)1.0;
+            parH[i]->cTtoWx = (real)0.0;
+            parH[i]->cTtoWy = (real)0.0;
+            parH[i]->cTtoWz = (real)0.0;
             ////MGs Trafo///////////////////////////////////////////////////////////////
             // parH[i]->cStartx               = (real)parH[i]->XdistKn;
             // parH[i]->cStarty               = (real)parH[i]->XdistKn;
@@ -533,9 +530,9 @@ void Parameter::initLBMSimulationParameter()
             ////////////////////////////////////////////////////////////////////////////
         } else {
             // Geller
-            parH[i]->distX = ((real)getDistX().at(i) + 0.25f) * parH[i - 1]->dx;
-            parH[i]->distY = ((real)getDistY().at(i) + 0.25f) * parH[i - 1]->dx;
-            parH[i]->distZ = ((real)getDistZ().at(i) + 0.25f) * parH[i - 1]->dx;
+            parH[i]->distX = ((real)getDistX().at(i) + (real)0.25) * parH[i - 1]->dx;
+            parH[i]->distY = ((real)getDistY().at(i) + (real)0.25) * parH[i - 1]->dx;
+            parH[i]->distZ = ((real)getDistZ().at(i) + (real)0.25) * parH[i - 1]->dx;
             // parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
             // parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
             // parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
@@ -560,7 +557,7 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->gridNX           = parH[i]->gridNX;
         parD[i]->gridNY           = parH[i]->gridNY;
         parD[i]->gridNZ           = parH[i]->gridNZ;
-        parD[i]->vis              = parH[i]->vis;
+        parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
         parD[i]->nx               = parH[i]->nx;
@@ -570,10 +567,10 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->sizePlaneXY      = parH[i]->sizePlaneXY;
         parD[i]->sizePlaneYZ      = parH[i]->sizePlaneYZ;
         parD[i]->sizePlaneXZ      = parH[i]->sizePlaneXZ;
-        parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;
-        parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;
-        parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;
-        parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;
+        //parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;  //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
+        //parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;  //DEPRECATED: related to full matrix
         parD[i]->isEvenTimestep        = parH[i]->isEvenTimestep;
         parD[i]->startz           = parH[i]->startz;
         parD[i]->endz             = parH[i]->endz;
@@ -587,6 +584,30 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->distX            = parH[i]->distX;
         parD[i]->distY            = parH[i]->distY;
         parD[i]->distZ            = parH[i]->distZ;
+    }
+
+    checkParameterValidityCumulantK17();
+}
+
+void Parameter::checkParameterValidityCumulantK17() const
+{
+    if (this->mainKernel != "CumulantK17")
+        return;
+
+    const real viscosity = this->parH[maxlevel]->viscosity;
+    const real viscosityLimit = 1.0 / 42.0;
+    if (viscosity > viscosityLimit) {
+        VF_LOG_WARNING("The viscosity (in LB units) at level {} is {:1.3g}. It is recommended to keep it smaller than {:1.3g} "
+                       "for the CumulantK17 collision kernel.",
+                       maxlevel, viscosity, viscosityLimit);
+    }
+
+    const real velocity = this->u0;
+    const real velocityLimit = 0.1;
+    if (velocity > velocityLimit) {
+        VF_LOG_WARNING("The velocity (in LB units) is {:1.4g}. It is recommended to keep it smaller than {:1.4g} for the "
+                       "CumulantK17 collision kernel.",
+                       velocity, velocityLimit);
     }
 }
 
@@ -692,15 +713,15 @@ void Parameter::setEndXHotWall(real endXHotWall)
 }
 void Parameter::setTimestepEnd(unsigned int tend)
 {
-    ic.tend = tend;
+    this->tend = tend;
 }
 void Parameter::setTimestepOut(unsigned int tout)
 {
-    ic.tout = tout;
+    this->tout = tout;
 }
 void Parameter::setTimestepStartOut(unsigned int tStartOut)
 {
-    ic.tStartOut = tStartOut;
+    this->tStartOut = tStartOut;
 }
 void Parameter::setTimestepOfCoarseLevel(unsigned int timestep)
 {
@@ -712,7 +733,7 @@ void Parameter::setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations)
 }
 void Parameter::setCalcMedian(bool calcMedian)
 {
-    ic.calcMedian = calcMedian;
+    this->calcMedian = calcMedian;
 }
 void Parameter::setCalcDragLift(bool calcDragLift)
 {
@@ -732,11 +753,11 @@ void Parameter::setCalcPlaneConc(bool calcPlaneConc)
 }
 void Parameter::setTimeCalcMedStart(int CalcMedStart)
 {
-    ic.tCalcMedStart = CalcMedStart;
+    this->tCalcMedStart = CalcMedStart;
 }
 void Parameter::setTimeCalcMedEnd(int CalcMedEnd)
 {
-    ic.tCalcMedEnd = CalcMedEnd;
+    this->tCalcMedEnd = CalcMedEnd;
 }
 void Parameter::setOutputPath(std::string oPath)
 {
@@ -744,82 +765,82 @@ void Parameter::setOutputPath(std::string oPath)
     if (oPath.back() != '/')
         oPath += "/";
 
-    ic.oPath = oPath;
+    this->oPath = oPath;
     this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
 void Parameter::setOutputPrefix(std::string oPrefix)
 {
-    ic.oPrefix = oPrefix;
+    this->oPrefix = oPrefix;
     this->setPathAndFilename(this->getOutputPath() + this->getOutputPrefix());
 }
 void Parameter::setPathAndFilename(std::string fname)
 {
-    ic.fname = fname;
+    this->fname = fname;
 }
 void Parameter::setGridPath(std::string gridPath)
 {
-    ic.gridPath = gridPath;
+    this->gridPath = gridPath;
     this->initGridPaths();
 }
 void Parameter::setPrintFiles(bool printfiles)
 {
-    ic.printFiles = printfiles;
+    this->printFiles = printfiles;
 }
 void Parameter::setReadGeo(bool readGeo)
 {
-    ic.readGeo = readGeo;
+    this->readGeo = readGeo;
 }
 void Parameter::setDiffusivity(real Diffusivity)
 {
-    ic.Diffusivity = Diffusivity;
+    this->Diffusivity = Diffusivity;
 }
 void Parameter::setTemperatureInit(real Temp)
 {
-    ic.Temp = Temp;
+    this->Temp = Temp;
 }
 void Parameter::setTemperatureBC(real TempBC)
 {
-    ic.TempBC = TempBC;
+    this->TempBC = TempBC;
 }
 void Parameter::setViscosityLB(real Viscosity)
 {
-    ic.vis = Viscosity;
+    this->vis = Viscosity;
 }
 void Parameter::setVelocityLB(real Velocity)
 {
-    ic.u0 = Velocity;
+    this->u0 = Velocity;
 }
 void Parameter::setViscosityRatio(real ViscosityRatio)
 {
-    ic.vis_ratio = ViscosityRatio;
+    this->vis_ratio = ViscosityRatio;
 }
 void Parameter::setVelocityRatio(real VelocityRatio)
 {
-    ic.u0_ratio = VelocityRatio;
+    this->u0_ratio = VelocityRatio;
 }
 void Parameter::setDensityRatio(real DensityRatio)
 {
-    ic.delta_rho = DensityRatio;
+    this->delta_rho = DensityRatio;
 }
 void Parameter::setPressRatio(real PressRatio)
 {
-    ic.delta_press = PressRatio;
+    this->delta_press = PressRatio;
 }
 real Parameter::getViscosityRatio()
 {
-    return ic.vis_ratio;
+    return this->vis_ratio;
 }
 real Parameter::getVelocityRatio()
 {
-    return ic.u0_ratio;
+    return this->u0_ratio;
 }
 real Parameter::getDensityRatio()
 {
-    return ic.delta_rho;
+    return this->delta_rho;
 }
 real Parameter::getPressureRatio()
 {
-    return ic.delta_press;
+    return this->delta_press;
 }
 real Parameter::getTimeRatio()
 {
@@ -867,133 +888,129 @@ real Parameter::getScaledStressRatio(int level)
 }
 void Parameter::setRealX(real RealX)
 {
-    ic.RealX = RealX;
+    this->RealX = RealX;
 }
 void Parameter::setRealY(real RealY)
 {
-    ic.RealY = RealY;
+    this->RealY = RealY;
 }
 void Parameter::setPressInID(unsigned int PressInID)
 {
-    ic.PressInID = PressInID;
+    this->PressInID = PressInID;
 }
 void Parameter::setPressOutID(unsigned int PressOutID)
 {
-    ic.PressOutID = PressOutID;
+    this->PressOutID = PressOutID;
 }
 void Parameter::setPressInZ(unsigned int PressInZ)
 {
-    ic.PressInZ = PressInZ;
+    this->PressInZ = PressInZ;
 }
 void Parameter::setPressOutZ(unsigned int PressOutZ)
 {
-    ic.PressOutZ = PressOutZ;
+    this->PressOutZ = PressOutZ;
 }
 void Parameter::setOutflowPressureCorrectionFactor(real pressBCrhoCorrectionFactor)
 {
-    ic.outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
+    this->outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
 }
 void Parameter::setMaxDev(int maxdev)
 {
-    ic.maxdev = maxdev;
+    this->maxdev = maxdev;
 }
 void Parameter::setMyID(int myid)
 {
-    ic.myProcessId = myid;
+    this->myProcessId = myid;
 }
 void Parameter::setNumprocs(int numprocs)
 {
-    ic.numprocs = numprocs;
+    this->numprocs = numprocs;
 }
 void Parameter::setDevices(std::vector<uint> devices)
 {
-    ic.devices = devices;
+    this->devices = devices;
 }
 void Parameter::setGeometryFileC(std::string GeometryFileC)
 {
-    ic.geometryFileC = GeometryFileC;
+    this->geometryFileC = GeometryFileC;
 }
 void Parameter::setGeometryFileM(std::string GeometryFileM)
 {
-    ic.geometryFileM = GeometryFileM;
+    this->geometryFileM = GeometryFileM;
 }
 void Parameter::setGeometryFileF(std::string GeometryFileF)
 {
-    ic.geometryFileF = GeometryFileF;
+    this->geometryFileF = GeometryFileF;
 }
 void Parameter::setRe(real Re)
 {
-    ic.Re = Re;
+    this->Re = Re;
 }
 void Parameter::setFactorPressBC(real factorPressBC)
 {
-    ic.factorPressBC = factorPressBC;
+    this->factorPressBC = factorPressBC;
 }
 void Parameter::setIsGeo(bool isGeo)
 {
-    ic.isGeo = isGeo;
+    this->isGeo = isGeo;
 }
 void Parameter::setIsGeoNormal(bool isGeoNormal)
 {
-    ic.isGeoNormal = isGeoNormal;
+    this->isGeoNormal = isGeoNormal;
 }
 void Parameter::setIsInflowNormal(bool isInflowNormal)
 {
-    ic.isInflowNormal = isInflowNormal;
+    this->isInflowNormal = isInflowNormal;
 }
 void Parameter::setIsOutflowNormal(bool isOutflowNormal)
 {
-    ic.isOutflowNormal = isOutflowNormal;
+    this->isOutflowNormal = isOutflowNormal;
 }
 void Parameter::setIsProp(bool isProp)
 {
-    ic.isProp = isProp;
+    this->isProp = isProp;
 }
 void Parameter::setIsCp(bool isCp)
 {
-    ic.isCp = isCp;
+    this->isCp = isCp;
 }
 void Parameter::setConcFile(bool concFile)
 {
-    ic.isConc = concFile;
-}
-void Parameter::setStreetVelocityFile(bool streetVelocityFile)
-{
-    ic.streetVelocityFile = streetVelocityFile;
+    this->isConc = concFile;
 }
 void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 {
-    ic.isMeasurePoints = useMeasurePoints;
+    this->isMeasurePoints = useMeasurePoints;
 }
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
-    ic.isInitNeq = useInitNeq;
+    this->isInitNeq = useInitNeq;
 }
 void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
 {
-    ic.simulatePorousMedia = simulatePorousMedia;
+    this->simulatePorousMedia = simulatePorousMedia;
 }
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 {
-    ic.isTurbulentViscosity = useTurbulentViscosity;
+    this->isTurbulentViscosity = useTurbulentViscosity;
 }
 void Parameter::setUseWale(bool useWale)
 {
-    ic.isWale = useWale;
+    this->isWale = useWale;
     if (useWale)
         setUseTurbulentViscosity(true);
 }
 void Parameter::setTurbulenceModel(TurbulenceModel turbulenceModel)
 {
-    ic.turbulenceModel = turbulenceModel;
+    this->turbulenceModel = turbulenceModel;
 }
 void Parameter::setSGSConstant(real SGSConstant)
 {
-    ic.SGSConstant = SGSConstant;
+    this->SGSConstant = SGSConstant;
 }
 void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
 {
-    ic.hasWallModelMonitor = hasWallModelMonitor;
+    this->hasWallModelMonitor = hasWallModelMonitor;
 }
 
 void Parameter::setIsF3(bool isF3)
@@ -1008,59 +1025,59 @@ void Parameter::setIsBodyForce(bool isBodyForce)
 
 void Parameter::setGridX(std::vector<int> GridX)
 {
-    ic.GridX = GridX;
+    this->GridX = GridX;
 }
 void Parameter::setGridY(std::vector<int> GridY)
 {
-    ic.GridY = GridY;
+    this->GridY = GridY;
 }
 void Parameter::setGridZ(std::vector<int> GridZ)
 {
-    ic.GridZ = GridZ;
+    this->GridZ = GridZ;
 }
 void Parameter::setDistX(std::vector<int> DistX)
 {
-    ic.DistX = DistX;
+    this->DistX = DistX;
 }
 void Parameter::setDistY(std::vector<int> DistY)
 {
-    ic.DistY = DistY;
+    this->DistY = DistY;
 }
 void Parameter::setDistZ(std::vector<int> DistZ)
 {
-    ic.DistZ = DistZ;
+    this->DistZ = DistZ;
 }
 void Parameter::setScaleLBMtoSI(std::vector<real> scaleLBMtoSI)
 {
-    ic.scaleLBMtoSI = scaleLBMtoSI;
+    this->scaleLBMtoSI = scaleLBMtoSI;
 }
 void Parameter::setTranslateLBMtoSI(std::vector<real> translateLBMtoSI)
 {
-    ic.translateLBMtoSI = translateLBMtoSI;
+    this->translateLBMtoSI = translateLBMtoSI;
 }
 void Parameter::setMinCoordX(std::vector<real> MinCoordX)
 {
-    ic.minCoordX = MinCoordX;
+    this->minCoordX = MinCoordX;
 }
 void Parameter::setMinCoordY(std::vector<real> MinCoordY)
 {
-    ic.minCoordY = MinCoordY;
+    this->minCoordY = MinCoordY;
 }
 void Parameter::setMinCoordZ(std::vector<real> MinCoordZ)
 {
-    ic.minCoordZ = MinCoordZ;
+    this->minCoordZ = MinCoordZ;
 }
 void Parameter::setMaxCoordX(std::vector<real> MaxCoordX)
 {
-    ic.maxCoordX = MaxCoordX;
+    this->maxCoordX = MaxCoordX;
 }
 void Parameter::setMaxCoordY(std::vector<real> MaxCoordY)
 {
-    ic.maxCoordY = MaxCoordY;
+    this->maxCoordY = MaxCoordY;
 }
 void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
-    ic.maxCoordZ = MaxCoordZ;
+    this->maxCoordZ = MaxCoordZ;
 }
 void Parameter::setTempH(TempforBoundaryConditions *TempH)
 {
@@ -1104,259 +1121,255 @@ void Parameter::setTempPressD(TempPressforBoundaryConditions *TempPressD)
 //}
 void Parameter::setkFull(std::string kFull)
 {
-    ic.kFull = kFull;
+    this->kFull = kFull;
 }
 void Parameter::setgeoFull(std::string geoFull)
 {
-    ic.geoFull = geoFull;
+    this->geoFull = geoFull;
 }
 void Parameter::setgeoVec(std::string geoVec)
 {
-    ic.geoVec = geoVec;
+    this->geoVec = geoVec;
 }
 void Parameter::setcoordX(std::string coordX)
 {
-    ic.coordX = coordX;
+    this->coordX = coordX;
 }
 void Parameter::setcoordY(std::string coordY)
 {
-    ic.coordY = coordY;
+    this->coordY = coordY;
 }
 void Parameter::setcoordZ(std::string coordZ)
 {
-    ic.coordZ = coordZ;
+    this->coordZ = coordZ;
 }
 void Parameter::setneighborX(std::string neighborX)
 {
-    ic.neighborX = neighborX;
+    this->neighborX = neighborX;
 }
 void Parameter::setneighborY(std::string neighborY)
 {
-    ic.neighborY = neighborY;
+    this->neighborY = neighborY;
 }
 void Parameter::setneighborZ(std::string neighborZ)
 {
-    ic.neighborZ = neighborZ;
+    this->neighborZ = neighborZ;
 }
 void Parameter::setneighborWSB(std::string neighborWSB)
 {
-    ic.neighborWSB = neighborWSB;
+    this->neighborWSB = neighborWSB;
 }
 void Parameter::setscaleCFC(std::string scaleCFC)
 {
-    ic.scaleCFC = scaleCFC;
+    this->scaleCFC = scaleCFC;
 }
 void Parameter::setscaleCFF(std::string scaleCFF)
 {
-    ic.scaleCFF = scaleCFF;
+    this->scaleCFF = scaleCFF;
 }
 void Parameter::setscaleFCC(std::string scaleFCC)
 {
-    ic.scaleFCC = scaleFCC;
+    this->scaleFCC = scaleFCC;
 }
 void Parameter::setscaleFCF(std::string scaleFCF)
 {
-    ic.scaleFCF = scaleFCF;
+    this->scaleFCF = scaleFCF;
 }
 void Parameter::setscaleOffsetCF(std::string scaleOffsetCF)
 {
-    ic.scaleOffsetCF = scaleOffsetCF;
+    this->scaleOffsetCF = scaleOffsetCF;
 }
 void Parameter::setscaleOffsetFC(std::string scaleOffsetFC)
 {
-    ic.scaleOffsetFC = scaleOffsetFC;
+    this->scaleOffsetFC = scaleOffsetFC;
 }
 void Parameter::setgeomBoundaryBcQs(std::string geomBoundaryBcQs)
 {
-    ic.geomBoundaryBcQs = geomBoundaryBcQs;
+    this->geomBoundaryBcQs = geomBoundaryBcQs;
 }
 void Parameter::setgeomBoundaryBcValues(std::string geomBoundaryBcValues)
 {
-    ic.geomBoundaryBcValues = geomBoundaryBcValues;
+    this->geomBoundaryBcValues = geomBoundaryBcValues;
 }
 void Parameter::setnoSlipBcPos(std::string noSlipBcPos)
 {
-    ic.noSlipBcPos = noSlipBcPos;
+    this->noSlipBcPos = noSlipBcPos;
 }
 void Parameter::setnoSlipBcQs(std::string noSlipBcQs)
 {
-    ic.noSlipBcQs = noSlipBcQs;
+    this->noSlipBcQs = noSlipBcQs;
 }
 void Parameter::setnoSlipBcValue(std::string noSlipBcValue)
 {
-    ic.noSlipBcValue = noSlipBcValue;
+    this->noSlipBcValue = noSlipBcValue;
 }
 void Parameter::setnoSlipBcValues(std::string noSlipBcValues)
 {
-    ic.noSlipBcValues = noSlipBcValues;
+    this->noSlipBcValues = noSlipBcValues;
 }
 void Parameter::setslipBcPos(std::string slipBcPos)
 {
-    ic.slipBcPos = slipBcPos;
+    this->slipBcPos = slipBcPos;
 }
 void Parameter::setslipBcQs(std::string slipBcQs)
 {
-    ic.slipBcQs = slipBcQs;
+    this->slipBcQs = slipBcQs;
 }
 void Parameter::setslipBcValue(std::string slipBcValue)
 {
-    ic.slipBcValue = slipBcValue;
+    this->slipBcValue = slipBcValue;
 }
 void Parameter::setpressBcPos(std::string pressBcPos)
 {
-    ic.pressBcPos = pressBcPos;
+    this->pressBcPos = pressBcPos;
 }
 void Parameter::setpressBcQs(std::string pressBcQs)
 {
-    ic.pressBcQs = pressBcQs;
+    this->pressBcQs = pressBcQs;
 }
 void Parameter::setpressBcValue(std::string pressBcValue)
 {
-    ic.pressBcValue = pressBcValue;
+    this->pressBcValue = pressBcValue;
 }
 void Parameter::setpressBcValues(std::string pressBcValues)
 {
-    ic.pressBcValues = pressBcValues;
+    this->pressBcValues = pressBcValues;
 }
 void Parameter::setvelBcQs(std::string velBcQs)
 {
-    ic.velBcQs = velBcQs;
+    this->velBcQs = velBcQs;
 }
 void Parameter::setvelBcValues(std::string velBcValues)
 {
-    ic.velBcValues = velBcValues;
+    this->velBcValues = velBcValues;
 }
 void Parameter::setinletBcQs(std::string inletBcQs)
 {
-    ic.inletBcQs = inletBcQs;
+    this->inletBcQs = inletBcQs;
 }
 void Parameter::setinletBcValues(std::string inletBcValues)
 {
-    ic.inletBcValues = inletBcValues;
+    this->inletBcValues = inletBcValues;
 }
 void Parameter::setoutletBcQs(std::string outletBcQs)
 {
-    ic.outletBcQs = outletBcQs;
+    this->outletBcQs = outletBcQs;
 }
 void Parameter::setoutletBcValues(std::string outletBcValues)
 {
-    ic.outletBcValues = outletBcValues;
+    this->outletBcValues = outletBcValues;
 }
 void Parameter::settopBcQs(std::string topBcQs)
 {
-    ic.topBcQs = topBcQs;
+    this->topBcQs = topBcQs;
 }
 void Parameter::settopBcValues(std::string topBcValues)
 {
-    ic.topBcValues = topBcValues;
+    this->topBcValues = topBcValues;
 }
 void Parameter::setbottomBcQs(std::string bottomBcQs)
 {
-    ic.bottomBcQs = bottomBcQs;
+    this->bottomBcQs = bottomBcQs;
 }
 void Parameter::setbottomBcValues(std::string bottomBcValues)
 {
-    ic.bottomBcValues = bottomBcValues;
+    this->bottomBcValues = bottomBcValues;
 }
 void Parameter::setfrontBcQs(std::string frontBcQs)
 {
-    ic.frontBcQs = frontBcQs;
+    this->frontBcQs = frontBcQs;
 }
 void Parameter::setfrontBcValues(std::string frontBcValues)
 {
-    ic.frontBcValues = frontBcValues;
+    this->frontBcValues = frontBcValues;
 }
 void Parameter::setbackBcQs(std::string backBcQs)
 {
-    ic.backBcQs = backBcQs;
+    this->backBcQs = backBcQs;
 }
 void Parameter::setbackBcValues(std::string backBcValues)
 {
-    ic.backBcValues = backBcValues;
+    this->backBcValues = backBcValues;
 }
 void Parameter::setwallBcQs(std::string wallBcQs)
 {
-    ic.wallBcQs = wallBcQs;
+    this->wallBcQs = wallBcQs;
 }
 void Parameter::setwallBcValues(std::string wallBcValues)
 {
-    ic.wallBcValues = wallBcValues;
+    this->wallBcValues = wallBcValues;
 }
 void Parameter::setperiodicBcQs(std::string periodicBcQs)
 {
-    ic.periodicBcQs = periodicBcQs;
+    this->periodicBcQs = periodicBcQs;
 }
 void Parameter::setperiodicBcValues(std::string periodicBcValues)
 {
-    ic.periodicBcValues = periodicBcValues;
+    this->periodicBcValues = periodicBcValues;
 }
 void Parameter::setpropellerQs(std::string propellerQs)
 {
-    ic.propellerQs = propellerQs;
+    this->propellerQs = propellerQs;
 }
 void Parameter::setpropellerValues(std::string propellerValues)
 {
-    ic.propellerValues = propellerValues;
+    this->propellerValues = propellerValues;
 }
 void Parameter::setpropellerCylinder(std::string propellerCylinder)
 {
-    ic.propellerCylinder = propellerCylinder;
+    this->propellerCylinder = propellerCylinder;
 }
 void Parameter::setmeasurePoints(std::string measurePoints)
 {
-    ic.measurePoints = measurePoints;
+    this->measurePoints = measurePoints;
 }
 void Parameter::setnumberNodes(std::string numberNodes)
 {
-    ic.numberNodes = numberNodes;
+    this->numberNodes = numberNodes;
 }
 void Parameter::setLBMvsSI(std::string LBMvsSI)
 {
-    ic.LBMvsSI = LBMvsSI;
+    this->LBMvsSI = LBMvsSI;
 }
 void Parameter::setcpTop(std::string cpTop)
 {
-    ic.cpTop = cpTop;
+    this->cpTop = cpTop;
 }
 void Parameter::setcpBottom(std::string cpBottom)
 {
-    ic.cpBottom = cpBottom;
+    this->cpBottom = cpBottom;
 }
 void Parameter::setcpBottom2(std::string cpBottom2)
 {
-    ic.cpBottom2 = cpBottom2;
+    this->cpBottom2 = cpBottom2;
 }
 void Parameter::setConcentration(std::string concFile)
 {
-    ic.concentration = concFile;
-}
-void Parameter::setStreetVelocity(std::string streetVelocity)
-{
-    ic.streetVelocity = streetVelocity;
+    this->concentration = concFile;
 }
 void Parameter::setclockCycleForMP(real clockCycleForMP)
 {
-    ic.clockCycleForMP = clockCycleForMP;
+    this->clockCycleForMP = clockCycleForMP;
 }
 void Parameter::setTimeDoCheckPoint(unsigned int tDoCheckPoint)
 {
-    ic.tDoCheckPoint = tDoCheckPoint;
+    this->tDoCheckPoint = tDoCheckPoint;
 }
 void Parameter::setTimeDoRestart(unsigned int tDoRestart)
 {
-    ic.tDoRestart = tDoRestart;
+    this->tDoRestart = tDoRestart;
 }
 void Parameter::setDoCheckPoint(bool doCheckPoint)
 {
-    ic.doCheckPoint = doCheckPoint;
+    this->doCheckPoint = doCheckPoint;
 }
 void Parameter::setDoRestart(bool doRestart)
 {
-    ic.doRestart = doRestart;
+    this->doRestart = doRestart;
 }
 void Parameter::settimestepForMP(unsigned int timestepForMP)
 {
-    ic.timeStepForMP = timestepForMP;
+    this->timeStepForMP = timestepForMP;
 }
 void Parameter::setObj(std::string str, bool isObj)
 {
@@ -1376,19 +1389,19 @@ void Parameter::setObj(std::string str, bool isObj)
 }
 void Parameter::setUseGeometryValues(bool useGeometryValues)
 {
-    ic.GeometryValues = useGeometryValues;
+    this->GeometryValues = useGeometryValues;
 }
 void Parameter::setCalc2ndOrderMoments(bool is2ndOrderMoments)
 {
-    ic.is2ndOrderMoments = is2ndOrderMoments;
+    this->is2ndOrderMoments = is2ndOrderMoments;
 }
 void Parameter::setCalc3rdOrderMoments(bool is3rdOrderMoments)
 {
-    ic.is3rdOrderMoments = is3rdOrderMoments;
+    this->is3rdOrderMoments = is3rdOrderMoments;
 }
 void Parameter::setCalcHighOrderMoments(bool isHighOrderMoments)
 {
-    ic.isHighOrderMoments = isHighOrderMoments;
+    this->isHighOrderMoments = isHighOrderMoments;
 }
 void Parameter::setMemsizeGPU(double admem, bool reset)
 {
@@ -1580,39 +1593,39 @@ void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, 
 }
 void Parameter::setgeomBoundaryNormalX(std::string geomNormalX)
 {
-    ic.geomNormalX = geomNormalX;
+    this->geomNormalX = geomNormalX;
 }
 void Parameter::setgeomBoundaryNormalY(std::string geomNormalY)
 {
-    ic.geomNormalY = geomNormalY;
+    this->geomNormalY = geomNormalY;
 }
 void Parameter::setgeomBoundaryNormalZ(std::string geomNormalZ)
 {
-    ic.geomNormalZ = geomNormalZ;
+    this->geomNormalZ = geomNormalZ;
 }
 void Parameter::setInflowBoundaryNormalX(std::string inflowNormalX)
 {
-    ic.inflowNormalX = inflowNormalX;
+    this->inflowNormalX = inflowNormalX;
 }
 void Parameter::setInflowBoundaryNormalY(std::string inflowNormalY)
 {
-    ic.inflowNormalY = inflowNormalY;
+    this->inflowNormalY = inflowNormalY;
 }
 void Parameter::setInflowBoundaryNormalZ(std::string inflowNormalZ)
 {
-    ic.inflowNormalZ = inflowNormalZ;
+    this->inflowNormalZ = inflowNormalZ;
 }
 void Parameter::setOutflowBoundaryNormalX(std::string outflowNormalX)
 {
-    ic.outflowNormalX = outflowNormalX;
+    this->outflowNormalX = outflowNormalX;
 }
 void Parameter::setOutflowBoundaryNormalY(std::string outflowNormalY)
 {
-    ic.outflowNormalY = outflowNormalY;
+    this->outflowNormalY = outflowNormalY;
 }
 void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
-    ic.outflowNormalZ = outflowNormalZ;
+    this->outflowNormalZ = outflowNormalZ;
 }
 void Parameter::setMainKernel(std::string kernel)
 {
@@ -1730,22 +1743,22 @@ unsigned int Parameter::getSizeMat(int level)
 {
     return parH[level]->size_Mat;
 }
-unsigned int Parameter::getMemSizereal(int level)
-{
-    return parH[level]->mem_size_real;
-}
-unsigned int Parameter::getMemSizeInt(int level)
-{
-    return parH[level]->mem_size_int;
-}
-unsigned int Parameter::getMemSizeBool(int level)
-{
-    return parH[level]->mem_size_bool;
-}
-unsigned int Parameter::getMemSizerealYZ(int level)
-{
-    return parH[level]->mem_size_real_yz;
-}
+//unsigned int Parameter::getMemSizereal(int level)      //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_real;
+//}
+//unsigned int Parameter::getMemSizeInt(int level)     //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_int;
+//}
+//unsigned int Parameter::getMemSizeBool(int level)    //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_bool;
+//}
+//unsigned int Parameter::getMemSizerealYZ(int level)  //DEPRECATED: related to full matrix
+//{
+//    return parH[level]->mem_size_real_yz;
+//}
 int Parameter::getFine()
 {
     return fine;
@@ -1812,19 +1825,19 @@ unsigned int Parameter::getTimestepInit()
 }
 unsigned int Parameter::getTimestepEnd()
 {
-    return ic.tend;
+    return this->tend;
 }
 unsigned int Parameter::getTimestepOut()
 {
-    return ic.tout;
+    return this->tout;
 }
 unsigned int Parameter::getTimestepStartOut()
 {
-    return ic.tStartOut;
+    return this->tStartOut;
 }
 bool Parameter::getCalcMedian()
 {
-    return ic.calcMedian;
+    return this->calcMedian;
 }
 bool Parameter::getCalcDragLift()
 {
@@ -1848,35 +1861,35 @@ bool Parameter::getCalcPlaneConc()
 }
 int Parameter::getTimeCalcMedStart()
 {
-    return ic.tCalcMedStart;
+    return this->tCalcMedStart;
 }
 int Parameter::getTimeCalcMedEnd()
 {
-    return ic.tCalcMedEnd;
+    return this->tCalcMedEnd;
 }
 std::string Parameter::getOutputPath()
 {
-    return ic.oPath;
+    return this->oPath;
 }
 std::string Parameter::getOutputPrefix()
 {
-    return ic.oPrefix;
+    return this->oPrefix;
 }
 std::string Parameter::getFName()
 {
-    return ic.fname;
+    return this->fname;
 }
 std::string Parameter::getGridPath()
 {
-    return ic.gridPath;
+    return this->gridPath;
 }
 bool Parameter::getPrintFiles()
 {
-    return ic.printFiles;
+    return this->printFiles;
 }
 bool Parameter::getReadGeo()
 {
-    return ic.readGeo;
+    return this->readGeo;
 }
 bool Parameter::getCalcTurbulenceIntensity()
 {
@@ -1884,143 +1897,143 @@ bool Parameter::getCalcTurbulenceIntensity()
 }
 real Parameter::getDiffusivity()
 {
-    return ic.Diffusivity;
+    return this->Diffusivity;
 }
 real Parameter::getTemperatureInit()
 {
-    return ic.Temp;
+    return this->Temp;
 }
 real Parameter::getTemperatureBC()
 {
-    return ic.TempBC;
+    return this->TempBC;
 }
 real Parameter::getViscosity()
 {
-    return ic.vis;
+    return this->vis;
 }
 real Parameter::getVelocity()
 {
-    return ic.u0;
+    return this->u0;
 }
 real Parameter::getRealX()
 {
-    return ic.RealX;
+    return this->RealX;
 }
 real Parameter::getRealY()
 {
-    return ic.RealY;
+    return this->RealY;
 }
 unsigned int Parameter::getPressInID()
 {
-    return ic.PressInID;
+    return this->PressInID;
 }
 unsigned int Parameter::getPressOutID()
 {
-    return ic.PressOutID;
+    return this->PressOutID;
 }
 unsigned int Parameter::getPressInZ()
 {
-    return ic.PressInZ;
+    return this->PressInZ;
 }
 unsigned int Parameter::getPressOutZ()
 {
-    return ic.PressOutZ;
+    return this->PressOutZ;
 }
 real Parameter::getOutflowPressureCorrectionFactor()
 {
-    return ic.outflowPressureCorrectionFactor;
+    return this->outflowPressureCorrectionFactor;
 }
 int Parameter::getMaxDev()
 {
-    return ic.maxdev;
+    return this->maxdev;
 }
 int Parameter::getMyProcessID()
 {
-    return ic.myProcessId;
+    return this->myProcessId;
 }
 int Parameter::getNumprocs()
 {
-    return ic.numprocs;
+    return this->numprocs;
 }
 std::vector<uint> Parameter::getDevices()
 {
-    return ic.devices;
+    return this->devices;
 }
 std::string Parameter::getGeometryFileC()
 {
-    return ic.geometryFileC;
+    return this->geometryFileC;
 }
 std::string Parameter::getGeometryFileM()
 {
-    return ic.geometryFileM;
+    return this->geometryFileM;
 }
 std::string Parameter::getGeometryFileF()
 {
-    return ic.geometryFileF;
+    return this->geometryFileF;
 }
 real Parameter::getRe()
 {
-    return ic.Re;
+    return this->Re;
 }
 real Parameter::getFactorPressBC()
 {
-    return ic.factorPressBC;
+    return this->factorPressBC;
 }
 std::vector<int> Parameter::getGridX()
 {
-    return ic.GridX;
+    return this->GridX;
 }
 std::vector<int> Parameter::getGridY()
 {
-    return ic.GridY;
+    return this->GridY;
 }
 std::vector<int> Parameter::getGridZ()
 {
-    return ic.GridZ;
+    return this->GridZ;
 }
 std::vector<int> Parameter::getDistX()
 {
-    return ic.DistX;
+    return this->DistX;
 }
 std::vector<int> Parameter::getDistY()
 {
-    return ic.DistY;
+    return this->DistY;
 }
 std::vector<int> Parameter::getDistZ()
 {
-    return ic.DistZ;
+    return this->DistZ;
 }
 std::vector<real> Parameter::getScaleLBMtoSI()
 {
-    return ic.scaleLBMtoSI;
+    return this->scaleLBMtoSI;
 }
 std::vector<real> Parameter::getTranslateLBMtoSI()
 {
-    return ic.translateLBMtoSI;
+    return this->translateLBMtoSI;
 }
 std::vector<real> Parameter::getMinCoordX()
 {
-    return ic.minCoordX;
+    return this->minCoordX;
 }
 std::vector<real> Parameter::getMinCoordY()
 {
-    return ic.minCoordY;
+    return this->minCoordY;
 }
 std::vector<real> Parameter::getMinCoordZ()
 {
-    return ic.minCoordZ;
+    return this->minCoordZ;
 }
 std::vector<real> Parameter::getMaxCoordX()
 {
-    return ic.maxCoordX;
+    return this->maxCoordX;
 }
 std::vector<real> Parameter::getMaxCoordY()
 {
-    return ic.maxCoordY;
+    return this->maxCoordY;
 }
 std::vector<real> Parameter::getMaxCoordZ()
 {
-    return ic.maxCoordZ;
+    return this->maxCoordZ;
 }
 TempforBoundaryConditions *Parameter::getTempH()
 {
@@ -2064,247 +2077,243 @@ TempPressforBoundaryConditions *Parameter::getTempPressD()
 //}
 std::string Parameter::getkFull()
 {
-    return ic.kFull;
+    return this->kFull;
 }
 std::string Parameter::getgeoFull()
 {
-    return ic.geoFull;
+    return this->geoFull;
 }
 std::string Parameter::getgeoVec()
 {
-    return ic.geoVec;
+    return this->geoVec;
 }
 std::string Parameter::getcoordX()
 {
-    return ic.coordX;
+    return this->coordX;
 }
 std::string Parameter::getcoordY()
 {
-    return ic.coordY;
+    return this->coordY;
 }
 std::string Parameter::getcoordZ()
 {
-    return ic.coordZ;
+    return this->coordZ;
 }
 std::string Parameter::getneighborX()
 {
-    return ic.neighborX;
+    return this->neighborX;
 }
 std::string Parameter::getneighborY()
 {
-    return ic.neighborY;
+    return this->neighborY;
 }
 std::string Parameter::getneighborZ()
 {
-    return ic.neighborZ;
+    return this->neighborZ;
 }
 std::string Parameter::getneighborWSB()
 {
-    return ic.neighborWSB;
+    return this->neighborWSB;
 }
 std::string Parameter::getscaleCFC()
 {
-    return ic.scaleCFC;
+    return this->scaleCFC;
 }
 std::string Parameter::getscaleCFF()
 {
-    return ic.scaleCFF;
+    return this->scaleCFF;
 }
 std::string Parameter::getscaleFCC()
 {
-    return ic.scaleFCC;
+    return this->scaleFCC;
 }
 std::string Parameter::getscaleFCF()
 {
-    return ic.scaleFCF;
+    return this->scaleFCF;
 }
 std::string Parameter::getscaleOffsetCF()
 {
-    return ic.scaleOffsetCF;
+    return this->scaleOffsetCF;
 }
 std::string Parameter::getscaleOffsetFC()
 {
-    return ic.scaleOffsetFC;
+    return this->scaleOffsetFC;
 }
 std::string Parameter::getgeomBoundaryBcQs()
 {
-    return ic.geomBoundaryBcQs;
+    return this->geomBoundaryBcQs;
 }
 std::string Parameter::getgeomBoundaryBcValues()
 {
-    return ic.geomBoundaryBcValues;
+    return this->geomBoundaryBcValues;
 }
 std::string Parameter::getnoSlipBcPos()
 {
-    return ic.noSlipBcPos;
+    return this->noSlipBcPos;
 }
 std::string Parameter::getnoSlipBcQs()
 {
-    return ic.noSlipBcQs;
+    return this->noSlipBcQs;
 }
 std::string Parameter::getnoSlipBcValue()
 {
-    return ic.noSlipBcValue;
+    return this->noSlipBcValue;
 }
 std::string Parameter::getnoSlipBcValues()
 {
-    return ic.noSlipBcValues;
+    return this->noSlipBcValues;
 }
 std::string Parameter::getslipBcPos()
 {
-    return ic.slipBcPos;
+    return this->slipBcPos;
 }
 std::string Parameter::getslipBcQs()
 {
-    return ic.slipBcQs;
+    return this->slipBcQs;
 }
 std::string Parameter::getslipBcValue()
 {
-    return ic.slipBcValue;
+    return this->slipBcValue;
 }
 std::string Parameter::getpressBcPos()
 {
-    return ic.pressBcPos;
+    return this->pressBcPos;
 }
 std::string Parameter::getpressBcQs()
 {
-    return ic.pressBcQs;
+    return this->pressBcQs;
 }
 std::string Parameter::getpressBcValue()
 {
-    return ic.pressBcValue;
+    return this->pressBcValue;
 }
 std::string Parameter::getpressBcValues()
 {
-    return ic.pressBcValues;
+    return this->pressBcValues;
 }
 std::string Parameter::getvelBcQs()
 {
-    return ic.velBcQs;
+    return this->velBcQs;
 }
 std::string Parameter::getvelBcValues()
 {
-    return ic.velBcValues;
+    return this->velBcValues;
 }
 std::string Parameter::getinletBcQs()
 {
-    return ic.inletBcQs;
+    return this->inletBcQs;
 }
 std::string Parameter::getinletBcValues()
 {
-    return ic.inletBcValues;
+    return this->inletBcValues;
 }
 std::string Parameter::getoutletBcQs()
 {
-    return ic.outletBcQs;
+    return this->outletBcQs;
 }
 std::string Parameter::getoutletBcValues()
 {
-    return ic.outletBcValues;
+    return this->outletBcValues;
 }
 std::string Parameter::gettopBcQs()
 {
-    return ic.topBcQs;
+    return this->topBcQs;
 }
 std::string Parameter::gettopBcValues()
 {
-    return ic.topBcValues;
+    return this->topBcValues;
 }
 std::string Parameter::getbottomBcQs()
 {
-    return ic.bottomBcQs;
+    return this->bottomBcQs;
 }
 std::string Parameter::getbottomBcValues()
 {
-    return ic.bottomBcValues;
+    return this->bottomBcValues;
 }
 std::string Parameter::getfrontBcQs()
 {
-    return ic.frontBcQs;
+    return this->frontBcQs;
 }
 std::string Parameter::getfrontBcValues()
 {
-    return ic.frontBcValues;
+    return this->frontBcValues;
 }
 std::string Parameter::getbackBcQs()
 {
-    return ic.backBcQs;
+    return this->backBcQs;
 }
 std::string Parameter::getbackBcValues()
 {
-    return ic.backBcValues;
+    return this->backBcValues;
 }
 std::string Parameter::getwallBcQs()
 {
-    return ic.wallBcQs;
+    return this->wallBcQs;
 }
 std::string Parameter::getwallBcValues()
 {
-    return ic.wallBcValues;
+    return this->wallBcValues;
 }
 std::string Parameter::getperiodicBcQs()
 {
-    return ic.periodicBcQs;
+    return this->periodicBcQs;
 }
 std::string Parameter::getperiodicBcValues()
 {
-    return ic.periodicBcValues;
+    return this->periodicBcValues;
 }
 std::string Parameter::getpropellerQs()
 {
-    return ic.propellerQs;
+    return this->propellerQs;
 }
 std::string Parameter::getpropellerValues()
 {
-    return ic.propellerValues;
+    return this->propellerValues;
 }
 std::string Parameter::getpropellerCylinder()
 {
-    return ic.propellerCylinder;
+    return this->propellerCylinder;
 }
 std::string Parameter::getmeasurePoints()
 {
-    return ic.measurePoints;
+    return this->measurePoints;
 }
 std::string Parameter::getLBMvsSI()
 {
-    return ic.LBMvsSI;
+    return this->LBMvsSI;
 }
 std::string Parameter::getnumberNodes()
 {
-    return ic.numberNodes;
+    return this->numberNodes;
 }
 std::string Parameter::getcpTop()
 {
-    return ic.cpTop;
+    return this->cpTop;
 }
 std::string Parameter::getcpBottom()
 {
-    return ic.cpBottom;
+    return this->cpBottom;
 }
 std::string Parameter::getcpBottom2()
 {
-    return ic.cpBottom2;
+    return this->cpBottom2;
 }
 std::string Parameter::getConcentration()
 {
-    return ic.concentration;
-}
-std::string Parameter::getStreetVelocityFilePath()
-{
-    return ic.streetVelocity;
+    return this->concentration;
 }
 real Parameter::getclockCycleForMP()
 {
-    return ic.clockCycleForMP;
+    return this->clockCycleForMP;
 }
 unsigned int Parameter::getTimeDoCheckPoint()
 {
-    return ic.tDoCheckPoint;
+    return this->tDoCheckPoint;
 }
 unsigned int Parameter::getTimeDoRestart()
 {
-    return ic.tDoRestart;
+    return this->tDoRestart;
 }
 
 //=======================================================================================
@@ -2328,63 +2337,59 @@ unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollis
 
 bool Parameter::getDoCheckPoint()
 {
-    return ic.doCheckPoint;
+    return this->doCheckPoint;
 }
 bool Parameter::getDoRestart()
 {
-    return ic.doRestart;
+    return this->doRestart;
 }
 bool Parameter::getIsGeo()
 {
-    return ic.isGeo;
+    return this->isGeo;
 }
 bool Parameter::getIsGeoNormal()
 {
-    return ic.isGeoNormal;
+    return this->isGeoNormal;
 }
 bool Parameter::getIsInflowNormal()
 {
-    return ic.isInflowNormal;
+    return this->isInflowNormal;
 }
 bool Parameter::getIsOutflowNormal()
 {
-    return ic.isOutflowNormal;
+    return this->isOutflowNormal;
 }
 bool Parameter::getIsCp()
 {
-    return ic.isCp;
+    return this->isCp;
 }
 bool Parameter::getConcFile()
 {
-    return ic.isConc;
-}
-bool Parameter::isStreetVelocityFile()
-{
-    return ic.streetVelocityFile;
+    return this->isConc;
 }
 bool Parameter::getUseMeasurePoints()
 {
-    return ic.isMeasurePoints;
+    return this->isMeasurePoints;
 }
 bool Parameter::getUseWale()
 {
-    return ic.isWale;
+    return this->isWale;
 }
 TurbulenceModel Parameter::getTurbulenceModel()
 {
-    return ic.turbulenceModel;
+    return this->turbulenceModel;
 }
 bool Parameter::getUseTurbulentViscosity()
 {
-    return ic.isTurbulentViscosity;
+    return this->isTurbulentViscosity;
 }
 real Parameter::getSGSConstant()
 {
-    return ic.SGSConstant;
+    return this->SGSConstant;
 }
 bool Parameter::getHasWallModelMonitor()
 {
-    return ic.hasWallModelMonitor;
+    return this->hasWallModelMonitor;
 }
 std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
 {
@@ -2396,11 +2401,11 @@ std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
 }
 bool Parameter::getUseInitNeq()
 {
-    return ic.isInitNeq;
+    return this->isInitNeq;
 }
 bool Parameter::getSimulatePorousMedia()
 {
-    return ic.simulatePorousMedia;
+    return this->simulatePorousMedia;
 }
 
 bool Parameter::getIsF3()
@@ -2415,23 +2420,23 @@ bool Parameter::getIsBodyForce()
 
 bool Parameter::getIsGeometryValues()
 {
-    return ic.GeometryValues;
+    return this->GeometryValues;
 }
 bool Parameter::getCalc2ndOrderMoments()
 {
-    return ic.is2ndOrderMoments;
+    return this->is2ndOrderMoments;
 }
 bool Parameter::getCalc3rdOrderMoments()
 {
-    return ic.is3rdOrderMoments;
+    return this->is3rdOrderMoments;
 }
 bool Parameter::getCalcHighOrderMoments()
 {
-    return ic.isHighOrderMoments;
+    return this->isHighOrderMoments;
 }
 bool Parameter::getIsProp()
 {
-    return ic.isProp;
+    return this->isProp;
 }
 bool Parameter::overWritingRestart(uint t)
 {
@@ -2439,7 +2444,7 @@ bool Parameter::overWritingRestart(uint t)
 }
 unsigned int Parameter::getTimestepForMP()
 {
-    return ic.timeStepForMP;
+    return this->timeStepForMP;
 }
 unsigned int Parameter::getTimestepOfCoarseLevel()
 {
@@ -2542,39 +2547,39 @@ bool Parameter::getIsNeighborZ()
 }
 std::string Parameter::getgeomBoundaryNormalX()
 {
-    return ic.geomNormalX;
+    return this->geomNormalX;
 }
 std::string Parameter::getgeomBoundaryNormalY()
 {
-    return ic.geomNormalY;
+    return this->geomNormalY;
 }
 std::string Parameter::getgeomBoundaryNormalZ()
 {
-    return ic.geomNormalZ;
+    return this->geomNormalZ;
 }
 std::string Parameter::getInflowBoundaryNormalX()
 {
-    return ic.inflowNormalX;
+    return this->inflowNormalX;
 }
 std::string Parameter::getInflowBoundaryNormalY()
 {
-    return ic.inflowNormalY;
+    return this->inflowNormalY;
 }
 std::string Parameter::getInflowBoundaryNormalZ()
 {
-    return ic.inflowNormalZ;
+    return this->inflowNormalZ;
 }
 std::string Parameter::getOutflowBoundaryNormalX()
 {
-    return ic.outflowNormalX;
+    return this->outflowNormalX;
 }
 std::string Parameter::getOutflowBoundaryNormalY()
 {
-    return ic.outflowNormalY;
+    return this->outflowNormalY;
 }
 std::string Parameter::getOutflowBoundaryNormalZ()
 {
-    return ic.outflowNormalZ;
+    return this->outflowNormalZ;
 }
 curandState *Parameter::getRandomState()
 {

@@ -10,7 +10,7 @@
 
 RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int refineLevel,
                                                        SPtr<D3Q27TriFaceMeshInteractor> objectIter,
-                                                       double startDistance, double stopDistance,
+                                                       real startDistance, real stopDistance,
                                                        std::shared_ptr<vf::mpi::Communicator> comm)
     : grid(grid), refineLevel(refineLevel), objectIter(objectIter), startDistance(startDistance),
       stopDistance(stopDistance), comm(comm)
@@ -21,6 +21,8 @@ RefineAroundGbObjectHelper::~RefineAroundGbObjectHelper(void) = default;
 //////////////////////////////////////////////////////////////////////////
 void RefineAroundGbObjectHelper::refine()
 {
+    using namespace vf::lbm::dir;
+
     UBLOG(logDEBUG5, "RefineCrossAndInsideGbObjectHelper: refine - start");
 
     int rank = grid->getRank();
@@ -38,7 +40,7 @@ void RefineAroundGbObjectHelper::refine()
     grid->accept(overlapVisitor);
 
     std::vector<int> dirs;
-    for (int i = D3Q27System::DIR_P00; i <= D3Q27System::DIR_0MP; i++) {
+    for (int i = (int)DIR_P00; i <= (int)DIR_0MP; i++) {
         dirs.push_back(i);
     }
     SetInterpolationDirsBlockVisitor interDirsVisitor(dirs);

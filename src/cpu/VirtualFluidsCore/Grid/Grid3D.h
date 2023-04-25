@@ -41,6 +41,7 @@
 #include <basics/utilities/UbKeys.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/utilities/Vector3D.h>
+#include "lbm/constants/D3Q27.h"
 
 class CoordinateTransformation3D;
 
@@ -77,11 +78,11 @@ public:
     void replaceBlock(SPtr<Block3D> block);
     SPtr<Block3D> getBlock(int ix1, int ix2, int ix3, int level) const;
     SPtr<Block3D> getBlock(int id) const;
-    void getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
+    void getBlocksByCuboid(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
                            std::vector<SPtr<Block3D>> &blocks);
-    void getBlocksByCuboid(int level, double minX1, double minX2, double minX3, double maxX1, double maxX2,
-                           double maxX3, std::vector<SPtr<Block3D>> &blocks);
-    void getAllBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3,
+    void getBlocksByCuboid(int level, real minX1, real minX2, real minX3, real maxX1, real maxX2,
+                           real maxX3, std::vector<SPtr<Block3D>> &blocks);
+    void getAllBlocksByCuboid(real minX1, real minX2, real minX3, real maxX1, real maxX2, real maxX3,
                               std::vector<SPtr<Block3D>> &blocks);
     //! get blocks for level
     void getBlocks(int level, std::vector<SPtr<Block3D>> &blockVector);
@@ -166,7 +167,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     // interactors control
     void addInteractor(SPtr<Interactor3D> interactor);
-    void addAndInitInteractor(SPtr<Interactor3D> interactor, double timestep = 0);
+    void addAndInitInteractor(SPtr<Interactor3D> interactor, real timestep = 0);
     Interactor3DSet getInteractors();
     //////////////////////////////////////////////////////////////////////////
     // visitors
@@ -189,19 +190,19 @@ public:
     void setPeriodicX3(bool value);
     //////////////////////////////////////////////////////////////////////////
     // Topology
-    UbTupleInt3 getBlockIndexes(double blockX1Coord, double blockX2Coord, double blockX3Coord) const;
-    UbTupleInt3 getBlockIndexes(double blockX1Coord, double blockX2Coord, double blockX3Coord, int level) const;
+    UbTupleInt3 getBlockIndexes(real blockX1Coord, real blockX2Coord, real blockX3Coord) const;
+    UbTupleInt3 getBlockIndexes(real blockX1Coord, real blockX2Coord, real blockX3Coord, int level) const;
     UbTupleDouble3 getBlockLengths(SPtr<Block3D> block) const;
     UbTupleDouble6 getBlockOversize() const;
     void setCoordinateTransformator(SPtr<CoordinateTransformation3D> trafo);
     const SPtr<CoordinateTransformation3D> getCoordinateTransformator() const;
-    void setDeltaX(double dx);
-    void setDeltaX(double worldUnit, double gridUnit);
-    double getDeltaX(int level) const;
-    double getDeltaX(SPtr<Block3D> block) const;
+    void setDeltaX(real dx);
+    void setDeltaX(real worldUnit, real gridUnit);
+    real getDeltaX(int level) const;
+    real getDeltaX(SPtr<Block3D> block) const;
     UbTupleDouble3 getNodeOffset(SPtr<Block3D> block) const;
     Vector3D getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const;
-    UbTupleInt3 getNodeIndexes(SPtr<Block3D> block, double nodeX1Coord, double nodeX2Coord, double nodeX3Coord) const;
+    UbTupleInt3 getNodeIndexes(SPtr<Block3D> block, real nodeX1Coord, real nodeX2Coord, real nodeX3Coord) const;
     void setBlockNX(int nx1, int nx2, int nx3);
     UbTupleInt3 getBlockNX() const;
     UbTupleDouble3 getBlockWorldCoordinates(SPtr<Block3D> block) const;
@@ -212,16 +213,16 @@ public:
     int getNX1() const;
     int getNX2() const;
     int getNX3() const;
-    void calcStartCoordinatesAndDelta(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3, double &deltaX);
-    void calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3);
+    void calcStartCoordinatesAndDelta(SPtr<Block3D> block, real &worldX1, real &worldX2, real &worldX3, real &deltaX);
+    void calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, real &worldX1, real &worldX2, real &worldX3);
     int getGhostLayerWidth() const;
     void setGhostLayerWidth(int ghostLayerWidth);
     //////////////////////////////////////////////////////////////////////////
     // LBM
     // double getDeltaT(SPtr<Block3D>) const;
     //////////////////////////////////////////////////////////////////////////
-    void setTimeStep(double step);
-    double getTimeStep() const;
+    void setTimeStep(real step);
+    real getTimeStep() const;
 
 protected:
     void checkLevel(int level);
@@ -309,11 +310,11 @@ private:
     int nx3{ 0 };
 
     SPtr<CoordinateTransformation3D> trafo;
-    double orgDeltaX{ 1.0 };
+    real orgDeltaX{ 1.0 };
 
-    double timeStep{ 0.0 };
+    real timeStep{ 0.0 };
 
-    double offset{ 0.5 };
+    real offset{ 0.5 };
 };
 
 #endif

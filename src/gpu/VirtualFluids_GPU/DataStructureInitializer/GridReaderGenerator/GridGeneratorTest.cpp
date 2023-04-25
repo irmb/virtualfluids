@@ -104,9 +104,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::WARNING);
-
         para = std::make_shared<Parameter>();
         para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
         for (uint i = 0; i <= level; i++) {

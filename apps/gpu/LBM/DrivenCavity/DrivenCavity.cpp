@@ -41,10 +41,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 
 #include <logger/Logger.h>
@@ -69,13 +66,14 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 int main()
 {
     try {
-         vf::logging::Logger::initalizeLogger();
+         vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
@@ -85,20 +83,11 @@ int main()
         const real L = 1.0;
         const real Re = 1000.0;
         const real velocity = 1.0;
-        const real dt = (real)0.5e-3;
+        const real velocityLB = 0.05; // LB units
         const uint nx = 64;
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
-
-        //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
         //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator
@@ -109,31 +98,30 @@ int main()
         auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
         //////////////////////////////////////////////////////////////////////////
-        // create grid
-        //////////////////////////////////////////////////////////////////////////
-
-        real dx = L / real(nx);
-
-        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
-
-        gridBuilder->addGrid(new Cuboid(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
-        GridScalingFactory scalingFactory = GridScalingFactory();
-        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
-
-        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-
-        gridBuilder->buildGrids(LbmOrGks::LBM, false);
-
-        //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
-        const real velocityLB = velocity * dt / dx; // LB units
+        const real dx = L / real(nx);
+        const real dt  = velocityLB / velocity * dx;
 
         const real vxLB = velocityLB / sqrt(2.0); // LB units
         const real vyLB = velocityLB / sqrt(2.0); // LB units
 
         const real viscosityLB = nx * velocityLB / Re; // LB units
+
+        //////////////////////////////////////////////////////////////////////////
+        // create grid
+        //////////////////////////////////////////////////////////////////////////
+
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
+
+        gridBuilder->addGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        GridScalingFactory scalingFactory = GridScalingFactory();
+        scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
+
+        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+        gridBuilder->buildGrids(false);
 
         //////////////////////////////////////////////////////////////////////////
         // set parameters
@@ -154,7 +142,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel("CumulantK17CompChimRedesigned");
+        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
@@ -164,8 +152,8 @@ int main()
         gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
 
         BoundaryConditionFactory bcFactory;
 

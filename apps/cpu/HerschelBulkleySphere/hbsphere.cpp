@@ -8,6 +8,8 @@ using namespace std;
 
 void bflow(string configname)
 {
+    using namespace vf::lbm::dir;
+
    try
    {
       vf::basics::ConfigurationFile config;
@@ -16,24 +18,24 @@ void bflow(string configname)
       string          outputPath = config.getValue<string>("outputPath");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      vector<double>  boundingBox = config.getVector<double>("boundingBox");
+      vector<real>  boundingBox = config.getVector<real>("boundingBox");
       //double          nuLB = config.getValue<double>("nuLB");
-      double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
-      double          availMem = config.getValue<double>("availMem");
+      real          endTime = config.getValue<real>("endTime");
+      real          outTime = config.getValue<real>("outTime");
+      real          availMem = config.getValue<real>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
-      double          restartStep = config.getValue<double>("restartStep");
-      double          deltax = config.getValue<double>("deltax");
-      double          radius = config.getValue<double>("radius");
-      double          cpStep = config.getValue<double>("cpStep");
-      double          cpStart = config.getValue<double>("cpStart");
+      real          restartStep = config.getValue<real>("restartStep");
+      real          deltax = config.getValue<real>("deltax");
+      real          radius = config.getValue<real>("radius");
+      real          cpStep = config.getValue<real>("cpStep");
+      real          cpStart = config.getValue<real>("cpStart");
       bool            newStart = config.getValue<bool>("newStart");
-      double          velocity = config.getValue<double>("velocity");
-      double          n = config.getValue<double>("n");
-      double          Re = config.getValue<double>("Re");
-      double          Bn = config.getValue<double>("Bn");
-      vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
+      real          velocity = config.getValue<real>("velocity");
+      real          n = config.getValue<real>("n");
+      real          Re = config.getValue<real>("Re");
+      real          Bn = config.getValue<real>("Bn");
+      vector<real>  sphereCenter = config.getVector<real>("sphereCenter");
 
       SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -56,19 +58,19 @@ void bflow(string configname)
          }
       }
 
-      LBMReal rhoLB = 0.0;
+      real rhoLB = 0.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       //bounding box
 
-      double g_minX1 = 0;
-      double g_minX2 = 0;
-      double g_minX3 = 0;
+      real g_minX1 = 0;
+      real g_minX2 = 0;
+      real g_minX3 = 0;
 
-      double g_maxX1 = boundingBox[0];
-      double g_maxX2 = boundingBox[1];
-      double g_maxX3 = boundingBox[2];
+      real g_maxX1 = boundingBox[0];
+      real g_maxX2 = boundingBox[1];
+      real g_maxX3 = boundingBox[2];
 
       //double g_minX1 = -boundingBox[0]/2.0;
       //double g_minX2 = -boundingBox[1] / 2.0;
@@ -78,21 +80,21 @@ void bflow(string configname)
       //double g_maxX2 = boundingBox[1]/2.0;
       //double g_maxX3 = boundingBox[2]/2.0;
 
-      double blockLength = 3.0 * deltax;
+      real blockLength = 3.0 * deltax;
 
-      double d = 2.0 * radius;
-      double U = velocity;
-      double Gamma = U / d;
+      real d = 2.0 * radius;
+      real U = velocity;
+      real Gamma = U / d;
 
-      double k = (U * d) / (Re * std::pow(Gamma, n - 1));
-      double tau0 = Bn * k * std::pow(Gamma, n);
+      real k = (U * d) / (Re * std::pow(Gamma, n - 1));
+      real tau0 = Bn * k * std::pow(Gamma, n);
 
       //double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
       //double tau0 = 3e-6; //Bn * k * std::pow(Gamma, n);
 
       //double forcing = 8e-7;
 
-      double omegaMin = 1.0e-8;
+      real omegaMin = 1.0e-8;
 
       SPtr<Rheology> thix = Rheology::getInstance();
       thix->setPowerIndex(n);
@@ -161,7 +163,7 @@ void bflow(string configname)
 
       ////////////////////////////////////////////
       //METIS
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::KWAY));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::KWAY));
       ////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -243,7 +245,7 @@ void bflow(string configname)
 
          ////////////////////////////////////////////
          //METIS
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_MMM, MetisPartitioner::KWAY));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::KWAY));
          ////////////////////////////////////////////
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
@@ -267,8 +269,8 @@ void bflow(string configname)
          unsigned long nodb = (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nod = nob * (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nodg = nob * (blocknx[0] + gl) * (blocknx[1] + gl) * (blocknx[1] + gl);
-         double needMemAll = double(nodg * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-         double needMem = needMemAll / double(comm->getNumberOfProcesses());
+         real needMemAll = real(nodg * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+         real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
          if (myid == 0)
          {
@@ -341,7 +343,7 @@ void bflow(string configname)
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
       //writeMQCoProcessor->process(0);
 
-      double area = UbMath::PI*radius*radius;
+      real area = UbMath::PI*radius*radius;
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, velocity, area);
       fp->addInteractor(sphereInt);

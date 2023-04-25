@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.4
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.5
 
 stages:
   - build
@@ -49,9 +49,10 @@ stages:
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - rm -r -f ./*
     - cmake .. -LAH
-      --preset=all_make
+      --preset=make_all
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
+      -DBUILD_VF_ALL_SAMPLES=ON
     - make -j4
     - ccache --show-stats
 
@@ -75,7 +76,7 @@ clang_10:
     - export CXX=clang++
 
 ###############################################################################
-msvc_16:
+msvc_17:
   stage: build
 
   tags:
@@ -92,14 +93,14 @@ msvc_16:
     - git --version
     - $env:Path += ";C:\Program Files\CMake\bin\"
     - cmake --version
-    - $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin"
+    - $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin"
     - MSBuild.exe -version
 
   script:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
+    - cmake .. --preset=msvc_all -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON -DBUILD_VF_ALL_SAMPLES=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   artifacts:
@@ -177,17 +178,17 @@ gcc_9_unit_tests:
     - cd $CI_PROJECT_DIR/build
 
   script:
-    - ctest
+    - ctest --output-on-failure
 
 ###############################################################################
-msvc_16_unit_tests:
+msvc_17_unit_tests:
   stage: test
 
   tags:
     - win
     - gpu
 
-  needs: ["msvc_16"]
+  needs: ["msvc_17"]
 
   before_script:
     - $env:Path += ";C:\Program Files\CMake\bin\"
@@ -212,7 +213,6 @@ gcc_9_python_bindings_test:
   script:
     - python3 -m unittest discover -s Python -v
 
-
 ###############################################################################
 gcc_9_python_hpc_test:
   image: python:latest
@@ -234,6 +234,95 @@ gcc_9_python_hpc_test:
   script:
     - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
 
+###############################################################################
+build-regression-tests-ci:
+  image: python:3.10
+  stage: test
+
+  before_script:
+    - pip install -r utilities/ci-regression-tests/requirements.txt
+
+  script:
+    - python3 utilities/ci-regression-tests/generate-ci.py
+
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - generated/
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  needs: []
+
+trigger-regression-tests:
+  stage: test
+  needs:
+    - build-regression-tests-ci
+  trigger:
+    include:
+      - artifact: generated/regression-tests-ci.yml
+        job: build-regression-tests-ci
+    strategy: depend
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+
+###############################################################################
+regression_test_4gpu:
+  image: python:latest
+  stage: test
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+    - pip install "fieldcompare[all]"
+
+  script:
+    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket4GPU.yml
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereScaling_4GPU_2Levels
+    - cd ..
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
+
+###############################################################################
+regression_test_8gpu:
+  image: python:latest
+  stage: test
+
+  rules:
+    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  before_script:
+    - pip install hpc-rocket
+    - pip install "fieldcompare[all]"
+
+  script:
+    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket8GPU.yml
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereScaling_8GPU_2Levels
+    - cd ..
+    - fieldcompare dir output/8GPU test_data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
+    - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereScaling_8GPU_2Levels --include-files "SphereScaling*.vtu"
 
 ###############################################################################
 ##                            Benchmark                                      ##
@@ -273,24 +362,23 @@ gpu_numerical_tests:
 
   before_script:
     - cd /tmp
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - cd test_data
+    - git sparse-checkout set numerical_tests_gpu/grids numerical_tests_gpu/grids
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
     - ccache -s
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
-    - rm -r -f ./*
+    - rm -rf ./*
     - cmake ..
-      --preset=gpu_numerical_tests_make
+      --preset=make_numerical_tests_gpu
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
     - make -j4
     - ccache -s
 
   script:
-    - cd $CI_PROJECT_DIR
-    # - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
-    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK17chim_nu10tm3.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
+    - $CI_PROJECT_DIR/build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK17chim_nu10tm3.txt /tmp/test_data/numerical_tests_gpu/ 2>&1 | tee -a numerical_tests_gpu_results.txt
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
@@ -301,31 +389,6 @@ gpu_numerical_tests:
     expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
-
-###############################################################################
-run-regression-tests:
-  stage: test
-
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - when: manual
-      allow_failure: true
-
-  needs: []
-
-  tags:
-    - gpu
-    - linux
-
-  before_script:
-    - apt-get update && apt-get -y install python3.8-venv
-    - chmod +x ./regression-tests/*
-
-  script:
-    - ./regression-tests/regression-tests.sh
 
 ###############################################################################
 ##                        Code analysis                                      ##
@@ -352,7 +415,7 @@ clang_build_analyzer_clang_10:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
@@ -384,7 +447,7 @@ include_what_you_use_clang_10:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
@@ -461,7 +524,7 @@ gcov_gcc_9:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      --preset=all_make
+      --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
     - make -j4
@@ -545,8 +608,6 @@ pages:
 ###############################################################################
 .deploy_template:
   stage: deploy
-
-
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'

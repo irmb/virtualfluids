@@ -2,14 +2,14 @@
 #define VIRTUALFLUIDSPYTHONBINDINGS_KERNELCONFIGSTRUCTS_H
 
 #include <string>
-#include <LBM/LBMSystem.h>
+#include <basics/DataTypes.h>
 
 struct LBMKernelConfiguration {
     KernelFactory::KernelType kernelType;
     bool useForcing = false;
-    LBMReal forcingX1{};
-    LBMReal forcingX2{};
-    LBMReal forcingX3{};
+    real forcingX1{};
+    real forcingX2{};
+    real forcingX3{};
 
     explicit LBMKernelConfiguration(KernelFactory::KernelType kernelType) : kernelType(kernelType)
     {

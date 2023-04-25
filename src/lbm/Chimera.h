@@ -8,16 +8,14 @@
 #define __device__
 #endif
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-namespace vf
+using namespace vf::basics::constant;
+
+namespace vf::lbm
 {
-namespace lbm
-{
-
-using namespace constant;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief forward chimera transformation \ref forwardInverseChimeraWithK 
@@ -116,6 +114,5 @@ inline __host__ __device__ void backwardChimeraWithK(real &mfa, real &mfb, real 
     mfb = m1;
 }
 
-}
 }
 #endif

@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
 
 project(VirtualFluids
-        VERSION 1.0.0
+        VERSION 0.1.0
         DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
         HOMEPAGE_URL "https://www.tu-braunschweig.de/irmb/forschung/virtualfluids"
         LANGUAGES CXX)
@@ -52,9 +52,6 @@ option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
 option(BUILD_USE_MPI "include MPI library support" ON)
 
 # vf gpu
-option(BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
-option(BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
-option(BUILD_JSONCPP         "Builds json cpp "            OFF)
 option(BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
@@ -78,7 +75,7 @@ endif()
 option(BUILD_VF_PYTHON_BINDINGS "" OFF)
 
 option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
-
+option(BUILD_VF_ALL_SAMPLES "Build All Samples" OFF)
 
 #################################################################################
 #  MACROS
@@ -100,7 +97,7 @@ IF( BUILD_VF_DOUBLE_ACCURACY )
 ENDIF()
 
 # set gpu features
-if(BUILD_VF_GPU OR BUILD_VF_GKS)
+if(BUILD_VF_GPU)
     include(CheckLanguage)
     check_language(CUDA)
 
@@ -137,6 +134,8 @@ if(BUILD_VF_GPU OR BUILD_VF_GKS)
     message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
     message(STATUS "CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
     set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}" CACHE STRING "Cuda Architecture (compute capabilitiy)")
+
+    set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 endif()
 
 
@@ -212,11 +211,11 @@ add_subdirectory(src/lbm)
 #  VIRTUAL FLUIDS CPU / GPU
 #################################################################################
 if (BUILD_VF_CPU)
-    include (cpu.cmake)
+    include(cpu.cmake)
 endif()
-if(BUILD_VF_GPU OR BUILD_VF_GKS)
+if(BUILD_VF_GPU)
     add_subdirectory(src/cuda)
-    include (gpu.cmake)
+    include(gpu.cmake)
 endif()
 
 if (BUILD_VF_PYTHON_BINDINGS)

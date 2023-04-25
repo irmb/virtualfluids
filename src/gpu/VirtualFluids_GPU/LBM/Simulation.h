@@ -31,6 +31,7 @@ class EnstrophyAnalyzer;
 class BoundaryConditionFactory;
 class GridScalingFactory;
 class TurbulenceModelFactory;
+class Timer;
 
 class Simulation
 {
@@ -44,16 +45,22 @@ public:
     void run();
 
     void setFactories(std::unique_ptr<KernelFactory> &&kernelFactory,
-               std::unique_ptr<PreProcessorFactory> &&preProcessorFactory);
+                      std::unique_ptr<PreProcessorFactory> &&preProcessorFactory);
     void setDataWriter(std::shared_ptr<DataWriter> dataWriter);
     void addKineticEnergyAnalyzer(uint tAnalyse);
     void addEnstrophyAnalyzer(uint tAnalyse);
+
+    //! \brief can be used as an alternative to run(), if the simulation needs to be controlled from the outside (e. g. for fluid structure interaction FSI)
+    void calculateTimestep(uint timestep);
+    //! \brief needed to initialize the simulation timers if calculateTimestep is used instead of run()
+    void initTimers();
 
 private:
 	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
     void porousMedia();
     void definePMarea(std::shared_ptr<PorousMedia>& pm);
+    void readAndWriteFiles(uint timestep);
 
 	std::unique_ptr<KernelFactory> kernelFactory;
 	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
@@ -79,6 +86,13 @@ private:
 	SPtr<TurbulenceModelFactory> tmFactory;
 
     SPtr<RestartObject> restart_object;
+
+    // Timer
+    std::unique_ptr<Timer> averageTimer;
+    uint previousTimestepForAveraging;
+    uint previousTimestepForTurbulenceIntensityCalculation;
+    uint timestepForMeasuringPoints;
+    
 
 	//Forcing Calculation
 	std::shared_ptr<ForceCalculations> forceCalculator;

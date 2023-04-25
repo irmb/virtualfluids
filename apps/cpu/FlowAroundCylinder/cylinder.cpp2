@@ -262,7 +262,7 @@ void run(const char *cstr)
          unsigned long nod = nob * (blocknx1+gl) * (blocknx2+gl) * (blocknx3+gl);
 
          double needMemAll  = double(nod*(27*sizeof(double) + sizeof(int) + sizeof(float)*4));
-         double needMem  = needMemAll / double(comm->getNummberOfProcesses());
+         double needMem  = needMemAll / double(comm->getNumberOfProcesses());
 
          if(myid == 0)
          {

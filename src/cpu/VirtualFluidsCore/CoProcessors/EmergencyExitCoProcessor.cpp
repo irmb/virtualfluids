@@ -22,7 +22,7 @@ EmergencyExitCoProcessor::EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
 //////////////////////////////////////////////////////////////////////////
 EmergencyExitCoProcessor::~EmergencyExitCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
-void EmergencyExitCoProcessor::process(double step)
+void EmergencyExitCoProcessor::process(real step)
 {
     if (scheduler->isDue(step))
         collectData(step);
@@ -30,7 +30,7 @@ void EmergencyExitCoProcessor::process(double step)
     UBLOG(logDEBUG3, "EmergencyExitCoProcessor::update:" << step);
 }
 
-void EmergencyExitCoProcessor::collectData(double step)
+void EmergencyExitCoProcessor::collectData(real step)
 {
     if (readMetafile()) {
         rp->process((int)step);

@@ -8,7 +8,7 @@
 #include "VirtualFluids_GPU_export.h"
 
 #include "CommunicationRoutine.h"
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 
 //////////////////////////////////
 #ifdef VF_DOUBLE_ACCURACY
@@ -34,7 +34,7 @@ public:
     void waitAll();
     void distributeGeometry(unsigned int *dataRoot, unsigned int *dataNode, int dataSizePerNode);
     int getPID() const override;
-    int getNummberOfProcess() const;
+    int getNumberOfProcess() const;
     int getNeighbourTop();
     int getNeighbourBottom();
     void exchngData(float *sbuf_t, float *rbuf_t, float *sbuf_b, float *rbuf_b, int count);

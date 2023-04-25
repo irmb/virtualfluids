@@ -33,6 +33,6 @@ void CumulantK17CompChim::run()
 CumulantK17CompChim::CumulantK17CompChim(std::shared_ptr<Parameter> para, int level): KernelImp(para, level)
 {
 	myPreProcessorTypes.push_back(InitCompSP27);
-	myKernelGroup = BasicKernel;
+	
 	this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 }

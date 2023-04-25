@@ -4,7 +4,8 @@
  *  Created on: 25.10.2017
  *  Author: S. Peters
  */
-
+#include "lbm/constants/D3Q27.h"
+ 
 #ifndef ForceCalculator_H
 #define ForceCalculator_H
 
@@ -36,9 +37,9 @@ private:
 
     std::shared_ptr<vf::mpi::Communicator> comm;
 
-    double forceX1global;
-    double forceX2global;
-    double forceX3global;
+    real forceX1global;
+    real forceX2global;
+    real forceX3global;
 };
 
 #endif

@@ -7,6 +7,8 @@ using namespace std;
 //pipe flow with forcing
 void pf1()
 {
+    using namespace vf::lbm::dir;
+
    SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
 
@@ -14,25 +16,25 @@ void pf1()
    string          pathOut = "d:/temp/test_dir_naming";  //"/gfs1/work/niikonst/pflow_pipe_forcing";
    int             numOfThreads = 1;
    int             blocknx[3] ={ 10,10,10 };
-   double          endTime = 10;
-   double          cpStart = 10;
-   double          cpStep = 10;
-   double          outTime = 10;
-   double          availMem = 8e9;
-   double          deltax = 1;
-   double          rhoLB = 0.0;
-   double          nuLB = 0.005;
+   real          endTime = 10;
+   real          cpStart = 10;
+   real          cpStep = 10;
+   real          outTime = 10;
+   real          availMem = 8e9;
+   real          deltax = 1;
+   real          rhoLB = 0.0;
+   real          nuLB = 0.005;
 
    //geometry definition
 
    //simulation bounding box
-   double g_minX1 = 0.0;
-   double g_minX2 = -10.0;
-   double g_minX3 = -10.0;
+   real g_minX1 = 0.0;
+   real g_minX2 = -10.0;
+   real g_minX3 = -10.0;
 
-   double g_maxX1 = 50;
-   double g_maxX2 = 10;
-   double g_maxX3 = 10;
+   real g_maxX1 = 50;
+   real g_maxX2 = 10;
+   real g_maxX3 = 10;
 
    //Sleep(15000);
 
@@ -76,7 +78,7 @@ void pf1()
 
    //set boundary conditions for blocks and create process decomposition for MPI
    SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
-   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
+   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
    InteractorsHelper intHelper(grid, metisVisitor);
    intHelper.addInteractor(cylinderInt);
    intHelper.selectBlocks();
@@ -91,8 +93,8 @@ void pf1()
    unsigned long long numberOfNodesPerBlock = (unsigned long long)(blocknx[0])* (unsigned long long)(blocknx[1])* (unsigned long long)(blocknx[2]);
    unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
    unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-   double needMemAll = double(numberOfNodesPerBlockWithGhostLayer*(27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
-   double needMem = needMemAll / double(comm->getNumberOfProcesses());
+   real needMemAll = real(numberOfNodesPerBlockWithGhostLayer*(27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+   real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
    if (myid == 0)
    {

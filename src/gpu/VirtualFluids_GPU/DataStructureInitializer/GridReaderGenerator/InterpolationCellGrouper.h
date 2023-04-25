@@ -6,7 +6,7 @@
 #ifndef InterpolationCellGrouper_H
 #define InterpolationCellGrouper_H
 
-#include <basics/Core/DataTypes.h>
+#include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 #include <memory>
 #include <vector>
@@ -54,14 +54,14 @@ protected:
     //////////////////////////////////////////////////////////////////////////
 
     //! \brief This function reorders the arrays of CFC/CFF indices and sets the pointers and sizes of the new
-    //! subarrays: \details The coarse cells for interpolation from coarse to fine (iCellCFC) are divided into two
-    //! subgroups: border and bulk. The fine cells (iCellCFF) are reordered accordingly. The offset cells (xOffCF,
+    //! subarrays: \details The coarse cells for interpolation from coarse to fine (coarseToFineCoarse) are divided into two
+    //! subgroups: border and bulk. The fine cells (coarseToFineFine) are reordered accordingly. The offset cells (xOffCF,
     //! yOffCF, zOffCF) must be reordered in the same way.
     void reorderCoarseToFineIntoBorderAndBulk(uint level) const;
 
     //! \brief This function reorders the arrays of FCC/FCF indices and return pointers and sizes of the new subarrays:
-    //! \details The coarse cells for interpolation from fine to coarse (iCellFCC) are divided into two subgroups:
-    //! border and bulk. The fine cells (iCellFCF) are reordered accordingly. The offset cells (xOffFC,
+    //! \details The coarse cells for interpolation from fine to coarse (fineToCoarseCoarse) are divided into two subgroups:
+    //! border and bulk. The fine cells (fineToCoarseFine) are reordered accordingly. The offset cells (xOffFC,
     //! yOffFC, zOffFC) must be reordered in the same way.
     void reorderFineToCoarseIntoBorderAndBulk(uint level) const;
 

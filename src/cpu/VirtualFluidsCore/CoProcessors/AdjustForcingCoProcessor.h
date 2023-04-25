@@ -5,6 +5,7 @@
 #include <string>
 
 #include "CoProcessor.h"
+#include "lbm/constants/D3Q27.h"
 
 namespace vf::mpi {class Communicator;}
 class UbScheduler;
@@ -21,35 +22,35 @@ class AdjustForcingCoProcessor : public CoProcessor
 {
 public:
     AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                             SPtr<IntegrateValuesHelper> integrateValues, double vTarged, std::shared_ptr<vf::mpi::Communicator> comm);
+                             SPtr<IntegrateValuesHelper> integrateValues, real vTarged, std::shared_ptr<vf::mpi::Communicator> comm);
     //!< calls collect PostprocessData
-    void process(double step) override;
+    void process(real step) override;
 
 protected:
     //!< object that can compute spacial average values in 3D-subdomain.
     SPtr<IntegrateValuesHelper> integrateValues;
     //!< compares velocity in integrateValues with target velocity and adjusts forcing accordingly.
-    void collectData(double step);
+    void collectData(real step);
     std::shared_ptr<vf::mpi::Communicator> comm;
 
 private:
-    double vx1Targed; //!< target velocity.
-    double forcing;   //!< forcing at previous update step.
-    double cellsVolume;
-    double vx1Average;
+    real vx1Targed; //!< target velocity.
+    real forcing;   //!< forcing at previous update step.
+    real cellsVolume;
+    real vx1Average;
     bool root;
-    double Kpcrit; // Kp critical
-    double Tcrit;  // the oscillation period
-    double Tn;
-    double Tv;
-    double e;
-    double Ta;
-    double Kp;
-    double Ki;
-    double Kd;
-    double y;
-    double esum;
-    double eold;
+    real Kpcrit; // Kp critical
+    real Tcrit;  // the oscillation period
+    real Tn;
+    real Tv;
+    real e;
+    real Ta;
+    real Kp;
+    real Ki;
+    real Kd;
+    real y;
+    real esum;
+    real eold;
     // std::vector<CalcNodes> cnodes;
     std::string path;
 };

@@ -18,7 +18,7 @@ void writeVeloFluctuationToFile(Parameter *para, uint timeste);
 void writeVeloMeansToFile(Parameter *para, uint timestep);
 void writeAllTiDatafToFile(Parameter *para, uint timestep);
 
-void writeTiStuffToFile(Parameter *para, uint timestep, int sizeOfTiArray, std::vector<real *> &data,
+void writeTiStuffToFile(Parameter *para, uint timestep, unsigned long long sizeOfTiArray, std::vector<real *> &data,
                   std::vector<std::string> &datanames);
 
 #endif

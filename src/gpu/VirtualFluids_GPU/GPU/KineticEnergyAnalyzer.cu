@@ -14,17 +14,17 @@
 
 #include <iomanip>
 
-//#include "Core/Logger/Logger.h"
+#include "cuda/CudaGrid.h"
 
 #include "Parameter/Parameter.h"
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
-#include <lbm/constants/NumericConstants.h>
+#include <basics/constants/NumericConstants.h>
 
-using namespace vf::lbm::constant;
+using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
-__global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat);
+__global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, unsigned long long numberOfLBnodes);
 
 __host__ __device__ inline void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint index);
 
@@ -35,56 +35,42 @@ bool KineticEnergyAnalyzer::run(uint iter)
     if( iter % this->analyzeIter != 0 ) return false;
 
 	int lev = 0;
-	int size_Mat = this->para->getParD(lev)->numberOfNodes;
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(lev)->numberofthreads, para->getParD(lev)->numberOfNodes);
 
-    thrust::device_vector<real> kineticEnergy(size_Mat, c0o1);
-    thrust::device_vector<uint> isFluid      (size_Mat, 0);
+    thrust::device_vector<real> kineticEnergy( this->para->getParD(lev)->numberOfNodes, c0o1);
+    thrust::device_vector<uint> isFluid      ( this->para->getParD(lev)->numberOfNodes, 0);
 
-	unsigned int numberOfThreads = 128;
-    int Grid = (size_Mat / numberOfThreads)+1;
-    int Grid1, Grid2;
-    if (Grid>512)
-    {
-       Grid1 = 512;
-       Grid2 = (Grid/Grid1)+1;
-    } 
-    else
-    {
-       Grid1 = 1;
-       Grid2 = Grid;
-    }
-    dim3 grid(Grid1, Grid2);
-    dim3 threads(numberOfThreads, 1, 1 );
+    LBCalcMacCompSP27<<< grid.grid, grid.threads >>>(
+        para->getParD(lev)->velocityX,
+        para->getParD(lev)->velocityY,
+        para->getParD(lev)->velocityZ,
+        para->getParD(lev)->rho,
+        para->getParD(lev)->pressure,
+        para->getParD(lev)->typeOfGridNode,
+        para->getParD(lev)->neighborX,
+        para->getParD(lev)->neighborY,
+        para->getParD(lev)->neighborZ,
+        para->getParD(lev)->numberOfNodes,
+        para->getParD(lev)->distributions.f[0],
+        para->getParD(lev)->isEvenTimestep); 
+    getLastCudaError("LBCalcMacCompSP27 execution failed"); 
 
-    LBCalcMacCompSP27<<< grid, threads >>> (para->getParD(lev)->velocityX,
-											para->getParD(lev)->velocityY,
-											para->getParD(lev)->velocityZ,
-											para->getParD(lev)->rho,
-											para->getParD(lev)->pressure,
-											para->getParD(lev)->typeOfGridNode,
-											para->getParD(lev)->neighborX,
-											para->getParD(lev)->neighborY,
-											para->getParD(lev)->neighborZ,
-											para->getParD(lev)->numberOfNodes,
-											para->getParD(lev)->distributions.f[0],
-											para->getParD(lev)->isEvenTimestep); 
-    getLastCudaError("LBCalcMacSP27 execution failed"); 
+    kineticEnergyKernel<<< grid.grid, grid.threads >>>(
+        para->getParD(lev)->velocityX, 
+        para->getParD(lev)->velocityY, 
+        para->getParD(lev)->velocityZ, 
+        para->getParD(lev)->rho, 
+        para->getParD(lev)->neighborX,
+        para->getParD(lev)->neighborY,
+        para->getParD(lev)->neighborZ,
+        para->getParD(lev)->neighborInverse,
+        para->getParD(lev)->typeOfGridNode,
+        kineticEnergy.data().get(), 
+        isFluid.data().get(),
+        para->getParD(lev)->numberOfNodes);
+    cudaDeviceSynchronize();
 
-	kineticEnergyKernel <<< grid, threads >>> ( para->getParD(lev)->velocityX, 
-											    para->getParD(lev)->velocityY, 
-												para->getParD(lev)->velocityZ, 
-												para->getParD(lev)->rho, 
-											    para->getParD(lev)->neighborX,
-											    para->getParD(lev)->neighborY,
-											    para->getParD(lev)->neighborZ,
-											    para->getParD(lev)->neighborInverse,
-											    para->getParD(lev)->typeOfGridNode,
-												kineticEnergy.data().get(), 
-                                                isFluid.data().get(),
-												size_Mat);
-	cudaDeviceSynchronize();
-
-	 getLastCudaError("kineticEnergyKernel execution failed");
+    getLastCudaError("kineticEnergyKernel execution failed");
 
 	 real EKin               = thrust::reduce(kineticEnergy.begin(), kineticEnergy.end(), c0o1, thrust::plus<real>());
      uint numberOfFluidNodes = thrust::reduce(isFluid.begin(),       isFluid.end(),       0,    thrust::plus<uint>());
@@ -99,7 +85,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat)
+__global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, unsigned long long numberOfLBnodes)
 {
     //////////////////////////////////////////////////////////////////////////
     const uint x = threadIdx.x;  // Globaler x-Index 
@@ -115,7 +101,7 @@ __global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uin
 
     //if( index % 34 == 0 || index % 34 == 33 ) return;
 
-    if( index >= size_Mat) return;
+    if( index >= (uint)numberOfLBnodes) return;
 
 	unsigned int BC;
 	BC = geo[index];
@@ -153,7 +139,6 @@ KineticEnergyAnalyzer::KineticEnergyAnalyzer(SPtr<Parameter> para, uint analyzeI
 
 void KineticEnergyAnalyzer::writeToFile(std::string filename)
 {
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 	std::cout << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 
     std::ofstream file;
@@ -165,7 +150,6 @@ void KineticEnergyAnalyzer::writeToFile(std::string filename)
 
     file.close();
 
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 	std::cout << "done!\n";
 }
 

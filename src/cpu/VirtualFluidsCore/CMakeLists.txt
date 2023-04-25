@@ -16,10 +16,6 @@ IF(${USE_CATALYST})
    list(APPEND VF_LIBRARIES optimized vtkParallelMPI debug vtkParallelMPI )
 ENDIF()
 
-IF(${USE_DEM_COUPLING})
-   INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../DemCoupling/DemCoupling.cmake)
-ENDIF()
-
 if(BUILD_USE_OPENMP)
     list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
@@ -29,6 +25,8 @@ IF(${USE_LIGGGHTS})
 ENDIF()
 
 vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
+
+vf_add_tests()
 
 vf_get_library_name(library_name)
 

@@ -45,13 +45,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/LbmOrGks.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -74,6 +72,7 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -97,29 +96,21 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
 
         vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
-        const int numberOfProcesses = communicator.getNummberOfProcess();
+        const int numberOfProcesses = communicator.getNumberOfProcess();
         SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, communicator.getPID());
         std::vector<uint> devices(10);
         std::iota(devices.begin(), devices.end(), 0);
         para->setDevices(devices);
-        para->setMaxDev(communicator.getNummberOfProcess());
+        para->setMaxDev(communicator.getNumberOfProcess());
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
         //////////////////////////////////////////////////////////////////////////
         // setup logger
         //////////////////////////////////////////////////////////////////////////
 
-        std::ofstream logFile("output/log_process" + std::to_string(vf::gpu::Communicator::getInstance().getPID()) +
-                              ".txt");
-        logging::Logger::addStream(&logFile);
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
         vf::logging::Logger::changeLogPath("output/vflog_process" +
                                            std::to_string(vf::gpu::Communicator::getInstance().getPID()) + ".txt");
-        vf::logging::Logger::initalizeLogger();
+        vf::logging::Logger::initializeLogger();
 
         //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator
@@ -166,7 +157,7 @@ int main(int argc, char *argv[])
         para->setTimestepEnd(timeStepEnd);
 
         para->setOutputPrefix("ChannelFlow");
-        para->setMainKernel("CumulantK17CompChimStream");
+        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
         const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
         real overlap = (real)8.0 * dx;
@@ -202,7 +193,7 @@ int main(int argc, char *argv[])
             // build grids
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             //////////////////////////////////////////////////////////////////////////
             // configure communication neighbors

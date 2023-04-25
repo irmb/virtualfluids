@@ -1,20 +1,17 @@
 #include "BGK.h"
 
 
-#include <basics/Core/DataTypes.h>
-#include <basics/Core/RealConstants.h>
+#include <basics/DataTypes.h>
 
 #include "constants/NumericConstants.h"
 #include "constants/D3Q27.h"
 
 #include "MacroscopicQuantities.h"
 
-namespace vf
-{
-namespace lbm
+namespace vf::lbm
 {
 
-using namespace constant;
+using namespace vf::basics::constant;
 
 
 
@@ -61,7 +58,7 @@ __host__ __device__ void bgk(KernelParameter parameter)
     //! - Acquire macroscopic quantities
     const real drho = getDensity(distribution.f);
     const real rho = c1o1 + drho;
-    const real OOrho = constant::c1o1 / (constant::c1o1 + drho);    
+    const real OOrho = c1o1 / (c1o1 + drho);    
 
     const real vvx = getIncompressibleVelocityX1(distribution.f) * OOrho;
     const real vvy = getIncompressibleVelocityX2(distribution.f) * OOrho;
@@ -135,6 +132,5 @@ __host__ __device__ void bgk(KernelParameter parameter)
 }
 
 
-}
 }
 
