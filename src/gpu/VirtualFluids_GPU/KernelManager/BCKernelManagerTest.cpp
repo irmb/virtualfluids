@@ -19,55 +19,85 @@ protected:
     }
 };
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, velocityBoundaryConditionPost_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, velocityBoundaryConditionPostNotSpecified_noBoundaryNodes_doesNotThrow)
 {
-    para->getParD(0)->velocityBC.numberOfBCnodes = 1;
-    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
     para->getParD(0)->velocityBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, noSlipBoundaryConditionPost_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, velocityBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
 {
-    para->getParD(0)->noSlipBC.numberOfBCnodes = 1;
-    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory)); // no throw, as a default is specified
+    para->getParD(0)->velocityBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, noSlipBoundaryConditionPostNotSpecified_noBoundaryNodes_doesNotThrow)
+{
     para->getParD(0)->noSlipBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, slipBoundaryConditionPost_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, noSlipBoundaryConditionPostNotSpecified_withBoundaryNodes_doesNotThrow)
 {
-    para->getParD(0)->slipBC.numberOfBCnodes = 1;
-    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+    para->getParD(0)->noSlipBC.numberOfBCnodes = 1;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory)); // no throw, as a default is specified
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, slipBoundaryConditionPostNotSpecified_noBoundaryNodes_doesNotThrow)
+{
     para->getParD(0)->slipBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, pressureBoundaryConditionPre_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, slipBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
 {
-    para->getParD(0)->pressureBC.numberOfBCnodes = 1;
+    para->getParD(0)->slipBC.numberOfBCnodes = 1;
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, pressureBoundaryConditionPreNotSpecified_noBoundaryNodes_doesNotThrow)
+{
     para->getParD(0)->pressureBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, geometryBoundaryConditionPost_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, pressureBoundaryConditionPreNotSpecified_withBoundaryNodes_throws)
 {
-    para->getParD(0)->geometryBC.numberOfBCnodes = 1;
-    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory)); // no throw, as a default is specified
+    para->getParD(0)->pressureBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, geometryBoundaryConditionPostNotSpecified_noBoundaryNodes_doesNotThrow)
+{
     para->getParD(0)->geometryBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, stressBoundaryConditionPost_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, geometryBoundaryConditionPostNotSpecified_withBoundaryNodes_doesNotThrow)
 {
-    para->getParD(0)->stressBC.numberOfBCnodes = 1;
-    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+    para->getParD(0)->geometryBC.numberOfBCnodes = 1;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory)); // no throw, as a default is specified
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, stressBoundaryConditionPostNotSpecified_noBoundaryNodes_doesNotThrow)
+{
     para->getParD(0)->stressBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
 }
 
-TEST_F(BCKernelManagerTest_BCsNotSpecified, precursorBoundaryConditionPost_NotSpecified)
+TEST_F(BCKernelManagerTest_BCsNotSpecified, stressBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
+{
+    para->getParD(0)->stressBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, precursorBoundaryConditionPostNotSpecified_noBoundaryNodes_doesNotThrow)
+{
+    para->getParD(0)->precursorBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BCKernelManager(para, &bcFactory));
+}
+
+TEST_F(BCKernelManagerTest_BCsNotSpecified, precursorBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
 {
     para->getParD(0)->precursorBC.numberOfBCnodes = 1;
     EXPECT_THROW(BCKernelManager(para, &bcFactory), std::runtime_error);
