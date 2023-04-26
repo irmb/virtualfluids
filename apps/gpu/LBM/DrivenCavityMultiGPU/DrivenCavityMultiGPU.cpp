@@ -60,7 +60,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(std::filesystem::path& configPath)
+void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
@@ -68,9 +68,6 @@ void multipleLevel(std::filesystem::path& configPath)
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    vf::basics::ConfigurationFile config;
-    std::cout << configPath << std::endl;
-    config.load(configPath.string());
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
@@ -519,20 +516,9 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
-            //////////////////////////////////////////////////////////////////////////
-            // assuming that a config files is stored parallel to this file.
-            std::filesystem::path configPath = __FILE__;
-
-            // the config file's default name can be replaced by passing a command line argument
-            std::string configName("configDrivenCavityMultiGPU.txt");
-            if (argc == 2) {
-                configName = argv[1];
-                std::cout << "Using configFile command line argument: " << configName << std::endl;
-            }
-
-            configPath.replace_filename(configName);
-
-            multipleLevel(configPath);
+            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/DrivenCavityMultiGPU/configDrivenCavityMultiGPU.txt");
+            runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////
         } catch (const spdlog::spdlog_ex &ex) {
