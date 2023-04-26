@@ -27,7 +27,7 @@ cd ..
 mkdir -p output
 
 echo $'\n\n\n\n---First test: DrivenCavityMultiGPU on 4 GPUs\n\n'
-mpirun -np 4 "./build/bin/DrivenCavityMultiGPU" "configPhoenix4GPU_regressionTest.txt"
+mpirun -np 4 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/LBM/DrivenCavityMultiGPU/configPhoenix4GPU_regressionTest.txt"
 
 echo $'\n\n\n\n---Second test: SphereScaling on 4 GPUs\n\n'
-mpirun -np 4 "./build/bin/SphereScaling"        "configPhoenix4GPU_regressionTest.txt"
+mpirun -np 4 "./build/bin/SphereScaling"        "apps/gpu/LBM/SphereScaling/configPhoenix4GPU_regressionTest.txt"
