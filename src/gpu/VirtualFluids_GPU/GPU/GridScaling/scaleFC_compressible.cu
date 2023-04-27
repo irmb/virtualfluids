@@ -58,15 +58,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     Distributions27 distCoarse;
     vf::gpu::getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
-    vf::gpu::ListIndices indices;
-    indices.k_000 = indicesCoarse000[nodeIndex];
-    indices.k_M00 = neighborXcoarse [indices.k_000];
-    indices.k_0M0 = neighborYcoarse [indices.k_000];
-    indices.k_00M = neighborZcoarse [indices.k_000];
-    indices.k_MM0 = neighborYcoarse [indices.k_M00];
-    indices.k_M0M = neighborZcoarse [indices.k_M00];
-    indices.k_0MM = neighborZcoarse [indices.k_0M0];
-    indices.k_MMM = neighborZcoarse [indices.k_MM0];
+    vf::gpu::ListIndices indices(indicesCoarse000[nodeIndex], neighborXcoarse, neighborYcoarse, neighborZcoarse);
 
     const real epsilon_new = c2o1; // ratio of grid resolutions
     const real omega_coarse_new = hasTurbulentViscosity ? vf::gpu::calculateOmega(omega_coarse, turbulentViscosityCoarse[indices.k_000]) : omega_coarse;

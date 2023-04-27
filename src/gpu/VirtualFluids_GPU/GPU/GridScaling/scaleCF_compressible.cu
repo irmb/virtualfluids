@@ -369,7 +369,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     real f_coarse[27];
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_MMM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -387,7 +387,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_MMP(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -405,7 +405,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_PMP(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -423,7 +423,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_PMM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -451,7 +451,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_MPM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -469,7 +469,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_MPP(f_coarse, omegaC);
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
@@ -486,7 +486,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_PPP(f_coarse, omegaC);
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -503,7 +503,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    readDistributionFromList(f_coarse, distCoarse, indices);
+    read(f_coarse, distCoarse, indices);
     moments_set.calculate_PPM(f_coarse, omegaC);
     // should be extractel until this line
     // - ###################################################################

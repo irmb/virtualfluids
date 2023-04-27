@@ -101,7 +101,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     real f_fine[27];
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_MMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_MMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_PMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_PMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -183,7 +183,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_MPM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -201,7 +201,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_MPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -219,7 +219,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
 
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_PPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -237,7 +237,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    readDistributionFromList(f_fine, distFine, indices);
+    read(f_fine, distFine, indices);
     moments_set.calculate_PPM(f_fine, omega_);
 }
 

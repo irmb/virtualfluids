@@ -201,8 +201,21 @@ __inline__ __device__ bool isValidFluidNode(uint nodeType)
     return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
 
-struct ListIndices 
+
+struct ListIndices
 {
+    __device__ ListIndices(unsigned int k, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ)
+    {
+        k_000 = k;
+        k_M00 = neighborX[k_000];
+        k_0M0 = neighborY[k_000];
+        k_00M = neighborZ[k_000];
+        k_MM0 = neighborY[k_M00];
+        k_M0M = neighborZ[k_M00];
+        k_0MM = neighborZ[k_0M0];
+        k_MMM = neighborZ[k_MM0];
+    }
+
     unsigned int k_000 { 0 };
     unsigned int k_M00 { 0 };
     unsigned int k_0M0 { 0 };
@@ -213,7 +226,13 @@ struct ListIndices
     unsigned int k_MMM { 0 };
 };
 
-__device__ __inline__ void readDistributionFromList(real *f, const Distributions27 &dist, const ListIndices &indices)
+
+////////////////////////////////////////////////////////////////////////////////////
+//! - Read distributions: style of reading and writing the distributions from/to
+//! stored arrays dependent on timestep is based on the esoteric twist algorithm
+//! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
+//! DOI:10.3390/computation5020019 ]</b></a>
+__device__ __inline__ void read(real *f, const Distributions27 &dist, const ListIndices &indices)
 {
     f[DIR_000] = (dist.f[DIR_000])[indices.k_000];
     f[DIR_P00] = (dist.f[DIR_P00])[indices.k_000];
@@ -242,6 +261,12 @@ __device__ __inline__ void readDistributionFromList(real *f, const Distributions
     f[DIR_MPM] = (dist.f[DIR_MPM])[indices.k_M0M];
     f[DIR_PMM] = (dist.f[DIR_PMM])[indices.k_0MM];
     f[DIR_MMM] = (dist.f[DIR_MMM])[indices.k_MMM];
+}
+
+__device__ __inline__ void readInverse(real *f, const Distributions27 &dist, const ListIndices &indices)
+{
+    //TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/101
+    assert(false) || !fprintf(stderr, "Not implemented yet.\n")); 
 }
 
 
@@ -280,6 +305,14 @@ __inline__ __device__ void write(Distributions27 &destination, const ListIndices
     (destination.f[DIR_PMM])[indices.k_0MM] = f[DIR_PMM];
     (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_MMM];
 }
+
+__inline__ __device__ void writeInverse(Distributions27 &destination, const ListIndices &indices, const real* f)
+{
+    //TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/101
+    assert(false) || !fprintf(stderr, "Not implemented yet.\n")); 
+}
+
+
 
 
 __inline__ __device__ real calculateOmega(const real omega_old, real turbulenceViscosity)
