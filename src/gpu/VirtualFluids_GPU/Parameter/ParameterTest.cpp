@@ -11,7 +11,7 @@
 
 #include "Factories/BoundaryConditionFactory.h"
 #include "Factories/GridScalingFactory.h"
-#include "Communication/MpiCommunicator.h"
+#include "Communication/Communicator.h"
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -250,6 +250,51 @@ TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingIni
     EXPECT_THAT(para->getParH(1), testing::Ne(nullptr));
 }
 
+class MockCommunicator : public vf::gpu::Communicator
+{
+public:
+    void waitAll(){};
+    int getPID() const override
+    {
+        return 0;
+    };
+    int getNumberOfProcess() const
+    {
+        return 1;
+    };
+    void exchngData(float *sbuf_t, float *rbuf_t, float *sbuf_b, float *rbuf_b, int count){};
+    //////////////////////////////////////////////////////////////////////////
+    void exchngDataGPU(real *sbuf, int count_s, real *rbuf, int count_r, int nb_rank){};
+    void nbRecvDataGPU(real *rbuf, int count_r, int nb_rank){};
+    void nbSendDataGPU(real *sbuf, int count_s, int nb_rank){};
+    void waitallGPU(){};
+    void sendDataGPU(real *sbuf, int count_s, int nb_rank){};
+    void waitGPU(int id){};
+    void resetRequest(){};
+    //////////////////////////////////////////////////////////////////////////
+    void startTimer(){};
+    void stopTimer(){};
+    double getTime()
+    {
+        return 0.0;
+    };
+    int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev)
+    {
+        return 0;
+    };
+    std::vector<double> gatherNUPS(double processNups)
+    {
+        return {};
+    };
+    double sumNups(double processNups)
+    {
+        return 0;
+    };
+    //////////////////////////////////////////////////////////////////////////
+    void receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send, int size_buffer_send, int neighbor_rank_send) const override{};
+
+};
+
 TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingSimulationConstructor_shouldNotThrow)
 {
     spdlog::set_level(spdlog::level::warn); // avoids logger spam in output
@@ -258,7 +303,7 @@ TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingSim
     para->setMaxLevel(2);
 
     SPtr<CudaMemoryManager> cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
-    vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+    MockCommunicator communicator = MockCommunicator();
     auto gridFactory = GridFactory::make();
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     SPtr<GridProvider> gridGenerator =
