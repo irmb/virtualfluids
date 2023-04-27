@@ -8,6 +8,7 @@
 #endif
 
 #include "VirtualFluids.h"
+#include "MultiphaseFlow/MultiphaseFlow.h"
 
 using namespace std;
 

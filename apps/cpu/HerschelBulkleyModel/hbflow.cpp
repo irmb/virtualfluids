@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include <VirtualFluids.h>
+#include "VirtualFluids.h"
+#include "NonNewtonianFluids/NonNewtonianFluids.h"
 
 using namespace std;
 

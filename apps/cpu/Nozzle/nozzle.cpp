@@ -4,12 +4,11 @@
 
 #include "VirtualFluids.h"
 
-#include "LiggghtsCoupling/LiggghtsCouplingSimulationObserver.h"
-#include "LiggghtsCoupling/LiggghtsCouplingWrapper.h"
-#include "LiggghtsCoupling/IBcumulantK17LBMKernel.h"
-#include "MultiphaseFlow/BoundaryConditions/MultiphasePressureBCStrategy.h"
-#include "MultiphaseFlow/LBM/MultiphaseSharpInterfaceLBMKernel.h"
-#include "MultiphaseFlow/SimulationObservers/WriteSharpInterfaceQuantitiesSimulationObserver.h"
+#include "LiggghtsCoupling/LiggghtsCoupling.h"
+
+#include "MultiphaseFlow/MultiphaseFlow.h"
+
+#include "NonNewtonianFluids/NonNewtonianFluids.h"
 
 using namespace std;
 

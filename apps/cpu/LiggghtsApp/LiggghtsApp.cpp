@@ -10,9 +10,7 @@
 //#include "modify.h"
 //#include "fix_lb_coupling_onetoone.h"
 
-#include "LiggghtsCouplingSimulationObserver.h"
-#include "LiggghtsCouplingWrapper.h"
-#include "IBcumulantK17LBMKernel.h"
+#include "LiggghtsCoupling/LiggghtsCoupling.h"
 
 using namespace std;
 

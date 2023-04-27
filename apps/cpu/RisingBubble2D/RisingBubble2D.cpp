@@ -8,10 +8,8 @@
 #endif
 
 #include "VirtualFluids.h"
-
-#include "LBM/MultiphaseSharpInterfaceLBMKernel.h"
-#include "LBM/MultiphaseScaleDistributionLBMKernel.h"
-#include "SimulationObservers/WriteSharpInterfaceQuantitiesSimulationObserver.h"
+#include "MultiphaseFlow/MultiphaseFlow.h"
+#include "NonNewtonianFluids/NonNewtonianFluids.h"
 
 using namespace std;
 

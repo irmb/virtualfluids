@@ -4,9 +4,7 @@
 
 #include "VirtualFluids.h"
 
-#include "LiggghtsCouplingSimulationObserver.h"
-#include "LiggghtsCouplingWrapper.h"
-#include "IBcumulantK17LBMKernel.h"
+#include "LiggghtsCoupling/LiggghtsCoupling.h"
 
 using namespace std;
 
