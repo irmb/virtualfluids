@@ -11,7 +11,7 @@
 
 #include "Factories/BoundaryConditionFactory.h"
 #include "Factories/GridScalingFactory.h"
-#include "Communication/Communicator.h"
+#include "Communication/MpiCommunicator.h"
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -258,7 +258,7 @@ TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingSim
     para->setMaxLevel(2);
 
     SPtr<CudaMemoryManager> cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
-    vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
     auto gridFactory = GridFactory::make();
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     SPtr<GridProvider> gridGenerator =
