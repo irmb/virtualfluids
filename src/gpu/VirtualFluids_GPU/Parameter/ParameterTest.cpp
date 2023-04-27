@@ -253,45 +253,45 @@ TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingIni
 class MockCommunicator : public vf::gpu::Communicator
 {
 public:
-    void waitAll(){};
+    void waitAll() override {};
     int getPID() const override
     {
         return 0;
     };
-    int getNumberOfProcess() const
+    int getNumberOfProcess() const override
     {
         return 1;
     };
-    void exchngData(float *sbuf_t, float *rbuf_t, float *sbuf_b, float *rbuf_b, int count){};
+    void exchngData(float *sbuf_t, float *rbuf_t, float *sbuf_b, float *rbuf_b, int count) override {};
     //////////////////////////////////////////////////////////////////////////
-    void exchngDataGPU(real *sbuf, int count_s, real *rbuf, int count_r, int nb_rank){};
-    void nbRecvDataGPU(real *rbuf, int count_r, int nb_rank){};
-    void nbSendDataGPU(real *sbuf, int count_s, int nb_rank){};
-    void waitallGPU(){};
-    void sendDataGPU(real *sbuf, int count_s, int nb_rank){};
-    void waitGPU(int id){};
-    void resetRequest(){};
+    void exchngDataGPU(real *sbuf, int count_s, real *rbuf, int count_r, int nb_rank) override {};
+    void nbRecvDataGPU(real *rbuf, int count_r, int nb_rank) override {};
+    void nbSendDataGPU(real *sbuf, int count_s, int nb_rank) override {};
+    void waitallGPU() override {};
+    void sendDataGPU(real *sbuf, int count_s, int nb_rank) override {};
+    void waitGPU(int id) override {};
+    void resetRequest() override {};
     //////////////////////////////////////////////////////////////////////////
-    void startTimer(){};
-    void stopTimer(){};
-    double getTime()
+    void startTimer() override {};
+    void stopTimer() override {};
+    double getTime() override
     {
         return 0.0;
     };
-    int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev)
+    int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev) override
     {
         return 0;
     };
-    std::vector<double> gatherNUPS(double processNups)
+    std::vector<double> gatherNUPS(double processNups) override
     {
         return {};
     };
-    double sumNups(double processNups)
+    double sumNups(double processNups) override
     {
         return 0;
     };
     //////////////////////////////////////////////////////////////////////////
-    void receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send, int size_buffer_send, int neighbor_rank_send) const override{};
+    void receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send, int size_buffer_send, int neighbor_rank_send) const override {};
 
 };
 

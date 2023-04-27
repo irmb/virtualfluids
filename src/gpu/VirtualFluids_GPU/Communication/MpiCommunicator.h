@@ -27,7 +27,7 @@ public:
     static MpiCommunicator &getInstance();
     MpiCommunicator(const MpiCommunicator &) = delete;
     MpiCommunicator &operator=(const MpiCommunicator &) = delete;
-    ~MpiCommunicator() override;\
+    ~MpiCommunicator() override;
 
     void exchngBottomToTop(float *sbuf, float *rbuf, int count);
     void exchngTopToBottom(float *sbuf, float *rbuf, int count);
