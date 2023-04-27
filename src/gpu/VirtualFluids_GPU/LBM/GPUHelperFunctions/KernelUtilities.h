@@ -35,6 +35,8 @@
 
 #include "LBM/LB.h"
 
+#include <assert.h>
+
 #include <lbm/constants/D3Q27.h>
 #include <basics/constants/NumericConstants.h>
 
@@ -204,6 +206,7 @@ __inline__ __device__ bool isValidFluidNode(uint nodeType)
 
 struct ListIndices
 {
+    __device__ ListIndices() {}
     __device__ ListIndices(unsigned int k, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ)
     {
         k_000 = k;
@@ -266,7 +269,7 @@ __device__ __inline__ void read(real *f, const Distributions27 &dist, const List
 __device__ __inline__ void readInverse(real *f, const Distributions27 &dist, const ListIndices &indices)
 {
     //TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/101
-    assert(false) || !fprintf(stderr, "Not implemented yet.\n")); 
+    assert((false) || !fprintf(stderr, "Not implemented yet.\n")); 
 }
 
 
@@ -309,7 +312,7 @@ __inline__ __device__ void write(Distributions27 &destination, const ListIndices
 __inline__ __device__ void writeInverse(Distributions27 &destination, const ListIndices &indices, const real* f)
 {
     //TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/101
-    assert(false) || !fprintf(stderr, "Not implemented yet.\n")); 
+    assert((false) || !fprintf(stderr, "Not implemented yet.\n")); 
 }
 
 
