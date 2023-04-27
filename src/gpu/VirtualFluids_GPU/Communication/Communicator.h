@@ -2,21 +2,10 @@
 #define COMMUNICATOR_GPU_H
 
 #include <vector>
-
-#include <mpi.h>
-
-#include "VirtualFluids_GPU_export.h"
-
-#include "CommunicationRoutine.h"
 #include <basics/DataTypes.h>
 
-//////////////////////////////////
-#ifdef VF_DOUBLE_ACCURACY
-#define MPI_Type_GPU MPI_DOUBLE
-#else
-#define MPI_Type_GPU MPI_FLOAT
-#endif
-//////////////////////////////////
+#include "VirtualFluids_GPU_export.h"
+#include "CommunicationRoutine.h"
 
 namespace vf::gpu
 {
