@@ -25,11 +25,9 @@
 SET(VFCPU_USE_METIS ON CACHE BOOL "include METIS library support")
 SET(VFCPU_USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(VFCPU_USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
-
 SET(VFCPU_USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
-SET(VFCPU_USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
-SET(VFCPU_ENABLE_LiggghtsCoupling ON CACHE BOOL "enable coupling with LIGGGHTS library")
+SET(VFCPU_ENABLE_LiggghtsCoupling OFF CACHE BOOL "enable coupling with LIGGGHTS library")
 SET(VFCPU_ENABLE_NonNewtonianFluids ON CACHE BOOL "enable non-Newtonian fluids module")
 SET(VFCPU_ENABLE_MultiphaseFlow ON CACHE BOOL "enable multiphase flow module")
 

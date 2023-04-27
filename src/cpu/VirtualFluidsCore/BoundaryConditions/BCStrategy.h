@@ -72,6 +72,7 @@ public:
     static const char MultiphaseVelocityBCStrategy                 = 21;
     static const char NonReflectingInflowBCStrategy                = 22;
     static const char NonReflectingOutflowWithRelaxationBCStrategy = 23;
+    static const char MultiphasePressureBCStrategy                 = 24;
 
 public:
     BCStrategy() = default;

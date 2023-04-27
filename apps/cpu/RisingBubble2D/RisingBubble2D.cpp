@@ -149,8 +149,8 @@ void run(string configname)
         // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
-        kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
-        //kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
+        //kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
+        kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
         mu::Parser fgr;
         fgr.SetExpr("-rho*g_y");
         fgr.DefineConst("g_y", g_y);
