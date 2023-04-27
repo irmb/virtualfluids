@@ -31,35 +31,35 @@ public:
 
     void exchngBottomToTop(float *sbuf, float *rbuf, int count);
     void exchngTopToBottom(float *sbuf, float *rbuf, int count);
-    void waitAll();
+    void waitAll() override;
     void distributeGeometry(unsigned int *dataRoot, unsigned int *dataNode, int dataSizePerNode);
     int getPID() const override;
-    int getNumberOfProcess() const;
+    int getNumberOfProcess() const override;
     int getNeighbourTop();
     int getNeighbourBottom();
-    void exchngData(float *sbuf_t, float *rbuf_t, float *sbuf_b, float *rbuf_b, int count);
+    void exchngData(float *sbuf_t, float *rbuf_t, float *sbuf_b, float *rbuf_b, int count) override;
     void exchngDataNB(float *sbuf_t, int count_st, float *rbuf_t, int count_rt, float *sbuf_b, int count_sb,
                       float *rbuf_b, int count_rb);
     //////////////////////////////////////////////////////////////////////////
-    void exchngDataGPU(real *sbuf, int count_s, real *rbuf, int count_r, int nb_rank);
+    void exchngDataGPU(real *sbuf, int count_s, real *rbuf, int count_r, int nb_rank) override;
     void sendRecvGPU(real *sbuf, int count_s, real *rbuf, int count_r, int nb_rank);
-    void nbRecvDataGPU(real *rbuf, int count_r, int nb_rank);
-    void nbSendDataGPU(real *sbuf, int count_s, int nb_rank);
-    void waitallGPU();
-    void sendDataGPU(real *sbuf, int count_s, int nb_rank);
-    void waitGPU(int id);
-    void resetRequest();
+    void nbRecvDataGPU(real *rbuf, int count_r, int nb_rank) override;
+    void nbSendDataGPU(real *sbuf, int count_s, int nb_rank) override;
+    void waitallGPU() override;
+    void sendDataGPU(real *sbuf, int count_s, int nb_rank) override;
+    void waitGPU(int id) override;
+    void resetRequest() override;
     void barrierGPU();
     void barrier();
     //////////////////////////////////////////////////////////////////////////
     void exchngDataGeo(int *sbuf_t, int *rbuf_t, int *sbuf_b, int *rbuf_b, int count);
     MPI_Comm getMpiCommunicator();
-    void startTimer();
-    void stopTimer();
-    double getTime();
-    int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev);
-    std::vector<double> gatherNUPS(double processNups);
-    double sumNups(double processNups);
+    void startTimer() override;
+    void stopTimer() override;
+    double getTime() override;
+    int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev) override;
+    std::vector<double> gatherNUPS(double processNups) override;
+    double sumNups(double processNups) override;
     //////////////////////////////////////////////////////////////////////////
     void receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
                       int size_buffer_send, int neighbor_rank_send) const override;
