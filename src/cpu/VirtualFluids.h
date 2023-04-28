@@ -212,7 +212,6 @@
 #include <LBM/Interpolation/CompressibleOffsetMomentsInterpolationProcessor.h>
 #include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolationProcessor.h>
 #include <LBM/Interpolation/IncompressibleOffsetInterpolationProcessor.h>
-#include <LBM/Interpolation/InterpolationHelper.h>
 #include <LBM/Interpolation/InterpolationProcessor.h>
 #include <IncompressibleCumulantWithSpongeLayerLBMKernel.h>
 #include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>

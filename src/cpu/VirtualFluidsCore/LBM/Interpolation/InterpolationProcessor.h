@@ -22,7 +22,6 @@ struct D3Q27ICell {
 class InterpolationProcessor;
 using InterpolationProcessorPtr = std::shared_ptr<InterpolationProcessor>;
 
-#include "InterpolationHelper.h"
 
 class InterpolationProcessor
 {
