@@ -70,8 +70,6 @@ private:
     std::vector<MPI_Request> requestGPU;
     int rcount;
     //////////////////////////////////////////////////////////////////////////
-    double starttime;
-    double endtime;
     MpiCommunicator();
 };
 
