@@ -33,12 +33,12 @@
 #ifndef RheologyInterpolationProcessor_H_
 #define RheologyInterpolationProcessor_H_
 
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "D3Q27System.h"
 
 //! \brief A class implements an interpolation function of grid refinement for thixotropic fluid.
 
-class RheologyInterpolationProcessor : public InterpolationProcessor
+class RheologyInterpolationProcessor : public Interpolator
 {
 public:
    RheologyInterpolationProcessor();

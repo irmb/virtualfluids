@@ -208,11 +208,11 @@
 #include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
-#include <LBM/Interpolation/CompressibleOffsetInterpolationProcessor.h>
-#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolationProcessor.h>
-#include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolationProcessor.h>
-#include <LBM/Interpolation/IncompressibleOffsetInterpolationProcessor.h>
-#include <LBM/Interpolation/InterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetInterpolator.h>
+#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
+#include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolator.h>
+#include <LBM/Interpolation/IncompressibleOffsetInterpolator.h>
+#include <LBM/Interpolation/Interpolator.h>
 #include <IncompressibleCumulantWithSpongeLayerLBMKernel.h>
 #include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>

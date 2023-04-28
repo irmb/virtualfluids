@@ -1,5 +1,5 @@
-#ifndef INTERPOLATIONPROCESSOR_H
-#define INTERPOLATIONPROCESSOR_H
+#ifndef CPU_INTERPOLATER_H
+#define CPU_INTERPOLATER_H
 
 #include <memory>
 
@@ -19,14 +19,14 @@ struct D3Q27ICell {
     real BSE[27];
 };
 
-class InterpolationProcessor;
-using InterpolationProcessorPtr = std::shared_ptr<InterpolationProcessor>;
+class Interpolator;
+using InterpolationProcessorPtr = std::shared_ptr<Interpolator>;
 
 
-class InterpolationProcessor
+class Interpolator
 {
 public:
-    virtual ~InterpolationProcessor() = default;
+    virtual ~Interpolator() = default;
     virtual InterpolationProcessorPtr clone() = 0;
 
     virtual void setOmegas(real omegaC, real omegaF)                       = 0;

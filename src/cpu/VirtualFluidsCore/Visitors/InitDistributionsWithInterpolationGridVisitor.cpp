@@ -8,7 +8,7 @@
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "LBMKernel.h"
 #include <CbArray2D.h>
 #include <basics/utilities/UbFileInputASCII.h>

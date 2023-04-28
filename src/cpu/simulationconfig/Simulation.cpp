@@ -26,7 +26,7 @@
 #include <Simulation/Simulation.h>
 #include <Simulation/Grid3D.h>
 #include <Interactors/InteractorsHelper.h>
-#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
 #include <LBM/LBMKernel.h>
 #include <LBM/LBMUnitConverter.h>
 #include <mpi/MPICommunicator.h>

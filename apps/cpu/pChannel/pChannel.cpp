@@ -536,7 +536,7 @@ void run(string configname)
          grid->accept(initVisitor);
 
          ////set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -559,7 +559,7 @@ void run(string configname)
          migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 

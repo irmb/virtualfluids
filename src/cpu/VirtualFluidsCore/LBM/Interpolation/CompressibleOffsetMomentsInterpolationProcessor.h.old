@@ -1,7 +1,7 @@
 #ifndef CompressibleOffsetMomentsInterpolationProcessor_OLD_H_
 #define CompressibleOffsetMomentsInterpolationProcessor_OLD_H_
 
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "D3Q27System.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-class CompressibleOffsetMomentsInterpolationProcessor_old : public InterpolationProcessor
+class CompressibleOffsetMomentsInterpolationProcessor_old : public Interpolator
 {
 public:
    CompressibleOffsetMomentsInterpolationProcessor_old();

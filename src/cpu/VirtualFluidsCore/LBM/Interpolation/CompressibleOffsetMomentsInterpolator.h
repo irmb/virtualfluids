@@ -1,7 +1,7 @@
 #ifndef CompressibleOffsetMomentsInterpolationProcessor_H_
 #define CompressibleOffsetMomentsInterpolationProcessor_H_
 
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "D3Q27System.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -9,11 +9,11 @@
 //super compact interpolation method by Martin Geier
 //////////////////////////////////////////////////////////////////////////
 
-class CompressibleOffsetMomentsInterpolationProcessor : public InterpolationProcessor
+class CompressibleOffsetMomentsInterpolator : public Interpolator
 {
 public:
-    CompressibleOffsetMomentsInterpolationProcessor() = default;
-    CompressibleOffsetMomentsInterpolationProcessor(real omegaC, real omegaF);
+    CompressibleOffsetMomentsInterpolator() = default;
+    CompressibleOffsetMomentsInterpolator(real omegaC, real omegaF);
     InterpolationProcessorPtr clone() override;
 
     void setOmegas(real omegaC, real omegaF) override;
@@ -28,12 +28,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF)
+inline void CompressibleOffsetMomentsInterpolator::interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF)
 {
     this->interpolateCoarseToFine(icellC, icellF, 0.0, 0.0, 0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell &icellF, real *icellC)
+inline void CompressibleOffsetMomentsInterpolator::interpolateFineToCoarse(D3Q27ICell &icellF, real *icellC)
 {
     this->interpolateFineToCoarse(icellF, icellC, 0.0, 0.0, 0.0);
 }

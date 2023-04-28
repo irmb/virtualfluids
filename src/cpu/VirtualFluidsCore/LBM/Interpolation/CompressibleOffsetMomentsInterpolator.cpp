@@ -1,4 +1,4 @@
-#include "CompressibleOffsetMomentsInterpolationProcessor.h"
+#include "CompressibleOffsetMomentsInterpolator.h"
 
 #include <algorithm>
 
@@ -25,23 +25,23 @@ void calculateCoefficients(vf::lbm::Coefficients& coefficients, const D3Q27ICell
     moments_set.calculateCoefficients(coefficients, xoff, yoff, zoff);
 }
 
-CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor(real omegaC, real omegaF)
+CompressibleOffsetMomentsInterpolator::CompressibleOffsetMomentsInterpolator(real omegaC, real omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
 }
 
-InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone()
+InterpolationProcessorPtr CompressibleOffsetMomentsInterpolator::clone()
 {
-   return InterpolationProcessorPtr (new CompressibleOffsetMomentsInterpolationProcessor(this->omegaC, this->omegaF));
+   return InterpolationProcessorPtr (new CompressibleOffsetMomentsInterpolator(this->omegaC, this->omegaF));
 }
 
-void CompressibleOffsetMomentsInterpolationProcessor::setOmegas(real omegaC, real omegaF)
+void CompressibleOffsetMomentsInterpolator::setOmegas(real omegaC, real omegaF)
 {
    this->omegaC = omegaC;
    this->omegaF = omegaF;
 }
 
-void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
+void CompressibleOffsetMomentsInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
     vf::lbm::Coefficients coefficients;
     calculateCoefficients(coefficients, icellC, omegaC, xoff, yoff, zoff);
@@ -56,7 +56,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3
      vf::lbm::interpolate_cf(icellF.TNE, omegaF, vf::basics::constant::c1o2, coefficients,  0.25,  0.25,  0.25);
 }
 
-void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
+void CompressibleOffsetMomentsInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
     vf::lbm::Coefficients coefficients;
     calculateCoefficients(coefficients, icellF, omegaF, xoff, yoff, zoff);

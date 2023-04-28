@@ -1,4 +1,4 @@
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 
 
 struct Range
@@ -16,7 +16,7 @@ struct Range
 
 
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::readICell(SPtr<DistributionArray3D> f, D3Q27ICell &icell, int x1, int x2, int x3)
+void Interpolator::readICell(SPtr<DistributionArray3D> f, D3Q27ICell &icell, int x1, int x2, int x3)
 {
     f->getDistribution(icell.BSW, x1, x2, x3);
     f->getDistribution(icell.BSE, x1 + 1, x2, x3);
@@ -28,7 +28,7 @@ void InterpolationProcessor::readICell(SPtr<DistributionArray3D> f, D3Q27ICell &
     f->getDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeICell(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3)
+void Interpolator::writeICell(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3)
 {
     f->setDistribution(icell.BSW, x1, x2, x3);
     f->setDistribution(icell.BSE, x1 + 1, x2, x3);
@@ -40,7 +40,7 @@ void InterpolationProcessor::writeICell(SPtr<DistributionArray3D> f, const D3Q27
     f->setDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeICellInv(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3)
+void Interpolator::writeICellInv(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3)
 {
     f->setDistributionInv(icell.BSW, x1, x2, x3);
     f->setDistributionInv(icell.BSE, x1 + 1, x2, x3);
@@ -52,18 +52,18 @@ void InterpolationProcessor::writeICellInv(SPtr<DistributionArray3D> f, const D3
     f->setDistributionInv(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeINode(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2, int x3)
+void Interpolator::writeINode(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2, int x3)
 {
     f->setDistribution(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeINodeInv(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2,
+void Interpolator::writeINodeInv(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2,
                                            int x3)
 {
     f->setDistributionInv(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-bool InterpolationProcessor::iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3)
+bool Interpolator::iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3)
 {
     for (int ix3 = x3; ix3 <= x3 + 1; ix3++)
         for (int ix2 = x2; ix2 <= x2 + 1; ix2++)
@@ -74,7 +74,7 @@ bool InterpolationProcessor::iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1
     return false;
 }
 //////////////////////////////////////////////////////////////////////////
-bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SPtr<DistributionArray3D> f,
+bool Interpolator::findNeighborICell(const SPtr<BCArray3D> bcArray, SPtr<DistributionArray3D> f,
                                                D3Q27ICell &icell, int maxX1, int maxX2, int maxX3, int x1, int x2,
                                                int x3, real &xoff, real &yoff, real &zoff)
 {
@@ -90,7 +90,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     }
     // GoEast
     else if (inRange(x1 + 2, x2, x3) &&
-             !iCellHasSolid(bcArray, x1 + 1, x2, x3)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+             !iCellHasSolid(bcArray, x1 + 1, x2, x3)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2, x3);
         xoff = -1;
@@ -106,7 +106,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     }
     // GoNorth
     else if (inRange(x1, x2 + 2, x3) &&
-             !iCellHasSolid(bcArray, x1, x2 + 1, x3)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+             !iCellHasSolid(bcArray, x1, x2 + 1, x3)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1, x2 + 1, x3);
         xoff = 0;
@@ -122,7 +122,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     }
     // GoTop
     else if (inRange(x1, x2, x3 + 2) &&
-             !iCellHasSolid(bcArray, x1, x2, x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+             !iCellHasSolid(bcArray, x1, x2, x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1, x2, x3 + 1);
         xoff = 0;
@@ -132,7 +132,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoNW
     else if (inRange(x1 - 1, x2 + 2, x3) &&
              !iCellHasSolid(bcArray, x1 - 1, x2 + 1,
-                            x3)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 - 1, x2 + 1, x3);
         xoff = 1;
@@ -142,7 +142,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoNE
     else if (inRange(x1 + 2, x2 + 2, x3) &&
              !iCellHasSolid(bcArray, x1 + 1, x2 + 1,
-                            x3)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2 + 1, x3);
         xoff = -1;
@@ -152,7 +152,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoSW
     else if (inRange(x1 - 1, x2 - 1, x3) &&
              !iCellHasSolid(bcArray, x1 - 1, x2 - 1,
-                            x3)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 - 1, x2 - 1, x3);
         xoff = 1;
@@ -162,7 +162,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoSE
     else if (inRange(x1 + 2, x2 - 1, x3) &&
              !iCellHasSolid(bcArray, x1 + 1, x2 - 1,
-                            x3)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2 - 1, x3);
         xoff = -1;
@@ -179,7 +179,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoBE
     else if (inRange(x1 + 2, x2, x3 - 1) &&
              !iCellHasSolid(bcArray, x1 + 1, x2,
-                            x3 - 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 - 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2, x3 - 1);
         xoff = -1;
@@ -196,7 +196,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoBN
     else if (inRange(x1, x2 + 2, x3 - 1) &&
              !iCellHasSolid(bcArray, x1, x2 + 1,
-                            x3 - 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 - 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1, x2 + 1, x3 - 1);
         xoff = 0;
@@ -213,7 +213,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoTE
     else if (inRange(x1 + 2, x2, x3 + 2) &&
              !iCellHasSolid(bcArray, x1 + 1, x2,
-                            x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2, x3 + 1);
         xoff = -1;
@@ -230,7 +230,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoTN
     else if (inRange(x1, x2 + 2, x3 + 2) &&
              !iCellHasSolid(bcArray, x1, x2 + 1,
-                            x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1, x2 + 1, x3 + 1);
         xoff = 0;
@@ -240,7 +240,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoTNW
     else if (inRange(x1 - 1, x2 + 2, x3 + 2) &&
              !iCellHasSolid(bcArray, x1 - 1, x2 + 1,
-                            x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 - 1, x2 + 1, x3 + 1);
         xoff = 1;
@@ -250,7 +250,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoTNE
     else if (inRange(x1 + 2, x2 + 2, x3 + 2) &&
              !iCellHasSolid(bcArray, x1 + 1, x2 + 1,
-                            x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2 + 1, x3 + 1);
         xoff = -1;
@@ -260,7 +260,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoTSE
     else if (inRange(x1 + 2, x2 - 1, x3 + 2) &&
              !iCellHasSolid(bcArray, x1 + 1, x2 - 1,
-                            x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2 - 1, x3 + 1);
         xoff = -1;
@@ -270,7 +270,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoTSW
     else if (inRange(x1 - 1, x2 - 1, x3 + 2) &&
              !iCellHasSolid(bcArray, x1 - 1, x2 - 1,
-                            x3 + 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 + 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 - 1, x2 - 1, x3 + 1);
         xoff = 1;
@@ -280,7 +280,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoBNW
     else if (inRange(x1 - 1, x2 + 2, x3 - 1) &&
              !iCellHasSolid(bcArray, x1 - 1, x2 + 1,
-                            x3 - 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 - 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 - 1, x2 + 1, x3 - 1);
         xoff = 1;
@@ -290,7 +290,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoBNE
     else if (inRange(x1 + 2, x2 + 2, x3 - 1) &&
              !iCellHasSolid(bcArray, x1 + 1, x2 + 1,
-                            x3 - 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 - 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2 + 1, x3 - 1);
         xoff = -1;
@@ -300,7 +300,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoBSE
     else if (inRange(x1 + 2, x2 - 1, x3 - 1) &&
              !iCellHasSolid(bcArray, x1 + 1, x2 - 1,
-                            x3 - 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 - 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 + 1, x2 - 1, x3 - 1);
         xoff = -1;
@@ -310,7 +310,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     // GoBSW
     else if (inRange(x1 - 1, x2 - 1, x3 - 1) &&
              !iCellHasSolid(bcArray, x1 - 1, x2 - 1,
-                            x3 - 1)) // ist �bern�chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+                            x3 - 1)) // is next but one node in area (base node at 0,0,0)
     {
         readICell(f, icell, x1 - 1, x2 - 1, x3 - 1);
         xoff = 1;
@@ -330,7 +330,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
     return true;
 }
 //////////////////////////////////////////////////////////////////////////
-int InterpolationProcessor::iCellHowManySolids(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3)
+int Interpolator::iCellHowManySolids(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3)
 {
     int count = 0;
     for (int ix3 = x3; ix3 <= x3 + 1; ix3++)

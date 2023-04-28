@@ -1,10 +1,10 @@
-#include "CompressibleOffsetSquarePressureInterpolationProcessor.h"
+#include "CompressibleOffsetSquarePressureInterpolator.h"
 #include "D3Q27System.h"
 
 //using namespace UbMath;
 using namespace vf::basics::constant;
 
-CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquarePressureInterpolationProcessor()
+CompressibleOffsetSquarePressureInterpolator::CompressibleOffsetSquarePressureInterpolator()
     
 {
    this->bulkOmegaToOmega = false;
@@ -12,7 +12,7 @@ CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquare
    this->OxxPyyPzzF = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquarePressureInterpolationProcessor(real omegaC, real omegaF)
+CompressibleOffsetSquarePressureInterpolator::CompressibleOffsetSquarePressureInterpolator(real omegaC, real omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
    this->bulkOmegaToOmega = false;
@@ -20,32 +20,32 @@ CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquare
    this->OxxPyyPzzF = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleOffsetSquarePressureInterpolationProcessor::~CompressibleOffsetSquarePressureInterpolationProcessor()
+CompressibleOffsetSquarePressureInterpolator::~CompressibleOffsetSquarePressureInterpolator()
 = default;
 //////////////////////////////////////////////////////////////////////////
-InterpolationProcessorPtr CompressibleOffsetSquarePressureInterpolationProcessor::clone()
+InterpolationProcessorPtr CompressibleOffsetSquarePressureInterpolator::clone()
 {
-   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetSquarePressureInterpolationProcessor(this->omegaC, this->omegaF));
+   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetSquarePressureInterpolator(this->omegaC, this->omegaF));
    if (bulkOmegaToOmega)
    {
-      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolationProcessor>(iproc)->OxxPyyPzzC = omegaC;
-      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolationProcessor>(iproc)->OxxPyyPzzF = omegaF;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzC = omegaC;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzF = omegaF;
    }
    else
    {
-      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolationProcessor>(iproc)->OxxPyyPzzC = c1o1;
-      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolationProcessor>(iproc)->OxxPyyPzzF = c1o1;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzC = c1o1;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzF = c1o1;
    }
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::setOmegas( real omegaC, real omegaF )
+void CompressibleOffsetSquarePressureInterpolator::setOmegas( real omegaC, real omegaF )
 {
    this->omegaC = omegaC;
    this->omegaF = omegaF;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::setOffsets(real xoff, real yoff, real zoff)
+void CompressibleOffsetSquarePressureInterpolator::setOffsets(real xoff, real yoff, real zoff)
 {
    this->xoff = xoff;
    this->yoff = yoff;
@@ -55,7 +55,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::setOffsets(real xof
    this->zoff_sq = zoff * zoff;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
+void CompressibleOffsetSquarePressureInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
    calcInterpolatedCoefficiets(icellC, omegaC, c1o2);
@@ -69,14 +69,14 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::interpolateCoarseTo
    calcInterpolatedNodeCF(icellF.TNE, omegaF,  c1o4,  c1o4,  c1o4, calcPressTNE(),  c1o1,  c1o1,  c1o1);
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
+void CompressibleOffsetSquarePressureInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
    calcInterpolatedCoefficiets(icellF, omegaF, c2o1);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::calcMoments(const real* const f, real omega, real& press, real& vx1, real& vx2, real& vx3, 
+void CompressibleOffsetSquarePressureInterpolator::calcMoments(const real* const f, real omega, real& press, real& vx1, real& vx2, real& vx3, 
                                                     real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz)
 {
    using namespace D3Q27System;
@@ -94,7 +94,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcMoments(const r
    kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(c1o1 + drho)-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
 {
    real        vx1_SWT,vx2_SWT,vx3_SWT;
    real        vx1_NWT,vx2_NWT,vx3_NWT;
@@ -475,7 +475,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedCoe
    yz_TNW =   c1o16*eps_new *((                bxyz +     cxyz)/(c72o1*o));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
@@ -812,8 +812,8 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    f[DIR_MMM]  = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
-//Position SWB -c1o4, -c1o4, -c1o4
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBSW()
+//Position SWB -0.25, -0.25, -0.25
+real CompressibleOffsetSquarePressureInterpolator::calcPressBSW()
 {
    return   press_SWT * (c9o64 + c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
       press_NWT * (c3o64 + c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -826,7 +826,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWT -0.25, -0.25, 0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTSW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTSW()
 {
    return   press_SWT * (c27o64 + c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
       press_NWT * (c9o64 + c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
@@ -839,7 +839,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SET 0.25, -0.25, 0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTSE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTSE()
 {
    return   press_SET * (c27o64 - c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
       press_NET * (c9o64 - c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
@@ -852,7 +852,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SEB 0.25, -0.25, -0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBSE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBSE()
 {
    return   press_SET * (c9o64 - c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
       press_NET * (c3o64 - c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -865,7 +865,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWB -0.25, 0.25, -0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBNW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBNW()
 {
    return   press_NWT * (c9o64 + c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
       press_NET * (c3o64 - c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
@@ -878,7 +878,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWT -0.25, 0.25, 0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTNW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTNW()
 {
    return   press_NWT * (c27o64 + c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
       press_NET * (c9o64 - c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -891,7 +891,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NET 0.25, 0.25, 0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTNE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTNE()
 {
    return   press_NET * (c27o64 - c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
       press_NWT * (c9o64 + c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -904,7 +904,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressTNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NEB 0.25, 0.25, -0.25
-real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBNE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBNE()
 {
    return   press_NET * (c9o64 - c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
       press_NWT * (c3o64 + c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
@@ -917,7 +917,7 @@ real CompressibleOffsetSquarePressureInterpolationProcessor::calcPressBNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position C 0.0, 0.0, 0.0
-void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNodeFC(real* f, real omega)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeFC(real* f, real omega)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
@@ -1266,14 +1266,14 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    f[DIR_MMM]  = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)
 {
 	vx1  = a0 + ax*x + ay*y + az*z + axx*x*x + ayy*y*y + azz*z*z + axy*x*y + axz*x*z + ayz*y*z+axyz*x*y*z;
 	vx2  = b0 + bx*x + by*y + bz*z + bxx*x*x + byy*y*y + bzz*z*z + bxy*x*y + bxz*x*z + byz*y*z+bxyz*x*y*z;
 	vx3  = c0 + cx*x + cy*y + cz*z + cxx*x*x + cyy*y*y + czz*z*z + cxy*x*y + cxz*x*z + cyz*y*z+cxyz*x*y*z;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
 {
 	tauxx=ax+c2o1*axx*x+axy*y+axz*z+axyz*y*z;
 	tauyy=by+c2o1*byy*y+bxy*x+byz*z+bxyz*x*z;
@@ -1283,7 +1283,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedShe
 	tauyz=c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetSquarePressureInterpolationProcessor::setBulkOmegaToOmega(bool value)
+void CompressibleOffsetSquarePressureInterpolator::setBulkOmegaToOmega(bool value)
 {
    bulkOmegaToOmega = value;
 }
