@@ -224,7 +224,7 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 					real mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
 
 					omegaDRho = 2.0;// 1.5;
-					real phiOld = (*phaseField)(x1, x2, x3);
+					//real phiOld = (*phaseField)(x1, x2, x3);
 
 					(*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca) + (mfcaa + mfacc))) +
 						(((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
@@ -400,12 +400,12 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										real vzBC = ((*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 										real vBC = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
 										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
-                                        real dvDir = vBC - vDir;
+                                        //real dvDir = vBC - vDir;
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 										real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 										real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
 										real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
-                                        real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
+                                        //real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
                                         // real fBC = (-fGInv + fGInvEQ + fGEQ - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
                                         //real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
@@ -481,13 +481,13 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										real vzBC = ((*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 										real vBC = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
 										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
-                                        real dvDir = vBC - vDir;
+                                        //real dvDir = vBC - vDir;
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 										real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 										real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
 										real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
 
-										real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
+										//real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
                                         // real fBC = (-fGInv + fGInvEQ + fGEQ - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
                                         //real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
@@ -705,7 +705,7 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 					real rhoH = 1.0;
 					real rhoL = 1.0/ densityRatio;
 
-					real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+					//real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
 					real dX1_phi = gradX1_phi();
 					real dX2_phi = gradX2_phi();
