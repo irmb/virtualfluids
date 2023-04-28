@@ -31,7 +31,7 @@ void K17CompressibleNavierStokes<turbulenceModel>::run()
                                                                                                         para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
                                                                                                         para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 
-    getLastCudaError("LB_Kernel_CumulantK17 execution failed");
+    getLastCudaError("K17CompressibleNavierStokes_Device execution failed");
 }
 
 template<TurbulenceModel turbulenceModel>
@@ -118,7 +118,7 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices( const unsigned 
             break;
     }
 
-    getLastCudaError("LB_Kernel_CumulantK17 execution failed");
+    getLastCudaError("K17CompressibleNavierStokes_Device execution failed");
 }
 
 template<TurbulenceModel turbulenceModel>

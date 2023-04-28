@@ -29,7 +29,7 @@ void K17CompressibleNavierStokesBulkViscosity::run()
 		para->getForcesDev(),
 		para->getQuadricLimitersDev(),
 		para->getParD(level)->isEvenTimestep);
-	getLastCudaError("LB_Kernel_CumulantK17BulkComp execution failed");
+	getLastCudaError("K17CompressibleNavierStokesBulkViscosity_Device execution failed");
 }
 
 K17CompressibleNavierStokesBulkViscosity::K17CompressibleNavierStokesBulkViscosity(std::shared_ptr<Parameter> para, int level)

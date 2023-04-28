@@ -27,7 +27,7 @@ void K17CompressibleNavierStokesChimeraLegacy::run()
 		para->getParD(level)->forceZ_SP,
         para->getQuadricLimitersDev(),
 		para->getParD(level)->isEvenTimestep);
-	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
+	getLastCudaError("K17CompressibleNavierStokesChimeraLegacy_Device execution failed");
 }
 
 K17CompressibleNavierStokesChimeraLegacy::K17CompressibleNavierStokesChimeraLegacy(std::shared_ptr<Parameter> para, int level): KernelImp(para, level)

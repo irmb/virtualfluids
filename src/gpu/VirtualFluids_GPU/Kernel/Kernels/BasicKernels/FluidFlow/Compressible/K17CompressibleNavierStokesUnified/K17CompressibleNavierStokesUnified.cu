@@ -48,7 +48,7 @@ void K17CompressibleNavierStokesUnified::run()
 
     runKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
 
-    getLastCudaError("LB_Kernel_CumulantK17Unified execution failed");
+    getLastCudaError("K17CompressibleNavierStokesUnified execution failed");
 }
 
 
