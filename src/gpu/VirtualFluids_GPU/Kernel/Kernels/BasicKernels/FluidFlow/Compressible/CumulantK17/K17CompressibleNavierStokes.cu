@@ -1,21 +1,21 @@
-#include "CumulantK17.h"
+#include "K17CompressibleNavierStokes.h"
 #include <logger/Logger.h>
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
-#include "CumulantK17_Device.cuh"
+#include "K17CompressibleNavierStokes_Device.cuh"
 
 #include <cuda.h>
 
 template<TurbulenceModel turbulenceModel>
-std::shared_ptr< CumulantK17<turbulenceModel> > CumulantK17<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr< K17CompressibleNavierStokes<turbulenceModel> > K17CompressibleNavierStokes<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-    return std::shared_ptr<CumulantK17<turbulenceModel> >(new CumulantK17<turbulenceModel>(para,level));
+    return std::shared_ptr<K17CompressibleNavierStokes<turbulenceModel> >(new K17CompressibleNavierStokes<turbulenceModel>(para,level));
 }
 
 template<TurbulenceModel turbulenceModel>
-void CumulantK17<turbulenceModel>::run()
+void K17CompressibleNavierStokes<turbulenceModel>::run()
 {
-    LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega,
+    K17CompressibleNavierStokes_Device < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads >>>(   para->getParD(level)->omega,
                                                                                                         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                                                         para->getParD(level)->distributions.f[0],
                                                                                                         para->getParD(level)->rho,
@@ -35,14 +35,14 @@ void CumulantK17<turbulenceModel>::run()
 }
 
 template<TurbulenceModel turbulenceModel>
-void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex )
+void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices( const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex )
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
     switch (collisionTemplate)
     {
         case CollisionTemplate::Default:
-            LB_Kernel_CumulantK17 < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(para->getParD(level)->omega,
+            K17CompressibleNavierStokes_Device < turbulenceModel, false, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(para->getParD(level)->omega,
                                                                                                                         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                                                                         para->getParD(level)->distributions.f[0],
                                                                                                                         para->getParD(level)->rho,
@@ -60,7 +60,7 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
             break;
 
         case CollisionTemplate::WriteMacroVars:
-            LB_Kernel_CumulantK17 < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,
+            K17CompressibleNavierStokes_Device < turbulenceModel, true, false  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,
                                                                                                                         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                                                                         para->getParD(level)->distributions.f[0],
                                                                                                                         para->getParD(level)->rho,
@@ -79,7 +79,7 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
 
         case CollisionTemplate::SubDomainBorder:
         case CollisionTemplate::AllFeatures:
-            LB_Kernel_CumulantK17 < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  para->getParD(level)->omega,
+            K17CompressibleNavierStokes_Device < turbulenceModel, true, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>(  para->getParD(level)->omega,
                                                                                                                         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                                                                         para->getParD(level)->distributions.f[0],
                                                                                                                         para->getParD(level)->rho,
@@ -97,7 +97,7 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
             break;
 
         case CollisionTemplate::ApplyBodyForce:
-            LB_Kernel_CumulantK17 < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,
+            K17CompressibleNavierStokes_Device < turbulenceModel, false, true  > <<< cudaGrid.grid, cudaGrid.threads, 0, stream >>>( para->getParD(level)->omega,
                                                                                                                         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
                                                                                                                         para->getParD(level)->distributions.f[0],
                                                                                                                         para->getParD(level)->rho,
@@ -122,7 +122,7 @@ void CumulantK17<turbulenceModel>::runOnIndices( const unsigned int *indices, un
 }
 
 template<TurbulenceModel turbulenceModel>
-CumulantK17<turbulenceModel>::CumulantK17(std::shared_ptr<Parameter> para, int level)
+K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
 {
     this->para = para;
     this->level = level;
@@ -137,7 +137,7 @@ CumulantK17<turbulenceModel>::CumulantK17(std::shared_ptr<Parameter> para, int l
     VF_LOG_INFO("Using turbulence model: {}", turbulenceModel);
 }
 
-template class CumulantK17<TurbulenceModel::AMD>;
-template class CumulantK17<TurbulenceModel::Smagorinsky>;
-template class CumulantK17<TurbulenceModel::QR>;
-template class CumulantK17<TurbulenceModel::None>;
+template class K17CompressibleNavierStokes<TurbulenceModel::AMD>;
+template class K17CompressibleNavierStokes<TurbulenceModel::Smagorinsky>;
+template class K17CompressibleNavierStokes<TurbulenceModel::QR>;
+template class K17CompressibleNavierStokes<TurbulenceModel::None>;

@@ -9,10 +9,10 @@ namespace gpu
 {
 
 
-class CumulantK17Unified : public KernelImp
+class K17CompressibleNavierStokesUnified : public KernelImp
 {
 public:
-    CumulantK17Unified(std::shared_ptr<Parameter> para, int level);
+    K17CompressibleNavierStokesUnified(std::shared_ptr<Parameter> para, int level);
 
     void run();
 };

@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce > __global__ void LB_Kernel_CumulantK17(
+template< TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce > __global__ void K17CompressibleNavierStokes_Device(
     real omega_in,
     uint* neighborX,
     uint* neighborY,

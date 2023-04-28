@@ -1,4 +1,4 @@
-#include "CumulantK17Unified.h"
+#include "K17CompressibleNavierStokesUnified.h"
 
 #include <stdexcept>
 
@@ -13,7 +13,7 @@ namespace gpu
 {
 
 
-CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int level)
+K17CompressibleNavierStokesUnified::K17CompressibleNavierStokesUnified(std::shared_ptr<Parameter> para, int level)
     : KernelImp(para, level)
 {
 #ifndef BUILD_CUDA_LTO
@@ -29,7 +29,7 @@ CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int leve
 
 
 
-void CumulantK17Unified::run()
+void K17CompressibleNavierStokesUnified::run()
 {
     GPUKernelParameter kernelParameter{
         para->getParD(level)->omega,

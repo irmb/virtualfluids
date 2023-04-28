@@ -1,17 +1,17 @@
-#include "CumulantK17CompChim.h"
+#include "K17CompressibleNavierStokesChimeraLegacy.h"
 
 #include "Parameter/Parameter.h"
-#include "CumulantK17CompChim_Device.cuh"
+#include "K17CompressibleNavierStokesChimeraLegacy_Device.cuh"
 #include "cuda/CudaGrid.h"
 
-std::shared_ptr<CumulantK17CompChim> CumulantK17CompChim::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<K17CompressibleNavierStokesChimeraLegacy> K17CompressibleNavierStokesChimeraLegacy::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<CumulantK17CompChim>(new CumulantK17CompChim(para,level));
+	return std::shared_ptr<K17CompressibleNavierStokesChimeraLegacy>(new K17CompressibleNavierStokesChimeraLegacy(para,level));
 }
 
-void CumulantK17CompChim::run()
+void K17CompressibleNavierStokesChimeraLegacy::run()
 {
-	LB_Kernel_CumulantK17CompChim <<< cudaGrid.grid, cudaGrid.threads >>>(
+	K17CompressibleNavierStokesChimeraLegacy_Device <<< cudaGrid.grid, cudaGrid.threads >>>(
 		para->getParD(level)->omega,
 		para->getParD(level)->typeOfGridNode,
 		para->getParD(level)->neighborX,
@@ -30,7 +30,7 @@ void CumulantK17CompChim::run()
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
 }
 
-CumulantK17CompChim::CumulantK17CompChim(std::shared_ptr<Parameter> para, int level): KernelImp(para, level)
+K17CompressibleNavierStokesChimeraLegacy::K17CompressibleNavierStokesChimeraLegacy(std::shared_ptr<Parameter> para, int level): KernelImp(para, level)
 {
 	myPreProcessorTypes.push_back(InitCompSP27);
 	

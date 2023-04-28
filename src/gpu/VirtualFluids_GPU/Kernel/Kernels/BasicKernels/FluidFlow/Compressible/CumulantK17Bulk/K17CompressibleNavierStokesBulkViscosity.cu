@@ -1,14 +1,14 @@
-#include "CumulantK17BulkComp.h"
+#include "K17CompressibleNavierStokesBulkViscosity.h"
 
-#include "CumulantK17BulkComp_Device.cuh"
+#include "K17CompressibleNavierStokesBulkViscosity_Device.cuh"
 #include "Parameter/Parameter.h"
 
-std::shared_ptr<CumulantK17BulkComp> CumulantK17BulkComp::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<K17CompressibleNavierStokesBulkViscosity> K17CompressibleNavierStokesBulkViscosity::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<CumulantK17BulkComp>(new CumulantK17BulkComp(para, level));
+	return std::shared_ptr<K17CompressibleNavierStokesBulkViscosity>(new K17CompressibleNavierStokesBulkViscosity(para, level));
 }
 
-void CumulantK17BulkComp::run()
+void K17CompressibleNavierStokesBulkViscosity::run()
 {
 	int size_Array = para->getParD(level)->size_Array_SP;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
@@ -17,7 +17,7 @@ void CumulantK17BulkComp::run()
 	dim3 grid(Grid, 1, 1);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_CumulantK17BulkComp << < grid, threads >> >(
+	K17CompressibleNavierStokesBulkViscosity_Device << < grid, threads >> >(
 		para->getParD(level)->omega,
 		para->getParD(level)->typeOfGridNode,
 		para->getParD(level)->neighborX,
@@ -32,7 +32,7 @@ void CumulantK17BulkComp::run()
 	getLastCudaError("LB_Kernel_CumulantK17BulkComp execution failed");
 }
 
-CumulantK17BulkComp::CumulantK17BulkComp(std::shared_ptr<Parameter> para, int level)
+K17CompressibleNavierStokesBulkViscosity::K17CompressibleNavierStokesBulkViscosity(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -42,6 +42,6 @@ CumulantK17BulkComp::CumulantK17BulkComp(std::shared_ptr<Parameter> para, int le
 	
 }
 
-CumulantK17BulkComp::CumulantK17BulkComp()
+K17CompressibleNavierStokesBulkViscosity::K17CompressibleNavierStokesBulkViscosity()
 {
 }

@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-__global__ void LB_Kernel_CumulantK17CompChim(
+__global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
 	real omega,
 	uint* typeOfGridNode,
 	uint* neighborX,

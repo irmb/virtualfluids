@@ -6,7 +6,7 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
-__global__ void LB_Kernel_CumulantK17BulkComp(real omega,
+__global__ void K17CompressibleNavierStokesBulkViscosity_Device(real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,
