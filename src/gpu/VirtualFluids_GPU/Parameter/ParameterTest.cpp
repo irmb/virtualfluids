@@ -276,11 +276,7 @@ public:
     {
         return 0;
     };
-    std::vector<double> gatherNUPS(double processNups) override
-    {
-        return {};
-    };
-    double sumNups(double processNups) override
+    double reduceSum(double quantityPerProcess) override
     {
         return 0;
     };

@@ -55,8 +55,7 @@ public:
     void exchngDataGeo(int *sbuf_t, int *rbuf_t, int *sbuf_b, int *rbuf_b, int count);
     MPI_Comm getMpiCommunicator();
     int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev) override;
-    std::vector<double> gatherNUPS(double processNups) override;
-    double sumNups(double processNups) override;
+    double reduceSum(double quantityPerProcess) override;
     //////////////////////////////////////////////////////////////////////////
     void receive_send(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
                       int size_buffer_send, int neighbor_rank_send) const override;

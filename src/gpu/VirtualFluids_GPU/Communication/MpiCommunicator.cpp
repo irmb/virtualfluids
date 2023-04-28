@@ -216,21 +216,9 @@ int MpiCommunicator::mapCudaDevice(const int &rank, const int &size, const std::
     return device;
 }
 
-std::vector<double> MpiCommunicator::gatherNUPS(double processNups)
+double MpiCommunicator::reduceSum(double quantityPerProcess)
 { 
-    double *buffer_send = &processNups;
-    double *buffer_recv = (double *)malloc(sizeof(double) * this->numprocs);
-
-    MPI_Gather(buffer_send, 1, MPI_DOUBLE, buffer_recv, 1, MPI_DOUBLE, 0, commGPU);
-
-    if (this->PID == 0)
-        return std::vector<double>(buffer_recv, buffer_recv + this->numprocs);
-    return std::vector<double>(); 
-}
-
-double MpiCommunicator::sumNups(double processNups)
-{ 
-    double *buffer_send = &processNups;
+    double *buffer_send = &quantityPerProcess;
     double *buffer_recv = (double *)malloc(sizeof(double));
 
     MPI_Reduce(buffer_send, buffer_recv, 1, MPI_DOUBLE, MPI_SUM, 0, commGPU);
