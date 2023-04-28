@@ -272,12 +272,6 @@ public:
     void waitGPU(int id) override {};
     void resetRequest() override {};
     //////////////////////////////////////////////////////////////////////////
-    void startTimer() override {};
-    void stopTimer() override {};
-    double getTime() override
-    {
-        return 0.0;
-    };
     int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev) override
     {
         return 0;

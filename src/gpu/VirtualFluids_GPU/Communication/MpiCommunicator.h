@@ -54,9 +54,6 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void exchngDataGeo(int *sbuf_t, int *rbuf_t, int *sbuf_b, int *rbuf_b, int count);
     MPI_Comm getMpiCommunicator();
-    void startTimer() override;
-    void stopTimer() override;
-    double getTime() override;
     int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev) override;
     std::vector<double> gatherNUPS(double processNups) override;
     double sumNups(double processNups) override;

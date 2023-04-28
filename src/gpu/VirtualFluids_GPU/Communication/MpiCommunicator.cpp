@@ -174,9 +174,6 @@ int MpiCommunicator::getNumberOfProcess() const { return numprocs; }
 int MpiCommunicator::getNeighbourTop() { return nbrtop; }
 int MpiCommunicator::getNeighbourBottom() { return nbrbottom; }
 MPI_Comm MpiCommunicator::getMpiCommunicator() { return comm1d; }
-void MpiCommunicator::startTimer() { starttime = MPI_Wtime(); }
-void MpiCommunicator::stopTimer() { endtime = MPI_Wtime(); }
-double MpiCommunicator::getTime() { return endtime - starttime; }
 void MpiCommunicator::distributeGeometry(unsigned int *dataRoot, unsigned int *dataNode, int dataSizePerNode)
 {
     MPI_Scatter(dataRoot, dataSizePerNode, MPI_UNSIGNED, dataNode, dataSizePerNode, MPI_UNSIGNED, 0, MPI_COMM_WORLD);

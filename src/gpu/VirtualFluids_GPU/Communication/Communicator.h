@@ -26,9 +26,6 @@ public:
     virtual void waitGPU(int id) = 0;
     virtual void resetRequest() = 0;
     //////////////////////////////////////////////////////////////////////////
-    virtual void startTimer() = 0;
-    virtual void stopTimer() = 0;
-    virtual double getTime() = 0;
     virtual int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev) = 0;
     virtual std::vector<double> gatherNUPS(double processNups) = 0;
     virtual double sumNups(double processNups) = 0;
