@@ -66,60 +66,60 @@ void run(string configname)
 
       //BC Adapter
       //////////////////////////////////////////////////////////////////////////////
-      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new ThinWallNoSlipBCAlgorithm()));
-      //SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new EqDensityBCAlgorithm()));
+      SPtr<BC> noSlipBC(new NoSlipBC());
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new ThinWallNoSlipBCStrategy()));
+      //SPtr<BC> denBC(new DensityBC(rhoLB));
+      //denBC->setBCStrategy(SPtr<BCStrategy>(new EqDensityBCStrategy()));
 
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
-      SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
-      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
+      SPtr<BC> denBC(new DensityBC(rhoLB));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
+      //denBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
 
       //double startTime = 5;
       mu::Parser fct1;
       fct1.SetExpr("U");
       fct1.DefineConst("U", uLB);
-      SPtr<BCAdapter> velBCAdapter1(new VelocityBCAdapter(true, false, false, fct1, 0, BCFunction::INFCONST));
-      //velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-      velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+      SPtr<BC> velBC1(new VelocityBC(true, false, false, fct1, 0, BCFunction::INFCONST));
+      //velBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+      velBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
 
       //mu::Parser fct2;
       //fct2.SetExpr("U");
       //fct2.DefineConst("U", uLB);
-      //SPtr<BCAdapter> velBCAdapter2(new VelocityBCAdapter(true, false, false, fct2, startTime, BCFunction::INFCONST));
+      //SPtr<BC> velBC2(new VelocityBC(true, false, false, fct2, startTime, BCFunction::INFCONST));
 
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBCAdapter);
-      bcVisitor.addBC(denBCAdapter);
-      //bcVisitor.addBC(velBCAdapter1);
+      bcVisitor.addBC(noSlipBC);
+      bcVisitor.addBC(denBC);
+      //bcVisitor.addBC(velBC1);
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
-      SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      SPtr<BCSet> bcProc;
+      bcProc = SPtr<BCSet>(new BCSet());
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //double bulckViscosity = 3700*nuLB;
       //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
-      kernel->setBCProcessor(bcProc);
-      kernel->setBCProcessor(bcProc);
+      kernel->setBCSet(bcProc);
+      kernel->setBCSet(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
-      SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
-      migCoProcessor->setLBMKernel(kernel);
-      migCoProcessor->setBCProcessor(bcProc);
-      migCoProcessor->setNu(nuLB);
-      migCoProcessor->setNuLG(0.01, 0.01);
-      migCoProcessor->setDensityRatio(1);
+      //SPtr<MPIIOMigrationSimulationObserver> migSimulationObserver(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      SPtr<MPIIOMigrationBESimulationObserver> migSimulationObserver(new MPIIOMigrationBESimulationObserver(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      migSimulationObserver->setLBMKernel(kernel);
+      migSimulationObserver->setBCSet(bcProc);
+      migSimulationObserver->setNu(nuLB);
+      migSimulationObserver->setNuLG(0.01, 0.01);
+      migSimulationObserver->setDensityRatio(1);
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<D3Q27Interactor> inflowInt;
@@ -189,11 +189,11 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-         ppblocks->process(0);
+         ppblocks->update(0);
 
-         SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+         SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBC, Interactor3D::INVERSESOLID));
 
          //double r = dynamicPointerCast<GbCylinder3D>(cylinder)->getRadius();
          //double cx1 = g_minX1;
@@ -211,16 +211,16 @@ void run(string configname)
          ////fct.DefineConst("y0", cx2);
          ////fct.DefineConst("z0", cx3);
          ////fct.DefineConst("nue", nuLB);
-         //SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+         //SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
+         //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+         //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
          
-         inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter1, Interactor3D::SOLID));
-         //inflowInt->addBCAdapter(velBCAdapter2);
+         inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBC1, Interactor3D::SOLID));
+         //inflowInt->addBC(velBC2);
 
 
          //outflow
-         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
          //SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::DIR_00M));
          InteractorsHelper intHelper(grid, metisVisitor);
@@ -229,7 +229,7 @@ void run(string configname)
          intHelper.addInteractor(outflowInt);
          intHelper.selectBlocks();
 
-         ppblocks->process(0);
+         ppblocks->update(0);
          ppblocks.reset();
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -268,7 +268,7 @@ void run(string configname)
 
          intHelper.setBC();
 
-         bcVisitor.addBC(velBCAdapter1);
+         bcVisitor.addBC(velBC1);
          grid->accept(bcVisitor);
 
          //initialization of distributions
@@ -280,8 +280,8 @@ void run(string configname)
          //boundary conditions grid
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-            ppgeo->process(0);
+            SPtr<SimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+            ppgeo->update(0);
             ppgeo.reset();
          }
 
@@ -302,7 +302,7 @@ void run(string configname)
             VF_LOG_INFO("path = {}", pathname);
          }
 
-         migCoProcessor->restart((int)restartStep);
+         migSimulationObserver->restart((int)restartStep);
          grid->setTimeStep(restartStep);
 
          if (myid == 0) VF_LOG_INFO("Restart - end");
@@ -316,26 +316,26 @@ void run(string configname)
       grid->accept(setInterConnsVisitor);
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      SPtr<SimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
-      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-      //auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+      //auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
       //timeDepBC->addInteractor(inflowInt);
 
       omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, int(endTime)));
-      calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(pp);
-      calculator->addCoProcessor(migCoProcessor);
-      //calculator->addCoProcessor(timeDepBC);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, int(endTime)));
+      simulation->addSimulationObserver(npr);
+      simulation->addSimulationObserver(pp);
+      simulation->addSimulationObserver(migSimulationObserver);
+      //simulation->addSimulationObserver(timeDepBC);
 
       if (myid == 0) VF_LOG_INFO("Simulation-start");
-      calculator->calculate();
+      simulation->run();
       if (myid == 0) VF_LOG_INFO("Simulation-end");
    }
    catch (std::exception& e)

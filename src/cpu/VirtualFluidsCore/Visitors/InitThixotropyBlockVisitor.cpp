@@ -33,7 +33,7 @@
 
 #include "InitThixotropyBlockVisitor.h"
 #include "LBMKernel.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
@@ -250,7 +250,7 @@ void InitThixotropyBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
       else                                                        
          calcFeqsFct   = &D3Q27System::calcIncompFeq; 
 
-      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getHdistributions();  
 
       real h[D3Q27System::ENDF+1];
