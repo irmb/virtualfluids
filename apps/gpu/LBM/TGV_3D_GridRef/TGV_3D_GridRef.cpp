@@ -158,9 +158,8 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = nx / ( 2.0 * PI ) * velocity / Re;
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity = " << velocity << " s\n";
-
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity = " << viscosity << "\n";
+    VF_LOG_INFO("velocity = {}", velocity);
+    VF_LOG_INFO("viscosity = {}", viscosity);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
