@@ -267,7 +267,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                     real rhoH = 1.0;
                     real rhoL = 1.0 / densityRatio;
                     // real rhoToPhi = (1.0 - 1.0/densityRatio);
-                    real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+                    //real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
                     // rho = phi[ZERO] + (1.0 - phi[ZERO])*1.0/densityRatio;
 
