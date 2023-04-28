@@ -227,7 +227,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
 
 					omegaDRho = 2.0;// 1.5;
-					real phiOld = (*phaseField)(x1, x2, x3);
+					//real phiOld = (*phaseField)(x1, x2, x3);
 
 					(*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca) + (mfcaa + mfacc))) +
 						(((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
@@ -254,9 +254,9 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 		for (int x2 = minX2 - ghostLayerWidth+1; x2 < maxX2 + ghostLayerWidth-1; x2++) {
 			for (int x1 = minX1 - ghostLayerWidth+1; x1 < maxX1 + ghostLayerWidth-1; x1++) {
 				if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
-					int x1p = x1 + 1;
-					int x2p = x2 + 1;
-					int x3p = x3 + 1;
+					//int x1p = x1 + 1;
+					//int x2p = x2 + 1;
+					//int x3p = x3 + 1;
 
 					//real mfabb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);//* rho * c1o3;
      //               real mfbab = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);//* rho * c1o3;
@@ -460,9 +460,9 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 		for (int x2 = minX2 - 1; x2 < maxX2 + 1; x2++) {
 			for (int x1 = minX1 - 1; x1 < maxX1 + 1; x1++) {
 				if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
-					int x1p = x1 + 1;
-					int x2p = x2 + 1;
-					int x3p = x3 + 1;
+					//int x1p = x1 + 1;
+					//int x2p = x2 + 1;
+					//int x3p = x3 + 1;
 					findNeighbors(phaseFieldOld, x1, x2, x3);
 					////////////////////////////////Momentum conservation experiment 06.03.2023
 					//surfacetension
@@ -598,8 +598,8 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 											//real vzBC = c1o2 * (vz + (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 											//real feqL = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 											//real feqG = D3Q27System::getIncompFeqForDirection(fdir, 0, vx, vy, vz);
-											real feqL = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX1[fdir]) * (D3Q27System::DX1[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX2[fdir]) * (D3Q27System::DX2[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]));
-											real feqG = D3Q27System::getIncompFeqForDirection(fdir, 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX1[fdir]) * (D3Q27System::DX1[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX2[fdir]) * (D3Q27System::DX2[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]));
+											//real feqL = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX1[fdir]) * (D3Q27System::DX1[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX2[fdir]) * (D3Q27System::DX2[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]));
+											//real feqG = D3Q27System::getIncompFeqForDirection(fdir, 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX1[fdir]) * (D3Q27System::DX1[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX2[fdir]) * (D3Q27System::DX2[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]));
 											//real feqG = D3Q27System::getIncompFeqForDirection(fdir, 0, vx * (D3Q27System::DX1[fdir]) * (D3Q27System::DX1[fdir]), vy * (D3Q27System::DX2[fdir]) * (D3Q27System::DX2[fdir]), vz * (D3Q27System::DX3[fdir]) * (D3Q27System::DX3[fdir]));
 
 											//distribution->setDistributionForDirection((fBC + fG) / densityRatio*0 - fL  - (feqG - feqL) * (c1o1 / densityRatio*0 - c1o1) * vBC, x1, x2, x3, fdir);// (vxBC * D3Q27System::DX1[fdir] + vyBC * D3Q27System::DX2[fdir] + vzBC * D3Q27System::DX3[fdir]), x1, x2, x3, fdir);
@@ -609,8 +609,8 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 											//real fLi = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], fdir);
 											//real number = 666;
 											//distribution->setDistributionForDirection((fBC + fG) / densityRatio * 0 - fL - (feqG - feqL) * (c1o1 / densityRatio * 0 - c1o1) * vBC, x1, x2, x3, fdir);
-											real eqBC= D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, vx, vy, vz);
-											real eqG = D3Q27System::getIncompFeqForDirection(fdir, 0, vx, vy, vz);
+											//real eqBC= D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, vx, vy, vz);
+											//real eqG = D3Q27System::getIncompFeqForDirection(fdir, 0, vx, vy, vz);
 											real eqBCN = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 											real eqGN = D3Q27System::getIncompFeqForDirection(fdir, 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 
@@ -1689,9 +1689,9 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 	for (int x2 = minX2; x2 < maxX2; x2++) {
 		for (int x1 = minX1; x1 < maxX1; x1++) {
 			 
-				int x1p = x1 + 1;
-				int x2p = x2 + 1;
-				int x3p = x3 + 1;
+				//int x1p = x1 + 1;
+				//int x2p = x2 + 1;
+				//int x3p = x3 + 1;
 				findNeighbors(phaseFieldOld, x1, x2, x3);
 
 				//if (((*phaseField)(x1, x2, x3) > c1o2) && (((*phaseFieldOld)(x1, x2, x3) <= c1o2)))
@@ -2997,7 +2997,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real rhoH = 1.0;
 					real rhoL = 1.0/ densityRatio;
 
-					real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+					//real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
 					real dX1_phi = gradX1_phi();
 					real dX2_phi = gradX2_phi();
@@ -3017,7 +3017,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					//collFactorM=(((*phaseField)(x1, x2, x3) > c1o2) && ((*phaseFieldOld)(x1, x2, x3) <= c1o2)) ? 1.8 : collFactorM;
 					real collFactorMInv = phi[DIR_000] > c1o2 ? collFactorG : collFactorL;
 
-					real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
+					//real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
 
 					//----------- Calculating Macroscopic Values -------------
 					real rho = phi[DIR_000] > c1o2 ? rhoH : rhoL;//rhoH + rhoToPhi * (phi[DIR_000] - phiH); //Incompressible
@@ -3318,7 +3318,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 					 ///Experimental interface sharpening force 20.06.2022
 
-					 real scaleSharpener = 1.0;
+					 //real scaleSharpener = 1.0;
 					 //forcingX1 += scaleSharpener * (FdX1_phi - dX1_phi) * fabsf(FdX1_phi - dX1_phi)  / rho;
 					 //forcingX2 += scaleSharpener * (FdX2_phi - dX2_phi) * fabsf(FdX2_phi - dX2_phi)  / rho;
 					 //forcingX3 += scaleSharpener * (FdX3_phi - dX3_phi) * fabsf(FdX3_phi - dX3_phi)  / rho;
@@ -3751,12 +3751,12 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 
 					////////save central moments for the phase field
-					real MMxx = mfcaa - c1o3 * mfaaa;
-					real MMyy = mfaca - c1o3 * mfaaa;
-					real MMzz = mfaac - c1o3 * mfaaa;
-					real MMxy = mfbba;
-					real MMxz = mfbab;
-					real MMyz = mfabb;
+					//real MMxx = mfcaa - c1o3 * mfaaa;
+					//real MMyy = mfaca - c1o3 * mfaaa;
+					//real MMzz = mfaac - c1o3 * mfaaa;
+					//real MMxy = mfbba;
+					//real MMxz = mfbab;
+					//real MMyz = mfabb;
 
 
 					////////////////////////////////////////////////////////////////////////////////////

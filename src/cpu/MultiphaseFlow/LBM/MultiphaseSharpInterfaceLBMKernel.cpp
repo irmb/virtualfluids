@@ -404,10 +404,10 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 										real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 										real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
-										//real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
+										real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
                                         real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
                                         // real fBC = (-fGInv + fGInvEQ + fGEQ - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
-                                        real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
+                                        //real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
 										//real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 										//real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
@@ -485,11 +485,11 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 										real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 										real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
-										//real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
+										real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
 
 										real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
                                         // real fBC = (-fGInv + fGInvEQ + fGEQ - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
-                                        real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
+                                        //real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
 										//real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 										//real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
@@ -797,8 +797,8 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
                     ////////////////////////////////////////////////////////////////////////////////////
 					real wadjust;
 //					real qudricLimit = 0.01 / (c1o1 + 1.0e4 * phi[DIR_000] * (c1o1 - phi[DIR_000]));
-					 real qudricLimit = 0.01 / (c1o1 + (((*phaseField)(x1, x2, x3) > c1o2) ? 1.0e6 * phi[DIR_000] * (c1o1 - phi[DIR_000]):c0o1)); 
-					//real qudricLimit = 0.01;
+					//real qudricLimit = 0.01 / (c1o1 + (((*phaseField)(x1, x2, x3) > c1o2) ? 1.0e6 * phi[DIR_000] * (c1o1 - phi[DIR_000]):c0o1)); 
+					real qudricLimit = 0.01;
 					
 																													                    ////////////////////////////////////////////////////////////////////////////////////
 					//! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
