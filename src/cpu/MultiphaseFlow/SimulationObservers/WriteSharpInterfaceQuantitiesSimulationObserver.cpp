@@ -173,8 +173,8 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
     real phi;
     real vx1, vx2, vx3, rho;
     real densityRatio = kernel->getDensityRatio();
-    real phiL = kernel->getPhiL();
-    real phiH = kernel->getPhiH();
+    //real phiL = kernel->getPhiL();
+    //real phiH = kernel->getPhiH();
 
     // knotennummerierung faengt immer bei 0 an!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
