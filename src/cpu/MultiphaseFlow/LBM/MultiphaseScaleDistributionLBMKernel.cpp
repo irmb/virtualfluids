@@ -187,7 +187,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 	int maxX1 = bcArrayMaxX1 - ghostLayerWidth;
 	int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
 	int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
-	real omegaDRho = 1.0;// 1.25;// 1.3;
+	//real omegaDRho = 1.0;// 1.25;// 1.3;
 	for (int x3 = minX3 - ghostLayerWidth; x3 < maxX3 + ghostLayerWidth; x3++) {
 		for (int x2 = minX2 - ghostLayerWidth; x2 < maxX2 + ghostLayerWidth; x2++) {
 			for (int x1 = minX1 - ghostLayerWidth; x1 < maxX1 + ghostLayerWidth; x1++) {
@@ -226,7 +226,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 					real mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
 
-					omegaDRho = 2.0;// 1.5;
+					//omegaDRho = 2.0;// 1.5;
 					//real phiOld = (*phaseField)(x1, x2, x3);
 
 					(*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca) + (mfcaa + mfacc))) +
