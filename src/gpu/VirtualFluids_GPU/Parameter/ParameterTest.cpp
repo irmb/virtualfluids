@@ -328,7 +328,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 {
 
     para.setVelocityLB(0.11);
-    para.setMainKernel("CumulantK17");
+    para.setMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -339,7 +339,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsOk_expectNoWarning)
 {
     para.setVelocityLB(0.09);
-    para.setMainKernel("CumulantK17");
+    para.setMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -361,7 +361,7 @@ TEST_F(ParameterTestCumulantK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarnin
 TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
 {
     para.setViscosityLB(0.024);
-    para.setMainKernel("CumulantK17");
+    para.setMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -372,7 +372,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
 TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsOk_expectNoWarning)
 {
     para.setViscosityLB(0.023);
-    para.setMainKernel("CumulantK17");
+    para.setMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();

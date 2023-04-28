@@ -1085,7 +1085,7 @@ private:
 
 
     // Kernel
-    std::string mainKernel{ "CumulantK17CompChim" };
+    std::string mainKernel{ "K17CompressibleNavierStokes" };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

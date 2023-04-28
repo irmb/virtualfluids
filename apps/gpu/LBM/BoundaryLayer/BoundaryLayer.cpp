@@ -221,7 +221,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams = (nProcs > 1 ? true: false);
     // useStreams=false;
     para->setUseStreams(useStreams);
-    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
+    para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );

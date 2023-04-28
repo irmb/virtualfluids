@@ -121,16 +121,16 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == CollisionKernel::Compressible::CumulantK15Unified) {
         newKernel     = std::make_shared<vf::gpu::CumulantK15Unified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17Unified) {
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesUnified) {
         newKernel     = std::make_shared<vf::gpu::K17CompressibleNavierStokesUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17Bulk) {
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesBulkViscosity) {
         newKernel     = K17CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17Chim) {
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesChimeraLegacy) {
         newKernel     = K17CompressibleNavierStokesChimeraLegacy::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17){
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokes){
         switch(para->getTurbulenceModel())
         {
             case TurbulenceModel::AMD:
