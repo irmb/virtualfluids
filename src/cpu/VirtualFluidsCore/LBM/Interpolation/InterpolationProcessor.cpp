@@ -1,9 +1,20 @@
 #include "InterpolationProcessor.h"
 
-//////////////////////////////////////////////////////////////////////////
-InterpolationProcessor::InterpolationProcessor() = default;
-//////////////////////////////////////////////////////////////////////////
-InterpolationProcessor::~InterpolationProcessor() = default;
+
+struct Range
+{
+    Range(int maxX1, int maxX2, int maxX3) : m_maxX1(maxX1), m_maxX2(maxX2), m_maxX3(maxX3) {}
+    inline bool operator()(int x1, int x2, int x3)
+    {
+        return x1 >= 0 && x1 < m_maxX1 && x2 >= 0 && x2 < m_maxX2 && x3 >= 0 && x3 < m_maxX3;
+    }
+
+    int m_maxX1;
+    int m_maxX2;
+    int m_maxX3;
+};
+
+
 //////////////////////////////////////////////////////////////////////////
 void InterpolationProcessor::readICell(SPtr<DistributionArray3D> f, D3Q27ICell &icell, int x1, int x2, int x3)
 {
@@ -67,9 +78,8 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
                                                D3Q27ICell &icell, int maxX1, int maxX2, int maxX3, int x1, int x2,
                                                int x3, real &xoff, real &yoff, real &zoff)
 {
-    m_maxX1 = maxX1;
-    m_maxX2 = maxX2;
-    m_maxX3 = maxX3;
+
+    Range inRange(maxX1, maxX2, maxX3);
 
     // GoWest
     if (inRange(x1 - 1, x2, x3) && !iCellHasSolid(bcArray, x1 - 1, x2, x3)) {

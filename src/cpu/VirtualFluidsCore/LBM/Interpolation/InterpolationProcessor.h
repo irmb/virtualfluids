@@ -26,9 +26,9 @@ using InterpolationProcessorPtr = std::shared_ptr<InterpolationProcessor>;
 class InterpolationProcessor
 {
 public:
-    InterpolationProcessor();
-    virtual ~InterpolationProcessor();
-    virtual InterpolationProcessorPtr clone()                                    = 0;
+    virtual ~InterpolationProcessor() = default;
+    virtual InterpolationProcessorPtr clone() = 0;
+
     virtual void setOmegas(real omegaC, real omegaF)                       = 0;
     virtual void interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF) = 0;
     virtual void interpolateCoarseToFine(D3Q27ICell &icellC, D3Q27ICell &icellF, real xoff, real yoff,
@@ -53,21 +53,9 @@ protected:
     virtual void calcInterpolatedNodeFC(real *f, real omega) {}
     virtual void calcInterpolatedVelocity(real x, real y, real z, real &vx1, real &vx2, real &vx3) {}
     virtual void calcInterpolatedShearStress(real x, real y, real z, real &tauxx, real &tauyy,
-                                             real &tauzz, real &tauxy, real &tauxz, real &tauyz)
-    {
-    }
+                                             real &tauzz, real &tauxy, real &tauxz, real &tauyz) {}
     virtual void setOffsets(real xoff, real yoff, real zoff) {}
-    friend class InterpolationHelper;
 
-private:
-    bool inRange(int x1, int x2, int x3);
-    int m_maxX1, m_maxX2, m_maxX3;
 };
-
-//////////////////////////////////////////////////////////////////////////
-inline bool InterpolationProcessor::inRange(int x1, int x2, int x3)
-{
-    return x1 >= 0 && x1 < m_maxX1 && x2 >= 0 && x2 < m_maxX2 && x3 >= 0 && x3 < m_maxX3;
-}
 
 #endif
