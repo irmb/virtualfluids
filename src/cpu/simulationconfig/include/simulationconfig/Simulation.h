@@ -9,9 +9,9 @@
 
 #include <geometry3d/GbPoint3D.h>
 #include <Interactors/Interactor3D.h>
-#include <BoundaryConditions/BCAdapter.h>
+#include <BoundaryConditions/BC.h>
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
-#include <CoProcessors/CoProcessor.h>
+#include <SimulationObservers/SimulationObserver.h>
 #include <LBM/LBMUnitConverter.h>
 #include "KernelFactory.h"
 #include "AbstractLBMSystem.h"
@@ -31,7 +31,7 @@ private:
     std::shared_ptr<Grid3D> grid;
     std::vector<std::shared_ptr<Interactor3D>> interactors;
     BoundaryConditionsBlockVisitor bcVisitor;
-    std::set<std::shared_ptr<BCAdapter>> registeredAdapters;
+    std::set<std::shared_ptr<BC>> registeredAdapters;
 
     std::shared_ptr<LBMKernelConfiguration> kernelConfig;
     std::shared_ptr<RuntimeParameters> simulationParameters;
@@ -57,10 +57,10 @@ public:
 
     void setKernelConfiguration(const std::shared_ptr<LBMKernelConfiguration> &kernel);
 
-    void addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BCAdapter> &bcAdapter, int state,
+    void addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BC> &bcAdapter, int state,
                    const std::string &folderPath);
 
-    void addBCAdapter(const std::shared_ptr<BCAdapter> &bcAdapter);
+    void addBC(const std::shared_ptr<BC> &bcAdapter);
 
     void run();
 
@@ -73,7 +73,7 @@ private:
 
     void writeBoundaryConditions() const;
 
-    std::shared_ptr<CoProcessor> makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
+    std::shared_ptr<SimulationObserver> makeMacroscopicQuantitiesSimulationObserver(const std::shared_ptr<LBMUnitConverter> &converter,
                                                            const std::shared_ptr<UbScheduler> &visualizationScheduler) const;
 
     static std::shared_ptr<LBMUnitConverter> makeLBMUnitConverter();
@@ -93,7 +93,7 @@ private:
 
     void initializeDistributions();
 
-    std::shared_ptr<CoProcessor> makeNupsCoProcessor() const;
+    std::shared_ptr<SimulationObserver> makeNupsSimulationObserver() const;
 };
 
 #endif

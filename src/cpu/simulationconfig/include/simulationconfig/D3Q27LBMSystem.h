@@ -16,10 +16,10 @@ public:
     makeInteractor(std::shared_ptr<GbObject3D> object, std::shared_ptr<Grid3D> grid, int type) override;
 
     std::shared_ptr<Interactor3D> makeInteractor(std::shared_ptr<GbObject3D> object, std::shared_ptr<Grid3D> grid,
-                                                 std::shared_ptr<BCAdapter> bcAdapter, int type) override;
+                                                 std::shared_ptr<BC> bcAdapter, int type) override;
 
     std::shared_ptr<Interactor3D> makeInteractor(std::shared_ptr<GbObject3D> object, std::shared_ptr<Grid3D> grid,
-                                                 std::shared_ptr<BCAdapter> bcAdapter, int type,
+                                                 std::shared_ptr<BC> bcAdapter, int type,
                                                  Interactor3D::Accuracy accuracy) override;
 };
 

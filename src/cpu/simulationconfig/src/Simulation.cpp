@@ -10,15 +10,14 @@
 #include <geometry3d/GbCuboid3D.h>
 #include <geometry3d/GbSystem3D.h>
 
-#include <BoundaryConditions/BCProcessor.h>
-#include <CoProcessors/CoProcessor.h>
-#include <CoProcessors/NUPSCounterCoProcessor.h>
-#include <CoProcessors/WriteBlocksCoProcessor.h>
-#include <CoProcessors/WriteBoundaryConditionsCoProcessor.h>
-#include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
-#include <Grid/BasicCalculator.h>
-#include <Grid/Calculator.h>
-#include <Grid/Grid3D.h>
+#include <BoundaryConditions/BCSet.h>
+#include <SimulationObservers/SimulationObserver.h>
+#include <SimulationObservers/NUPSCounterSimulationObserver.h>
+#include <SimulationObservers/WriteBlocksSimulationObserver.h>
+#include <SimulationObservers/WriteBoundaryConditionsSimulationObserver.h>
+#include <SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
+#include <Simulation/Simulation.h>
+#include <Simulation/Grid3D.h>
 #include <Interactors/InteractorsHelper.h>
 #include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
 #include <LBM/LBMKernel.h>
@@ -61,7 +60,7 @@ void Simulation::setRuntimeParameters(std::shared_ptr<RuntimeParameters> paramet
 }
 
 void
-Simulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BCAdapter> &bcAdapter, int state,
+Simulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BCA> &bcAdapter, int state,
                       const std::string &folderPath)
 {
     const bool is_in = registeredAdapters.find(bcAdapter) != registeredAdapters.end();
@@ -72,7 +71,7 @@ Simulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shar
     GbSystem3D::writeGeoObject(object, writerConfig.outputPath + folderPath, writerConfig.getWriter());
 }
 
-void Simulation::addBCAdapter(const std::shared_ptr<BCAdapter> &bcAdapter)
+void Simulation::addBCAdapter(const std::shared_ptr<BC> &bcAdapter)
 {
     registeredAdapters.insert(bcAdapter);
     this->bcVisitor.addBC(bcAdapter);
@@ -150,15 +149,15 @@ void Simulation::run()
 #endif
 
     auto visualizationScheduler = std::make_shared<UbScheduler>(simulationParameters->timeStepLogInterval);
-    auto mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
+    auto mqSimulationObserver = makeMacroscopicQuantitiesSimulationObserver(converter,
                                                               visualizationScheduler);
 
-    auto nupsCoProcessor = makeNupsCoProcessor();
+    auto nupsSimulationObserver = makeNupsSimulationObserver();
 
     auto calculator = std::make_shared<BasicCalculator>(grid, visualizationScheduler,
                                                         simulationParameters->numberOfTimeSteps);
-    calculator->addCoProcessor(nupsCoProcessor);
-    calculator->addCoProcessor(mqCoProcessor);
+    calculator->addSimulationObserver(nupsSimulationObserver);
+    calculator->addSimulationObserver(mqSimulationObserver);
 
     if (isMainProcess()) UBLOG(logINFO, "Simulation-start")
     calculator->calculate();
@@ -223,7 +222,7 @@ Simulation::makeLBMUnitConverter()
 void Simulation::writeBoundaryConditions() const
 {
     auto geoSch = std::make_shared<UbScheduler>(1);
-    WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, writerConfig.outputPath, writerConfig.getWriter(),
+    WriteBoundaryConditionsSimulationObserver ppgeo(grid, geoSch, writerConfig.outputPath, writerConfig.getWriter(),
                                              communicator);
     ppgeo.process(0);
 }
@@ -232,7 +231,7 @@ void Simulation::writeBlocksToFile() const
 {
     UBLOG(logINFO, "Write block grid to VTK-file")
     auto scheduler = std::make_shared<UbScheduler>(1);
-    auto ppblocks = std::make_shared<WriteBlocksCoProcessor>(grid,
+    auto ppblocks = std::make_shared<WriteBlocksSimulationObserver>(grid,
                                                              scheduler,
                                                              writerConfig.outputPath,
                                                              writerConfig.getWriter(),
@@ -272,23 +271,23 @@ void Simulation::initializeDistributions()
     grid->accept(initVisitor);
 }
 
-std::shared_ptr<CoProcessor>
-Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
+std::shared_ptr<SimulationObserver>
+Simulation::makeMacroscopicQuantitiesSimulationObserver(const std::shared_ptr<LBMUnitConverter> &converter,
                                                  const std::shared_ptr<UbScheduler> &visualizationScheduler) const
 {
-    auto mqCoProcessor = std::make_shared<WriteMacroscopicQuantitiesCoProcessor>(grid, visualizationScheduler,
+    auto mqSimulationObserver = std::make_shared<WriteMacroscopicQuantitiesSimulationObserver>(grid, visualizationScheduler,
                                                                                  writerConfig.outputPath,
                                                                                  writerConfig.getWriter(),
                                                                                  converter,
                                                                                  communicator);
-    mqCoProcessor->process(0);
-    return mqCoProcessor;
+    mqSimulationObserver->process(0);
+    return mqSimulationObserver;
 }
 
-std::shared_ptr<CoProcessor> Simulation::makeNupsCoProcessor() const
+std::shared_ptr<SimulationObserver> Simulation::makeNupsSimulationObserver() const
 {
     auto scheduler = std::make_shared<UbScheduler>(100, 100);
-    return std::make_shared<NUPSCounterCoProcessor>(grid, scheduler,
+    return std::make_shared<NUPSCounterSimulationObserver>(grid, scheduler,
                                                     simulationParameters->numberOfThreads,
                                                     communicator);
 }
