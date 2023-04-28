@@ -208,14 +208,12 @@
 #include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
-//#include <LBM/D3Q27CompactInterpolationProcessor.h>
-#include <LBM/CompressibleOffsetInterpolationProcessor.h>
-#include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
-#include <LBM/CompressibleOffsetSquarePressureInterpolationProcessor.h>
-#include <LBM/IncompressibleOffsetInterpolationProcessor.h>
-#include <LBM/InterpolationHelper.h>
-#include <LBM/InterpolationProcessor.h>
-//#include <LBM/D3Q27OffsetInterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetInterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolationProcessor.h>
+#include <LBM/Interpolation/IncompressibleOffsetInterpolationProcessor.h>
+#include <LBM/Interpolation/InterpolationHelper.h>
+#include <LBM/Interpolation/InterpolationProcessor.h>
 #include <IncompressibleCumulantWithSpongeLayerLBMKernel.h>
 #include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
@@ -223,7 +221,6 @@
 #include <LBM/ICell.h>
 #include <LBM/IncompressibleCumulantLBMKernel.h>
 #include <LBM/InitDensityLBMKernel.h>
-#include <LBM/InterpolationProcessor.h>
 #include <LBM/LBMKernel.h>
 #include <LBM/LBMKernelETD3Q27BGK.h>
 #include <LBM/LBMSystem.h>

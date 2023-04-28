@@ -25,7 +25,7 @@ public:
    void interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC) override; 
    void interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff) override; 
    //real forcingC, forcingF;
-protected:   
+protected:
 private:
    real omegaC{0.0}, omegaF{0.0};
    real a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
