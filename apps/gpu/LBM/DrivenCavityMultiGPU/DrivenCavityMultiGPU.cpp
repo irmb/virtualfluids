@@ -36,7 +36,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -62,7 +62,7 @@
 
 void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
@@ -145,7 +145,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 
         if (para->getNumprocs() > 1) {
 
-            const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
+            const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
             real overlap            = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 

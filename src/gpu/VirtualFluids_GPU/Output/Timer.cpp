@@ -52,7 +52,7 @@ void Timer::outputPerformance(uint t, Parameter* para, vf::gpu::Communicator& co
 
     // When using multiple GPUs, sum the nups of all processes
     if (communicator.getNumberOfProcess() > 1) {
-        double nupsSum =  communicator.sumNups(fnups);
+        double nupsSum =  communicator.reduceSum(fnups);
         if (communicator.getPID() == 0)
             VF_LOG_INFO("Sum of all {} processes: Nups in Mio: {:.1f}", communicator.getNumberOfProcess(), nupsSum);
     }

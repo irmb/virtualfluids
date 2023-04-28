@@ -62,7 +62,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
         // setup simulation parameters (with or without config file)
         //////////////////////////
 
-        vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();;
+        vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();;
         SPtr<Parameter> para;
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
         GridScalingFactory scalingFactory = GridScalingFactory();

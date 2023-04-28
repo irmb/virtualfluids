@@ -13,7 +13,7 @@
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 #include "gpu/GridGenerator/utilities/communication.h"
-#include "gpu/VirtualFluids_GPU/Communication/Communicator.cpp"
+#include "gpu/VirtualFluids_GPU/Communication/MpiCommunicator.cpp"
 
 namespace indexRearrangementTests
 {
@@ -148,7 +148,7 @@ private:
         para->initProcessNeighborsAfterFtoCX(sendIndices.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, vf::gpu::MpiCommunicator::getInstance()));
     };
 };
 
@@ -608,7 +608,7 @@ private:
         para = testingVF::createParameterForLevel(ri.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, vf::gpu::MpiCommunicator::getInstance()));
     };
 };
 
