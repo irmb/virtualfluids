@@ -1,8 +1,8 @@
 add_subdirectory(${APPS_ROOT_CPU}/PoiseuilleFlow)
 add_subdirectory(${APPS_ROOT_CPU}/CouetteFlow)
 #add_subdirectory(${APPS_ROOT_CPU}/sphere)
-add_subdirectory(${APPS_ROOT_CPU}/FlowAroundCylinder)
-add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
+#add_subdirectory(${APPS_ROOT_CPU}/FlowAroundCylinder)
+#add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
 add_subdirectory(${APPS_ROOT_CPU}/ConvectionOfVortex)
 
 IF(${VFCPU_ENABLE_LiggghtsCoupling})
