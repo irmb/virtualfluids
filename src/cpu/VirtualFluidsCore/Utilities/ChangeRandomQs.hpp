@@ -5,7 +5,7 @@
 #include "IntegrateValuesHelper.h"
 #include "BoundaryConditions.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 
 namespace Utilities
 {
@@ -16,7 +16,7 @@ namespace Utilities
       for(IntegrateValuesHelper::CalcNodes cn : cnodes)
       {
          SPtr<ILBMKernel> kernel = cn.block->getKernel();
-         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+         SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
          for(UbTupleInt3 node : cn.nodes)
          {
             SPtr<BoundaryConditions> bc = bcArray->getBC(val<1>(node), val<2>(node), val<3>(node));

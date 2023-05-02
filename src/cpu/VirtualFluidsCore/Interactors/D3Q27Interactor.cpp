@@ -39,9 +39,9 @@
 
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include "BCAdapter.h"
+#include "BC.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
 #include "Grid3D.h"
@@ -66,20 +66,20 @@ D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid
     this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type)
+D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BC> BC, int type)
     : Interactor3D(geoObject3D, grid, type), relevantForForces(false)
 {
     this->reinitWithStoredQsFlag = false;
-    this->addBCAdapter(bcAdapter);
+    this->addBC(BC);
     this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type,
+D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BC> BC, int type,
                                  Interactor3D::Accuracy a)
     : Interactor3D(geoObject3D, grid, type, a), relevantForForces(false)
 {
     this->reinitWithStoredQsFlag = false;
-    this->addBCAdapter(bcAdapter);
+    this->addBC(BC);
     this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -206,14 +206,14 @@ void D3Q27Interactor::initInteractor(const real &timeStep)
 
     //////////////////////////////////////////////////////////////////////////
     // init bcs
-    int nofAdapter = (int)bcAdapters.size();
+    int nofAdapter = (int)BCs.size();
     if (nofAdapter == 0) {
         UBLOG(logWARNING, "WARNING - D3Q27Interactor::initInteractor Warning - no nodeAdapter available");
     }
     bool needTimeDependence = false;
     for (int pos = 0; pos < nofAdapter; ++pos) {
-        bcAdapters[pos]->init(this, timeStep);
-        if (bcAdapters[pos]->isTimeDependent())
+        BCs[pos]->init(this, timeStep);
+        if (BCs[pos]->isTimeDependent())
             needTimeDependence = true;
     }
     if (needTimeDependence)
@@ -230,7 +230,7 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
 
     //////////////////////////////////////////////////////////////////////////
     // update bcs
-    int nofAdapter = (int)bcAdapters.size();
+    int nofAdapter = (int)BCs.size();
     if (nofAdapter == 0) {
         UBLOG(logERROR, "WARNING - D3Q27Interactor::updateInteractor Warning - no nodeAdapter available for ");
     }
@@ -238,8 +238,8 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
     bool needTimeDependence = false;
 
     for (int pos = 0; pos < nofAdapter; ++pos) {
-        bcAdapters[pos]->update(this, timestep);
-        if (bcAdapters[pos]->isTimeDependent())
+        BCs[pos]->update(this, timestep);
+        if (BCs[pos]->isTimeDependent())
             needTimeDependence = true;
     }
     if (needTimeDependence)
@@ -255,7 +255,7 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
             continue;
 
         SPtr<ILBMKernel> kernel = block->getKernel();
-        SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
         set<std::vector<int>>::iterator setPos;
 
@@ -271,8 +271,8 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
             SPtr<BoundaryConditions> bc = bcArray->getBC(x1, x2, x3);
             if (bc) // may be that the BC has been deleted by the solid setting of another interactor
             {
-                for (size_t i = 0; i < bcAdapters.size(); i++)
-                    bcAdapters[i]->adaptBC(*this, bc, worldX1, worldX2, worldX3, timestep);
+                for (size_t i = 0; i < BCs.size(); i++)
+                    BCs[i]->adaptBC(*this, bc, worldX1, worldX2, worldX3, timestep);
             }
         }
     }
@@ -303,7 +303,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
     SPtr<BoundaryConditions> bc;
 
     SPtr<ILBMKernel> kernel = block->getKernel();
-    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
     real internX1, internX2, internX3;
 
@@ -415,8 +415,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                         bc->setBoundaryVelocityX3(0.0);
                                     }
 
-                                    for (int index = (int)bcAdapters.size() - 1; index >= 0; --index)
-                                        bcAdapters[index]->adaptBCForDirection(*this, bc, internX1, internX2, internX3,
+                                    for (int index = (int)BCs.size() - 1; index >= 0; --index)
+                                        BCs[index]->adaptBCForDirection(*this, bc, internX1, internX2, internX3,
                                                                                q, fdir, timestep);
                                 }
 
@@ -434,8 +434,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                 p[2] = ix3;
                                 transNodeIndices.insert(p);
 
-                                for (int index = (int)bcAdapters.size() - 1; index >= 0; --index)
-                                    bcAdapters[index]->adaptBC(*this, bc, internX1, internX2, internX3, timestep);
+                                for (int index = (int)BCs.size() - 1; index >= 0; --index)
+                                    BCs[index]->adaptBC(*this, bc, internX1, internX2, internX3, timestep);
                             }
                         }
                     } else if (this->isInverseSolid()) {
@@ -534,8 +534,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                             bc = std::make_shared<BoundaryConditions>();
                                             bcArray->setBC(ix1, ix2, ix3, bc);
                                         }
-                                        for (int index = (int)bcAdapters.size() - 1; index >= 0; --index)
-                                            bcAdapters[index]->adaptBCForDirection(*this, bc, internX1, internX2,
+                                        for (int index = (int)BCs.size() - 1; index >= 0; --index)
+                                            BCs[index]->adaptBCForDirection(*this, bc, internX1, internX2,
                                                                                    internX3, q, fdir, timestep);
                                     }
 
@@ -558,8 +558,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                 p[2] = ix3;
                                 transNodeIndices.insert(p);
 
-                                for (int index = (int)bcAdapters.size() - 1; index >= 0; --index)
-                                    bcAdapters[index]->adaptBC(*this, bc, internX1, internX2, internX3, timestep);
+                                for (int index = (int)BCs.size() - 1; index >= 0; --index)
+                                    BCs[index]->adaptBC(*this, bc, internX1, internX2, internX3, timestep);
                             }
                         }
                     }
@@ -583,7 +583,7 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
         UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
         SPtr<ILBMKernel> kernel = block->getKernel();
-        SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
         map<SPtr<Block3D>, set<std::vector<int>>>::iterator pos = bcNodeIndicesMap.find(block);
         if (pos == bcNodeIndicesMap.end()) {
@@ -779,7 +779,7 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
 
     for (SPtr<Block3D> block : bcBlocks) {
         SPtr<ILBMKernel> kernel   = block->getKernel();
-        SPtr<BCArray3D> bcMatrix  = kernel->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcMatrix  = kernel->getBCSet()->getBCArray();
         UbTupleDouble3 nodeOffset = grid.lock()->getNodeOffset(block);
 
         // Check whether top row is real in the system or not

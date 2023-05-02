@@ -76,7 +76,7 @@ void ZoltanPartitioner::partition()
                                  &exportToPart);    /* Partition to which each vertex will belong */
 
     if (rc != ZOLTAN_OK) {
-        cout << "Partitioning failed on process " << rank << "\n" << endl;
+        cout << "Partitioning failed on update " << rank << "\n" << endl;
         MPI_Finalize();
         Zoltan_Destroy(&zz);
         exit(0);

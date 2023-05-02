@@ -56,7 +56,7 @@ struct dataSetParam {
 };
 
 //! \struct DataSetRestart
-//! \brief Structure describes parameters of the dataSet in MPIIORestartCoProcessor format
+//! \brief Structure describes parameters of the dataSet in MPIIORestartSimulationObserver format
 //! \details The structure is used when reading from the file
 struct DataSetRestart {
     real collFactor;
@@ -74,7 +74,7 @@ struct DataSetRestart {
 };
 
 //! \struct DataSetMigration
-//! \brief Structure describes parameters of the dataSet in MPIIOMigrationCoProcessor format
+//! \brief Structure describes parameters of the dataSet in MPIIOMigrationSimulationObserver format
 //! \details The structure is used to find the needed block in the grid when restoring a dataSet
 struct DataSetMigration {
     real collFactor;
@@ -89,7 +89,7 @@ struct DataSetMigration {
 };
 
 //! \struct DataSetSmallRead
-//! \brief Structure describes parameters of the DataSetSmall in MPIIORestartCoProcessor format
+//! \brief Structure describes parameters of the DataSetSmall in MPIIORestartSimulationObserver format
 //! \details The structure is used when reading from the file
 struct DataSetSmallRestart {
     int x1;
@@ -98,7 +98,7 @@ struct DataSetSmallRestart {
     int level;
 };
 //! \struct dataSetSmall
-//! \brief Structure containes information identifying the block in MPIIOMigrationCoProcessor format
+//! \brief Structure containes information identifying the block in MPIIOMigrationSimulationObserver format
 //! \details The structure is used to find the needed block in the grid when restoring a dataSet arrays
 struct DataSetSmallMigration {
     int globalID;
@@ -138,7 +138,7 @@ struct boundCondParam {
 };
 
 //! \struct BCAddRead
-//! \brief Structure describes parameters of the BCAdd in MPIIORestartCoProcessor format
+//! \brief Structure describes parameters of the BCAdd in MPIIORestartSimulationObserver format
 //! \details The structure is used when reading from the file
 struct BCAddRestart {
     int x1; //	to find the right block
@@ -151,7 +151,7 @@ struct BCAddRestart {
 
 //! \struct BCAdd
 //! \brief Structure containes information identifying the block and some parameters of the arrays
-//! \of boundary conditions that are equal in all blocks in MPIIOMigrationCoProcessor format
+//! \of boundary conditions that are equal in all blocks in MPIIOMigrationSimulationObserver format
 //! \details The structure is used to find the needed block in the grid when restoring a dataSet
 //! and to set common parameters
 struct BCAddMigration {

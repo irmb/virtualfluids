@@ -34,7 +34,7 @@
 
 #include "SetKernelBlockVisitor.h"
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
@@ -88,24 +88,24 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
                 newKernel->setDataSet(dataSet);
 
-                SPtr<BCProcessor> bcProc = block->getKernel()->getBCProcessor();
+                SPtr<BCSet> bcProc = block->getKernel()->getBCSet();
                 if (!bcProc) {
                     UB_THROW(UbException(
                         UB_EXARGS,
-                        "It is not possible to change a BCProcessor in kernel! Old BCProcessor is not exist!"));
+                        "It is not possible to change a BCSet in kernel! Old BCSet is not exist!"));
                 }
-                newKernel->setBCProcessor(bcProc);
+                newKernel->setBCSet(bcProc);
                 block->setKernel(newKernel);
             } break;
 
             case SetKernelBlockVisitor::ChangeKernelWithData: {
-                SPtr<BCProcessor> bcProc = block->getKernel()->getBCProcessor();
+                SPtr<BCSet> bcProc = block->getKernel()->getBCSet();
                 if (!bcProc) {
                     UB_THROW(UbException(
                         UB_EXARGS,
-                        "It is not possible to change a BCProcessor in kernel! Old BCProcessor is not exist!"));
+                        "It is not possible to change a BCSet in kernel! Old BCSet is not exist!"));
                 }
-                newKernel->setBCProcessor(bcProc);
+                newKernel->setBCSet(bcProc);
                 block->setKernel(newKernel);
             } break;
         }

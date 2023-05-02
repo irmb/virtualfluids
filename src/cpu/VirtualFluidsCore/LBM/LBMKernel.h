@@ -41,7 +41,7 @@
 #include <limits>
 #include <muParser.h>
 
-class BCProcessor;
+class BCSet;
 class DataSet3D;
 class Block3D;
 
@@ -59,8 +59,8 @@ public:
     void calculate(int step) override    = 0;
     real getCalculationTime() override = 0;
 
-    void setBCProcessor(SPtr<BCProcessor> bcp) override;
-    SPtr<BCProcessor> getBCProcessor() const override;
+    void setBCSet(SPtr<BCSet> bcp) override;
+    SPtr<BCSet> getBCSet() const override;
 
     void setCollisionFactor(real collFactor) override;
     real getCollisionFactor() const override;
@@ -129,10 +129,12 @@ public:
     real getPhaseFieldRelaxation() const;
     void setMobility(real mob);
     void setInterfaceWidth(real w);
+    void setSigma(real sigma);
+    real getSigma() const;
 
 protected:
     SPtr<DataSet3D> dataSet;
-    SPtr<BCProcessor> bcProcessor;
+    SPtr<BCSet> bcSet;
     real collFactor;
     int ghostLayerWidth{ 1 };
     bool compressible{ false };
@@ -159,6 +161,7 @@ protected:
     real densityRatio;
     real beta;
     real kappa;
+    real sigma;
     real contactAngle;
     real phiL;
     real phiH;

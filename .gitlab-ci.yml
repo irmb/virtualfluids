@@ -196,7 +196,7 @@ msvc_17_unit_tests:
 
   script:
     - cd $CI_PROJECT_DIR/build
-    - ctest -C Release
+    - ctest --output-on-failure -C Release
 
 ###############################################################################
 gcc_9_python_bindings_test:

@@ -1,0 +1,1 @@
+vf_add_library(PUBLIC_LINK VirtualFluidsCore)

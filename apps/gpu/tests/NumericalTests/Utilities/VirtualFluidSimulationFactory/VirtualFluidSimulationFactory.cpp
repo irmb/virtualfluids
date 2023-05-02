@@ -9,7 +9,7 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 
 std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<SimulationParameter> simPara)
@@ -120,7 +120,7 @@ const std::function<void()> vf::gpu::tests::makeVirtualFluidSimulation(std::shar
     auto grid = makeGridReader(condition, para, cudaManager);
     BoundaryConditionFactory bc_factory;
     auto simulation =
-        std::make_shared<Simulation>(para, cudaManager, vf::gpu::Communicator::getInstance(), *grid.get(), &bc_factory);
+        std::make_shared<Simulation>(para, cudaManager, vf::gpu::MpiCommunicator::getInstance(), *grid.get(), &bc_factory);
     simulation->setDataWriter(dataWriter);
 
     return [simulation]() { simulation->run(); };
