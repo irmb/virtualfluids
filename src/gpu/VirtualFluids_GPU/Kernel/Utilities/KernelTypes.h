@@ -13,9 +13,9 @@ namespace vf::CollisionKernel::Compressible {
     static const std::string CumulantK15Unified = "CumulantK15Unified";
     static const std::string K17CompressibleNavierStokesUnified = "K17CompressibleNavierStokesUnified";
 
+    static const std::string K17CompressibleNavierStokes = "K17CompressibleNavierStokes";
     static const std::string K17CompressibleNavierStokesBulkViscosity = "K17CompressibleNavierStokesBulkViscosity";
     static const std::string K17CompressibleNavierStokesChimeraLegacy = "K17CompressibleNavierStokesChimeraLegacy";
-    static const std::string K17CompressibleNavierStokes = "K17CompressibleNavierStokes";
 
     static const std::string CumulantAll4SP27 = "CumulantAll4CompSP27";
     static const std::string CumulantK18 = "CumulantK18Comp";

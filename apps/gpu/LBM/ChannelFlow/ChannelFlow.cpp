@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
         para->setTimestepEnd(timeStepEnd);
 
         para->setOutputPrefix("ChannelFlow");
-        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
+        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
         const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
         real overlap = (real)8.0 * dx;
