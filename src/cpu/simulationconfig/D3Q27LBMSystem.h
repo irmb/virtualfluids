@@ -6,8 +6,6 @@
 
 class D3Q27LBMSystem : public AbstractLBMSystem {
 public:
-    D3Q27LBMSystem() = default;
-
     int getNumberOfDirections() override;
 
     std::shared_ptr<Interactor3D> makeInteractor() override;

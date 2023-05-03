@@ -1,9 +1,15 @@
+#include <simulationconfig/Simulation.h>
+
 #include <memory>
 #include <string>
 #include <set>
 #include <utility>
 #include <cmath>
+
+#ifdef _OPENMP
 #include <omp.h>
+#endif
+
 #include <mpi.h>
 
 #include <basics/utilities/UbScheduler.h>
@@ -31,18 +37,16 @@
 #include <Visitors/SetKernelBlockVisitor.h>
 
 #include <simulationconfig/SimulationParameters.h>
-#include <simulationconfig/Simulation.h>
 
 #include <lbm/constants/D3Q27.h>
+
+#include <logger/Logger.h>
 
 
 CPUSimulation::CPUSimulation()
 {
     this->communicator = vf::mpi::MPICommunicator::getInstance();
-    this->grid = std::shared_ptr<Grid3D>(new Grid3D(communicator));
-    this->interactors = std::vector<std::shared_ptr<Interactor3D>>();
-    this->bcVisitor = BoundaryConditionsBlockVisitor();
-    this->registeredAdapters = std::set<std::shared_ptr<BC>>();
+    this->grid = std::make_shared<Grid3D>(communicator);
 }
 
 void CPUSimulation::setGridParameters(std::shared_ptr<GridParameters> parameters)
@@ -60,9 +64,7 @@ void CPUSimulation::setRuntimeParameters(std::shared_ptr<RuntimeParameters> para
     this->simulationParameters = std::move(parameters);
 }
 
-void
-CPUSimulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BC> &bcAdapter, int state,
-                      const std::string &folderPath)
+void CPUSimulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BC> &bcAdapter, int state, const std::string &folderPath)
 {
     const bool is_in = registeredAdapters.find(bcAdapter) != registeredAdapters.end();
     if (!is_in) addBCAdapter(bcAdapter);
@@ -85,25 +87,19 @@ void CPUSimulation::setKernelConfiguration(const std::shared_ptr<LBMKernelConfig
     this->lbmSystem = kernelFactory.makeLBMSystem(kernel->kernelType);
 }
 
-void CPUSimulation::setWriterConfiguration(const WriterConfiguration &config)
+void CPUSimulation::setWriterConfiguration(WriterConfiguration config)
 {
     this->writerConfig = config;
 }
 
-WriterConfiguration &CPUSimulation::getWriterConfig()
-{
-    return writerConfig;
-}
-
 void CPUSimulation::run()
 {
-    UBLOG(logINFO, "Beginning simulation setup for MPI rank " << communicator->getProcessID())
+    VF_LOG_INFO("Beginning simulation setup for MPI rank {}", communicator->getProcessID());
     grid->setDeltaX(gridParameters->nodeDistance);
     grid->setPeriodicX1(gridParameters->periodicBoundaryInX1);
     grid->setPeriodicX2(gridParameters->periodicBoundaryInX2);
     grid->setPeriodicX3(gridParameters->periodicBoundaryInX3);
 
-    //int &numberOfNodesInReferenceDirection = gridParameters->numberOfNodesPerDirection[gridParameters->referenceDirectionIndex];
     std::shared_ptr<LBMUnitConverter> converter = makeLBMUnitConverter();
 
     int &nodesInX1 = gridParameters->numberOfNodesPerDirection[0];
@@ -146,7 +142,7 @@ void CPUSimulation::run()
 #ifdef _OPENMP
     omp_set_num_threads(simulationParameters->numberOfThreads);
     if (isMainProcess())
-        UBLOG(logINFO, "OpenMP is set to run with " << simulationParameters->numberOfThreads << " threads")
+        VF_LOG_INFO("OpenMP is set to run with {} threads", simulationParameters->numberOfThreads);
 #endif
 
     auto visualizationScheduler = std::make_shared<UbScheduler>(simulationParameters->timeStepLogInterval);
@@ -160,9 +156,9 @@ void CPUSimulation::run()
     simulation->addSimulationObserver(nupsCoProcessor);
     simulation->addSimulationObserver(mqCoProcessor);
 
-    if (isMainProcess()) UBLOG(logINFO, "Simulation-start")
+    if (isMainProcess()) VF_LOG_TRACE("Simulation start");
     simulation->run();
-    if (isMainProcess()) UBLOG(logINFO, "Simulation-end")
+    if (isMainProcess()) VF_LOG_TRACE("Simulation end");
 }
 
 bool CPUSimulation::isMainProcess()
@@ -170,8 +166,7 @@ bool CPUSimulation::isMainProcess()
     return communicator->getProcessID() == 0;
 }
 
-void
-CPUSimulation::setKernelForcing(const std::shared_ptr<LBMKernel> &kernel,
+void CPUSimulation::setKernelForcing(const std::shared_ptr<LBMKernel> &kernel,
                              std::shared_ptr<LBMUnitConverter> &converter) const
 {
     kernel->setWithForcing(kernelConfig->useForcing);
@@ -182,21 +177,21 @@ CPUSimulation::setKernelForcing(const std::shared_ptr<LBMKernel> &kernel,
 
 void CPUSimulation::logSimulationData(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const
 {
-    UBLOG(logINFO, "Domain size = " << nodesInX1 << " x " << nodesInX2 << " x " << nodesInX3)
-    UBLOG(logINFO, "dx          = " << gridParameters->nodeDistance << " m")
-    UBLOG(logINFO, "latticeViscosity    = " << physicalParameters->latticeViscosity)
+    VF_LOG_INFO("Domain size = {} x {} x {}", nodesInX1, nodesInX2, nodesInX3);
+    VF_LOG_INFO("dx          = {} m", gridParameters->nodeDistance);
+    VF_LOG_INFO("latticeViscosity    = {}", physicalParameters->latticeViscosity);
 }
 
 void CPUSimulation::generateBlockGrid(const std::shared_ptr<GbObject3D> &gridCube) const
 {
-    UBLOG(logINFO, "Generate block grid")
+    VF_LOG_TRACE("Generate block grid");
     GenBlocksGridVisitor genBlocks(gridCube);
     grid->accept(genBlocks);
 }
 
 void CPUSimulation::setBoundaryConditionProcessor(const std::shared_ptr<LBMKernel> &kernel)
 {
-    UBLOG(logINFO, "Create boundary conditions processor")
+    VF_LOG_TRACE("Create boundary conditions processor");
     auto bcProc = std::make_shared<BCSet>();
     kernel->setBCSet(bcProc);
 }
@@ -206,7 +201,7 @@ void CPUSimulation::setBlockSize(const int &nodesInX1, const int &nodesInX2, con
     int blockSizeX1 = nodesInX1 / gridParameters->blocksPerDirection[0];
     int blockSizeX2 = nodesInX2 / gridParameters->blocksPerDirection[1];
     int blockSizeX3 = nodesInX3 / gridParameters->blocksPerDirection[2];
-    UBLOG(logINFO, "Block size  = " << blockSizeX1 << " x " << blockSizeX2 << " x " << blockSizeX3)
+    VF_LOG_INFO("Block size  = {} x {} x {}", blockSizeX1, blockSizeX2, blockSizeX3);
     grid->setBlockNX(blockSizeX1,
                      blockSizeX2,
                      blockSizeX3);
@@ -230,7 +225,7 @@ void CPUSimulation::writeBoundaryConditions() const
 
 void CPUSimulation::writeBlocksToFile() const
 {
-    UBLOG(logINFO, "Write block grid to VTK-file")
+    VF_LOG_TRACE("Write block grid to VTK-file");
     auto scheduler = std::make_shared<UbScheduler>(1);
     auto ppblocks = std::make_shared<WriteBlocksSimulationObserver>(grid,
                                                              scheduler,
@@ -241,18 +236,13 @@ void CPUSimulation::writeBlocksToFile() const
     ppblocks.reset();
 }
 
-std::shared_ptr<GbObject3D>
-CPUSimulation::makeSimulationBoundingBox()
+std::shared_ptr<GbObject3D> CPUSimulation::makeSimulationBoundingBox()
 {
     auto box = gridParameters->boundingBox();
-    auto gridCube = std::make_shared<GbCuboid3D>(box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2,
-                                                 box->maxX3);
+    auto gridCube = std::make_shared<GbCuboid3D>(box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2, box->maxX3);
 
-    if (isMainProcess())
-    {
-        UBLOG(logINFO, "Bounding box dimensions = [("
-                << box->minX1 << ", " << box->minX2 << ", " << box->minX3 << "); ("
-                << box->maxX1 << ", " << box->maxX2 << ", " << box->maxX3 << ")]")
+    if (isMainProcess()) {
+        VF_LOG_INFO("Bounding box dimensions = [({}},{}},{}}); ({}}, {}}, {}})]", box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2, box->maxX3);
 
         GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
     }
@@ -272,15 +262,9 @@ void CPUSimulation::initializeDistributions()
     grid->accept(initVisitor);
 }
 
-std::shared_ptr<SimulationObserver>
-CPUSimulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                 const std::shared_ptr<UbScheduler> &visualizationScheduler) const
+std::shared_ptr<SimulationObserver> CPUSimulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter, const std::shared_ptr<UbScheduler> &visualizationScheduler) const
 {
-    auto mqCoProcessor = std::make_shared<WriteMacroscopicQuantitiesSimulationObserver>(grid, visualizationScheduler,
-                                                                                 writerConfig.outputPath,
-                                                                                 writerConfig.getWriter(),
-                                                                                 converter,
-                                                                                 communicator);
+    auto mqCoProcessor = std::make_shared<WriteMacroscopicQuantitiesSimulationObserver>(grid, visualizationScheduler, writerConfig.outputPath, writerConfig.getWriter(), converter, communicator);
     mqCoProcessor->update(0);
     return mqCoProcessor;
 }
@@ -292,6 +276,3 @@ std::shared_ptr<SimulationObserver> CPUSimulation::makeNupsCoProcessor() const
                                                     simulationParameters->numberOfThreads,
                                                     communicator);
 }
-
-
-CPUSimulation::~CPUSimulation() = default;
