@@ -14,7 +14,7 @@ struct WriterConfiguration {
     OutputFormat outputFormat{};
     std::string outputPath{"./output"};
 
-    WbWriter *getWriter()
+    WbWriter *getWriter() const 
     {
         if (outputFormat == ASCII) return WbWriterVtkXmlASCII::getInstance();
         if (outputFormat == BINARY) return WbWriterVtkXmlBinary::getInstance();

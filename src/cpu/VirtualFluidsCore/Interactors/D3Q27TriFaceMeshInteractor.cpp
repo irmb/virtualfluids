@@ -186,11 +186,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     assert(UbMath::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX3 / (double)blocknx3));
 
     for (int level = coarsestInitLevel; level <= finestInitLevel; level++) {
-        double nodeDeltaX1 = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
-        double nodeDeltaX2 = cblockDeltaX2 / (double)(blocknx2 * (1 << (level - coarsestInitLevel)));
-        double nodeDeltaX3 = cblockDeltaX3 / (double)(blocknx3 * (1 << (level - coarsestInitLevel)));
+        real nodeDeltaX1 = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
+        real nodeDeltaX2 = cblockDeltaX2 / (double)(blocknx2 * (1 << (level - coarsestInitLevel)));
+        real nodeDeltaX3 = cblockDeltaX3 / (double)(blocknx3 * (1 << (level - coarsestInitLevel)));
 
-        std::vector<double> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
+        std::vector<real> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
         D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDeltaX1, nodeDeltaX2, nodeDeltaX3);
         // D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDeltaX1);
 
@@ -666,9 +666,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     assert(UbMath::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX3 / (double)blocknx3));
 
     for (int level = coarsestInitLevel; level <= finestInitLevel; level++) {
-        double nodeDelta = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
+        real nodeDelta = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
 
-        std::vector<double> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
+        std::vector<real> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
         D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDelta);
 
         nodeDeltaToNeigh[level].resize(D3Q27System::ENDDIR + 1, 0.0);
@@ -1313,7 +1313,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     //}
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startDistance, double stopDistance)
+void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDistance, real stopDistance)
 {
     UBLOG(logDEBUG1, "D3Q27TriFaceMeshInteractor::refineBlockGridToLevel - start");
 
