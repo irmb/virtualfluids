@@ -26,24 +26,23 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file RheologyInterpolationProcessor.h
+//! \file RheologyInterpolator.h
 //! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef RheologyInterpolationProcessor_H_
-#define RheologyInterpolationProcessor_H_
+#ifndef RheologyInterpolator_H_
+#define RheologyInterpolator_H_
 
-#include "Interpolator.h"
+#include "Interpolation/Interpolator.h"
 #include "D3Q27System.h"
 
 //! \brief A class implements an interpolation function of grid refinement for thixotropic fluid.
 
-class RheologyInterpolationProcessor : public Interpolator
+class RheologyInterpolator : public Interpolator
 {
 public:
-   RheologyInterpolationProcessor();
-   RheologyInterpolationProcessor(real omegaC, real omegaF, real omegaMin);
-   virtual ~RheologyInterpolationProcessor();
+   RheologyInterpolator();
+   RheologyInterpolator(real omegaC, real omegaF, real omegaMin);
    InterpolationProcessorPtr clone();
    void setOmegas(real omegaC, real omegaF);
    void setOmegaMin(real omegaMin);
@@ -94,12 +93,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline void RheologyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
+inline void RheologyInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
 {
    this->interpolateCoarseToFine(icellC, icellF, 0.0, 0.0, 0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void RheologyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
+inline void RheologyInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
 {
    this->interpolateFineToCoarse(icellF, icellC, 0.0, 0.0, 0.0);
 }
