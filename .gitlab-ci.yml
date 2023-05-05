@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.5
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0
 
 stages:
   - build
@@ -330,7 +330,7 @@ regression_test_8gpu:
 nvidia_test:
   stage: benchmark
 
-  image: nvidia/cuda:11.1.1-devel-ubuntu20.04
+  image: nvidia/cuda:12.1.1-devel-ubuntu22.04
 
   needs: []
 
