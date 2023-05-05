@@ -1505,8 +1505,8 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
 
             block1->getKernel()->setBCSet(bcProc);
 
-            delete bcArray;
-            delete intArray1;
+            delete[] bcArray;
+            delete[] intArray1;
 
             ic++;
         }
