@@ -1,4 +1,4 @@
-#include "CumulantK15Unified.h"
+#include "K15CompressibleNavierStokesUnified.h"
 
 #include <stdexcept>
 
@@ -13,7 +13,7 @@ namespace vf
 namespace gpu
 {
 
-CumulantK15Unified::CumulantK15Unified(std::shared_ptr<Parameter> para, int level)
+K15CompressibleNavierStokesUnified::K15CompressibleNavierStokesUnified(std::shared_ptr<Parameter> para, int level)
     : KernelImp(para, level)
 {
 #ifndef BUILD_CUDA_LTO
@@ -28,7 +28,7 @@ CumulantK15Unified::CumulantK15Unified(std::shared_ptr<Parameter> para, int leve
     this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 }
 
-void CumulantK15Unified::run()
+void K15CompressibleNavierStokesUnified::run()
 {
     GPUKernelParameter kernelParameter{
         para->getParD(level)->omega,

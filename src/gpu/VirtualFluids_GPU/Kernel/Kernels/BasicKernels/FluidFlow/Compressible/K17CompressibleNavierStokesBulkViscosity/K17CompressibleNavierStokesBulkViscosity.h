@@ -1,5 +1,5 @@
-#ifndef CUMULANT_K17_BULK_COMP_H
-#define CUMULANT_K17_BULK_COMP_H
+#ifndef K17CompressibleNavierStokesBulkViscosity_H
+#define K17CompressibleNavierStokesBulkViscosity_H
 
 #include "Kernel/KernelImp.h"
 

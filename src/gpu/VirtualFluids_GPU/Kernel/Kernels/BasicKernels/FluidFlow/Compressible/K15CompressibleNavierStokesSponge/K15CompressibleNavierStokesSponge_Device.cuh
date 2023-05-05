@@ -1,10 +1,10 @@
-#ifndef LB_KERNEL_CUMULANT_K15_SPONGE_COMP_H
-#define LB_KERNEL_CUMULANT_K15_SPONGE_COMP_H
+#ifndef K15CompressibleNavierStokesSponge_Device_H
+#define K15CompressibleNavierStokesSponge_Device_H
 
 #include <DataTypes.h>
 #include <curand.h>
 
-__global__ void LB_Kernel_CumulantK15SpongeComp(real omega,
+__global__ void K15CompressibleNavierStokesSponge_Device(real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

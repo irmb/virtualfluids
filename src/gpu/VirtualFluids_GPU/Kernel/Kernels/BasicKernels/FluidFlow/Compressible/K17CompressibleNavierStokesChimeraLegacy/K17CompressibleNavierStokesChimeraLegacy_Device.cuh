@@ -1,5 +1,5 @@
-#ifndef LB_Kernel_CUMULANT_K17_COMP_CHIM_H
-#define LB_Kernel_CUMULANT_K17_COMP_CHIM_H
+#ifndef K17CompressibleNavierStokesChimeraLegacy_Device_H
+#define K17CompressibleNavierStokesChimeraLegacy_Device_H
 
 #include <DataTypes.h>
 #include <curand.h>

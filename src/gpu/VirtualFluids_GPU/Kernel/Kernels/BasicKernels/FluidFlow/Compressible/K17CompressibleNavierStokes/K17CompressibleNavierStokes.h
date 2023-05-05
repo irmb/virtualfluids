@@ -1,5 +1,5 @@
-#ifndef CUMULANT_K17_H
-#define CUMULANT_K17_H
+#ifndef K17CompressibleNavierStokes_H
+#define K17CompressibleNavierStokes_H
 
 #include "Kernel/KernelImp.h"
 #include "Parameter/Parameter.h"

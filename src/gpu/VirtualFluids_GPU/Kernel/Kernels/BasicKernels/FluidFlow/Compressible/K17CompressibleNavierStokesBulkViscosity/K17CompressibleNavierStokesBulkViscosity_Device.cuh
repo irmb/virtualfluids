@@ -1,5 +1,5 @@
-#ifndef LB_KERNEL_CUMULANT_K17_BULK_COMP_H
-#define LB_KERNEL_CUMULANT_K17_BULK_COMP_H
+#ifndef K17CompressibleNavierStokesBulkViscosity_Device_H
+#define K17CompressibleNavierStokesBulkViscosity_Device_H
 
 #include <DataTypes.h>
 #include <curand.h>

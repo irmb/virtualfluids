@@ -1,15 +1,15 @@
-#include "CumulantK15Comp.h"
+#include "K15CompressibleNavierStokes.h"
 
-#include "CumulantK15Comp_Device.cuh"
+#include "K15CompressibleNavierStokes_Device.cuh"
 
 #include "Parameter/Parameter.h"
 
-std::shared_ptr<CumulantK15Comp> CumulantK15Comp::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<K15CompressibleNavierStokes> K15CompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<CumulantK15Comp>(new CumulantK15Comp(para, level));
+	return std::shared_ptr<K15CompressibleNavierStokes>(new K15CompressibleNavierStokes(para, level));
 }
 
-void CumulantK15Comp::run()
+void K15CompressibleNavierStokes::run()
 {
 	int numberOfThreads = para->getParD(level)->numberofthreads;
 	int size_Mat = (int)para->getParD(level)->numberOfNodes;
@@ -29,7 +29,7 @@ void CumulantK15Comp::run()
 	dim3 grid(Grid1, Grid2, 1);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_CumulantK15Comp <<< grid, threads >>>(
+	K15CompressibleNavierStokes_Device <<< grid, threads >>>(
 		para->getParD(level)->omega,
 		para->getParD(level)->typeOfGridNode,
 		para->getParD(level)->neighborX,
@@ -43,7 +43,7 @@ void CumulantK15Comp::run()
 	getLastCudaError("LB_Kernel_CumulantK15Comp execution failed");
 }
 
-CumulantK15Comp::CumulantK15Comp(std::shared_ptr<Parameter> para, int level)
+K15CompressibleNavierStokes::K15CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;

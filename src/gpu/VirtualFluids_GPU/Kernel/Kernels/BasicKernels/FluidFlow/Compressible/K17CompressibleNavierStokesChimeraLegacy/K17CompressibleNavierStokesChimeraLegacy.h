@@ -1,5 +1,5 @@
-#ifndef CUMULANT_K17_COMP_CHIM_H
-#define CUMULANT_K17_COMP_CHIM_H
+#ifndef K17CompressibleNavierStokesChimeraLegacy_H
+#define K17CompressibleNavierStokesChimeraLegacy_H
 
 #include "Kernel/KernelImp.h"
 

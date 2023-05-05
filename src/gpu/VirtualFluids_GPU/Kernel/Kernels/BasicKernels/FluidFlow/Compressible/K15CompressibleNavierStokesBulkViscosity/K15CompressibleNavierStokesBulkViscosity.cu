@@ -1,19 +1,19 @@
-#include "CumulantK15BulkComp.h"
+#include "K15CompressibleNavierStokesBulkViscosity.h"
 
-#include "CumulantK15BulkComp_Device.cuh"
+#include "K15CompressibleNavierStokesBulkViscosity_Device.cuh"
 #include "Parameter/Parameter.h"
 #include "cuda/CudaGrid.h"
 
-std::shared_ptr<CumulantK15BulkComp> CumulantK15BulkComp::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<K15CompressibleNavierStokesBulkViscosity> K15CompressibleNavierStokesBulkViscosity::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<CumulantK15BulkComp>(new CumulantK15BulkComp(para, level));
+	return std::shared_ptr<K15CompressibleNavierStokesBulkViscosity>(new K15CompressibleNavierStokesBulkViscosity(para, level));
 }
 
-void CumulantK15BulkComp::run()
+void K15CompressibleNavierStokesBulkViscosity::run()
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 
-    LB_Kernel_CumulantK15BulkComp <<< grid.grid, grid.threads >>>(
+    K15CompressibleNavierStokesBulkViscosity_Device <<<grid.grid, grid.threads>>>(
         para->getParD(level)->omega,
         para->getParD(level)->typeOfGridNode,
         para->getParD(level)->neighborX,
@@ -27,7 +27,7 @@ void CumulantK15BulkComp::run()
     getLastCudaError("LB_Kernel_CumulantK15BulkComp execution failed");
 }
 
-CumulantK15BulkComp::CumulantK15BulkComp(std::shared_ptr<Parameter> para, int level)
+K15CompressibleNavierStokesBulkViscosity::K15CompressibleNavierStokesBulkViscosity(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -37,6 +37,6 @@ CumulantK15BulkComp::CumulantK15BulkComp(std::shared_ptr<Parameter> para, int le
 	
 }
 
-CumulantK15BulkComp::CumulantK15BulkComp()
+K15CompressibleNavierStokesBulkViscosity::K15CompressibleNavierStokesBulkViscosity()
 {
 }

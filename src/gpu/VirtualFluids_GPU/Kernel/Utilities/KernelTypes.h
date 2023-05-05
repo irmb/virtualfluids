@@ -21,10 +21,10 @@ namespace vf::CollisionKernel::Compressible {
     static const std::string CumulantK18 = "CumulantK18Comp";
     static const std::string CumulantK20 = "CumulantK20Comp";
 
-    static const std::string CumulantK15 = "CumulantK15Comp";
-    static const std::string CumulantK15Bulk = "CumulantK15BulkComp";
-    static const std::string CumulantK15Sponge = "CumulantK15SpongeComp";
-}
+    static const std::string K15CompressibleNavierStokes = "K15CompressibleNavierStokes";
+    static const std::string K15CompressibleNavierStokesBulk = "K15CompressibleNavierStokesBulk";
+    static const std::string K15CompressibleNavierStokesSponge = "K15CompressibleNavierStokesSponge";
+    }
 
 namespace vf::CollisionKernel::Incompressible {
     static const std::string BGK = "BGKIncompSP27";

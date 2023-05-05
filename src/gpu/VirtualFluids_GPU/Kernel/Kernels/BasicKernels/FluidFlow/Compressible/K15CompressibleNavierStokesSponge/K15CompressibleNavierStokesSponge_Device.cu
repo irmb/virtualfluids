@@ -6,7 +6,7 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
-__global__ void LB_Kernel_CumulantK15SpongeComp(real omegaIn,
+__global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

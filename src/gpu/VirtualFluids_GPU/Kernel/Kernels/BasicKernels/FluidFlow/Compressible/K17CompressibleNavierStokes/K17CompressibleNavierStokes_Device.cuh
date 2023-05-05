@@ -1,5 +1,5 @@
-#ifndef LB_Kernel_CUMULANT_K17_H
-#define LB_Kernel_CUMULANT_K17_H
+#ifndef K17CompressibleNavierStokes_Device_H
+#define K17CompressibleNavierStokes_Device_H
 
 #include <DataTypes.h>
 #include <curand.h>

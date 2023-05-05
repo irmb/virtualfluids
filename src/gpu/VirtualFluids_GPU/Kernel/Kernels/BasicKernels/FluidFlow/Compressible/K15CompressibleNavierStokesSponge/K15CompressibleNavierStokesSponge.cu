@@ -1,19 +1,19 @@
-#include "CumulantK15SpongeComp.h"
+#include "K15CompressibleNavierStokesSponge.h"
 
-#include "CumulantK15SpongeComp_Device.cuh"
+#include "K15CompressibleNavierStokesSponge_Device.cuh"
 #include "Parameter/Parameter.h"
 #include "cuda/CudaGrid.h"
 
-std::shared_ptr<CumulantK15SpongeComp> CumulantK15SpongeComp::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<K15CompressibleNavierStokesSponge> K15CompressibleNavierStokesSponge::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<CumulantK15SpongeComp>(new CumulantK15SpongeComp(para, level));
+	return std::shared_ptr<K15CompressibleNavierStokesSponge>(new K15CompressibleNavierStokesSponge(para, level));
 }
 
-void CumulantK15SpongeComp::run()
+void K15CompressibleNavierStokesSponge::run()
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
 
-    LB_Kernel_CumulantK15SpongeComp <<< grid.grid, grid.threads >>>(
+    K15CompressibleNavierStokesSponge_Device <<< grid.grid, grid.threads >>>(
         para->getParD(level)->omega,
         para->getParD(level)->typeOfGridNode,
         para->getParD(level)->neighborX,
@@ -28,7 +28,7 @@ void CumulantK15SpongeComp::run()
     getLastCudaError("LB_Kernel_CumulantK15SpongeComp execution failed");
 }
 
-CumulantK15SpongeComp::CumulantK15SpongeComp(std::shared_ptr<Parameter> para, int level)
+K15CompressibleNavierStokesSponge::K15CompressibleNavierStokesSponge(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -38,6 +38,6 @@ CumulantK15SpongeComp::CumulantK15SpongeComp(std::shared_ptr<Parameter> para, in
 	
 }
 
-CumulantK15SpongeComp::CumulantK15SpongeComp()
+K15CompressibleNavierStokesSponge::K15CompressibleNavierStokesSponge()
 {
 }
