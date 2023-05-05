@@ -112,14 +112,14 @@ void run()
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
-      outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      SPtr<BC> outflowBC(new DensityBC(rhoLB));
+      outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(outflowBCAdapter);
+      bcVisitor.addBC(outflowBC);
 
-      SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      SPtr<BCSet> bcProc;
+      bcProc = SPtr<BCSet>(new BCSet());
 
       SPtr<GbObject3D> refCube(new GbCuboid3D(g_minX1-blockLength,-0.02,-0.02,g_maxX1+blockLength,0.02,0.02));
       if (myid==0) GbSystem3D::writeGeoObject(refCube.get(), pathname+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
@@ -133,24 +133,24 @@ void run()
          if (myid==0) UBLOG(logINFO, "Refinement - end");
       }
 
-      SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
       //outflow
       GbCuboid3DPtr geoOutflow1(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow1.get(), pathname+"/geo/geoOutflow1", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBC, Interactor3D::SOLID));
 
       GbCuboid3DPtr geoOutflow2(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow2.get(), pathname+"/geo/geoOutflow2", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBC, Interactor3D::SOLID));
       
       GbCuboid3DPtr geoOutflow3(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow3.get(), pathname+"/geo/geoOutflow3", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBC, Interactor3D::SOLID));
 
       GbCuboid3DPtr geoOutflow4(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow4.get(), pathname+"/geo/geoOutflow4", WbWriterVtkXmlASCII::getInstance());
-      SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBC, Interactor3D::SOLID));
 
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
       InteractorsHelper intHelper(grid, metisVisitor);
@@ -160,7 +160,7 @@ void run()
       //intHelper.addInteractor(outflowIntr4);
       intHelper.selectBlocks();
 
-      ppblocks->process(0);
+      ppblocks->update(0);
       ppblocks.reset();
 
       //set connectors  
@@ -211,9 +211,9 @@ void run()
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
-      SPtr<BCProcessor> bcProcessor(new BCProcessor());
+      SPtr<BCSet> bcSet(new BCSet());
 
-      kernel->setBCProcessor(bcProcessor);
+      kernel->setBCSet(bcSet);
 
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
       grid->accept(kernelVisitor);
@@ -264,8 +264,8 @@ void run()
 
       //Postrozess
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-      ppgeo->process(0);
+      SPtr<SimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      ppgeo->update(0);
       ppgeo.reset();
 
       if (myid==0) UBLOG(logINFO, "Preprozess - end");
@@ -278,27 +278,27 @@ void run()
       }
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-      writeMQCoProcessor->process(0);
+      SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      writeMQSimulationObserver->update(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      std::shared_ptr<NUPSCounterSimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //SPtr<UbScheduler> tavSch(new UbScheduler(1, 0, endTime));
-      //SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-      //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      //SPtr<TimeAveragedValuesSimulationObserver> tav(new TimeAveragedValuesSimulationObserver(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+      //   TimeAveragedValuesSimulationObserver::Density | TimeAveragedValuesSimulationObserver::Velocity | TimeAveragedValuesSimulationObserver::Fluctuations));
       //tav->setWithGhostLayer(true);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-      calculator->addCoProcessor(nupsCoProcessor);
-      calculator->addCoProcessor(writeMQCoProcessor);
-      //calculator->addCoProcessor(tav);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+      simulation->addSimulationObserver(nupsSimulationObserver);
+      simulation->addSimulationObserver(writeMQSimulationObserver);
+      //simulation->addSimulationObserver(tav);
 
       //omp_set_num_threads(1);
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
-      calculator->calculate();
+      simulation->run();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

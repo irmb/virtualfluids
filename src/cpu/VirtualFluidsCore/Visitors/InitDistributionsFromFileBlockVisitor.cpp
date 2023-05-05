@@ -1,6 +1,6 @@
 #include "InitDistributionsFromFileBlockVisitor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
@@ -73,7 +73,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
 
         //      UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-        SPtr<BCArray3D> bcArray        = kernel->getBCProcessor()->getBCArray();
+        SPtr<BCArray3D> bcArray        = kernel->getBCSet()->getBCArray();
         SPtr<EsoTwist3D> distributions = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
         real f[D3Q27System::ENDF + 1];

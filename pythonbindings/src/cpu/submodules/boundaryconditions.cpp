@@ -30,16 +30,17 @@
 //! \ingroup submodules
 //! \author Sven Marcus, Henry Korb
 //=======================================================================================
+#include "BCStrategy.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <BoundaryConditions/DensityBCAdapter.h>
-#include <BoundaryConditions/NonReflectingOutflowBCAlgorithm.h>
-#include <BoundaryConditions/BCAdapter.h>
-#include <BoundaryConditions/NoSlipBCAdapter.h>
-#include <BoundaryConditions/VelocityBCAdapter.h>
-#include <BoundaryConditions/NoSlipBCAlgorithm.h>
-#include <BoundaryConditions/VelocityBCAlgorithm.h>
-#include <BoundaryConditions/HighViscosityNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/DensityBC.h>
+#include <BoundaryConditions/NonReflectingOutflowBCStrategy.h>
+#include <BoundaryConditions/BC.h>
+#include <BoundaryConditions/NoSlipBC.h>
+#include <BoundaryConditions/VelocityBC.h>
+#include <BoundaryConditions/NoSlipBCStrategy.h>
+#include <BoundaryConditions/VelocityBCStrategy.h>
+#include <BoundaryConditions/HighViscosityNoSlipBCStrategy.h>
 
 namespace boundaryconditions
 {
@@ -47,35 +48,35 @@ namespace boundaryconditions
     using namespace py::literals;
 
     template<class adapter, class algorithm,
-            class = std::enable_if_t<std::is_base_of<BCAdapter, adapter>::value>,
-            class = std::enable_if_t<std::is_base_of<BCAlgorithm, algorithm>::value>>
+            class = std::enable_if_t<std::is_base_of<BC, adapter>::value>,
+            class = std::enable_if_t<std::is_base_of<BCStrategy, algorithm>::value>>
     class PyBoundaryCondition : public adapter
     {
     public:
         template<typename ...Args>
         PyBoundaryCondition(Args &&... args) : adapter(std::forward<Args>(args)...)
         {
-            this->setBcAlgorithm(std::make_shared<algorithm>());
+            this->setBCStrategy(std::make_shared<algorithm>());
         }
     };
 
     template<class adapter, class algorithm>
-    using bc_class = py::class_<PyBoundaryCondition<adapter, algorithm>, BCAdapter,
+    using bc_class = py::class_<PyBoundaryCondition<adapter, algorithm>, BC,
             std::shared_ptr<PyBoundaryCondition<adapter, algorithm>>>;
 
     void makeModule(py::module_ &parentModule)
     {
         py::module_ bcModule = parentModule.def_submodule("boundaryconditions");
 
-        auto _ = py::class_<BCAdapter, std::shared_ptr<BCAdapter>>(bcModule, "BCAdapter");
+        auto _ = py::class_<BC, std::shared_ptr<BC>>(bcModule, "BC");
 
-        bc_class<NoSlipBCAdapter, NoSlipBCAlgorithm>(bcModule, "NoSlipBoundaryCondition")
+        bc_class<NoSlipBC, NoSlipBCStrategy>(bcModule, "NoSlipBoundaryCondition")
                 .def(py::init());
 
-        bc_class<NoSlipBCAdapter, HighViscosityNoSlipBCAlgorithm>(bcModule, "HighViscosityNoSlipBoundaryCondition")
+        bc_class<NoSlipBC, HighViscosityNoSlipBCStrategy>(bcModule, "HighViscosityNoSlipBoundaryCondition")
                 .def(py::init());
 
-        bc_class<VelocityBCAdapter, VelocityBCAlgorithm>(bcModule, "VelocityBoundaryCondition")
+        bc_class<VelocityBC, VelocityBCStrategy>(bcModule, "VelocityBoundaryCondition")
                 .def(py::init())
                 .def(py::init<bool &, bool &, bool &, mu::Parser &, real &, real &>(),
                      "vx1"_a, "vx2"_a, "vx3"_a,
@@ -89,7 +90,7 @@ namespace boundaryconditions
                      "vx2"_a, "vx2_start_time"_a, "vx2_end_time"_a,
                      "vx3"_a, "vx3_start_time"_a, "vx3_end_time"_a);
 
-        bc_class<DensityBCAdapter, NonReflectingOutflowBCAlgorithm>(bcModule, "NonReflectingOutflow")
+        bc_class<DensityBC, NonReflectingOutflowBCStrategy>(bcModule, "NonReflectingOutflow")
                 .def(py::init());
     }
 

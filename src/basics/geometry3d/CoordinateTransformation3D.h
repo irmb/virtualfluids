@@ -137,10 +137,10 @@ private:
     bool active;
     bool transformation;
 
-    friend class MPIIOCoProcessor;
-    friend class MPIIORestartCoProcessor;
-    friend class MPIIOMigrationCoProcessor;
-    friend class MPIIOMigrationBECoProcessor;
+    friend class MPIIOSimulationObserver;
+    friend class MPIIORestartSimulationObserver;
+    friend class MPIIOMigrationSimulationObserver;
+    friend class MPIIOMigrationBESimulationObserver;
     friend class CheckpointConverter;
 };
 

@@ -39,7 +39,7 @@ namespace communicator
 
     void makeModule(py::module_ &parentModule)
     {
-        py::class_<vf::gpu::MpiCommunicator, std::unique_ptr<vf::gpu::MpiCommunicator, py::nodelete>>(parentModule, "Communicator")
+        py::class_<vf::gpu::MpiCommunicator, std::unique_ptr<vf::gpu::MpiCommunicator, py::nodelete>>(parentModule, "MpiCommunicator")
         .def_static("get_instance", &vf::gpu::MpiCommunicator::getInstance, py::return_value_policy::reference)
         .def("get_number_of_process", &vf::gpu::MpiCommunicator::getNumberOfProcess)
         .def("get_pid", &vf::gpu::MpiCommunicator::getPID);

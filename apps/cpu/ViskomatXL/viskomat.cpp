@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include <VirtualFluids.h>
+#include "VirtualFluids.h"
+#include "NonNewtonianFluids/NonNewtonianFluids.h"
 
 using namespace std;
 
@@ -106,14 +107,14 @@ void bflow(string configname)
       thix->setYieldStress(tau0LB);
       //thix->setOmegaMin(omegaMin);
 
-      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      SPtr<BC> noSlipBC(new NoSlipBC());
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyHerschelBulkleyModelNoSlipBCStrategy()));
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelNoSlipBCStrategy()));
 
-      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
-      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
-      //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SlipBCAlgorithm()));
+      SPtr<BC> slipBC(new SlipBC());
+      slipBC->setBCStrategy(SPtr<BCStrategy>(new SimpleSlipBCStrategy()));
+      //slipBC->setBCStrategy(SPtr<BCStrategy>(new SlipBCStrategy()));
 
       //// rotation around X-axis
       mu::Parser fctVy;
@@ -148,26 +149,26 @@ void bflow(string configname)
       //mu::Parser fctVy;
       //fctVy.SetExpr("0.0");
 
-      SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
+      SPtr<BC> velocityBC(new VelocityBC(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+      velocityBC->setBCStrategy(SPtr<BCStrategy>(new SimpleVelocityBCStrategy()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelVelocityBCStrategy()));
 
-      //SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
-      //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
-      ////densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      //SPtr<BC> densityBC(new DensityBC());
+      //densityBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+      ////densityBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
 
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      //bcVisitor.addBC(noSlipBCAdapter);
-      bcVisitor.addBC(slipBCAdapter);
-      bcVisitor.addBC(velocityBCAdapter);
-      //bcVisitor.addBC(densityBCAdapter);
+      //bcVisitor.addBC(noSlipBC);
+      bcVisitor.addBC(slipBC);
+      bcVisitor.addBC(velocityBC);
+      //bcVisitor.addBC(densityBC);
       
-      SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      SPtr<BCSet> bcProc;
+      bcProc = SPtr<BCSet>(new BCSet());
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BGKLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
@@ -177,7 +178,7 @@ void bflow(string configname)
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
-      kernel->setBCProcessor(bcProc);
+      kernel->setBCSet(bcProc);
       //kernel->setForcingX1(forcing);
       //kernel->setWithForcing(true);
 
@@ -198,11 +199,11 @@ void bflow(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, outputPath, comm));
-      //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, mSch, outputPath, comm));
-      restartCoProcessor->setLBMKernel(kernel);
-      restartCoProcessor->setBCProcessor(bcProc);
-      //restartCoProcessor->setNu(k);
+      SPtr<MPIIOMigrationSimulationObserver> restartSimulationObserver(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, outputPath, comm));
+      //SPtr<MPIIORestartSimulationObserver> restartSimulationObserver(new MPIIORestartSimulationObserver(grid, mSch, outputPath, comm));
+      restartSimulationObserver->setLBMKernel(kernel);
+      restartSimulationObserver->setBCSet(bcProc);
+      //restartSimulationObserver->setNu(k);
       //////////////////////////////////////////////////////////////////////////
 
       ////stator
@@ -222,7 +223,7 @@ void bflow(string configname)
       //// //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
 
       // SPtr<D3Q27Interactor> statorInt =
-      //    SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      //    SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBC, Interactor3D::SOLID));
       
       SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
       stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
@@ -231,7 +232,7 @@ void bflow(string configname)
       //stator->translate(4.0, -73.0, -6.0);
 
       SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
-         new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+         new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES));
 
       GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
 
@@ -250,7 +251,7 @@ void bflow(string configname)
       GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
 
       SPtr<D3Q27Interactor> rotorInt =
-          SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
+          SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBC, Interactor3D::INVERSESOLID));
 
       //walls
       GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - deltax, g_minX2 - deltax, g_minX3 - deltax, g_minX1,
@@ -262,8 +263,8 @@ void bflow(string configname)
       if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
       //wall interactors
-      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, slipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, slipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBC, Interactor3D::SOLID));
 
       if (myid == 0)
       {
@@ -320,8 +321,8 @@ void bflow(string configname)
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
 
-         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppblocks->process(0);
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
+         ppblocks->update(0);
 
          unsigned long nob = grid->getNumberOfBlocks();
          int gl = 3;
@@ -365,18 +366,18 @@ void bflow(string configname)
          grid->accept(initVisitor);
 
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
-         ppgeo.process(0);
+         WriteBoundaryConditionsSimulationObserver ppgeo = WriteBoundaryConditionsSimulationObserver(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
+         ppgeo.update(0);
 
          if (myid == 0) UBLOG(logINFO, "Preprozess - end");
       }
       else
       {
-         restartCoProcessor->restart((int)restartStep);
+         restartSimulationObserver->restart((int)restartStep);
          
-         //restartCoProcessor->readBlocks((int)restartStep);
-         //restartCoProcessor->readDataSet((int)restartStep);
-         ////restartCoProcessor->readBoundaryConds((int)restartStep);
+         //restartSimulationObserver->readBlocks((int)restartStep);
+         //restartSimulationObserver->readDataSet((int)restartStep);
+         ////restartSimulationObserver->readBoundaryConds((int)restartStep);
          //grid->setTimeStep((int)restartStep);
          
          SetBcBlocksBlockVisitor v2(wallXmaxInt);
@@ -395,9 +396,9 @@ void bflow(string configname)
          grid->accept(v1);
          wallXminInt->initInteractor();
 
-         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
                                                                WbWriterVtkXmlBinary::getInstance(), comm));
-         ppblocks->process(1);
+         ppblocks->update(1);
       }
       
       //omp_set_num_threads(numOfThreads);
@@ -414,33 +415,33 @@ void bflow(string configname)
       grid->accept(bcVisitor);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       //write data for visualization of macroscopic quantities
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       //SPtr<UbScheduler> visSch(new UbScheduler(10,1));
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-      //writeMQCoProcessor->process(100);
+      SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      //writeMQSimulationObserver->update(100);
 
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
-      SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.csv", comm);
+      SPtr<CalculateTorqueSimulationObserver> fp = make_shared<CalculateTorqueSimulationObserver>(grid, forceSch, outputPath + "/torque/TorqueRotor.csv", comm);
       fp->addInteractor(rotorInt);
-      SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.csv", comm);
+      SPtr<CalculateTorqueSimulationObserver> fp2 = make_shared<CalculateTorqueSimulationObserver>(grid, forceSch, outputPath + "/torque/TorqueStator.csv", comm);
       fp2->addInteractor(statorInt);
 
-      //SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      //SPtr<WriteThixotropyQuantitiesSimulationObserver> writeThixotropicMQSimulationObserver(new WriteThixotropyQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-      calculator->addCoProcessor(npr);
-      //calculator->addCoProcessor(fp);
-      calculator->addCoProcessor(fp2);
-      //calculator->addCoProcessor(writeMQCoProcessor);
-      //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
-      calculator->addCoProcessor(restartCoProcessor);
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+      simulation->addSimulationObserver(npr);
+      //simulation->addSimulationObserver(fp);
+      simulation->addSimulationObserver(fp2);
+      //simulation->addSimulationObserver(writeMQSimulationObserver);
+      //simulation->addSimulationObserver(writeThixotropicMQSimulationObserver);
+      simulation->addSimulationObserver(restartSimulationObserver);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculator->calculate();
+      simulation->run();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

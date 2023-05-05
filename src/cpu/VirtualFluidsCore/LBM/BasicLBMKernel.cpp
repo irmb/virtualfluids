@@ -1,7 +1,7 @@
 #include "BasicLBMKernel.h"
 #include "D3Q27System.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 
 BasicLBMKernel::BasicLBMKernel()
 {
@@ -28,7 +28,7 @@ void BasicLBMKernel::calculate(int step)
 
    initData();
 
-   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();

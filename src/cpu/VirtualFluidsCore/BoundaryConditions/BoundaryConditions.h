@@ -42,6 +42,7 @@
 #include "UbTuple.h"
 #include "Vector3D.h"
 #include <PointerDefinitions.h>
+#include "basics/constants/NumericConstants.h"
 
 //! Difenition of baundary conditions in grid generation
 class BoundaryConditions
@@ -310,8 +311,8 @@ public:
         return (((flag >> (optionDigits * direction)) & maxOptionVal) != 0);
     }
 
-    void setBcAlgorithmType(char alg) { algorithmType = alg; }
-    char getBcAlgorithmType() { return algorithmType; }
+    void setBCStrategyType(char alg) { algorithmType = alg; }
+    char getBCStrategyType() { return algorithmType; }
 
 public:
     static const int optionDigits = 2;   //--> 2 bits for secondary Option --> maxOptionVal = 7
@@ -326,20 +327,20 @@ protected:
     long long densityBoundaryFlags{ 0 };
     long long wallModelBoundaryFlags{ 0 };
 
-    float bcVelocityX1{ 0.0f };
-    float bcVelocityX2{ 0.0f };
-    float bcVelocityX3{ 0.0f };
-    float bcDensity{ 0.0f };
-    float bcPhaseField{ 0.0f };
+    float bcVelocityX1{ vf::basics::constant::c0o1 };
+    float bcVelocityX2{ vf::basics::constant::c0o1 };
+    float bcVelocityX3{ vf::basics::constant::c0o1 };
+    float bcDensity{ vf::basics::constant::c0o1 };
+    float bcPhaseField{ vf::basics::constant::c0o1 };
 
-    float nx1{ 0.0f }, nx2{ 0.0f }, nx3{ 0.0f };
+    float nx1{ vf::basics::constant::c0o1 }, nx2{ vf::basics::constant::c0o1 }, nx3{ vf::basics::constant::c0o1 };
 
     char algorithmType { -1 };
 
 private:
-    friend class MPIIORestartCoProcessor;
-    friend class MPIIOMigrationCoProcessor;
-    friend class MPIIOMigrationBECoProcessor;
+    friend class MPIIORestartSimulationObserver;
+    friend class MPIIOMigrationSimulationObserver;
+    friend class MPIIOMigrationBESimulationObserver;
 };
 
 #endif
