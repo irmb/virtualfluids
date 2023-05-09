@@ -79,8 +79,8 @@ class UbFileInput;
 //! \code{.cpp}
 //!    mu::Parser fct;
 //!    fct.SetExpr("max(vmax*(1.0-4.0*((x2-x2_vmax)^2+(x3-x3_vmax)^2)/H^2),0.0)"); //paraboloid (with vmax for
-//!    (0/x2_vmax/x3_vmax) fct.DefineConst("x2Vmax", 0.0            ); //x2-Pos für vmax fct.DefineConst("x3Vmax", 0.0
-//!    ); //x3-Pos für vmax fct.DefineConst("H"     , diameterOfPipe); fct.DefineConst("vmax"  , vmax           );
+//!    (0/x2_vmax/x3_vmax) fct.DefineConst("x2Vmax", 0.0            ); //x2-Pos for vmax fct.DefineConst("x3Vmax", 0.0
+//!    ); //x3-Pos for vmax fct.DefineConst("H"     , diameterOfPipe); fct.DefineConst("vmax"  , vmax           );
 //!    VelocityBC velBC(true, false ,false ,fct, 0, BCFunction::INFCONST);
 //! \endcode 
 

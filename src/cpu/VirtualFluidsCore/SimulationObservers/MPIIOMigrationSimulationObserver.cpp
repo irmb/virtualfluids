@@ -730,8 +730,6 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
 
     int blocksCount          = 0; // quantity of blocks, that belong to this process
     size_t allBytesCount     = 0; // quantity of bytes, that one process writes to the file
-    size_t count_boundCond   = 0; // how many BoundaryConditions in all blocks
-    int count_indexContainer = 0; // how many indexContainer-values in all blocks
 
     std::vector<SPtr<Block3D>> blocksVector[25];
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -793,7 +791,6 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
 
                 bcVector[ic].push_back(*bouCond);
                 bcAddArray[ic].boundCond_count++;
-                count_boundCond++;
                 bytesCount[ic] += sizeof(BoundaryCondition);
             }
 
@@ -810,7 +807,6 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
 
             indexContainerVector[ic].insert(indexContainerVector[ic].begin(), bcArr->indexContainer.begin(), bcArr->indexContainer.end());
             bcAddArray[ic].indexContainer_count = static_cast<int>(bcArr->indexContainer.size());
-            count_indexContainer += bcAddArray[ic].indexContainer_count;
             bytesCount[ic] += bcAddArray[ic].indexContainer_count * sizeof(int);
 
             allBytesCount += bytesCount[ic];

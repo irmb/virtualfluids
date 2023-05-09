@@ -717,16 +717,16 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 								real sum2 = 1e-100;
 								real sumRho = 0;
-								real sumVx = 0;
-								real sumVy = 0;
-								real sumVz = 0;
+								// real sumVx = 0;
+								// real sumVy = 0;
+								// real sumVz = 0;
 								for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
 									if ((phi[fdir] > c1o2)) {
 
 										sumRho += WEIGTH[fdir] * (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);// * tempRho;
-										sumVx += WEIGTH[fdir] * (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
-										sumVy += WEIGTH[fdir] * (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
-										sumVz += WEIGTH[fdir] * (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
+										// sumVx += WEIGTH[fdir] * (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
+										// sumVy += WEIGTH[fdir] * (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
+										// sumVz += WEIGTH[fdir] * (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
 										sum2 += WEIGTH[fdir];
 									}
 								}
@@ -3559,12 +3559,12 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real mxxMzz = mfcaa - mfaac;
 
 					///
-					real mmfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-					real mmfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
-					real mmfaac = c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz);
-					real mmfabb = mfabb;
-					real mmfbab = mfbab;
-					real mmfbba = mfbba;
+					// real mmfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
+					// real mmfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
+					// real mmfaac = c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz);
+					// real mmfabb = mfabb;
+					// real mmfbab = mfbab;
+					// real mmfbba = mfbba;
 					///
 
 					real dxux = -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);// *0;
@@ -3670,12 +3670,12 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real mxyyPxzz = mfbca + mfbac;
 					real mxyyMxzz = mfbca - mfbac;
 
-					 mmfcaa += c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz- mfaaa);
-					 mmfaca += c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz- mfaaa);
-					 mmfaac += c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz- mfaaa);
-					 mmfabb += mfabb;
-					 mmfbab += mfbab;
-					 mmfbba += mfbba;
+					//  mmfcaa += c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz- mfaaa);
+					//  mmfaca += c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz- mfaaa);
+					//  mmfaac += c1o3 * (mxxMyy - 2. * mxxMzz + mxxPyyPzz- mfaaa);
+					//  mmfabb += mfabb;
+					//  mmfbab += mfbab;
+					//  mmfbba += mfbba;
 
 					//relax
 					wadjust = Oxyz + (1. - Oxyz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
