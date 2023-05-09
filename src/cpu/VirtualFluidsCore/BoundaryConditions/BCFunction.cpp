@@ -32,6 +32,7 @@
 //=======================================================================================
 
 #include "BCFunction.h"
+#include "basics/constants/NumericConstants.h"
 
-const real BCFunction::INFTIMEDEPENDENT = -1.0;
-const real BCFunction::INFCONST         = -10.0;
+const real BCFunction::INFTIMEDEPENDENT = -vf::basics::constant::c1o1;
+const real BCFunction::INFCONST         = -vf::basics::constant::c10o1;

@@ -178,8 +178,7 @@ gcc_9_unit_tests:
     - cd $CI_PROJECT_DIR/build
 
   script:
-    - ctest
-    - ctest --rerun-failed --output-on-failure
+    - ctest --output-on-failure
 
 ###############################################################################
 msvc_17_unit_tests:
@@ -197,7 +196,7 @@ msvc_17_unit_tests:
 
   script:
     - cd $CI_PROJECT_DIR/build
-    - ctest -C Release
+    - ctest --output-on-failure -C Release
 
 ###############################################################################
 gcc_9_python_bindings_test:
@@ -213,7 +212,6 @@ gcc_9_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
-
 
 ###############################################################################
 gcc_9_python_hpc_test:
@@ -235,6 +233,44 @@ gcc_9_python_hpc_test:
 
   script:
     - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
+
+###############################################################################
+build-regression-tests-ci:
+  image: python:3.10
+  stage: test
+
+  before_script:
+    - pip install -r utilities/ci-regression-tests/requirements.txt
+
+  script:
+    - python3 utilities/ci-regression-tests/generate-ci.py
+
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - generated/
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: manual
+      allow_failure: true
+
+  needs: []
+
+trigger-regression-tests:
+  stage: test
+  needs:
+    - build-regression-tests-ci
+  trigger:
+    include:
+      - artifact: generated/regression-tests-ci.yml
+        job: build-regression-tests-ci
+    strategy: depend
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
 
 ###############################################################################
 regression_test_4gpu:
@@ -353,31 +389,6 @@ gpu_numerical_tests:
     expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
-
-###############################################################################
-run-regression-tests:
-  stage: test
-
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - when: manual
-      allow_failure: true
-
-  needs: []
-
-  tags:
-    - gpu
-    - linux
-
-  before_script:
-    - apt-get update && apt-get -y install python3.8-venv
-    - chmod +x ./regression-tests/*
-
-  script:
-    - ./regression-tests/regression-tests.sh
 
 ###############################################################################
 ##                        Code analysis                                      ##
@@ -597,8 +608,6 @@ pages:
 ###############################################################################
 .deploy_template:
   stage: deploy
-
-
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'

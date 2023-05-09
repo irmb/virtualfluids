@@ -1,5 +1,5 @@
 #include "FindQ/FindQ.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 #include "lbm/constants/D3Q27.h"
 
 using namespace vf::lbm::dir;

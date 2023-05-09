@@ -5,7 +5,7 @@
 #include <sstream>
 #include <stdio.h>
 // #include <math.h>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "lbm/constants/D3Q27.h"
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
@@ -13,7 +13,7 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <cmath>
 
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 
 namespace EdgeNodeDebugWriter
 {
@@ -54,7 +54,7 @@ void writeEdgeNodesXZ_Send(SPtr<Parameter> para)
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeEdgeNodesXZ_Send_PID_" +
-                                  std::to_string(vf::gpu::Communicator::getInstance().getPID()) + "_" +
+                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
@@ -90,7 +90,7 @@ void writeEdgeNodesXZ_Recv(SPtr<Parameter> para)
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeEdgeNodesXZ_Recv_PID_" +
-                                  std::to_string(vf::gpu::Communicator::getInstance().getPID()) + "_" +
+                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);

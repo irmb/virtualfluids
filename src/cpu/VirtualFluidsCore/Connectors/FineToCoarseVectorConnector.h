@@ -46,7 +46,7 @@
 #include "basics/transmitter/TbTransmitter.h"
 #include <PointerDefinitions.h>
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "DataSet3D.h"
 
 class Block3D;
@@ -795,7 +795,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
 {
     int ix1, ix2, ix3;
     real xoff, yoff, zoff;
-    SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCSet()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3 += 2) {
         for (ix2 = lMinX2; ix2 < lMaxX2; ix2 += 2) {

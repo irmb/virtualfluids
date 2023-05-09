@@ -139,7 +139,6 @@ KineticEnergyAnalyzer::KineticEnergyAnalyzer(SPtr<Parameter> para, uint analyzeI
 
 void KineticEnergyAnalyzer::writeToFile(std::string filename)
 {
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 	std::cout << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 
     std::ofstream file;
@@ -151,7 +150,6 @@ void KineticEnergyAnalyzer::writeToFile(std::string filename)
 
     file.close();
 
-    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 	std::cout << "done!\n";
 }
 

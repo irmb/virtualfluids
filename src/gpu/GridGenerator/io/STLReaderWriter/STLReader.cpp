@@ -55,17 +55,17 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name)
         line[strcspn(line.c_str(), "\r\n")] = 0;
         if (strcmp(line.c_str(), "solid ascii") == 0) {
             file.close();
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
+            VF_LOG_INFO("start reading ascii STL file: {}" , name);
             return readASCIISTL(name);
         }
         else {
             file.close();
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading binary STL file: " + name + "\n";
+            VF_LOG_INFO("start reading binary STL file: {}" , name);
+
             return readBinarySTL(name);
         }
     }
-
-     *logging::out << logging::Logger::INFO_INTERMEDIATE << "can't open STL-file" + name + " ... exit program! \n";
+    VF_LOG_CRITICAL("can't open STL-file {} ... exit program!" , name);
      exit(1);
 }
 
@@ -81,7 +81,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
     const int lines = countLinesInFile(name);
     const int nTriangles = (lines) / 7; // seven lines per triangle
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles: " << nTriangles << "\n";
+    VF_LOG_INFO("Number of Triangles: {}" , nTriangles);
     std::vector<Triangle> triangles;
 
     std::string line;
@@ -109,8 +109,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
 
 std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name, const std::vector<uint> ignorePatches)
 {
-    *logging::out << logging::Logger::INFO_HIGH << "Start reading ascii STL file:\n";
-    *logging::out << logging::Logger::INFO_HIGH << "    " + name + "\n";
+    VF_LOG_INFO("Start reading ascii STL file: {}" , name);
 
     std::vector<Triangle> triangles;
 
@@ -141,9 +140,10 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
             ignoreCurrentPatch = std::find( ignorePatches.begin(), ignorePatches.end(), currentPatchIndex ) != ignorePatches.end();
 
             if( !ignoreCurrentPatch )
-                *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Reading STL-Group " << line.substr( line.find(' ') + 1 ) << " as patch " << currentPatchIndex << "\n";
+                VF_LOG_INFO("    Reading STL-Group {} as patch {}" , line.substr( line.find(' ') + 1 ) , currentPatchIndex);
             else
-                *logging::out << logging::Logger::WARNING           << "    Ignoring STL-Group " << line.substr( line.find(' ') + 1 ) << " as patch " << currentPatchIndex << "\n";
+                VF_LOG_WARNING("    Ignoring STL-Group {} as patch {}" , line.substr( line.find(' ') + 1 ) , currentPatchIndex);
+
 
             currentFacetLine++;
         }
@@ -202,7 +202,7 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
 
     file.close();
 
-    *logging::out << logging::Logger::INFO_HIGH << "Done reading ascii STL file\n";
+    VF_LOG_INFO("Done reading ascii STL file");
 
     return triangles;
 }
@@ -218,7 +218,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
     char nTri[4];
     sizef                  = fread(nTri, sizeof(char), 4, file);
     unsigned long nTriLong = *((unsigned long*)nTri);
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles: " << nTriLong << "\n";
+    VF_LOG_INFO("Number of Triangles: {}" , nTriLong);
     std::vector<Triangle> triangles;
 
     char facet[50];
@@ -248,18 +248,18 @@ std::vector<Triangle> STLReader::readSTL(const BoundingBox &box, const std::stri
 		line[strcspn(line.c_str(), "\r\n")] = 0;
 		if (strcmp(line.c_str(), "solid ascii") == 0) {
 			file.close();
-			*logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
+            VF_LOG_INFO("start reading ascii STL file {}", name);
 			return readASCIISTL(box, name);
 		}
 		else {
 			file.close();
-			*logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading binary STL file: " + name + "\n";
+            VF_LOG_INFO("start reading binary STL file {}", name);
 			std::vector<Triangle> triangles = readBinarySTL(box, name);
 			return triangles;
 		}
 	}
 	else {
-		*logging::out << logging::Logger::INFO_INTERMEDIATE << "can't open STL-file" + name + "\n";
+        VF_LOG_CRITICAL("can't open STL-file {}", name);
 		exit(1);
 	}
 }
@@ -311,7 +311,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     sizef    = fread(nTri, sizeof(char), 4, file);
     nTriLong = *((unsigned long*)nTri);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles complete geometry: " << nTriLong << "\n";
+    VF_LOG_INFO("Number of Triangles complete geometry: {}", nTriLong);
     std::vector<Triangle> triangles;
 
     char facet[50];
@@ -329,8 +329,8 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
             triangles.push_back(t);
     }
     int size = (int)triangles.size();
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Complete reading STL file. \n";
+    VF_LOG_INFO("Number of Triangles in process: {}", size);
+    VF_LOG_INFO("Complete reading STL file");
     (void)sizef;
 	fclose(file);
 

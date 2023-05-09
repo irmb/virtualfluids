@@ -4,6 +4,7 @@ bin/
 cmake-build-debug/
 run/
 buildGCC
+buildWSL
 
 # Python
 _skbuild/
@@ -27,6 +28,7 @@ pythonbindings/pymuparser/bindings*
 output/
 logs/
 reference_data/
+generated/
 
 # grid
 .grid/

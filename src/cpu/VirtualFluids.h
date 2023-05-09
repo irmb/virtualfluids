@@ -108,45 +108,34 @@
 #include <muParserToken.h>
 #include <muParserTokenReader.h>
 
-#include <BoundaryConditions/BCAdapter.h>
-#include <BoundaryConditions/BCAlgorithm.h>
+#include <BoundaryConditions/BC.h>
+#include <BoundaryConditions/BCStrategy.h>
 #include <BoundaryConditions/BCArray3D.h>
 #include <BoundaryConditions/BCFunction.h>
-#include <BoundaryConditions/BCProcessor.h>
+#include <BoundaryConditions/BCSet.h>
 #include <BoundaryConditions/BoundaryConditions.h>
-#include <BoundaryConditions/DensityBCAdapter.h>
-#include <BoundaryConditions/EqDensityBCAlgorithm.h>
-#include <BoundaryConditions/HighViscosityNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/NoSlipBCAdapter.h>
-#include <BoundaryConditions/NoSlipBCAlgorithm.h>
-#include <BoundaryConditions/NonEqDensityBCAlgorithm.h>
-#include <BoundaryConditions/NonReflectingOutflowBCAlgorithm.h>
-#include <BoundaryConditions/NonReflectingOutflowBCAlgorithmWithRelaxation.h>
-#include <BoundaryConditions/NonReflectingInflowBCAlgorithm.h>
-#include <BoundaryConditions/SlipBCAdapter.h>
-#include <BoundaryConditions/SlipBCAlgorithm.h>
-#include <BoundaryConditions/ThinWallBCProcessor.h>
-#include <BoundaryConditions/ThinWallNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/VelocityBCAdapter.h>
-#include <BoundaryConditions/VelocityBCAlgorithm.h>
-#include <BoundaryConditions/VelocityWithDensityBCAlgorithm.h>
-#include <BoundaryConditions/ThixotropyDensityBCAlgorithm.h>
-#include <BoundaryConditions/ThixotropyNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/ThixotropyVelocityBCAlgorithm.h>
-#include <BoundaryConditions/ThixotropyNonReflectingOutflowBCAlgorithm.h>
-#include <BoundaryConditions/ThixotropyVelocityWithDensityBCAlgorithm.h>
-#include <BoundaryConditions/SimpleVelocityBCAlgorithm.h>
-#include <BoundaryConditions/RheologyNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/RheologyBinghamModelNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/RheologyHerschelBulkleyModelNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
-#include <BoundaryConditions/RheologyPowellEyringModelNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/RheologyBinghamModelVelocityBCAlgorithm.h>
-#include <BoundaryConditions/MultiphaseNoSlipBCAlgorithm.h>
-#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h>
-#include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
-#include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
-#include <BoundaryConditions/MultiphaseSlipBCAlgorithm.h> 
+#include <BoundaryConditions/DensityBC.h>
+#include <BoundaryConditions/EqDensityBCStrategy.h>
+#include <BoundaryConditions/HighViscosityNoSlipBCStrategy.h>
+#include <BoundaryConditions/NoSlipBC.h>
+#include <BoundaryConditions/NoSlipBCStrategy.h>
+#include <BoundaryConditions/NonEqDensityBCStrategy.h>
+#include <BoundaryConditions/NonReflectingOutflowBCStrategy.h>
+#include <BoundaryConditions/NonReflectingOutflowWithRelaxationBCStrategy.h>
+#include <BoundaryConditions/NonReflectingInflowBCStrategy.h>
+#include <BoundaryConditions/SlipBC.h>
+#include <BoundaryConditions/SlipBCStrategy.h>
+#include <BoundaryConditions/ThinWallBCSet.h>
+#include <BoundaryConditions/ThinWallNoSlipBCStrategy.h>
+#include <BoundaryConditions/VelocityBC.h>
+#include <BoundaryConditions/VelocityBCStrategy.h>
+#include <BoundaryConditions/VelocityWithDensityBCStrategy.h>
+#include <BoundaryConditions/SimpleVelocityBCStrategy.h>
+#include <BoundaryConditions/SimpleSlipBCStrategy.h>
+
+
+
+
 
 #include <Connectors/Block3DConnector.h>
 //#include <Connectors/Block3DConnectorFactory.h>
@@ -173,51 +162,50 @@
 #include <Data/EsoTwistD3Q27System.h>
 #include <Data/VoidData3D.h>
 
-#include <Grid/BasicCalculator.h>
-#include <Grid/Block3D.h>
-#include <Grid/Calculator.h>
-#include <Grid/Grid3D.h>
+#include <Simulation/Block3D.h>
+#include <Simulation/Simulation.h>
+#include <Simulation/Grid3D.h>
 
 #include <Interactors/D3Q27Interactor.h>
 #include <Interactors/D3Q27TriFaceMeshInteractor.h>
 #include <Interactors/Interactor3D.h>
 #include <Interactors/InteractorsHelper.h>
 
-#include <CoProcessors/AdjustForcingCoProcessor.h>
-#include <CoProcessors/CalculateForcesCoProcessor.h>
-#include <CoProcessors/CalculateTorqueCoProcessor.h>
-#include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
-#include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
-#include <CoProcessors/WriteBoundaryConditionsCoProcessor.h>
-#include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
-#include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
-#include <WriteBlocksCoProcessor.h>
-//#include <CoProcessors/PathLineCoProcessor.h>
-//#include <CoProcessors/PathLineCoProcessorMcpart.h>
-#include <CoProcessors/EmergencyExitCoProcessor.h>
-#include <CoProcessors/NUPSCounterCoProcessor.h>
-#include <CoProcessors/PressureDifferenceCoProcessor.h>
-//#include <CoProcessors/Particles.h>
-#include <CoProcessors/AverageValuesCoProcessor.h>
-#include <CoProcessors/CoProcessor.h>
-#include <CoProcessors/DecreaseViscosityCoProcessor.h>
-#include <CoProcessors/InSituVTKCoProcessor.h>
-#include <CoProcessors/QCriterionCoProcessor.h>
-#include <CoProcessors/ShearStressCoProcessor.h>
-#include <CoProcessors/TimeseriesCoProcessor.h>
-#include <CoProcessors/TurbulenceIntensityCoProcessor.h>
-#include <CoProcessors/TimeAveragedValuesCoProcessor.h>
+#include <SimulationObservers/AdjustForcingSimulationObserver.h>
+#include <SimulationObservers/CalculateForcesSimulationObserver.h>
 
-//#include <CoProcessors/MeanValuesCoProcessor.h>
-#include <CoProcessors/InSituCatalystCoProcessor.h>
-#include <CoProcessors/LineTimeSeriesCoProcessor.h>
-#include <CoProcessors/MPIIOMigrationBECoProcessor.h>
-#include <CoProcessors/MPIIOMigrationCoProcessor.h>
-#include <CoProcessors/MPIIORestartCoProcessor.h>
-#include <CoProcessors/MicrophoneArrayCoProcessor.h>
-#include <WriteThixotropyQuantitiesCoProcessor.h>
-#include <WriteMultiphaseQuantitiesCoProcessor.h>
-#include <TimeDependentBCCoProcessor.h>
+#include <SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
+#include <SimulationObservers/WriteMQFromSelectionSimulationObserver.h>
+#include <SimulationObservers/WriteBoundaryConditionsSimulationObserver.h>
+#include <SimulationObservers/WriteMQFromSelectionSimulationObserver.h>
+#include <SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
+#include <WriteBlocksSimulationObserver.h>
+//#include <SimulationObservers/PathLineSimulationObserver.h>
+//#include <SimulationObservers/PathLineSimulationObserverMcpart.h>
+#include <SimulationObservers/EmergencyExitSimulationObserver.h>
+#include <SimulationObservers/NUPSCounterSimulationObserver.h>
+#include <SimulationObservers/PressureDifferenceSimulationObserver.h>
+//#include <SimulationObservers/Particles.h>
+#include <SimulationObservers/AverageValuesSimulationObserver.h>
+#include <SimulationObservers/SimulationObserver.h>
+#include <SimulationObservers/DecreaseViscositySimulationObserver.h>
+#include <SimulationObservers/InSituVTKSimulationObserver.h>
+#include <SimulationObservers/QCriterionSimulationObserver.h>
+#include <SimulationObservers/ShearStressSimulationObserver.h>
+#include <SimulationObservers/TimeseriesSimulationObserver.h>
+#include <SimulationObservers/TurbulenceIntensitySimulationObserver.h>
+#include <SimulationObservers/TimeAveragedValuesSimulationObserver.h>
+
+//#include <SimulationObservers/MeanValuesSimulationObserver.h>
+#include <SimulationObservers/InSituCatalystSimulationObserver.h>
+#include <SimulationObservers/LineTimeSeriesSimulationObserver.h>
+#include <SimulationObservers/MPIIOMigrationBESimulationObserver.h>
+#include <SimulationObservers/MPIIOMigrationSimulationObserver.h>
+#include <SimulationObservers/MPIIORestartSimulationObserver.h>
+#include <SimulationObservers/MicrophoneArraySimulationObserver.h>
+
+
+#include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
@@ -241,26 +229,13 @@
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
 #include <LBM/BGKLBMKernel.h>
-#include <LBM/ThixotropyLBMKernel.h>
-#include <LBM/ThixotropyExpLBMKernel.h>
+
 #include <LBM/CumulantLBMKernel.h>
 #include <LBM/CumulantK17LBMKernel.h>
 //#include <LBM/RheologyModelLBMKernel.h>
 //#include <LBM/RheologyModelLBMKernel2.h>
-#include <LBM/RheologyBinghamModelLBMKernel.h>
-#include <LBM/RheologyHerschelBulkleyModelLBMKernel.h>
-#include <LBM/RheologyInterpolationProcessor.h>
-#include <LBM/Rheology.h>
-#include <LBM/RheologyK17LBMKernel.h>
-#include <LBM/RheologyPowellEyringModelLBMKernel.h>
-#include <LBM/MultiphaseCumulantLBMKernel.h>
-#include <LBM/MultiphaseScratchCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
-#include <LBM/MultiphasePressureFilterLBMKernel.h>
-#include <LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
-#include <MultiphaseSimpleVelocityBaseExternalPressureLBMKernel.h>
+
+
 
 
 
@@ -349,10 +324,7 @@
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 #include <ZoltanPartitioningGridVisitor.h>
-#include <Visitors/MultiphaseSetKernelBlockVisitor.h>
-#include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
-#include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
-#include <Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
+
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

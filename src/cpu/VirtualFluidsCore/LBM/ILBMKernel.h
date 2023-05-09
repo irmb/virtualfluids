@@ -38,7 +38,7 @@
 
 #include "LBMSystem.h"
 
-class BCProcessor;
+class BCSet;
 class DataSet3D;
 
 //! Abstract class provides interface for LBM kernel
@@ -52,8 +52,8 @@ public:
     virtual void swapDistributions()    = 0;
 
     virtual bool getCompressible() const                                             = 0;
-    virtual SPtr<BCProcessor> getBCProcessor() const                                 = 0;
-    virtual void setBCProcessor(SPtr<BCProcessor> bcProcessor)                       = 0;
+    virtual SPtr<BCSet> getBCSet() const                                 = 0;
+    virtual void setBCSet(SPtr<BCSet> BCSet)                       = 0;
     virtual SPtr<DataSet3D> getDataSet() const                                       = 0;
     virtual real getCollisionFactor() const                                        = 0;
     virtual void setCollisionFactor(real collFactor)                               = 0;

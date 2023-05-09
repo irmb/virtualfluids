@@ -37,7 +37,7 @@
 #include <iostream>
 #include <string>
 
-#include "basics/Core/DataTypes.h"
+#include "basics/DataTypes.h"
 
 //! \brief namespace for global system-functions
 

@@ -41,9 +41,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 
 #include <logger/Logger.h>
@@ -60,7 +58,7 @@
 
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -90,15 +88,6 @@ int main()
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
-
-        //////////////////////////////////////////////////////////////////////////
-        // setup logger
-        //////////////////////////////////////////////////////////////////////////
-
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
         //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator
@@ -175,7 +164,7 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =

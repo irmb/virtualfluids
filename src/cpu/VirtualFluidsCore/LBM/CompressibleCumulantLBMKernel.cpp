@@ -15,9 +15,9 @@ CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel()
 {
    this->compressible = true;
    this->parameter = CompressibleCumulantLBMKernel::NORMAL;
-   this->OxyyMxzz = 1.0;
+   this->OxyyMxzz = c1o1;
    this->bulkOmegaToOmega = false;
-   this->OxxPyyPzz = 1.0;
+   this->OxxPyyPzz = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulantLBMKernel::~CompressibleCumulantLBMKernel(void)
@@ -35,7 +35,7 @@ SPtr<LBMKernel> CompressibleCumulantLBMKernel::clone()
    kernel->setNX(nx);
    dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
-   kernel->setBCProcessor(bcProcessor->clone(kernel));
+   kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
    kernel->setForcingX1(muForcingX1);
    kernel->setForcingX2(muForcingX2);
@@ -47,10 +47,10 @@ SPtr<LBMKernel> CompressibleCumulantLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 1.0;
+      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = c1o1;
       break;
    case MAGIC:
-      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = c2o1 +(-collFactor);
       break;
    }
 
@@ -85,7 +85,7 @@ void CompressibleCumulantLBMKernel::calculate(int step)
       muForcingX2.DefineVar("dt", &muDeltaT);
       muForcingX3.DefineVar("dt", &muDeltaT);
 
-      muNu = (1.0/3.0)*(1.0/collFactor - 1.0/2.0);
+      muNu = (c1o1 / c3o1)*(c1o1 /collFactor - c1o1 / c2o1);
 
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
@@ -101,7 +101,7 @@ void CompressibleCumulantLBMKernel::calculate(int step)
    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -215,9 +215,9 @@ void CompressibleCumulantLBMKernel::calculate(int step)
                      forcingX2 = muForcingX2.Eval();
                      forcingX3 = muForcingX3.Eval();
 
-                     vvx += forcingX1*deltaT*0.5; // X
-                     vvy += forcingX2*deltaT*0.5; // Y
-                     vvz += forcingX3*deltaT*0.5; // Z
+                     vvx += forcingX1*deltaT*c1o2; // X
+                     vvy += forcingX2*deltaT*c1o2; // Y
+                     vvz += forcingX3*deltaT*c1o2; // Z
                   }
                   ///////////////////////////////////////////////////////////////////////////////////////////               
             ////////////////////////////////////////////////////////////////////////////////////

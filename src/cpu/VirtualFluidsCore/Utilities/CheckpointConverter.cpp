@@ -162,7 +162,7 @@ void CheckpointConverter::convertBlocks(int step, int procCount)
 
     // calculate the read offset
     procCount =
-        1; // readBlocks and writeBlocks in both MPIIORestartCoProcessor and MPIIOMigrationCoProcessor have size == 1!
+        1; // readBlocks and writeBlocks in both MPIIORestartSimulationObserver and MPIIOMigrationSimulationObserver have size == 1!
     MPI_Offset read_offset = (MPI_Offset)(procCount * sizeof(int));
 
     // read parameters of the grid and blocks

@@ -48,7 +48,7 @@
 #include "UbException.h"
 #include "UbTuple.h"
 
-class BCAdapter;
+class BC;
 class Block3D;
 class Grid3D;
 class GbObject3D;
@@ -63,8 +63,8 @@ class D3Q27Interactor : public Interactor3D
 public:
     D3Q27Interactor();
     D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type);
-    D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type);
-    D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type,
+    D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BC> BC, int type);
+    D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BC> BC, int type,
                     Interactor3D::Accuracy a);
 
     ~D3Q27Interactor() override;
@@ -72,8 +72,8 @@ public:
     void setRelevantForForces(const bool &value) { this->relevantForForces = value; }
     bool isRelevantForForces() { return this->relevantForForces; }
 
-    virtual void addBCAdapter(const SPtr<BCAdapter> bcAdapter) { bcAdapters.push_back(bcAdapter); }
-    void deleteBCAdapter() { bcAdapters.clear(); }
+    virtual void addBC(const SPtr<BC> BC) { BCs.push_back(BC); }
+    void deleteBC() { BCs.clear(); }
 
     void initInteractor(const real &timeStep = 0) override;
     void updateInteractor(const real &timestep = 0) override;
@@ -106,7 +106,7 @@ protected:
     bool relevantForForces;
     bool reinitWithStoredQsFlag;
 
-    std::vector<SPtr<BCAdapter>> bcAdapters;
+    std::vector<SPtr<BC>> BCs;
 
     SolidNodeIndicesMap solidNodeIndicesMap;
     BcNodeIndicesMap bcNodeIndicesMap;

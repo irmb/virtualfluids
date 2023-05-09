@@ -50,11 +50,11 @@
 
 //#include "metis.h"
 
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -156,18 +156,7 @@ void multipleLevel(const std::string& configPath)
     rankY = ( mpirank % ( sideLengthX * sideLengthY ) ) /   sideLengthX;
     rankZ =   mpirank                                   / ( sideLengthY * sideLengthX );
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    logging::Logger::addStream(&std::cout);
-
-    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(mpirank) + ".log" );
-    logging::Logger::addStream(&logFile);
-
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 

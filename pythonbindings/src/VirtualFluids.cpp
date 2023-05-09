@@ -49,7 +49,8 @@ namespace py_bindings
 
     PYBIND11_MODULE(bindings, m)
     {
-        py::add_ostream_redirect(m, "ostream_redirect");
+        // because we do not use the old logger (src/basics/logger) anymore and cout is not passed anymore to the old logger, we probably do not need this anymore
+        // pybind11::add_ostream_redirect(m, "ostream_redirect");
         basics::makeModule(m);
         lbm::makeModule(m);
         logging::makeModule(m);

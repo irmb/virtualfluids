@@ -70,7 +70,7 @@
 #define INTERFACE_B 5
 
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 
 #include <string>
 #include <vector>

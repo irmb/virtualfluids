@@ -13,14 +13,12 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "basics/Core/DataTypes.h"
-#include "basics/Core/VectorTypes.h"
+#include "basics/DataTypes.h"
 #include "basics/PointerDefinitions.h"
 
-#include "basics/Core/Logger/Logger.h"
-#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +39,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -65,21 +63,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(std::filesystem::path& configPath)
+void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    vf::basics::ConfigurationFile config;
-    config.load(configPath.string());
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
@@ -179,7 +170,7 @@ void multipleLevel(std::filesystem::path& configPath)
         const real dCubeLev1   = 72.0; // Phoenix: 72.0
 
         if (para->getNumprocs() > 1) {
-            const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
+            const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
 
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
@@ -666,20 +657,9 @@ int main(int argc, char *argv[])
     if (argv != NULL) {
 
         try {
-            //////////////////////////////////////////////////////////////////////////
-            // assuming that a config files is stored parallel to this file.
-            std::filesystem::path configPath = __FILE__;
-
-            // the config file's default name can be replaced by passing a command line argument
-            std::string configName("config.txt");
-            if (argc == 2) {
-                configName = argv[1];
-                std::cout << "Using configFile command line argument: " << configName << std::endl;
-            }
-
-            configPath.replace_filename(configName);
-
-            multipleLevel(configPath);
+            VF_LOG_INFO("For the default config path to work, execute the app from the project root.");
+            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/SphereScaling/config.txt");
+            runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////
         } catch (const spdlog::spdlog_ex &ex) {

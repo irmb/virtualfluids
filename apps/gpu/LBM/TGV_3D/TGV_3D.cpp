@@ -45,9 +45,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+#include <logger/Logger.h>
+
 #include "PointerDefinitions.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -77,7 +77,6 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 
-#include <logger/Logger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,16 +132,7 @@ std::string simulationName("TGV_3D");
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    //logging::Logger::addStream(&logFile);
-
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
@@ -170,9 +160,8 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = nx / ( 2.0 * PI ) * velocity / Re;
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity = " << velocity << " s\n";
-
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity = " << viscosity << "\n";
+    VF_LOG_INFO("velocity = {}", velocity);
+    VF_LOG_INFO("viscosity = {}", viscosity);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -342,22 +331,17 @@ int main( int argc, char* argv[])
 		}
         catch (const std::bad_alloc& e)
         {
-
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-            //std::cout << e.what() << std::flush;
+            std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::exception& e)
         {
-
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-            //std::cout << e.what() << std::flush;
+            std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (...)
         {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
-            //std::cout << "unknown exeption" << std::endl;
+            std::cout << "unknown exeption" << std::endl;
         }
 
         //std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;

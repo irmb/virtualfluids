@@ -1,7 +1,7 @@
 #include "PostProcessingConfigFileReaderImp.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 #include "Utilities/PostProcessingConfigData/PostProcessingConfigDataImp.h"
 

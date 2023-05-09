@@ -1,7 +1,7 @@
 #include "GridGenerator.h"
 #include <gmock/gmock.h>
 
-#include "Communication/Communicator.h"
+#include "Communication/MpiCommunicator.h"
 #include "DataTypes.h"
 #include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
@@ -104,9 +104,6 @@ protected:
 private:
     void SetUp() override
     {
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::WARNING);
-
         para = std::make_shared<Parameter>();
         para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
         for (uint i = 0; i <= level; i++) {
@@ -116,7 +113,7 @@ private:
         para->setNumprocs(2);
 
         builder = std::make_shared<LevelGridBuilderStub>(nullptr);
-        vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
 
         gridGenerator = std::make_shared<GridGenerator>(builder, para, std::make_shared<CudaMemoryManagerDouble>(para),
                                                         communicator);

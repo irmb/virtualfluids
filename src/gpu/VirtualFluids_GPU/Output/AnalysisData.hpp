@@ -3,7 +3,7 @@
 
 #include "basics/utilities/UbFileOutputASCII.h"
 #include "Parameter/Parameter.h"
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 class AnalysisData
 {
