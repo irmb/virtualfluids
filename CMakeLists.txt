@@ -226,10 +226,9 @@ if (BUILD_VF_PYTHON_BINDINGS)
             pybind11
             GIT_REPOSITORY ${pybind_url}
             GIT_TAG        ${pybind_version}
-            OVERRIDE_FIND_PACKAGE
     )
 
-    find_package(pybind11)
+    FetchContent_MakeAvailable(pybind11)
     add_subdirectory(pythonbindings)
 endif()
 
