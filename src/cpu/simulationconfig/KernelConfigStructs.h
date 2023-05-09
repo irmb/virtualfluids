@@ -4,14 +4,16 @@
 #include <string>
 #include <basics/DataTypes.h>
 
+#include "KernelFactory.h"
+
 struct LBMKernelConfiguration {
     KernelFactory::KernelType kernelType;
-    bool useForcing = false;
-    real forcingX1{};
-    real forcingX2{};
-    real forcingX3{};
+    bool useForcing {false};
+    real forcingX1 {};
+    real forcingX2 {};
+    real forcingX3 {};
 
-    explicit LBMKernelConfiguration(KernelFactory::KernelType kernelType) : kernelType(kernelType)
+    LBMKernelConfiguration(KernelFactory::KernelType kernelType) : kernelType(kernelType)
     {
     }
 };

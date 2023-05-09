@@ -20,14 +20,14 @@ D3Q27LBMSystem::makeInteractor(std::shared_ptr<GbObject3D> object, std::shared_p
 
 std::shared_ptr<Interactor3D>
 D3Q27LBMSystem::makeInteractor(std::shared_ptr<GbObject3D> object, std::shared_ptr<Grid3D> grid,
-                               std::shared_ptr<BCAdapter> bcAdapter, int type)
+                               std::shared_ptr<BC> bcAdapter, int type)
 {
     return std::shared_ptr<Interactor3D>(new D3Q27Interactor(object, grid, bcAdapter, type));
 }
 
 std::shared_ptr<Interactor3D>
 D3Q27LBMSystem::makeInteractor(std::shared_ptr<GbObject3D> object, std::shared_ptr<Grid3D> grid,
-                               std::shared_ptr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy accuracy)
+                               std::shared_ptr<BC> bcAdapter, int type, Interactor3D::Accuracy accuracy)
 {
     return std::shared_ptr<Interactor3D>(new D3Q27Interactor(object, grid, bcAdapter, type, accuracy));
 }
