@@ -501,7 +501,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 						findNeighbors(phaseField, x1, x2, x3);
 						real curv = computeCurvature_phi();
 						findNeighbors(phaseFieldOld, x1, x2, x3);
-						real sigma = c3o1*c2o1*1e-1;
+						real sigma =0* c3o1*c2o1*1e-1;
 
 //16.03.23 c: BB gas side with updated boundary velocity
 
