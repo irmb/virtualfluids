@@ -9,8 +9,8 @@
 #endif
 
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
-#include "constants/NumericConstants.h"
 #include "constants/D3Q27.h"
 
 

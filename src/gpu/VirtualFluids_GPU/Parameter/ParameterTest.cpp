@@ -4,8 +4,17 @@
 #include <iostream>
 #include <string>
 
+#include "LBM/Simulation.h"
 #include "Parameter.h"
+#include "PointerDefinitions.h"
 #include "basics/config/ConfigurationFile.h"
+
+#include "Factories/BoundaryConditionFactory.h"
+#include "Factories/GridScalingFactory.h"
+#include "Communication/Communicator.h"
+#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "GPU/CudaMemoryManager.h"
+#include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
@@ -196,6 +205,49 @@ TEST(ParameterTest, userMissedSlashMultiGPU)
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
     EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
+}
+
+class MockGridGenerator : public GridGenerator
+{
+
+public:
+    MockGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
+                      std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator &communicator)
+        : GridGenerator(builder, para, cudaMemoryManager, communicator)
+    {
+    }
+
+    void initalGridInformations() override
+    {
+        para->setGridX({ 2, 8 });
+        para->setGridY({ 2, 8 });
+        para->setGridZ({ 2, 8 });
+        para->setDistX({ 0, 0 });
+        para->setDistY({ 0, 0 });
+        para->setDistZ({ 0, 0 });
+    }
+    void allocArrays_CoordNeighborGeo() override{};
+    void setBoundingBox() override{};
+    void allocArrays_OffsetScale() override{};
+    void allocArrays_BoundaryValues() override{};
+    void allocArrays_BoundaryQs() override{};
+};
+
+TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingInitLBMSimulationParameter_shouldNotThrow)
+{
+    auto para = std::make_shared<Parameter>();
+    para->setMaxLevel(2);
+
+    para->setGridX({ 2, 8 });
+    para->setGridY({ 2, 8 });
+    para->setGridZ({ 2, 8 });
+    para->setDistX({ 0, 0 });
+    para->setDistY({ 0, 0 });
+    para->setDistZ({ 0, 0 });
+
+    EXPECT_THAT(para->getParH(1), testing::Eq(nullptr)); // Parameter initialization incomplete
+    para->initLBMSimulationParameter();
+    EXPECT_THAT(para->getParH(1), testing::Ne(nullptr));
 }
 
 class ParameterTestCumulantK17 : public testing::Test

@@ -178,8 +178,7 @@ gcc_9_unit_tests:
     - cd $CI_PROJECT_DIR/build
 
   script:
-    - ctest
-    - ctest --rerun-failed --output-on-failure
+    - ctest --output-on-failure
 
 ###############################################################################
 msvc_17_unit_tests:
@@ -197,7 +196,7 @@ msvc_17_unit_tests:
 
   script:
     - cd $CI_PROJECT_DIR/build
-    - ctest -C Release
+    - ctest --output-on-failure -C Release
 
 ###############################################################################
 gcc_9_python_bindings_test:
