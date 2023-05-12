@@ -68,7 +68,7 @@ UbFileOutputBinary::UbFileOutputBinary(const string &filename, UbFileOutput::CRE
         string path = UbSystem::getPathFromString(filename);
         if (path.size() > 0) {
             outfile.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-            UbSystem::makeDirectory(path, 20);
+            UbSystem::makeDirectory(path);
 
             this->open(filename, opt);
         }
