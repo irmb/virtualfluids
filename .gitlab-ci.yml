@@ -115,10 +115,10 @@ msvc_17:
 gcc_12_python:
   stage: build_python
 
-  needs: ["gcc_9"]
+  needs: ["gcc_12"]
 
   cache:
-    key: "gcc_9-$CI_COMMIT_REF_SLUG"
+    key: "gcc_12-$CI_COMMIT_REF_SLUG"
     paths:
       - build
 
@@ -172,7 +172,7 @@ build_poiseuille_test_container:
 gcc_12_unit_tests:
   stage: test
 
-  needs: ["gcc_9"]
+  needs: ["gcc_12"]
 
   before_script:
     - cd $CI_PROJECT_DIR/build
@@ -202,7 +202,7 @@ msvc_17_unit_tests:
 gcc_12_python_bindings_test:
   stage: test
 
-  needs: ["gcc_9_python"]
+  needs: ["gcc_12_python"]
 
   before_script:
     - export PYTHONPATH="Python"
@@ -628,7 +628,7 @@ pages:
 vf_to_phoenix:
   extends: .deploy_template
   stage: deploy
-  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
+  needs: ["gcc_12_python", "gcc_12_unit_tests", "gcc_12_python_bindings_test"]
 
   when: manual
 
@@ -652,7 +652,7 @@ vf_wheel_to_jupyterhub:
 
   only: ["manual"]
 
-  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
+  needs: ["gcc_12_python", "gcc_12_unit_tests", "gcc_12_python_bindings_test"]
 
   variables:
     HOST: "gitlab-runner01.irmb.bau.tu-bs.de"
@@ -680,7 +680,7 @@ sonar-scanner:
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
 
-  needs: ["cppcheck","clang-tidy","gcov_gcc_9"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc_12"]
 
   before_script:
     - cd /tmp
