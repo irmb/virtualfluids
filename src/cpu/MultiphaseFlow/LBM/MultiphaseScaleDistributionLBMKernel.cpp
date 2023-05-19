@@ -90,6 +90,7 @@ SPtr<LBMKernel> MultiphaseScaleDistributionLBMKernel::clone()
 	kernel->setPhaseFieldRelaxation(this->tauH);
 	kernel->setMobility(this->mob);
 	kernel->setInterfaceWidth(this->interfaceWidth);
+    kernel->setSigma(this->sigma);
 
 	kernel->setBCSet(bcSet->clone(kernel));
 	kernel->setWithForcing(withForcing);
@@ -501,8 +502,9 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                         real rho = (*rhoNode)(x1, x2, x3);
 						findNeighbors(phaseField, x1, x2, x3);
 						//real curv = computeCurvature_phi();
-						findNeighbors(phaseFieldOld, x1, x2, x3);
                         real laplacePressure = c12o1 * sigma * computeCurvature_phi();
+						findNeighbors(phaseFieldOld, x1, x2, x3);
+
 
 						//real sigma = c3o1*c2o1*1e-3;
                         real dX1_phi = gradX1_phi();
@@ -692,7 +694,8 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 
 											
-											real laplacePressureBC;
+                                            // real flNew = (fBC + fG-eqBC-eqG) / densityRatio +eqBC+eqG - fL - (feqG - feqL - 2 * fL + 2 * feqL) * (c1o1 / densityRatio  - c1o1) * vBC;
+                                            real laplacePressureBC;
                                             if ((x1 + D3Q27System::DX1[fdir] > 0) && (x1 + D3Q27System::DX1[fdir] < maxX1 + 1) && (x2 + D3Q27System::DX2[fdir] > 0) && (x2 + D3Q27System::DX2[fdir] < maxX2 + 1) && (x3 + D3Q27System::DX3[fdir] > 0) && (x3 + D3Q27System::DX3[fdir] < maxX3 + 1)) {
                                                 findNeighbors(phaseField, x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]);
                                                 laplacePressureBC = c6o1 * c2o1 * computeCurvature_phi() * sigma;
@@ -702,7 +705,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                                             laplacePressureBC = laplacePressure * (c1o1 - c2o1 * (*phaseField)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir])) /
                                                                     (c2o1 * (*phaseField)(x1, x2, x3) - c2o1 * (*phaseField)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir])) +
                                                                 laplacePressureBC * (-c1o1 + c2o1 * (*phaseField)(x1, x2, x3)) / (c2o1 * (*phaseField)(x1, x2, x3) - c2o1 * (*phaseField)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
-
+                                            // laplacePressureBC *= sigma;
                                             // eqBCN = eqBC;
                                             // distribution->setDistributionForDirection(LaplacePressure* WEIGTH[fdir] + (fBC + fG - eqBC - eqG) / densityRatio + (eqBCN + eqGN) * (c1o1 - c1o1 / densityRatio*0) - fL - 0*(feqG - feqL - 2 * fL + 2 * feqL) * (c1o1 / densityRatio - c1o1) * vBC, x1, x2,
                                             // x3, fdir);// (vxBC * D3Q27System::DX1[fdir] + vyBC * D3Q27System::DX2[fdir] + vzBC * D3Q27System::DX3[fdir]), x1, x2, x3, fdir);
@@ -4927,41 +4930,39 @@ real MultiphaseScaleDistributionLBMKernel::nabla2_phi()
 
 real MultiphaseScaleDistributionLBMKernel::computeCurvature_phi()
 {
-	using namespace D3Q27System;
-	//using namespace UbMath;
+    using namespace D3Q27System;
+    using namespace UbMath;
 
-	real phiX = gradX1_phi();
-	real phiY = gradX2_phi();
-	real phiZ = gradX3_phi();
-	real phiXX = c4o9*(phi[DIR_P00] - c2o1 * phi[DIR_000] + phi[DIR_M00])
-					+(c1o9*(((phi[DIR_PP0] - c2o1 * phi[DIR_0P0] + phi[DIR_MP0])+ (phi[DIR_PM0] - c2o1 * phi[DIR_0M0] + phi[DIR_MM0]))+ ((phi[DIR_P0P] - c2o1 * phi[DIR_00P] + phi[DIR_M0P]) + (phi[DIR_P0M] - c2o1 * phi[DIR_00M] + phi[DIR_M0M])))
-					+c1o36* (((phi[DIR_PPP] - c2o1 * phi[DIR_0PP] + phi[DIR_MPP]) + (phi[DIR_PMP] - c2o1 * phi[DIR_0MP] + phi[DIR_MMP])) + ((phi[DIR_PPM] - c2o1 * phi[DIR_0PM] + phi[DIR_MPM]) + (phi[DIR_PMM] - c2o1 * phi[DIR_0MM] + phi[DIR_MMM]))));
-	real phiYY = c4o9*(phi[DIR_0P0] - c2o1 * phi[DIR_000] + phi[DIR_0M0])
-					+(c1o9*(((phi[DIR_PP0] - c2o1 * phi[DIR_P00] + phi[DIR_PM0])+ (phi[DIR_MP0] - c2o1 * phi[DIR_M00] + phi[DIR_MM0]))+ ((phi[DIR_0PP] - c2o1 * phi[DIR_00P] + phi[DIR_0MP]) + (phi[DIR_0PM] - c2o1 * phi[DIR_00M] + phi[DIR_0MM])))
-					+c1o36* (((phi[DIR_PPP] - c2o1 * phi[DIR_P0P] + phi[DIR_PMP]) + (phi[DIR_MPM] - c2o1 * phi[DIR_M0M] + phi[DIR_MMM])) + ((phi[DIR_MPP] - c2o1 * phi[DIR_M0P] + phi[DIR_MMP]) + (phi[DIR_PPM] - c2o1 * phi[DIR_P0M] + phi[DIR_PMM]))));
-	real phiZZ = c4o9*(phi[DIR_00P] - c2o1 * phi[DIR_000] + phi[DIR_00M])
-					+(c1o9*(((phi[DIR_M0P] - c2o1 * phi[DIR_M00] + phi[DIR_M0M])+ (phi[DIR_P0P] - c2o1 * phi[DIR_P00] + phi[DIR_P0M]))+ ((phi[DIR_0MP] - c2o1 * phi[DIR_0M0] + phi[DIR_0MM]) + (phi[DIR_0PP] - c2o1 * phi[DIR_0P0] + phi[DIR_0PM])))
-					+c1o36* (((phi[DIR_MPP] - c2o1 * phi[DIR_MP0] + phi[DIR_MPM]) + (phi[DIR_PMP] - c2o1 * phi[DIR_PM0] + phi[DIR_PMM])) + ((phi[DIR_MMP] - c2o1 * phi[DIR_MM0] + phi[DIR_MMM]) + (phi[DIR_PPP] - c2o1 * phi[DIR_PP0] + phi[DIR_PPM]))));
-	real phiXY = c1o4 *(c2o3* (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0])+c1o6*((phi[DIR_MMP] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_MPP])+ (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PPM] - phi[DIR_MPM])));
-	real phiXZ = c1o4 *(c2o3* (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P])+c1o6*((phi[DIR_MPM] - phi[DIR_PPM] + phi[DIR_PPP] - phi[DIR_MPP])+ (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PMP] - phi[DIR_MMP])));
-	real phiYZ = c1o4 *(c2o3* (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM])+c1o6*((phi[DIR_MMM] - phi[DIR_MMP] + phi[DIR_MPP] - phi[DIR_MPM])+ (phi[DIR_PMM] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_PPM])));
+    real phiX = gradX1_phi();
+    real phiY = gradX2_phi();
+    real phiZ = gradX3_phi();
+    real phiXX =
+        c4o9 * (phi[DIR_P00] - c2o1 * phi[DIR_000] + phi[DIR_M00]) + (c1o9 * (((phi[DIR_PP0] - c2o1 * phi[DIR_0P0] + phi[DIR_MP0]) + (phi[DIR_PM0] - c2o1 * phi[DIR_0M0] + phi[DIR_MM0])) + ((phi[DIR_P0P] - c2o1 * phi[DIR_00P] + phi[DIR_M0P]) + (phi[DIR_P0M] - c2o1 * phi[DIR_00M] + phi[DIR_M0M]))) +
+                                                                      c1o36 * (((phi[DIR_PPP] - c2o1 * phi[DIR_0PP] + phi[DIR_MPP]) + (phi[DIR_PMP] - c2o1 * phi[DIR_0MP] + phi[DIR_MMP])) + ((phi[DIR_PPM] - c2o1 * phi[DIR_0PM] + phi[DIR_MPM]) + (phi[DIR_PMM] - c2o1 * phi[DIR_0MM] + phi[DIR_MMM]))));
+    real phiYY =
+        c4o9 * (phi[DIR_0P0] - c2o1 * phi[DIR_000] + phi[DIR_0M0]) + (c1o9 * (((phi[DIR_PP0] - c2o1 * phi[DIR_P00] + phi[DIR_PM0]) + (phi[DIR_MP0] - c2o1 * phi[DIR_M00] + phi[DIR_MM0])) + ((phi[DIR_0PP] - c2o1 * phi[DIR_00P] + phi[DIR_0MP]) + (phi[DIR_0PM] - c2o1 * phi[DIR_00M] + phi[DIR_0MM]))) +
+                                                                      c1o36 * (((phi[DIR_PPP] - c2o1 * phi[DIR_P0P] + phi[DIR_PMP]) + (phi[DIR_MPM] - c2o1 * phi[DIR_M0M] + phi[DIR_MMM])) + ((phi[DIR_MPP] - c2o1 * phi[DIR_M0P] + phi[DIR_MMP]) + (phi[DIR_PPM] - c2o1 * phi[DIR_P0M] + phi[DIR_PMM]))));
+    real phiZZ =
+        c4o9 * (phi[DIR_00P] - c2o1 * phi[DIR_000] + phi[DIR_00M]) + (c1o9 * (((phi[DIR_M0P] - c2o1 * phi[DIR_M00] + phi[DIR_M0M]) + (phi[DIR_P0P] - c2o1 * phi[DIR_P00] + phi[DIR_P0M])) + ((phi[DIR_0MP] - c2o1 * phi[DIR_0M0] + phi[DIR_0MM]) + (phi[DIR_0PP] - c2o1 * phi[DIR_0P0] + phi[DIR_0PM]))) +
+                                                                      c1o36 * (((phi[DIR_MPP] - c2o1 * phi[DIR_MP0] + phi[DIR_MPM]) + (phi[DIR_PMP] - c2o1 * phi[DIR_PM0] + phi[DIR_PMM])) + ((phi[DIR_MMP] - c2o1 * phi[DIR_MM0] + phi[DIR_MMM]) + (phi[DIR_PPP] - c2o1 * phi[DIR_PP0] + phi[DIR_PPM]))));
+    real phiXY = c1o4 * (c2o3 * (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0]) + c1o6 * ((phi[DIR_MMP] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_MPP]) + (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PPM] - phi[DIR_MPM])));
+    real phiXZ = c1o4 * (c2o3 * (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P]) + c1o6 * ((phi[DIR_MPM] - phi[DIR_PPM] + phi[DIR_PPP] - phi[DIR_MPP]) + (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PMP] - phi[DIR_MMP])));
+    real phiYZ = c1o4 * (c2o3 * (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM]) + c1o6 * ((phi[DIR_MMM] - phi[DIR_MMP] + phi[DIR_MPP] - phi[DIR_MPM]) + (phi[DIR_PMM] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_PPM])));
 
-	//non isotropic FD (to be improved):
-	//real phiX = (phi[DIR_P00] - phi[DIR_M00]) * c1o2; //gradX1_phi();
-	//real phiY = (phi[DIR_0P0] - phi[DIR_0M0]) * c1o2; //gradX2_phi();
-	//real phiZ = (phi[DIR_00P] - phi[DIR_00M]) * c1o2; //gradX3_phi();
+    // non isotropic FD (to be improved):
+    // real phiX = (phi[DIR_P00] - phi[DIR_M00]) * c1o2; //gradX1_phi();
+    // real phiY = (phi[DIR_0P0] - phi[DIR_0M0]) * c1o2; //gradX2_phi();
+    // real phiZ = (phi[DIR_00P] - phi[DIR_00M]) * c1o2; //gradX3_phi();
 
-	//real phiXX = phi[DIR_P00] - c2o1 * phi[DIR_000] + phi[DIR_M00];
-	//real phiYY = phi[DIR_0P0] - c2o1 * phi[DIR_000] + phi[DIR_0M0];
-	//real phiZZ =( phi[DIR_00P] - c2o1 * phi[DIR_000] + phi[DIR_00M]);
-	//real phiXY = c1o4 * (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0]);
-	//real phiXZ = c1o4 * (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P]);
-	//real phiYZ = c1o4 * (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM]);
-	//real back= (c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ) - phiXX * (phiY * phiY + phiZ * phiZ) - phiYY * (phiX * phiX + phiZ * phiZ) - phiZZ * (phiX * phiX + phiY * phiY)) / (c2o1 * pow(phiX * phiX + phiY * phiY + phiZ * phiZ, c3o2));
-	return (c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ) - (phiXX * (phiY * phiY + phiZ * phiZ) + phiYY * (phiX * phiX + phiZ * phiZ) + phiZZ * (phiX * phiX + phiY * phiY))) / (c2o1*pow(phiX*phiX+phiY*phiY+phiZ*phiZ,c3o2));
-	//return (phiX * phiX * phiXX + phiY * phiY * phiYY + phiZ * phiZ * phiZZ + c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ)) / ((phiX * phiX + phiY * phiY + phiZ * phiZ) * (phiX * phiX + phiY * phiY + phiZ * phiZ));
+    // real phiXX = phi[DIR_P00] - c2o1 * phi[DIR_000] + phi[DIR_M00];
+    // real phiYY = phi[DIR_0P0] - c2o1 * phi[DIR_000] + phi[DIR_0M0];
+    // real phiZZ =( phi[DIR_00P] - c2o1 * phi[DIR_000] + phi[DIR_00M]);
+    // real phiXY = c1o4 * (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0]);
+    // real phiXZ = c1o4 * (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P]);
+    // real phiYZ = c1o4 * (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM]);
+    // real back= (c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ) - phiXX * (phiY * phiY + phiZ * phiZ) - phiYY * (phiX * phiX + phiZ * phiZ) - phiZZ * (phiX * phiX + phiY * phiY)) / (c2o1 * pow(phiX * phiX + phiY * phiY + phiZ * phiZ, c3o2));
+    return (c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ) - phiXX * (phiY * phiY + phiZ * phiZ) - phiYY * (phiX * phiX + phiZ * phiZ) - phiZZ * (phiX * phiX + phiY * phiY)) / (c2o1 * pow(phiX * phiX + phiY * phiY + phiZ * phiZ, c3o2));
 }
-
 void MultiphaseScaleDistributionLBMKernel::computePhasefield()
 {
 	using namespace D3Q27System;
