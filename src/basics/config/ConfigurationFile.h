@@ -77,7 +77,7 @@ public:
 private:
    //! the container
    //! get string with key
-   std::string  getValue(const std::string& key) const;
+   std::string getValue(const std::string& key) const;
 
    //! remove leading and trailing tabs and spaces
    static std::string trim(const std::string& str);
