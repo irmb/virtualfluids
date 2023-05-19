@@ -471,6 +471,7 @@ cppcheck:
   needs: []
 
   before_script:
+    - apt-get update && apt-get install -y libpcre3-dev
     - chmod +x utilities/install-cppcheck.sh 
     - ./utilities/install-cppcheck.sh
     - cppcheck --version
