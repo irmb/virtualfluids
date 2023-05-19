@@ -438,8 +438,8 @@ include_what_you_use_clang_15:
     - cd /tmp
     - git clone https://github.com/include-what-you-use/include-what-you-use.git
     - cd include-what-you-use
-    - git checkout clang_10
-    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
+    - git checkout clang_15
+    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15
     - make
     - export PATH+=:$(pwd)/bin
 
@@ -471,6 +471,8 @@ cppcheck:
   needs: []
 
   before_script:
+    - chmod +x utilities/install-cppcheck.sh 
+    - ./utilities/install-cppcheck.sh
     - cppcheck --version
 
   script:
@@ -493,10 +495,6 @@ lizard:
   needs: []
 
   before_script:
-    - cd /tmp
-    - git clone https://github.com/terryyin/lizard.git
-    - cd lizard
-    - python3 setup.py install
     - lizard --version
 
   script:
@@ -560,7 +558,7 @@ clang-tidy:
   allow_failure: true
 
   before_script:
-    - run-clang-tidy -h
+    - run-clang-tidy-15 -h
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build

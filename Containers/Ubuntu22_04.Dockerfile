@@ -43,5 +43,6 @@ RUN apt-get update &&   \
         numpy            \
         ansible          \
         'jinja2<3.1'     \
-        gcovr==6.0       
+        gcovr==6.0       \
+        lizard==1.17.10
 
