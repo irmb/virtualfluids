@@ -25,6 +25,7 @@ RUN apt-get update &&   \
     #libclang-dev       \
     python3.11          \
     python3-pip         \
+    python3.11-dev      \
     cppcheck            \
     clangd-12           \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
