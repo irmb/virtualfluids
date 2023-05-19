@@ -60,7 +60,7 @@ stages:
     BUILD_FOLDER: "build"
 
 ###############################################################################
-gcc_9:
+gcc_12:
   extends: .gnu_build_template
 
   before_script:
@@ -68,12 +68,12 @@ gcc_9:
     - export CXX=g++
 
 ###############################################################################
-clang_10:
+clang_15:
   extends: .gnu_build_template
 
   before_script:
     - export CC=clang
-    - export CXX=clang++
+    - export CXX=clang++  
 
 ###############################################################################
 msvc_17:
@@ -112,7 +112,7 @@ msvc_17:
 ###############################################################################
 ##                             Build Python                                  ##
 ###############################################################################
-gcc_9_python:
+gcc_12_python:
   stage: build_python
 
   needs: ["gcc_9"]
@@ -169,7 +169,7 @@ build_poiseuille_test_container:
 ###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
-gcc_9_unit_tests:
+gcc_12_unit_tests:
   stage: test
 
   needs: ["gcc_9"]
@@ -199,7 +199,7 @@ msvc_17_unit_tests:
     - ctest --output-on-failure -C Release
 
 ###############################################################################
-gcc_9_python_bindings_test:
+gcc_12_python_bindings_test:
   stage: test
 
   needs: ["gcc_9_python"]
@@ -214,7 +214,7 @@ gcc_9_python_bindings_test:
     - python3 -m unittest discover -s Python -v
 
 ###############################################################################
-gcc_9_python_hpc_test:
+gcc_12_python_hpc_test:
   image: python:latest
   stage: test
 
@@ -424,7 +424,7 @@ clang_build_analyzer_clang_10:
     - ClangBuildAnalyzer --analyze CBA
 
 ###############################################################################
-include_what_you_use_clang_10:
+include_what_you_use_clang_15:
   stage: analyze
 
   only: ["schedules"]
@@ -510,7 +510,7 @@ lizard:
 
 ###############################################################################
 # code coverage
-gcov_gcc_9:
+gcov_gcc_12:
   stage: analyze
 
   extends: .analyze_template
@@ -528,7 +528,7 @@ gcov_gcc_9:
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
     - make -j4
-    - ./bin/basicsTests
+    - ctest
     - cd ..
     - mkdir coverage
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
