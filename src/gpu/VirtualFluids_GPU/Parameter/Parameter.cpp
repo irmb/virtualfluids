@@ -37,11 +37,15 @@
 #include <cstdlib>
 #include <optional>
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #pragma clang diagnostic ignored "-Wunused-but-set-parameter"
+#endif
 #include <curand_kernel.h>
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
 #include "StringUtilities/StringUtil.h"
 
