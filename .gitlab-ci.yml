@@ -522,7 +522,7 @@ gcov_gcc:
     - export CXX=/usr/bin/g++-11
 
   script:
-    - mkdir -p $CI_PROJECT_DIR/builda
+    - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
       --preset=make_all
