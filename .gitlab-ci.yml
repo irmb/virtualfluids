@@ -509,7 +509,7 @@ lizard:
 
 ###############################################################################
 # code coverage
-gcov_gcc_11:
+gcov_gcc:
   stage: analyze
 
   extends: .analyze_template
@@ -680,7 +680,7 @@ sonar-scanner:
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
 
-  needs: ["cppcheck","clang-tidy","gcov_gcc_12"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc"]
 
   before_script:
     - cd /tmp
