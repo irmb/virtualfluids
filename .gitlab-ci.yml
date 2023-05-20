@@ -527,6 +527,7 @@ gcov_gcc:
     - cmake ..
       --preset=make_all
       -DCMAKE_BUILD_TYPE=PROFILE
+      -DCMAKE_CUDA_ARCHITECTURES=70
     - make -j4
     - ctest
     - cd ..
