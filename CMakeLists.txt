@@ -58,7 +58,6 @@ option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
-option(BUILD_VF_COVERAGE "Add the -coverage compiler flag." OFF)
 
 option(BUILD_CUDA_LTO "Enables the cuda link optimization." OFF)
 
