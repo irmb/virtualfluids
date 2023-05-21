@@ -11,7 +11,9 @@
                 "xaver.clang-format",
                 "notskm.clang-tidy",
                 "streetsidesoftware.code-spell-checker",
-                "llvm-vs-code-extensions.vscode-clangd"
+                "llvm-vs-code-extensions.vscode-clangd",
+                "jbenden.c-cpp-flylint",
+                "ms-python.python",
             ]
         }
     },
