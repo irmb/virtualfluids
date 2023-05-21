@@ -154,8 +154,6 @@ build_poiseuille_test_container:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -228,8 +226,6 @@ gcc_12_python_hpc_test:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -258,8 +254,6 @@ build-regression-tests-ci:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -285,8 +279,6 @@ regression_test_4gpu:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -311,8 +303,6 @@ regression_test_8gpu:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -354,8 +344,6 @@ gpu_numerical_tests:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -411,7 +399,7 @@ gpu_numerical_tests:
       allow_failure: true
 
 
-clang_build_analyzer_clang_10:
+clang_build_analyzer:
   extends: .analyze_template
 
   before_script:
