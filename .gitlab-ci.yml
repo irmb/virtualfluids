@@ -430,6 +430,7 @@ include_what_you_use_clang_15:
   extends: .analyze_template
 
   before_script:
+    - apt-get update && apt-get install -y libclang-15-dev llvm-15-dev
     - export CC=clang
     - export CXX=clang++
     - $CXX --version

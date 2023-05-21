@@ -21,8 +21,6 @@ RUN apt-get update &&   \
     clang-format-15        \
     clang-tidy-15          \
     clang-tools-15         \
-    #llvm-dev           \
-    #libclang-dev       \
     python3.11          \
     python3-pip         \
     python3.11-dev      \
