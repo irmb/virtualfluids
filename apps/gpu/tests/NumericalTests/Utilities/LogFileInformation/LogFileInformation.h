@@ -1,11 +1,12 @@
 #ifndef LOGFILE_INFORMATION_H
 #define LOGFILE_INFORMATION_H
 
-#include <iostream>
+#include <string>
 
 class LogFileInformation
 {
 public:
+	virtual ~LogFileInformation() = default;
 	virtual std::string getOutput() = 0;
 
 private:

@@ -379,7 +379,6 @@ gpu_numerical_tests:
       - $CI_PROJECT_DIR/cache
 
   artifacts:
-    expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 

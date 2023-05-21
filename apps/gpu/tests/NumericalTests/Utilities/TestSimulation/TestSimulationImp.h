@@ -5,7 +5,7 @@
 #include "Utilities/NumericalTestSimulation/NumericalTestSimulation.h"
 
 #include <functional>
-#include <time.h>
+#include <ctime>
 #include <vector>
 
 class ToVectorWriter;
@@ -28,20 +28,20 @@ public:
                       std::shared_ptr<ColorConsoleOutput> colorOutput);
     void run() override;
 
-    std::shared_ptr<SimulationParameter> getSimulationParameter();
+    std::shared_ptr<SimulationParameter> getSimulationParameter() override;
     std::shared_ptr<SimulationInfo> getSimulationInfo();
-    std::shared_ptr<TimeTracking> getTimeTracking();
+    std::shared_ptr<TimeTracking> getTimeTracking() override;
 
-    SimulationStatus getSimulationStatus();
+    SimulationStatus getSimulationStatus() override;
 
-    void makeSimulationHeadOutput();
-    void startPostProcessing();
+    void makeSimulationHeadOutput() override;
+    void startPostProcessing() override;
 
-    void setParameter(std::shared_ptr<Parameter> para);
+    void setParameter(std::shared_ptr<Parameter> para) override;
 
     std::shared_ptr<SimulationResults> getSimulationResults();
     std::shared_ptr<AnalyticalResults> getAnalyticalResults();
-    void registerSimulationObserver(std::shared_ptr<SimulationObserver> simObserver);
+    void registerSimulationObserver(std::shared_ptr<SimulationObserver> simObserver) override;
     std::vector<std::string> getDataToCalcTests();
 
 private:

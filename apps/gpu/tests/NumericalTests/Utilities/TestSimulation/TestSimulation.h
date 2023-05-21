@@ -15,6 +15,7 @@ class Parameter;
 class TestSimulation
 {
 public:
+    virtual ~TestSimulation() = default;
     virtual void run() = 0;
 	virtual void makeSimulationHeadOutput() = 0;
 	virtual void startPostProcessing() = 0;

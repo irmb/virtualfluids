@@ -8,6 +8,7 @@
 class LogFileInformationImp : public LogFileInformation
 {
 public:
+	LogFileInformationImp() = default;
 	virtual std::string getOutput() = 0;
 
 protected:
