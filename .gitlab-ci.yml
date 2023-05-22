@@ -318,7 +318,6 @@ regression_test_8gpu:
     - cd ..
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereScaling_8GPU_2Levels --include-files "SphereScaling*.vtu"
-
 ###############################################################################
 ##                            Benchmark                                      ##
 ###############################################################################
@@ -389,6 +388,10 @@ gpu_numerical_tests:
   stage: analyze
 
   needs: []
+
+  tags:
+    - gpu
+    - linux
 
   rules:
     - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
@@ -552,6 +555,41 @@ clang-tidy:
       - build/clangtidy.txt
       - build/compile_commands.json
 
+
+###############################################################################
+##                            Sanitizer                                      ##
+###############################################################################
+sanitizer-address-leak-ub:
+  extends: .analyze_template
+  script:
+    - mkdir -p build
+    - cmake -B build
+      --preset=make_all
+      -DENABLE_SANITIZER_ADDRESS=ON
+      -DENABLE_SANITIZER_LEAK=ON
+      -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
+    - make -j8
+    - ctest
+
+sanitizer-thread:
+  extends: .analyze_template
+  script:
+    - mkdir -p build
+    - cmake -B build
+      --preset=make_all
+      -DENABLE_SANITIZER_THREAD=ON
+    - make -j8
+    - ctest
+
+sanitizer-memory:
+  extends: .analyze_template
+  script:
+    - mkdir -p build
+    - cmake -B build
+      --preset=make_all
+      -DENABLE_SANITIZER_MEMORY=ON
+    - make -j8
+    - ctest
 
 ###############################################################################
 # doxgen
