@@ -3616,7 +3616,9 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real wadjust;
 					//real qudricLimit = 0.01 / (c1o1 + 1.0e5 * phi[DIR_000] * (c1o1 - phi[DIR_000])); //real qudricLimit = 0.01;
 					//real qudricLimit = (((*phaseField)(x1, x2, x3) > c1o2) && (normX1 * vvx + normX2 * vvy + normX3 * vvz < 0)) ? 0.01 / (c1o1 + 1.0e5 * phi[DIR_000] * (c1o1 - phi[DIR_000])) : 0.01;
-					real qudricLimit = (((*phaseField)(x1, x2, x3) > c1o2)&& (normX1*vvx+normX2*vvy+normX3*vvz<0) ) ? 0.01 / (c1o1 + 1.0e5 * phi[DIR_000] * (c1o1 - phi[DIR_000])) : 0.01 ;
+					//real qudricLimit = (((*phaseField)(x1, x2, x3) > c1o2)&& (normX1*vvx+normX2*vvy+normX3*vvz<0) ) ? 0.01 / (c1o1 + 1.0e5 * phi[DIR_000] * (c1o1 - phi[DIR_000])) : 0.01 ;
+                    real qudricLimit = 0.0001;
+                    /// (c1o1 + 1.0e3 * (dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi));
 					//real qudricLimit = 0.01 / (c1o1 + 1.0e5 * phi[DIR_000] * (c1o1 - phi[DIR_000])) ;
 					//real qudricLimit = (((*phaseField)(x1, x2, x3) > c1o2) ) ? 0.01 / (c1o1 + 1.0e5 * phi[DIR_000] * (c1o1 - phi[DIR_000])) : 0.01 ;
 					//qudricLimit = (((*phaseField)(x1, x2, x3)-c1o2 ) * (normX1 * vvx + normX2 * vvy + normX3 * vvz) < 0) ? 0.01 / (c1o1 + 1.0e8 * phi[DIR_000] * (c1o1 - phi[DIR_000])) : 0.01;
@@ -3792,6 +3794,30 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real Dxy = -c3o1 * collFactorM * mfbba;
 					real Dxz = -c3o1 * collFactorM * mfbab;
 					real Dyz = -c3o1 * collFactorM * mfabb;
+                    // if (phi[DIR_000] > c1o2) 
+						if ((phi[DIR_000] > c1o2) && ((phi[DIR_P00] <= c1o2) || (phi[DIR_M00] <= c1o2) || (phi[DIR_00P] <= c1o2) || (phi[DIR_00M] <= c1o2) || (phi[DIR_0M0] <= c1o2) || (phi[DIR_0P0] <= c1o2) || (phi[DIR_PP0] <= c1o2) || (phi[DIR_PM0] <= c1o2) || (phi[DIR_P0P] <= c1o2) ||
+                                                  (phi[DIR_P0M] <= c1o2) || (phi[DIR_MP0] <= c1o2) || (phi[DIR_MM0] <= c1o2) || (phi[DIR_M0P] <= c1o2) || (phi[DIR_M0M] <= c1o2) || (phi[DIR_0PM] <= c1o2) || (phi[DIR_0MM] <= c1o2) || (phi[DIR_0PP] <= c1o2) || (phi[DIR_0MP] <= c1o2) ||
+                                                  (phi[DIR_PPP] <= c1o2) || (phi[DIR_PMP] <= c1o2) || (phi[DIR_MPP] <= c1o2) || (phi[DIR_MMP] <= c1o2) ||
+                         (phi[DIR_PPM] <= c1o2) || (phi[DIR_PMM] <= c1o2) || (phi[DIR_MPM] <= c1o2) || (phi[DIR_MMM] <= c1o2))) {
+
+					// {
+                        /// QR eddyviscosity:
+                        real eddyR = -(Dxy * Dxy + Dxz * Dxz + c1o3 * dxux * dxux) * (dxux) - (Dxy * Dxy + Dyz * Dyz + c1o3 * dyuy * dyuy) * dyuy - (Dxz * Dxz + Dyz * Dyz + c1o3 * dzuz * dzuz) * dzuz - c2o1 * Dxy * Dxz * Dyz;
+                        real eddyQ = Dxy * Dxz + Dxy * Dyz + Dxz * Dyz + c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz);
+                        //real nuEddy = 5.0e5 * (eddyR / (eddyQ + 1e-100)) * (dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi);
+                        real nuEddy = 5.0e3 * (eddyR / (eddyQ + 1e-100));
+                        nuEddy = (nuEddy < c1o1 / collFactorM) ? c1o1 / collFactorM : nuEddy;
+                        collFactorM = c1o1 / nuEddy;
+                        // collFactorM = c1o1 / (c1o1 / collFactorM +1.e2*nuEddy*(dX1_phi*dX1_phi+dX2_phi*dX2_phi+dX3_phi*dX3_phi));
+                        collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
+                        OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
+                        OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
+                        Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 *
+                        collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0)); A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM
+                        - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM)); BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM
+                        - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+                    }
+
 					//if ((phi[DIR_000] > c1o2)&& (normX1 * vvx + normX2 * vvy + normX3 * vvz < 0)){//&& ((*phaseFieldOld)(x1, x2, x3) <= c1o2)) {
      //               if ((phi[DIR_000] > 0.01) && (phi[DIR_000]<0.99)){
 					//	//std::cout << "new node\n";
