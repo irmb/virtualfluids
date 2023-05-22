@@ -562,8 +562,8 @@ clang-tidy:
 sanitizer-address-leak-ub:
   extends: .analyze_template
   script:
-    - mkdir -p build
-    - cmake -B build
+    - mkdir -p build && cd build
+    - cmake ..
       --preset=make_all
       -DENABLE_SANITIZER_ADDRESS=ON
       -DENABLE_SANITIZER_LEAK=ON
@@ -574,8 +574,8 @@ sanitizer-address-leak-ub:
 sanitizer-thread:
   extends: .analyze_template
   script:
-    - mkdir -p build
-    - cmake -B build
+    - mkdir -p build && cd build
+    - cmake ..
       --preset=make_all
       -DENABLE_SANITIZER_THREAD=ON
     - make -j8
@@ -584,8 +584,8 @@ sanitizer-thread:
 sanitizer-memory:
   extends: .analyze_template
   script:
-    - mkdir -p build
-    - cmake -B build
+    - mkdir -p build && cd build
+    - cmake ..
       --preset=make_all
       -DENABLE_SANITIZER_MEMORY=ON
     - make -j8
