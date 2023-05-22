@@ -14,14 +14,14 @@
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 #include "utilities/communication.h"
-#include "Communication/Communicator.h"
+#include "Communication/CommunicationRoutine.h"
 
 #include <logger/Logger.h>
 
 using namespace vf::lbm::dir;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
-                             std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator &communicator)
+                             std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::CommunicationRoutine &communicator)
     : mpiProcessID(communicator.getPID()), builder(builder)
 {
     this->para = para;
@@ -31,7 +31,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
         std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
 }
 
-GridGenerator::~GridGenerator() {}
+GridGenerator::~GridGenerator() = default;
 
 void GridGenerator::setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams> &&indexRearrangement)
 {
