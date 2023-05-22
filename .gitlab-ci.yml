@@ -56,7 +56,7 @@ workflow:
     - cmake .. -LAH
       --preset=make_all
       -DBUILD_WARNINGS_AS_ERRORS=ON
-      -DCMAKE_CUDA_ARCHITECTURES=60
+      -DCMAKE_CUDA_ARCHITECTURES=70
       -DBUILD_VF_ALL_SAMPLES=ON
     - make -j4
     - ccache --show-stats
@@ -565,6 +565,7 @@ sanitizer-address-leak-ub:
     - mkdir -p build && cd build
     - cmake ..
       --preset=make_all
+      -DCMAKE_CUDA_ARCHITECTURES=70
       -DENABLE_SANITIZER_ADDRESS=ON
       -DENABLE_SANITIZER_LEAK=ON
       -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
@@ -577,6 +578,7 @@ sanitizer-thread:
     - mkdir -p build && cd build
     - cmake ..
       --preset=make_all
+      -DCMAKE_CUDA_ARCHITECTURES=70
       -DENABLE_SANITIZER_THREAD=ON
     - make -j8
     - ctest --output-on-failure
@@ -587,6 +589,7 @@ sanitizer-memory:
     - mkdir -p build && cd build
     - cmake ..
       --preset=make_all
+      -DCMAKE_CUDA_ARCHITECTURES=70
       -DENABLE_SANITIZER_MEMORY=ON
     - make -j8
     - ctest --output-on-failure
