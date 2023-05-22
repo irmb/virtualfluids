@@ -510,7 +510,7 @@ gcov_gcc:
       -DCMAKE_BUILD_TYPE=PROFILE
       -DCMAKE_CUDA_ARCHITECTURES=70
     - make -j4
-    - ctest
+    - ctest --output-on-failure
     - cd ..
     - mkdir coverage
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
@@ -569,7 +569,7 @@ sanitizer-address-leak-ub:
       -DENABLE_SANITIZER_LEAK=ON
       -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
     - make -j8
-    - ctest
+    - ctest --output-on-failure
 
 sanitizer-thread:
   extends: .analyze_template
@@ -579,7 +579,7 @@ sanitizer-thread:
       --preset=make_all
       -DENABLE_SANITIZER_THREAD=ON
     - make -j8
-    - ctest
+    - ctest --output-on-failure
 
 sanitizer-memory:
   extends: .analyze_template
@@ -589,7 +589,7 @@ sanitizer-memory:
       --preset=make_all
       -DENABLE_SANITIZER_MEMORY=ON
     - make -j8
-    - ctest
+    - ctest --output-on-failure
 
 ###############################################################################
 # doxgen
