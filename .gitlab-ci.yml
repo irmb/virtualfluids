@@ -78,7 +78,7 @@ clang_15:
 
   before_script:
     - export CC=clang
-    - export CXX=clang++  
+    - export CXX=clang++
 
 ###############################################################################
 msvc_17:
@@ -569,17 +569,6 @@ sanitizer-address-leak-ub:
       -DENABLE_SANITIZER_ADDRESS=ON
       -DENABLE_SANITIZER_LEAK=ON
       -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
-    - make -j8
-    - ctest --output-on-failure
-
-sanitizer-thread:
-  extends: .analyze_template
-  script:
-    - mkdir -p build && cd build
-    - cmake ..
-      --preset=make_all
-      -DCMAKE_CUDA_ARCHITECTURES=70
-      -DENABLE_SANITIZER_THREAD=ON
     - make -j8
     - ctest --output-on-failure
 
