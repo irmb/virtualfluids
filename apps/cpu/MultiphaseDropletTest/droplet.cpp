@@ -9,6 +9,7 @@
 
 #include "VirtualFluids.h"
 #include "MultiphaseFlow/MultiphaseFlow.h"
+#include "NonNewtonianFluids/NonNewtonianFluids.h"
 
 using namespace std;
 
@@ -141,12 +142,19 @@ void run(string configname)
 
         //const int baseLevel = 0;
 
+        
+        SPtr<Rheology> thix = Rheology::getInstance();
+        thix->setYieldStress(0);
+
         SPtr<LBMKernel> kernel;
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
        // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
+        //kernel = make_shared< MultiphaseScaleDistributionLBMKernel>();
+        //kernel = SPtr<LBMKernel>(new MultiphaseSharpInterfaceLBMKernel());
+        kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
 
         mu::Parser fgr;
         fgr.SetExpr("-(rho-rho_l)*g_y");
@@ -287,12 +295,14 @@ void run(string configname)
             intHelper.setBC();
 
             // initialization of distributions
-            real x1c = 2.5 * D; // (g_maxX1 - g_minX1-1)/2; //
+            real x1c = 1.5;//
+            //2.5 * D;             // (g_maxX1 - g_minX1-1)/2; //
             real x2c = 12.5 * D; //(g_maxX2 - g_minX2-1)/2;
-            real x3c = 1.5; //2.5 * D; //(g_maxX3 - g_minX3-1)/2;
+            real x3c = 2.5 * D;
+            //1.5; // 2.5 * D; //(g_maxX3 - g_minX3-1)/2;
             //LBMReal x3c = 2.5 * D;
             mu::Parser fct1;
-            fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct1.SetExpr("0.5+0.5*tanh(2*(sqrt(0*(x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
             fct1.DefineConst("x1c", x1c);
             fct1.DefineConst("x2c", x2c);
             fct1.DefineConst("x3c", x3c);
@@ -300,7 +310,7 @@ void run(string configname)
             fct1.DefineConst("interfaceThickness", interfaceThickness);
 
             mu::Parser fct2;
-            fct2.SetExpr("0.5*uLB-uLB*0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct2.SetExpr("0.5*uLB-uLB*0.5*tanh(2*(sqrt(0*(x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
             //fct2.SetExpr("uLB");
             fct2.DefineConst("uLB", uLB);
             fct2.DefineConst("x1c", x1c);
@@ -381,7 +391,7 @@ void run(string configname)
         t = (int)(t_ast/std::sqrt(g_y/D));         
         visSch->addSchedule(t,t,t); //t=9
 
-        SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
+        SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> pp(new WriteSharpInterfaceQuantitiesSimulationObserver(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         if(grid->getTimeStep() == 0) 
             pp->update(0);

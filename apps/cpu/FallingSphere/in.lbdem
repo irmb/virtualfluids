@@ -11,7 +11,7 @@ communicate	single vel yes
 boundary	f f f
 newton		off
 
-processors * * 1
+processors 1 1 *
 region		box block 0. 1. 0. 1. 0. 10. units box
 create_box	1 box
 

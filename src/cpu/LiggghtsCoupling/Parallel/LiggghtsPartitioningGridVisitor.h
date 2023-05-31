@@ -26,18 +26,34 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LiggghtsCoupling.h
+//! \file LiggghtsPartitioningGridVisitor.h
 //! \ingroup LiggghtsCoupling
 //! \author Konstantin Kutscher
 //=======================================================================================
+#ifndef LiggghtsPartitioningGridVisitor_h
+#define LiggghtsPartitioningGridVisitor_h
 
-#ifndef LiggghtsCoupling_h
-#define LiggghtsCoupling_h
+#include <lammps.h>
+#include <vector>
+#include "basics/PointerDefinitions.h"
+#include "VirtualFluidsCore/Visitors/Grid3DVisitor.h"
 
-#include "LiggghtsCoupling/3rdParty/LiggghtsCouplingWrapper.h"
-#include "LiggghtsCoupling/LBM/IBcumulantK17LBMKernel.h"
-#include "LiggghtsCoupling/LBM/IBsharpInterfaceLBMKernel.h"
-#include "LiggghtsCoupling/SimulationObserver/LiggghtsCouplingSimulationObserver.h"
-#include "LiggghtsCoupling/Parallel/LiggghtsPartitioningGridVisitor.h"
+class LiggghtsCouplingWrapper;
+class Grid3D;
 
+class LiggghtsPartitioningGridVisitor : public Grid3DVisitor
+{
+public:
+    LiggghtsPartitioningGridVisitor(int nx, int ny, int nz, LAMMPS_NS::LAMMPS *lmp);
+
+    ~LiggghtsPartitioningGridVisitor() override;
+
+    void visit(SPtr<Grid3D> grid) override;
+
+private:
+    int nx, ny, nz;
+    LAMMPS_NS::LAMMPS &lmp;
+    int npx{ 0 }, npy{ 0 }, npz{ 0 };
+    std::vector<int> xVal, yVal, zVal;
+};
 #endif
