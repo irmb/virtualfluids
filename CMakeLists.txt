@@ -219,7 +219,16 @@ if(BUILD_VF_GPU)
 endif()
 
 if (BUILD_VF_PYTHON_BINDINGS)
-    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.6.0)
+    set(pybind_version "v2.10.4")
+    set(pybind_url "https://github.com/pybind/pybind11")
+    message(STATUS "Fetching pybind: ${pybind_version}")
+    FetchContent_Declare(
+            pybind11
+            GIT_REPOSITORY ${pybind_url}
+            GIT_TAG        ${pybind_version}
+    )
+
+    FetchContent_MakeAvailable(pybind11)
     add_subdirectory(pythonbindings)
 endif()
 

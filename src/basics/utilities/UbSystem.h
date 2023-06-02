@@ -276,24 +276,26 @@ inline bool isDirectory(const std::string &dir, const unsigned & /*attemptions*/
 #if defined(CAB_BOOST)
 static boost::mutex mtx_makeDirectory;
 #endif
-inline bool makeDirectory(const std::string &dir, const unsigned &attemptions = 3)
+inline bool makeDirectory(const std::string &dir)
 {
-    UBLOG(logDEBUG5, "UbSystem::makeDirectory - start, dir=" << dir << " #attemptions=" << attemptions);
+    UBLOG(logDEBUG5, "UbSystem::makeDirectory - start, dir=" << dir);
 
     if (dir.empty())
         UB_THROW(UbException(UB_EXARGS, "dir is empty"));
     std::string path = UbSystem::replaceInString(dir, "\\", "/");
 
     bool dirCreated = true;
-#if defined UBSYSTEM_WINDOWS
+
     if (path[path.size() - 1] != '/')
         path += "/";
     size_t pos = 0;
+
     while ((pos = path.find("/", pos + 1)) != std::string::npos) {
         std::string tmpdir = path.substr(0, pos);
 #if defined(CAB_BOOST)
         boost::mutex::scoped_lock lock(mtx_makeDirectory);
 #endif
+#if defined UBSYSTEM_WINDOWS
         if (
 #ifndef _UNICODE
             _access(tmpdir.c_str(), 0) == -1 && _mkdir(tmpdir.c_str()) == -1
@@ -301,34 +303,23 @@ inline bool makeDirectory(const std::string &dir, const unsigned &attemptions = 
             _waccess(tmpdir.c_str(), 0) == -1 && _wmkdir(tmpdir.c_str()) == -1
 #endif
         ) {
-            UBLOG(logDEBUG5, "UbSystem::makeDirectory-  dir=\"" << tmpdir << "\" doesn't exit or makedir failed");
+            UBLOG(logDEBUG5, "UbSystem::makeDirectory - dir=\"" << tmpdir << "\" - doesn't exist or makedir failed");
             dirCreated = false;
             break;
         }
-    }
 #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
-    std::string command = "mkdir -p \"" + path + "\"";
-    {
-#if defined(CAB_BOOST)
-        boost::mutex::scoped_lock lock(mtx_makeDirectory);
-#endif
-        if (system(command.c_str()) != 0) {
-            UBLOG(logDEBUG5, "UbSystem::makeDirectory-  dir=\"" << path << "\" doesn't exit or makedir failed");
+        int status = mkdir(tmpdir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        if (status == 0) {
+            UBLOG(logDEBUG5,"UbSystem::makeDirectory - dir=\"" << tmpdir << " - directory created successfully.");
+            dirCreated = true;
+        } else {
+            UBLOG(logDEBUG5,"UbSystem::makeDirectory - dir=\"" << tmpdir << " - mkdir() failed" << " ERROR: " << strerror(errno));
             dirCreated = false;
         }
-    }
 #else
 #error "UbSystem::makeDirectory - UnknownMachine"
 #endif
-
-    if (!dirCreated && attemptions > 1) {
-        UBLOG(logDEBUG5, "UbSystem::makeDirectory - internal call of UbSystem::makeDirectory");
-        UbSystem::sleepMs(500);
-        dirCreated = UbSystem::makeDirectory(path, attemptions - 1);
     }
-
-    UBLOG(logDEBUG5,
-          "UbSystem::makeDirectory - end (success=" << dirCreated << ", attemptions = " << attemptions << ")");
     return dirCreated;
 }
 /*==========================================================*/

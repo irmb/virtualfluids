@@ -658,7 +658,7 @@ int main(int argc, char *argv[])
 
         try {
             VF_LOG_INFO("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/SphereScaling/config.txt");
+            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/SphereScaling/config.txt");
             runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////
