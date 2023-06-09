@@ -463,7 +463,6 @@ void printGeoFile(Parameter* para, bool fileFormat)
     }
     else //Binary:
     {
-        int tempX = 0;
         //////////////////////////////////////////////////////////////////////////
         std::ofstream ostr;
         ostr.open(fname, std::ios::out | std::ios::binary);
@@ -491,10 +490,8 @@ void printGeoFile(Parameter* para, bool fileFormat)
                 {
                     tempCoord = (para->getParH((int)lev)->coordinateX[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
                     writeFloatToFile(tempCoord, ostr);
-                    tempX++;
                 }
             }
-            //std::cout << "tempX in geo: " << tempX << endl;
         }
         //////////////////////////////////////////////////////////////////////////
         // Y

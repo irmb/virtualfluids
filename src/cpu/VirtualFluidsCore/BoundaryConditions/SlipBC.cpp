@@ -28,7 +28,7 @@
 //
 //! \file SlipBC.cpp
 //! \ingroup BoundarConditions
-//! \author Sören Freudiger
+//! \author Soeren Freudiger
 //=======================================================================================
 #include "SlipBC.h"
 #include "D3Q27Interactor.h"

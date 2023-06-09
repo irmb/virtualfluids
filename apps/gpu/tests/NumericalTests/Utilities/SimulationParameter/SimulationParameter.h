@@ -11,6 +11,7 @@ class KernelConfiguration;
 class SimulationParameter
 {
 public:
+	virtual ~SimulationParameter() = default;
 	virtual std::shared_ptr<KernelConfiguration> getKernelConfiguration() = 0;
 	virtual double getViscosity() = 0;
 	virtual std::string getGridPath() = 0;

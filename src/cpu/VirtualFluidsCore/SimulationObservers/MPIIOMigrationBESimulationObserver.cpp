@@ -130,7 +130,6 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     DSArraysPresence arrPresence;
     bool firstBlock        = true;
     int doubleCountInBlock = 0;
-    int ic                 = 0;
     SPtr<D3Q27EsoTwist3DSplittedVector> D3Q27EsoTwist3DSplittedVectorPtrF = 0, D3Q27EsoTwist3DSplittedVectorPtrH1 = 0, D3Q27EsoTwist3DSplittedVectorPtrH2 = 0;
     CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF = 0, localDistributionsH1 = 0, localDistributionsH2 = 0;
     CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF = 0, nonLocalDistributionsH1 = 0, nonLocalDistributionsH2 = 0;
@@ -280,8 +279,6 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
                 if (zeroDistributionsH2 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
                 doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), zeroDistributionsH2->getDataVector().begin(), zeroDistributionsH2->getDataVector().end());
             }
-
-            ic++;
         }
     }
 
@@ -431,7 +428,6 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
     dataSetParam dataSetParamStr;
     bool firstBlock        = true;
     int doubleCountInBlock = 0;
-    int ic                 = 0;
     SPtr<CbArray4D<real, IndexerX4X3X2X1>> ___Array;
 
     if (comm->isRoot()) 
@@ -482,8 +478,6 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
 
             if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0) && (dataSetParamStr.nx[3] > 0))
                 doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
-
-            ic++;
         }
     }
 
@@ -550,7 +544,6 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
     dataSetParam dataSetParamStr;
     bool firstBlock        = true;
     int doubleCountInBlock = 0;
-    int ic                 = 0;
     SPtr<CbArray3D<real, IndexerX3X2X1>> ___Array;
 
     if (comm->isRoot()) 
@@ -599,8 +592,6 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
 
             if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0))
                 doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
-
-            ic++;
         }
     }
 
@@ -659,8 +650,6 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
 
     int blocksCount          = 0; // quantity of blocks, that belong to this process
     size_t allBytesCount     = 0; // quantity of bytes, that one process writes to the file
-    size_t count_boundCond   = 0; // how many BoundaryConditions in all blocks
-    int count_indexContainer = 0; // how many indexContainer-values in all blocks
 
     std::vector<SPtr<Block3D>> blocksVector[25];
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -721,7 +710,6 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
 
                 bcVector[ic].push_back(*bouCond);
                 bcAddArray[ic].boundCond_count++;
-                count_boundCond++;
                 bytesCount[ic] += sizeof(BoundaryCondition);
             }
 
@@ -738,7 +726,6 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
 
             indexContainerVector[ic].insert(indexContainerVector[ic].begin(), bcArr->indexContainer.begin(), bcArr->indexContainer.end());
             bcAddArray[ic].indexContainer_count = static_cast<int>(bcArr->indexContainer.size());
-            count_indexContainer += bcAddArray[ic].indexContainer_count;
             bytesCount[ic] += bcAddArray[ic].indexContainer_count * sizeof(int);
 
             allBytesCount += bytesCount[ic];

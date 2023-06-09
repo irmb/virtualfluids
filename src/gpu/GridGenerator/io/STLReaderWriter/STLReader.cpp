@@ -217,7 +217,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
 
     char nTri[4];
     sizef                  = fread(nTri, sizeof(char), 4, file);
-    unsigned long nTriLong = *((unsigned long*)nTri);
+    unsigned int nTriLong = *((unsigned int*)nTri);
     VF_LOG_INFO("Number of Triangles: {}" , nTriLong);
     std::vector<Triangle> triangles;
 
@@ -309,7 +309,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
 
 
     sizef    = fread(nTri, sizeof(char), 4, file);
-    nTriLong = *((unsigned long*)nTri);
+    nTriLong = *((unsigned int*)nTri);
 
     VF_LOG_INFO("Number of Triangles complete geometry: {}", nTriLong);
     std::vector<Triangle> triangles;

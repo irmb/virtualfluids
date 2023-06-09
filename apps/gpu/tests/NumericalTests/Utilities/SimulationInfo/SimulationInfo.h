@@ -10,6 +10,7 @@ class TimeInfo;
 class SimulationInfo
 {
 public:
+	virtual ~SimulationInfo() = default;
 	virtual std::string getKernelName() = 0;
 	virtual double getViscosity() = 0;
 	virtual std::string getSimulationName() = 0;

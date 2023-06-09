@@ -9,6 +9,7 @@ class L2NormCalculator;
 class L2NormCalculatorFactory
 {
 public:
+	virtual ~L2NormCalculatorFactory() = default;
 	virtual std::shared_ptr<L2NormCalculator> makeL2NormCalculator(std::string type) = 0;
 
 };

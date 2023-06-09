@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.5
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0
 
 stages:
   - build
@@ -13,6 +13,11 @@ stages:
   - deploy
   - release
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never  # disable detached merge request pipelines
+    - when: always # add all jobs to normal pipeline. This can be overwritten by the rules of the jobs.
 
 ###############################################################################
 ##                                Builds                                     ##
@@ -60,7 +65,7 @@ stages:
     BUILD_FOLDER: "build"
 
 ###############################################################################
-gcc_9:
+gcc_12:
   extends: .gnu_build_template
 
   before_script:
@@ -68,12 +73,12 @@ gcc_9:
     - export CXX=g++
 
 ###############################################################################
-clang_10:
+clang_15:
   extends: .gnu_build_template
 
   before_script:
     - export CC=clang
-    - export CXX=clang++
+    - export CXX=clang++  
 
 ###############################################################################
 msvc_17:
@@ -112,13 +117,13 @@ msvc_17:
 ###############################################################################
 ##                             Build Python                                  ##
 ###############################################################################
-gcc_9_python:
+gcc_12_python:
   stage: build_python
 
-  needs: ["gcc_9"]
+  needs: ["gcc_12"]
 
   cache:
-    key: "gcc_9-$CI_COMMIT_REF_SLUG"
+    key: "gcc_12-$CI_COMMIT_REF_SLUG"
     paths:
       - build
 
@@ -149,8 +154,6 @@ build_poiseuille_test_container:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -169,10 +172,10 @@ build_poiseuille_test_container:
 ###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
-gcc_9_unit_tests:
+gcc_12_unit_tests:
   stage: test
 
-  needs: ["gcc_9"]
+  needs: ["gcc_12"]
 
   before_script:
     - cd $CI_PROJECT_DIR/build
@@ -199,10 +202,10 @@ msvc_17_unit_tests:
     - ctest --output-on-failure -C Release
 
 ###############################################################################
-gcc_9_python_bindings_test:
+gcc_12_python_bindings_test:
   stage: test
 
-  needs: ["gcc_9_python"]
+  needs: ["gcc_12_python"]
 
   before_script:
     - export PYTHONPATH="Python"
@@ -214,7 +217,7 @@ gcc_9_python_bindings_test:
     - python3 -m unittest discover -s Python -v
 
 ###############################################################################
-gcc_9_python_hpc_test:
+gcc_12_python_hpc_test:
   image: python:latest
   stage: test
 
@@ -223,8 +226,6 @@ gcc_9_python_hpc_test:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -253,8 +254,6 @@ build-regression-tests-ci:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -280,8 +279,6 @@ regression_test_4gpu:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -306,8 +303,6 @@ regression_test_8gpu:
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -330,7 +325,7 @@ regression_test_8gpu:
 nvidia_test:
   stage: benchmark
 
-  image: nvidia/cuda:11.1.1-devel-ubuntu20.04
+  image: nvidia/cuda:12.1.1-devel-ubuntu22.04
 
   needs: []
 
@@ -349,8 +344,6 @@ gpu_numerical_tests:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
     - when: manual
       allow_failure: true
 
@@ -386,19 +379,27 @@ gpu_numerical_tests:
       - $CI_PROJECT_DIR/cache
 
   artifacts:
-    expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
 ###############################################################################
 ##                        Code analysis                                      ##
 ###############################################################################
-clang_build_analyzer_clang_10:
+.analyze_template:
   stage: analyze
 
-  only: ["schedules"]
-
   needs: []
+
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
+      when: always
+    - if: '$CI_PROJECT_NAMESPACE != "irmb"'
+      when: manual
+      allow_failure: true
+
+
+clang_build_analyzer:
+  extends: .analyze_template
 
   before_script:
     - export CC=clang
@@ -424,22 +425,19 @@ clang_build_analyzer_clang_10:
     - ClangBuildAnalyzer --analyze CBA
 
 ###############################################################################
-include_what_you_use_clang_10:
-  stage: analyze
-
-  only: ["schedules"]
-
-  needs: []
+include_what_you_use_clang_15:
+  extends: .analyze_template
 
   before_script:
+    - apt-get update && apt-get install -y libclang-15-dev llvm-15-dev
     - export CC=clang
     - export CXX=clang++
     - $CXX --version
     - cd /tmp
     - git clone https://github.com/include-what-you-use/include-what-you-use.git
     - cd include-what-you-use
-    - git checkout clang_10
-    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
+    - git checkout clang_15
+    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15
     - make
     - export PATH+=:$(pwd)/bin
 
@@ -453,24 +451,13 @@ include_what_you_use_clang_10:
     - make
 
 ###############################################################################
-.analyze_template:
-
-  rules: # dont create MR pipeline, run always on irmb/develop and manual in all other cases
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
-      when: always
-    - when: manual
-      allow_failure: true
-
 cppcheck:
-  stage: analyze
-
   extends: .analyze_template
 
-  needs: []
-
   before_script:
+    - apt-get update && apt-get install -y libpcre3-dev
+    - chmod +x utilities/install-cppcheck.sh 
+    - ./utilities/install-cppcheck.sh
     - cppcheck --version
 
   script:
@@ -486,17 +473,9 @@ cppcheck:
 # lizard - Cyclomatic Complexity Analyzer
 # Ignore warnings is manually set to 191. This job will fail when new warnings are added.
 lizard:
-  stage: analyze
-
   extends: .analyze_template
 
-  needs: []
-
   before_script:
-    - cd /tmp
-    - git clone https://github.com/terryyin/lizard.git
-    - cd lizard
-    - python3 setup.py install
     - lizard --version
 
   script:
@@ -510,25 +489,25 @@ lizard:
 
 ###############################################################################
 # code coverage
-gcov_gcc_9:
+gcov_gcc:
   stage: analyze
 
   extends: .analyze_template
 
-  needs: []
-
   before_script:
     - gcovr --version
+    - export CC=/usr/bin/gcc-11
+    - export CXX=/usr/bin/g++-11
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
       --preset=make_all
-      -DCMAKE_CUDA_ARCHITECTURES=60
-      -DBUILD_VF_COVERAGE=ON
+      -DCMAKE_BUILD_TYPE=PROFILE
+      -DCMAKE_CUDA_ARCHITECTURES=70
     - make -j4
-    - ./bin/basicsTests
+    - ctest
     - cd ..
     - mkdir coverage
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
@@ -551,16 +530,10 @@ gcov_gcc_9:
 ###############################################################################
 # this job also produces a compile commands json file.
 clang-tidy:
-  stage: analyze
-
   extends: .analyze_template
 
-  needs: []
-
-  allow_failure: true
-
   before_script:
-    - run-clang-tidy -h
+    - run-clang-tidy-15 -h
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
@@ -570,7 +543,7 @@ clang-tidy:
       -DBUILD_VF_DOUBLE_ACCURACY=ON
       -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
-    - run-clang-tidy -quiet > clangtidy.txt
+    - run-clang-tidy-15 -quiet > clangtidy.txt
 
   artifacts:
     when: always
@@ -628,7 +601,7 @@ pages:
 vf_to_phoenix:
   extends: .deploy_template
   stage: deploy
-  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
+  needs: ["gcc_12_python", "gcc_12_unit_tests", "gcc_12_python_bindings_test"]
 
   when: manual
 
@@ -652,7 +625,7 @@ vf_wheel_to_jupyterhub:
 
   only: ["manual"]
 
-  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
+  needs: ["gcc_12_python", "gcc_12_unit_tests", "gcc_12_python_bindings_test"]
 
   variables:
     HOST: "gitlab-runner01.irmb.bau.tu-bs.de"
@@ -680,7 +653,7 @@ sonar-scanner:
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
 
-  needs: ["cppcheck","clang-tidy","gcov_gcc_9"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc"]
 
   before_script:
     - cd /tmp

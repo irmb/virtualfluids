@@ -17,7 +17,7 @@ std::shared_ptr<PhiTest> PhiTest::getNewInstance(std::shared_ptr<ColorConsoleOut
 
 void PhiTest::evaluate()
 {
-	for (int i = 0; i < postProStrategies.size(); i++)
+	for (uint i = 0; i < postProStrategies.size(); i++)
 		phiDiff.push_back(postProStrategies.at(i)->getPhiDiff(dataToCalculate));
 	
 	orderOfAccuracy = calcOrderOfAccuracy(phiDiff);
@@ -46,7 +46,7 @@ std::string PhiTest::getDataToCalculate()
 std::vector<int> PhiTest::getLx()
 {
 	std::vector<int> lxINT;
-	for (int i = 0; i < lx.size(); i++)
+	for (uint i = 0; i < lx.size(); i++)
 		lxINT.push_back((int)lx.at(i));
 	return lxINT;
 }
@@ -62,7 +62,7 @@ double PhiTest::getOrderOfAccuracy()
 }
 
 PhiTest::PhiTest(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiTestParameterStruct> testPara, std::string dataToCalculate)
-	: TestImp(colorOutput), viscosity(viscosity), dataToCalculate(dataToCalculate)
+	: TestImp(colorOutput), dataToCalculate(dataToCalculate)
 {
 	minOrderOfAccuracy = testPara->minOrderOfAccuracy;
 	startStepCalculation = testPara->startTimeStepCalculation;
@@ -92,7 +92,7 @@ std::vector<std::string> PhiTest::buildTestOutput()
 	std::vector<std::string> output = buildBasicTestOutput();
 	std::ostringstream oss;
 
-	for (int i = 0; i < phiDiff.size(); i++) {
+	for (uint i = 0; i < phiDiff.size(); i++) {
 		oss << "PhiDiff" << simInfos.at(i)->getLx() << ": " << phiDiff.at(i);
 		output.push_back(oss.str());
 		oss.str(std::string());
@@ -125,7 +125,7 @@ std::vector<std::string> PhiTest::buildBasicTestOutput()
 	output.push_back(oss.str());
 	oss.str(std::string());
 
-	for (int i = 0; i < simInfos.size(); i++) {
+	for (uint i = 0; i < simInfos.size(); i++) {
 		oss << "L: " << std::setfill(' ') << std::right << std::setw(4) << simInfos.at(i)->getLx() << simInfos.at(i)->getSimulationParameterString();
 		output.push_back(oss.str());
 		oss.str(std::string());
