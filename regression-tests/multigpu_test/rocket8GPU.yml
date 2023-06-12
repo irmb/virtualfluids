@@ -46,6 +46,7 @@ collect:
 
 clean:
   - multigpu_test/output/*
+  - multigpu_test/src/*
 
 sbatch: multigpu_test/slurm8GPU.job
 continue_if_job_fails: true
