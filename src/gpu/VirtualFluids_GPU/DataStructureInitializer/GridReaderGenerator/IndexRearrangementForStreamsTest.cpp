@@ -13,7 +13,8 @@
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 #include "gpu/GridGenerator/utilities/communication.h"
-#include "gpu/VirtualFluids_GPU/Communication/MpiCommunicator.cpp"
+
+#include "Communication/CommunicationRoutineMocks.h"
 
 namespace indexRearrangementTests
 {
@@ -148,8 +149,10 @@ private:
         para->initProcessNeighborsAfterFtoCX(sendIndices.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::MpiCommunicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, communicator));
     };
+
+    vf::gpu::test::CommunicationRoutineTestDouble communicator;
 };
 
 TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesForCommAfterFtoCX)
@@ -608,8 +611,10 @@ private:
         para = testingVF::createParameterForLevel(ri.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::MpiCommunicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, communicator));
     };
+
+    vf::gpu::test::CommunicationRoutineTestDouble communicator;
 };
 
 TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreUnchanged)
