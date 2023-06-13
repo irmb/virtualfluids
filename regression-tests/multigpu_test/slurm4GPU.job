@@ -2,7 +2,7 @@
 
 #SBATCH --partition=gpu01_queue
 #SBATCH --nodes=1
-#SBATCH --time=10:00:00
+#SBATCH --time=03:00:00
 #SBATCH --job-name=Regr4GPU
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=gpu:4
