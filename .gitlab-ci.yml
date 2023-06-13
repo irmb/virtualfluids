@@ -287,7 +287,10 @@ regression_test_4gpu:
     - pip install "fieldcompare[all]"
 
   script:
-    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket4GPU.yml
+    - hpc-rocket launch regression-tests/multigpu_test/rocket4GPU.yml |& tee hpcrocket4GPU.log
+    - hpc-rocket watch regression-tests/multigpu_test/rocket4GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket4GPU.log)
+    - hpc-rocket finalize regression-tests/multigpu_test/rocket4GPU.yml
+    - cat output/4GPU/slurm4GPU.out
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
     - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereScaling_4GPU_2Levels
@@ -295,9 +298,13 @@ regression_test_4gpu:
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
 
+  after_script:
+    - hpc-rocket cancel regression-tests/multigpu_test/rocket4GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket4GPU.log)
+
   artifacts:
     paths:
       - output/4GPU/slurm4GPU.out
+      - hpcrocket4GPU.log
 ###############################################################################
 regression_test_8gpu:
   image: python:latest
