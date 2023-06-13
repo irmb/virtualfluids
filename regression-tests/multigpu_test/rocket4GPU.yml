@@ -37,7 +37,7 @@ copy:
 
 collect:
   - from: multigpu_test/output/4GPU/
-    to: output/4GPU
+    to: output/4GPU/
     overwrite: true
 
   - from: multigpu_test/slurm4GPU.out
