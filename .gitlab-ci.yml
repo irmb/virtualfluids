@@ -295,6 +295,9 @@ regression_test_4gpu:
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
 
+  artifacts:
+    paths:
+      - output/4GPU/slurm4GPU.out
 ###############################################################################
 regression_test_8gpu:
   image: python:latest
@@ -318,6 +321,9 @@ regression_test_8gpu:
     - cd ..
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereScaling_8GPU_2Levels --include-files "SphereScaling*.vtu"
+  artifacts:
+    paths:
+      - output/8GPU/slurm8GPU.out
 ###############################################################################
 ##                            Benchmark                                      ##
 ###############################################################################
