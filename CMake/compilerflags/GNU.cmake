@@ -17,10 +17,10 @@ if(NOT BUILD_VF_INCLUDE_WHAT_YOU_USE) # optimization flag '-funroll-all-loops' i
 endif()
 
 # gcov
-if (BUILD_VF_COVERAGE)
-    list(APPEND CS_COMPILER_FLAGS_CXX "--coverage")
-    set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} " --coverage")
-endif()
+# According to https://gcovr.com/en/stable/cookbook.html#out-of-source-builds-with-cmake
+# This flags are used if cmake is called with -DCMAKE_BUILD_TYPE=PROFILE
+set(CMAKE_C_FLAGS_PROFILE --coverage)
+set(CMAKE_CXX_FLAGS_PROFILE --coverage)
 
 #############################################################################################################
 # warnings

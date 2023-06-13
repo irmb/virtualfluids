@@ -13,7 +13,6 @@ class ForceCalculations
 {
 public:
 	ForceCalculations(Parameter* para);
-	~ForceCalculations();
 	void calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 	void printForcing(Parameter* para);
 
@@ -33,10 +32,5 @@ private:
 	double eold;
 	bool isPID;
 };
-
-
-//void calcVeloForce(Parameter* para);
-//void allocVeloForForcing(Parameter* para);
-//void printForcing(Parameter* para);
 
 #endif /* FORCE_CALCULATIONS_H */

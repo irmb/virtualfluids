@@ -39,12 +39,12 @@ int main(int argc, char **argv)
 	std::shared_ptr<MathematicaAssistantFactory> assistantFactory = MathematicaAssistantFactoryImp::getNewInstance();
 	std::vector<std::shared_ptr<MathematicaAssistant> > mathematicaAssistants = assistantFactory->makeMathematicaAssistants(configData->getAssistants(), functionFactory);
 
-	for (int sim = 0; sim < configData->getSimulations().size(); sim++) {
-		for (int comb = 0; comb < configData->getDataCombinations().size(); comb++) {
+	for (uint sim = 0; sim < configData->getSimulations().size(); sim++) {
+		for (uint comb = 0; comb < configData->getDataCombinations().size(); comb++) {
 			std::shared_ptr<LogFileDataAssistantStrategy> strategy = assistentStrategyFactory->makeLogFileDataAssistantStrategy(configData->getSimulations().at(sim));
 			std::vector<std::shared_ptr<LogFileDataGroup> > logFileDataSorted = assistentLogFile->findDataCombination(logFileDataVector, strategy, configData->getDataCombinations().at(comb));
-			for (int i = 0; i < logFileDataSorted.size(); i++) {
-				for (int j = 0; j < mathematicaAssistants.size(); j++)
+			for (uint i = 0; i < logFileDataSorted.size(); i++) {
+				for (uint j = 0; j < mathematicaAssistants.size(); j++)
 					mathematicaAssistants.at(j)->makeMathematicaOutput(logFileDataSorted.at(i), aMathmaticaFile);
 			}
 		}
