@@ -307,6 +307,7 @@ regression_test_4gpu:
     paths:
       - output/4GPU/slurm4GPU.out
       - hpcrocket4GPU.log
+    expire_in: 1 week
 ###############################################################################
 regression_test_8gpu:
   image: python:latest
@@ -325,16 +326,24 @@ regression_test_8gpu:
     - pip install "fieldcompare[all]"
 
   script:
-    - hpc-rocket launch --watch regression-tests/multigpu_test/rocket8GPU.yml
-    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
+    - hpc-rocket launch regression-tests/multigpu_test/rocket8GPU.yml |& tee hpcrocket8GPU.log
+    - hpc-rocket watch regression-tests/multigpu_test/rocket8GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket8GPU.log)
+    - hpc-rocket finalize regression-tests/multigpu_test/rocket8GPU.yml
+    - cat output/8GPU/slurm8GPU.out
     - cd test_data
     - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereScaling_8GPU_2Levels
     - cd ..
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereScaling_8GPU_2Levels --include-files "SphereScaling*.vtu"
+  
+  after_script:
+    - hpc-rocket cancel regression-tests/multigpu_test/rocket8GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket8GPU.log)
+
   artifacts:
     paths:
       - output/8GPU/slurm8GPU.out
+      - hpcrocket8GPU.log
+    expire_in: 1 week
 ###############################################################################
 ##                            Benchmark                                      ##
 ###############################################################################
