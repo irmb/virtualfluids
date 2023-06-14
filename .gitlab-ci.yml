@@ -275,7 +275,6 @@ trigger-regression-tests:
 regression_test_4gpu:
   image: python:latest
   stage: test
-
   needs: []
 
   rules:
@@ -312,7 +311,6 @@ regression_test_4gpu:
 regression_test_8gpu:
   image: python:latest
   stage: test
-
   needs: []
 
   rules:
@@ -330,6 +328,7 @@ regression_test_8gpu:
     - hpc-rocket watch regression-tests/multigpu_test/rocket8GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket8GPU.log)
     - hpc-rocket finalize regression-tests/multigpu_test/rocket8GPU.yml
     - cat output/8GPU/slurm8GPU.out
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
     - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereScaling_8GPU_2Levels
     - cd ..
