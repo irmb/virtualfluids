@@ -276,6 +276,8 @@ regression_test_4gpu:
   image: python:latest
   stage: test
 
+  needs: []
+
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
       when: always
@@ -309,6 +311,8 @@ regression_test_4gpu:
 regression_test_8gpu:
   image: python:latest
   stage: test
+
+  needs: []
 
   rules:
     - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
