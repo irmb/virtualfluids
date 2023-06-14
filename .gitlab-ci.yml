@@ -303,9 +303,9 @@ regression_test_4gpu:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket4GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket4GPU.log)
 
   artifacts:
+    when: always
     paths:
       - output/4GPU/slurm4GPU.out
-      - hpcrocket4GPU.log
     expire_in: 1 week
 ###############################################################################
 regression_test_8gpu:
@@ -339,9 +339,9 @@ regression_test_8gpu:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket8GPU.yml $(python regression-tests/multigpu_test/utilities/parsejobid.py hpcrocket8GPU.log)
 
   artifacts:
+    when: always
     paths:
       - output/8GPU/slurm8GPU.out
-      - hpcrocket8GPU.log
     expire_in: 1 week
 ###############################################################################
 ##                            Benchmark                                      ##
