@@ -45,8 +45,7 @@ collect:
     overwrite: true
 
 clean:
-  - multigpu_test/output/*
-  - multigpu_test/src/*
+  - multigpu_test/*
 
 sbatch: multigpu_test/slurm4GPU.job
 continue_if_job_fails: true
