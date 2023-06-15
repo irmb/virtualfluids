@@ -30,10 +30,19 @@
 #ifndef STREAM_MANAGER_H
 #define STREAM_MANAGER_H
 
-#include "Core/DataTypes.h"
+#include <map>
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include "DataTypes.h"
+
+enum class CudaStreamIndex
+    {
+        Legacy,
+        Bulk,
+        SubDomainBorder,
+        Precursor,
+        ActuatorFarm
+    };
 
 class CudaStreamManager
 {
