@@ -172,7 +172,7 @@ void temporal_average(T* quantitiesArray, T currentValue, uint currentTimestep, 
 void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {   
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
-    uint numberOfStressBCPoints = para->getParD(level)->stressBC.kArray;
+    uint numberOfStressBCPoints = para->getParD(level)->stressBC.numberOfBCnodes;
     if(numberOfStressBCPoints<1) return; //Skipping levels without StressBC
     uint timestep = probeStruct->timestepInTimeseries;
     real inv_n = c1o1/real(probeStruct->timestepInTimeAverage+1);

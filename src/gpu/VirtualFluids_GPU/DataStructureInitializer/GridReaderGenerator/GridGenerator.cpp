@@ -263,7 +263,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
         }
         para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
-        para->getParD(level)->stressBC.kArray = para->getParH(level)->stressBC.kArray;
         para->getParH(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
         para->getParD(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
     }
