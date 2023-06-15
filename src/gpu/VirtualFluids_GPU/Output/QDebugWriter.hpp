@@ -11,7 +11,7 @@
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 namespace QDebugWriter
 {
@@ -33,8 +33,8 @@ namespace QDebugWriter
 				}
 			}
 			if (qKey > 0) {
-				real transportKey = *((real*)&qKey);
-				qNode.push_back(transportKey);
+				float transportKey = *((float*)&qKey);
+				qNode.push_back((real)transportKey);
 				qNode.push_back((real)k[j]);
 				qs.push_back(qNode);
 			}

@@ -16,11 +16,11 @@
 
 #include "metis.h"
 
-#include "Core/Input/Input.h"
-#include "Core/StringUtilities/StringUtil.h"
+#include "Input/Input.h"
+#include "StringUtilities/StringUtil.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -262,17 +262,6 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    logging::Logger::addStream(&logFile);
-
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
-    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
-
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
@@ -372,7 +361,7 @@ void multipleLevel(const std::string& configPath)
             real dx = 0.2;
             real vx = 0.05;
 
-            TriangularMesh* SphereSTL = TriangularMesh::make("E:/temp/GridSphere/2018/STL/SphereNotOptimal.stl");
+            auto SphereSTL = std::make_shared<TriangularMesh>("E:/temp/GridSphere/2018/STL/SphereNotOptimal.stl");
 
             gridBuilder->addCoarseGrid(- 5.0, -5.0, -5.0,
                                         10.0,  5.0,  5.0, dx);  // DrivAer
@@ -420,21 +409,21 @@ void multipleLevel(const std::string& configPath)
             real dx = 0.2;
             real vx = 0.05;
 
-            TriangularMesh* DrivAerSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
-            //TriangularMesh* DrivAerSTL = TriangularMesh::make("stl/DrivAer_Fastback_Coarse.stl");
+            auto DrivAerSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+            //auto triangularMesh = std::make_shared<TriangularMesh>("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+            //auto triangularMesh = std::make_shared<TriangularMesh>("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+            //auto DrivAerSTL = std::make_shared<TriangularMesh>("stl/DrivAer_Fastback_Coarse.stl");
 
-            TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
-            //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("stl/DrivAer_REF_BOX_Adrea.stl");
+            auto DrivAerRefBoxSTL = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+            //auto DrivAerRefBoxSTL = std::make_shared<TriangularMesh>("stl/DrivAer_REF_BOX_Adrea.stl");
 
             real z0 = 0.318+0.5*dx;
 
             gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
                                         15.0,  5.0, 5.0 - z0, dx);  // DrivAer
 
-            //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-            //Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
+            //Object* floorBox = std::make_shared<Cuboid>( -0.3, -1, -1, 4.0, 1, 0.2 );
+            //Object* wakeBox  = std::make_shared<Cuboid>(  3.5, -1, -1, 5.5, 1, 0.8 );
 
             //Conglomerate* refRegion = new Conglomerate();
 
@@ -507,34 +496,34 @@ void multipleLevel(const std::string& configPath)
 
             std::vector<uint> ignorePatches = { 152, 153, 154 };
 
-            //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
-            TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
+            //auto VW370_SERIE_STL = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+            auto VW370_SERIE_STL = std::make_shared<TriangularMesh>("stl/VW370_SERIE.stl", ignorePatches);
 
-            //TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
+            //auto DLC_RefBox = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
 
-            //TriangularMesh* DLC_RefBox_1 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
-            //TriangularMesh* DLC_RefBox_2 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
-            //TriangularMesh* DLC_RefBox_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
-            //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
+            //auto DLC_RefBox_1 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
+            //auto DLC_RefBox_2 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
+            //auto DLC_RefBox_3 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
+            //auto DLC_RefBox_4 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
 
-            //TriangularMesh* DLC_RefBox_Level_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_3.stl");
-            //TriangularMesh* DLC_RefBox_Level_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_4.stl");
-            //TriangularMesh* DLC_RefBox_Level_5 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_5.stl");
+            //auto DLC_RefBox_Level_3 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_3.stl");
+            //auto DLC_RefBox_Level_4 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_4.stl");
+            //auto DLC_RefBox_Level_5 = std::make_shared<TriangularMesh>("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_5.stl");
 
-            TriangularMesh* DLC_RefBox_Level_3 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_3.stl");
-            TriangularMesh* DLC_RefBox_Level_4 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_4.stl");
-            TriangularMesh* DLC_RefBox_Level_5 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_5.stl");
+            auto DLC_RefBox_Level_3 = std::make_shared<TriangularMesh>("stl/DLC/DLC_RefBox_Level_3.stl");
+            auto DLC_RefBox_Level_4 = std::make_shared<TriangularMesh>("stl/DLC/DLC_RefBox_Level_4.stl");
+            auto DLC_RefBox_Level_5 = std::make_shared<TriangularMesh>("stl/DLC/DLC_RefBox_Level_5.stl");
 
-            //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
-            //TriangularMesh* DLC_RefBox = TriangularMesh::make("stl/DLC_RefBox.lnx.stl");
-            //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
+            //auto VW370_SERIE_STL = std::make_shared<TriangularMesh>("stl/VW370_SERIE.stl", ignorePatches);
+            //auto DLC_RefBox = std::make_shared<TriangularMesh>("stl/DLC_RefBox.lnx.stl");
+            //auto DLC_RefBox_4 = std::make_shared<TriangularMesh>("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
 
             gridBuilder->addCoarseGrid(-30.0, -20.0,  0.0 - z0,
                                         50.0,  20.0, 25.0 - z0, dx);
             
             gridBuilder->setNumberOfLayers(10,8);
-            gridBuilder->addGrid( new Cuboid( - 6.6, -6, -0.7, 20.6 , 6, 5.3  ), 1 );
-            gridBuilder->addGrid( new Cuboid( -3.75, -3, -0.7, 11.75, 3, 2.65 ), 2 );
+            gridBuilder->addGrid( std::make_shared<Cuboid>( - 6.6, -6, -0.7, 20.6 , 6, 5.3  ), 1 );
+            gridBuilder->addGrid( std::make_shared<Cuboid>( -3.75, -3, -0.7, 11.75, 3, 2.65 ), 2 );
 
             gridBuilder->setNumberOfLayers(10,8);
             gridBuilder->addGrid(DLC_RefBox_Level_3, 3);
@@ -632,13 +621,11 @@ void multipleLevel(const std::string& configPath)
                 logFile2.open( "F:/Work/Computations/gridGenerator/grid/1/gridGeneratorLog.txt" );
                 //logFile2.open( "grid/1/gridGeneratorLog.txt" );
 
-            logging::Logger::addStream(&logFile2);
-
             real dx = 1.0 / 40.0;
             real vx = 0.05;
 
-            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+            auto triangularMesh = std::make_shared<TriangularMesh>("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+            //auto triangularMesh = std::make_shared<TriangularMesh>("stl/ShpereNotOptimal.lnx.stl");
 
             // all
             //gridBuilder->addCoarseGrid(-2, -2, -2,  
@@ -774,7 +761,6 @@ int main( int argc, char* argv[])
             }
             catch (const std::exception& e)
             {
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
@@ -791,22 +777,17 @@ int main( int argc, char* argv[])
 			}
             catch (const std::exception& e)
             {
-                
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
+                std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (const std::bad_alloc e)
             {
-                
-                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
+                std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
             {
-                *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
-                //std::cout << "unknown exeption" << std::endl;
+                std::cout << "unknown exeption" << std::endl;
             }
 
             std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;

@@ -1,8 +1,8 @@
 #ifndef TRANSIENTBCSETTER_H_
 #define TRANSIENTBCSETTER_H_
 
-#include "Core/DataTypes.h"
-#include <Core/StringUtilities/StringUtil.h>
+#include "DataTypes.h"
+#include <StringUtilities/StringUtil.h>
 #include "PointerDefinitions.h"
 
 #include <string>

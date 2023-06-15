@@ -1,0 +1,26 @@
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0
+
+stages: 
+  - test
+
+.regression-test:
+  stage: test
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - chmod +x ./regression-tests/*
+    - pip install fieldcompare
+
+{% for regression_test in regression_tests %}
+run-regression-test-{{ regression_test }}:
+  extends: .regression-test
+
+  script:
+    - ./regression-tests/{{ regression_test }}.sh
+
+{% endfor %}

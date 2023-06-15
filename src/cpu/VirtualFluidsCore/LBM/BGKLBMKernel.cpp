@@ -1,6 +1,6 @@
 #include "BGKLBMKernel.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "D3Q27EsoTwist3DSoA.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -27,7 +27,7 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
     kernel->setNX(nx);
     std::dynamic_pointer_cast<BGKLBMKernel>(kernel)->initDataSet();
     kernel->setCollisionFactor(this->collFactor);
-    kernel->setBCProcessor(bcProcessor->clone(kernel));
+    kernel->setBCSet(bcSet->clone(kernel));
     kernel->setWithForcing(withForcing);
     kernel->setForcingX1(muForcingX1);
     kernel->setForcingX2(muForcingX2);
@@ -69,7 +69,7 @@ void BGKLBMKernel::calculate(int step)
     zeroDistributions =
         std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-    SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
     real f[D3Q27System::ENDF + 1];
     real feq[D3Q27System::ENDF + 1];
     real drho, vx1, vx2, vx3;
@@ -141,39 +141,39 @@ void BGKLBMKernel::calculate(int step)
                     real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
                     feq[DIR_000] = c8o27 * (drho - cu_sq);
-                    feq[DIR_P00]    = c2o27 * (drho + 3.0 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);
-                    feq[DIR_M00]    = c2o27 * (drho + 3.0 * (-vx1) + c9o2 * (-vx1) * (-vx1) - cu_sq);
-                    feq[DIR_0P0]    = c2o27 * (drho + 3.0 * (vx2) + c9o2 * (vx2) * (vx2)-cu_sq);
-                    feq[DIR_0M0]    = c2o27 * (drho + 3.0 * (-vx2) + c9o2 * (-vx2) * (-vx2) - cu_sq);
-                    feq[DIR_00P]    = c2o27 * (drho + 3.0 * (vx3) + c9o2 * (vx3) * (vx3)-cu_sq);
-                    feq[DIR_00M]    = c2o27 * (drho + 3.0 * (-vx3) + c9o2 * (-vx3) * (-vx3) - cu_sq);
-                    feq[DIR_PP0]   = c1o54 * (drho + 3.0 * (vx1 + vx2) + c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq);
-                    feq[DIR_MM0]   = c1o54 * (drho + 3.0 * (-vx1 - vx2) + c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq);
-                    feq[DIR_PM0]   = c1o54 * (drho + 3.0 * (vx1 - vx2) + c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq);
-                    feq[DIR_MP0]   = c1o54 * (drho + 3.0 * (-vx1 + vx2) + c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq);
-                    feq[DIR_P0P]   = c1o54 * (drho + 3.0 * (vx1 + vx3) + c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq);
-                    feq[DIR_M0M]   = c1o54 * (drho + 3.0 * (-vx1 - vx3) + c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq);
-                    feq[DIR_P0M]   = c1o54 * (drho + 3.0 * (vx1 - vx3) + c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq);
-                    feq[DIR_M0P]   = c1o54 * (drho + 3.0 * (-vx1 + vx3) + c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq);
-                    feq[DIR_0PP]   = c1o54 * (drho + 3.0 * (vx2 + vx3) + c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq);
-                    feq[DIR_0MM]   = c1o54 * (drho + 3.0 * (-vx2 - vx3) + c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq);
-                    feq[DIR_0PM]   = c1o54 * (drho + 3.0 * (vx2 - vx3) + c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq);
-                    feq[DIR_0MP]   = c1o54 * (drho + 3.0 * (-vx2 + vx3) + c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq);
+                    feq[DIR_P00]    = c2o27 * (drho + c3o1 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);
+                    feq[DIR_M00]    = c2o27 * (drho + c3o1 * (-vx1) + c9o2 * (-vx1) * (-vx1) - cu_sq);
+                    feq[DIR_0P0]    = c2o27 * (drho + c3o1 * (vx2) + c9o2 * (vx2) * (vx2)-cu_sq);
+                    feq[DIR_0M0]    = c2o27 * (drho + c3o1 * (-vx2) + c9o2 * (-vx2) * (-vx2) - cu_sq);
+                    feq[DIR_00P]    = c2o27 * (drho + c3o1 * (vx3) + c9o2 * (vx3) * (vx3)-cu_sq);
+                    feq[DIR_00M]    = c2o27 * (drho + c3o1 * (-vx3) + c9o2 * (-vx3) * (-vx3) - cu_sq);
+                    feq[DIR_PP0]   = c1o54 * (drho + c3o1 * (vx1 + vx2) + c9o2 * (vx1 + vx2) * (vx1 + vx2) - cu_sq);
+                    feq[DIR_MM0]   = c1o54 * (drho + c3o1 * (-vx1 - vx2) + c9o2 * (-vx1 - vx2) * (-vx1 - vx2) - cu_sq);
+                    feq[DIR_PM0]   = c1o54 * (drho + c3o1 * (vx1 - vx2) + c9o2 * (vx1 - vx2) * (vx1 - vx2) - cu_sq);
+                    feq[DIR_MP0]   = c1o54 * (drho + c3o1 * (-vx1 + vx2) + c9o2 * (-vx1 + vx2) * (-vx1 + vx2) - cu_sq);
+                    feq[DIR_P0P]   = c1o54 * (drho + c3o1 * (vx1 + vx3) + c9o2 * (vx1 + vx3) * (vx1 + vx3) - cu_sq);
+                    feq[DIR_M0M]   = c1o54 * (drho + c3o1 * (-vx1 - vx3) + c9o2 * (-vx1 - vx3) * (-vx1 - vx3) - cu_sq);
+                    feq[DIR_P0M]   = c1o54 * (drho + c3o1 * (vx1 - vx3) + c9o2 * (vx1 - vx3) * (vx1 - vx3) - cu_sq);
+                    feq[DIR_M0P]   = c1o54 * (drho + c3o1 * (-vx1 + vx3) + c9o2 * (-vx1 + vx3) * (-vx1 + vx3) - cu_sq);
+                    feq[DIR_0PP]   = c1o54 * (drho + c3o1 * (vx2 + vx3) + c9o2 * (vx2 + vx3) * (vx2 + vx3) - cu_sq);
+                    feq[DIR_0MM]   = c1o54 * (drho + c3o1 * (-vx2 - vx3) + c9o2 * (-vx2 - vx3) * (-vx2 - vx3) - cu_sq);
+                    feq[DIR_0PM]   = c1o54 * (drho + c3o1 * (vx2 - vx3) + c9o2 * (vx2 - vx3) * (vx2 - vx3) - cu_sq);
+                    feq[DIR_0MP]   = c1o54 * (drho + c3o1 * (-vx2 + vx3) + c9o2 * (-vx2 + vx3) * (-vx2 + vx3) - cu_sq);
                     feq[DIR_PPP]  = c1o216 *
-                               (drho + 3.0 * (vx1 + vx2 + vx3) + c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq);
-                    feq[DIR_MMM] = c1o216 * (drho + 3.0 * (-vx1 - vx2 - vx3) +
+                               (drho + c3o1 * (vx1 + vx2 + vx3) + c9o2 * (vx1 + vx2 + vx3) * (vx1 + vx2 + vx3) - cu_sq);
+                    feq[DIR_MMM] = c1o216 * (drho + c3o1 * (-vx1 - vx2 - vx3) +
                                          c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq);
                     feq[DIR_PPM] = c1o216 *
-                               (drho + 3.0 * (vx1 + vx2 - vx3) + c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq);
-                    feq[DIR_MMP] = c1o216 * (drho + 3.0 * (-vx1 - vx2 + vx3) +
+                               (drho + c3o1 * (vx1 + vx2 - vx3) + c9o2 * (vx1 + vx2 - vx3) * (vx1 + vx2 - vx3) - cu_sq);
+                    feq[DIR_MMP] = c1o216 * (drho + c3o1 * (-vx1 - vx2 + vx3) +
                                          c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq);
                     feq[DIR_PMP] = c1o216 *
-                               (drho + 3.0 * (vx1 - vx2 + vx3) + c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq);
-                    feq[DIR_MPM] = c1o216 * (drho + 3.0 * (-vx1 + vx2 - vx3) +
+                               (drho + c3o1 * (vx1 - vx2 + vx3) + c9o2 * (vx1 - vx2 + vx3) * (vx1 - vx2 + vx3) - cu_sq);
+                    feq[DIR_MPM] = c1o216 * (drho + c3o1 * (-vx1 + vx2 - vx3) +
                                          c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq);
                     feq[DIR_PMM] = c1o216 *
-                               (drho + 3.0 * (vx1 - vx2 - vx3) + c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq);
-                    feq[DIR_MPP] = c1o216 * (drho + 3.0 * (-vx1 + vx2 + vx3) +
+                               (drho + c3o1 * (vx1 - vx2 - vx3) + c9o2 * (vx1 - vx2 - vx3) * (vx1 - vx2 - vx3) - cu_sq);
+                    feq[DIR_MPP] = c1o216 * (drho + c3o1 * (-vx1 + vx2 + vx3) +
                                          c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
 
                     // Relaxation
@@ -217,33 +217,33 @@ void BGKLBMKernel::calculate(int step)
                         forcingX2 = muForcingX2.Eval();
                         forcingX3 = muForcingX3.Eval();
 
-                        f[DIR_000] += 0.0;
-                        f[DIR_P00] += 3.0 * c2o27 * (forcingX1);
-                        f[DIR_M00] += 3.0 * c2o27 * (-forcingX1);
-                        f[DIR_0P0] += 3.0 * c2o27 * (forcingX2);
-                        f[DIR_0M0] += 3.0 * c2o27 * (-forcingX2);
-                        f[DIR_00P] += 3.0 * c2o27 * (forcingX3);
-                        f[DIR_00M] += 3.0 * c2o27 * (-forcingX3);
-                        f[DIR_PP0] += 3.0 * c1o54 * (forcingX1 + forcingX2);
-                        f[DIR_MM0] += 3.0 * c1o54 * (-forcingX1 - forcingX2);
-                        f[DIR_PM0] += 3.0 * c1o54 * (forcingX1 - forcingX2);
-                        f[DIR_MP0] += 3.0 * c1o54 * (-forcingX1 + forcingX2);
-                        f[DIR_P0P] += 3.0 * c1o54 * (forcingX1 + forcingX3);
-                        f[DIR_M0M] += 3.0 * c1o54 * (-forcingX1 - forcingX3);
-                        f[DIR_P0M] += 3.0 * c1o54 * (forcingX1 - forcingX3);
-                        f[DIR_M0P] += 3.0 * c1o54 * (-forcingX1 + forcingX3);
-                        f[DIR_0PP] += 3.0 * c1o54 * (forcingX2 + forcingX3);
-                        f[DIR_0MM] += 3.0 * c1o54 * (-forcingX2 - forcingX3);
-                        f[DIR_0PM] += 3.0 * c1o54 * (forcingX2 - forcingX3);
-                        f[DIR_0MP] += 3.0 * c1o54 * (-forcingX2 + forcingX3);
-                        f[DIR_PPP] += 3.0 * c1o216 * (forcingX1 + forcingX2 + forcingX3);
-                        f[DIR_MMM] += 3.0 * c1o216 * (-forcingX1 - forcingX2 - forcingX3);
-                        f[DIR_PPM] += 3.0 * c1o216 * (forcingX1 + forcingX2 - forcingX3);
-                        f[DIR_MMP] += 3.0 * c1o216 * (-forcingX1 - forcingX2 + forcingX3);
-                        f[DIR_PMP] += 3.0 * c1o216 * (forcingX1 - forcingX2 + forcingX3);
-                        f[DIR_MPM] += 3.0 * c1o216 * (-forcingX1 + forcingX2 - forcingX3);
-                        f[DIR_PMM] += 3.0 * c1o216 * (forcingX1 - forcingX2 - forcingX3);
-                        f[DIR_MPP] += 3.0 * c1o216 * (-forcingX1 + forcingX2 + forcingX3);
+                        f[DIR_000] += c0o1;
+                        f[DIR_P00] += c3o1 * c2o27 * (forcingX1);
+                        f[DIR_M00] += c3o1 * c2o27 * (-forcingX1);
+                        f[DIR_0P0] += c3o1 * c2o27 * (forcingX2);
+                        f[DIR_0M0] += c3o1 * c2o27 * (-forcingX2);
+                        f[DIR_00P] += c3o1 * c2o27 * (forcingX3);
+                        f[DIR_00M] += c3o1 * c2o27 * (-forcingX3);
+                        f[DIR_PP0] += c3o1 * c1o54 * (forcingX1 + forcingX2);
+                        f[DIR_MM0] += c3o1 * c1o54 * (-forcingX1 - forcingX2);
+                        f[DIR_PM0] += c3o1 * c1o54 * (forcingX1 - forcingX2);
+                        f[DIR_MP0] += c3o1 * c1o54 * (-forcingX1 + forcingX2);
+                        f[DIR_P0P] += c3o1 * c1o54 * (forcingX1 + forcingX3);
+                        f[DIR_M0M] += c3o1 * c1o54 * (-forcingX1 - forcingX3);
+                        f[DIR_P0M] += c3o1 * c1o54 * (forcingX1 - forcingX3);
+                        f[DIR_M0P] += c3o1 * c1o54 * (-forcingX1 + forcingX3);
+                        f[DIR_0PP] += c3o1 * c1o54 * (forcingX2 + forcingX3);
+                        f[DIR_0MM] += c3o1 * c1o54 * (-forcingX2 - forcingX3);
+                        f[DIR_0PM] += c3o1 * c1o54 * (forcingX2 - forcingX3);
+                        f[DIR_0MP] += c3o1 * c1o54 * (-forcingX2 + forcingX3);
+                        f[DIR_PPP] += c3o1 * c1o216 * (forcingX1 + forcingX2 + forcingX3);
+                        f[DIR_MMM] += c3o1 * c1o216 * (-forcingX1 - forcingX2 - forcingX3);
+                        f[DIR_PPM] += c3o1 * c1o216 * (forcingX1 + forcingX2 - forcingX3);
+                        f[DIR_MMP] += c3o1 * c1o216 * (-forcingX1 - forcingX2 + forcingX3);
+                        f[DIR_PMP] += c3o1 * c1o216 * (forcingX1 - forcingX2 + forcingX3);
+                        f[DIR_MPM] += c3o1 * c1o216 * (-forcingX1 + forcingX2 - forcingX3);
+                        f[DIR_PMM] += c3o1 * c1o216 * (forcingX1 - forcingX2 - forcingX3);
+                        f[DIR_MPP] += c3o1 * c1o216 * (-forcingX1 + forcingX2 + forcingX3);
                     }
                     //////////////////////////////////////////////////////////////////////////
 #ifdef PROOF_CORRECTNESS
@@ -302,4 +302,4 @@ void BGKLBMKernel::calculate(int step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-real BGKLBMKernel::getCalculationTime() { return 0.0; }
+real BGKLBMKernel::getCalculationTime() { return vf::basics::constant::c0o1; }

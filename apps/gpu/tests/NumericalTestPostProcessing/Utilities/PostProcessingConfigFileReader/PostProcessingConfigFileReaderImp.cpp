@@ -1,7 +1,7 @@
 #include "PostProcessingConfigFileReaderImp.h"
 
 #include <basics/config/ConfigurationFile.h>
-#include "Core/StringUtilities/StringUtil.h"
+#include "StringUtilities/StringUtil.h"
 
 #include "Utilities/PostProcessingConfigData/PostProcessingConfigDataImp.h"
 
@@ -63,8 +63,4 @@ std::shared_ptr<PostProcessingConfigData> PostProcessingConfigFileReaderImp::rea
 	data->setMathematicaFilePath(input->getValue<std::string>("MathematicaFilePath"));
 	
 	return data;
-}
-
-PostProcessingConfigFileReaderImp::PostProcessingConfigFileReaderImp()
-{
 }

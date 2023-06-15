@@ -53,7 +53,7 @@ namespace configuration
         .def("get_double_value", static_cast<double      (vf::basics::ConfigurationFile::*)(const std::string&, double     ) const>(&vf::basics::ConfigurationFile::getValue), py::arg("key"), py::arg("default_value"))
         .def("get_bool_value"  , static_cast<bool        (vf::basics::ConfigurationFile::*)(const std::string&) const>(&vf::basics::ConfigurationFile::getValue), py::arg("key"))
         .def("get_bool_value"  , static_cast<bool        (vf::basics::ConfigurationFile::*)(const std::string&, bool       ) const>(&vf::basics::ConfigurationFile::getValue), py::arg("key"), py::arg("default_value"))
-        .def("get_string_value", static_cast<std::string (vf::basics::ConfigurationFile::*)(const std::string&) const>(&vf::basics::ConfigurationFile::getValue), py::arg("key"))
+        .def("get_string_value", static_cast<std::string (vf::basics::ConfigurationFile::*)(const std::string&) const>(&vf::basics::ConfigurationFile::getValue<std::string>), py::arg("key"))
         .def("get_string_value", static_cast<std::string (vf::basics::ConfigurationFile::*)(const std::string&, std::string) const>(&vf::basics::ConfigurationFile::getValue), py::arg("key"), py::arg("default_value"));
     }
 }

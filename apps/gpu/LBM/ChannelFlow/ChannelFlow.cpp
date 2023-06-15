@@ -45,12 +45,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "Core/Logger/Logger.h"
-#include "Core/VectorTypes.h"
+#include "DataTypes.h"
+
 #include "PointerDefinitions.h"
 #include "config/ConfigurationFile.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +65,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -96,7 +95,7 @@ int main(int argc, char *argv[])
         // setup simulation parameters (without config file)
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
         const int numberOfProcesses = communicator.getNumberOfProcess();
         SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, communicator.getPID());
         std::vector<uint> devices(10);
@@ -109,16 +108,8 @@ int main(int argc, char *argv[])
         // setup logger
         //////////////////////////////////////////////////////////////////////////
 
-        std::ofstream logFile("output/log_process" + std::to_string(vf::gpu::Communicator::getInstance().getPID()) +
-                              ".txt");
-        logging::Logger::addStream(&logFile);
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
-
         vf::logging::Logger::changeLogPath("output/vflog_process" +
-                                           std::to_string(vf::gpu::Communicator::getInstance().getPID()) + ".txt");
+                                           std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + ".txt");
         vf::logging::Logger::initializeLogger();
 
         //////////////////////////////////////////////////////////////////////////
@@ -168,7 +159,7 @@ int main(int argc, char *argv[])
         para->setOutputPrefix("ChannelFlow");
         para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
-        const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
+        const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
         real overlap = (real)8.0 * dx;
 
         if (numberOfProcesses > 1) {

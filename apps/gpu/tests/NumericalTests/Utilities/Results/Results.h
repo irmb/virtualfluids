@@ -6,6 +6,7 @@
 class Results
 {
 public:
+	virtual ~Results() = default;
 	virtual int getNumberOfTimeSteps() = 0;
 	virtual std::vector<std::vector<double> > getVx() = 0;
 	virtual std::vector<std::vector<double> > getVy() = 0;

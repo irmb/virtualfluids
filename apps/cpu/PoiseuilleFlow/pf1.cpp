@@ -68,24 +68,24 @@ void pf1()
    //boundary conditions definition 
    //boundary conditions adapters
    //////////////////////////////////////////////////////////////////////////////
-   SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-   noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+   SPtr<BC> noSlipBC(new NoSlipBC());
+   noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
    //boundary conditions visitor
    BoundaryConditionsBlockVisitor bcVisitor;
-   bcVisitor.addBC(noSlipBCAdapter);
+   bcVisitor.addBC(noSlipBC);
    //////////////////////////////////////////////////////////////////////////////////
 
    //set boundary conditions for blocks and create process decomposition for MPI
-   SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+   SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBC, Interactor3D::INVERSESOLID));
    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
    InteractorsHelper intHelper(grid, metisVisitor);
    intHelper.addInteractor(cylinderInt);
    intHelper.selectBlocks();
 
    //write data for visualization of block grid
-   SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
-   ppblocks->process(0);
+   SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
+   ppblocks->update(0);
    //ppblocks.reset();
 
    unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -116,8 +116,8 @@ void pf1()
    //LBM kernel definition
    SPtr<LBMKernel> kernel;
    kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-   SPtr<BCProcessor> bcProc(new BCProcessor());
-   kernel->setBCProcessor(bcProc);
+   SPtr<BCSet> bcProc(new BCSet());
+   kernel->setBCSet(bcProc);
 
    //set forcing
    mu::Parser fctForcingX1;
@@ -143,18 +143,18 @@ void pf1()
    grid->accept(setConnsVisitor);
 
    SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-   //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, mSch, pathOut, comm));
-   //restartCoProcessor->setLBMKernel(kernel);
-   //restartCoProcessor->setBCProcessor(bcProc);
+   //SPtr<MPIIORestartSimulationObserver> restartSimulationObserver(new MPIIORestartSimulationObserver(grid, mSch, pathOut, comm));
+   //restartSimulationObserver->setLBMKernel(kernel);
+   //restartSimulationObserver->setBCSet(bcProc);
 
-   /*SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut + "/mig", comm));
-   migCoProcessor->setLBMKernel(kernel);
-   migCoProcessor->setBCProcessor(bcProc);*/
+   /*SPtr<MPIIOMigrationSimulationObserver> migSimulationObserver(new MPIIOMigrationSimulationObserver(grid, mSch, pathOut + "/mig", comm));
+   migSimulationObserver->setLBMKernel(kernel);
+   migSimulationObserver->setBCSet(bcProc);*/
 
-   //SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
-   //migCoProcessor->setLBMKernel(kernel);
-   //migCoProcessor->setBCProcessor(bcProc);
-   //migCoProcessor->setNu(nuLB);
+   //SPtr<MPIIOMigrationBESimulationObserver> migSimulationObserver(new MPIIOMigrationBESimulationObserver(grid, mSch, pathOut + "/mig", comm));
+   //migSimulationObserver->setLBMKernel(kernel);
+   //migSimulationObserver->setBCSet(bcProc);
+   //migSimulationObserver->setNu(nuLB);
 
    //SPtr<UtilConvertor> convertProcessor(new UtilConvertor(grid, pathOut, comm));
    //convertProcessor->convert(300, 4);
@@ -163,45 +163,45 @@ void pf1()
    //write data for visualization of boundary conditions
    {
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), /*SPtr<LBMUnitConverter>(new LBMUnitConverter()),*/ comm);
-      ppgeo.process(0);
+      WriteBoundaryConditionsSimulationObserver ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), /*SPtr<LBMUnitConverter>(new LBMUnitConverter()),*/ comm);
+      ppgeo.update(0);
    }
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
    //grid=SPtr<Grid3D>(new Grid3D(comm));
-   //restartCoProcessor->restart(200);
-   //SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathOut + "/mig", comm));
-   //migCoProcessor->setLBMKernel(kernel);
-   //migCoProcessor->setBCProcessor(bcProc);
-   //migCoProcessor->setNu(nuLB);
-   //migCoProcessor->restart(10);
+   //restartSimulationObserver->restart(200);
+   //SPtr<MPIIOMigrationBESimulationObserver> migSimulationObserver(new MPIIOMigrationBESimulationObserver(grid, mSch, metisVisitor, pathOut + "/mig", comm));
+   //migSimulationObserver->setLBMKernel(kernel);
+   //migSimulationObserver->setBCSet(bcProc);
+   //migSimulationObserver->setNu(nuLB);
+   //migSimulationObserver->restart(10);
 
-   ppblocks->process(1);
+   ppblocks->update(1);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-   SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathOut, 
+   SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathOut, 
       WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
    //performance control
    SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-   SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+   SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
    //start simulation 
    //omp_set_num_threads(numOfThreads);
    SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
-   SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-   calculator->addCoProcessor(npr);
-   calculator->addCoProcessor(writeMQCoProcessor);
-   //calculator->addCoProcessor(migCoProcessor);
-   //calculator->addCoProcessor(restartCoProcessor);
+   SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+   simulation->addSimulationObserver(npr);
+   simulation->addSimulationObserver(writeMQSimulationObserver);
+   //simulation->addSimulationObserver(migSimulationObserver);
+   //simulation->addSimulationObserver(restartSimulationObserver);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
-   calculator->calculate();
+   simulation->run();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
    
-   ppblocks->process(10);
+   ppblocks->update(10);
 }
 
 

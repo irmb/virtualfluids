@@ -52,6 +52,7 @@ function(enable_sanitizers project_name)
        "${LIST_OF_SANITIZERS}"
        STREQUAL
        "")
+      message(STATUS "Enabling sanitizers: ${LIST_OF_SANITIZERS}")
       target_compile_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
       target_link_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
     endif()

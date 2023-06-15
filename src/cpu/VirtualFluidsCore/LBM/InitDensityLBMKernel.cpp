@@ -1,6 +1,6 @@
 #include "InitDensityLBMKernel.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "DataSet3D.h"
 #include "BCArray3D.h"
 #include "basics/constants/NumericConstants.h"
@@ -30,7 +30,7 @@ SPtr<LBMKernel> InitDensityLBMKernel::clone()
    kernel->setNX(nx);
    dynamicPointerCast<InitDensityLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
-   kernel->setBCProcessor(bcProcessor->clone(kernel));
+   kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
    kernel->setForcingX1(muForcingX1);
    kernel->setForcingX2(muForcingX2);
@@ -61,7 +61,7 @@ real InitDensityLBMKernel::getCalculationTime()
 //   nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
 //   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 //
-//   BCArray3D<D3Q27BoundaryCondition>& bcArray = dynamicPointerCast<D3Q27ETBCProcessor>(this->getBCProcessor())->getBCArray();
+//   BCArray3D<D3Q27BoundaryCondition>& bcArray = dynamicPointerCast<D3Q27ETBCSet>(this->getBCSet())->getBCArray();
 //
 //   const int bcArrayMaxX1 = (int)bcArray->getNX1();
 //   const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -864,7 +864,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
    SPtr<BoundaryConditions> bcPtr;
    real f[D3Q27System::ENDF+1];
    real feq[D3Q27System::ENDF+1];
@@ -960,32 +960,32 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                real cu_sq = 1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
                feq[DIR_000] = c8o27*(drho-cu_sq);
-               feq[DIR_P00] = c2o27*(drho+3.0*(vx1)+c9o2*(vx1)*(vx1)-cu_sq);
-               feq[DIR_M00] = c2o27*(drho+3.0*(-vx1)+c9o2*(-vx1)*(-vx1)-cu_sq);
-               feq[DIR_0P0] = c2o27*(drho+3.0*(vx2)+c9o2*(vx2)*(vx2)-cu_sq);
-               feq[DIR_0M0] = c2o27*(drho+3.0*(-vx2)+c9o2*(-vx2)*(-vx2)-cu_sq);
-               feq[DIR_00P] = c2o27*(drho+3.0*(vx3)+c9o2*(vx3)*(vx3)-cu_sq);
-               feq[DIR_00M] = c2o27*(drho+3.0*(-vx3)+c9o2*(-vx3)*(-vx3)-cu_sq);
-               feq[DIR_PP0] = c1o54*(drho+3.0*(vx1+vx2)+c9o2*(vx1+vx2)*(vx1+vx2)-cu_sq);
-               feq[DIR_MM0] = c1o54*(drho+3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq);
-               feq[DIR_PM0] = c1o54*(drho+3.0*(vx1-vx2)+c9o2*(vx1-vx2)*(vx1-vx2)-cu_sq);
-               feq[DIR_MP0] = c1o54*(drho+3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq);
-               feq[DIR_P0P] = c1o54*(drho+3.0*(vx1+vx3)+c9o2*(vx1+vx3)*(vx1+vx3)-cu_sq);
-               feq[DIR_M0M] = c1o54*(drho+3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq);
-               feq[DIR_P0M] = c1o54*(drho+3.0*(vx1-vx3)+c9o2*(vx1-vx3)*(vx1-vx3)-cu_sq);
-               feq[DIR_M0P] = c1o54*(drho+3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq);
-               feq[DIR_0PP] = c1o54*(drho+3.0*(vx2+vx3)+c9o2*(vx2+vx3)*(vx2+vx3)-cu_sq);
-               feq[DIR_0MM] = c1o54*(drho+3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq);
-               feq[DIR_0PM] = c1o54*(drho+3.0*(vx2-vx3)+c9o2*(vx2-vx3)*(vx2-vx3)-cu_sq);
-               feq[DIR_0MP] = c1o54*(drho+3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq);
-               feq[DIR_PPP] = c1o216*(drho+3.0*(vx1+vx2+vx3)+c9o2*(vx1+vx2+vx3)*(vx1+vx2+vx3)-cu_sq);
-               feq[DIR_MMM] = c1o216*(drho+3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-               feq[DIR_PPM] = c1o216*(drho+3.0*(vx1+vx2-vx3)+c9o2*(vx1+vx2-vx3)*(vx1+vx2-vx3)-cu_sq);
-               feq[DIR_MMP] = c1o216*(drho+3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-               feq[DIR_PMP] = c1o216*(drho+3.0*(vx1-vx2+vx3)+c9o2*(vx1-vx2+vx3)*(vx1-vx2+vx3)-cu_sq);
-               feq[DIR_MPM] = c1o216*(drho+3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-               feq[DIR_PMM] = c1o216*(drho+3.0*(vx1-vx2-vx3)+c9o2*(vx1-vx2-vx3)*(vx1-vx2-vx3)-cu_sq);
-               feq[DIR_MPP] = c1o216*(drho+3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+               feq[DIR_P00] = c2o27*(drho+c3o1*(vx1)+c9o2*(vx1)*(vx1)-cu_sq);
+               feq[DIR_M00] = c2o27*(drho+c3o1*(-vx1)+c9o2*(-vx1)*(-vx1)-cu_sq);
+               feq[DIR_0P0] = c2o27*(drho+c3o1*(vx2)+c9o2*(vx2)*(vx2)-cu_sq);
+               feq[DIR_0M0] = c2o27*(drho+c3o1*(-vx2)+c9o2*(-vx2)*(-vx2)-cu_sq);
+               feq[DIR_00P] = c2o27*(drho+c3o1*(vx3)+c9o2*(vx3)*(vx3)-cu_sq);
+               feq[DIR_00M] = c2o27*(drho+c3o1*(-vx3)+c9o2*(-vx3)*(-vx3)-cu_sq);
+               feq[DIR_PP0] = c1o54*(drho+c3o1*(vx1+vx2)+c9o2*(vx1+vx2)*(vx1+vx2)-cu_sq);
+               feq[DIR_MM0] = c1o54*(drho+c3o1*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq);
+               feq[DIR_PM0] = c1o54*(drho+c3o1*(vx1-vx2)+c9o2*(vx1-vx2)*(vx1-vx2)-cu_sq);
+               feq[DIR_MP0] = c1o54*(drho+c3o1*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq);
+               feq[DIR_P0P] = c1o54*(drho+c3o1*(vx1+vx3)+c9o2*(vx1+vx3)*(vx1+vx3)-cu_sq);
+               feq[DIR_M0M] = c1o54*(drho+c3o1*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq);
+               feq[DIR_P0M] = c1o54*(drho+c3o1*(vx1-vx3)+c9o2*(vx1-vx3)*(vx1-vx3)-cu_sq);
+               feq[DIR_M0P] = c1o54*(drho+c3o1*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq);
+               feq[DIR_0PP] = c1o54*(drho+c3o1*(vx2+vx3)+c9o2*(vx2+vx3)*(vx2+vx3)-cu_sq);
+               feq[DIR_0MM] = c1o54*(drho+c3o1*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq);
+               feq[DIR_0PM] = c1o54*(drho+c3o1*(vx2-vx3)+c9o2*(vx2-vx3)*(vx2-vx3)-cu_sq);
+               feq[DIR_0MP] = c1o54*(drho+c3o1*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq);
+               feq[DIR_PPP] = c1o216*(drho+c3o1*(vx1+vx2+vx3)+c9o2*(vx1+vx2+vx3)*(vx1+vx2+vx3)-cu_sq);
+               feq[DIR_MMM] = c1o216*(drho+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+               feq[DIR_PPM] = c1o216*(drho+c3o1*(vx1+vx2-vx3)+c9o2*(vx1+vx2-vx3)*(vx1+vx2-vx3)-cu_sq);
+               feq[DIR_MMP] = c1o216*(drho+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+               feq[DIR_PMP] = c1o216*(drho+c3o1*(vx1-vx2+vx3)+c9o2*(vx1-vx2+vx3)*(vx1-vx2+vx3)-cu_sq);
+               feq[DIR_MPM] = c1o216*(drho+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+               feq[DIR_PMM] = c1o216*(drho+c3o1*(vx1-vx2-vx3)+c9o2*(vx1-vx2-vx3)*(vx1-vx2-vx3)-cu_sq);
+               feq[DIR_MPP] = c1o216*(drho+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
 
                //Relaxation
                f[DIR_000] += (feq[DIR_000]-f[DIR_000])*collFactor;

@@ -169,17 +169,12 @@ class findNeighborsIntegrationTest : public ::testing::Test
 {
 protected:
     SPtr<MultipleGridBuilder> gridBuilder;
+
     void SetUp() override
     {
         auto gridFactory = GridFactory::make();
         gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
         gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
-        // init logger to avoid segmentation fault in buildGrids
-        logging::Logger::addStream(&std::cout);
-        logging::Logger::setDebugLevel(logging::Logger::Level::WARNING);
-        logging::Logger::timeStamp(logging::Logger::ENABLE);
-        logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
     }
 };
 

@@ -33,9 +33,7 @@
 #include "Core/DataTypes.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <map>
-
-enum class CudaStreamIndex { Legacy, Bulk, SubDomainBorder, Precursor, ActuatorFarm };
+#include "DataTypes.h"
 
 class CudaStreamManager
 {

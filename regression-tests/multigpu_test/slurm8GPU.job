@@ -10,8 +10,8 @@
 ##SBATCH --exclusive
 
 module purge 
-module load comp/ccache/4.1 # loads comp/gcc/9.3.0 
-module load mpi/openmpi/4.0.5_gcc_9.3/openmpi 
+module load comp/gcc/10.2.0
+module load mpi/openmpi/4.0.5_gcc_9.3/openmpi
 module load cuda/11.3
 module load comp/git/2.27.0
 PATH=/home/irmb/tools/cmake-3.20.3-linux-x86_64/bin:$PATH
@@ -19,7 +19,7 @@ PATH=/home/irmb/tools/cmake-3.20.3-linux-x86_64/bin:$PATH
 module list
 
 cd multigpu_test
-mkdir -p build
+rm -r build && mkdir -p build
 cd build
 cmake .. -DBUILD_VF_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/LBM/DrivenCavityMultiGPU\;apps/gpu/LBM/SphereScaling
 make -j 16
@@ -27,7 +27,7 @@ cd ..
 mkdir -p output
 
 echo $'\n\n\n\n---First test: DrivenCavityMultiGPU on 8 GPUs\n\n'
-mpirun -np 8 "./build/bin/DrivenCavityMultiGPU" "configPhoenix8GPU_regressionTest.txt"
+mpirun -np 8 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/LBM/DrivenCavityMultiGPU/configPhoenix8GPU_regressionTest.txt"
 
 echo $'\n\n\n\n---Second test: SphereScaling on 8 GPUs\n\n'
-mpirun -np 8 "./build/bin/SphereScaling"        "configPhoenix8GPU_regressionTest.txt"
+mpirun -np 8 "./build/bin/SphereScaling"        "apps/gpu/LBM/SphereScaling/configPhoenix8GPU_regressionTest.txt"

@@ -4,11 +4,11 @@
 #include <array>
 #include <vector>
 
-#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/StringUtilities/StringUtil.h"
 #include "basics/utilities/UbSystem.h"
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "lbm/constants/D3Q27.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 
 #include "gpu/GridGenerator/grid/NodeValues.h"
 #include "gpu/VirtualFluids_GPU/Communication/Communicator.h"

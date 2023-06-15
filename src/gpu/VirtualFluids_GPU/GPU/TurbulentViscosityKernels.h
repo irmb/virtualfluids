@@ -38,7 +38,7 @@
 #include <cuda_runtime.h>
 
 #include "LBM/LB.h" 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include <basics/constants/NumericConstants.h>
 
 using namespace vf::basics::constant;

@@ -39,7 +39,7 @@
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
 #include <basics/constants/NumericConstants.h>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
-#include <Core/StringUtilities/StringUtil.h>
+#include <StringUtilities/StringUtil.h>
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"

@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "TriangularMeshStrategy.h"
 
-#include "Core/Timer/Timer.h"
+#include "Timer/Timer.h"
 
 #include "basics/geometry3d/GbTriFaceMesh3D.h"
 
@@ -56,7 +56,7 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
 {
     triangularMesh->generateGbTriFaceMesh3D();
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start Point-In-Object Test:\n";
+    VF_LOG_INFO("Start Point-In-Object Test");
 
     // trigger the GbTriFaceMesh3D to generate a kd-tree
     triangularMesh->getGbTriFaceMesh3D()->isPointInGbObject3D(0.0, 0.0, 0.0);
@@ -79,12 +79,11 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
         //    grid->setNodeTo(i, OuterType);
 
         if( timer->getCurrentRuntimeInSeconds() > outputTime ){
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    " << index << "/" << grid->getSize() <<" nodes tested!\n";
+            VF_LOG_INFO("    {} / {} nodes tested", index, grid->getSize());
             timer->start();
         }
     }
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done Point-In-Object Test\n";
+    VF_LOG_INFO("Done Point-In-Object Test");
 }
 
 
@@ -125,10 +124,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
             }
         }
 
-
-
-        int counter = 0;
-
         // Test line intersection
         for (z = minZ; z <= maxZ; z += grid->getDelta())
         {
@@ -136,7 +131,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
             {
                 for (x = minX; x <= maxX; x += grid->getDelta())
                 {
-                    counter++;
                     if (mesh->intersectLine((x - grid->getDelta()), y, z, x, y, z)) 
                         break;
                     grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -153,7 +147,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine((x + grid->getDelta()), y, z, x, y, z))
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -171,7 +164,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, (y - grid->getDelta()), z, x, y, z)) 
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -189,7 +181,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, (y + grid->getDelta()), z, x, y, z))
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -207,7 +198,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, y, (z - grid->getDelta()), x, y, z)) 
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -225,7 +215,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, y, (z + grid->getDelta()), x, y, z)) 
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);

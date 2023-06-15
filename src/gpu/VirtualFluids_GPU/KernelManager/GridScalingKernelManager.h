@@ -36,7 +36,7 @@
 #include "LBM/LB.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
-#include "logger/Logger.h"
+#include <logger/Logger.h>
 #include <functional>
 #include <memory>
 #include <stdexcept>

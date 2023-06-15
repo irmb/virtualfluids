@@ -33,7 +33,7 @@
 
 #include "InitDistributionsBlockVisitor.h"
 #include "BCArray3D.h"
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "Block3D.h"
 #include "DataSet3D.h"
 #include "EsoTwist3D.h"
@@ -157,7 +157,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
       else                                                        
          calcFeqsFct   = &D3Q27System::calcIncompFeq; 
 
-      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();  
 
       real o  = kernel->getCollisionFactor();

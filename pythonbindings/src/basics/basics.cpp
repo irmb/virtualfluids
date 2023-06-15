@@ -31,7 +31,6 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include "submodules/logger.cpp"
 #include "submodules/configuration_file.cpp"
 
 namespace basics
@@ -42,9 +41,8 @@ namespace basics
     {
         py::module basicsModule = parentModule.def_submodule("basics");
 
-        logger::makeModule(basicsModule);
         configuration::makeModule(basicsModule);
-        
+
         return basicsModule;
     }
 }

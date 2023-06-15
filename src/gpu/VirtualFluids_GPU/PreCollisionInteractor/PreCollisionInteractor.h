@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 

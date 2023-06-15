@@ -2,7 +2,7 @@
 #define LBM_D3Q27_H
 
 #include <map>
-#include "basics/Core/DataTypes.h"
+#include "basics/DataTypes.h"
 
 namespace vf::lbm::dir
 {

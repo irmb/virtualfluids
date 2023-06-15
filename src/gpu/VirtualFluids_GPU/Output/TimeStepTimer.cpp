@@ -1,6 +1,6 @@
 #include "helper_cuda.h"
 #include <cuda_runtime.h>
-#include "Core/DataTypes.h"
+#include "DataTypes.h"
 #include "UbScheduler.h"
 #include "Parameter/Parameter.h"
 

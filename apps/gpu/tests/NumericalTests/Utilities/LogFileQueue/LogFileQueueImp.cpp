@@ -13,7 +13,7 @@ std::shared_ptr<LogFileQueueImp> LogFileQueueImp::getNewInstance(std::string bas
 
 void LogFileQueueImp::writeLogFiles()
 {
-	for (int i = 0; i < logFileWriter.size(); i++){
+	for (uint i = 0; i < logFileWriter.size(); i++){
 		logFileWriter.at(i)->writeLogFile(basicLogFilePath);
 	}
 }

@@ -13,7 +13,7 @@
 #include <sstream>
 #include <cmath>
 
-#include <Core/StringUtilities/StringUtil.h>
+#include <StringUtilities/StringUtil.h>
 
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"

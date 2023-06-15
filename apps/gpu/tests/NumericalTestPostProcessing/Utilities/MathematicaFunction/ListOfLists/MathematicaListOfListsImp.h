@@ -1,5 +1,5 @@
 #ifndef MATHEMATICA_LIST_OF_LISTS_IMP_H
-#define MATHEMATICA_LIST_OF_LISTS_IMÜ_H
+#define MATHEMATICA_LIST_OF_LISTS_IMP_H
 
 #include "MathematicaListOfLists.h"
 

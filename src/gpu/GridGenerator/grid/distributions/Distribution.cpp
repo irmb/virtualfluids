@@ -46,9 +46,9 @@ Distribution DistributionHelper::getDistribution27()
     d27.dir_start = STARTDIR;
     d27.dir_end = ENDDIR;
 
-    d27.dirs = new int[(ENDDIR + 1) * DIMENSION];
+    d27.dirs.resize((ENDDIR + 1) * DIMENSION);
 
-    d27.directions = new Direction[ENDDIR + 1];
+    d27.directions.resize(ENDDIR + 1);
     d27.directions[DIR_P00] = Direction(DIR_27_E_X, DIR_27_E_Y, DIR_27_E_Z);
     d27.directions[DIR_M00] = Direction(DIR_27_W_X, DIR_27_W_Y, DIR_27_W_Z);
     d27.directions[DIR_0P0] = Direction(DIR_27_N_X, DIR_27_N_Y, DIR_27_N_Z);

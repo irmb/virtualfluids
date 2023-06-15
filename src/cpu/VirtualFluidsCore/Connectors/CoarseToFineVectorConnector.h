@@ -48,7 +48,7 @@
 #include "basics/transmitter/TbTransmitterLocal.h"
 #include <PointerDefinitions.h>
 
-#include "BCProcessor.h"
+#include "BCSet.h"
 #include "FineToCoarseVectorConnector.h"
 
 class Block3D;
@@ -833,7 +833,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectorExt(SPtr<Dist
         return;
     int ix1, ix2, ix3;
     real xoff, yoff, zoff;
-    SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCSet()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3++) {
         for (ix2 = lMinX2; ix2 < lMaxX2; ix2++) {
@@ -1979,7 +1979,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
         return;
     int ix1, ix2, ix3;
     real xoff, yoff, zoff;
-    SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+    SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCSet()->getBCArray();
 
     for (ix3 = lMinX3; ix3 < lMaxX3; ix3++) {
         for (ix2 = lMinX2; ix2 < lMaxX2; ix2++) {
