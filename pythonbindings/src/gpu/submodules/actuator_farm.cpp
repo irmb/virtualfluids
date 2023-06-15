@@ -71,7 +71,7 @@ namespace actuator_farm
         .def_property_readonly("number_of_turbines", &ActuatorFarm::getNumberOfTurbines)
         .def_property_readonly("number_of_nodes_per_blade", &ActuatorFarm::getNumberOfNodesPerBlade)
         .def_property_readonly("number_of_blades_per_turbine", &ActuatorFarm::getNumberOfBladesPerTurbine)
-        .def_property_readonly("number_of_nodes", &ActuatorFarm::getNumberOfNodes)
+        .def_property_readonly("number_of_grid_nodes", &ActuatorFarm::getNumberOfGridNodes)
         .def_property_readonly("number_of_indices", &ActuatorFarm::getNumberOfIndices)
         .def_property_readonly("density", &ActuatorFarm::getDensity)
         .def_property_readonly("delta_t", &ActuatorFarm::getDeltaT)
