@@ -36,7 +36,7 @@
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
 #include <lbm/KernelParameter.h>
-#include <lbm/refinement/Interpolation_FC.h>
+#include <lbm/refinement/InterpolationFC.h>
 #include <lbm/refinement/Coefficients.h>
 
 
@@ -49,7 +49,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     unsigned int* neighborZcoarse,
     unsigned long long numberOfLBnodesCoarse,
     unsigned int* indicesCoarse000,
-    real omega_coarse,
+    real omegaCoarse,
     real* turbulentViscosityCoarse,
     bool isEvenTimestep
 )
@@ -60,12 +60,12 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::gpu::ListIndices indices(indicesCoarse000[nodeIndex], neighborXcoarse, neighborYcoarse, neighborZcoarse);
 
-    const real epsilon_new = c2o1; // ratio of grid resolutions
-    const real omega_coarse_new = hasTurbulentViscosity ? vf::gpu::calculateOmega(omega_coarse, turbulentViscosityCoarse[indices.k_000]) : omega_coarse;
-    real f_coarse[27];
-    vf::lbm::interpolate_fc(f_coarse, epsilon_new, omega_coarse_new, coefficients);
+    const real epsilonNew = c2o1; // ratio of grid resolutions
+    const real omegaCoarseNew = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
+    real fCoarse[27];
+    vf::lbm::interpolateFC(fCoarse, epsilonNew, omegaCoarseNew, coefficients);
 
-    vf::gpu::write(distCoarse, indices, f_coarse);
+    vf::gpu::write(distCoarse, indices, fCoarse);
 }
 
 
@@ -101,13 +101,13 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
         return;
 
     // 1.calculate moments
-    vf::lbm::MomentsOnSourceNodeSet moments_set;
-    vf::gpu::calculate_moment_set<hasTurbulentViscosity>(
-        moments_set, nodeIndex, distributionsFine, neighborXfine, neighborYfine, neighborZfine, indicesFineMMM, turbulentViscosityFine, numberOfLBnodesFine, omegaFine, true);
+    vf::lbm::MomentsOnSourceNodeSet momentsSet;
+    vf::gpu::calculateMomentSet<hasTurbulentViscosity>(
+        momentsSet, nodeIndex, distributionsFine, neighborXfine, neighborYfine, neighborZfine, indicesFineMMM, turbulentViscosityFine, numberOfLBnodesFine, omegaFine, true);
 
     // 2.calculate coefficients
     vf::lbm::Coefficients coefficients;
-    moments_set.calculateCoefficients(coefficients, neighborFineToCoarse.x[nodeIndex], neighborFineToCoarse.y[nodeIndex], neighborFineToCoarse.z[nodeIndex]);
+    momentsSet.calculateCoefficients(coefficients, neighborFineToCoarse.x[nodeIndex], neighborFineToCoarse.y[nodeIndex], neighborFineToCoarse.z[nodeIndex]);
 
     // 3. interpolate fine to coarse
     interpolate<hasTurbulentViscosity>(

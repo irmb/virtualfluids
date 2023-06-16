@@ -35,7 +35,7 @@
 
 #include "LBM/LB.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include <lbm/constants/D3Q27.h>
 #include <basics/constants/NumericConstants.h>

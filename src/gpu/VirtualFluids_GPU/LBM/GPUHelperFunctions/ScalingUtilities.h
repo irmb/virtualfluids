@@ -41,8 +41,6 @@
 #include <lbm/KernelParameter.h>
 #include <basics/DataTypes.h>
 
-#include <lbm/constants/D3Q27.h>
-
 #include <lbm/refinement/Coefficients.h>
 
 using namespace vf::basics::constant;
@@ -51,8 +49,8 @@ using namespace vf::lbm::dir;
 namespace vf::gpu
 {
 
-template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
-    vf::lbm::MomentsOnSourceNodeSet& moments_set,
+template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
+    vf::lbm::MomentsOnSourceNodeSet& momentsSet,
     const unsigned nodeIndex,
     real *distribution,
     unsigned int *neighborX,
@@ -102,7 +100,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     real f_fine[27];
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_MMM(f_fine, omega_);
+    momentsSet.calculateMMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSW = MMP
@@ -120,7 +118,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_MMP(f_fine, omega_);
+    momentsSet.calculateMMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSE = PMP
@@ -138,7 +136,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_PMP(f_fine, omega_);
+    momentsSet.calculatePMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BSE = PMM 
@@ -156,7 +154,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_PMM(f_fine, omega_);
+    momentsSet.calculatePMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNW = MPM
@@ -184,7 +182,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_MPM(f_fine, omega_);
+    momentsSet.calculateMPM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNW = MPP
@@ -202,7 +200,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_MPP(f_fine, omega_);
+    momentsSet.calculateMPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
@@ -220,7 +218,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_PPP(f_fine, omega_);
+    momentsSet.calculatePPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -238,7 +236,7 @@ template<bool hasTurbulentViscosity> __device__ void calculate_moment_set(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    moments_set.calculate_PPM(f_fine, omega_);
+    momentsSet.calculatePPM(f_fine, omega_);
 }
 
 }
