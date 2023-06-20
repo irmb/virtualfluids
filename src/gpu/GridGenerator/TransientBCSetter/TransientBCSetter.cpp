@@ -49,16 +49,16 @@ std::vector<T> readStringToVector(std::string s)
 
 std::string readElement(std::string line)
 {
-    size_t elemStart = line.find('<')+1;
+    const size_t elemStart = line.find('<')+1;
     // size_t elemEnd = line.find("/>", elemStart);
-    size_t nameLen = line.find(' ', elemStart)-elemStart;
+    const size_t nameLen = line.find(' ', elemStart)-elemStart;
     return line.substr(elemStart, nameLen);
 }
 
 std::string readAttribute(std::string line, std::string attributeName)
 {
-    size_t attributeStart = line.find(attributeName)+attributeName.size() + 2; // add 2 for '="'
-    size_t attributeLen = line.find("\"", attributeStart)-attributeStart;
+    const size_t attributeStart = line.find(attributeName)+attributeName.size() + 2; // add 2 for '="'
+    const size_t attributeLen = line.find("\"", attributeStart)-attributeStart;
     return line.substr(attributeStart, attributeLen);
 }
 
@@ -94,7 +94,7 @@ void VTKFile::readHeader()
     getline(file, line); // </ImageData
     getline(file, line); // AppendedData
 
-    int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
+    const int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
 
     for(auto& quantity: this->quantities)
     {
@@ -118,7 +118,7 @@ void VTKFile::readHeader()
 
 }
 
-bool VTKFile::markNANs(const std::vector<uint>& readIndices)
+bool VTKFile::markNANs(const std::vector<uint>& readIndices) const
 {
     std::ifstream buf(fileName.c_str(), std::ios::in | std::ios::binary);
 
@@ -126,7 +126,7 @@ bool VTKFile::markNANs(const std::vector<uint>& readIndices)
     tmp.reserve(readIndices.size());
     buf.seekg(this->quantities[0].offset);
     buf.read((char*) tmp.data(), sizeof(double)*readIndices.size());
-    auto firstNAN = std::find_if(tmp.begin(), tmp.end(), [](auto it){ return isnan(it); });
+    const auto firstNAN = std::find_if(tmp.begin(), tmp.end(), [](auto it){ return isnan(it); });
     
     return firstNAN != tmp.end();
 }
@@ -391,7 +391,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
 uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 {
-    auto it = std::find(this->writeIndices[level][id].begin(), this->writeIndices[level][id].end(), linearIndex);
+    const auto it = std::find(this->writeIndices[level][id].begin(), this->writeIndices[level][id].end(), linearIndex);
     const uint idx = it-this->writeIndices[level][id].begin();
     if(it==this->writeIndices[level][id].end())                         
     {
