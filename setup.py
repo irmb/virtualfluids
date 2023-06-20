@@ -1,9 +1,3 @@
-import sys
-from pathlib import Path
-from typing import List
-
-import skbuild
-
 """
 Install python wrapper of Virtual Fluids
 install via python:
@@ -16,35 +10,32 @@ or install via pip:
     for pip>21:
         set CMAKE Flags via --config-settings "-DBUILD_VF_GPU=ON"
         example: pip install . --config-settings="-DBUILD_VF_GPU=ON"
-        each option has to be passed in individually i.e --config-settings="-DOPT1=ON" --config-settings="-DOPT2=OFF"
+        each option has to be passed in individually i.e
+        --config-settings="-DOPT1=ON" --config-settings="-DOPT2=OFF"
     for pip <21:
         set CMAKE Flags via --global-option ="-DBUILD_VF_GPU=ON"
         example: pip install . --global-option="-DBUILD_VF_GPU=ON"
 """
+import sys
+from pathlib import Path
+
+from setuptools import find_namespace_packages
+import skbuild
 
 package_name = "pyfluids"
 target = "python_bindings"
 src_dir = "pythonbindings"
-stub_package = package_name+"-stubs"
+stubs_package = package_name+"-stubs"
+stub_dir = Path(src_dir)/stubs_package
 
-stub_dir = Path(src_dir)/stub_package
+
+def find_stub_subpackages(stub_dir: Path):
+    return [str(d.parent.relative_to(stub_dir.parent)) for d in stub_dir.rglob("__init__.pyi")]
 
 
-def add_subfiles(dir_path: Path, suffix: str, root_dir: Path) -> List[str]:
-    files = []
-    for f in dir_path.iterdir():
-        if f.is_dir():
-            files.extend(add_subfiles(f, suffix, root_dir))
-        if f.is_file():
-            if f.suffix != suffix:
-                continue
-            files.append(str(f.relative_to(root_dir)))
-    return files
+def find_stub_files(dir: Path):
+    return [str(f.relative_to(dir)) for f in dir.rglob("*.pyi")]
 
-def add_directory(dir_path: Path, suffix: str):
-    return add_subfiles(dir_path, suffix, dir_path)
-
-stub_files = add_directory(stub_dir, ".pyi")
 
 # hack to get config-args for installation with pip>21
 cmake_args = []
@@ -62,11 +53,10 @@ cmake_args += [
 
 skbuild.setup(
     name=package_name,
-    packages=[package_name, "pymuparser", "pyfluids-stubs"],
+    packages=find_namespace_packages(where=src_dir)+find_stub_subpackages(stub_dir),
     package_dir={"": src_dir},
     cmake_args=cmake_args,
     cmake_install_target=target,
-    package_data={  "pyfluids": ["py.typed"],
-                    "pyfluids-stubs": stub_files},
+    package_data={package_name: ["py.typed"], stubs_package: find_stub_files(stub_dir)},
     include_package_data=True,
 )

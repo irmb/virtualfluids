@@ -16,8 +16,6 @@ class CudaMemoryManager;
 
 class VIRTUALFLUIDS_GPU_EXPORT PreCollisionInteractor
 {
-private:
-    SPtr<Parameter> para;
 
 protected:
     PreCollisionInteractor()
