@@ -39,10 +39,10 @@
 // The default log level is set to trace. Supported levels: trace < debug < info < warning < critical
 // 
 // The logging is realized in 3 different log sinks:
-// 1. colorded console output
+// 1. colored console output
 // 2. a daily log file
 // 3. a log file from the last run of VirtualFluids
-// The default file path is relativ to executed command logs/
+// The default file path is relative to executed command logs/
 // File path can be changed via changeLogPath()
 
 #define VF_LOG_TRACE(...) spdlog::trace(__VA_ARGS__)
@@ -57,7 +57,7 @@ namespace vf::logging
     class Logger
     {
     public:
-        // initalizing the above named logger
+        // initializing the above named logger
         static void initializeLogger();
 
         // changing the path of the log files
