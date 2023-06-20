@@ -421,7 +421,7 @@ void Probe::write(Parameter* para, int level, int t)
     {
         int t_write = this->fileNameLU ? t: t/this->tOut; 
 
-        const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
+        const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getLimitOfNodesForVTK() + 1;
 
         std::vector<std::string> fnames;
         for (uint i = 1; i <= numberOfParts; i++)
@@ -456,8 +456,8 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
 
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
-    uint startpos = (part-1) * para->getlimitOfNodesForVTK();
-    uint sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
+    uint startpos = (part-1) * para->getLimitOfNodesForVTK();
+    uint sizeOfNodes = min(para->getLimitOfNodesForVTK(), probeStruct->nPoints - startpos);
     uint endpos = startpos + sizeOfNodes;
 
     //////////////////////////////////////////////////////////////////////////
