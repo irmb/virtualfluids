@@ -70,7 +70,7 @@ void printCudaInformation(int deviceId)
     cudaError_t errorId = cudaGetDeviceProperties(&prop, deviceId);
 
     if(errorId != cudaSuccess){
-        VF_LOG_CRITICAL("Device {}: Error while accessing the device properties for occurs: {}", deviceId, cudaGetErrorString(errorId));
+        VF_LOG_CRITICAL("Device {}: Error while accessing the device properties occurs: {}", deviceId, cudaGetErrorString(errorId));
     }
 
     printf(" --- General Information for device %d ---\n", deviceId);
