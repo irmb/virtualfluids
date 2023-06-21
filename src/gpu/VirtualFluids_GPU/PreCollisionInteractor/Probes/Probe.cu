@@ -389,7 +389,7 @@ std::string Probe::makeGridFileName(int level, int id, int t, uint part)
 {
     return this->probeName + "_bin" + nameComponent<int>("lev", level)
                                     + nameComponent<int>("ID", id)
-                                    + nameComponent<int>("part", part)
+                                    + nameComponent<int>("Part", part)
                                     + nameComponent<int>("t", t) + ".vtk";
 }
 
