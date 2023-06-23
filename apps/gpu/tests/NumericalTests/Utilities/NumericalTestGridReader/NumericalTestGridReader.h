@@ -13,7 +13,7 @@ public:
 	static std::shared_ptr<NumericalTestGridReader> getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager);
 
 protected:
-	virtual void setInitalNodeValues(uint numberOfNodes, int level) const override;
+	virtual void setInitialNodeValues(uint numberOfNodes, int level) const override;
     
 private:
 	NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager);
