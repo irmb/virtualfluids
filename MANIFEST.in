@@ -1,1 +1,1 @@
-include pythonbindings/*/bindings*
+include pythonbindings/*/*.cpython*

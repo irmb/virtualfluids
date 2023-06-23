@@ -26,20 +26,30 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file lbm.cpp
-//! \ingroup lbm
+//! \file logging.cpp
+//! \ingroup logger
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
+#include <logger/Logger.h>
 
-namespace lbm
+namespace logger_bindings
 {
+
     namespace py = pybind11;
 
-    py::module makeModule(py::module_ &parentModule)
+    PYBIND11_MODULE(logger, m)
     {
-        py::module lbmModule = parentModule.def_submodule("lbm");
+        py::class_<vf::logging::Logger>(m, "Logger")
+        .def_static("initialize_logger", &vf::logging::Logger::initializeLogger)
+        .def_static("change_log_path", &vf::logging::Logger::changeLogPath, py::arg("path"));
 
-        return lbmModule;
+        // use f-strings (f"text {float}") in python for compounded messages
+        m.def("vf_log_trace", [](std::string message){ VF_LOG_TRACE(message); }, py::arg("message"));        
+        m.def("vf_log_debug", [](std::string message){ VF_LOG_DEBUG(message); }, py::arg("message"));        
+        m.def("vf_log_info", [](std::string message){ VF_LOG_INFO(message); }, py::arg("message"));        
+        m.def("vf_log_warning", [](std::string message){ VF_LOG_WARNING(message); }, py::arg("message"));        
+        m.def("vf_log_critical", [](std::string message){ VF_LOG_CRITICAL(message); }, py::arg("message"));       
     }
 }
+

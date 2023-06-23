@@ -130,16 +130,16 @@ gcc_12_python:
   artifacts:
     expire_in: 1 hrs
     paths:
-      - build/
-      - dist/
-      - _skbuild/
+      - pybuild/ # build in separate folder to avoid conflicts with c++ build
 
   before_script:
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
-    - python3 setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DBUILD_VF_DOUBLE_ACCURACY=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    - export SKBUILD_BUILD_DIR="pybuild"
+    - export SKBUILD_CMAKE_ARGS="-DBUILD_VF_CPU=ON;-DBUILD_VF_DOUBLE_ACCURACY=ON;-DCMAKE_CXX_COMPILER_LAUNCHER=ccache;-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache;-DCMAKE_C_COMPILER_LAUNCHER=ccache;-G=Ninja"
+    - pip install . -v
 
 ###############################################################################
 ##                            Container Upload                               ##
@@ -208,9 +208,6 @@ gcc_12_python_bindings_test:
   needs: ["gcc_12_python"]
 
   before_script:
-    - export PYTHONPATH="Python"
-    - export VF_WHEEL=$(find dist/*.whl)
-    - pip3 install $VF_WHEEL
     - pip3 install -r Python/requirements.txt
 
   script:

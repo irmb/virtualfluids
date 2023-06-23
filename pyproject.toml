@@ -1,9 +1,46 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "scikit-build",
-    "cmake",
-    "ninja; platform_system!='Windows'"
+requires = ["scikit-build-core"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pyfluids"
+version = "0.1.0"
+description = "Python bindings for VirtualFluids"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
 ]
-build-backend = "setup_builder"
-backend-path = ["utilities"]
+url = "https://git.rz.tu-bs.de/irmb/virtualfluids"
+
+[tool.cmake]
+jobs = 8
+
+[tool.scikit-build]
+build-dir = "build"
+strict-config = true
+logging.level = "INFO"
+
+[tool.scikit-build.wheel]
+packages = ["pythonbindings/pyfluids", "pythonbindings/pyfluids-stubs", "pythonbindings/pymuparser"]
+
+[tool.scikit_build.cmake]
+verbose = true
+build-type = "Release"
+
+[tool.scikit-build.cmake.define]
+BUILD_VF_PYTHON_BINDINGS = "ON"
+BUILD_SHARED_LIBS = "OFF"
+BUILD_VF_UNIT_TESTS = "OFF"
+BUILD_WARNINGS_AS_ERRORS = "OFF"
+
+
+[mypy]
+plugins = "numpy.typing.mypy_plugin"
+

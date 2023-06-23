@@ -35,7 +35,7 @@ r"""
 from __future__ import annotations
 from typing import ClassVar, List
 
-from pyfluids.bindings.gpu import PreCollisionInteractor
+import gpu
 
 
 class Statistic:
@@ -64,7 +64,7 @@ class Statistic:
     def name(self) -> str: ...
 
 
-class Probe(PreCollisionInteractor):
+class Probe(gpu.PreCollisionInteractor):
     def __init__(self, *args, **kwargs) -> None: ...
     def add_all_available_statistics(self) -> None: ...
     def add_statistic(self, variable: Statistic) -> None: ...
