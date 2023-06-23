@@ -94,7 +94,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
         neighWSB->initalNeighbors(para->getParH(level)->neighborInverse, level);
         geoV.initalNeighbors(     para->getParH(level)->typeOfGridNode,          level);
         rearrangeGeometry(para.get(), level);
-		setInitalNodeValues(numberOfNodesPerLevel, level);
+		setInitialNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);

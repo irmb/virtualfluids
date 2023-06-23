@@ -40,6 +40,7 @@ from typing import overload
 import gpu
 
 
+
 class BoundingBox:
     def __init__(self, min_x: float, max_x: float, min_y: float, max_y: float, min_z: float, max_z: float) -> None: ...
 
@@ -80,6 +81,7 @@ class LevelGridBuilder(GridBuilder):
     def set_slip_boundary_condition(self, side_type: gpu.SideType, normal_x: float, normal_y: float, normal_z: float) -> None: ...
     def set_stress_boundary_condition(self, side_type: gpu.SideType, normal_x: float, normal_y: float, normal_z: float, sampling_offset: int, z0: float, dx: float, q: float = ...) -> None: ...
     def set_velocity_boundary_condition(self, side_type: gpu.SideType, vx: float, vy: float, vz: float) -> None: ...
+
 
 
 class MultipleGridBuilder(LevelGridBuilder):

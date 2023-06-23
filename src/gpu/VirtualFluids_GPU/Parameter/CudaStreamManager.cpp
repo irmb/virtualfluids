@@ -31,15 +31,14 @@
 #include <helper_cuda.h>
 #include <iostream>
 
-void CudaStreamManager::registerStream(CudaStreamIndex streamIndex)
+int CudaStreamManager::registerAndLaunchStream(CudaStreamIndex streamIndex)
 {   
-    if(streamIndex != CudaStreamIndex::Legacy)
-        cudaStreams.emplace(streamIndex, nullptr);
-}
-void CudaStreamManager::launchStreams()
-{
-    for (auto &stream : cudaStreams)
-        cudaStreamCreate(&stream.second);
+    if(streamIndex == CudaStreamIndex::Legacy) return 0;
+
+    cudaStream_t new_stream = nullptr;
+    cudaStreamCreate(&new_stream);
+    cudaStreams.emplace(streamIndex, new_stream);
+    return int(cudaStreams.count(streamIndex) - 1);
 }
 
 void CudaStreamManager::terminateStreams()

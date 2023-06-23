@@ -179,6 +179,7 @@ class GridProvider:
     def make_grid_generator(builder: grid_generator.GridBuilder, para: Parameter, cuda_memory_manager: CudaMemoryManager, communicator: MpiCommunicator) -> GridProvider: ...
 
 
+
 class GridScaling:
     __members__: ClassVar[dict] = ...  # read-only
     NotSpecified: ClassVar[GridScaling] = ...
