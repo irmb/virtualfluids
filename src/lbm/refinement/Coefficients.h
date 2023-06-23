@@ -53,11 +53,11 @@ namespace vf::lbm
 
 // The Coefficients struct needs be created like this:
 // Coefficients coeffs;
-// MomentsOnSourceNodeSet moment_set;
-// moment_set.calculate_PPP(f, omega);
+// MomentsOnSourceNodeSet momentsSet;
+// momentsSet.calculatePPP(f, omega);
 // ... and so on
 // Coefficients coeffs;
-// moment_set.calculateCoefficients(coeffs);
+// momentsSet.calculateCoefficients(coeffs);
 
 // Coefficient which are used in the interpolation
 struct Coefficients
