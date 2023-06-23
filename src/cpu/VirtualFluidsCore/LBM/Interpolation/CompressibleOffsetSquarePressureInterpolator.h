@@ -1,7 +1,7 @@
-#ifndef IncompressibleOffsetInterpolationProcessor_H_
-#define IncompressibleOffsetInterpolationProcessor_H_
+#ifndef CompressibleOffsetSquarePressureInterpolationProcessor_H_
+#define CompressibleOffsetSquarePressureInterpolationProcessor_H_
 
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "D3Q27System.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -9,22 +9,21 @@
 //super compact interpolation method by Martin Geier
 //////////////////////////////////////////////////////////////////////////
 
-class IncompressibleOffsetInterpolationProcessor;
-using D3Q27IncompressibleOffsetInterpolationProcessorPtr = SPtr<IncompressibleOffsetInterpolationProcessor>;
+class CompressibleOffsetSquarePressureInterpolator;
 
-class IncompressibleOffsetInterpolationProcessor : public InterpolationProcessor
+class CompressibleOffsetSquarePressureInterpolator : public Interpolator
 {
 public:
-   IncompressibleOffsetInterpolationProcessor() = default;
-   IncompressibleOffsetInterpolationProcessor(real omegaC, real omegaF);
-   ~IncompressibleOffsetInterpolationProcessor() override = default;
+   CompressibleOffsetSquarePressureInterpolator();
+   CompressibleOffsetSquarePressureInterpolator(real omegaC, real omegaF);
+   ~CompressibleOffsetSquarePressureInterpolator() override;
    InterpolationProcessorPtr clone() override;
    void setOmegas(real omegaC, real omegaF) override;
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF) override;
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff) override;
    void interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC) override; 
    void interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff) override; 
-   //real forcingC, forcingF;
+   void setBulkOmegaToOmega(bool value);
 protected:   
 private:
    real omegaC{0.0}, omegaF{0.0};
@@ -43,13 +42,18 @@ private:
 
    real kxyAverage, kyzAverage, kxzAverage, kxxMyyAverage, kxxMzzAverage; 
 
-//   LBMReal a,b,c;
+//   real a,b,c;
+
+   // bulk viscosity
+   bool bulkOmegaToOmega;
+   real OxxPyyPzzC;
+   real OxxPyyPzzF;
 
    void setOffsets(real xoff, real yoff, real zoff) override;
    void calcMoments(const real* const f, real omega, real& rho, real& vx1, real& vx2, real& vx3, 
       real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz);
    void calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new) override;
-   void calcInterpolatedNode(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs);
+   void calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs);
    real calcPressBSW();
    real calcPressTSW();
    real calcPressTSE();
@@ -64,12 +68,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline void IncompressibleOffsetInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
+inline void CompressibleOffsetSquarePressureInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
 {
    this->interpolateCoarseToFine(icellC, icellF, 0.0, 0.0, 0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void IncompressibleOffsetInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
+inline void CompressibleOffsetSquarePressureInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC)
 {
    this->interpolateFineToCoarse(icellF, icellC, 0.0, 0.0, 0.0);
 }

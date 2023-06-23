@@ -1,61 +1,51 @@
-#include "CompressibleOffsetMomentsInterpolationProcessor.h"
+#include "CompressibleOffsetSquarePressureInterpolator.h"
 #include "D3Q27System.h"
 
 //using namespace UbMath;
 using namespace vf::basics::constant;
 
-CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
+CompressibleOffsetSquarePressureInterpolator::CompressibleOffsetSquarePressureInterpolator()
     
 {
-   this->bulkViscosity = c0o1;
-   this->shearViscosity = c0o1;
+   this->bulkOmegaToOmega = false;
    this->OxxPyyPzzC = c1o1;
    this->OxxPyyPzzF = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor(real omegaC, real omegaF)
+CompressibleOffsetSquarePressureInterpolator::CompressibleOffsetSquarePressureInterpolator(real omegaC, real omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
-   this->bulkViscosity = c0o1;
-   this->shearViscosity = c0o1;
+   this->bulkOmegaToOmega = false;
    this->OxxPyyPzzC = c1o1;
    this->OxxPyyPzzF = c1o1;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleOffsetMomentsInterpolationProcessor::~CompressibleOffsetMomentsInterpolationProcessor()
+CompressibleOffsetSquarePressureInterpolator::~CompressibleOffsetSquarePressureInterpolator()
 = default;
 //////////////////////////////////////////////////////////////////////////
-InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone()
+InterpolationProcessorPtr CompressibleOffsetSquarePressureInterpolator::clone()
 {
-   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetMomentsInterpolationProcessor(this->omegaC, this->omegaF));
-
-   dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = this->OxxPyyPzzC;
-   dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = this->OxxPyyPzzF;
-
-   return iproc;
-}
-//////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::setOmegas( real omegaC, real omegaF )
-{
-   this->omegaC = omegaC;
-   this->omegaF = omegaF;
-
-   real dtC = (c3o1 *shearViscosity)/((c1o1/omegaC)-c1o2);
-   real dtF = (c3o1 *shearViscosity)/((c1o1/omegaF)-c1o2);
-
-   if (bulkViscosity != 0)
+   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetSquarePressureInterpolator(this->omegaC, this->omegaF));
+   if (bulkOmegaToOmega)
    {
-      this->OxxPyyPzzC = LBMSystem::calcOmega2(bulkViscosity, dtC);
-      this->OxxPyyPzzF = LBMSystem::calcOmega2(bulkViscosity, dtF);
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzC = omegaC;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzF = omegaF;
    }
    else
    {
-      this->OxxPyyPzzC = c1o1;
-      this->OxxPyyPzzF = c1o1;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzC = c1o1;
+      dynamicPointerCast<CompressibleOffsetSquarePressureInterpolator>(iproc)->OxxPyyPzzF = c1o1;
    }
+   return iproc;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::setOffsets(real xoff, real yoff, real zoff)
+void CompressibleOffsetSquarePressureInterpolator::setOmegas( real omegaC, real omegaF )
+{
+   this->omegaC = omegaC;
+   this->omegaF = omegaF;
+}
+//////////////////////////////////////////////////////////////////////////
+void CompressibleOffsetSquarePressureInterpolator::setOffsets(real xoff, real yoff, real zoff)
 {
    this->xoff = xoff;
    this->yoff = yoff;
@@ -65,7 +55,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::setOffsets(real xoff, real
    this->zoff_sq = zoff * zoff;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
+void CompressibleOffsetSquarePressureInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
    calcInterpolatedCoefficiets(icellC, omegaC, c1o2);
@@ -79,14 +69,14 @@ void CompressibleOffsetMomentsInterpolationProcessor::interpolateCoarseToFine(D3
    calcInterpolatedNodeCF(icellF.TNE, omegaF,  c1o4,  c1o4,  c1o4, calcPressTNE(),  c1o1,  c1o1,  c1o1);
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
+void CompressibleOffsetSquarePressureInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
    setOffsets(xoff, yoff, zoff);
    calcInterpolatedCoefficiets(icellF, omegaF, c2o1);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::calcMoments(const real* const f, real omega, real& press, real& vx1, real& vx2, real& vx3, 
+void CompressibleOffsetSquarePressureInterpolator::calcMoments(const real* const f, real omega, real& press, real& vx1, real& vx2, real& vx3, 
                                                     real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz)
 {
    using namespace D3Q27System;
@@ -104,7 +94,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcMoments(const real* co
    kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(c1o1 + drho)-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
 {
    real        vx1_SWT,vx2_SWT,vx3_SWT;
    real        vx1_NWT,vx2_NWT,vx3_NWT;
@@ -403,7 +393,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedCoefficiet
    x_BE = c1o4*eps_new*(-((c2o1*axx - c3o1*axz - c2o1*bxy - c6o1*cxx + cxz))/(c54o1*o));
    x_TN = c1o4*eps_new*(-((-c4o1*axx + bxy + c3o1*bxz + c3o1*cxy + cxz))/(c54o1*o));
    x_BN = c1o4*eps_new*(-((-c4o1*axx + bxy - c3o1*bxz - c3o1*cxy + cxz))/(c54o1*o));
-   x_ZERO = c0o1;
+   x_ZERO = 0.;
    x_TNE = c1o4*eps_new*(-((axy + axz + c2o1*bxx + bxz + c2o1*cxx + cxy))/(c72o1*o));
    x_TSW = c1o4*eps_new*(((-axy + axz - c2o1*bxx + bxz + c2o1*cxx + cxy))/(c72o1*o));
    x_TSE = c1o4*eps_new*(((axy - axz + c2o1*bxx + bxz - c2o1*cxx + cxy))/(c72o1*o));
@@ -418,7 +408,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedCoefficiet
    y_BE = c1o4*eps_new*(-((axy - c3o1*ayz - c4o1*byy - c3o1*cxy + cyz))/(c54o1*o));
    y_TN = c1o4*eps_new*(-((-c2o1*axy + c2o1*byy + c3o1*byz + c6o1*cyy + cyz))/(c54o1*o));
    y_BN = c1o4*eps_new*(-((-c2o1*axy + c2o1*byy - c3o1*byz - c6o1*cyy + cyz))/(c54o1*o));
-   y_ZERO = c0o1;
+   y_ZERO = 0.;
    y_TNE = c1o4*eps_new*(-((c2o1*ayy + ayz + bxy + byz + cxy + c2o1*cyy))/(c72o1*o));
    y_TSW = c1o4*eps_new*(((-c2o1*ayy + ayz - bxy + byz + cxy + c2o1*cyy))/(c72o1*o));
    y_TSE = c1o4*eps_new*(((c2o1*ayy - ayz + bxy + byz - cxy + c2o1*cyy))/(c72o1*o));
@@ -433,7 +423,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedCoefficiet
    z_BE = c1o4*eps_new*(-((axz - c6o1*azz - c2o1*byz - c3o1*cxz + c2o1*czz))/(c54o1*o));
    z_TN = c1o4*eps_new*(-((-c2o1*axz + byz + c6o1*bzz + c3o1*cyz + c2o1*czz))/(c54o1*o));
    z_BN = c1o4*eps_new*(-((-c2o1*axz + byz - c6o1*bzz - c3o1*cyz + c2o1*czz))/(c54o1*o));
-   z_ZERO = c0o1;
+   z_ZERO = 0.;
    z_TNE = c1o4*eps_new*(-((ayz + c2o1*azz + bxz + c2o1*bzz + cxz + cyz))/(c72o1*o));
    z_TSW = c1o4*eps_new*(((-ayz + c2o1*azz - bxz + c2o1*bzz + cxz + cyz))/(c72o1*o));
    z_TSE = c1o4*eps_new*(((ayz - c2o1*azz + bxz + c2o1*bzz - cxz + cyz))/(c72o1*o));
@@ -485,18 +475,22 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedCoefficiet
    yz_TNW =   c1o16*eps_new *((                bxyz +     cxyz)/(c72o1*o));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeCF(real* f, real omega, real x, real y, real z, real press, real xs, real ys, real zs)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
-   using namespace vf::basics::constant;
 
    real eps_new = c1o2;
    real o = omega;
    //bulk viscosity
    real oP = OxxPyyPzzF;
 
-//   LBMReal rho  = press ;//+ (c2o1*axx*x+axy*y+axz*z+axyz*y*z+ax + c2o1*byy*y+bxy*x+byz*z+bxyz*x*z+by + c2o1*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/c3o1;
+   real rho  = press ;//+ (c2o1*axx*x+axy*y+axz*z+axyz*y*z+ax + c2o1*byy*y+bxy*x+byz*z+bxyz*x*z+by + c2o1*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
+
+   real laplaceRho = (xoff!=c0o1 || yoff!=c0o1 || zoff!= c0o1) ? c0o1 :(-c3o1*(by*by+ax*ax+cz*cz)-c6o1*(ay*bx+bz*cy+az*cx))*(c1o1+rho);
+
+   rho=rho+laplaceRho*(c3o1/c16o1);
+
    real vx1  = a0 + c1o4*( xs*ax + ys*ay + zs*az) + c1o16*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + c1o64*(xs*ys*zs*axyz);
    real vx2  = b0 + c1o4*( xs*bx + ys*by + zs*bz) + c1o16*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + c1o64*(xs*ys*zs*bxyz);
    real vx3  = c0 + c1o4*( xs*cx + ys*cy + zs*cz) + c1o16*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + c1o64*(xs*ys*zs*cxyz);
@@ -529,23 +523,23 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    real mfcaa = c0o1;
    real mfaca = c0o1;
 
-   mfaaa = press; // if drho is interpolated directly
+   mfaaa = rho; // if drho is interpolated directly
 
    real vx1Sq = vx1*vx1;
    real vx2Sq = vx2*vx2;
    real vx3Sq = vx3*vx3;
    real oMdrho = c1o1;
 
-   //c2o1f
+   //2.f
 
    // linear combinations
-   real mxxPyyPzz = mfaaa - c2o3*(ax + by + c2o1 *axx*x + bxy*x + axy*y + c2o1 *byy*y + axz*z + byz*z + bxyz*x*z + axyz*y*z + cz - cxz*x + cyz*y + cxyz*x*y + c2o1 *czz*z)*eps_new / oP* (c1o1 + press);
-   real mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1 *axx*x - bxy*x + axy*y - c2o1 *byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
-   real mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1 *axx*x - cxz*x + axy*y - cyz*y - cxyz*x*y + axz*z - c2o1 *czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+   real mxxPyyPzz = mfaaa - c2o3*(ax + by + c2o1*axx*x + bxy*x + axy*y + c2o1*byy*y + axz*z + byz*z + bxyz*x*z + axyz*y*z + cz - cxz*x + cyz*y + cxyz*x*y + c2o1*czz*z)*eps_new / oP* (c1o1 + press);
+   real mxxMyy    = -c2o3*(ax - by + kxxMyyAverage + c2o1*axx*x - bxy*x + axy*y - c2o1*byy*y + axz*z - byz*z - bxyz*x*z + axyz*y*z)*eps_new/o * (c1o1 + press);
+   real mxxMzz    = -c2o3*(ax - cz + kxxMzzAverage + c2o1*axx*x - cxz*x + axy*y - cyz*y - cxyz*x*y + axz*z - c2o1*czz*z + axyz*y*z)*eps_new/o * (c1o1 + press);
 
-   mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1 *cyy*y + bxyz*x*y + c2o1 *bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
-   mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1 *cxx*x + ayz*y + cxy*y + axyz*x*y + c2o1 *azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
-   mfbba     = -c1o3 * (ay + bx + kxyAverage + axy*x + c2o1 *bxx*x + c2o1 *ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o * (c1o1 + press);
+   mfabb     = -c1o3 * (bz + cy + kyzAverage + bxz*x + cxy*x + byz*y + c2o1*cyy*y + bxyz*x*y + c2o1*bzz*z + cyz*z + cxyz*x*z)*eps_new/o * (c1o1 + press);
+   mfbab     = -c1o3 * (az + cx + kxzAverage + axz*x + c2o1*cxx*x + ayz*y + cxy*y + axyz*x*y + c2o1*azz*z + cxz*z + cxyz*y*z)*eps_new/o * (c1o1 + press);
+   mfbba     = -c1o3 * (ay + bx + kxyAverage + axy*x + c2o1*bxx*x + c2o1*ayy*y + bxy*y + ayz*z + bxz*z + axyz*x*z + bxyz*y*z)*eps_new/o * (c1o1 + press);
 
    // linear combinations back
    mfcaa = c1o3 * (mxxMyy +       mxxMzz + mxxPyyPzz) ;
@@ -558,7 +552,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    real mxxyMyzz = c0o1;
    real mxxzPyyz = c0o1;
    real mxxzMyyz = c0o1;
-   real mxyyPxzz = c0o1;
+   real mxyyPxzz =  c0o1;
    real mxyyMxzz = c0o1;
 
    // linear combinations back
@@ -789,37 +783,37 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(rea
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[DIR_P00] = mfcbb;
-   f[DIR_M00] = mfabb;
-   f[DIR_0P0] = mfbcb;
-   f[DIR_0M0] = mfbab;
-   f[DIR_00P] = mfbbc;
-   f[DIR_00M] = mfbba;
-   f[DIR_PP0] = mfccb;
-   f[DIR_MM0] = mfaab;
-   f[DIR_PM0] = mfcab;
-   f[DIR_MP0] = mfacb;
-   f[DIR_P0P] = mfcbc;
-   f[DIR_M0M] = mfaba;
-   f[DIR_P0M] = mfcba;
-   f[DIR_M0P] = mfabc;
-   f[DIR_0PP] = mfbcc;
-   f[DIR_0MM] = mfbaa;
-   f[DIR_0PM] = mfbca;
-   f[DIR_0MP] = mfbac;
+   f[DIR_P00]    = mfcbb;
+   f[DIR_M00]    = mfabb;
+   f[DIR_0P0]    = mfbcb;
+   f[DIR_0M0]    = mfbab;
+   f[DIR_00P]    = mfbbc;
+   f[DIR_00M]    = mfbba;
+   f[DIR_PP0]   = mfccb;
+   f[DIR_MM0]   = mfaab;
+   f[DIR_PM0]   = mfcab;
+   f[DIR_MP0]   = mfacb;
+   f[DIR_P0P]   = mfcbc;
+   f[DIR_M0M]   = mfaba;
+   f[DIR_P0M]   = mfcba;
+   f[DIR_M0P]   = mfabc;
+   f[DIR_0PP]   = mfbcc;
+   f[DIR_0MM]   = mfbaa;
+   f[DIR_0PM]   = mfbca;
+   f[DIR_0MP]   = mfbac;
    f[DIR_000] = mfbbb;
-   f[DIR_PPP] = mfccc;
-   f[DIR_PMP] = mfcac;
-   f[DIR_PPM] = mfcca;
-   f[DIR_PMM] = mfcaa;
-   f[DIR_MPP] = mfacc;
-   f[DIR_MMP] = mfaac;
-   f[DIR_MPM] = mfaca;
-   f[DIR_MMM] = mfaaa;
+   f[DIR_PPP]  = mfccc;
+   f[DIR_PMP]  = mfcac;
+   f[DIR_PPM]  = mfcca;
+   f[DIR_PMM]  = mfcaa;
+   f[DIR_MPP]  = mfacc;
+   f[DIR_MMP]  = mfaac;
+   f[DIR_MPM]  = mfaca;
+   f[DIR_MMM]  = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressBSW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBSW()
 {
    return   press_SWT * (c9o64 + c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
       press_NWT * (c3o64 + c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -832,7 +826,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressBSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWT -0.25, -0.25, 0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressTSW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTSW()
 {
    return   press_SWT * (c27o64 + c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
       press_NWT * (c9o64 + c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
@@ -845,7 +839,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressTSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SET 0.25, -0.25, 0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressTSE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTSE()
 {
    return   press_SET * (c27o64 - c9o16 * xoff + c9o16 * yoff - c9o16 * zoff) +
       press_NET * (c9o64 - c3o16 * xoff - c9o16 * yoff - c3o16 * zoff) +
@@ -858,7 +852,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressTSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SEB 0.25, -0.25, -0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressBSE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBSE()
 {
    return   press_SET * (c9o64 - c3o16 * xoff + c3o16 * yoff - c9o16 * zoff) +
       press_NET * (c3o64 - c1o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -871,7 +865,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressBSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWB -0.25, 0.25, -0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressBNW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBNW()
 {
    return   press_NWT * (c9o64 + c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
       press_NET * (c3o64 - c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
@@ -884,7 +878,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressBNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWT -0.25, 0.25, 0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressTNW()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTNW()
 {
    return   press_NWT * (c27o64 + c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
       press_NET * (c9o64 - c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -897,7 +891,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressTNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NET 0.25, 0.25, 0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressTNE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressTNE()
 {
    return   press_NET * (c27o64 - c9o16 * xoff - c9o16 * yoff - c9o16 * zoff) +
       press_NWT * (c9o64 + c9o16 * xoff - c3o16 * yoff - c3o16 * zoff) +
@@ -910,7 +904,7 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressTNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NEB 0.25, 0.25, -0.25
-real CompressibleOffsetMomentsInterpolationProcessor::calcPressBNE()
+real CompressibleOffsetSquarePressureInterpolator::calcPressBNE()
 {
    return   press_NET * (c9o64 - c3o16 * xoff - c3o16 * yoff - c9o16 * zoff) +
       press_NWT * (c3o64 + c3o16 * xoff - c1o16 * yoff - c3o16 * zoff) +
@@ -923,24 +917,29 @@ real CompressibleOffsetMomentsInterpolationProcessor::calcPressBNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position C 0.0, 0.0, 0.0
-void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(real* f, real omega)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeFC(real* f, real omega)
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
 
-   real press  =  press_NET * (c4o32 - c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
-      press_NWT * (c4o32 + c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
-      press_SET * (c4o32 - c1o4 * xoff + c1o4 * yoff - c1o4 * zoff) +
-      press_SWT * (c4o32 + c1o4 * xoff + c1o4 * yoff - c1o4 * zoff) +
-      press_NEB * (c4o32 - c1o4 * xoff - c1o4 * yoff + c1o4 * zoff) +
-      press_NWB * (c4o32 + c1o4 * xoff - c1o4 * yoff + c1o4 * zoff) +
-      press_SEB * (c4o32 - c1o4 * xoff + c1o4 * yoff + c1o4 * zoff) +
-      press_SWB * (c4o32 + c1o4 * xoff + c1o4 * yoff + c1o4 * zoff);
+   real press  =  press_NET * (c1o8 - c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
+      press_NWT * (c1o8 + c1o4 * xoff - c1o4 * yoff - c1o4 * zoff) +
+      press_SET * (c1o8 - c1o4 * xoff + c1o4 * yoff - c1o4 * zoff) +
+      press_SWT * (c1o8 + c1o4 * xoff + c1o4 * yoff - c1o4 * zoff) +
+      press_NEB * (c1o8 - c1o4 * xoff - c1o4 * yoff + c1o4 * zoff) +
+      press_NWB * (c1o8 + c1o4 * xoff - c1o4 * yoff + c1o4 * zoff) +
+      press_SEB * (c1o8 - c1o4 * xoff + c1o4 * yoff + c1o4 * zoff) +
+      press_SWB * (c1o8 + c1o4 * xoff + c1o4 * yoff + c1o4 * zoff);
    real vx1  = a0;
    real vx2  = b0;
    real vx3  = c0;
+  
+   
+   real rho = press ;//+ (ax+by+cz)/3.;
 
-//   LBMReal rho = press ;//+ (ax+by+cz)/c3o1;
+   real laplaceRho = (xoff!=c0o1 || yoff!=c0o1 || zoff!= c0o1) ? c0o1 :(-c3o1*(by*by+ax*ax+cz*cz)-c6o1*(ay*bx+bz*cy+az*cx))*(c1o1+rho);
+
+   rho=rho-laplaceRho*c1o4;
 
    real eps_new = c2o1;
    real o  = omega;
@@ -975,19 +974,19 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    real mfcaa = c0o1;
    real mfaca = c0o1;
 
-   mfaaa = press; // if drho is interpolated directly
+   mfaaa = rho; // if drho is interpolated directly
 
    real vx1Sq = vx1*vx1;
    real vx2Sq = vx2*vx2;
    real vx3Sq = vx3*vx3;
    real oMdrho = c1o1;
-   //oMdrho = one - mfaaa;
+   //oMdrho = c1o1 - mfaaa;
 
    //2.f
    // linear combinations
 
 /////////////////////////
-   real mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(c1o1 +press);
+   real mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(c1o1+press);
 
    real mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (c1o1 + press);
    real mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (c1o1 + press);
@@ -1238,55 +1237,54 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(rea
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[DIR_P00] = mfcbb;
-   f[DIR_M00] = mfabb;
-   f[DIR_0P0] = mfbcb;
-   f[DIR_0M0] = mfbab;
-   f[DIR_00P] = mfbbc;
-   f[DIR_00M] = mfbba;
-   f[DIR_PP0] = mfccb;
-   f[DIR_MM0] = mfaab;
-   f[DIR_PM0] = mfcab;
-   f[DIR_MP0] = mfacb;
-   f[DIR_P0P] = mfcbc;
-   f[DIR_M0M] = mfaba;
-   f[DIR_P0M] = mfcba;
-   f[DIR_M0P] = mfabc;
-   f[DIR_0PP] = mfbcc;
-   f[DIR_0MM] = mfbaa;
-   f[DIR_0PM] = mfbca;
-   f[DIR_0MP] = mfbac;
+   f[DIR_P00]    = mfcbb;
+   f[DIR_M00]    = mfabb;
+   f[DIR_0P0]    = mfbcb;
+   f[DIR_0M0]    = mfbab;
+   f[DIR_00P]    = mfbbc;
+   f[DIR_00M]    = mfbba;
+   f[DIR_PP0]   = mfccb;
+   f[DIR_MM0]   = mfaab;
+   f[DIR_PM0]   = mfcab;
+   f[DIR_MP0]   = mfacb;
+   f[DIR_P0P]   = mfcbc;
+   f[DIR_M0M]   = mfaba;
+   f[DIR_P0M]   = mfcba;
+   f[DIR_M0P]   = mfabc;
+   f[DIR_0PP]   = mfbcc;
+   f[DIR_0MM]   = mfbaa;
+   f[DIR_0PM]   = mfbca;
+   f[DIR_0MP]   = mfbac;
    f[DIR_000] = mfbbb;
-   f[DIR_PPP] = mfccc;
-   f[DIR_PMP] = mfcac;
-   f[DIR_PPM] = mfcca;
-   f[DIR_PMM] = mfcaa;
-   f[DIR_MPP] = mfacc;
-   f[DIR_MMP] = mfaac;
-   f[DIR_MPM] = mfaca;
-   f[DIR_MMM] = mfaaa;
+   f[DIR_PPP]  = mfccc;
+   f[DIR_PMP]  = mfcac;
+   f[DIR_PPM]  = mfcca;
+   f[DIR_PMM]  = mfcaa;
+   f[DIR_MPP]  = mfacc;
+   f[DIR_MMP]  = mfaac;
+   f[DIR_MPM]  = mfaca;
+   f[DIR_MMM]  = mfaaa;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)
 {
 	vx1  = a0 + ax*x + ay*y + az*z + axx*x*x + ayy*y*y + azz*z*z + axy*x*y + axz*x*z + ayz*y*z+axyz*x*y*z;
 	vx2  = b0 + bx*x + by*y + bz*z + bxx*x*x + byy*y*y + bzz*z*z + bxy*x*y + bxz*x*z + byz*y*z+bxyz*x*y*z;
 	vx3  = c0 + cx*x + cy*y + cz*z + cxx*x*x + cyy*y*y + czz*z*z + cxy*x*y + cxz*x*z + cyz*y*z+cxyz*x*y*z;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
+void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
 {
 	tauxx=ax+c2o1*axx*x+axy*y+axz*z+axyz*y*z;
 	tauyy=by+c2o1*byy*y+bxy*x+byz*z+bxyz*x*z;
 	tauzz=cz+c2o1*czz*z+cxz*x+cyz*y+cxyz*x*y;
-	tauxy= c1o2*((ay+c2o1*ayy*y+axy*x+ayz*z+axyz*x*z)+(bx+c2o1*bxx*x+bxy*y+bxz*z+bxyz*y*z));
-	tauxz= c1o2*((az+c2o1*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+c2o1*cxx*x+cxy*y+cxz*z+cxyz*y*z));
-	tauyz= c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
+	tauxy=c1o2*((ay+c2o1*ayy*y+axy*x+ayz*z+axyz*x*z)+(bx+c2o1*bxx*x+bxy*y+bxz*z+bxyz*y*z));
+	tauxz=c1o2*((az+c2o1*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+c2o1*cxx*x+cxy*y+cxz*z+cxyz*y*z));
+	tauyz=c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::setBulkViscosity(real shearViscosity, real bulkViscosity)
+void CompressibleOffsetSquarePressureInterpolator::setBulkOmegaToOmega(bool value)
 {
-   this->shearViscosity = shearViscosity;
-   this->bulkViscosity  = bulkViscosity;
+   bulkOmegaToOmega = value;
 }
 
