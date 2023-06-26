@@ -134,9 +134,9 @@ void IBcumulantK17LBMKernel::calculate(int step)
     }
     /////////////////////////////////////
 
-    localDistributions = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-    nonLocalDistributions = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-    restDistributions = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+    localDistributionsF = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+    nonLocalDistributionsF = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+    restDistributionsF = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
@@ -191,35 +191,35 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     // a b c
                     //-1 0 1
 
-                    LBMReal mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-                    LBMReal mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-                    LBMReal mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-                    LBMReal mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-                    LBMReal mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
-                    LBMReal mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-                    LBMReal mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
-                    LBMReal mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-                    LBMReal mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
-                    LBMReal mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-                    LBMReal mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
-                    LBMReal mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
-                    LBMReal mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                    LBMReal mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
+                    LBMReal mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
+                    LBMReal mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
+                    LBMReal mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
+                    LBMReal mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
+                    LBMReal mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
+                    LBMReal mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
+                    LBMReal mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
+                    LBMReal mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
+                    LBMReal mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
+                    LBMReal mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
+                    LBMReal mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
+                    LBMReal mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    LBMReal mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
-                    LBMReal mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
-                    LBMReal mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
-                    LBMReal mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
-                    LBMReal mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
-                    LBMReal mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
-                    LBMReal mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
-                    LBMReal mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
-                    LBMReal mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
-                    LBMReal mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                    LBMReal mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                    LBMReal mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                    LBMReal mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
+                    LBMReal mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
+                    LBMReal mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
+                    LBMReal mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
+                    LBMReal mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
+                    LBMReal mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
+                    LBMReal mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
+                    LBMReal mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
+                    LBMReal mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
+                    LBMReal mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
+                    LBMReal mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                    LBMReal mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                    LBMReal mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                    LBMReal mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    LBMReal mfbbb = (*this->restDistributions)(x1, x2, x3);
+                    LBMReal mfbbb = (*this->restDistributionsF)(x1, x2, x3);
 
                     LBMReal f[D3Q27System::ENDF + 1];
                     LBMReal fEq[D3Q27System::ENDF + 1];
@@ -753,35 +753,35 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
                     //! DOI:10.3390/computation5020019 ]</b></a>
                     //!
-                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)     = mfabb;
-                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)     = mfbab;
-                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)     = mfbba;
-                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)    = mfaab;
-                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)   = mfcab;
-                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)    = mfaba;
-                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)   = mfcba;
-                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)    = mfbaa;
-                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)   = mfbca;
-                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)   = mfaaa;
-                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)  = mfcaa;
-                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)  = mfaca;
-                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca;
+                    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3)     = mfabb;
+                    (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3)     = mfbab;
+                    (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3)     = mfbba;
+                    (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3)    = mfaab;
+                    (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3)   = mfcab;
+                    (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3)    = mfaba;
+                    (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3)   = mfcba;
+                    (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3)    = mfbaa;
+                    (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3)   = mfbca;
+                    (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3)   = mfaaa;
+                    (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3)  = mfcaa;
+                    (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3)  = mfaca;
+                    (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca;
 
-                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     = mfcbb;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     = mfbcb;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     = mfbbc;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   = mfccb;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    = mfacb;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   = mfcbc;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    = mfabc;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   = mfbcc;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    = mfbac;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  = mfacc;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  = mfcac;
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   = mfaac;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3)     = mfcbb;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3)     = mfbcb;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p)     = mfbbc;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3)   = mfccb;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3)    = mfacb;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p)   = mfcbc;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p)    = mfabc;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p)   = mfbcc;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p)    = mfbac;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p)  = mfacc;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p)  = mfcac;
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p)   = mfaac;
 
-                    (*this->restDistributions)(x1, x2, x3) = mfbbb;
+                    (*this->restDistributionsF)(x1, x2, x3) = mfbbb;
                     //////////////////////////////////////////////////////////////////////////
                     f[vf::lbm::dir::DIR_000] = mfbbb;
                      
@@ -813,91 +813,93 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     f[vf::lbm::dir::DIR_MPM]  = mfaca;
                     f[vf::lbm::dir::DIR_PPM]  = mfcca;
                 }
-                    if ((*particleData)(x1, x2, x3)->solidFraction < SOLFRAC_MIN)
-                        continue;
+                    if ((*particleData)(x1, x2, x3)->solidFraction >= SOLFRAC_MIN) {
+                    //                    if ((*particleData)(x1, x2, x3)->solidFraction < SOLFRAC_MIN)
+                    //                        continue;
+                    //
+                                        LBMReal vx1, vx2, vx3, drho;
+                                        D3Q27System::calcCompMacroscopicValues(f, drho, vx1, vx2, vx3);
+                                        D3Q27System::calcCompFeq(fEq, drho, vx1, vx2, vx3);
+                    
+                                        std::array<double, 3> uPart;
+                                        uPart[0] = (*particleData)(x1, x2, x3)->uPart[0] * (1. + drho);
+                                        uPart[1] = (*particleData)(x1, x2, x3)->uPart[1] * (1. + drho);
+                                        uPart[2] = (*particleData)(x1, x2, x3)->uPart[2] * (1. + drho);
+                    
+                                        D3Q27System::calcCompFeq(fEqSolid, drho, uPart[0], uPart[1], uPart[2]);
+                    
+                                        if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MAX) {
+                                        double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
+                                        f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + bb0;
+                                            for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
+                                                const int iOpp        = D3Q27System::INVDIR[iPop];
+                                                double const bb       = ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
+                                                double const bbOpp    = ((fPre[iPop] - fEq[iPop]) - (fPre[iOpp] - fEqSolid[iOpp]));
+                    
+                    
+                                                f[iPop] = fPre[iPop] + bb;
+                                                f[iOpp] = fPre[iOpp] + bbOpp;
+                    
+                                                (*particleData)(x1, x2, x3)->hydrodynamicForce[0] -= D3Q27System::DX1[iPop] * (bb - bbOpp);
+                                                (*particleData)(x1, x2, x3)->hydrodynamicForce[1] -= D3Q27System::DX2[iPop] * (bb - bbOpp);
+                                                (*particleData)(x1, x2, x3)->hydrodynamicForce[2] -= D3Q27System::DX3[iPop] * (bb - bbOpp);
+                                            }
+                                        } else { /* particleData.solidFraction < SOLFRAC_MAX */
+                    //#ifdef LBDEM_USE_WEIGHING
+                                            double const ooo = 1. / omega - 0.5;
+                                            double const B   = (*particleData)(x1, x2, x3)->solidFraction * ooo / ((1. - (*particleData)(x1, x2, x3)->solidFraction) + ooo);
+                    //#else
+                    //                        T const B = particleData.solidFraction;
+                    //#endif
+                                            double const oneMinB = 1. - B;
+                    
+                                            double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
+                                            f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + oneMinB * (f[vf::lbm::dir::DIR_000] - fPre[vf::lbm::dir::DIR_000]) + B * bb0;
+                    
+                                            for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
+                                                int const iOpp = D3Q27System::INVDIR[iPop];
+                                                double const bb       = B * ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
+                                                double const bbOpp    = B * ((fPre[iPop] - fEq[iPop]) - (fPre[iOpp] - fEqSolid[iOpp]));
+                    
+                                                f[iPop] = fPre[iPop] + oneMinB * (f[iPop] - fPre[iPop]) + bb;
+                                                f[iOpp] = fPre[iOpp] + oneMinB * (f[iOpp] - fPre[iOpp]) + bbOpp;
+                    
+                                                (*particleData)(x1, x2, x3)->hydrodynamicForce[0] -= D3Q27System::DX1[iPop] * (bb - bbOpp);
+                                                (*particleData)(x1, x2, x3)->hydrodynamicForce[1] -= D3Q27System::DX2[iPop] * (bb - bbOpp);
+                                                (*particleData)(x1, x2, x3)->hydrodynamicForce[2] -= D3Q27System::DX3[iPop] * (bb - bbOpp);
+                                            }
+                                        } /* if solidFraction > SOLFRAC_MAX */
 
-                    LBMReal vx1, vx2, vx3, drho;
-                    D3Q27System::calcCompMacroscopicValues(f, drho, vx1, vx2, vx3);
-                    D3Q27System::calcCompFeq(fEq, drho, vx1, vx2, vx3);
+                    (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::DIR_000];
 
-                    std::array<double, 3> uPart;
-                    uPart[0] = (*particleData)(x1, x2, x3)->uPart[0] * (1. + drho);
-                    uPart[1] = (*particleData)(x1, x2, x3)->uPart[1] * (1. + drho);
-                    uPart[2] = (*particleData)(x1, x2, x3)->uPart[2] * (1. + drho);
+                    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::DIR_M00];
+                    (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::DIR_0M0];
+                    (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = f[vf::lbm::dir::DIR_00M];
+                    (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = f[vf::lbm::dir::DIR_MM0];
+                    (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = f[vf::lbm::dir::DIR_PM0];
+                    (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = f[vf::lbm::dir::DIR_M0M];
+                    (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = f[vf::lbm::dir::DIR_P0M];
+                    (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = f[vf::lbm::dir::DIR_0MM];
+                    (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = f[vf::lbm::dir::DIR_0PM];
+                    (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = f[vf::lbm::dir::DIR_MMM];
+                    (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = f[vf::lbm::dir::DIR_PMM];
+                    (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MPM];
+                    (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PPM];
 
-                    D3Q27System::calcCompFeq(fEqSolid, drho, uPart[0], uPart[1], uPart[2]);
-
-                    if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MAX) {
-                    double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-                    f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + bb0;
-                        for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
-                            const int iOpp        = D3Q27System::INVDIR[iPop];
-                            double const bb       = ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
-                            double const bbOpp    = ((fPre[iPop] - fEq[iPop]) - (fPre[iOpp] - fEqSolid[iOpp]));
-
-
-                            f[iPop] = fPre[iPop] + bb;
-                            f[iOpp] = fPre[iOpp] + bbOpp;
-
-                            (*particleData)(x1, x2, x3)->hydrodynamicForce[0] -= D3Q27System::DX1[iPop] * (bb - bbOpp);
-                            (*particleData)(x1, x2, x3)->hydrodynamicForce[1] -= D3Q27System::DX2[iPop] * (bb - bbOpp);
-                            (*particleData)(x1, x2, x3)->hydrodynamicForce[2] -= D3Q27System::DX3[iPop] * (bb - bbOpp);
-                        }
-                    } else { /* particleData.solidFraction < SOLFRAC_MAX */
-//#ifdef LBDEM_USE_WEIGHING
-                        double const ooo = 1. / omega - 0.5;
-                        double const B   = (*particleData)(x1, x2, x3)->solidFraction * ooo / ((1. - (*particleData)(x1, x2, x3)->solidFraction) + ooo);
-//#else
-//                        T const B = particleData.solidFraction;
-//#endif
-                        double const oneMinB = 1. - B;
-
-                        double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-                        f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + oneMinB * (f[vf::lbm::dir::DIR_000] - fPre[vf::lbm::dir::DIR_000]) + B * bb0;
-
-                        for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
-                            int const iOpp = D3Q27System::INVDIR[iPop];
-                            double const bb       = B * ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
-                            double const bbOpp    = B * ((fPre[iPop] - fEq[iPop]) - (fPre[iOpp] - fEqSolid[iOpp]));
-
-                            f[iPop] = fPre[iPop] + oneMinB * (f[iPop] - fPre[iPop]) + bb;
-                            f[iOpp] = fPre[iOpp] + oneMinB * (f[iOpp] - fPre[iOpp]) + bbOpp;
-
-                            (*particleData)(x1, x2, x3)->hydrodynamicForce[0] -= D3Q27System::DX1[iPop] * (bb - bbOpp);
-                            (*particleData)(x1, x2, x3)->hydrodynamicForce[1] -= D3Q27System::DX2[iPop] * (bb - bbOpp);
-                            (*particleData)(x1, x2, x3)->hydrodynamicForce[2] -= D3Q27System::DX3[iPop] * (bb - bbOpp);
-                        }
-                    } /* if solidFraction > SOLFRAC_MAX */
-
-                    (*this->restDistributions)(x1, x2, x3)                             = f[vf::lbm::dir::DIR_000];
-                                                                                          
-                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)         = f[vf::lbm::dir::DIR_M00];
-                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)         = f[vf::lbm::dir::DIR_0M0];
-                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)         = f[vf::lbm::dir::DIR_00M];
-                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)        = f[vf::lbm::dir::DIR_MM0];
-                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)       = f[vf::lbm::dir::DIR_PM0];
-                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)        = f[vf::lbm::dir::DIR_M0M];
-                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)       = f[vf::lbm::dir::DIR_P0M];
-                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)        = f[vf::lbm::dir::DIR_0MM];
-                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)       = f[vf::lbm::dir::DIR_0PM];
-                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)       = f[vf::lbm::dir::DIR_MMM];
-                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)      = f[vf::lbm::dir::DIR_PMM];
-                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)      = f[vf::lbm::dir::DIR_MPM];
-                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3)     = f[vf::lbm::dir::DIR_PPM];
-                                                                                              
-                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     = f[vf::lbm::dir::DIR_P00];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     = f[vf::lbm::dir::DIR_0P0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     = f[vf::lbm::dir::DIR_00P];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   = f[vf::lbm::dir::DIR_PP0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    = f[vf::lbm::dir::DIR_MP0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   = f[vf::lbm::dir::DIR_P0P];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    = f[vf::lbm::dir::DIR_M0P];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   = f[vf::lbm::dir::DIR_0PP];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    = f[vf::lbm::dir::DIR_0MP];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[vf::lbm::dir::DIR_PPP];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  = f[vf::lbm::dir::DIR_MPP];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  = f[vf::lbm::dir::DIR_PMP];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   = f[vf::lbm::dir::DIR_MMP];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::DIR_P00];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = f[vf::lbm::dir::DIR_0P0];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = f[vf::lbm::dir::DIR_00P];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PP0];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MP0];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = f[vf::lbm::dir::DIR_P0P];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = f[vf::lbm::dir::DIR_M0P];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = f[vf::lbm::dir::DIR_0PP];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = f[vf::lbm::dir::DIR_0MP];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[vf::lbm::dir::DIR_PPP];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = f[vf::lbm::dir::DIR_MPP];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = f[vf::lbm::dir::DIR_PMP];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = f[vf::lbm::dir::DIR_MMP];
+                    }
                 }
             }
         }

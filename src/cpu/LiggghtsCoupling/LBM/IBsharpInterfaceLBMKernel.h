@@ -36,7 +36,7 @@
 
 #include "BCSet.h"
 #include "D3Q27System.h"
-#include "LBMKernel.h"
+#include "LiggghtsCouplingLBMKernel.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
 #include "basics/utilities/UbTiming.h"
@@ -45,7 +45,7 @@
 //! \brief  Multiphase Cascaded Cumulant LBM kernel.
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  M. Geier, K. Kutscher, Hesameddin Safari
-class IBsharpInterfaceLBMKernel : public LBMKernel
+class IBsharpInterfaceLBMKernel : public LiggghtsCouplingLBMKernel
 {
 public:
     IBsharpInterfaceLBMKernel();
@@ -60,15 +60,6 @@ public:
     {
         return .0;
     }
-
-    CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr getParticleData()
-    {
-        return particleData;
-    };
-    void setParticleData(CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData)
-    {
-        this->particleData = particleData;
-    };
 
 protected:
     virtual void initDataSet();
@@ -85,11 +76,11 @@ protected:
 
     CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
     CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsF;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr restDistributionsF;
 
     CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsH1;
     CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsH1;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsH1;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr restDistributionsH1;
 
     CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressureOld;
     CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr p1Old;
@@ -137,7 +128,6 @@ protected:
     real forcingX2;
     real forcingX3;
 
-    CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData;
 };
 
 #endif

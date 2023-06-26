@@ -105,32 +105,39 @@ void LiggghtsCouplingSimulationObserver::setSingleSphere3D(double *x, double *v,
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
             CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData =
-                //dynamicPointerCast<IBcumulantK17LBMKernel>(kernel)->getParticleData();
-                dynamicPointerCast<IBsharpInterfaceLBMKernel>(kernel)->getParticleData();
+                dynamicPointerCast<LiggghtsCouplingLBMKernel>(kernel)->getParticleData();
 
             if (!particleData)
                 continue;
 
-            //int minX1 = 1;
-            //int minX2 = 1;
-            //int minX3 = 1;
+            int minX1b = 1;
+            int minX2b = 1;
+            int minX3b = 1;
 
-            //int maxX1 = (int)(distributions->getNX1()) - 1;
-            //int maxX2 = (int)(distributions->getNX2()) - 1;
-            //int maxX3 = (int)(distributions->getNX3()) - 1;
+            int maxX1b = (int)(distributions->getNX1()) - 2;
+            int maxX2b = (int)(distributions->getNX2()) - 2;
+            int maxX3b = (int)(distributions->getNX3()) - 2;
 
             real deltax = grid->getDeltaX(block);
 
             UbTupleInt3 nodesMin = grid->getNodeIndexes(block, x[0] - r - deltax, x[1] - r - deltax, x[2] - r - deltax);
             UbTupleInt3 nodesMax = grid->getNodeIndexes(block, x[0] + r + deltax, x[1] + r + deltax, x[2] + r + deltax);
 
-            int minX1 = val<1>(nodesMin);
-            int minX2 = val<2>(nodesMin);
-            int minX3 = val<3>(nodesMin);
+            int minX1 = (val<1>(nodesMin) < minX1b) ? minX1b : val<1>(nodesMin);
+            int minX2 = (val<2>(nodesMin) < minX2b) ? minX2b : val<2>(nodesMin);
+            int minX3 = (val<3>(nodesMin) < minX3b) ? minX3b : val<3>(nodesMin);
 
-            int maxX1 = val<1>(nodesMax);
-            int maxX2 = val<2>(nodesMax);
-            int maxX3 = val<3>(nodesMin);
+            int maxX1 = (val<1>(nodesMax) > maxX1b) ? maxX1b : val<1>(nodesMax);
+            int maxX2 = (val<2>(nodesMax) > maxX2b) ? maxX2b : val<2>(nodesMax);
+            int maxX3 = (val<3>(nodesMax) > maxX3b) ? maxX3b : val<3>(nodesMax);
+
+            //int minX1 =  minX1b;
+            //int minX2 =  minX2b;
+            //int minX3 =  minX3b;
+
+            //int maxX1 =  maxX1b;
+            //int maxX2 =  maxX2b;
+            //int maxX3 =  maxX3b;
 
 
             for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
@@ -350,8 +357,7 @@ void LiggghtsCouplingSimulationObserver::SumForceTorque3D(ParticleData::Particle
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
             CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData =
-                //dynamicPointerCast<IBcumulantK17LBMKernel>(kernel)->getParticleData();
-                dynamicPointerCast<IBsharpInterfaceLBMKernel>(kernel)->getParticleData();
+                dynamicPointerCast<LiggghtsCouplingLBMKernel>(kernel)->getParticleData();
 
             if (!particleData)
                 continue;

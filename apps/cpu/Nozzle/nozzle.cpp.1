@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
         if (myid == 0) VF_LOG_INFO("Yield stress = {} Pa", tau0);
         if (myid == 0) VF_LOG_INFO("Yield stress LB = {} ", tau0_LB);
 
-        // SPtr<BC> noSlipBC(new NoSlipBC());
-        // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //SPtr<BC> noSlipBC(new NoSlipBC());
+        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
@@ -161,8 +161,8 @@ int main(int argc, char *argv[])
         //    fct.DefineConst("U", uLB_ref * ((N + 3) / (N + 1)));
         //    fct.DefineConst("NplusOne", N + 1.0);
 
-        // SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
-        // inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
+        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
         SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
         inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -444,7 +444,7 @@ int main(int argc, char *argv[])
         bcVisitor.addBC(noSlipBC);
         bcVisitor.addBC(inflowConcreteBC);
         bcVisitor.addBC(inflowAirBC1);
-        //bcVisitor.addBC(outflowBC);
+        bcVisitor.addBC(outflowBC);
 
         // SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
         // SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
@@ -484,7 +484,7 @@ int main(int argc, char *argv[])
 
         string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
 
-        string outputPath = "d:/temp/NozzleFlowTest_SharpInterface_With_Part_without_gravity_0.6_2";
+        string outputPath = "d:/temp/NozzleFlowTest_SharpInterface_With_Part_fraction_0.23";
         UbSystem::makeDirectory(outputPath);
         UbSystem::makeDirectory(outputPath + "/liggghts");
 
@@ -525,7 +525,7 @@ int main(int argc, char *argv[])
         //LatticeDecomposition lDec((g_maxX1 - g_minX1) / dx, (g_maxX2 - g_minX2) / dx, (g_maxX3 - g_minX3) / dx, wrapper.lmp, grid);
 
         SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
-        SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, units);
+        SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, unitsAir);
         //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(std::ceil((g_maxX1 - g_minX1) / dx), std::ceil((g_maxX2 - g_minX2) / dx), std::ceil((g_maxX3 - g_minX3) / dx), wrapper.lmp);
         SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(26,26,420, wrapper.lmp);
         
@@ -598,7 +598,7 @@ int main(int argc, char *argv[])
         ///////////////////////////////////////////////////////////
         // inflow
         //GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.20105, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.23, 0.013));
-        GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.175, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.23, 0.013));
+        GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.175, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.21, 0.013));
         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBC, Interactor3D::SOLID));
         ///////////////////////////////////////////////////////////
@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
         intHelper.addInteractor(intrFluidArea);
         intHelper.addInteractor(intrNozzleVolcanNozzle2);
         // intHelper.addInteractor(intrBox);
-        //intHelper.addInteractor(intrInflow);
+        intHelper.addInteractor(intrInflow);
         // intHelper.addInteractor(intrAirInflow);
         intHelper.addInteractor(intAirInlet1);
         intHelper.addInteractor(intAirInlet2);
@@ -711,8 +711,8 @@ int main(int argc, char *argv[])
 
         double x1c = -1.31431 + R;
         double x2c = 0.375582 + R;
-        double Ri = 5; //0.05;
-        double x3c = 0.1225 + Ri;
+        double Ri = 5;
+        double x3c = 0.136 + Ri;
 
         //R = 0.2 - 0.145; // 0.078-0.04; // 0.2;
 
@@ -726,7 +726,7 @@ int main(int argc, char *argv[])
         fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
 
         MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-        //initVisitor.setPhi(fct1);
+        initVisitor.setPhi(fct1);
         grid->accept(initVisitor);
 
         //InitDistributionsBlockVisitor initVisitor;

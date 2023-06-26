@@ -26,50 +26,41 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NoSlipBCStrategy.cpp
-//! \ingroup BoundarConditions
+//! \file LiggghtsCouplingLBMKernel.h
+//! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "NoSlipBCStrategy.h"
-#include "BoundaryConditions.h"
-#include "DistributionArray3D.h"
+#ifndef LiggghtsCouplingLBMKernel_h
+#define LiggghtsCouplingLBMKernel_h
 
-NoSlipBCStrategy::NoSlipBCStrategy()
-{
-    BCStrategy::type         = BCStrategy::NoSlipBCStrategy;
-    BCStrategy::preCollision = false;
-}
-//////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> NoSlipBCStrategy::clone()
-{
-    SPtr<BCStrategy> bc(new NoSlipBCStrategy());
-    return bc;
-}
-//////////////////////////////////////////////////////////////////////////
-void NoSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
-{
-    this->distributions = distributions;
-}
-//////////////////////////////////////////////////////////////////////////
-void NoSlipBCStrategy::applyBC()
-{
-    using namespace vf::basics::constant;
-    using namespace D3Q27System;
-    real f[ENDF + 1];
-    real feq[ENDF + 1];
-    distributions->getDistributionInv(f, x1, x2, x3);
-    real rho, vx1, vx2, vx3;
-    calcMacrosFct(f, rho, vx1, vx2, vx3);
-    calcFeqFct(feq, rho, vx1, vx2, vx3);
+#include "LBMKernel.h"
+#include "IBdynamicsParticleData.h"
+#include "basics/container/CbArray3D.h"
+#include "basics/container/CbArray4D.h"
 
-    for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
-        if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
-            // quadratic bounce back
-            const int invDir = INVDIR[fdir];
-            real q = bcPtr->getQ(invDir);
-            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
-            distributions->setDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
-        }
-    }
-}
+class LiggghtsCouplingLBMKernel : public LBMKernel
+{
+public:
+    virtual ~LiggghtsCouplingLBMKernel() = default;
+
+    CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr getParticleData()
+    {
+        return particleData;
+    };
+    void setParticleData(CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData)
+    {
+        this->particleData = particleData;
+    };
+
+    
+ protected:
+    //void collisionOperator();
+    CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData;
+
+    //CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
+    //CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
+    //CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr restDistributionsF;
+};
+
+#endif

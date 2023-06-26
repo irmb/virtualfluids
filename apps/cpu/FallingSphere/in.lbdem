@@ -42,7 +42,7 @@ fix xwalls2 all wall/gran model hertz tangential history primitive type 1 xplane
 fix ywalls1 all wall/gran model hertz tangential history primitive type 1 yplane 0.
 fix ywalls2 all wall/gran model hertz tangential history primitive type 1 yplane 1.
 fix zwalls1 all wall/gran model hertz tangential history primitive type 1 zplane 0.
-fix zwalls2 all wall/gran model hertz tangential history primitive type 1 zplane 2.
+fix zwalls2 all wall/gran model hertz tangential history primitive type 1 zplane 10.
 
 create_atoms 1 single 0.5 0.5 9.75
 #create_atoms 1 single 0.38 0.05 0.05

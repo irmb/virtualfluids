@@ -184,11 +184,11 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
     localDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
     nonLocalDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-    zeroDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+    restDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
     localDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getLocalDistributions();
     nonLocalDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getNonLocalDistributions();
-    zeroDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getZeroDistributions();
+    restDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getZeroDistributions();
 
     CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
 
@@ -239,7 +239,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                     real mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
                     real mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     real mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
-                    real mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
+                    real mfbbb = (*this->restDistributionsH1)(x1, x2, x3);
 
                     // omegaDRho = 2.0;// 1.5;
                     // real phiOld = (*phaseField)(x1, x2, x3);
@@ -680,12 +680,12 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                     real mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
                     real mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     real mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
-                    real mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
+                    real mfbbb = (*this->restDistributionsF)(x1, x2, x3);
 
-                    LBMReal f[D3Q27System::ENDF + 1];
-                    LBMReal fEq[D3Q27System::ENDF + 1];
-                    LBMReal fEqSolid[D3Q27System::ENDF + 1];
-                    LBMReal fPre[D3Q27System::ENDF + 1];
+                    real f[D3Q27System::ENDF + 1];
+                    real fEq[D3Q27System::ENDF + 1];
+                    real fEqSolid[D3Q27System::ENDF + 1];
+                    real fPre[D3Q27System::ENDF + 1];
 
                     f[vf::lbm::dir::DIR_000] = mfbbb;
 
@@ -1169,7 +1169,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac;  //* rho * c1o3;
                         (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac;   //* rho * c1o3;
 
-                        (*this->zeroDistributionsF)(x1, x2, x3) = mfbbb; // *rho* c1o3;
+                        (*this->restDistributionsF)(x1, x2, x3) = mfbbb; // *rho* c1o3;
 
                         f[vf::lbm::dir::DIR_000] = mfbbb;
 
@@ -1202,7 +1202,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         f[vf::lbm::dir::DIR_PPM] = mfcca;
                     }
                     if ((*particleData)(x1, x2, x3)->solidFraction >= SOLFRAC_MIN) {
-                        LBMReal vx1, vx2, vx3, drho;
+                        real vx1, vx2, vx3, drho;
                         D3Q27System::calcIncompMacroscopicValues(f, drho, vx1, vx2, vx3);
                         D3Q27System::calcIncompFeq(fEq, drho, vx1, vx2, vx3);
 
@@ -1254,7 +1254,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                             }
                         } /* if solidFraction > SOLFRAC_MAX */
 
-                        (*this->zeroDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::DIR_000];
+                        (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::DIR_000];
 
                         (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::DIR_M00];
                         (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::DIR_0M0];
@@ -1318,7 +1318,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
                         mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
                         mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
-                        mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
+                        mfbbb = (*this->restDistributionsH1)(x1, x2, x3);
 
                         ////////////////////////////////////////////////////////////////////////////////////
                         //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
@@ -1529,7 +1529,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac;
                         (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac;
 
-                        (*this->zeroDistributionsH1)(x1, x2, x3) = mfbbb;
+                        (*this->restDistributionsH1)(x1, x2, x3) = mfbbb;
 
                     }
                 }
@@ -1715,7 +1715,7 @@ void IBsharpInterfaceLBMKernel::computePhasefield()
                     h[DIR_MPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     h[DIR_PPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[DIR_000] = (*this->zeroDistributionsH1)(x1, x2, x3);
+                    h[DIR_000] = (*this->restDistributionsH1)(x1, x2, x3);
                 }
             }
         }
