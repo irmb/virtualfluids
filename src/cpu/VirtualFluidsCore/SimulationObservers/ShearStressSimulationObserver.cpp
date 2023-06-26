@@ -16,6 +16,8 @@ ShearStressSimulationObserver::ShearStressSimulationObserver(SPtr<Grid3D> grid, 
                                                SPtr<UbScheduler> s, SPtr<UbScheduler> rs)
     : SimulationObserver(grid, s), Resetscheduler(rs), path(path), writer(writer)
 {
+    using namespace vf::basics::constant; 
+
     std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
     normals.push_back(0);
     normals.push_back(0);
@@ -30,7 +32,7 @@ ShearStressSimulationObserver::ShearStressSimulationObserver(SPtr<Grid3D> grid, 
         for (SPtr<Block3D> block : blockVector[level]) {
             UbTupleInt3 nx                                   = grid->getBlockNX();
             SPtr<ShearStressValuesArray3D> shearStressValues = SPtr<ShearStressValuesArray3D>(
-                new ShearStressValuesArray3D(14, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+                new ShearStressValuesArray3D(14, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, c0o1));
             block->getKernel()->getDataSet()->setShearStressValues(shearStressValues);
         }
     }
@@ -126,6 +128,7 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
 {
     using namespace vf::lbm::dir;
     using namespace D3Q27System;
+    using namespace vf::basics::constant;
 
     real f[27];
     real vx, vy, vz, sxx, syy, szz, sxy, syz, sxz;
@@ -182,23 +185,23 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
                     vz = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
                           (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[DIR_00P] - f[DIR_00M]));
 
-                    sxy = 3.0 * collFactor / (collFactor - 1.0) *
+                    sxy = c3o1 * collFactor / (collFactor - c1o1) *
                           (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + (-(f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                            (((f[DIR_PP0] + f[DIR_MM0]) - (f[DIR_PM0] + f[DIR_MP0]))) - vx * vy);
 
-                    sxz = 3.0 * collFactor / (collFactor - 1.0) *
+                    sxz = c3o1 * collFactor / (collFactor - c1o1) *
                           (((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + (-(f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
                            ((f[DIR_P0P] + f[DIR_M0M]) - (f[DIR_P0M] + f[DIR_M0P])) - vx * vz);
 
-                    syz = 3.0 * collFactor / (collFactor - 1.0) *
+                    syz = c3o1 * collFactor / (collFactor - c1o1) *
                           (((f[DIR_PPP] + f[DIR_MMM]) - (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) - (f[DIR_MMP] + f[DIR_PPM])) +
                            (-(f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) - vy * vz);
 
-                    real dxxMyy = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
+                    real dxxMyy = c3o1 / c2o1 * collFactor / (collFactor - c1o1) *
                                      (((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) +
                                       ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_0P0] + f[DIR_0M0])) - vx * vx + vy * vy);
 
-                    real dxxMzz = 3.0 / 2.0 * collFactor / (collFactor - 1.0) *
+                    real dxxMzz = c3o1 / c2o1 * collFactor / (collFactor - c1o1) *
                                      ((((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
                                       ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_00P] + f[DIR_00M])) - vx * vx + vz * vz);
 
@@ -206,25 +209,25 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
                     // f[NW]))-((f[TE] + f[BW])+(f[BE]+ f[TW])))
                     //    +((f[N] + f[S])-(f[T] + f[B])) -vy*vy +vz*vz);
 
-                    sxx = (dxxMyy + dxxMzz) / 3.0; // weil dxxPyyPzz=0
+                    sxx = (dxxMyy + dxxMzz) / c3o1; // weil dxxPyyPzz=0
 
-                    syy = (dxxMzz - 2 * dxxMyy) / 3.0;
+                    syy = (dxxMzz - c2o1 * dxxMyy) / c3o1;
 
-                    szz = (dxxMyy - 2 * dxxMzz) / 3.0;
+                    szz = (dxxMyy - c2o1 * dxxMzz) / c3o1;
 
                     //////////////////////////////////////////////////////////////////////////
                     // compute average values
                     //////////////////////////////////////////////////////////////////////////
-                    (*ssv)(AvVx, ix1, ix2, ix3) = ((*ssv)(AvVx, ix1, ix2, ix3) * timeStep + vx) / (timeStep + 1.0);
-                    (*ssv)(AvVy, ix1, ix2, ix3) = ((*ssv)(AvVy, ix1, ix2, ix3) * timeStep + vy) / (timeStep + 1.0);
-                    (*ssv)(AvVz, ix1, ix2, ix3) = ((*ssv)(AvVz, ix1, ix2, ix3) * timeStep + vz) / (timeStep + 1.0);
+                    (*ssv)(AvVx, ix1, ix2, ix3) = ((*ssv)(AvVx, ix1, ix2, ix3) * timeStep + vx) / (timeStep + c1o1);
+                    (*ssv)(AvVy, ix1, ix2, ix3) = ((*ssv)(AvVy, ix1, ix2, ix3) * timeStep + vy) / (timeStep + c1o1);
+                    (*ssv)(AvVz, ix1, ix2, ix3) = ((*ssv)(AvVz, ix1, ix2, ix3) * timeStep + vz) / (timeStep + c1o1);
 
-                    (*ssv)(AvSxx, ix1, ix2, ix3) = ((*ssv)(AvSxx, ix1, ix2, ix3) * timeStep + sxx) / (timeStep + 1.0);
-                    (*ssv)(AvSyy, ix1, ix2, ix3) = ((*ssv)(AvSyy, ix1, ix2, ix3) * timeStep + syy) / (timeStep + 1.0);
-                    (*ssv)(AvSzz, ix1, ix2, ix3) = ((*ssv)(AvSzz, ix1, ix2, ix3) * timeStep + szz) / (timeStep + 1.0);
-                    (*ssv)(AvSxy, ix1, ix2, ix3) = ((*ssv)(AvSxy, ix1, ix2, ix3) * timeStep + sxy) / (timeStep + 1.0);
-                    (*ssv)(AvSyz, ix1, ix2, ix3) = ((*ssv)(AvSyz, ix1, ix2, ix3) * timeStep + syz) / (timeStep + 1.0);
-                    (*ssv)(AvSxz, ix1, ix2, ix3) = ((*ssv)(AvSxz, ix1, ix2, ix3) * timeStep + sxz) / (timeStep + 1.0);
+                    (*ssv)(AvSxx, ix1, ix2, ix3) = ((*ssv)(AvSxx, ix1, ix2, ix3) * timeStep + sxx) / (timeStep + c1o1);
+                    (*ssv)(AvSyy, ix1, ix2, ix3) = ((*ssv)(AvSyy, ix1, ix2, ix3) * timeStep + syy) / (timeStep + c1o1);
+                    (*ssv)(AvSzz, ix1, ix2, ix3) = ((*ssv)(AvSzz, ix1, ix2, ix3) * timeStep + szz) / (timeStep + c1o1);
+                    (*ssv)(AvSxy, ix1, ix2, ix3) = ((*ssv)(AvSxy, ix1, ix2, ix3) * timeStep + sxy) / (timeStep + c1o1);
+                    (*ssv)(AvSyz, ix1, ix2, ix3) = ((*ssv)(AvSyz, ix1, ix2, ix3) * timeStep + syz) / (timeStep + c1o1);
+                    (*ssv)(AvSxz, ix1, ix2, ix3) = ((*ssv)(AvSxz, ix1, ix2, ix3) * timeStep + sxz) / (timeStep + c1o1);
                 }
             }
         }
@@ -233,6 +236,8 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
 //////////////////////////////////////////////////////////////////////////
 void ShearStressSimulationObserver::addData()
 {
+    using namespace vf::basics::constant;
+
     // Diese Daten werden geschrieben:
     datanames.resize(0);
     datanames.emplace_back("y^plus");
@@ -322,16 +327,16 @@ void ShearStressSimulationObserver::addData()
                     real nvty   = vty / normVt;
                     real nvtz   = vtz / normVt;
 
-                    real sx   = 0.5 * ((*ssv)(AvSxx, ix1, ix2, ix3) * nvtx + (*ssv)(AvSxy, ix1, ix2, ix3) * nvty +
+                    real sx   = c1o2 * ((*ssv)(AvSxx, ix1, ix2, ix3) * nvtx + (*ssv)(AvSxy, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSxz, ix1, ix2, ix3) * nvtz);
-                    real sy   = 0.5 * ((*ssv)(AvSxy, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyy, ix1, ix2, ix3) * nvty +
+                    real sy   = c1o2 * ((*ssv)(AvSxy, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyy, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSyz, ix1, ix2, ix3) * nvtz);
-                    real sz   = 0.5 * ((*ssv)(AvSxz, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyz, ix1, ix2, ix3) * nvty +
+                    real sz   = c1o2 * ((*ssv)(AvSxz, ix1, ix2, ix3) * nvtx + (*ssv)(AvSyz, ix1, ix2, ix3) * nvty +
                                        (*ssv)(AvSzz, ix1, ix2, ix3) * nvtz);
                     real sabs = sqrt(sx * sx + sy * sy + sz * sz);
 
-                    real viscosity = (1.0 / 3.0) * (1.0 / collFactor - 0.5);
-                    real rho       = 1.0;
+                    real viscosity = (c1o1 / c3o1) * (c1o1 / collFactor - c1o2);
+                    real rho       = c1o1;
                     real utau      = sqrt(viscosity / rho * sabs);
 
                     // double q=(*av)(ix1,ix2,ix3,normalq) ;
@@ -355,6 +360,8 @@ void ShearStressSimulationObserver::reset(real step)
 //////////////////////////////////////////////////////////////////////////
 void ShearStressSimulationObserver::resetData(real /*step*/)
 {
+    using namespace vf::basics::constant;
+
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (const auto &block : blockVector[level]) {
             if (block) {
@@ -383,16 +390,16 @@ void ShearStressSimulationObserver::resetData(real /*step*/)
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values
                                 //////////////////////////////////////////////////////////////////////////
-                                (*ssv)(AvVx, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvVy, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvVz, ix1, ix2, ix3) = 0.0;
+                                (*ssv)(AvVx, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvVy, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvVz, ix1, ix2, ix3) = c0o1;
 
-                                (*ssv)(AvSxx, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvSyy, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvSzz, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvSxy, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvSyz, ix1, ix2, ix3) = 0.0;
-                                (*ssv)(AvSxz, ix1, ix2, ix3) = 0.0;
+                                (*ssv)(AvSxx, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvSyy, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvSzz, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvSxy, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvSyz, ix1, ix2, ix3) = c0o1;
+                                (*ssv)(AvSxz, ix1, ix2, ix3) = c0o1;
                                 //////////////////////////////////////////////////////////////////////////
                             }
                         }
@@ -409,10 +416,11 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                                        real &B, real &C, real &D, real &ii)
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
-    real x1plane = 0.0, y1plane = 0.0, z1plane = 0.0;
-    real x2plane = 0.0, y2plane = 0.0, z2plane = 0.0;
-    real x3plane = 0.0, y3plane = 0.0, z3plane = 0.0;
+    real x1plane = c0o1, y1plane = c0o1, z1plane = c0o1;
+    real x2plane = c0o1, y2plane = c0o1, z2plane = c0o1;
+    real x3plane = c0o1, y3plane = c0o1, z3plane = c0o1;
     SPtr<BoundaryConditions> bcPtr;
     real dx                               = grid->getDeltaX(block);
     SPtr<ILBMKernel> kernel                 = block->getKernel();
@@ -839,6 +847,7 @@ bool ShearStressSimulationObserver::checkUndefindedNodes(SPtr<BCArray3D> bcArray
 void ShearStressSimulationObserver::initDistance()
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
     for (const auto &interactor : interactors) {
         //      typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
@@ -906,7 +915,7 @@ void ShearStressSimulationObserver::initDistance()
                         continue;
 
                     //////get normal and distance//////
-                    real A, B, C, D, ii = 0.0;
+                    real A, B, C, D, ii = c0o1;
                     findPlane(ix1, ix2, ix3, grid, block, A, B, C, D, ii);
                     Vector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     real ix1ph         = pointplane1[0];

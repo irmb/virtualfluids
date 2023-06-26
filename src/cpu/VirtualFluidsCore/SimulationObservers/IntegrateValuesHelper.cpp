@@ -36,6 +36,8 @@ IntegrateValuesHelper::~IntegrateValuesHelper() = default;
 //////////////////////////////////////////////////////////////////////////
 void IntegrateValuesHelper::init(int level)
 {
+    using namespace vf::basics::constant;
+
     root = comm->isRoot();
 
     real orgX1, orgX2, orgX3;
@@ -49,8 +51,8 @@ void IntegrateValuesHelper::init(int level)
         maxInitLevel = level;
     }
 
-    real numSolids = 0.0;
-    real numFluids = 0.0;
+    real numSolids = c0o1;
+    real numFluids = c0o1;
     for (int level_it = minInitLevel; level_it <= maxInitLevel; level_it++) {
         std::vector<SPtr<Block3D>> blockVector;
         grid->getBlocks(level_it, gridRank, blockVector);
@@ -101,8 +103,8 @@ void IntegrateValuesHelper::init(int level)
     rvalues = comm->gather(values);
 
     if (root) {
-        numberOfSolidNodes  = 0.0;
-        numberOfFluidsNodes = 0.0;
+        numberOfSolidNodes  = c0o1;
+        numberOfFluidsNodes = c0o1;
         int rsize           = (int)rvalues.size();
         int vsize           = (int)values.size();
         for (int i = 0; i < rsize; i += vsize) {
@@ -230,21 +232,23 @@ void IntegrateValuesHelper::calculateMQ()
 //////////////////////////////////////////////////////////////////////////
 void IntegrateValuesHelper::clearData()
 {
-    sRho        = 0.0;
-    sVx1        = 0.0;
-    sVx2        = 0.0;
-    sVx3        = 0.0;
-    sCellVolume = 0.0;
+    using namespace vf::basics::constant;
+ 
+    sRho        = c0o1;
+    sVx1        = c0o1;
+    sVx2        = c0o1;
+    sVx3        = c0o1;
+    sCellVolume = c0o1;
     // sVm = 0.0;
     // sPress = 0.0;
     // numberOfFluidsNodes = 0.0;
-    sAvVx1  = 0.0;
-    sAvVx2  = 0.0;
-    sAvVx3  = 0.0;
-    sTSx1   = 0.0;
-    sTSx2   = 0.0;
-    sTSx3   = 0.0;
-    sTSx1x3 = 0.0;
+    sAvVx1  = c0o1;
+    sAvVx2  = c0o1;
+    sAvVx3  = c0o1;
+    sTSx1   = c0o1;
+    sTSx2   = c0o1;
+    sTSx3   = c0o1;
+    sTSx1x3 = c0o1;
 }
 //////////////////////////////////////////////////////////////////////////
 real IntegrateValuesHelper::getNumberOfFluidsNodes() { return this->numberOfFluidsNodes; }
