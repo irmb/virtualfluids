@@ -15,7 +15,7 @@ void verifyNumberOfDevices(int deviceId)
     int device_count = 0;
     cudaError_t errorId = cudaGetDeviceCount(&device_count);
     if(errorId != cudaSuccess) {
-        VF_LOG_CRITICAL("Error while accessing the device count: {}", cudaGetErrorString(errorId));
+        VF_LOG_CRITICAL("Device {}: Error while accessing the device count: {}", deviceId, cudaGetErrorString(errorId));
     }
     if (deviceId > device_count) {
         throw std::runtime_error("chosen gpudevice >=  device_count ... exiting\n");
@@ -28,13 +28,13 @@ void verifyComputeCapability(int deviceId)
     cudaError_t errorId = cudaGetDeviceProperties(&deviceProp, deviceId);
 
     if(errorId != cudaSuccess){
-        VF_LOG_CRITICAL("Error while accessing the device properties occurs: {}", cudaGetErrorString(errorId));
+        VF_LOG_CRITICAL("Device {}: Error while accessing the device properties occurs: {}", deviceId, cudaGetErrorString(errorId));
     }
 
     VF_LOG_INFO("[compute capability] = [{}.{}]\n", deviceProp.major, deviceProp.minor);
 
     if (deviceProp.major > 999) {
-        throw std::runtime_error("warning, CUDA Device Emulation (CPU) detected, exiting\n");
+        throw std::runtime_error("Warning, CUDA Device Emulation (CPU) detected, exiting\n");
     }
 }
 
@@ -43,13 +43,13 @@ void setCudaDevice(int deviceId)
     // choose a cuda device for kernel execution
     cudaError_t errorId = cudaSetDevice(deviceId);
     if (errorId != cudaSuccess) {
-        VF_LOG_CRITICAL("Error while setting the device to {}: {}", deviceId, cudaGetErrorString(errorId));
+        VF_LOG_CRITICAL("Device {}: Error while setting the device to: {}", deviceId, cudaGetErrorString(errorId));
     } else {
         int device;
         // double check that device was properly selected
         errorId = cudaGetDevice(&device);
         if(errorId != cudaSuccess) {
-            VF_LOG_CRITICAL("Error while getting the device: {}", cudaGetErrorString(errorId));
+            VF_LOG_CRITICAL("Device {}: Error while getting the device: {}", deviceId, cudaGetErrorString(errorId));
         }
     }
 }
@@ -70,7 +70,7 @@ void printCudaInformation(int deviceId)
     cudaError_t errorId = cudaGetDeviceProperties(&prop, deviceId);
 
     if(errorId != cudaSuccess){
-        VF_LOG_CRITICAL("Error while accessing the device properties occurs: {}", cudaGetErrorString(errorId));
+        VF_LOG_CRITICAL("Device {}: Error while accessing the device properties occurs: {}", deviceId, cudaGetErrorString(errorId));
     }
 
     printf(" --- General Information for device %d ---\n", deviceId);

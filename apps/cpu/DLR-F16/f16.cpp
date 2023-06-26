@@ -978,8 +978,8 @@ void run(string configname)
 
 
          ////set connectors
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -1101,7 +1101,7 @@ void run(string configname)
          
                  
          ////////////////////////////////////////////////////////////////////////////
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 

@@ -91,9 +91,12 @@ include(${VF_CMAKE_DIR}/Cache.cmake)
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
-IF( BUILD_VF_DOUBLE_ACCURACY )
+if(BUILD_VF_DOUBLE_ACCURACY)
     list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
-ENDIF()
+    message(STATUS "Configure VirtualFluids with double precision")
+else()
+    message(STATUS "Configure VirtualFluids with single precision")
+endif()
 
 # set gpu features
 if(BUILD_VF_GPU)

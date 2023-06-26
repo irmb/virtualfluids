@@ -700,7 +700,7 @@ public:
     real getEndXHotWall();
     unsigned int getStepEnsight();
     unsigned int getOutputCount();
-    unsigned int getlimitOfNodesForVTK();
+    unsigned int getLimitOfNodesForVTK();
     unsigned int getStartTurn();
     bool getEvenOrOdd(int level);
     bool getDiffOn();

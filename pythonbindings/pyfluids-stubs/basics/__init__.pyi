@@ -32,10 +32,13 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
-from typing import ClassVar
+from __future__ import annotations
 
-from typing import overload
+from typing import ClassVar, overload
 
+from . import logger as logger
+
+from pyfluids.bindings.basics import logger as logger
 class ConfigurationFile:
     def __init__(self) -> None: ...
     def contains(self, key: str) -> bool: ...

@@ -1721,7 +1721,7 @@ unsigned int Parameter::getOutputCount()
 {
     return this->outputCount;
 }
-unsigned int Parameter::getlimitOfNodesForVTK()
+unsigned int Parameter::getLimitOfNodesForVTK()
 {
     return this->limitOfNodesForVTK;
 }

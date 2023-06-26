@@ -164,15 +164,15 @@ void run()
       ppblocks.reset();
 
       //set connectors  
-      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
-      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
-      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetSquarePressureInterpolationProcessor());
+      //SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
+      //SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
+      //dynamicPointerCast<CompressibleOffsetMomentsInterpolator>(iProcessor)->setBulkOmegaToOmega(true);
+      //SPtr<Interpolator> iProcessor(new CompressibleOffsetSquarePressureInterpolator());
 
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
       SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 

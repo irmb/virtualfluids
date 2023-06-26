@@ -211,7 +211,7 @@ void run(string configname)
 
       //set connectors
       if (myid==0) UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
-      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
       grid->accept(setConnsVisitor);
       if (myid==0) UBLOG(logINFO, "SetConnectorsBlockVisitor:end");

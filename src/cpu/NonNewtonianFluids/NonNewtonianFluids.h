@@ -18,7 +18,7 @@
 #include "NonNewtonianFluids/LBM/ThixotropyExpLBMKernel.h"
 #include "NonNewtonianFluids/LBM/RheologyBinghamModelLBMKernel.h"
 #include "NonNewtonianFluids/LBM/RheologyHerschelBulkleyModelLBMKernel.h"
-#include "NonNewtonianFluids/LBM/RheologyInterpolationProcessor.h"
+#include "NonNewtonianFluids/LBM/RheologyInterpolator.h"
 #include "NonNewtonianFluids/LBM/Rheology.h"
 #include "NonNewtonianFluids/LBM/RheologyK17LBMKernel.h"
 #include "NonNewtonianFluids/LBM/RheologyPowellEyringModelLBMKernel.h"

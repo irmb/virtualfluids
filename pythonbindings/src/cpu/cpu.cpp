@@ -38,18 +38,16 @@
 #include "submodules/simulationparameters.cpp"
 #include "submodules/writer.cpp"
 
-namespace cpu
+namespace cpu_bindings
 {
     namespace py = pybind11;
-    py::module makeModule(py::module_ &parentModule)
+    PYBIND11_MODULE(cpu, m)
     {
-        py::module cpuModule = parentModule.def_submodule("cpu");
-        boundaryconditions::makeModule(cpuModule);
-        simulation::makeModule(cpuModule);
-        geometry::makeModule(cpuModule);
-        kernel::makeModule(cpuModule);
-        parameters::makeModule(cpuModule);
-        writer::makeModule(cpuModule);
-        return cpuModule;
+        boundaryconditions::makeModule(m);
+        simulation::makeModule(m);
+        geometry::makeModule(m);
+        kernel::makeModule(m);
+        parameters::makeModule(m);
+        writer::makeModule(m);
     }
 }

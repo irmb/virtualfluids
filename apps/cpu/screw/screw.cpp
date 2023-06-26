@@ -146,8 +146,8 @@ int main(int argc, char* argv[])
          //////////////////////////////////////
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
+         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
          grid->accept(bcVisitor);
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
