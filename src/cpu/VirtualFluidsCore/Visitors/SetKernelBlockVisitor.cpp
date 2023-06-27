@@ -124,6 +124,8 @@ void SetKernelBlockVisitor::throwExceptionIfNotEnoughMemory(const SPtr<Grid3D> &
 
 real SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) const
 {
+    using namespace vf::basics::constant;
+
     unsigned long long numberOfNodesPerBlockWithGhostLayer;
     auto numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
     auto blockNx        = grid->getBlockNX();
@@ -133,7 +135,7 @@ real SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) 
                                           (val<2>(blockNx) + ghostLayer) * (val<3>(blockNx) + ghostLayer);
 
     auto needMemAll =
-        real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+        real(numberOfNodesPerBlockWithGhostLayer * (c27o1 * sizeof(real) + sizeof(int) + sizeof(float) * c4o1));
 
     return needMemAll / real(numberOfProcesses);
 }

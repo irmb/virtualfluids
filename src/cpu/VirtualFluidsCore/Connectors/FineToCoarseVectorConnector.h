@@ -45,6 +45,7 @@
 #include "MathUtil.hpp"
 #include "basics/transmitter/TbTransmitter.h"
 #include <PointerDefinitions.h>
+#include "basics/constants/NumericConstants.h"
 
 #include "BCSet.h"
 #include "DataSet3D.h"
@@ -793,6 +794,8 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
                                                                     const int &lMaxX1, const int &lMaxX2,
                                                                     const int &lMaxX3, vector_type &data, int &index)
 {
+    using namespace vf::basics::constant;
+
     int ix1, ix2, ix3;
     real xoff, yoff, zoff;
     SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCSet()->getBCArray();
@@ -807,9 +810,9 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
 
                 if (howManySolids == 0 || howManySolids == 8) {
                     iprocessor->readICell(fFrom, icellF, ix1, ix2, ix3);
-                    xoff = 0.0;
-                    yoff = 0.0;
-                    zoff = 0.0;
+                    xoff = c0o1;
+                    yoff = c0o1;
+                    zoff = c0o1;
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellF, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {
