@@ -13,7 +13,7 @@ class TestQueueImp : public TestQueue
 {
 public:
 	TestSuiteResult run() override;
-	void makeFinalOutput();
+	void makeFinalOutput() override;
 
 	int getNumberOfFailedTests() const noexcept override;
 

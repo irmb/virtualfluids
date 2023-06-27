@@ -479,8 +479,8 @@ void SimulationFileWriter::addShortQsToVector(int index, std::vector<std::vector
         }
     }
     if (qKey > 0) {
-        real transportKey = *((real*)&qKey);
-        qNode.push_back(transportKey);
+        float transportKey = *((float*)&qKey);
+        qNode.push_back((real)transportKey);
         qNode.push_back((real)index);
         qs[GEOMQS].push_back(qNode);
     }
@@ -522,8 +522,8 @@ void SimulationFileWriter::fillRBForNode(int index, int direction, int direction
         qNode.push_back(0.5f);
     }
     if (qKey > 0) {
-        real transportKey = *((real*)&qKey);
-        qNode.push_back(transportKey);
+        float transportKey = *((float*)&qKey);
+        qNode.push_back((real)transportKey);
         qNode.push_back((real)index);
         qs[rb].push_back(qNode);
     }

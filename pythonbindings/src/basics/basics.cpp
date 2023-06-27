@@ -37,12 +37,8 @@ namespace basics
 {
     namespace py = pybind11;
 
-    py::module makeModule(py::module_ &parentModule)
+    PYBIND11_MODULE(basics, m)
     {
-        py::module basicsModule = parentModule.def_submodule("basics");
-
-        configuration::makeModule(basicsModule);
-
-        return basicsModule;
+        configuration::makeModule(m);
     }
 }

@@ -488,7 +488,7 @@ void run(string configname)
          grid->accept(initVisitor);
 
          ////set connectors
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -506,7 +506,7 @@ void run(string configname)
       }
       else
       {
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 

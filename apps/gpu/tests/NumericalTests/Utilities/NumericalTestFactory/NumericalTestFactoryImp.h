@@ -93,7 +93,7 @@ private:
 
 	int simID;
 	int numberOfSimulations;
-	int simPerKernel, numberOfTestGroupsBetweenKernels, numberOfTestsForOneSimulation, numberOfTestsBetweenKernels;
-	int posBasicSimulationForL2Test, posDivergentSimulationForL2Test;
+	// int simPerKernel, numberOfTestGroupsBetweenKernels, numberOfTestsForOneSimulation, numberOfTestsBetweenKernels;
+	// int posBasicSimulationForL2Test, posDivergentSimulationForL2Test;
 };
 #endif

@@ -141,7 +141,7 @@
 //   grid->accept(initVisitor);
 //
 //   //set connectors
-//   InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+//   InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
 //   SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 //   grid->accept(setConnsVisitor);
 //

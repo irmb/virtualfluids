@@ -4,6 +4,7 @@
 #include "MathematicaPointList.h"
 
 #include <iomanip>
+#include <limits>
 
 std::shared_ptr<MathematicaPointList> MathematicaPointListImp::getNewInstance(std::string listName, std::vector<std::shared_ptr<DataPoint> > plotData)
 {
