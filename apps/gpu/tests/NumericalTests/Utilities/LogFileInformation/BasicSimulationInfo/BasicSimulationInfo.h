@@ -12,7 +12,7 @@ public:
 	std::string getOutput();
 
 private:
-	BasicSimulationInfo() {};
+	BasicSimulationInfo() = default;
     BasicSimulationInfo(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, std::string kernel);
 
 	int numberOfTimeSteps;

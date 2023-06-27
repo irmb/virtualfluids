@@ -1,6 +1,6 @@
 ﻿#include "ThixotropyLBMKernel.h"
 #include "D3Q27System.h"
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
 #include "DataSet3D.h"

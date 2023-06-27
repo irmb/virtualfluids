@@ -1,7 +1,8 @@
 #ifndef BASICS_CONFIGURATIONFILE_H
 #define BASICS_CONFIGURATIONFILE_H
 
-#include "Logger.h"
+#include <logger/Logger.h>
+
 #include <filesystem>
 #include <map>
 #include <vector>
@@ -9,7 +10,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <basics/utilities/UbException.h>
 
@@ -38,7 +39,7 @@
 //!bool           writeLogFile = config.getValue<bool>("writeLogFile");
 //!string         errorMessage = config.getValue<string>("errorMessage");
 //!vector<double> origin       = config.getVector<double>("origin");
-//!            
+//!
 //! \author  Konstantin Kutscher
 
 
@@ -70,36 +71,20 @@ public:
    template<class T>
    T getValue(const std::string& key, T defaultValue) const;
 
-   static ConfigurationFile loadConfig(int argc, char *argv[], std::string configPath = "./config.txt")
-   {
-      // the config file's default path can be replaced by passing a command line argument
-
-      if (argc > 1) 
-      {
-         configPath = argv[1];
-         VF_LOG_INFO("Using command line argument for config path: {}", configPath);
-      } else {
-         VF_LOG_INFO("Using default config path: {}", configPath);
-      }
-
-      vf::basics::ConfigurationFile config;
-      config.load(configPath);
-      return config;
-   }
+   //! the container is public to test this class
+   std::map<std::string, std::string> data;
 
 private:
    //! the container
-   std::map<std::string, std::string> data;
-
    //! get string with key
-   std::string  getString(const std::string& key) const;
+   std::string getValue(const std::string& key) const;
 
    //! remove leading and trailing tabs and spaces
    static std::string trim(const std::string& str);
 
    //! convert string to data type T
    template<class T>
-   T fromString(const std::string& str) const;
+   T convert_to(const std::string& str) const;
 
    void split(std::vector<std::string>& lst, const std::string& input, const std::string& separators, bool remove_empty = true) const;
 };
@@ -109,56 +94,44 @@ private:
 template<class T>
 std::vector<T> ConfigurationFile::getVector(const std::string& key) const
 {
-   std::string str = getString(key);
-   std::vector<T> v;
-   std::vector<std::string> strings;
-   split(strings, str, "\t\n\r;, ");
-   for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it)
+   std::string string_value = getValue(key);
+   std::vector<T> values;
+   std::vector<std::string> string_vector;
+   split(string_vector, string_value, "\t\n\r;, ");
+   for (std::vector<std::string>::iterator it = string_vector.begin(); it != string_vector.end(); ++it)
    {
       if (*it != "")
       {
-         v.push_back(fromString<T>(*it));
+         values.push_back(convert_to<T>(*it));
       }
    }
-   return v;
+   return values;
 }
 //////////////////////////////////////////////////////////////////////////
 template<class T>
-T ConfigurationFile::fromString(const std::string& str) const
+T ConfigurationFile::convert_to(const std::string& value) const
 {
-   std::istringstream stream(str);
+   if constexpr (std::is_same_v<T, bool>)
+   {
+      return (value == "true");
+   }
+
+   std::istringstream stream(value);
    T t;
    stream >> t;
+    if (stream.fail())
+      throw UbException(UB_EXARGS, " cannot convert \"" + value + "\" to type <" + static_cast<std::string>(typeid(t).name()) + ">");
+
    return t;
 }
-
-template<>
-bool ConfigurationFile::fromString<bool>(const std::string& str) const;
 
 //////////////////////////////////////////////////////////////////////////
 template<class T>
 T ConfigurationFile::getValue(const std::string& key) const
 {
-   std::string str = getString(key);
-   bool bFlag = false;
-   if ((std::string)typeid(T).name() == (std::string)typeid(bool).name()) 
-   {
-      bFlag = true;
-   }
+   std::string value = getValue(key);
 
-   std::istringstream iss(str);
-   T x;
-   iss >> x;
-   if (!iss && !bFlag)
-      UB_THROW(UbException(UB_EXARGS, " cannot convert \"" + str + "\" to type <" + static_cast<std::string>(typeid(x).name()) + ">"));
-
-   if (bFlag)
-   {
-      bool value = (str == "true");
-      x = value;
-   }
-
-   return x;
+   return convert_to<T>(value);
 }
 
 template<class T>
@@ -173,6 +146,24 @@ T ConfigurationFile::getValue(const std::string& key, T defaultValue) const
       return defaultValue;
    }
 }
+
+static ConfigurationFile loadConfig(int argc, char *argv[], std::string configPath = "./config.txt")
+{
+   // the config file's default path can be replaced by passing a command line argument
+
+   if (argc > 1)
+   {
+      configPath = argv[1];
+      VF_LOG_INFO("Using command line argument for config path: {}", configPath);
+   } else {
+      VF_LOG_INFO("Using default config path: {}", configPath);
+   }
+
+   vf::basics::ConfigurationFile config;
+   config.load(configPath);
+   return config;
+}
+
 
 }
 

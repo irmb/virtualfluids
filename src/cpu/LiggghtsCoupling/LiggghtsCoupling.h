@@ -26,13 +26,18 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphasePressureBCStrategy.h
-//! \ingroup BoundarConditions
-//! \author Hesameddin Safari
+//! \file LiggghtsCoupling.h
+//! \ingroup LiggghtsCoupling
+//! \author Konstantin Kutscher
 //=======================================================================================
 
-#pragma once
+#ifndef LiggghtsCoupling_h
+#define LiggghtsCoupling_h
 
 #include "LiggghtsCoupling/3rdParty/LiggghtsCouplingWrapper.h"
 #include "LiggghtsCoupling/LBM/IBcumulantK17LBMKernel.h"
+#include "LiggghtsCoupling/LBM/IBsharpInterfaceLBMKernel.h"
 #include "LiggghtsCoupling/SimulationObserver/LiggghtsCouplingSimulationObserver.h"
+#include "LiggghtsCoupling/Parallel/LiggghtsPartitioningGridVisitor.h"
+
+#endif

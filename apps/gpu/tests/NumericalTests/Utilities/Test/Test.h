@@ -10,8 +10,8 @@
 class Test : public SimulationObserver 
 {
 public:
+	virtual ~Test() = default;
 	virtual void run() = 0;
-	virtual void update() = 0;
 
 	virtual TestStatus getTestStatus() = 0;
 	virtual void makeConsoleOutput() = 0;

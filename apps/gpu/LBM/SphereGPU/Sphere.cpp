@@ -62,7 +62,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
@@ -96,14 +96,14 @@ int main(int argc, char *argv[])
         // setup simulation parameters (with or without config file)
         //////////////////////////
 
-        vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();;
+        vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();;
         SPtr<Parameter> para;
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
         GridScalingFactory scalingFactory = GridScalingFactory();
         vf::basics::ConfigurationFile config;
         if (useConfigFile) {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/SphereGPU/config.txt");
+            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/SphereGPU/config.txt");
             para = std::make_shared<Parameter>(&config);
         } else {
             para = std::make_shared<Parameter>();

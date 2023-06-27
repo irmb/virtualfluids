@@ -37,7 +37,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -86,7 +86,7 @@ const std::string simulationName("MusselOyster");
 
 void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+    vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
 
     auto gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
@@ -191,7 +191,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
             bivalveRef_1_STL = std::make_shared<TriangularMesh>(stlPath + bivalveType + "_Level1.stl");
 
         if (para->getNumprocs() > 1) {
-            const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
+            const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
 
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
@@ -584,7 +584,7 @@ int main(int argc, char *argv[])
 
         try {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/MusselOyster/configMusselOyster.txt");
+            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/MusselOyster/configMusselOyster.txt");
             runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////

@@ -70,7 +70,7 @@ void LiggghtsCouplingWrapper::setVariable(char const *name, std::string &value)
 void LiggghtsCouplingWrapper::run(int nSteps)
 {
   std::stringstream cmd;
-  cmd << "run " << nSteps;
+  cmd << "run " << nSteps << " pre no post no";
   execCommand(cmd);
 }
 void LiggghtsCouplingWrapper::runUpto(int nSteps)

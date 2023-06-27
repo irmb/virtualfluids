@@ -60,7 +60,7 @@
 
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -167,7 +167,7 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
+        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =

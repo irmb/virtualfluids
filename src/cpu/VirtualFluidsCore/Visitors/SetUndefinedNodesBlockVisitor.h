@@ -1,7 +1,7 @@
 #ifndef SetUndefinedNodesBlockVisitor_h
 #define SetUndefinedNodesBlockVisitor_h
 
-#include <PointerDefinitions.h>
+#include <basics/PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 

@@ -267,14 +267,14 @@ void run(string configname)
 
       UBLOG(logINFO, "SetConnectors - start, id=" << myid);
       //set connectors
-      //SPtr<InterpolationProcessor> iProcessor(new  IncompressibleOffsetInterpolationProcessor());
-      //SPtr<CompressibleOffsetMomentsInterpolationProcessor> iProcessor(new  CompressibleOffsetMomentsInterpolationProcessor());
+      //SPtr<Interpolator> iProcessor(new  IncompressibleOffsetInterpolator());
+      //SPtr<CompressibleOffsetMomentsInterpolator> iProcessor(new  CompressibleOffsetMomentsInterpolator());
       //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
       SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 

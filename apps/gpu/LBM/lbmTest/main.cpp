@@ -20,7 +20,7 @@
 #include "StringUtilities/StringUtil.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"

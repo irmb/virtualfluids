@@ -634,8 +634,8 @@ void run(string configname)
       }
       
       ////set connectors
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
+      SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolator>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
       grid->accept(setConnsVisitor);
 

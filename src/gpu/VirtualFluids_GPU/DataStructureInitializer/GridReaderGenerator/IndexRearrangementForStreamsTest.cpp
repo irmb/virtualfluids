@@ -13,7 +13,8 @@
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 #include "gpu/GridGenerator/utilities/communication.h"
-#include "gpu/VirtualFluids_GPU/Communication/Communicator.cpp"
+
+#include "Communication/CommunicationRoutineMocks.h"
 
 namespace indexRearrangementTests
 {
@@ -34,6 +35,7 @@ private:
     LevelGridBuilderDouble() = default;
 
     uint numberOfSendIndices;
+    uint numberOfRecvIndices;
 
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
@@ -48,6 +50,14 @@ public:
     uint getNumberOfSendIndices(int direction, uint level) override
     {
         return numberOfSendIndices;
+    };
+    uint getNumberOfReceiveIndices(int direction, uint level) override
+    {
+        return numberOfRecvIndices;
+    };
+    void setNumberOfRecvIndices(uint numberOfRecvIndices)
+    {
+        this->numberOfRecvIndices = numberOfRecvIndices;
     };
 };
 
@@ -139,8 +149,10 @@ private:
         para->initProcessNeighborsAfterFtoCX(sendIndices.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, communicator));
     };
+
+    vf::gpu::test::CommunicationRoutineTestDouble communicator;
 };
 
 TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesForCommAfterFtoCX)
@@ -541,4 +553,147 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, recvIn
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Test reorderReceiveIndices
+//////////////////////////////////////////////////////////////////////////
+
+struct RecvIndicesForCommAfterFtoC {
+    // data to work on
+    std::vector<int> recvIndices = { 10, 11, 12, 13, 14, 15, 16 };
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions = {};
+    const int level = 0;
+    const int direction = CommunicationDirections::MX;
+    const int numberOfProcessNeighbors = 1;
+    const int indexOfProcessNeighbor = 0;
+
+    // output data
+    int numberOfRecvNodesAfterFtoC;
+    // and reordered recvIndices
+};
+
+class IndexRearrangementForStreamsTest_reorderRecvIndicesX : public testing::Test
+{
+protected:
+    RecvIndicesForCommAfterFtoC ri;
+    SPtr<Parameter> para;
+    std::unique_ptr<IndexRearrangementForStreams> testSubject;
+
+    void setUpParaInX()
+    {
+        para->setNumberOfProcessNeighborsX(ri.numberOfProcessNeighbors, ri.level, "recv");
+        para->initProcessNeighborsAfterFtoCX(ri.level);
+        para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index = ri.recvIndices.data();
+    }
+
+    void act()
+    {
+        testSubject->reorderRecvIndicesForCommAfterFtoC(ri.recvIndices.data(), ri.numberOfRecvNodesAfterFtoC,
+                                                        ri.direction, ri.level,
+                                                        ri.sendIndicesForCommAfterFtoCPositions);
+    };
+
+    void actWithX()
+    {
+        testSubject->reorderRecvIndicesForCommAfterFtoCX(ri.direction, ri.level, ri.indexOfProcessNeighbor,
+                                                         ri.sendIndicesForCommAfterFtoCPositions);
+    };
+
+private:
+    void SetUp() override
+    {
+        SPtr<GridImpDouble> grid =
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
+        std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
+        builder->setNumberOfRecvIndices((uint)ri.recvIndices.size());
+
+        para = testingVF::createParameterForLevel(ri.level);
+
+        testSubject = std::make_unique<IndexRearrangementForStreams>(
+            IndexRearrangementForStreams(para, builder, communicator));
+    };
+
+    vf::gpu::test::CommunicationRoutineTestDouble communicator;
+};
+
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreUnchanged)
+{
+    ri.sendIndicesForCommAfterFtoCPositions = {};
+    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
+    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
+
+    act();
+    EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
+    EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
+{
+    ri.sendIndicesForCommAfterFtoCPositions = { 0, 2, 4, 6 };
+    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
+    std::vector<int> recvIndices_expected = { 10, 12, 14, 16, 11, 13, 15 };
+
+    act();
+    EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
+    EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
+{
+    ri.sendIndicesForCommAfterFtoCPositions = { 0, 1, 2, 3, 4, 5, 6 };
+    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
+    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
+
+    act();
+    EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
+    EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreUnchanged)
+{
+    setUpParaInX();
+
+    ri.sendIndicesForCommAfterFtoCPositions = {};
+    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
+    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
+
+    this->actWithX();
+
+    EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
+                testing::Eq(numberOfRecvNodesAfterFtoC_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index,
+                                recvIndices_expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreReorderedCorrectly)
+{
+    setUpParaInX();
+
+    ri.sendIndicesForCommAfterFtoCPositions = { 0, 2, 4, 6 };
+    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
+    std::vector<int> recvIndices_expected = { 10, 12, 14, 16, 11, 13, 15 };
+
+    actWithX();
+
+    EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
+                testing::Eq(numberOfRecvNodesAfterFtoC_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index,
+                                recvIndices_expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreReorderedCorrectly)
+{
+    setUpParaInX();
+
+    ri.sendIndicesForCommAfterFtoCPositions = { 0, 1, 2, 3, 4, 5, 6 };
+    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
+    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
+
+    actWithX();
+
+    EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
+                testing::Eq(numberOfRecvNodesAfterFtoC_expected));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index,
+                                recvIndices_expected));
 }

@@ -8,12 +8,12 @@
 
 class Grid3D;
 class Block3D;
-class InterpolationProcessor;
+class Interpolator;
 
 class InitDistributionsWithInterpolationGridVisitor : public Grid3DVisitor
 {
 public:
-    InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, SPtr<InterpolationProcessor> iProcessor,
+    InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, SPtr<Interpolator> iProcessor,
                                                   real nu);
     ~InitDistributionsWithInterpolationGridVisitor() override;
     void visit(SPtr<Grid3D> grid) override;
@@ -30,7 +30,7 @@ private:
     SPtr<Grid3D> oldGrid;
     real nu;
 
-    SPtr<InterpolationProcessor> iProcessor;
+    SPtr<Interpolator> iProcessor;
 };
 
 #endif // InitDistributionsWithVelocityProfileBlockVisitor_h__

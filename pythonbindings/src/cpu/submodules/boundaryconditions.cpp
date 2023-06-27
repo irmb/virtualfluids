@@ -30,6 +30,7 @@
 //! \ingroup submodules
 //! \author Sven Marcus, Henry Korb
 //=======================================================================================
+#include "BCStrategy.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <BoundaryConditions/DensityBC.h>
@@ -55,7 +56,7 @@ namespace boundaryconditions
         template<typename ...Args>
         PyBoundaryCondition(Args &&... args) : adapter(std::forward<Args>(args)...)
         {
-            this->setBcAlgorithm(std::make_shared<algorithm>());
+            this->setBCStrategy(std::make_shared<algorithm>());
         }
     };
 

@@ -8,7 +8,7 @@
 #include "D3Q27Interactor.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "LBMKernel.h"
 #include "UbScheduler.h"
 
@@ -429,139 +429,139 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
     bcPtr                                   = bcArray->getBC(ix1, ix2, ix3);
     int x, y, z;
 
-    if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2, ix3)) {
+    if (Interpolator::iCellHasSolid(bcArray, ix1, ix2, ix3)) {
         x = ix1;
         y = ix2;
         z = ix3;
-    } else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2 - 1, ix3)) {
+    } else if (Interpolator::iCellHasSolid(bcArray, ix1, ix2 - 1, ix3)) {
         x = ix1 + 0;
         y = ix2 - 1;
         z = ix3 + 0;
     } // S
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1, ix2, ix3 - 1)) {
         x = ix1 + 0;
         y = ix2 + 0;
         z = ix3 - 1;
     } // B
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2, ix3)) {
         x = ix1 - 1;
         y = ix2 + 0;
         z = ix3 + 0;
     } // w
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2 - 1, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1, ix2 - 1, ix3 - 1)) {
         x = ix1 + 0;
         y = ix2 - 1;
         z = ix3 - 1;
     } // BS
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2, ix3 - 1)) {
         x = ix1 - 1;
         y = ix2 + 0;
         z = ix3 - 1;
     } // BW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2 - 1, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2 - 1, ix3)) {
         x = ix1 - 1;
         y = ix2 - 1;
         z = ix3 + 0;
     } // SW
 
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2 - 1, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2 - 1, ix3 - 1)) {
         x = ix1 - 1;
         y = ix2 - 1;
         z = ix3 - 1;
     } // BSW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2, ix3)) {
         x = ix1 + 1;
         y = ix2 + 0;
         z = ix3 + 0;
     } // E
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2 + 1, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1, ix2 + 1, ix3)) {
         x = ix1 + 0;
         y = ix2 + 1;
         z = ix3 + 0;
     } // N
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1, ix2, ix3 + 1)) {
         x = ix1 + 0;
         y = ix2 + 0;
         z = ix3 + 1;
     } // T
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2 + 1, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2 + 1, ix3)) {
         x = ix1 + 1;
         y = ix2 + 1;
         z = ix3 + 0;
     } // NE
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2, ix3 + 1)) {
         x = ix1 + 1;
         y = ix2 + 0;
         z = ix3 + 1;
     } // TE
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2 + 1, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1, ix2 + 1, ix3 + 1)) {
         x = ix1 + 0;
         y = ix2 + 1;
         z = ix3 + 1;
     } // TN
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2 + 1, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2 + 1, ix3 + 1)) {
         x = ix1 + 1;
         y = ix2 + 1;
         z = ix3 + 1;
     } // TNE
 
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2 - 1, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2 - 1, ix3)) {
         x = ix1 + 1;
         y = ix2 - 1;
         z = ix3 + 0;
     } // SE
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2 + 1, ix3)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2 + 1, ix3)) {
         x = ix1 - 1;
         y = ix2 + 1;
         z = ix3 + 0;
     } // NW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2, ix3 - 1)) {
         x = ix1 + 1;
         y = ix2 + 0;
         z = ix3 - 1;
     } // BE
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2, ix3 + 1)) {
         x = ix1 - 1;
         y = ix2 + 0;
         z = ix3 + 1;
     } // TW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 0, ix2 + 1, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 0, ix2 + 1, ix3 - 1)) {
         x = ix1 + 0;
         y = ix2 + 1;
         z = ix3 - 1;
     } // BN
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 0, ix2 - 1, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 0, ix2 - 1, ix3 + 1)) {
         x = ix1 + 0;
         y = ix2 - 1;
         z = ix3 + 1;
     } // TS
 
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2 + 1, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2 + 1, ix3 + 1)) {
         x = ix1 - 1;
         y = ix2 + 1;
         z = ix3 + 1;
     } // TNW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2 - 1, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2 - 1, ix3 + 1)) {
         x = ix1 + 1;
         y = ix2 - 1;
         z = ix3 + 1;
     } // TSE
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2 - 1, ix3 + 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2 - 1, ix3 + 1)) {
         x = ix1 - 1;
         y = ix2 - 1;
         z = ix3 + 1;
     } // TSW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2 + 1, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2 + 1, ix3 - 1)) {
         x = ix1 + 1;
         y = ix2 + 1;
         z = ix3 - 1;
     } // BNE
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 - 1, ix2 + 1, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 - 1, ix2 + 1, ix3 - 1)) {
         x = ix1 - 1;
         y = ix2 + 1;
         z = ix3 - 1;
     } // BNW
-    else if (InterpolationProcessor::iCellHasSolid(bcArray, ix1 + 1, ix2 - 1, ix3 - 1)) {
+    else if (Interpolator::iCellHasSolid(bcArray, ix1 + 1, ix2 - 1, ix3 - 1)) {
         x = ix1 + 1;
         y = ix2 - 1;
         z = ix3 - 1;
@@ -602,7 +602,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
         }
     }
 
-    if (InterpolationProcessor::iCellHasSolid(bcArray, x, y, z)) {
+    if (Interpolator::iCellHasSolid(bcArray, x, y, z)) {
         for (int i = x; i <= x + 1; i++) {
             for (int j = y; j <= y + 1; j++) {
                 for (int k = z; k <= z + 1; k++) {

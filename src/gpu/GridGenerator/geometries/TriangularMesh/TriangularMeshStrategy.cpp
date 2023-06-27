@@ -124,10 +124,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
             }
         }
 
-
-
-        int counter = 0;
-
         // Test line intersection
         for (z = minZ; z <= maxZ; z += grid->getDelta())
         {
@@ -135,7 +131,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
             {
                 for (x = minX; x <= maxX; x += grid->getDelta())
                 {
-                    counter++;
                     if (mesh->intersectLine((x - grid->getDelta()), y, z, x, y, z)) 
                         break;
                     grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -152,7 +147,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine((x + grid->getDelta()), y, z, x, y, z))
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -170,7 +164,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, (y - grid->getDelta()), z, x, y, z)) 
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -188,7 +181,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, (y + grid->getDelta()), z, x, y, z))
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -206,7 +198,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, y, (z - grid->getDelta()), x, y, z)) 
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
@@ -224,7 +215,6 @@ void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMe
                 {
                     if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
                     {
-                        counter++;
                         if (mesh->intersectLine(x, y, (z + grid->getDelta()), x, y, z)) 
                             break;
                         grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);

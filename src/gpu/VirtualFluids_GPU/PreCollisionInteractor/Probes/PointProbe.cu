@@ -103,11 +103,20 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
-    interpAndCalcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
+    int oldTimestepInTimeseries = this->outputTimeSeries ? calcOldTimestep(probeStruct->timestepInTimeseries, probeStruct->lastTimestepInOldTimeseries) : 0;
+    int currentTimestep = this->outputTimeSeries ? probeStruct->timestepInTimeseries : 0;
+    interpAndCalcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, oldTimestepInTimeseries, currentTimestep, probeStruct->timestepInTimeAverage, probeStruct->nTimesteps,
                                                 probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
                                                 para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ, para->getParD(level)->rho, 
                                                 para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ, 
                                                 probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD);
+}
+
+void PointProbe::addProbePoint(real pointCoordX, real pointCoordY, real pointCoordZ)
+{
+    this->pointCoordsX.push_back(pointCoordX);
+    this->pointCoordsY.push_back(pointCoordY);
+    this->pointCoordsZ.push_back(pointCoordZ);
 }
 
 void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ)

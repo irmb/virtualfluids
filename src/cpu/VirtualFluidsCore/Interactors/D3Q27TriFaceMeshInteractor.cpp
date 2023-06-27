@@ -186,11 +186,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     assert(UbMath::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX3 / (double)blocknx3));
 
     for (int level = coarsestInitLevel; level <= finestInitLevel; level++) {
-        double nodeDeltaX1 = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
-        double nodeDeltaX2 = cblockDeltaX2 / (double)(blocknx2 * (1 << (level - coarsestInitLevel)));
-        double nodeDeltaX3 = cblockDeltaX3 / (double)(blocknx3 * (1 << (level - coarsestInitLevel)));
+        real nodeDeltaX1 = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
+        real nodeDeltaX2 = cblockDeltaX2 / (double)(blocknx2 * (1 << (level - coarsestInitLevel)));
+        real nodeDeltaX3 = cblockDeltaX3 / (double)(blocknx3 * (1 << (level - coarsestInitLevel)));
 
-        std::vector<double> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
+        std::vector<real> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
         D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDeltaX1, nodeDeltaX2, nodeDeltaX3);
         // D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDeltaX1);
 
@@ -233,7 +233,6 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     // notwendige variablen initialisieren (u.a. blockDeltas des groben levels)
     float triPoints[3][3];
     float vx1 = 0.0, vx2 = 0.0, vx3 = 0.0;
-    unsigned counterTriBoxOverlap = 0, counterAABBTriFace = 0, counterHalfspace = 0, counterBilligOBB = 0;
     std::vector<GbTriFaceMesh3D::TriFace> &triangles = *mesh->getTriangles();
     std::vector<GbTriFaceMesh3D::Vertex> &nodes      = *mesh->getNodes();
     std::map<SPtr<Block3D>, std::set<UbTupleInt3>> tmpSolidNodesFromOtherInteractors;
@@ -341,7 +340,6 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
 
                 // wenn dreieck "vergroesserten cube" nicht schneidet/beruehrt -> keine BC moeglich -> continue
                 if (!GbMeshTools3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
-                    counterTriBoxOverlap++;
                     continue;
                 }
 
@@ -396,7 +394,6 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                             bool pointIsOnBoundary = true;
                             if (!boundingCubeTriangle.isPointInGbObject3D(internX1, internX2, internX3,
                                                                           pointIsOnBoundary)) {
-                                counterAABBTriFace++;
                                 continue;
                             }
                             // std::cout<<"internX3  "<<internX3<<"  internX2"<<internX2<<" internX1 "<<internX1<<"\n";
@@ -408,13 +405,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                             if (useHalfSpace &&
                                 UbMath::less(distance, 0.0)) //== !halfSpace.ptInside(internX1,internX2,internX3) )
                             {
-                                counterHalfspace++;
                                 continue;
                             }
 
                             // BilligOBB-Test: wenn distance > qEinflussDelta -> kein q
                             if (UbMath::greater(fabs(distance), qEinflussDelta)) {
-                                counterBilligOBB++;
                                 continue;
                             }
 
@@ -666,9 +661,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     assert(UbMath::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX3 / (double)blocknx3));
 
     for (int level = coarsestInitLevel; level <= finestInitLevel; level++) {
-        double nodeDelta = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
+        real nodeDelta = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
 
-        std::vector<double> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
+        std::vector<real> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
         D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDelta);
 
         nodeDeltaToNeigh[level].resize(D3Q27System::ENDDIR + 1, 0.0);
@@ -1050,7 +1045,6 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                                         // SG 26.08.2010 if(!bc && !bcMatrix->isSolid())
                                         if (!bc) {
                                             bc = SPtr<BoundaryConditions>(new BoundaryConditions);
-                                            ;
                                             bcMatrix->setBC(ix1, ix2, ix3, bc);
                                         } else if (UbMath::less(bc->getQ(fdir), q)) // schon ein kuerzeres q voehanden?
                                         {
@@ -1120,7 +1114,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     UBLOG(logDEBUG1, "       * rejected nodes  with halfspace      test : " << counterHalfspace);
     UBLOG(logDEBUG1, "       * rejected nodes  with OBB            test : " << counterBilligOBB);
 
-    typedef std::map<SPtr<Block3D>, SolidCheckMethod>::iterator BlockSolidCheckMethodIterator;
+    using BlockSolidCheckMethodIterator = std::map<SPtr<Block3D>, SolidCheckMethod>::iterator;
 
     //////////////////////////////////////////////////////////////////////////
     // SOLID checks
@@ -1313,7 +1307,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     //}
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startDistance, double stopDistance)
+void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDistance, real stopDistance)
 {
     UBLOG(logDEBUG1, "D3Q27TriFaceMeshInteractor::refineBlockGridToLevel - start");
 

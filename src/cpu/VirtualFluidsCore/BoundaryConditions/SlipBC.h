@@ -28,7 +28,7 @@
 //
 //! \file SlipBC.h
 //! \ingroup BoundarConditions
-//! \author Sören Freudiger
+//! \author Soeren Freudiger
 //=======================================================================================
 #ifndef SlipBC_H
 #define SlipBC_H
