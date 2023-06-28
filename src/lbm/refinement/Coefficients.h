@@ -59,7 +59,7 @@ namespace vf::lbm
 // Coefficients coeffs;
 // momentsSet.calculateCoefficients(coeffs);
 
-// Coefficient which are used in the interpolation
+// Coefficients of the interpolation polynomial
 struct Coefficients
 {
     real a000, a100, a010, a001, a200, a020, a002, a110, a101, a011;
