@@ -40,13 +40,14 @@
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
 #include "Grid3D.h"
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "LBMKernel.h"
 #include "MathUtil.hpp"
 #include "basics/container/CbVector.h"
 #include "basics/transmitter/TbTransmitter.h"
 #include "basics/transmitter/TbTransmitterLocal.h"
 #include <PointerDefinitions.h>
+#include "basics/constants/NumericConstants.h"
 
 #include "BCSet.h"
 #include "FineToCoarseVectorConnector.h"
@@ -829,6 +830,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectorExt(SPtr<Dist
                                                                        const int &lMaxX2, const int &lMaxX3,
                                                                        vector_type &data, int &index)
 {
+    using namespace vf::basics::constant;
+
     if (data.size() == 0)
         return;
     int ix1, ix2, ix3;
@@ -845,9 +848,9 @@ void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectorExt(SPtr<Dist
 
                 if (howManySolids == 0 || howManySolids == 8) {
                     iprocessor->readICell(fFrom, icellC, ix1, ix2, ix3);
-                    xoff = 0.0;
-                    yoff = 0.0;
-                    zoff = 0.0;
+                    xoff = c0o1;
+                    yoff = c0o1;
+                    zoff = c0o1;
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellC, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {
@@ -1991,9 +1994,9 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
 
                 if (howManySolids == 0 || howManySolids == 8) {
                     iprocessor->readICell(fFrom, icellC, ix1, ix2, ix3);
-                    xoff = 0.0;
-                    yoff = 0.0;
-                    zoff = 0.0;
+                    xoff = c0o1;
+                    yoff = c0o1;
+                    zoff = c0o1;
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellC, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {

@@ -2,14 +2,13 @@
 #include <memory>
 #include <string>
 
-#include "VirtualFluids.h"
 #include "MultiphaseFlow/MultiphaseFlow.h"
+#include "VirtualFluids.h"
 
 using namespace std;
 
 void setInflowBC(real x1, real x2, real x3, real radius, int dir)
 {
-
 }
 
 void run(string configname)
@@ -24,20 +23,20 @@ void run(string configname)
         config.load(configname);
 
         string pathname = config.getValue<string>("pathname");
-        //string pathGeo = config.getValue<string>("pathGeo");
-        //string geoFile = config.getValue<string>("geoFile");
+        // string pathGeo = config.getValue<string>("pathGeo");
+        // string geoFile = config.getValue<string>("geoFile");
         int numOfThreads = config.getValue<int>("numOfThreads");
         vector<int> blocknx = config.getVector<int>("blocknx");
-        //vector<double> boundingBox = config.getVector<double>("boundingBox");
-        // vector<double>  length = config.getVector<double>("length");
+        // vector<double> boundingBox = config.getVector<double>("boundingBox");
+        //  vector<double>  length = config.getVector<double>("length");
         real U_LB = config.getValue<real>("U_LB");
         // double uF2                         = config.getValue<double>("uF2");
-        //double nuL = config.getValue<double>("nuL");
-        //double nuG = config.getValue<double>("nuG");
-        //double densityRatio = config.getValue<double>("densityRatio");
-        //double sigma = config.getValue<double>("sigma");
+        // double nuL = config.getValue<double>("nuL");
+        // double nuG = config.getValue<double>("nuG");
+        // double densityRatio = config.getValue<double>("densityRatio");
+        // double sigma = config.getValue<double>("sigma");
         int interfaceWidth = config.getValue<int>("interfaceWidth");
-        //double D          = config.getValue<double>("D");
+        // double D          = config.getValue<double>("D");
         real theta = config.getValue<real>("contactAngle");
         real D_LB = config.getValue<real>("D_LB");
         real phiL = config.getValue<real>("phi_L");
@@ -48,24 +47,21 @@ void run(string configname)
         real endTime = config.getValue<real>("endTime");
         real outTime = config.getValue<real>("outTime");
         real availMem = config.getValue<real>("availMem");
-        //int refineLevel = config.getValue<int>("refineLevel");
-        //double Re = config.getValue<double>("Re");
-        
+        // int refineLevel = config.getValue<int>("refineLevel");
+        // double Re = config.getValue<double>("Re");
+
         bool logToFile = config.getValue<bool>("logToFile");
         real restartStep = config.getValue<real>("restartStep");
         real cpStart = config.getValue<real>("cpStart");
         real cpStep = config.getValue<real>("cpStep");
         bool newStart = config.getValue<bool>("newStart");
 
-
-
         int caseN = config.getValue<int>("case");
 
         SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
-        if (myid == 0)
-            UBLOG(logINFO, "Jet Breakup: Start!");
+        if (myid == 0) UBLOG(logINFO, "Jet Breakup: Start!");
 
         if (logToFile) {
 #if defined(__unix__)
@@ -84,25 +80,25 @@ void run(string configname)
 
         // Sleep(30000);
 
-        real rho_h=0, rho_l=0, r_rho=0, mu_h=0, /*mu_l,*/ Uo=0, D=0, sigma=0;
+        real rho_h = 0, rho_l = 0, r_rho = 0, mu_h = 0, /*mu_l,*/ Uo = 0, D = 0, sigma = 0;
 
         switch (caseN) {
-            case 1: 
-                //density of heavy fluid (kg/m^3)
-                rho_h = 848; 
-                //density of light fluid (kg/m^3)
+            case 1:
+                // density of heavy fluid (kg/m^3)
+                rho_h = 848;
+                // density of light fluid (kg/m^3)
                 rho_l = 34.5;
-                //density ratio
+                // density ratio
                 r_rho = rho_h / rho_l;
-                //dynamic viscosity of heavy fluid (Pa � s)
+                // dynamic viscosity of heavy fluid (Pa � s)
                 mu_h = 2.87e-3;
-                //dynamic viscosity of light fluid (Pa � s)
-                //mu_l = 1.97e-5;
-                //velocity (m/s)
+                // dynamic viscosity of light fluid (Pa � s)
+                // mu_l = 1.97e-5;
+                // velocity (m/s)
                 Uo = 100;
-                //diameter of jet (m)
+                // diameter of jet (m)
                 D = 0.0001;
-                //surface tension (N/m)
+                // surface tension (N/m)
                 sigma = 0.03;
                 break;
             case 2:
@@ -115,7 +111,7 @@ void run(string configname)
                 // dynamic viscosity of heavy fluid (Pa � s)
                 mu_h = 2.87e-3;
                 // dynamic viscosity of light fluid (Pa � s)
-                //mu_l = 1.84e-5;
+                // mu_l = 1.84e-5;
                 // velocity (m/s)
                 Uo = 200;
                 // diameter of jet (m)
@@ -133,14 +129,14 @@ void run(string configname)
                 // dynamic viscosity of heavy fluid (Pa � s)
                 mu_h = 2.87e-3;
                 // dynamic viscosity of light fluid (Pa � s)
-                //mu_l = 1.84e-5;
+                // mu_l = 1.84e-5;
                 // velocity (m/s)
                 Uo = 200;
                 // diameter of jet (m)
                 D = 0.0001;
                 // surface tension (N/m)
                 sigma = 0.03;
-                break;                
+                break;
         }
 
         real Re = rho_h * Uo * D / mu_h;
@@ -149,14 +145,15 @@ void run(string configname)
         real dx = D / D_LB;
         real nu_h = U_LB * D_LB / Re;
         real nu_l = nu_h;
+        nu_h *= 100;
 
         real rho_h_LB = 1;
-        //surface tension
+        // surface tension
         real sigma_LB = rho_h_LB * U_LB * U_LB * D_LB / We;
 
         // LBMReal dLB = 0; // = length[1] / dx;
         real rhoLB = 0.0;
-        //LBMReal nuLB = nu_l; //(uLB*dLB) / Re;
+        // LBMReal nuLB = nu_l; //(uLB*dLB) / Re;
 
         real beta = 12.0 * sigma_LB / interfaceWidth;
         real kappa = 1.5 * interfaceWidth * sigma_LB;
@@ -177,18 +174,18 @@ void run(string configname)
             UBLOG(logINFO, "path = " << pathname);
         }
 
-                    // bounding box
-            real g_minX1 = 0;
-            real g_minX2 = 0;
-            real g_minX3 = 0;
+        // bounding box
+        real g_minX1 = 0;
+        real g_minX2 = 0;
+        real g_minX3 = 0;
 
-            //double g_maxX1 = 8.0*D;
-            //double g_maxX2 = 2.5*D;
-            //double g_maxX3 = 2.5*D;
+        // double g_maxX1 = 8.0*D;
+        // double g_maxX2 = 2.5*D;
+        // double g_maxX3 = 2.5*D;
 
-             real g_maxX1 = 8.0 * D;
-             real g_maxX2 = 5 * D;
-             real g_maxX3 = 5 * D;
+        real g_maxX1 = 2.0 * D;
+        real g_maxX2 = 2.5 * D;
+        real g_maxX3 = 2.5 * D;
 
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
@@ -201,9 +198,10 @@ void run(string configname)
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
-        //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
-        //kernel = SPtr<LBMKernel>(new MultiphaseSimpleVelocityBaseExternalPressureLBMKernel());
+        // kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
+        // kernel = SPtr<LBMKernel>(new MultiphaseSimpleVelocityBaseExternalPressureLBMKernel());
         kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
+       //kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -222,7 +220,7 @@ void run(string configname)
         kernel->setMultiphaseModelParameters(beta, kappa);
         kernel->setContactAngle(theta);
         kernel->setInterfaceWidth(interfaceWidth);
-        //dynamicPointerCast<MultiphasePressureFilterLBMKernel>(kernel)->setPhaseFieldBC(0.0);
+        // dynamicPointerCast<MultiphasePressureFilterLBMKernel>(kernel)->setPhaseFieldBC(0.0);
         kernel->setSigma(sigma);
 
         SPtr<BCSet> bcProc(new BCSet());
@@ -236,8 +234,7 @@ void run(string configname)
         // grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
-        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(
-            comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
         // restart
@@ -270,6 +267,8 @@ void run(string configname)
         mu::Parser fctF2;
         fctF2.SetExpr("vx1");
         fctF2.DefineConst("vx1", U_LB);
+        fctF2.SetExpr("vx1");
+        fctF2.DefineConst("vx1", U_LB);
 
         // real startTime = 1;
         // SPtr<BC> velBCF1(new MultiphaseVelocityBC(true, false, false, fctF1, phiH, 0.0, startTime));
@@ -295,15 +294,17 @@ void run(string configname)
         fctvel_F2_init.DefineConst("U", 0);
 
         velBCF1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        velBCF2->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
         bcVisitor.addBC(noSlipBC);
         //bcVisitor.addBC(denBC); // Ohne das BB?
         bcVisitor.addBC(velBCF1);
+        bcVisitor.addBC(velBCF2);
 
-        //SPtr<D3Q27Interactor> inflowF1Int;
-        //SPtr<D3Q27Interactor> cylInt;
+        // SPtr<D3Q27Interactor> inflowF1Int;
+        // SPtr<D3Q27Interactor> cylInt;
 
         SPtr<D3Q27Interactor> inflowInt;
 
@@ -315,32 +316,29 @@ void run(string configname)
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-            if (myid == 0)
-                GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube",
-                                           WbWriterVtkXmlBinary::getInstance());
+            if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
-            //if (myid == 0)
-            //    UBLOG(logINFO, "Read geoFile:start");
-            //SPtr<GbTriFaceMesh3D> cylinder = make_shared<GbTriFaceMesh3D>();
-            //cylinder->readMeshFromSTLFileBinary(pathGeo + "/" + geoFile, false);
-            //GbSystem3D::writeGeoObject(cylinder.get(), pathname + "/geo/Stlgeo", WbWriterVtkXmlBinary::getInstance());
-            //if (myid == 0)
-            //    UBLOG(logINFO, "Read geoFile:stop");
-            // inflow
-            // GbCuboid3DPtr geoInflowF1(new GbCuboid3D(g_minX1, g_minX2 - 0.5 * dx, g_minX3, g_maxX1, g_minX2 - 1.0 *
-            // dx, g_maxX3));
-            //GbCuboid3DPtr geoInflowF1(new GbCuboid3D(g_minX1 * 0.5 - dx, g_minX2 - dx, g_minX3 * 0.5 - dx,
-            //                                         g_maxX1 * 0.5 + dx, g_minX2, g_maxX3 * 0.5 + dx));
-            //if (myid == 0)
-            //    GbSystem3D::writeGeoObject(geoInflowF1.get(), pathname + "/geo/geoInflowF1",
-            //                               WbWriterVtkXmlASCII::getInstance());
+            // if (myid == 0)
+            //     UBLOG(logINFO, "Read geoFile:start");
+            // SPtr<GbTriFaceMesh3D> cylinder = make_shared<GbTriFaceMesh3D>();
+            // cylinder->readMeshFromSTLFileBinary(pathGeo + "/" + geoFile, false);
+            // GbSystem3D::writeGeoObject(cylinder.get(), pathname + "/geo/Stlgeo", WbWriterVtkXmlBinary::getInstance());
+            // if (myid == 0)
+            //     UBLOG(logINFO, "Read geoFile:stop");
+            //  inflow
+            //  GbCuboid3DPtr geoInflowF1(new GbCuboid3D(g_minX1, g_minX2 - 0.5 * dx, g_minX3, g_maxX1, g_minX2 - 1.0 *
+            //  dx, g_maxX3));
+            // GbCuboid3DPtr geoInflowF1(new GbCuboid3D(g_minX1 * 0.5 - dx, g_minX2 - dx, g_minX3 * 0.5 - dx,
+            //                                          g_maxX1 * 0.5 + dx, g_minX2, g_maxX3 * 0.5 + dx));
+            // if (myid == 0)
+            //     GbSystem3D::writeGeoObject(geoInflowF1.get(), pathname + "/geo/geoInflowF1",
+            //                                WbWriterVtkXmlASCII::getInstance());
 
             GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1 - 2.0*dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1, g_maxX2 / 2.0, g_maxX3 / 2.0, D / 2.0));
             if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
             GbCylinder3DPtr geoSolid(new GbCylinder3D(g_minX1 - 2.0 * dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1-dx, g_maxX2 / 2.0, g_maxX3 / 2.0, 1.5*D / 2.0));
             if (myid == 0) GbSystem3D::writeGeoObject(geoSolid.get(), pathname + "/geo/geoSolid", WbWriterVtkXmlASCII::getInstance());
-
 
             // GbCylinder3DPtr cylinder2(
             //    new GbCylinder3D(0.0, g_minX2 - 2.0 * dx / 2.0, 0.0, 0.0, g_minX2 + 4.0 * dx, 0.0, 8.0+2.0*dx));
@@ -350,8 +348,8 @@ void run(string configname)
             // outflow
             // GbCuboid3DPtr geoOutflow(new GbCuboid3D(-1.0, -1, -1.0, 121.0, 1.0, 121.0)); // For JetBreakup (Original)
             // GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_minX1, g_maxX2 - 40 * dx, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-            GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
-            if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow",                                         WbWriterVtkXmlASCII::getInstance());
+            GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_maxX3));
+            if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
             // double blockLength = blocknx[0] * dx;
 
@@ -369,11 +367,10 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            SPtr<WriteBlocksSimulationObserver> ppblocks(new WriteBlocksSimulationObserver(
-                grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+            SPtr<WriteBlocksSimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-            //SPtr<Interactor3D> tubes(new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBC,
-            //                                                        Interactor3D::SOLID, Interactor3D::POINTS));
+            // SPtr<Interactor3D> tubes(new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBC,
+            //                                                         Interactor3D::SOLID, Interactor3D::POINTS));
 
             // inflowF1Int =
             //    SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, noSlipBC, Interactor3D::SOLID));
@@ -402,11 +399,17 @@ void run(string configname)
             SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
             SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
             SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
 
-            //cylInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, velBCF1, Interactor3D::SOLID));
-            //cylInt->addBC(velBCF2);
-            // SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBC,
-            // Interactor3D::SOLID));
+            // cylInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, velBCF1, Interactor3D::SOLID));
+            // cylInt->addBC(velBCF2);
+            //  SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBC,
+            //  Interactor3D::SOLID));
 
             inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCF1, Interactor3D::SOLID));
             //inflowInt->addBC(velBCF2);
@@ -425,12 +428,13 @@ void run(string configname)
 
             intHelper.addInteractor(wallXminInt);
             intHelper.addInteractor(wallXmaxInt);
+            intHelper.addInteractor(wallXmaxInt);
             intHelper.addInteractor(wallZminInt);
             intHelper.addInteractor(wallZmaxInt);
             intHelper.addInteractor(wallYminInt);
             intHelper.addInteractor(wallYmaxInt);
-            intHelper.addInteractor(inflowInt);
-            //intHelper.addInteractor(solidInt);
+            //intHelper.addInteractor(inflowInt);
+            intHelper.addInteractor(inflowAirInt);
 
             intHelper.selectBlocks();
 
@@ -439,13 +443,10 @@ void run(string configname)
 
             unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
             int ghostLayer = 3;
-            unsigned long long numberOfNodesPerBlock =
-                (unsigned long long)(blocknx[0]) * (unsigned long long)(blocknx[1]) * (unsigned long long)(blocknx[2]);
+            unsigned long long numberOfNodesPerBlock = (unsigned long long)(blocknx[0]) * (unsigned long long)(blocknx[1]) * (unsigned long long)(blocknx[2]);
             unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
-            unsigned long long numberOfNodesPerBlockWithGhostLayer =
-                numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
-            real needMemAll =
-                real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
+            unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (blocknx[0] + ghostLayer) * (blocknx[1] + ghostLayer) * (blocknx[2] + ghostLayer);
+            real needMemAll = real(numberOfNodesPerBlockWithGhostLayer * (27 * sizeof(real) + sizeof(int) + sizeof(float) * 4));
             real needMem = needMemAll / real(comm->getNumberOfProcesses());
 
             if (myid == 0) {
@@ -467,10 +468,10 @@ void run(string configname)
 
             grid->accept(kernelVisitor);
 
-            //if (refineLevel > 0) {
-            //    SetUndefinedNodesBlockVisitor undefNodesVisitor;
-            //    grid->accept(undefNodesVisitor);
-            //}
+            // if (refineLevel > 0) {
+            //     SetUndefinedNodesBlockVisitor undefNodesVisitor;
+            //     grid->accept(undefNodesVisitor);
+            // }
 
             intHelper.setBC();
 
@@ -483,15 +484,28 @@ void run(string configname)
             real x3c = (g_minX3 + g_maxX3)/2;
             
             mu::Parser fct1;
-            fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct1.SetExpr("(0.5-0.5*tanh(2*(sqrt((x1/radius-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness))-(0.5-0.5*tanh(2*(sqrt((x1/radius-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius2)/interfaceThickness))");
+            //fct1.SetExpr("x1 < 4*dx ? (0.5-0.5*tanh(2*(1-4*dx)*(sqrt((x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)) : 0");
             fct1.DefineConst("x1c", x1c);
             fct1.DefineConst("x2c", x2c);
             fct1.DefineConst("x3c", x3c);
-            fct1.DefineConst("radius", 0.5*D);
-            fct1.DefineConst("interfaceThickness", interfaceWidth*dx);
+            fct1.DefineConst("dx", dx);
+            fct1.DefineConst("radius", 0.5 * D /* + 2. * dx*/);
+            fct1.DefineConst("radius2", D/4.);
+            fct1.DefineConst("interfaceThickness", interfaceWidth * dx);
+
+            mu::Parser fct2;
+            // fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1/radius-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct2.SetExpr("x1 < 4*dx ? (0.5-0.5*tanh(2*(1-4*dx)*(sqrt((x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)) : 0");
+            fct2.DefineConst("x1c", x1c);
+            fct2.DefineConst("x2c", x2c);
+            fct2.DefineConst("x3c", x3c);
+            fct2.DefineConst("dx", dx);
+            fct2.DefineConst("radius", 0.5 * D /* + 2. * dx*/);
+            fct2.DefineConst("interfaceThickness", interfaceWidth * dx);
 
             MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-            initVisitor.setPhi(fct1);
+            //initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
             ///////////////////////////////////////////////////////////////////////////////////////////
             //{
@@ -538,22 +552,19 @@ void run(string configname)
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
-                SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(
-                    grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+                SPtr<WriteBoundaryConditionsSimulationObserver> ppgeo(new WriteBoundaryConditionsSimulationObserver(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
                 ppgeo->update(0);
                 ppgeo.reset();
             }
 
-            if (myid == 0)
-                UBLOG(logINFO, "Preprocess - end");
+            if (myid == 0) UBLOG(logINFO, "Preprocess - end");
         } else {
             rcp->restart((int)restartStep);
             grid->setTimeStep(restartStep);
 
-            if (myid == 0)
-                UBLOG(logINFO, "Restart - end");
+            if (myid == 0) UBLOG(logINFO, "Restart - end");
         }
-        
+
         //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //  grid->accept(setConnsVisitor);
 
@@ -591,13 +602,12 @@ void run(string configname)
         simulation->addSimulationObserver(npr);
         simulation->addSimulationObserver(pp);
         // simulation->addSimulationObserver(timeDepBC);
+        // simulation->addSimulationObserver(timeDepBC);
         simulation->addSimulationObserver(rcp);
 
-        if (myid == 0)
-            UBLOG(logINFO, "Simulation-start");
+        if (myid == 0) UBLOG(logINFO, "Simulation-start");
         simulation->run();
-        if (myid == 0)
-            UBLOG(logINFO, "Simulation-end");
+        if (myid == 0) UBLOG(logINFO, "Simulation-end");
     } catch (std::exception &e) {
         cerr << e.what() << endl << flush;
     } catch (std::string &s) {

@@ -64,10 +64,12 @@ Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm, int blockNx1, int bl
 
       blockNx1(blockNx1), blockNx2(blockNx2), blockNx3(blockNx2), nx1(gridNx1), nx2(gridNx2), nx3(gridNx3)
 {
+    using namespace vf::basics::constant;
+
     levelSet.resize(D3Q27System::MAXLEVEL + 1);
     bundle = comm->getBundleID();
     rank  = comm->getProcessID();
-    trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (real)blockNx1, (real)blockNx2,
+    trafo = std::make_shared<CoordinateTransformation3D>(c0o1, c0o1, c0o1, (real)blockNx1, (real)blockNx2,
                                                          (real)blockNx3);
     UbTupleInt3 minInd(0, 0, 0);
     UbTupleInt3 maxInd(gridNx1, gridNx2, gridNx3);
@@ -481,7 +483,8 @@ UbTupleDouble3 Grid3D::getBlockLengths(const SPtr<Block3D> block) const
                        trafo->getX3CoordinateScaling() * delta);
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleDouble6 Grid3D::getBlockOversize() const { return makeUbTuple(0.0, 0.0, 0.0, 0.0, 0.0, 0.0); }
+using namespace vf::basics::constant;
+UbTupleDouble6 Grid3D::getBlockOversize() const { return makeUbTuple(c0o1, c0o1, c0o1, c0o1, c0o1, c0o1); }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setCoordinateTransformator(SPtr<CoordinateTransformation3D> trafo) { this->trafo = trafo; }
 //////////////////////////////////////////////////////////////////////////
@@ -2233,7 +2236,7 @@ int Grid3D::getGhostLayerWidth() const
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setGhostLayerWidth(int ghostLayerWidth)
 {
-    this->offset = static_cast<real>(ghostLayerWidth) - 0.5;
+    this->offset = static_cast<real>(ghostLayerWidth) - c1o2;
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setTimeStep(real step) { timeStep = step; }

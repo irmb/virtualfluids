@@ -290,7 +290,7 @@ void bflow(string configname)
 
 
       //set connectors
-      //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
       //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
       //grid->accept(setConnsVisitor);
 

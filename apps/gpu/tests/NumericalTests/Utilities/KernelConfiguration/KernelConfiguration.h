@@ -7,7 +7,8 @@
 class KernelConfiguration
 {
 public:
-    virtual std::string getMainKernel()              = 0;
+    virtual ~KernelConfiguration() = default;
+    virtual std::string getMainKernel() = 0;
 	virtual bool getMultiKernelOn() = 0;
 	virtual	std::vector<int> getMultiKernelLevel() = 0;
     virtual std::vector<std::string> getMultiKernel() = 0;

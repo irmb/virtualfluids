@@ -13,7 +13,7 @@ std::shared_ptr<NumericalTestGridReader> NumericalTestGridReader::getNewInstance
 	return std::shared_ptr<NumericalTestGridReader>(new NumericalTestGridReader(para, initialCondition, cudaManager));
 }
 
-void NumericalTestGridReader::setInitalNodeValues(uint numberOfNodes, int level) const
+void NumericalTestGridReader::setInitialNodeValues(uint numberOfNodes, int level) const
 {
 	initialCondition->init(level);
 	for (uint j = 0; j <= numberOfNodes; j++){

@@ -40,9 +40,9 @@
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 #include <mpi/Communicator.h>
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 
-SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, real nue, SPtr<InterpolationProcessor> iProcessor) :
+SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, real nue, SPtr<Interpolator> iProcessor) :
 Block3DVisitor(0, D3Q27System::MAXLEVEL), 
 	comm(comm),
 	nue(nue),

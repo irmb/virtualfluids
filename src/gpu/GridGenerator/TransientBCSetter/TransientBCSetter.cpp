@@ -49,16 +49,16 @@ std::vector<T> readStringToVector(std::string s)
 
 std::string readElement(std::string line)
 {
-    size_t elemStart = line.find("<")+1;
+    const size_t elemStart = line.find('<')+1;
     // size_t elemEnd = line.find("/>", elemStart);
-    size_t nameLen = line.find(" ", elemStart)-elemStart;
+    const size_t nameLen = line.find(' ', elemStart)-elemStart;
     return line.substr(elemStart, nameLen);
 }
 
 std::string readAttribute(std::string line, std::string attributeName)
 {
-    size_t attributeStart = line.find(attributeName)+attributeName.size() + 2; // add 2 for '="'
-    size_t attributeLen = line.find("\"", attributeStart)-attributeStart;
+    const size_t attributeStart = line.find(attributeName)+attributeName.size() + 2; // add 2 for '="'
+    const size_t attributeLen = line.find("\"", attributeStart)-attributeStart;
     return line.substr(attributeStart, attributeLen);
 }
 
@@ -94,7 +94,7 @@ void VTKFile::readHeader()
     getline(file, line); // </ImageData
     getline(file, line); // AppendedData
 
-    int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
+    const int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
 
     for(auto& quantity: this->quantities)
     {
@@ -118,7 +118,7 @@ void VTKFile::readHeader()
 
 }
 
-bool VTKFile::markNANs(std::vector<uint> readIndices)
+bool VTKFile::markNANs(const std::vector<uint>& readIndices) const
 {
     std::ifstream buf(fileName.c_str(), std::ios::in | std::ios::binary);
 
@@ -126,7 +126,7 @@ bool VTKFile::markNANs(std::vector<uint> readIndices)
     tmp.reserve(readIndices.size());
     buf.seekg(this->quantities[0].offset);
     buf.read((char*) tmp.data(), sizeof(double)*readIndices.size());
-    auto firstNAN = std::find_if(tmp.begin(), tmp.end(), [](auto it){ return isnan(it); });
+    const auto firstNAN = std::find_if(tmp.begin(), tmp.end(), [](auto it){ return isnan(it); });
     
     return firstNAN != tmp.end();
 }
@@ -161,7 +161,7 @@ void VTKFile::getData(real *data, uint numberOfNodes, const std::vector<uint> &r
 {
     if(!this->loaded) loadFile();
 
-    size_t nPoints = writeIndices.size();
+    const size_t nPoints = writeIndices.size();
 
     for(size_t j=0; j<this->quantities.size(); j++)
     {
@@ -177,7 +177,7 @@ void VTKFile::printFileInfo()
 {
     printf("file %s with \n nx %i ny %i nz %i \n origin %f %f %f \n spacing %f %f %f \n", 
             fileName.c_str(), nx, ny, nz, minX, minY, minZ, deltaX, deltaY, deltaZ);
-    for(auto quantity: this->quantities)
+    for(const auto& quantity: this->quantities)
     {
         printf("\t quantity %s offset %i \n", quantity.name.c_str(), quantity.offset);
     }
@@ -199,8 +199,8 @@ void VTKFileCollection::findFiles()
             std::vector<VTKFile> filesWithThisId;
             while (!foundLastPart)
             {
-                std::string fname = makeFileName((int)files.size(), (int)filesOnThisLevel.size(), (int)filesWithThisId.size());
-                std::ifstream f(fname);
+                const std::string fname = makeFileName((int)files.size(), (int)filesOnThisLevel.size(), (int)filesWithThisId.size());
+                const std::ifstream f(fname);
                 if(f.good())
                     filesWithThisId.emplace_back(fname);
                 else
@@ -223,7 +223,7 @@ void VTKFileCollection::findFiles()
     }
 
     if(files.empty())
-        VF_LOG_CRITICAL("VTKFileCollection found no files!"); 
+        throw std::runtime_error("VTKFileCollection found no files!");
 }
     
 void TransientBCInputFileReader::getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM)
@@ -260,8 +260,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 {
     this->nPoints = (uint)coordsY.size();
     this->initializeIndexVectors();
-    real max_diff = 1e-4; // maximum distance between point on grid and precursor plane to count as exact match
-    real eps = 1e-7; // small number to avoid division by zero
+    const real max_diff = 1e-4; // maximum distance between point on grid and precursor plane to count as exact match
+    const real eps = 1e-7; // small number to avoid division by zero
     bool perfect_match = true;
 
     this->weights0PP.reserve(this->nPoints);
@@ -277,11 +277,11 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
     for(uint i=0; i<nPoints; i++)
     {
 
-        real posY = coordsY[i];
-        real posZ = coordsZ[i];
+        const real posY = coordsY[i];
+        const real posZ = coordsZ[i];
         bool found0PP = false, found0PM = false, found0MP = false, found0MM = false, foundAll = false;
 
-        uint level = this->readLevel;
+        const uint level = this->readLevel;
 
         for(int fileId=0; fileId<(int)this->fileCollection->files[level].size(); fileId++)
         {
@@ -290,7 +290,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
             // y in simulation is x in precursor/file, z in simulation is y in precursor/file 
             // simulation -> file: N -> E, S -> W, T -> N, B -> S
-            int idx = file.findNeighborMMM(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
+            const int idx = file.findNeighborMMM(posY, posZ, 0.f);                            //!> index of nearest WSB neighbor on precursor file
             
             if(idx!=-1)
             {
@@ -301,7 +301,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                     this->weights0PM.emplace_back(0.f);
                     this->weights0MP.emplace_back(0.f);
                     this->weights0MM.emplace_back(0.f);
-                    uint writeIdx = this->getWriteIndex(level, fileId, idx);            //!> writeIdx: index on host/device array where precursor value will be written to after loading from file
+                    const uint writeIdx = this->getWriteIndex(level, fileId, idx);            //!> writeIdx: index on host/device array where precursor value will be written to after loading from file
                     this->planeNeighbor0PP.push_back(writeIdx);                          //!> neighbor lists mapping where BC kernel should read from on host/device array
                     this->planeNeighbor0PM.push_back(writeIdx);
                     this->planeNeighbor0MP.push_back(writeIdx);
@@ -319,8 +319,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                 if(!found0MM)
                 {
                     found0MM = true;
-                    real dy = file.getX(idx)-posY;
-                    real dz = file.getY(idx)-posZ;
+                    const real dy = file.getX(idx)-posY;
+                    const real dz = file.getY(idx)-posZ;
                     this->weights0MM.emplace_back(1.f/(dy*dy+dz*dz+eps));
                     this->planeNeighbor0MM.emplace_back(getWriteIndex(level, fileId, idx));
                 }
@@ -329,12 +329,12 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
             
             if(!found0PP) //NT in simulation is EN in precursor
             {
-                int index = file.findNeighborPPM(posY, posZ, 0.f);
+                const int index = file.findNeighborPPM(posY, posZ, 0.f);
                 if(index!=-1)
                 {
                     found0PP = true;
-                    real dy = file.getX(index)-posY;
-                    real dz = file.getY(index)-posZ;
+                    const real dy = file.getX(index)-posY;
+                    const real dz = file.getY(index)-posZ;
                     this->weights0PP.emplace_back(1.f/(dy*dy+dz*dz+eps));
                     this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, index));
                 }
@@ -342,12 +342,12 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
             if(!found0PM) //NB in simulation is ES in precursor
             {
-                int index = file.findNeighborPMM(posY, posZ, 0.f);
+                const int index = file.findNeighborPMM(posY, posZ, 0.f);
                 if(index!=-1)
                 {
                     found0PM = true;
-                    real dy = file.getX(index)-posY;
-                    real dz = file.getY(index)-posZ;
+                    const real dy = file.getX(index)-posY;
+                    const real dz = file.getY(index)-posZ;
                     this->weights0PM.emplace_back(1.f/(dy*dy+dz*dz+eps));
                     this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, index));
                 }
@@ -355,12 +355,12 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
             if(!found0MP) //ST in simulation is WN in precursor
             {
-                int index = file.findNeighborMPM(posY, posZ, 0.f);
+                const int index = file.findNeighborMPM(posY, posZ, 0.f);
                 if(index!=-1)
                 {
                     found0MP = true;
-                    real dy = file.getX(index)-posY;
-                    real dz = file.getY(index)-posZ;
+                    const real dy = file.getX(index)-posY;
+                    const real dz = file.getY(index)-posZ;
                     this->weights0MP.emplace_back(1.f/(dy*dy+dz*dz+eps));
                     this->planeNeighbor0MP.emplace_back(getWriteIndex(level, fileId, index));
                 }
@@ -391,8 +391,8 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 
 uint VTKReader::getWriteIndex(int level, int id, int linearIndex)
 {
-    auto it = std::find(this->writeIndices[level][id].begin(), this->writeIndices[level][id].end(), linearIndex);
-    uint idx = it-this->writeIndices[level][id].begin();
+    const auto it = std::find(this->writeIndices[level][id].begin(), this->writeIndices[level][id].end(), linearIndex);
+    const uint idx = it-this->writeIndices[level][id].begin();
     if(it==this->writeIndices[level][id].end())                         
     {
         this->writeIndices[level][id].push_back(this->nPointsRead);     //!> index on host/device array where value from file will be written to
@@ -407,17 +407,16 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
 {
     // for(size_t level=0; level<this->fileCollection->files.size(); level++)
     // {
-        uint level = this->readLevel;
+        const uint level = this->readLevel;
         for(size_t id=0; id<this->fileCollection->files[level].size(); id++)
         {
             size_t numberOfFiles = this->nFile[level][id];
-
 
             if(!this->fileCollection->files[level][id][numberOfFiles].inZBounds(time))
             {
                 numberOfFiles++;
 
-                VF_LOG_INFO("PrecursorBC on level {}: switching to file no. {}\n", level, numberOfFiles);
+                VF_LOG_INFO("PrecursorBC on level {}: switching to file no. {}", level, numberOfFiles);
                 if(numberOfFiles == this->fileCollection->files[level][id].size())
                     throw std::runtime_error("Not enough Precursor Files to read");
 
@@ -433,10 +432,9 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
                 }
             }
         
-
             VTKFile* file = &this->fileCollection->files[level][id][numberOfFiles];
 
-            int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
+            const int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
             file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
             this->nFile[level][id] = numberOfFiles;
         }

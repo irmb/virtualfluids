@@ -103,15 +103,17 @@ void CalculateForcesSimulationObserver::collectData(real step)
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesSimulationObserver::calculateForces()
 {
-    forceX1global = 0.0;
-    forceX2global = 0.0;
-    forceX3global = 0.0;
+    using namespace  vf::basics::constant;
+
+    forceX1global = c0o1;
+    forceX2global = c0o1;
+    forceX3global = c0o1;
 
     for (SPtr<D3Q27Interactor> interactor : interactors) {
         for (BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap()) {
-            real forceX1 = 0.0;
-            real forceX2 = 0.0;
-            real forceX3 = 0.0;
+            real forceX1 = c0o1;
+            real forceX2 = c0o1;
+            real forceX3 = c0o1;
 
             SPtr<Block3D> block                             = t.first;
             std::set<std::vector<int>> &transNodeIndicesSet = t.second;
@@ -172,9 +174,9 @@ void CalculateForcesSimulationObserver::calculateForces()
 
     rvalues = comm->gather(values);
     if (comm->getProcessID() == comm->getRoot()) {
-        forceX1global = 0.0;
-        forceX2global = 0.0;
-        forceX3global = 0.0;
+        forceX1global = c0o1;
+        forceX2global = c0o1;
+        forceX3global = c0o1;
 
         for (int i = 0; i < (int)rvalues.size(); i += 3) {
             forceX1global += rvalues[i];
@@ -187,7 +189,9 @@ void CalculateForcesSimulationObserver::calculateForces()
 UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions,
                                                      SPtr<BoundaryConditions> bc)
 {
-    UbTupleDouble3 force(0.0, 0.0, 0.0);
+    using namespace  vf::basics::constant;
+
+    UbTupleDouble3 force(c0o1, c0o1, c0o1);
 
     if (bc) {
         // references to tuple "force"
@@ -217,14 +221,16 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesSimulationObserver::calculateCoefficients()
 {
+    using namespace  vf::basics::constant;
+    
     real F1 = forceX1global;
     real F2 = forceX2global;
     real F3 = forceX3global;
 
     // return 2*F/(rho*v*v*a);
-    C1 = 2.0 * F1 / (v * v * a);
-    C2 = 2.0 * F2 / (v * v * a);
-    C3 = 2.0 * F3 / (v * v * a);
+    C1 = c2o1 * F1 / (v * v * a);
+    C2 = c2o1 * F2 / (v * v * a);
+    C3 = c2o1 * F3 / (v * v * a);
 }
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesSimulationObserver::addInteractor(SPtr<D3Q27Interactor> interactor) { interactors.push_back(interactor); }

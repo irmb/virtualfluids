@@ -10,7 +10,6 @@
 
 #if defined VF_METIS
 
-#include "basics/utilities/UbLogger.h"
 #include "basics/utilities/UbSystem.h"
 #include "metis.h"
 #include <PointerDefinitions.h>
@@ -24,7 +23,6 @@ public:
 
 public:
     MetisPartitioner();
-    virtual ~MetisPartitioner();
     idx_t *getMetisOptions();
     void setMetisOptions(int option, idx_t value);
     int partition(int nofParts, PartType ptype);
@@ -47,9 +45,9 @@ public:
     real_t *
         ubvec; // This is an array of size ncon that specifies the allowed load imbalance tolerance for each constraint.
     // For the ith partition and jth constraint the allowed weight is the ubvec[j]*tpwgts[i*ncon+j] fraction
-    // of the jth’s constraint total weight. The load imbalances must be greater than 1.0.
+    // of the jths constraint total weight. The load imbalances must be greater than 1.0.
     // A NULL value can be passed indicating that the load imbalance tolerance for each constraint should
-    // be 1.001 (for ncon=1) or 1.01 (for ncon¿1).
+    // be 1.001 (for ncon=1) or 1.01 (for ncon1).
 
     std::vector<idx_t>
         part; // This is a vector of size n that upon successful completion stores the partition vector of the graph.

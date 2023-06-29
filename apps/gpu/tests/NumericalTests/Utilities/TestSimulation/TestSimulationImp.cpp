@@ -87,7 +87,7 @@ std::vector<std::string> TestSimulationImp::getDataToCalcTests()
 
 void TestSimulationImp::notifyObserver()
 {
-    for (int i = 0; i < simObserver.size(); i++)
+    for (uint i = 0; i < simObserver.size(); i++)
         simObserver.at(i)->update();
 }
 

@@ -107,47 +107,59 @@ constexpr std::initializer_list<CollisionTemplate> bulk_CollisionTemplate = { Co
 
 //Interface Cells
 // example of old names (pre 2023) ICellCFC: interpolation from Coarse (C) to Fine (F), indices of the Coarse cells (C)
-typedef struct ICells{
+struct ICells
+{
    uint* fineCellIndices;
    uint* coarseCellIndices;
    uint numberOfCells;
-} InterpolationCells;
+};
+
+using InterpolationCells = ICells;
 
 //! \brief stores location of neighboring cell (necessary for refinement into the wall)
-typedef struct ICellNeigh{
+struct ICellNeigh
+{
    real* x;
    real* y;
    real* z;
-} InterpolationCellNeighbor;
+};
 
-// Distribution functions g 6
-typedef struct  Distri6 { // ADD IN FUTURE RELEASE
+using InterpolationCellNeighbor = ICellNeigh;
+
+// ADD IN FUTURE RELEASE
+struct Distributions6 
+{
    real* g[6];
-} Distributions6;
+};
 
-// Distribution functions f 7
-typedef struct  Distri7{ // ADD IN FUTURE RELEASE
+// ADD IN FUTURE RELEASE
+struct  Distributions7
+{
    real* f[7];
-} Distributions7;
+};
 
-// Distribution functions f 19
-typedef struct  Distri19{ // DEPRECATED
+// DEPRECATED
+struct  Distributions19
+{
    real* f[19];
-} Distributions19;
+};
 
-// Distribution functions f 27
-typedef struct  Distri27{
+struct  Distributions27
+{
    real* f[27];
-} Distributions27, DistributionReferences27;
+};
 
-// Subgrid distances q 27
-typedef struct SubgridDist27{
+using DistributionReferences27 = Distributions27;
+
+struct SubgridDistances27
+{
    real* q[27];
-} SubgridDistances27;
+};
 
 //Q for second order BCs
 //! \struct to manage sub-grid-distances (q) for second order Boundary Conditions (BCs)
-typedef struct QforBC{
+struct QforBoundaryConditions
+{
    int* k;
    int* kN;
    long long* valueQ;
@@ -160,13 +172,15 @@ typedef struct QforBC{
    real *Vx1,     *Vy1,     *Vz1;
    real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
-}QforBoundaryConditions;
+};
 
-typedef struct QforPrecursorBC{
+struct QforPrecursorBoundaryConditions
+{
    int* k;
    int numberOfBCnodes=0;
    int sizeQ;
    int numberOfPrecursorNodes=0;
+   uint streamIndex=0;
    uint nPrecursorReads=0;
    uint timeStepsBetweenReads;
    size_t numberOfQuantities;
@@ -175,34 +189,38 @@ typedef struct QforPrecursorBC{
    real* weights0PP, *weights0PM, *weights0MP,  *weights0MM;
    real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
-}QforPrecursorBoundaryConditions;
+};
 
-//BCTemp
-typedef struct TempforBC{  // ADD IN FUTURE RELEASE
+// ADD IN FUTURE RELEASE
+struct TempforBoundaryConditions
+{
    int* k;
    real* temp;
    int kTemp=0;
-}TempforBoundaryConditions;
+};
 
-//BCTempVel
-typedef struct TempVelforBC{  // ADD IN FUTURE RELEASE
+// ADD IN FUTURE RELEASE
+struct TempVelforBoundaryConditions
+{
    int* k;
    real* temp;
    real* tempPulse;
    real* velo;
    int kTemp=0;
-}TempVelforBoundaryConditions;
+};
 
-//BCTempPress
-typedef struct TempPressforBC{  // ADD IN FUTURE RELEASE
+// ADD IN FUTURE RELEASE
+struct TempPressforBoundaryConditions
+{
    int* k;
    real* temp;
    real* velo;
    int kTemp=0;
-}TempPressforBoundaryConditions;
+};
 
 // Settings for wall model used in StressBC
-typedef struct WMparas{
+struct WallModelParameters
+{
    real* z0;
    int* samplingOffset;
    bool hasMonitor;
@@ -210,11 +228,12 @@ typedef struct WMparas{
    real* Fx;
    real* Fy;
    real* Fz;
-}WallModelParameters;
+};
 
 
-//measurePoints
-typedef struct MeasP{ // ADD IN FUTURE RELEASE
+// ADD IN FUTURE RELEASE
+struct MeasurePoints
+{
    std::string name;
    uint k;
    std::vector<real> Vx;
@@ -225,10 +244,11 @@ typedef struct MeasP{ // ADD IN FUTURE RELEASE
    //real* Vy;
    //real* Vz;
    //real* Rho;
-}MeasurePoints;
+};
 
-//Process Neighbors
-typedef struct PN27{
+
+struct ProcessNeighbor27
+{
    real* f[27];
    uint memsizeFs;
    int* index;
@@ -236,9 +256,11 @@ typedef struct PN27{
    uint rankNeighbor;
    int numberOfNodes;
    int numberOfFs;
-}ProcessNeighbor27;
+};
 
-typedef struct PN_F3 { // ADD IN FUTURE RELEASE
+// ADD IN FUTURE RELEASE
+struct ProcessNeighborF3
+{
    real* g[6];
    uint memsizeGs;
    int* index;
@@ -246,10 +268,11 @@ typedef struct PN_F3 { // ADD IN FUTURE RELEASE
    uint rankNeighbor;
    int numberOfNodes;
    int numberOfGs;
-}ProcessNeighborF3;
+};
 
-//path line particles // DEPRECATED
-typedef struct PLP{
+// DEPRECATED
+struct PathLineParticles
+{
    bool *stuck, *hot;
    real *coordXabsolut, *coordYabsolut, *coordZabsolut;
    real *coordXlocal,   *coordYlocal,   *coordZlocal;
@@ -260,13 +283,12 @@ typedef struct PLP{
    uint *cellBaseID;
    uint numberOfParticles, numberOfTimestepsParticles;
    uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
-}PathLineParticles;
+};
 
 //////////////////////////////////////////////////////////////////////////
 // DEPRECATED
-inline int vectorPosition(int i, int j, int k, int Lx, int Ly )
+inline int vectorPosition(int i, int j, int k, int Lx, int Ly)
 {
-   //return((j+15)*(Lx+2*16)+(i+15));
    return((Lx+2*STARTOFFX)*((Ly+2*STARTOFFY)*(k+STARTOFFZ)+(j+STARTOFFY))+(i+STARTOFFX));
 }
 //////////////////////////////////////////////////////////////////////////

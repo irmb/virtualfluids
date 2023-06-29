@@ -5,17 +5,20 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+
+class LogFileWriter;
 
 class LogFileQueueImp : public LogFileQueue 
 {
 public:
 	static std::shared_ptr<LogFileQueueImp> getNewInstance(std::string basicLogFilePath);
 
-	void writeLogFiles();
+	void writeLogFiles() override;
 	void addLogFileWriter(std::shared_ptr<LogFileWriter> aLogFileWriter);
 
 private:
-	LogFileQueueImp() {};
+	LogFileQueueImp() = default;
 	LogFileQueueImp(std::string basicLogFilePath);
 
 	std::string calcDateAndTime();

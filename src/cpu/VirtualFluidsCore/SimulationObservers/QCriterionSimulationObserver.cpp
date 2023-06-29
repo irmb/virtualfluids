@@ -89,6 +89,8 @@ void QCriterionSimulationObserver::clearData()
 //////////////////////////////////////////////////////////////////////////
 void QCriterionSimulationObserver::addData(const SPtr<Block3D> block)
 {
+    using namespace vf::basics::constant;
+
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
     //	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
@@ -147,16 +149,16 @@ void QCriterionSimulationObserver::addData(const SPtr<Block3D> block)
                     getNeighborVelocities(0, 0, 1, ix1, ix2, ix3, block, vT, vB);
                     //////////////////////////////////
                     // derivatives
-                    real duxdy = (vN[xdir] - vS[xdir]) * 0.5;
-                    real duydx = (vE[ydir] - vW[ydir]) * 0.5;
-                    real duxdz = (vT[xdir] - vB[xdir]) * 0.5;
-                    real duzdx = (vE[zdir] - vW[zdir]) * 0.5;
-                    real duydz = (vT[ydir] - vB[ydir]) * 0.5;
-                    real duzdy = (vN[zdir] - vS[zdir]) * 0.5;
+                    real duxdy = (vN[xdir] - vS[xdir]) * c1o2;
+                    real duydx = (vE[ydir] - vW[ydir]) * c1o2;
+                    real duxdz = (vT[xdir] - vB[xdir]) * c1o2;
+                    real duzdx = (vE[zdir] - vW[zdir]) * c1o2;
+                    real duydz = (vT[ydir] - vB[ydir]) * c1o2;
+                    real duzdy = (vN[zdir] - vS[zdir]) * c1o2;
 
-                    real duxdx = (vE[xdir] - vW[xdir]) * 0.5;
-                    real duydy = (vN[ydir] - vS[ydir]) * 0.5;
-                    real duzdz = (vT[zdir] - vB[zdir]) * 0.5;
+                    real duxdx = (vE[xdir] - vW[xdir]) * c1o2;
+                    real duydy = (vN[ydir] - vS[ydir]) * c1o2;
+                    real duzdz = (vT[zdir] - vB[zdir]) * c1o2;
 
                     real scaleFactor =
                         (real)(1
@@ -203,7 +205,9 @@ void QCriterionSimulationObserver::addData(const SPtr<Block3D> block)
 void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3,
                                                   const SPtr<Block3D> block, real *vE, real *vW)
 {
-    SPtr<ILBMKernel> kernel                 = block->getKernel();
+    using namespace vf::basics::constant;
+    
+    SPtr<ILBMKernel> kernel = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
@@ -214,13 +218,13 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
     //	int minX3 = 0;
 
     int maxX1 = (int)(distributions->getNX1());
-    int maxX2 = (int)(distributions->getNX2());
-    int maxX3 = (int)(distributions->getNX3());
+    // int maxX2 = (int)(distributions->getNX2());
+    // int maxX3 = (int)(distributions->getNX3());
     if (maxX1 < 3)
         throw UbException(UB_EXARGS, "QCriterionSimulationObserver: NX1 too small for FD stencils!");
     maxX1 -= 2;
-    maxX2 -= 2;
-    maxX3 -= 2;
+    // maxX2 -= 2;
+    // maxX3 -= 2;
     bool checkInterpolation = true;
     bool neighNodeIsBC      = false;
     SPtr<BoundaryConditions> bcPtr;
@@ -306,9 +310,9 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
             computeVelocity(fW2, vW2, compressible);
             computeVelocity(f0, v0, compressible);
             // second order non-symetric interpolation
-            vW[0] = v0[0] * 1.5 - vW[0] + 0.5 * vW2[0];
-            vW[1] = v0[1] * 1.5 - vW[1] + 0.5 * vW2[1];
-            vW[2] = v0[2] * 1.5 - vW[2] + 0.5 * vW2[2];
+            vW[0] = v0[0] * c3o2 - vW[0] + c1o2 * vW2[0];
+            vW[1] = v0[1] * c3o2 - vW[1] + c1o2 * vW2[1];
+            vW[2] = v0[2] * c3o2 - vW[2] + c1o2 * vW2[2];
             // throw UbException(UB_EXARGS,"Parallel or Non-Uniform Simulation -- not yet implemented");
         } else {
             SPtr<ILBMKernel> kernelW                 = blockNeighW->getKernel();

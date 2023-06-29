@@ -8,7 +8,7 @@
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "LBMKernel.h"
 #include <CbArray2D.h>
 #include <basics/utilities/UbFileInputASCII.h>
@@ -163,6 +163,8 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
 void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseToFine(SPtr<Block3D> oldBlock,
                                                                                       SPtr<Block3D> newBlock)
 {
+    using namespace vf::basics::constant;
+    
     D3Q27ICell icellC;
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
@@ -225,14 +227,14 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
                         iProcessor->interpolateCoarseToFine(icellC, icellF, xoff, yoff, zoff);
                     } else {
                         for (int i = 0; i < 27; i++) {
-                            icellF.BSW[i] = 0.0;
-                            icellF.BSE[i] = 0.0;
-                            icellF.BNW[i] = 0.0;
-                            icellF.BNE[i] = 0.0;
-                            icellF.TSW[i] = 0.0;
-                            icellF.TSE[i] = 0.0;
-                            icellF.TNW[i] = 0.0;
-                            icellF.TNE[i] = 0.0;
+                            icellF.BSW[i] = c0o1;
+                            icellF.BSE[i] = c0o1;
+                            icellF.BNW[i] = c0o1;
+                            icellF.BNE[i] = c0o1;
+                            icellF.TSW[i] = c0o1;
+                            icellF.TSE[i] = c0o1;
+                            icellF.TNW[i] = c0o1;
+                            icellF.TNE[i] = c0o1;
                         }
                         //                     std::string err = "For "+oldBlock->toString()+
                         //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
@@ -254,6 +256,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
 void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarseToFine(SPtr<Block3D> oldBlock,
                                                                                        SPtr<Block3D> newBlock)
 {
+    using namespace vf::basics::constant;
+    
     int newGridRank  = newGrid->getRank();
     int oldBlockRank = oldBlock->getRank();
     int newBlockRank = newBlock->getRank();
@@ -363,14 +367,14 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
                             iProcessor->interpolateCoarseToFine(icellC, icellF, xoff, yoff, zoff);
                         } else {
                             for (int i = 0; i < 27; i++) {
-                                icellF.BSW[i] = 0.0;
-                                icellF.BSE[i] = 0.0;
-                                icellF.BNW[i] = 0.0;
-                                icellF.BNE[i] = 0.0;
-                                icellF.TSW[i] = 0.0;
-                                icellF.TSE[i] = 0.0;
-                                icellF.TNW[i] = 0.0;
-                                icellF.TNE[i] = 0.0;
+                                icellF.BSW[i] = c0o1;
+                                icellF.BSE[i] = c0o1;
+                                icellF.BNW[i] = c0o1;
+                                icellF.BNE[i] = c0o1;
+                                icellF.TSW[i] = c0o1;
+                                icellF.TSE[i] = c0o1;
+                                icellF.TNW[i] = c0o1;
+                                icellF.TNE[i] = c0o1;
                             }
                             //                     std::string err = "For "+oldBlock->toString()+
                             //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
@@ -393,6 +397,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToCoarse(SPtr<Block3D> oldBlock,
                                                                                       SPtr<Block3D> newBlock)
 {
+    using namespace vf::basics::constant;
+    
     real icellC[27];
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
@@ -456,14 +462,14 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
                         iProcessor->interpolateFineToCoarse(icellF, icellC, xoff, yoff, zoff);
                     } else {
                         for (int i = 0; i < 27; i++) {
-                            icellF.BSW[i] = 0.0;
-                            icellF.BSE[i] = 0.0;
-                            icellF.BNW[i] = 0.0;
-                            icellF.BNE[i] = 0.0;
-                            icellF.TSW[i] = 0.0;
-                            icellF.TSE[i] = 0.0;
-                            icellF.TNW[i] = 0.0;
-                            icellF.TNE[i] = 0.0;
+                            icellF.BSW[i] = c0o1;
+                            icellF.BSE[i] = c0o1;
+                            icellF.BNW[i] = c0o1;
+                            icellF.BNE[i] = c0o1;
+                            icellF.TSW[i] = c0o1;
+                            icellF.TSE[i] = c0o1;
+                            icellF.TNW[i] = c0o1;
+                            icellF.TNE[i] = c0o1;
                         }
                         //                     std::string err = "For "+oldBlock->toString()+
                         //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
@@ -485,6 +491,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
 void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineToCoarse(SPtr<Block3D> oldBlock,
                                                                                        SPtr<Block3D> newBlock)
 {
+    using namespace vf::basics::constant;
+    
     int newGridRank  = newGrid->getRank();
     int oldBlockRank = oldBlock->getRank();
     int newBlockRank = newBlock->getRank();
@@ -594,14 +602,14 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
                             iProcessor->interpolateFineToCoarse(icellF, icellC, xoff, yoff, zoff);
                         } else {
                             for (int i = 0; i < 27; i++) {
-                                icellF.BSW[i] = 0.0;
-                                icellF.BSE[i] = 0.0;
-                                icellF.BNW[i] = 0.0;
-                                icellF.BNE[i] = 0.0;
-                                icellF.TSW[i] = 0.0;
-                                icellF.TSE[i] = 0.0;
-                                icellF.TNW[i] = 0.0;
-                                icellF.TNE[i] = 0.0;
+                                icellF.BSW[i] = c0o1;
+                                icellF.BSE[i] = c0o1;
+                                icellF.BNW[i] = c0o1;
+                                icellF.BNE[i] = c0o1;
+                                icellF.TSW[i] = c0o1;
+                                icellF.TSE[i] = c0o1;
+                                icellF.TNW[i] = c0o1;
+                                icellF.TNE[i] = c0o1;
                             }
                             //                     std::string err = "For "+oldBlock->toString()+
                             //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+

@@ -43,10 +43,12 @@
 
 InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
-    this->setVx1(0.0);
-    this->setVx2(0.0);
-    this->setVx3(0.0);
-    this->setRho(0.0);
+    using namespace vf::basics::constant;
+    
+    this->setVx1(c0o1);
+    this->setVx2(c0o1);
+    this->setVx3(c0o1);
+    this->setRho(c0o1);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx1(const mu::Parser &parser)
@@ -125,6 +127,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
 {
    using namespace D3Q27System;
    using namespace vf::lbm::dir;
+   using namespace vf::basics::constant;
 
    if(!block) UB_THROW( UbException(UB_EXARGS,"block is not exist") );
 
@@ -214,38 +217,38 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                real vx2Minusx3 = muVx2.Eval();
                real vx3Minusx3 = muVx3.Eval();
 
-               real ax=(vx1Plusx1-vx1Minusx1)/(2.0*deltaX)*dx;
-               real bx=(vx2Plusx1-vx2Minusx1)/(2.0*deltaX)*dx;
-               real cx=(vx3Plusx1-vx3Minusx1)/(2.0*deltaX)*dx;
+               real ax=(vx1Plusx1-vx1Minusx1)/(c2o1*deltaX)*dx;
+               real bx=(vx2Plusx1-vx2Minusx1)/(c2o1*deltaX)*dx;
+               real cx=(vx3Plusx1-vx3Minusx1)/(c2o1*deltaX)*dx;
 
-               real ay=(vx1Plusx2-vx1Minusx2)/(2.0*deltaX)*dx;
-               real by=(vx2Plusx2-vx2Minusx2)/(2.0*deltaX)*dx;
-               real cy=(vx3Plusx2-vx3Minusx2)/(2.0*deltaX)*dx;
+               real ay=(vx1Plusx2-vx1Minusx2)/(c2o1*deltaX)*dx;
+               real by=(vx2Plusx2-vx2Minusx2)/(c2o1*deltaX)*dx;
+               real cy=(vx3Plusx2-vx3Minusx2)/(c2o1*deltaX)*dx;
 
-               real az=(vx1Plusx3-vx1Minusx3)/(2.0*deltaX)*dx;
-               real bz=(vx2Plusx3-vx2Minusx3)/(2.0*deltaX)*dx;
-               real cz=(vx3Plusx3-vx3Minusx3)/(2.0*deltaX)*dx;
-               real eps_new=1.0;
-               real op = 1.;
+               real az=(vx1Plusx3-vx1Minusx3)/(c2o1*deltaX)*dx;
+               real bz=(vx2Plusx3-vx2Minusx3)/(c2o1*deltaX)*dx;
+               real cz=(vx3Plusx3-vx3Minusx3)/(c2o1*deltaX)*dx;
+               real eps_new=c1o1;
+               real op = c1o1;
 
                real feq[27];
 
                calcFeqsFct(feq,rho,vx1,vx2,vx3);
 
-               real f_E    = eps_new *((5.*ax*o + 5.*by*o + 5.*cz*o - 8.*ax*op + 4.*by*op + 4.*cz*op)/(54.*o*op));
-               real f_N    = f_E + eps_new *((2.*(ax - by))/(9.*o));
-               real f_T    = f_E + eps_new *((2.*(ax - cz))/(9.*o));
-               real f_NE   = eps_new *(-(5.*cz*o + 3.*(ay + bx)*op - 2.*cz*op + ax*(5.*o + op) + by*(5.*o + op))/(54.*o*op));
-               real f_SE   = f_NE + eps_new *((  ay + bx )/(9.*o));
-               real f_TE   = eps_new *(-(5.*cz*o + by*(5.*o - 2.*op) + 3.*(az + cx)*op + cz*op + ax*(5.*o + op))/(54.*o*op));
-               real f_BE   = f_TE + eps_new *((  az + cx )/(9.*o));
-               real f_TN   = eps_new *(-(5.*ax*o + 5.*by*o + 5.*cz*o - 2.*ax*op + by*op + 3.*bz*op + 3.*cy*op + cz*op)/(54.*o*op));
-               real f_BN   = f_TN + eps_new *((  bz + cy )/(9.*o));
-               real f_ZERO = eps_new *((5.*(ax + by + cz))/(9.*op));
-               real f_TNE  = eps_new *(-(ay + az + bx + bz + cx + cy)/(72.*o));
-               real f_TSW  = - eps_new *((ay + bx)/(36.*o)) - f_TNE;
-               real f_TSE  = - eps_new *((az + cx)/(36.*o)) - f_TNE;
-               real f_TNW  = - eps_new *((bz + cy)/(36.*o)) - f_TNE;
+               real f_E    = eps_new *((c5o1*ax*o + c5o1*by*o + c5o1*cz*o - c8o1*ax*op + c4o1*by*op + c4o1*cz*op)/(c54o1*o*op));
+               real f_N    = f_E + eps_new *((c2o1*(ax - by))/(c9o1*o));
+               real f_T    = f_E + eps_new *((c2o1*(ax - cz))/(c9o1*o));
+               real f_NE   = eps_new *(-(c5o1*cz*o + c3o1*(ay + bx)*op - c2o1*cz*op + ax*(c5o1*o + op) + by*(c5o1*o + op))/(c54o1*o*op));
+               real f_SE   = f_NE + eps_new *((  ay + bx )/(c9o1*o));
+               real f_TE   = eps_new *(-(c5o1*cz*o + by*(c5o1*o - c2o1*op) + c3o1*(az + cx)*op + cz*op + ax*(c5o1*o + op))/(c54o1*o*op));
+               real f_BE   = f_TE + eps_new *((  az + cx )/(c9o1*o));
+               real f_TN   = eps_new *(-(c5o1*ax*o + c5o1*by*o + c5o1*cz*o - c2o1*ax*op + by*op + c3o1*bz*op + c3o1*cy*op + cz*op)/(c54o1*o*op));
+               real f_BN   = f_TN + eps_new *((  bz + cy )/(c9o1*o));
+               real f_ZERO = eps_new *((c5o1*(ax + by + cz))/(c9o1*op));
+               real f_TNE  = eps_new *(-(ay + az + bx + bz + cx + cy)/(c72o1*o));
+               real f_TSW  = - eps_new *((ay + bx)/(c36o1*o)) - f_TNE;
+               real f_TSE  = - eps_new *((az + cx)/(c36o1*o)) - f_TNE;
+               real f_TNW  = - eps_new *((bz + cy)/(c36o1*o)) - f_TNE;
 
 
                f[DIR_P00]    = f_E    + feq[DIR_P00];
@@ -298,7 +301,9 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 {
-    real x1 = 1.0, x2 = 1.0, x3 = 1.0;
+    using namespace vf::basics::constant;
+    
+    real x1 = c1o1, x2 = c1o1, x3 = c1o1;
     fct.DefineVar("x1", &x1);
     fct.DefineVar("x2", &x2);
     fct.DefineVar("x3", &x3);

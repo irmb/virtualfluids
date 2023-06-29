@@ -54,23 +54,22 @@ void NoSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
 //////////////////////////////////////////////////////////////////////////
 void NoSlipBCStrategy::applyBC()
 {
-    real f[D3Q27System::ENDF + 1];
-    real feq[D3Q27System::ENDF + 1];
+    using namespace vf::basics::constant;
+    using namespace D3Q27System;
+    real f[ENDF + 1];
+    real feq[ENDF + 1];
     distributions->getDistributionInv(f, x1, x2, x3);
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     calcFeqFct(feq, rho, vx1, vx2, vx3);
 
-    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+    for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
         if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
             // quadratic bounce back
-            const int invDir = D3Q27System::INVDIR[fdir];
-            real q        = bcPtr->getQ(invDir);
-            real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) +
-                              ((q / (vf::basics::constant::c1o1 + q)) * (f[invDir] + f[fdir]));
-            distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
-                                                       x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
-                                                       fdir);
+            const int invDir = INVDIR[fdir];
+            real q = bcPtr->getQ(invDir);
+            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
+            distributions->setDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
         }
     }
 }

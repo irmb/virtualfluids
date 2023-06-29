@@ -4,6 +4,7 @@
 #include "Parameter/Parameter.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "GPU/CudaMemoryManager.h"
+#include "Parameter/CudaStreamManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
 
@@ -14,14 +15,14 @@
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
 #include "utilities/communication.h"
-#include "Communication/Communicator.h"
+#include "Communication/CommunicationRoutine.h"
 
 #include <logger/Logger.h>
 
 using namespace vf::lbm::dir;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
-                             std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator &communicator)
+                             std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::CommunicationRoutine &communicator)
     : mpiProcessID(communicator.getPID()), builder(builder)
 {
     this->para = para;
@@ -31,7 +32,7 @@ GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_p
         std::make_unique<InterpolationCellGrouper>(para->getParHallLevels(), para->getParDallLevels(), builder);
 }
 
-GridGenerator::~GridGenerator() {}
+GridGenerator::~GridGenerator() = default;
 
 void GridGenerator::setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams> &&indexRearrangement)
 {
@@ -92,7 +93,7 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             para->getParH(level)->typeOfGridNode,
             level);
 
-        setInitalNodeValues(numberOfNodesPerLevel, level);
+        setInitialNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
@@ -364,6 +365,8 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             cudaMemoryManager->cudaCopyPrecursorBC(level);
             cudaMemoryManager->cudaAllocPrecursorData(level);
+            para->getParD(level)->precursorBC.streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::Precursor);
+            
 
             // read first timestep of precursor into next and copy to next on device
             for(auto reader : para->getParH(level)->transientBCInputFileReader)
