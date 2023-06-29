@@ -177,6 +177,19 @@ void run(string configname)
             UBLOG(logINFO, "path = " << pathname);
         }
 
+                    // bounding box
+            real g_minX1 = 0;
+            real g_minX2 = 0;
+            real g_minX3 = 0;
+
+            //double g_maxX1 = 8.0*D;
+            //double g_maxX2 = 2.5*D;
+            //double g_maxX3 = 2.5*D;
+
+             real g_maxX1 = 8.0 * D;
+             real g_maxX2 = 5 * D;
+             real g_maxX3 = 5 * D;
+
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
         // const int baseLevel = 0;
@@ -189,7 +202,8 @@ void run(string configname)
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseSimpleVelocityBaseExternalPressureLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseSimpleVelocityBaseExternalPressureLBMKernel());
+        kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -209,6 +223,7 @@ void run(string configname)
         kernel->setContactAngle(theta);
         kernel->setInterfaceWidth(interfaceWidth);
         //dynamicPointerCast<MultiphasePressureFilterLBMKernel>(kernel)->setPhaseFieldBC(0.0);
+        kernel->setSigma(sigma);
 
         SPtr<BCSet> bcProc(new BCSet());
         // BCSetPtr bcProc(new ThinWallBCSet());
@@ -240,25 +255,26 @@ void run(string configname)
         // BC Adapter
         //////////////////////////////////////////////////////////////////////////////
         mu::Parser fctF1;
-        // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
-        // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
-        fctF1.SetExpr("vy1");
-        fctF1.DefineConst("vy1", 0.0);
-        fctF1.DefineConst("R", 8.0);
-        fctF1.DefineConst("x0", 0.0);
-        fctF1.DefineConst("z0", 0.0);
-        // SPtr<BC> velBCF1(
-        //    new MultiphaseVelocityBC(false, true, false, fctF1, phiH, 0.0, BCFunction::INFCONST));
+        //u_actual(r) = U_max * (4 / (D^2) * (R^2 - r^2))
+        //fctF1.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
+        //fctF1.SetExpr("vx1*(1-(sqrt((x2-y0)^2+(x3-z0)^2))/(R))");
+        //fctF1.SetExpr("vy1*(1-(sqrt((x2-x0)^2+(x3-z0)^2)/R))^0.1");
+        fctF1.SetExpr("vx1");
+        //fctF1.DefineConst("vx1", 0);
+        fctF1.DefineConst("vx1", U_LB);
+        fctF1.DefineConst("R", 0.5*D);
+        fctF1.DefineConst("y0", (g_minX2+g_maxX2)/2);
+        fctF1.DefineConst("z0", (g_minX3+g_maxX3)/2);
+        SPtr<BC> velBCF1(new MultiphaseVelocityBC(true, false, false, fctF1, phiH, 0.0, BCFunction::INFCONST));
 
         mu::Parser fctF2;
-        fctF2.SetExpr("vy1");
-        fctF2.DefineConst("vy1", U_LB);
+        fctF2.SetExpr("vx1");
+        fctF2.DefineConst("vx1", U_LB);
 
-        real startTime = 1;
-        SPtr<BC> velBCF1(
-            new MultiphaseVelocityBC(true, false, false, fctF1, phiH, 0.0, startTime));
-        SPtr<BC> velBCF2(
-            new MultiphaseVelocityBC(true, false, false, fctF2, phiH, startTime, endTime));
+        // real startTime = 1;
+        // SPtr<BC> velBCF1(new MultiphaseVelocityBC(true, false, false, fctF1, phiH, 0.0, startTime));
+        //SPtr<BC> velBCF2(new MultiphaseVelocityBC(true, false, false, fctF2, phiH, startTime, endTime));
+        SPtr<BC> velBCF2(new MultiphaseVelocityBC(true, false, false, fctF2, phiL, 0.0, BCFunction::INFCONST));
 
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
@@ -283,7 +299,7 @@ void run(string configname)
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
         bcVisitor.addBC(noSlipBC);
-        bcVisitor.addBC(denBC); // Ohne das BB?
+        //bcVisitor.addBC(denBC); // Ohne das BB?
         bcVisitor.addBC(velBCF1);
 
         //SPtr<D3Q27Interactor> inflowF1Int;
@@ -295,18 +311,7 @@ void run(string configname)
 
             //  if (newStart) {
 
-            // bounding box
-            real g_minX1 = 0;
-            real g_minX2 = 0;
-            real g_minX3 = 0;
 
-            //double g_maxX1 = 8.0*D;
-            //double g_maxX2 = 2.5*D;
-            //double g_maxX3 = 2.5*D;
-
-             real g_maxX1 = 1.0 * D; // 8.0 * D;
-             real g_maxX2 = 2.0 * D;
-             real g_maxX3 = 2.0 * D;
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
@@ -330,18 +335,11 @@ void run(string configname)
             //    GbSystem3D::writeGeoObject(geoInflowF1.get(), pathname + "/geo/geoInflowF1",
             //                               WbWriterVtkXmlASCII::getInstance());
 
-            GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1 - 2.0*dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1,
-                                                       g_maxX2 / 2.0,
-                                                       g_maxX3 / 2.0, D / 2.0));
-            if (myid == 0)
-                GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow",
-                                           WbWriterVtkXmlASCII::getInstance());
+            GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1 - 2.0*dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1, g_maxX2 / 2.0, g_maxX3 / 2.0, D / 2.0));
+            if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
-            GbCylinder3DPtr geoSolid(new GbCylinder3D(g_minX1 - 2.0 * dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1-dx,
-                                                       g_maxX2 / 2.0, g_maxX3 / 2.0, 1.5*D / 2.0));
-            if (myid == 0)
-                GbSystem3D::writeGeoObject(geoSolid.get(), pathname + "/geo/geoSolid",
-                                           WbWriterVtkXmlASCII::getInstance());
+            GbCylinder3DPtr geoSolid(new GbCylinder3D(g_minX1 - 2.0 * dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1-dx, g_maxX2 / 2.0, g_maxX3 / 2.0, 1.5*D / 2.0));
+            if (myid == 0) GbSystem3D::writeGeoObject(geoSolid.get(), pathname + "/geo/geoSolid", WbWriterVtkXmlASCII::getInstance());
 
 
             // GbCylinder3DPtr cylinder2(
@@ -384,38 +382,26 @@ void run(string configname)
             SPtr<D3Q27Interactor> outflowInt(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
             // Create boundary conditions geometry
-            GbCuboid3DPtr wallXmin(
-                new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_minX1, g_maxX2 + 2.0*dx, g_maxX3));
+            GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_minX1, g_maxX2 + 2.0*dx, g_maxX3));
             GbSystem3D::writeGeoObject(wallXmin.get(), pathname + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallXmax(
-                new GbCuboid3D(g_maxX1, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
+            GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
             GbSystem3D::writeGeoObject(wallXmax.get(), pathname + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallZmin(
-                new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_minX3));
+            GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_minX3));
             GbSystem3D::writeGeoObject(wallZmin.get(), pathname + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallZmax(
-                new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_maxX3, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3 + 2.0*dx));
+            GbCuboid3DPtr wallZmax(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_maxX3, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3 + 2.0*dx));
             GbSystem3D::writeGeoObject(wallZmax.get(), pathname + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallYmin(
-                new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_minX2, g_maxX3));
+            GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_minX2, g_maxX3));
             GbSystem3D::writeGeoObject(wallYmin.get(), pathname + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallYmax(
-                new GbCuboid3D(g_minX1 - 2.0*dx, g_maxX2, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
+            GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - 2.0*dx, g_maxX2, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
             GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
 
             // Add boundary conditions to grid generator
-            SPtr<D3Q27Interactor> wallXminInt(
-                new D3Q27Interactor(wallXmin, grid, noSlipBC, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallXmaxInt(
-                new D3Q27Interactor(wallXmax, grid, noSlipBC, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallZminInt(
-                new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallZmaxInt(
-                new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallYminInt(
-                new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
-            SPtr<D3Q27Interactor> wallYmaxInt(
-                new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
 
             //cylInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder1, grid, velBCF1, Interactor3D::SOLID));
             //cylInt->addBC(velBCF2);
@@ -423,19 +409,22 @@ void run(string configname)
             // Interactor3D::SOLID));
 
             inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCF1, Interactor3D::SOLID));
-            inflowInt->addBC(velBCF2);
+            //inflowInt->addBC(velBCF2);
 
-            SPtr<D3Q27Interactor> solidInt =
-                SPtr<D3Q27Interactor>(new D3Q27Interactor(geoSolid, grid, noSlipBC, Interactor3D::SOLID));
+            GbCylinder3DPtr geoAirInflow(new GbCylinder3D(g_minX1 - 2.0*dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1, g_maxX2 / 2.0, g_maxX3 / 2.0, D * 0.9 / 2.0));
+            if (myid == 0) GbSystem3D::writeGeoObject(geoAirInflow.get(), pathname + "/geo/geoAirInflow", WbWriterVtkXmlASCII::getInstance());            
+            SPtr<D3Q27Interactor> inflowAirInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoAirInflow, grid, velBCF2, Interactor3D::SOLID));
+
+            SPtr<D3Q27Interactor> solidInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoSolid, grid, noSlipBC, Interactor3D::SOLID));
 
             InteractorsHelper intHelper(grid, metisVisitor, true);
             //intHelper.addInteractor(cylInt);
             //intHelper.addInteractor(tubes);
-            intHelper.addInteractor(outflowInt);
+            //intHelper.addInteractor(outflowInt);
             // intHelper.addInteractor(cyl2Int);
 
             intHelper.addInteractor(wallXminInt);
-            //intHelper.addInteractor(wallXmaxInt);
+            intHelper.addInteractor(wallXmaxInt);
             intHelper.addInteractor(wallZminInt);
             intHelper.addInteractor(wallZmaxInt);
             intHelper.addInteractor(wallYminInt);
@@ -490,8 +479,8 @@ void run(string configname)
             //fct1.SetExpr("phiL");
             //fct1.DefineConst("phiL", phiL);
             real x1c = 0;  // (g_maxX1 - g_minX1-1)/2; //
-            real x2c = (g_maxX2 - g_minX2)/2;
-            real x3c = (g_maxX3 - g_minX3)/2;
+            real x2c = (g_minX2 + g_maxX2)/2;
+            real x3c = (g_minX3 + g_maxX3)/2;
             
             mu::Parser fct1;
             fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
@@ -572,8 +561,8 @@ void run(string configname)
 
         grid->accept(bcVisitor);
 
-        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
@@ -581,16 +570,17 @@ void run(string configname)
         t_ast = 7.19;
         t = (int)(t_ast/(U_LB/(D_LB)));
         visSch->addSchedule(t,t,t); //t=7.19
-        SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
-            grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+        // SPtr<WriteMultiphaseQuantitiesSimulationObserver> pp(new WriteMultiphaseQuantitiesSimulationObserver(
+        //     grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+        SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> pp(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));        
         pp->update(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
-        SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
-        auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
-        timeDepBC->addInteractor(inflowInt);
+        // SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
+        // auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
+        // timeDepBC->addInteractor(inflowInt);
 
 #ifdef _OPENMP
         omp_set_num_threads(numOfThreads);
@@ -600,7 +590,7 @@ void run(string configname)
         SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
         simulation->addSimulationObserver(npr);
         simulation->addSimulationObserver(pp);
-        simulation->addSimulationObserver(timeDepBC);
+        // simulation->addSimulationObserver(timeDepBC);
         simulation->addSimulationObserver(rcp);
 
         if (myid == 0)

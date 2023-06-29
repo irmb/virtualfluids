@@ -427,6 +427,17 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					//		(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
 					//		(mfbbc - mfbba));
 					D3Q27System::calcIncompMacroscopicValues(ff, rhoG, vx, vy, vz);
+										    if (withForcing) {
+
+                        real forcingX1 = muForcingX1.Eval();
+                        real forcingX2 = muForcingX2.Eval();
+                        real forcingX3 = muForcingX3.Eval();
+
+                        vx += (forcingX1)*deltaT * c1o2;
+                        vy += (forcingX2)*deltaT * c1o2;
+                        vz += (forcingX3)*deltaT * c1o2;
+                    }
+
 					//if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {  }
 					//else { rhoG = 0.0; vx = 0.0; vy = 0.0; vz = 0.0; }
 					//// very bad save the world procedure!!!!
@@ -1916,34 +1927,34 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 	this->swapDistributions();
 
-	for (int x3 = minX3; x3 < maxX3; x3++) {
-	for (int x2 = minX2; x2 < maxX2; x2++) {
-		for (int x1 = minX1; x1 < maxX1; x1++) {
+// 	for (int x3 = minX3; x3 < maxX3; x3++) {
+// 	for (int x2 = minX2; x2 < maxX2; x2++) {
+// 		for (int x1 = minX1; x1 < maxX1; x1++) {
 			 
-				int x1p = x1 + 1;
-				int x2p = x2 + 1;
-				int x3p = x3 + 1;
-				findNeighbors(phaseFieldOld, x1, x2, x3);
+// 				int x1p = x1 + 1;
+// 				int x2p = x2 + 1;
+// 				int x3p = x3 + 1;
+// 				findNeighbors(phaseFieldOld, x1, x2, x3);
 
-				//if (((*phaseField)(x1, x2, x3) > c1o2) && (((*phaseFieldOld)(x1, x2, x3) <= c1o2)))
-				{//Refill liquid
-					real vx;
-					real vy;
-					real vz;
+// 				//if (((*phaseField)(x1, x2, x3) > c1o2) && (((*phaseFieldOld)(x1, x2, x3) <= c1o2)))
+// 				{//Refill liquid
+// 					real vx;
+// 					real vy;
+// 					real vz;
 
 
-					distribution->getDistribution(ff, x1, x2, x3);
-					real rhoL;
-					D3Q27System::calcIncompMacroscopicValues(ff, rhoL, vx, vy, vz);
-					//if (vz != 0) {
+// 					distribution->getDistribution(ff, x1, x2, x3);
+// 					real rhoL;
+// 					D3Q27System::calcIncompMacroscopicValues(ff, rhoL, vx, vy, vz);
+// 					//if (vz != 0) {
 
-					//	std::cout << "precol: rhoL=" << rhoL << " vx=" << vx << " vy=" << vy << " vz=" << vz << "ffRest=" << ff[DIR_000] << " x=" << x1 << " y=" << x2 << " z=" << x3 << "\n";
-					//}
-				}
+// 					//	std::cout << "precol: rhoL=" << rhoL << " vx=" << vx << " vy=" << vy << " vz=" << vz << "ffRest=" << ff[DIR_000] << " x=" << x1 << " y=" << x2 << " z=" << x3 << "\n";
+// 					//}
+// 				}
 			
-		}
-	}
-}
+// 		}
+// 	}
+// }
 
 
 
