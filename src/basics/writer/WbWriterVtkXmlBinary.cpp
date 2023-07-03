@@ -39,9 +39,8 @@
 
 using namespace std;
 
-ofstream createFileStream(const std::string& vtkFilename)
+ofstream createFileStream(const std::string &vtkFilename)
 {
-
     ofstream outputFileStream(vtkFilename.c_str(), ios::out | ios::binary);
     if (!outputFileStream) {
         outputFileStream.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
@@ -50,8 +49,7 @@ ofstream createFileStream(const std::string& vtkFilename)
             UbSystem::makeDirectory(path);
             outputFileStream.open(vtkFilename.c_str(), ios::out | ios::binary);
         }
-        if (!outputFileStream)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkFilename);
+        if (!outputFileStream) throw UbException(UB_EXARGS, "couldn't open file " + vtkFilename);
     }
     return outputFileStream;
 }
@@ -67,8 +65,7 @@ void addCollectionDatasetsForTimeStep(std::ofstream &outputFileStream, const vec
 {
     int group = 0, part = 0;
     for (size_t i = 0; i < filenames.size(); i++) {
-        outputFileStream << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << part
-                         << "\" file=\"" << filenames[i] << "\"/>" << endl;
+        outputFileStream << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << part << "\" file=\"" << filenames[i] << "\"/>" << endl;
         if (separateGroups)
             group++;
         else
@@ -110,6 +107,7 @@ string WbWriterVtkXmlBinary::writeCollection(const string &filename, const vecto
     finalizeCollectionFile(out);
     return vtkFilename;
 }
+
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::addFilesToCollection(const string &filename, const vector<string> &filenames,
                                                   const double &timeStep, const bool &separateGroups) const
