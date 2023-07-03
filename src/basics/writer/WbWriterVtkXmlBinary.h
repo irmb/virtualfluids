@@ -36,6 +36,7 @@
 #include <string>
 
 #include <basics/writer/WbWriter.h>
+#include <basics/DataTypes.h>
 
 #include "basics_export.h"
 

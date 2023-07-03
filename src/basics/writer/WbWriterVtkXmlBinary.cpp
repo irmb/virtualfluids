@@ -92,7 +92,7 @@ void finalizeCollectionFile(std::ofstream &outputFileStream)
 }
 
 std::string WbWriterVtkXmlBinary::writeCollectionForTimeSeries(const std::string &filename,
-                                                                      std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps, bool separateGroups) const
+                                                               std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps, bool separateGroups) const
 {
     std::string vtkFilename = filename + ".pvd";
     ofstream out = createFileStream(vtkFilename);
