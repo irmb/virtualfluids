@@ -39,13 +39,13 @@
 
 using namespace std;
 
-ofstream createFileStream(std::string& vtkFilename)
+ofstream createFileStream(const std::string& vtkFilename)
 {
 
     ofstream outputFileStream(vtkFilename.c_str(), ios::out | ios::binary);
     if (!outputFileStream) {
         outputFileStream.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkFilename);
+        const std::string path = UbSystem::getPathFromString(vtkFilename);
         if (!path.empty()) {
             UbSystem::makeDirectory(path);
             outputFileStream.open(vtkFilename.c_str(), ios::out | ios::binary);
@@ -56,13 +56,9 @@ ofstream createFileStream(std::string& vtkFilename)
     return outputFileStream;
 }
 
-void addCollectionHeader(std::ofstream &outputFileStream){
-    string endian;
-    if (UbSystem::isLittleEndian())
-        endian = "LittleEndian";
-    else
-        endian = "BigEndian";
-
+void addCollectionHeader(std::ofstream &outputFileStream)
+{
+    std::string endian = UbSystem::isLittleEndian() ? "LittleEndian" : "BigEndian";
     outputFileStream << "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"" << endian << "\" >" << endl;
     outputFileStream << "   <Collection>" << endl;
 }
