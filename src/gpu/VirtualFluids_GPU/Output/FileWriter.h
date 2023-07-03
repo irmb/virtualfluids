@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-
+#include <map>
 
 
 #include "DataWriter.h"
@@ -29,10 +29,14 @@ private:
 
     std::string writeCollectionFileMedian( std::shared_ptr<Parameter> para, unsigned int timestep );
 
+    std::string writePvdCollectionFileForTimeSeries( const Parameter &para);
+
     std::vector<std::string> getNodeDataNames(std::shared_ptr<Parameter> para);
     std::vector<std::string> getMedianNodeDataNames(std::shared_ptr<Parameter> para);
 
     std::vector< std::string > fileNamesForCollectionFile;
     std::vector< std::string > fileNamesForCollectionFileMedian;
+
+    std::map<uint, std::vector<std::string>> fileNamesForCollectionFileTimeSeries; // key: timeStep, value: fileNames for timeStep
 };
 #endif
