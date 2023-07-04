@@ -31,6 +31,7 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
+#include <gpu/VirtualFluids_GPU/Communication/Communicator.h>
 #include <gpu/VirtualFluids_GPU/Communication/MpiCommunicator.h>
 
 namespace communicator
@@ -39,9 +40,13 @@ namespace communicator
 
     void makeModule(py::module_ &parentModule)
     {
-        py::class_<vf::gpu::MpiCommunicator, std::unique_ptr<vf::gpu::MpiCommunicator, py::nodelete>>(parentModule, "MpiCommunicator")
-        .def_static("get_instance", &vf::gpu::MpiCommunicator::getInstance, py::return_value_policy::reference)
-        .def("get_number_of_process", &vf::gpu::MpiCommunicator::getNumberOfProcess)
-        .def("get_pid", &vf::gpu::MpiCommunicator::getPID);
+        py::class_<vf::gpu::CommunicationRoutine, std::unique_ptr<vf::gpu::CommunicationRoutine, py::nodelete>>(parentModule, "CommunicationRoutine");
+
+        py::class_<vf::gpu::Communicator, vf::gpu::CommunicationRoutine, std::unique_ptr<vf::gpu::Communicator, py::nodelete>>(parentModule, "Communicator")
+            .def("get_number_of_process", &vf::gpu::Communicator::getNumberOfProcess)
+            .def("get_pid", &vf::gpu::Communicator::getPID);
+
+        py::class_<vf::gpu::MpiCommunicator, vf::gpu::Communicator, std::unique_ptr<vf::gpu::MpiCommunicator, py::nodelete>>(parentModule, "MpiCommunicator")
+            .def_static("get_instance", &vf::gpu::MpiCommunicator::getInstance, py::return_value_policy::reference);
     }
-}
+} // namespace communicator
