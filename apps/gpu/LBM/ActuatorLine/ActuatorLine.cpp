@@ -61,8 +61,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 
-#include "GridGenerator/grid/GridFactory.h"
-
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
@@ -109,9 +107,6 @@ void multipleLevel(const std::string& configPath)
 {
     vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
-    auto gridFactory = GridFactory::make();
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
@@ -148,6 +143,8 @@ void multipleLevel(const std::string& configPath)
 	const real dx = reference_diameter/real(nodes_per_diameter);
 
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
 							   L_x,  L_y,  L_z, dx);

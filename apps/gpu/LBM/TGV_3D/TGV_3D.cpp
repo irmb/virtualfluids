@@ -58,7 +58,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
 #include "GridGenerator/io/STLReaderWriter/STLReader.h"
@@ -134,14 +133,7 @@ void multipleLevel(const std::string& configPath)
 {
     vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
-    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
-
-    auto gridFactory = GridFactory::make();
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
-
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
@@ -166,6 +158,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	real dx = 2.0 * PI / real(nx);
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
 	gridBuilder->addCoarseGrid(-PI, -PI, -PI,
 								PI,  PI,  PI, dx);
