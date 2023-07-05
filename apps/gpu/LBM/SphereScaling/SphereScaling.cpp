@@ -25,7 +25,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/GridFactory.h"
 
 #include "geometries/Conglomerate/Conglomerate.h"
 #include "geometries/Cuboid/Cuboid.h"
@@ -66,10 +65,6 @@
 void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
     vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
-
-    auto gridFactory = GridFactory::make();
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
@@ -149,6 +144,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
 
     //////////////////////////////////////////////////////////////////////////
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
     if (useGridGenerator) {
         real sideLengthCube;

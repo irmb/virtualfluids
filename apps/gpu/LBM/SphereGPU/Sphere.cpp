@@ -41,18 +41,17 @@
 #include <string>
 
 //////////////////////////////////////////////////////////////////////////
-
-#include "DataTypes.h"
+#include <basics/PointerDefinitions.h>
+#include <basics/DataTypes.h>
 #include <logger/Logger.h>
-#include "PointerDefinitions.h"
-#include "config/ConfigurationFile.h"
+#include <basics/PointerDefinitions.h>
+#include <basics/config/ConfigurationFile.h>
 
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
@@ -94,9 +93,8 @@ int main(int argc, char *argv[])
 
         //////////////////////////////////////////////////////////////////////////
         // setup simulation parameters (with or without config file)
-        //////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();;
         SPtr<Parameter> para;
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
         GridScalingFactory scalingFactory = GridScalingFactory();
@@ -109,17 +107,11 @@ int main(int argc, char *argv[])
             para = std::make_shared<Parameter>();
         }
 
-        //////////////////////////////////////////////////////////////////////////
-        // setup gridGenerator
-        //////////////////////////////////////////////////////////////////////////
-
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
+        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
         real dx = L / real(nx);
         gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L,
@@ -207,7 +199,7 @@ int main(int argc, char *argv[])
         const uint tAveraging      = 100;
         const uint tStartOutProbe  = 0;
         const uint tOutProbe       = para->getTimestepOut();
-        SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>( "pointProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
+        SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), tStartAveraging, tAveraging, tStartOutProbe, tOutProbe);
         std::vector<real> probeCoordsX = {0.3, 0.5};
         std::vector<real> probeCoordsY = {0.0, 0.0};
         std::vector<real> probeCoordsZ = {0.0, 0.0};
@@ -226,7 +218,7 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
         // setup to copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
-
+        vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
