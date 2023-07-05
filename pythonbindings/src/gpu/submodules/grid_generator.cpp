@@ -38,7 +38,6 @@
 #include "gpu/GridGenerator/geometries/Cuboid/Cuboid.h"
 #include "gpu/GridGenerator/geometries/Sphere/Sphere.h"
 #include "gpu/GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
-#include "gpu/GridGenerator/grid/GridFactory.h"
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -62,9 +61,6 @@ namespace grid_generator
         // .value("PY", CommunicationDirections::PY)
         // .value("MZ", CommunicationDirections::MZ)
         // .value("PZ", CommunicationDirections::PZ);
-
-        py::class_<GridFactory, std::shared_ptr<GridFactory>>(gridGeneratorModule, "GridFactory")
-        .def_static("make", &GridFactory::make, py::return_value_policy::reference);
 
         py::class_<BoundingBox, std::shared_ptr<BoundingBox>>(gridGeneratorModule, "BoundingBox")
         .def(py::init<real, real, real, real, real, real>(), py::arg("min_x"), py::arg("max_x"), py::arg("min_y"), py::arg("max_y"), py::arg("min_z"), py::arg("max_z"));
@@ -99,7 +95,6 @@ namespace grid_generator
         .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"));
 
         py::class_<MultipleGridBuilder, LevelGridBuilder, std::shared_ptr<MultipleGridBuilder>>(gridGeneratorModule, "MultipleGridBuilder")
-        .def_static("make_shared", &MultipleGridBuilder::makeShared, py::return_value_policy::reference, py::arg("grid_factory"))
         .def("add_coarse_grid", &MultipleGridBuilder::addCoarseGrid, py::arg("start_x"), py::arg("start_y"), py::arg("start_z"), py::arg("end_x"), py::arg("end_y"), py::arg("end_z"), py::arg("delta"))
         .def("add_grid", py::overload_cast<SPtr<Object>>(&MultipleGridBuilder::addGrid), py::arg("grid_shape"))
         .def("add_grid", py::overload_cast<SPtr<Object>, uint>(&MultipleGridBuilder::addGrid), py::arg("grid_shape"), py::arg("level_fine"))
