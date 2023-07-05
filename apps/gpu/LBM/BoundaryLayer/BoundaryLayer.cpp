@@ -61,8 +61,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 
-#include "GridGenerator/grid/GridFactory.h"
-
 #include "geometries/Cuboid/Cuboid.h"
 #include "geometries/TriangularMesh/TriangularMesh.h"
 
@@ -103,9 +101,6 @@ using namespace vf::basics::constant;
 
 void multipleLevel(const std::string& configPath)
 {
-    auto gridFactory = GridFactory::make();
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
@@ -266,6 +261,7 @@ void multipleLevel(const std::string& configPath)
         xGridMax += overlap;
         xGridMin -= overlap;
     }
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
