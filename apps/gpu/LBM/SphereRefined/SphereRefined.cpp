@@ -124,11 +124,11 @@ int main()
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
         // use primitive
-        // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
+        auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
 
         // use stl
-        std::string stlPath = "C:\\Users\\schoen\\Desktop\\git\\VirtualFluids_dev_rz\\apps\\gpu\\LBM\\SphereRefined\\sphere02.stl";
-        auto sphere = std::make_shared<TriangularMesh>(stlPath);
+        //std::string stlPath = "C:\\Users\\schoen\\Desktop\\git\\VirtualFluids_dev_rz\\apps\\gpu\\LBM\\SphereRefined\\sphere02.stl";
+        //auto sphere = std::make_shared<TriangularMesh>(stlPath);
         gridBuilder->addGeometry(sphere);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
