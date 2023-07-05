@@ -6,7 +6,7 @@ source ./regression-tests/__regression_test_executer.sh
 REFERENCE_DATA_DIR=regression_tests/gpu/SphereInChannel_3Levels
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75"
+CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75 -DUSER_APPS=apps/gpu/LBM/SphereRefined"
 
 # 3. define the application to be executed
 APPLICATION=./build/bin/SphereRefined
