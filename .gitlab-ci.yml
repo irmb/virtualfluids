@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1
 
 stages:
   - build
