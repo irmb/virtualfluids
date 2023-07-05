@@ -75,7 +75,8 @@
 int main()
 {
     try {
-         vf::logging::Logger::initializeLogger();
+        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+        vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
@@ -86,11 +87,11 @@ int main()
         const real dSphere = 0.2;
         const real Re = 300.0;
         const real velocity = 1.0;
-        const real velocityLB = (real)0.5e-3; // LB units
-        const uint nx = 64;
+        const real velocityLB = (real)0.5e-2; // LB units
+        const uint nx = 50;
 
         const uint timeStepOut = 10000;
-        const uint timeStepEnd = 100000;
+        const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
         // setup gridGenerator
@@ -114,17 +115,18 @@ int main()
         //////////////////////////////////////////////////////////////////////////
 
         gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L, 
-                                    3.0 * L,  0.6 * L,  0.6 * L, dx);
-
-        // use primitive
-        // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
+                                    2.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // add fine grid
-        //gridBuilder->addGrid(std::make_shared<Sphere>(0., 0., 0., 0.3), 3); 
+        gridBuilder->addGrid(std::make_shared<Sphere>(0., 0., 0., 0.3), 2); 
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
+        // use primitive
+        // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
+
+        // use stl
         std::string stlPath = "C:\\Users\\schoen\\Desktop\\git\\VirtualFluids_dev_rz\\apps\\gpu\\LBM\\SphereRefined\\sphere02.stl";
         auto sphere = std::make_shared<TriangularMesh>(stlPath);
         gridBuilder->addGeometry(sphere);
@@ -178,7 +180,6 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =
