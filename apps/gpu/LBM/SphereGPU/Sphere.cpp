@@ -44,8 +44,8 @@
 #include <basics/PointerDefinitions.h>
 #include <basics/DataTypes.h>
 #include <logger/Logger.h>
-#include "PointerDefinitions.h"
-#include "config/ConfigurationFile.h"
+#include <basics/PointerDefinitions.h>
+#include <basics/config/ConfigurationFile.h>
 
 //////////////////////////////////////////////////////////////////////////
 
