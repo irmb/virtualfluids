@@ -80,7 +80,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        std::string path("D:/output/SphereRefined");
+        std::string path("output/SphereRefined");
         std::string simulationName("SphereRefined");
 
         const real L = 1.0;
@@ -118,7 +118,7 @@ int main()
                                     2.0 * L,  0.6 * L,  0.6 * L, dx);
 
         // add fine grid
-        gridBuilder->addGrid(std::make_shared<Sphere>(0., 0., 0., 0.3), 2); 
+        gridBuilder->addGrid(std::make_shared<Sphere>(0., 0., 0., 0.22), 2); 
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -126,9 +126,6 @@ int main()
         // use primitive
         auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
 
-        // use stl
-        //std::string stlPath = "C:\\Users\\schoen\\Desktop\\git\\VirtualFluids_dev_rz\\apps\\gpu\\LBM\\SphereRefined\\sphere02.stl";
-        //auto sphere = std::make_shared<TriangularMesh>(stlPath);
         gridBuilder->addGeometry(sphere);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -154,7 +151,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
