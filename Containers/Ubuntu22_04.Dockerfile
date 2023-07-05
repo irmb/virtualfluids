@@ -1,7 +1,7 @@
 # VirtualFluids Development Image:
 # Ubuntu 22.04
 
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.2.0-devel-ubuntu22.04
 
 # timezone
 ARG TZ
@@ -25,13 +25,15 @@ RUN apt-get update &&   \
     python3-pip         \
     python3.11-dev      \
     cppcheck            \
-    clangd-12           \
+    clangd-15           \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
     && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100 \
     && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100 \
     && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100 \
-    && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-12 100 \
+    && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-15 100 \
+    && ln -s clang-tidy-15 /usr/bin/clang-tidy \
+    && ln -s clang-format-15 /usr/bin/clang-format \
     && pip3 install      \
         cmake==3.26.3    \
         setuptools       \
