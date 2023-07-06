@@ -191,6 +191,7 @@ void run(string configname)
             //                                                   TPMSOrigin[2] + TPMSL[2],
             //                                                   UnitEdgeLength, dx, 2.5e-4));
 
+
             
             GbGeneralThirdOrderImplicitSurfacePtr tpms;
             tpms = GbGeneralThirdOrderImplicitSurfacePtr(new GbGeneralThirdOrderImplicitSurface(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],

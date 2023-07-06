@@ -4,6 +4,7 @@ add_subdirectory(${APPS_ROOT_CPU}/CouetteFlow)
 #add_subdirectory(${APPS_ROOT_CPU}/FlowAroundCylinder)
 #add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
 add_subdirectory(${APPS_ROOT_CPU}/ConvectionOfVortex)
+add_subdirectory(${APPS_ROOT_CPU}/PoiseuilleFlowPlates)
 
 IF(${VFCPU_ENABLE_LiggghtsCoupling})
 	add_subdirectory(${APPS_ROOT_CPU}/LiggghtsApp)
