@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
         vf::basics::ConfigurationFile config;
         if (useConfigFile) {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/SphereGPU/config.txt");
+            config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/SphereGPU/config.txt");
             para = std::make_shared<Parameter>(&config);
         } else {
             para = std::make_shared<Parameter>();
