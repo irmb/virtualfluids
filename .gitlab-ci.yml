@@ -138,7 +138,7 @@ gcc_12_python:
 
   script:
     - export SKBUILD_BUILD_DIR="pybuild"
-    - export SKBUILD_CMAKE_ARGS="-DBUILD_VF_CPU=ON;-DBUILD_VF_DOUBLE_ACCURACY=ON;-DCMAKE_CXX_COMPILER_LAUNCHER=ccache;-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache;-DCMAKE_C_COMPILER_LAUNCHER=ccache;-G=Ninja"
+    - export SKBUILD_CMAKE_ARGS="-DBUILD_VF_CPU=ON;-DBUILD_VF_GPU=ON;-DBUILD_VF_DOUBLE_ACCURACY=ON;-DCMAKE_CXX_COMPILER_LAUNCHER=ccache;-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache;-DCMAKE_C_COMPILER_LAUNCHER=ccache;-G=Ninja"
     - pip install . -v
 
 ###############################################################################
