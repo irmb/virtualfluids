@@ -77,13 +77,13 @@ void run(string configname)
       
 
         ////////////////////////////////////////////////////////////////////////
-        // BC 
-        // BCPtr gradient(new VelocityBC(true, true, true, pdxC, pdyC, pdzC, 0.0,
+        // BC Adapter
+        // BCPtr gradientAdapter(new VelocityBC(true, true, true, pdxC, pdyC, pdzC, 0.0,
         // BCFunction::INFCONST));
-        // gradient->setBCStrategy(BCStrategyPtr(new FluxBCStrategy()));
-        // BCPtr cubeNoslip(new NoSlipBC(1));
-        SPtr<BC> tpmsNoslip(new NoSlipBC());
-        //SPtr<BC> funnelNoslip(new NoSlipBC(1));
+        // gradientAdapter->setBcAlgorithm(BCStrategyPtr(new FluxBCStrategy()));
+        // BCPtr cubeNoslipAdapter(new NoSlipBC(1));
+        SPtr<BC> tpmsNoslipAdapter(new NoSlipBC());
+        //SPtr<BC> funnelNoslipAdapter(new NoSlipBC(1));
 
            // SPtr<BC> xMinApr(new DensityBC(0.0000001));
          SPtr<BC> xMinApr(new DensityBC());
@@ -99,32 +99,32 @@ void run(string configname)
         //SPtr<BC> zMinFunnelApr(new NoSlipBC(1));
         //SPtr<BC> zMaxFunnelApr(new NoSlipBC(1));
 
-         //tpmsNoslip->setBCStrategy(BCStrategyPtr(new NoSlipBCStrategy()));
-         //tpmsNoslip->setBCStrategy(SPtr<BCStrategy>(new ThinWallNoSlipBCStrategy()));
+         //tpmsNoslipAdapter->setBcAlgorithm(BCStrategyPtr(new NoSlipBCStrategy()));
+         //tpmsNoslipAdapter->setBcAlgorithm(SPtr<BCStrategy>(new ThinWallNoSlipBCStrategy()));
 
-        tpmsNoslip->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-        //funnelNoslip->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        tpmsNoslipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //funnelNoslipAdapter->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
-         //xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
-        // xMinApr->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-         xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy())); 
-        // xMinApr->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
-         //xMaxApr->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+         //xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+        // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy())); 
+        // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+         //xMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
          xMaxApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowWithRelaxationBCStrategy()));
-        //yMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-        //yMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-        zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-        zMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //yMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //yMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+         zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+         zMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
-        //zMinFunnelApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-        //zMaxFunnelApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //zMinFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //zMaxFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
         ////////////////////////////////////////////////////////////////////////
         // BC visitor
         BoundaryConditionsBlockVisitor bcVisitor;
-        // bcVisitor.addBC(cubeNoslip);
-        bcVisitor.addBC(tpmsNoslip);
-        //bcVisitor.addBC(funnelNoslip);
+        // bcVisitor.addBC(cubeNoslipAdapter);
+        bcVisitor.addBC(tpmsNoslipAdapter);
+        //bcVisitor.addBC(funnelNoslipAdapter);
         bcVisitor.addBC(xMinApr);
         bcVisitor.addBC(xMaxApr);
         //bcVisitor.addBC(yMinApr);
@@ -143,7 +143,7 @@ void run(string configname)
         //spongeLayer.DefineConst("dx", dx);
 
         ////////////////////////////////////////////////////////////////////////
-        // grid, kernel and BCSet
+        // grid, kernel and BCProcessor
         SPtr<Grid3D> grid(new Grid3D(comm));
         SPtr<LBMKernel> kernel;
         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
@@ -159,13 +159,10 @@ void run(string configname)
         // 		 kernel->setForcingX1(fctForcingX1);
         // 		 kernel->setWithForcing(true);
         //
-        // SPtr<ThinWallBCSet> bcProc(new ThinWallBCSet());
-        SPtr<BCSet> bcProc(new BCSet());
-        kernel->setBCSet(bcProc);
+        // SPtr<ThinWallBCProcessor> bcProc(new ThinWallBCProcessor());
+         SPtr<BCSet> bcProc(new BCSet());
+         kernel->setBCSet(bcProc);
 
-       
-
-        
 
             SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(
                 comm, MetisPartitioningGridVisitor::LevelIntersected, DIR_00M, MetisPartitioner::RECURSIVE));
@@ -180,21 +177,10 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
-
-        
-            //GbGyroidThirdOrderPtr tpms;
-            // // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
-            // // dx));
-            // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
-            //                                                   TPMSOrigin[0] + TPMSL[0],
-            //                                                   TPMSOrigin[1] + TPMSL[1],
-            //                                                   TPMSOrigin[2] + TPMSL[2],
-            //                                                   UnitEdgeLength, dx, 2.5e-4));
-
-
-            
-            GbGeneralThirdOrderImplicitSurfacePtr tpms;
-            tpms = GbGeneralThirdOrderImplicitSurfacePtr(new GbGeneralThirdOrderImplicitSurface(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
+            GbImplicitSurfacePtr tpms;
+            // tpms = GbImplicitSurfacePtr(new GbImplicitSurface(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
+            // dx));
+            tpms = GbImplicitSurfacePtr(new GbImplicitSurface(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
                                                               TPMSOrigin[0] + TPMSL[0],
                                                               TPMSOrigin[1] + TPMSL[1],
                                                               TPMSOrigin[2] + TPMSL[2],
@@ -261,25 +247,11 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-        if (refineLevel > 0)
-         {
-             //refinement area
-            //SPtr<GbObject3D> refCube(new  GbCuboid3D(TPMSOrigin[0],TPMSOrigin[1],TPMSOrigin[2],TPMSL[0],TPMSL[1],TPMSL[2]));
-            //if (myid == 0) GbSystem3D::writeGeoObject(refCube.get(), pathname + "/geo/refCube", WbWriterVtkXmlASCII::getInstance());
-            
-            if (myid == 0) UBLOG(logINFO, "Refinement - start");
-            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
-            //refineHelper.addGbObject(sphere, refineLevel);
-            refineHelper.addGbObject(tpms, refineLevel);
-            refineHelper.refine();
-            if (myid == 0) UBLOG(logINFO, "Refinement - end");
-         }
-
             SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname,
                                                                   WbWriterVtkXmlBinary::getInstance(), comm));
 
             ppblocks->update(0);
-            
+
             // GbObject3DPtr solidcube(new GbCuboid3D(0, g_minX2, g_minX3, TPMSL[0], g_maxX2, g_maxX3));
             // if (myid == 0) GbSystem3D::writeGeoObject(solidcube.get(), pathname + "/geo/solidcube",
             // WbWriterVtkXmlBinary::getInstance());
@@ -336,14 +308,14 @@ void run(string configname)
                 GbSystem3D::writeGeoObject(zMaxFunnel.get(), pathname + "/geo/zMaxFunnel",
                                            WbWriterVtkXmlBinary::getInstance());*/
 
-            // D3Q27InteractorPtr cubeInt = D3Q27InteractorPtr(new D3Q27Interactor(solidcube, grid, cubeNoslip,
+            // D3Q27InteractorPtr cubeInt = D3Q27InteractorPtr(new D3Q27Interactor(solidcube, grid, cubeNoslipAdapter,
             // Interactor3D::SOLID));
             SPtr<D3Q27Interactor> tpmsInt = SPtr<D3Q27Interactor>(
-                new D3Q27Interactor(tpms, grid, tpmsNoslip, Interactor3D::SOLID, Interactor3D::POINTS));
+                new D3Q27Interactor(tpms, grid, tpmsNoslipAdapter, Interactor3D::SOLID, Interactor3D::POINTS));
             //SPtr<Interactor3D> funnelInt = SPtr<D3Q27TriFaceMeshInteractor>(
-                //new D3Q27TriFaceMeshInteractor(funnel, grid, funnelNoslip, Interactor3D::SOLID));
+                //new D3Q27TriFaceMeshInteractor(funnel, grid, funnelNoslipAdapter, Interactor3D::SOLID));
             // D3Q27TriFaceMeshInteractorPtr tpmsInt = D3Q27TriFaceMeshInteractorPtr(new
-            // D3Q27TriFaceMeshInteractor(tpms, grid, tpmsNoslip, Interactor3D::SOLID));
+            // D3Q27TriFaceMeshInteractor(tpms, grid, tpmsNoslipAdapter, Interactor3D::SOLID));
             //  tpmsInt->setQs2(0);
 
             SPtr<D3Q27Interactor> xMinInt = SPtr<D3Q27Interactor>(
@@ -475,7 +447,7 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
         // set connectors
-        SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
+        SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
         //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu, iProcessor);
         OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
@@ -501,23 +473,23 @@ void run(string configname)
         fnu.DefineConst("u", vx);
         SPtr<SimulationObserver> nupr(new DecreaseViscositySimulationObserver(grid, nuSch, &fnu, comm));
 
-        SPtr<UbScheduler> nupsSch(new UbScheduler(10, 10, 100000000));
+        SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
         SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
         //omp_set_num_threads(numOfThreads);
         numOfThreads = 1;
         SPtr<UbScheduler> stepGhostLayer(visSch);
-        SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, int(endTime)));
+        SPtr<Simulation> calculator(new Simulation(grid, stepGhostLayer, int(endTime)));
 
-        //Simulation->addSimulationObserver(nupr);
-        simulation->addSimulationObserver(npr);
-        simulation->addSimulationObserver(pp);
-        simulation->addSimulationObserver(migSimulationObserver);
-        simulation->addSimulationObserver(tav);
+        //calculator->addSimulationObserver(nupr);
+        calculator->addSimulationObserver(npr);
+        calculator->addSimulationObserver(pp);
+        calculator->addSimulationObserver(migSimulationObserver);
+        calculator->addSimulationObserver(tav);
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
-        simulation->run();
+        calculator->run();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
     } catch (std::exception &e) {

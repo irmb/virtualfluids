@@ -517,7 +517,7 @@ int main(int argc, char *argv[])
 
         try {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::ConfigurationFile::loadConfig(argc, argv, "./apps/gpu/LBM/DrivenCavityMultiGPU/configDrivenCavityMultiGPU.txt");
+            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/DrivenCavityMultiGPU/configDrivenCavityMultiGPU.txt");
             runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////

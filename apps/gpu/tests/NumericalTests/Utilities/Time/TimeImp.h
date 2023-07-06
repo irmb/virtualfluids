@@ -5,26 +5,26 @@
 #include "TimeTracking.h"
 
 #include <memory>
-#include <time.h>
+#include <ctime>
 
 class TimeImp : public TimeTracking, public TimeInfo
 {
 public:
 	static std::shared_ptr<TimeImp> getNewInstance();
 
-	void setSimulationStartTime();
-	void setSimulationEndTime();
-	void setTestStartTime();
-	void setTestEndTime();
-	void setAnalyticalResultWriteStartTime();
-	void setAnalyticalResultWriteEndTime();
-	void setResultCheckStartTime();
-	void setResultCheckEndTime();
+	void setSimulationStartTime() override;
+	void setSimulationEndTime() override;
+	void setTestStartTime() override;
+	void setTestEndTime() override;
+	void setAnalyticalResultWriteStartTime() override;
+	void setAnalyticalResultWriteEndTime() override;
+	void setResultCheckStartTime() override;
+	void setResultCheckEndTime() override;
 
-	std::string getSimulationTime();
-	std::string getResultCheckTime();
-	std::string getTestTime();
-	std::string getAnalyticalResultWriteTime();
+	std::string getSimulationTime() override;
+	std::string getResultCheckTime() override;
+	std::string getTestTime() override;
+	std::string getAnalyticalResultWriteTime() override;
 
 private:
 	TimeImp();

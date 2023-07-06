@@ -208,7 +208,7 @@ void run(string configname)
 
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -290,7 +290,7 @@ void run(string configname)
          UBLOG(logINFO, "SetConnectors - start, id="<<myid);
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
          //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          SPtr<ConnectorFactory> cFactory(new Block3DConnectorFactory());
          ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, cFactory);

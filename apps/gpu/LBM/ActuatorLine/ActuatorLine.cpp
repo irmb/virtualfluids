@@ -61,8 +61,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 
-#include "GridGenerator/grid/GridFactory.h"
-
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
@@ -109,9 +107,6 @@ void multipleLevel(const std::string& configPath)
 {
     vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
-    auto gridFactory = GridFactory::make();
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
@@ -148,6 +143,8 @@ void multipleLevel(const std::string& configPath)
 	const real dx = reference_diameter/real(nodes_per_diameter);
 
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
 							   L_x,  L_y,  L_z, dx);
@@ -236,21 +233,28 @@ void multipleLevel(const std::string& configPath)
     para->addActuator( actuator_farm );
 
 
-    // SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100);
-    // std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
-    // std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    // std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    // pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-    // // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+    SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100, false);
+    std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
+    std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
 
-    // pointProbe->addStatistic(Statistic::Means);
-    // pointProbe->addStatistic(Statistic::Variances);
-    // para->addProbe( pointProbe );
+    pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
-    // SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
-    // planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
-    // planeProbe->addStatistic(Statistic::Means);
-    // para->addProbe( planeProbe );
+    pointProbe->addStatistic(Statistic::Means);
+    pointProbe->addStatistic(Statistic::Variances);
+    para->addProbe( pointProbe );
+
+    SPtr<PointProbe> timeseriesProbe = std::make_shared<PointProbe>("timeProbe", para->getOutputPath(), 100, 1, 500, 100, true);
+    timeseriesProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    timeseriesProbe->addStatistic(Statistic::Instantaneous);
+    timeseriesProbe->addStatistic(Statistic::Means);
+    para->addProbe( timeseriesProbe );
+
+    SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
+    planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+    planeProbe->addStatistic(Statistic::Means);
+    para->addProbe( planeProbe );
 
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);

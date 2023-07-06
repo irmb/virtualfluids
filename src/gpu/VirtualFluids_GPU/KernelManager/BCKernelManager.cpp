@@ -415,7 +415,7 @@ void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryMana
         para->getParD(level)->precursorBC.current = para->getParD(level)->precursorBC.next;
         para->getParD(level)->precursorBC.next = tmp;
 
-        real loadTime = nextTime*pow(2,-level)*para->getTimeRatio();
+        real loadTime = nextTime*exp2(-level)*para->getTimeRatio();
 
         for(auto reader : para->getParH(level)->transientBCInputFileReader)
         {   

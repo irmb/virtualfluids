@@ -40,7 +40,7 @@
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
 #include "Grid3D.h"
-#include "InterpolationProcessor.h"
+#include "Interpolator.h"
 #include "LBMKernel.h"
 #include "MathUtil.hpp"
 #include "basics/transmitter/TbTransmitter.h"

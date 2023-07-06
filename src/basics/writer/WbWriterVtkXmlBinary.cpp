@@ -128,23 +128,24 @@ string WbWriterVtkXmlBinary::writeParallelFile(const string &filename, vector<st
     }
 
     // VTK FILE
+    out << "<?xml version=\"1.0\"?>\n";
     out << "<VTKFile type=\"PUnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">"
         << "\n";
-    out << "  <PUnstructuredGrid GhostLevel=\"0\">"
+    out << "  <PUnstructuredGrid GhostLevel=\"1\">"
         << "\n";
-    out << "    <PPoints>\n";
-    out << "      <PDataArray type=\"Float32\" NumberOfComponents=\"3\"/>\n";
-    out << "    </PPoints>\n";
     out << "    <PPointData>\n";
     for (size_t s = 0; s < pointDataNames.size(); s++)
-        out << "      <PDataArray type=\"Float32\" Name=\"" << pointDataNames[s] << "\"/>\n";
+        out << "      <PDataArray type=\"Float64\" Name=\"" << pointDataNames[s] << "\"/>\n";
     out << "    </PPointData>\n";
     if (cellDataNames.size() > 0) {
         out << "    <PCellData>\n";
         for (size_t s = 0; s < cellDataNames.size(); s++)
-            out << "      <PDataArray type=\"Float32\" Name=\"" << cellDataNames[s] << "\"/>\n";
+            out << "      <PDataArray type=\"Float64\" Name=\"" << cellDataNames[s] << "\"/>\n";
         out << "    </PCellData>\n";
     }
+    out << "    <PPoints>\n";
+    out << "      <PDataArray type=\"Float32\" NumberOfComponents=\"3\"/>\n";
+    out << "    </PPoints>\n";
 
     for (size_t s = 0; s < pieceSources.size(); s++)
         out << "    <Piece Source=\"" << pieceSources[s] << "\"/>\n";

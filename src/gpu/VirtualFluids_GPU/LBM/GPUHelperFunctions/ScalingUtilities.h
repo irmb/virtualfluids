@@ -33,9 +33,15 @@
 #ifndef SCALING_HELPER_FUNCTIONS_H
 #define SCALING_HELPER_FUNCTIONS_H
 
-#include "LBM/LB.h" 
-#include "lbm/constants/D3Q27.h"
-#include "basics/constants/NumericConstants.h"
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+
+#include <basics/constants/NumericConstants.h>
+
+#include <lbm/constants/D3Q27.h>
+#include <lbm/KernelParameter.h>
+#include <basics/DataTypes.h>
+
+#include <lbm/refinement/Coefficients.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -43,94 +49,196 @@ using namespace vf::lbm::dir;
 namespace vf::gpu
 {
 
-__device__ __inline__ void calculateMomentsOnSourceNodes(Distributions27 &dist, real &omega, unsigned int &k_000,
-                                                         unsigned int &k_M00, unsigned int &k_0M0, unsigned int &k_00M,
-                                                         unsigned int &k_MM0, unsigned int &k_M0M, unsigned int &k_0MM,
-                                                         unsigned int &k_MMM, real &drho, real &velocityX,
-                                                         real &velocityY, real &velocityZ, real &kxyFromfcNEQ,
-                                                         real &kyzFromfcNEQ, real &kxzFromfcNEQ, real &kxxMyyFromfcNEQ,
-                                                         real &kxxMzzFromfcNEQ)
+template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
+    vf::lbm::MomentsOnSourceNodeSet& momentsSet,
+    const unsigned nodeIndex,
+    real *distribution,
+    unsigned int *neighborX,
+    unsigned int *neighborY,
+    unsigned int *neighborZ,
+    unsigned int *indices_MMM,
+    real* turbulentViscosity,
+    unsigned long long numberOfLBnodes,
+    const real omega,
+    bool isEvenTimestep
+)
 {
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Set local distributions (f's) on source nodes:
+    real omega_ = omega;
+    Distributions27 distFine;
+    getPointersToDistributions(distFine, distribution, numberOfLBnodes, isEvenTimestep);
+
+    ListIndices indices;
+
+    //////////////////////////////////////////////////////////////////////////
+    //! - Calculate moments for each source node 
     //!
-    real f_000 = (dist.f[DIR_000])[k_000];
-    real f_P00 = (dist.f[DIR_P00])[k_000];
-    real f_M00 = (dist.f[DIR_M00])[k_M00];
-    real f_0P0 = (dist.f[DIR_0P0])[k_000];
-    real f_0M0 = (dist.f[DIR_0M0])[k_0M0];
-    real f_00P = (dist.f[DIR_00P])[k_000];
-    real f_00M = (dist.f[DIR_00M])[k_00M];
-    real f_PP0 = (dist.f[DIR_PP0])[k_000];
-    real f_MM0 = (dist.f[DIR_MM0])[k_MM0];
-    real f_PM0 = (dist.f[DIR_PM0])[k_0M0];
-    real f_MP0 = (dist.f[DIR_MP0])[k_M00];
-    real f_P0P = (dist.f[DIR_P0P])[k_000];
-    real f_M0M = (dist.f[DIR_M0M])[k_M0M];
-    real f_P0M = (dist.f[DIR_P0M])[k_00M];
-    real f_M0P = (dist.f[DIR_M0P])[k_M00];
-    real f_0PP = (dist.f[DIR_0PP])[k_000];
-    real f_0MM = (dist.f[DIR_0MM])[k_0MM];
-    real f_0PM = (dist.f[DIR_0PM])[k_00M];
-    real f_0MP = (dist.f[DIR_0MP])[k_0M0];
-    real f_PPP = (dist.f[DIR_PPP])[k_000];
-    real f_MPP = (dist.f[DIR_MPP])[k_M00];
-    real f_PMP = (dist.f[DIR_PMP])[k_0M0];
-    real f_MMP = (dist.f[DIR_MMP])[k_MM0];
-    real f_PPM = (dist.f[DIR_PPM])[k_00M];
-    real f_MPM = (dist.f[DIR_MPM])[k_M0M];
-    real f_PMM = (dist.f[DIR_PMM])[k_0MM];
-    real f_MMM = (dist.f[DIR_MMM])[k_MMM];
+    //////////////////////////////////////////////////////////////////////////
+    // source node BSW = MMM
+    //////////////////////////////////////////////////////////////////////////
+    // index of the base node and its neighbors
+    unsigned int k_base_000 = indices_MMM[nodeIndex];
+    unsigned int k_base_M00 = neighborX [k_base_000];
+    unsigned int k_base_0M0 = neighborY [k_base_000];
+    unsigned int k_base_00M = neighborZ [k_base_000];
+    unsigned int k_base_MM0 = neighborY [k_base_M00];
+    unsigned int k_base_M0M = neighborZ [k_base_M00];
+    unsigned int k_base_0MM = neighborZ [k_base_0M0];
+    unsigned int k_base_MMM = neighborZ [k_base_MM0];
+    //////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices
+    indices.k_000 = k_base_000;
+    indices.k_M00 = k_base_M00;
+    indices.k_0M0 = k_base_0M0;
+    indices.k_00M = k_base_00M;
+    indices.k_MM0 = k_base_MM0;
+    indices.k_M0M = k_base_M0M;
+    indices.k_0MM = k_base_0MM;
+    indices.k_MMM = k_base_MMM;
 
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
-    //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
-    //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-    //!
-    drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
-            (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
-             ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
-            ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
-           f_000;
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    real oneOverRho = c1o1 / (c1o1 + drho);
+    real f_fine[27];
 
-    velocityX = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
-                 (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
-                oneOverRho;
-    velocityY = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
-                 (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
-                oneOverRho;
-    velocityZ = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
-                 (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
-                oneOverRho;
+    read(f_fine, distFine, indices);
+    momentsSet.calculateMMM(f_fine, omega_);
 
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Calculate second order moments for interpolation
-    //!
-    // example: kxxMzz: moment, second derivative in x direction minus the second derivative in z direction
-    kxyFromfcNEQ = -c3o1 * omega *
-                   ((f_MM0 + f_MMM + f_MMP - f_MP0 - f_MPM - f_MPP - f_PM0 - f_PMM - f_PMP + f_PP0 + f_PPM + f_PPP) /
-                    (c1o1 + drho) -
-                    ((velocityX * velocityY)));
-    kyzFromfcNEQ = -c3o1 * omega *
-                   ((f_0MM + f_PMM + f_MMM - f_0MP - f_PMP - f_MMP - f_0PM - f_PPM - f_MPM + f_0PP + f_PPP + f_MPP) /
-                    (c1o1 + drho) -
-                    ((velocityY * velocityZ)));
-    kxzFromfcNEQ = -c3o1 * omega *
-                   ((f_M0M + f_MMM + f_MPM - f_M0P - f_MMP - f_MPP - f_P0M - f_PMM - f_PPM + f_P0P + f_PMP + f_PPP) /
-                    (c1o1 + drho) -
-                    ((velocityX * velocityZ)));
-    kxxMyyFromfcNEQ = -c3o2 * omega *
-                      ((f_M0M + f_M00 + f_M0P - f_0MM - f_0M0 - f_0MP - f_0PM - f_0P0 - f_0PP + f_P0M + f_P00 + f_P0P) /
-                       (c1o1 + drho) -
-                       ((velocityX * velocityX - velocityY * velocityY)));
-    kxxMzzFromfcNEQ = -c3o2 * omega *
-                      ((f_MM0 + f_M00 + f_MP0 - f_0MM - f_0MP - f_00M - f_00P - f_0PM - f_0PP + f_PM0 + f_P00 + f_PP0) /
-                       (c1o1 + drho) -
-                       ((velocityX * velocityX - velocityZ * velocityZ)));
+    //////////////////////////////////////////////////////////////////////////
+    // source node TSW = MMP
+    //////////////////////////////////////////////////////////////////////////
+    // Set neighbor indices - has to be recalculated for the new source node
+    indices.k_000 = indices.k_00M;
+    indices.k_M00 = indices.k_M0M;
+    indices.k_0M0 = indices.k_0MM;
+    indices.k_00M = neighborZ[indices.k_00M];
+    indices.k_MM0 = indices.k_MMM;
+    indices.k_M0M = neighborZ[indices.k_M0M];
+    indices.k_0MM = neighborZ[indices.k_0MM];
+    indices.k_MMM = neighborZ[indices.k_MMM];
+
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculateMMP(f_fine, omega_);
+
+    //////////////////////////////////////////////////////////////////////////
+    // source node TSE = PMP
+    //////////////////////////////////////////////////////////////////////////
+    // index
+    indices.k_000 = indices.k_M00;
+    indices.k_M00 = neighborX[indices.k_M00];
+    indices.k_0M0 = indices.k_MM0;
+    indices.k_00M = indices.k_M0M;
+    indices.k_MM0 = neighborX[indices.k_MM0];
+    indices.k_M0M = neighborX[indices.k_M0M];
+    indices.k_0MM = indices.k_MMM;
+    indices.k_MMM = neighborX[indices.k_MMM];
+
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculatePMP(f_fine, omega_);
+
+    //////////////////////////////////////////////////////////////////////////
+    // source node BSE = PMM 
+    //////////////////////////////////////////////////////////////////////////
+    // index
+    indices.k_00M = indices.k_000;
+    indices.k_M0M = indices.k_M00;
+    indices.k_0MM = indices.k_0M0;
+    indices.k_MMM = indices.k_MM0;
+    indices.k_000 = k_base_M00;
+    indices.k_M00 = neighborX[k_base_M00];
+    indices.k_0M0 = k_base_MM0;
+    indices.k_MM0 = neighborX[k_base_MM0];
+
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculatePMM(f_fine, omega_);
+
+    //////////////////////////////////////////////////////////////////////////
+    // source node BNW = MPM
+    //////////////////////////////////////////////////////////////////////////
+    // index of the base node and its neighbors --> indices of all source nodes
+    k_base_000 = k_base_0M0;
+    k_base_M00 = k_base_MM0;
+    k_base_0M0 = neighborY[k_base_0M0];
+    k_base_00M = k_base_0MM;
+    k_base_MM0 = neighborY[k_base_MM0];
+    k_base_M0M = k_base_MMM;
+    k_base_0MM = neighborY[k_base_0MM];
+    k_base_MMM = neighborY[k_base_MMM];
+    //////////////////////////////////////////////////////////////////////////
+    // index
+    indices.k_000 = k_base_000;
+    indices.k_M00 = k_base_M00;
+    indices.k_0M0 = k_base_0M0;
+    indices.k_00M = k_base_00M;
+    indices.k_MM0 = k_base_MM0;
+    indices.k_M0M = k_base_M0M;
+    indices.k_0MM = k_base_0MM;
+    indices.k_MMM = k_base_MMM;
+
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculateMPM(f_fine, omega_);
+
+    //////////////////////////////////////////////////////////////////////////
+    // source node TNW = MPP
+    //////////////////////////////////////////////////////////////////////////
+    // index
+    indices.k_000 = indices.k_00M;
+    indices.k_M00 = indices.k_M0M;
+    indices.k_0M0 = indices.k_0MM;
+    indices.k_00M = neighborZ[indices.k_00M];
+    indices.k_MM0 = indices.k_MMM;
+    indices.k_M0M = neighborZ[indices.k_M0M];
+    indices.k_0MM = neighborZ[indices.k_0MM];
+    indices.k_MMM = neighborZ[indices.k_MMM];
+
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculateMPP(f_fine, omega_);
+
+    //////////////////////////////////////////////////////////////////////////
+    // source node TNE = PPP
+    //////////////////////////////////////////////////////////////////////////
+    // index
+    indices.k_000 = indices.k_M00;
+    indices.k_M00 = neighborX[indices.k_M00];
+    indices.k_0M0 = indices.k_MM0;
+    indices.k_00M = indices.k_M0M;
+    indices.k_MM0 = neighborX[indices.k_MM0];
+    indices.k_M0M = neighborX[indices.k_M0M];
+    indices.k_0MM = indices.k_MMM;
+    indices.k_MMM = neighborX[indices.k_MMM];
+
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculatePPP(f_fine, omega_);
+
+    //////////////////////////////////////////////////////////////////////////
+    // source node BNE = PPM
+    //////////////////////////////////////////////////////////////////////////
+    // index
+    indices.k_00M = indices.k_000;
+    indices.k_M0M = indices.k_M00;
+    indices.k_0MM = indices.k_0M0;
+    indices.k_MMM = indices.k_MM0;
+    indices.k_000 = k_base_M00;
+    indices.k_M00 = neighborX[k_base_M00];
+    indices.k_0M0 = k_base_MM0;
+    indices.k_MM0 = neighborX[k_base_MM0];
+    
+    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+
+    read(f_fine, distFine, indices);
+    momentsSet.calculatePPM(f_fine, omega_);
 }
 
-} // namespace vf::gpu
+}
 
 #endif

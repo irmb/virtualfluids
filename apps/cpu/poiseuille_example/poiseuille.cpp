@@ -79,7 +79,7 @@ int main()
     grid->accept(kernelVisitor);
     interactorsHelper.setBC();
 
-    const auto interpolationProcessor(std::make_shared<CompressibleOffsetMomentsInterpolationProcessor>());
+    const auto interpolationProcessor(std::make_shared<CompressibleOffsetMomentsInterpolator>());
     interpolationProcessor->setBulkViscosity(latticeViscosity, latticeViscosity * bulkViscosityFactor);
 
     SetConnectorsBlockVisitor setConnsVisitor(communicator,

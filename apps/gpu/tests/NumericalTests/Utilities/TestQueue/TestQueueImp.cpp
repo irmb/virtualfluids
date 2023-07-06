@@ -6,7 +6,7 @@
 
 TestSuiteResult TestQueueImp::run()
 {
-    for (const auto test : tests)
+    for (const auto& test : tests)
         test->run();
 
     makeFinalOutput();
@@ -19,7 +19,7 @@ void TestQueueImp::makeFinalOutput()
     calcTestNumbers();
     colorOutput->makeFinalTestOutputHead(numberOfTests, numberOfExecutedTest, numberOfPassedTest, numberOfFailedTest,
                                          numberOfErrorTest, numberOfNotExecutedTest);
-    for (int i = 0; i < tests.size(); i++)
+    for (uint i = 0; i < tests.size(); i++)
         tests.at(i)->makeConsoleOutput();
     colorOutput->makeFinalTestOutputFoot(numberOfTests, numberOfExecutedTest, numberOfPassedTest, numberOfFailedTest,
                                          numberOfErrorTest, numberOfNotExecutedTest);
@@ -54,7 +54,7 @@ void TestQueueImp::calcTestNumbers()
     numberOfErrorTest = 0;
     numberOfNotExecutedTest = 0;
 
-    for (int i = 0; i < tests.size(); i++) {
+    for (uint i = 0; i < tests.size(); i++) {
         switch (tests.at(i)->getTestStatus()) {
             case passed:
                 numberOfPassedTest++;

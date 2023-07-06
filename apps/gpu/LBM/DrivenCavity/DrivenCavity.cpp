@@ -41,8 +41,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
-#include "PointerDefinitions.h"
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
 
 #include <logger/Logger.h>
 
@@ -51,7 +51,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/GridFactory.h"
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,7 +64,6 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -90,14 +88,6 @@ int main()
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
-        // setup gridGenerator
-        //////////////////////////////////////////////////////////////////////////
-
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
-        //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +102,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
+        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
