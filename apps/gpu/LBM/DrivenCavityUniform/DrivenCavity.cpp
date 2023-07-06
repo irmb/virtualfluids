@@ -46,8 +46,6 @@
 
 #include "PointerDefinitions.h"
 
-#include <logger/Logger.h>
-
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
@@ -66,7 +64,6 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
