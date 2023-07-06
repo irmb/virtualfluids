@@ -44,7 +44,6 @@
 #include <basics/PointerDefinitions.h>
 #include <basics/DataTypes.h>
 #include <logger/Logger.h>
-#include <basics/PointerDefinitions.h>
 #include <basics/config/ConfigurationFile.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,7 +69,6 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
-//////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[])
 {
@@ -78,7 +76,6 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-
         const bool useConfigFile = true;
 
         const real L = 1.0;

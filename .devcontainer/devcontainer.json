@@ -5,15 +5,15 @@
             "extensions": [
                 "mhutchie.git-graph",
                 "donjayamanne.githistory",
+                "ms-python.python",
                 "twxs.cmake",
                 "ms-vscode.cpptools",
-                "visualstudioexptteam.vscodeintellicode",
-                "xaver.clang-format",
-                "notskm.clang-tidy",
+                "usernamehw.errorlens", // show warnings in code
                 "streetsidesoftware.code-spell-checker",
-                "llvm-vs-code-extensions.vscode-clangd",
-                "jbenden.c-cpp-flylint",
-                "ms-python.python"
+                "xaver.clang-format",
+                "msekoranja.clang-format-checker", // currently this extensions results in a lot of warnings
+                "llvm-vs-code-extensions.vscode-clangd", // code index based on clang using the compile_commannds.json
+                "jbenden.c-cpp-flylint" // adds clang, cppcheck and lizard checks (currently does not support compile_commannds.json, include paths are set manually in .vscode/settings.json)
             ]
         }
     },

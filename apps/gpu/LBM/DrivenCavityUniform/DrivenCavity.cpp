@@ -41,7 +41,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
+#include <basics/DataTypes.h>
 #include <logger/Logger.h>
 
 #include "PointerDefinitions.h"
@@ -71,7 +71,7 @@
 int main()
 {
     try {
-         vf::logging::Logger::initializeLogger();
+        vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////

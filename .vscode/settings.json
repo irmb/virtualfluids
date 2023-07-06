@@ -1,4 +1,14 @@
 {
     "c-cpp-flylint.flexelint.enable": false,
-    "c-cpp-flylint.flawfinder.enable": false
+    "c-cpp-flylint.flawfinder.enable": false,
+    "c-cpp-flylint.includePaths": [
+        "${workspaceFolder}/build/_deps/spdlog-src/include",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/src/gpu",
+        "${workspaceFolder}/src/cpu",
+        "${workspaceFolder}/src/gpu/VirtualFluids_GPU",
+    ],
+    "c-cpp-flylint.standard": [
+        "c++17"
+    ],
 }

@@ -8,6 +8,7 @@ add_subdirectory(src/gpu/VirtualFluids_GPU)
 if(BUILD_VF_ALL_SAMPLES)
     list(APPEND USER_APPS
     "apps/gpu/LBM/DrivenCavityUniform"
+    "apps/gpu/LBM/DrivenCavityMultiGPU"
     "apps/gpu/LBM/ActuatorLine"
     "apps/gpu/LBM/SphereScaling" 
     "apps/gpu/LBM/TGV_3D")
