@@ -1,10 +1,10 @@
-#ifndef K15CompressibleNavierStokes_Device_H
-#define K15CompressibleNavierStokes_Device_H
+#ifndef M02IncompressibleNavierStokes_Device_H
+#define M02IncompressibleNavierStokes_Device_H
 
 #include <DataTypes.h>
 #include <curand.h>
 
-__global__ void K15CompressibleNavierStokes_Device(	
+__global__ void M02IncompressibleNavierStokes_Device(
 	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -12,7 +12,6 @@ __global__ void K15CompressibleNavierStokes_Device(
 	unsigned int* neighborZ,
 	real* DDStart,
 	int size_Mat,
-	int level,
-	real* forces,
 	bool EvenOrOdd);
+
 #endif
