@@ -53,7 +53,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/GridFactory.h"
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -92,18 +91,12 @@ int main()
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
-        // setup gridGenerator
-        //////////////////////////////////////////////////////////////////////////
-
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
-        //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
 
         real dx = L / real(nx);
+
+        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 

@@ -49,14 +49,11 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/STLReaderWriter/STLWriter.h"
 
-MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory) : LevelGridBuilder(), gridFactory(gridFactory), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
-{
 
-}
-
-SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> gridFactory)
+MultipleGridBuilder::MultipleGridBuilder() : LevelGridBuilder(), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
 {
-    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder(gridFactory));
+    gridFactory = GridFactory::make();
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 }
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
@@ -111,7 +108,6 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
 
     for( uint level = this->getNumberOfLevels(); level <= levelFine; level++ ){
         const auto grid = makeGrid(gridShape, level, levelFine);
-
 
         if(level != levelFine){
             grid->setInnerRegionFromFinerGrid(true);

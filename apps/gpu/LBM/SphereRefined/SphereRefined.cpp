@@ -26,9 +26,9 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LidDrivenCavity.cpp
+//! \file SphereRefined.cpp
 //! \ingroup Applications
-//! \author Martin Schoenherr, Stephan Lenz
+//! \author Martin Schoenherr
 //=======================================================================================
 #define _USE_MATH_DEFINES
 #include <exception>
@@ -41,8 +41,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include <basics/DataTypes.h>
-#include <basics/PointerDefinitions.h>
+#include "DataTypes.h"
+#include "PointerDefinitions.h"
 
 #include <logger/Logger.h>
 
@@ -51,7 +51,10 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "GridGenerator/grid/GridFactory.h"
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/geometries/Sphere/Sphere.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -64,6 +67,7 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,21 +75,31 @@
 int main()
 {
     try {
-         vf::logging::Logger::initializeLogger();
+        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+        vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        std::string path("./output/DrivenCavity");
-        std::string simulationName("LidDrivenCavity");
+        std::string path("output/SphereRefined");
+        std::string simulationName("SphereRefined");
 
         const real L = 1.0;
-        const real Re = 1000.0;
+        const real dSphere = 0.2;
+        const real Re = 300.0;
         const real velocity = 1.0;
-        const real velocityLB = 0.05; // LB units
-        const uint nx = 64;
+        const real velocityLB = (real)0.5e-2; // LB units
+        const uint nx = 50;
 
-        const uint timeStepOut = 1000;
+        const uint timeStepOut = 10000;
         const uint timeStepEnd = 10000;
+
+        //////////////////////////////////////////////////////////////////////////
+        // setup gridGenerator
+        //////////////////////////////////////////////////////////////////////////
+
+        auto gridFactory = GridFactory::make();
+        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -94,21 +108,25 @@ int main()
         const real dx = L / real(nx);
         const real dt  = velocityLB / velocity * dx;
 
-        const real vxLB = velocityLB / sqrt(2.0); // LB units
-        const real vyLB = velocityLB / sqrt(2.0); // LB units
-
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
-        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L, 
+                                    2.0 * L,  0.6 * L,  0.6 * L, dx);
 
-        gridBuilder->addGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
+        // add fine grid
+        gridBuilder->addGrid(std::make_shared<Sphere>(0., 0., 0., 0.22), 2); 
+
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
+
+        // use primitive
+        auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
+
+        gridBuilder->addGeometry(sphere);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -133,29 +151,32 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+
+        gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
         BoundaryConditionFactory bcFactory;
 
-        bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
-        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+        bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
 
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =
@@ -180,8 +201,6 @@ int main()
         VF_LOG_INFO("Re                     = {}", Re);
         VF_LOG_INFO("lb_velocity [dx/dt]    = {}", velocityLB);
         VF_LOG_INFO("lb_viscosity [dx^2/dt] = {}", viscosityLB);
-        VF_LOG_INFO("lb_vx [dx/dt] (lb_velocity/sqrt(2)) = {}", vxLB);
-        VF_LOG_INFO("lb_vy [dx/dt] (lb_velocity/sqrt(2)) = {}", vyLB);
         printf("\n");
         VF_LOG_INFO("simulation parameter:");
         VF_LOG_INFO("--------------");

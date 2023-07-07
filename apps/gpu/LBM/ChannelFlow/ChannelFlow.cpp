@@ -56,7 +56,6 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/GridFactory.h"
 
 #include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
@@ -111,14 +110,6 @@ int main(int argc, char *argv[])
         vf::logging::Logger::changeLogPath("output/vflog_process" +
                                            std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + ".txt");
         vf::logging::Logger::initializeLogger();
-
-        //////////////////////////////////////////////////////////////////////////
-        // setup gridGenerator
-        //////////////////////////////////////////////////////////////////////////
-
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
@@ -178,6 +169,8 @@ int main(int argc, char *argv[])
 
             if (generatePart != numberOfProcesses - 1)
                 subdomainMaxXoverlap += overlap;
+
+            auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
             gridBuilder->addCoarseGrid(subdomainMinXoverlap, yGridMin, zGridMin, subdomainMaxXoverlap, yGridMax,
                                        zGridMax, dx);
