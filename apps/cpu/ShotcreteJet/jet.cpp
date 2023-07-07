@@ -40,16 +40,29 @@ int main(int argc, char *argv[])
 
         // int blockNX[3] = { 10, 10, 10 };
 
-        double g_minX1 = -1.31431;
-        double g_minX2 = 0.375582;
-        double g_minX3 = -0.21 + 0.035 * 8.0; //-0.21; //-210e-3 - 0.2 - 6e-3; //- 1e-3;
+        int gridNZ = 3;
 
-        double g_maxX1 = -1.28831;
-        double g_maxX2 = 0.401582;
-        double g_maxX3 = 0.175;//0.21;
+        //double g_minX1 = -1.31431;
+        //double g_minX2 = 0.375582;
+        //double g_minX3 = -0.21 + 0.035 * 8.0; //-0.21; //-210e-3 - 0.2 - 6e-3; //- 1e-3;
+
+        //double g_maxX1 = -1.28831;
+        //double g_maxX2 = 0.401582;
+        //double g_maxX3 = 0.175;//0.21;
+
+        double g_minX1 = -1.49631;
+        double g_minX2 = 0.193582;
+        double g_minX3 = -0.095; //-0.215; 
+
+        double g_maxX1 = -1.10631;
+        double g_maxX2 = 0.583582;
+        double g_maxX3 = 0.175;
+
+        double g_maxX3_box = -0.065;
+        
 
         //int blockNX[3] = { 26, 26, 35 };
-        int blockNX[3] = { 26, 26, 35/5 };
+        int blockNX[3] = { 15, 15, 15 };
 
         double dx = 1e-3;
 
@@ -127,10 +140,10 @@ int main(int argc, char *argv[])
         if (myid == 0) VF_LOG_INFO("Yield stress = {} Pa", tau0);
         if (myid == 0) VF_LOG_INFO("Yield stress LB = {} ", tau0_LB);
 
-        SPtr<BC> noSlipBC(new NoSlipBC());
-        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //SPtr<BC> noSlipBC(new NoSlipBC());
-        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
+        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        SPtr<BC> noSlipBC(new NoSlipBC());
+        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
         // concrete inflow boundary condition
         mu::Parser fct;
@@ -162,10 +175,10 @@ int main(int argc, char *argv[])
         //    fct.DefineConst("U", uLB_ref * ((N + 3) / (N + 1)));
         //    fct.DefineConst("NplusOne", N + 1.0);
 
-        SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
-        inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
-        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
+        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
+        inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         // air inflow boundary condition
         //  Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering
@@ -318,10 +331,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("alpha", alpha);
         fctVx3.DefineConst("gamma", gamma);
 
-        SPtr<BC> inflowAirBC1(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));        
-        //SPtr<BC> inflowAirBC1(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC1(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));        
+        SPtr<BC> inflowAirBC1(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         fctVx1.DefineVar("x1", &cx1);
         fctVx1.DefineVar("x2", &cx2);
@@ -357,10 +370,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC2(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC2(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC2(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC2(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.2948374155694822;
         cx2 = 0.37733728717266285;
@@ -377,10 +390,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC3(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC3(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC3(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC3(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.28847;
         cx2 = 0.3885;
@@ -397,10 +410,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC4(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC4(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC4(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC4(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.294771417778694;
         cx2 = 0.399787947463142;
@@ -417,10 +430,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC5(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC5(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC5(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC5(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.3077338898450492;
         cx2 = 0.3998516560596088;
@@ -437,27 +450,27 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC6(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC6(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC6(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC6(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         // Pressure BC for air inlet
         // SPtr<BC> inflowAirBC1(new DensityBC(p_air_LB));
         // inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
 
         SPtr<BC> outflowBC(new DensityBC(rhoLB));
-        outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
-        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
+        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+        outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
         
         // SPtr<BC> outflowBC(new DensityBC(rhoLB));
         //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
-        BoundaryConditionsBlockVisitor bcVisitor;
-        //MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        //BoundaryConditionsBlockVisitor bcVisitor;
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
         bcVisitor.addBC(noSlipBC);
-        //bcVisitor.addBC(inflowConcreteBC);
+        bcVisitor.addBC(inflowConcreteBC);
         bcVisitor.addBC(inflowAirBC1);
         bcVisitor.addBC(outflowBC);
 
@@ -465,8 +478,9 @@ int main(int argc, char *argv[])
          //SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseSimpleVelocityBaseExternalPressureLBMKernel>();
-        //SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
-        SPtr<LBMKernel> kernel = make_shared<IBcumulantK17LBMKernel>();
+        SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
+        //SPtr<LBMKernel> kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
+        //SPtr<LBMKernel> kernel = make_shared<IBcumulantK17LBMKernel>();
         //SPtr<LBMKernel> kernel = make_shared<IBsharpInterfaceLBMKernel>();
 
         kernel->setWithForcing(false);
@@ -495,11 +509,11 @@ int main(int argc, char *argv[])
         grid->setPeriodicX3(false);
         grid->setDeltaX(dx);
         grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
-        grid->setGhostLayerWidth(1);
+        grid->setGhostLayerWidth(2);
 
         string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
 
-        string outputPath = "d:/temp/NozzleFlowTest_SinglePhase_SmallTest_Blocks";
+        string outputPath = "d:/temp/ShotcreteJet";
         UbSystem::makeDirectory(outputPath);
         UbSystem::makeDirectory(outputPath + "/liggghts");
 
@@ -521,7 +535,7 @@ int main(int argc, char *argv[])
         double dt_phys = units->getFactorTimeLbToW();
         int demSubsteps = 10;
         double dt_dem = dt_phys / (double)demSubsteps;
-        int vtkSteps = 1000;
+        int vtkSteps = 10;
         string demOutDir = outputPath + "/liggghts";
 
         // wrapper.execCommand("echo none");
@@ -529,11 +543,11 @@ int main(int argc, char *argv[])
         // wrapper.execFile((char*)inFile1.c_str());
 
         //// set timestep and output directory
-        wrapper.setVariable("t_step", dt_dem);
-        wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
-        wrapper.setVariable("dmp_dir", demOutDir);
+        //////wrapper.setVariable("t_step", dt_dem);
+        //////wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
+        //////wrapper.setVariable("dmp_dir", demOutDir);
 
-        wrapper.execFile((char *)inFile1.c_str());
+        //!!!!//wrapper.execFile((char *)inFile1.c_str());
         //wrapper.runUpto(demSubsteps - 1);
         // wrapper.runUpto(1000);
 
@@ -542,12 +556,12 @@ int main(int argc, char *argv[])
         SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
         SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, unitsAir);
         //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(std::ceil((g_maxX1 - g_minX1) / dx), std::ceil((g_maxX2 - g_minX2) / dx), std::ceil((g_maxX3 - g_minX3) / dx), wrapper.lmp);
-        SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(26,26,420, wrapper.lmp);
+        //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(blockNX[0], blockNX[1], blockNX[2] * gridNZ, wrapper.lmp);
         
         /////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////
         
-        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::RECURSIVE));
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::KWAY));
 
         SPtr<GbObject3D> gridCube = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
@@ -564,46 +578,47 @@ int main(int argc, char *argv[])
         meshNozzleAirDistributor->readMeshFromSTLFileASCII(geoPath + "/01_Nozzle_Air_Distributor.stl", false);
         if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirDistributor:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAirDistributor.get(), outputPath + "/geo/meshNozzleAirDistributor", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleAirDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirDistributor, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
-        ///////////////////////////////////////////////////////////
-        SPtr<GbTriFaceMesh3D> meshNozzleAirInlet = std::make_shared<GbTriFaceMesh3D>();
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:start");
-        meshNozzleAirInlet->readMeshFromSTLFileASCII(geoPath + "/02_Nozzle_Air_Inlet.stl", false);
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:end");
-        if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAirInlet.get(), outputPath + "/geo/meshNozzleAirInlet", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirInlet, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
-        ///////////////////////////////////////////////////////////
-        SPtr<GbTriFaceMesh3D> meshNozzleSpacer = std::make_shared<GbTriFaceMesh3D>();
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleSpacer:start");
-        meshNozzleSpacer->readMeshFromSTLFileASCII(geoPath + "/03_Nozzle_Spacer.stl", true);
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleSpacer:end");
-        if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleSpacer.get(), outputPath + "/geo/meshNozzleSpacer", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleSpacer = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleSpacer, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
-        ///////////////////////////////////////////////////////////
-        SPtr<GbTriFaceMesh3D> meshNozzleAccDistributor = std::make_shared<GbTriFaceMesh3D>();
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccDistributor:start");
-        meshNozzleAccDistributor->readMeshFromSTLFileASCII(geoPath + "/04_Nozzle_Acc_Distributor.stl", false);
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccDistributor:end");
-        if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAccDistributor.get(), outputPath + "/geo/meshNozzleAccDistributor", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleAccDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccDistributor, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
-        ///////////////////////////////////////////////////////////
-        SPtr<GbTriFaceMesh3D> meshNozzleAccInlet = std::make_shared<GbTriFaceMesh3D>();
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccInlet:start");
-        meshNozzleAccInlet->readMeshFromSTLFileASCII(geoPath + "/05_Nozzle_Acc_Inlet.stl", false);
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccInlet:end");
-        if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAccInlet.get(), outputPath + "/geo/meshNozzleAccInlet", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleAccInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccInlet, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
-        ///////////////////////////////////////////////////////////
-        SPtr<GbTriFaceMesh3D> meshNozzleVolcanNozzle1 = std::make_shared<GbTriFaceMesh3D>();
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle1:start");
-        meshNozzleVolcanNozzle1->readMeshFromSTLFileBinary(geoPath + "/06_1_Nozzle_Volcan_Nozzle.stl", true);
-        if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle1:end");
-        if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle1.get(), outputPath + "/geo/meshNozzleVolcanNozzle1", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleVolcanNozzle1 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle1, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
+        SPtr<Interactor3D> intrNozzleAirDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirDistributor, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
+        /////////////////////////////////////////////////////////////
+        //SPtr<GbTriFaceMesh3D> meshNozzleAirInlet = std::make_shared<GbTriFaceMesh3D>();
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:start");
+        //meshNozzleAirInlet->readMeshFromSTLFileASCII(geoPath + "/02_Nozzle_Air_Inlet.stl", false);
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:end");
+        //if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAirInlet.get(), outputPath + "/geo/meshNozzleAirInlet", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<Interactor3D> intrNozzleAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirInlet, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+        /////////////////////////////////////////////////////////////
+        //SPtr<GbTriFaceMesh3D> meshNozzleSpacer = std::make_shared<GbTriFaceMesh3D>();
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleSpacer:start");
+        //meshNozzleSpacer->readMeshFromSTLFileASCII(geoPath + "/03_Nozzle_Spacer.stl", true);
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleSpacer:end");
+        //if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleSpacer.get(), outputPath + "/geo/meshNozzleSpacer", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<Interactor3D> intrNozzleSpacer = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleSpacer, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+        /////////////////////////////////////////////////////////////
+        //SPtr<GbTriFaceMesh3D> meshNozzleAccDistributor = std::make_shared<GbTriFaceMesh3D>();
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccDistributor:start");
+        //meshNozzleAccDistributor->readMeshFromSTLFileASCII(geoPath + "/04_Nozzle_Acc_Distributor.stl", false);
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccDistributor:end");
+        //if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAccDistributor.get(), outputPath + "/geo/meshNozzleAccDistributor", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<Interactor3D> intrNozzleAccDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccDistributor, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+        /////////////////////////////////////////////////////////////
+        //SPtr<GbTriFaceMesh3D> meshNozzleAccInlet = std::make_shared<GbTriFaceMesh3D>();
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccInlet:start");
+        //meshNozzleAccInlet->readMeshFromSTLFileASCII(geoPath + "/05_Nozzle_Acc_Inlet.stl", false);
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAccInlet:end");
+        //if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAccInlet.get(), outputPath + "/geo/meshNozzleAccInlet", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<Interactor3D> intrNozzleAccInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAccInlet, grid, noSlipBC, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy);
+        /////////////////////////////////////////////////////////////
+        //SPtr<GbTriFaceMesh3D> meshNozzleVolcanNozzle1 = std::make_shared<GbTriFaceMesh3D>();
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle1:start");
+        //meshNozzleVolcanNozzle1->readMeshFromSTLFileBinary(geoPath + "/06_1_Nozzle_Volcan_Nozzle.stl", true);
+        //if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle1:end");
+        //if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle1.get(), outputPath + "/geo/meshNozzleVolcanNozzle1", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<Interactor3D> intrNozzleVolcanNozzle1 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle1, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
         ///////////////////////////////////////////////////////////
         SPtr<GbTriFaceMesh3D> meshNozzleVolcanNozzle2 = std::make_shared<GbTriFaceMesh3D>();
         if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle2:start");
-        meshNozzleVolcanNozzle2->readMeshFromSTLFileBinary(geoPath + "/06_2_Nozzle_Volcan_Nozzle.stl", true);
+        //meshNozzleVolcanNozzle2->readMeshFromSTLFileBinary(geoPath + "/06_2_Nozzle_Volcan_Nozzle.stl", true);
+        meshNozzleVolcanNozzle2->readMeshFromSTLFileBinary(geoPath + "/Nozzle_Volcan_Nozzle_Shift.stl", true);
         if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle2:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle2.get(), outputPath + "/geo/meshNozzleVolcanNozzle2", WbWriterVtkXmlBinary::getInstance());
         SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
@@ -613,7 +628,7 @@ int main(int argc, char *argv[])
         ///////////////////////////////////////////////////////////
         // inflow
         //GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.20105, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.23, 0.013));
-        GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3 - 2.0 * dx, -1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3, 0.013));
+        GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3 - 2.0 * dx, -1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3+2.0*dx, 0.013));
         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBC, Interactor3D::SOLID));
         ///////////////////////////////////////////////////////////
@@ -632,10 +647,70 @@ int main(int argc, char *argv[])
         // SPtr<Interactor3D> intrAirInlet = std::make_shared<D3Q27TriFaceMeshInteractor>(geoAirInlet, grid, inflowAirBC1, Interactor3D::SOLID, Interactor3D::EDGES);
         /////////////////////////////////////////////////////////////
         // Fluid area
-        GbCylinder3DPtr geoFluidArea(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, g_minX3, -1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3, 0.013));
+        //GbCylinder3DPtr geoFluidArea(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, g_minX3, -1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3, 0.013));
+        GbCylinder3DPtr geoFluidArea(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3_box, -1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3, 0.013));
         if (myid == 0) GbSystem3D::writeGeoObject(geoFluidArea.get(), outputPath + "/geo/geoFluidArea", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrFluidArea = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoFluidArea, grid, noSlipBC, Interactor3D::INVERSESOLID));
+
+        //SPtr<GbTriFaceMesh3D> meshFluidArea = std::make_shared<GbTriFaceMesh3D>();
+        //if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:start");
+        //meshFluidArea->readMeshFromSTLFileBinary(geoPath + "/FluidArea.stl", true);
+        //if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:end");
+        //if (myid == 0) GbSystem3D::writeGeoObject(meshFluidArea.get(), outputPath + "/geo/meshFluidArea", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<Interactor3D> intrFluidArea = std::make_shared<D3Q27TriFaceMeshInteractor>(meshFluidArea, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
+
         ///////////////////////////////////////////////////////////
+        SPtr<GbTriFaceMesh3D> meshInflowPipe = std::make_shared<GbTriFaceMesh3D>();
+        if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:start");
+        meshInflowPipe->readMeshFromSTLFileBinary(geoPath + "/InflowPipe.stl", true);
+        if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:end");
+        if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe.get(), outputPath + "/geo/meshInflowPipe", WbWriterVtkXmlBinary::getInstance());
+        SPtr<Interactor3D> intrInflowPipe = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
+        ///////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////
+        SPtr<GbTriFaceMesh3D> meshInflowPipe2 = std::make_shared<GbTriFaceMesh3D>();
+        if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:start");
+        meshInflowPipe2->readMeshFromSTLFileBinary(geoPath + "/LongTube.stl", true);
+        if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:end");
+        if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe2.get(), outputPath + "/geo/LongTube", WbWriterVtkXmlBinary::getInstance());
+        SPtr<Interactor3D> intrInflowPipe2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe2, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
+        ///////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////
+        //outflows 
+        //////////////////////////////////////////////////////////
+        SPtr<GbObject3D> geoOutflow1 = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3-2.0*dx, g_maxX1, g_maxX2, g_minX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow1.get(), outputPath + "/geo/geoOutflow1", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrOutflow1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBC, Interactor3D::SOLID));
+
+        SPtr<GbObject3D> geoOutflow2 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2, g_minX3 - 2.0 * dx, g_minX1, g_maxX2, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow2.get(), outputPath + "/geo/geoOutflow2", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrOutflow2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBC, Interactor3D::SOLID));
+
+        SPtr<GbObject3D> geoOutflow3 = make_shared<GbCuboid3D>(g_maxX1, g_minX2, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow3.get(), outputPath + "/geo/geoOutflow3", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrOutflow3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBC, Interactor3D::SOLID));
+
+        SPtr<GbObject3D> geoOutflow4 = make_shared<GbCuboid3D>(g_minX1, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1, g_minX2, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow4.get(), outputPath + "/geo/geoOutflow4", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrOutflow4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBC, Interactor3D::SOLID));
+
+        SPtr<GbObject3D> geoOutflow5 = make_shared<GbCuboid3D>(g_minX1, g_maxX2, g_minX3 - 2.0 * dx, g_maxX1, g_maxX2 + 2.0 * dx, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow5.get(), outputPath + "/geo/geoOutflow5", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrOutflow5 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow5, grid, outflowBC, Interactor3D::SOLID));
+
+        //SPtr<GbObject3D> geoOutflow6 = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_maxX3_box, g_maxX1, g_maxX2, g_maxX3_box + 2.0 * dx);
+        //if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow6.get(), outputPath + "/geo/geoOutflow6", WbWriterVtkXmlBinary::getInstance());
+        //SPtr<D3Q27Interactor> intrOutflow6 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow6, grid, outflowBC, Interactor3D::SOLID));
+
+        SPtr<GbTriFaceMesh3D> geoOutflow6 = std::make_shared<GbTriFaceMesh3D>();
+        if (myid == 0) UBLOG(logINFO, "Read geoOutflow6:start");
+        geoOutflow6->readMeshFromSTLFileBinary(geoPath + "/OutflowTop.stl", true);
+        if (myid == 0) UBLOG(logINFO, "Read geoOutflow6:end");
+        if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow6.get(), outputPath + "/geo/geoOutflow6", WbWriterVtkXmlBinary::getInstance());
+        SPtr<Interactor3D> intrOutflow6 = std::make_shared<D3Q27TriFaceMeshInteractor>(geoOutflow6, grid, outflowBC, Interactor3D::SOLID, Interactor3D::POINTS);
+
         ///////////////////////////////////////////////////////////
         GbCylinder3DPtr geoAirInflow(new GbCylinder3D(-1.31431 - 0.0005, 0.388587, 0.1383275, -1.31431, 0.388587, 0.1383275, 0.002765));
         if (myid == 0) GbSystem3D::writeGeoObject(geoAirInflow.get(), outputPath + "/geo/geoAirInlet", WbWriterVtkXmlBinary::getInstance());
@@ -683,21 +758,92 @@ int main(int argc, char *argv[])
         if (myid == 0) GbSystem3D::writeGeoObject(meshAirInlet6.get(), outputPath + "/geo/meshAirInlet6", WbWriterVtkXmlBinary::getInstance());
         SPtr<Interactor3D> intAirInlet6 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshAirInlet6, grid, inflowAirBC6, Interactor3D::SOLID, Interactor3D::POINTS);
         ///////////////////////////////////////////////////////////
+        
+        SPtr<GbObject3D> geoBox1 = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_maxX3_box, g_minX1+12.0*blockNX[0]*dx, g_maxX2, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoBox1.get(), outputPath + "/geo/geoBox1", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrGeoBox1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoBox1, grid, outflowBC, Interactor3D::SOLID));    
 
-        InteractorsHelper intHelper(grid, partVisitor, false);
+        SPtr<GbObject3D> geoBox2 = make_shared<GbCuboid3D>(g_minX1 + 14.0 * blockNX[0] * dx, g_minX2, g_maxX3_box, g_maxX1, g_maxX2, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoBox2.get(), outputPath + "/geo/geoBox2", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrGeoBox2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoBox2, grid, outflowBC, Interactor3D::SOLID));
 
-        intHelper.addInteractor(intrFluidArea);
-        //intHelper.addInteractor(intrNozzleVolcanNozzle2);
+        SPtr<GbObject3D> geoBox3 = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_maxX3_box, g_maxX1, g_minX2 + 12.0 * blockNX[0] * dx, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoBox3.get(), outputPath + "/geo/geoBox3", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrGeoBox3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoBox3, grid, outflowBC, Interactor3D::SOLID));
+
+        SPtr<GbObject3D> geoBox4 = make_shared<GbCuboid3D>(g_minX1, g_minX2 + 14.0 * blockNX[0] * dx, g_maxX3_box, g_maxX1, g_maxX2, g_maxX3);
+        if (myid == 0) GbSystem3D::writeGeoObject(geoBox4.get(), outputPath + "/geo/geoBox4", WbWriterVtkXmlBinary::getInstance());
+        SPtr<D3Q27Interactor> intrGeoBox4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoBox4, grid, outflowBC, Interactor3D::SOLID));
+        
+        InteractorsHelper intHelper1(grid, metisVisitor, true);
+        //intHelper1.addInteractor(intrFluidArea);
+        intHelper1.addInteractor(intrGeoBox1);
+        intHelper1.addInteractor(intrGeoBox2);
+        intHelper1.addInteractor(intrGeoBox3);
+        intHelper1.addInteractor(intrGeoBox4);
+        intHelper1.selectBlocks();
+
+        //MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h_LB, nu_l_LB, 1e9, 1);
+        //grid->accept(kernelVisitor);
+
+        //intHelper1.setBC();
+
+        //SPtr<GbObject3D> gridCube2 = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3_box);
+        //if (myid == 0) GbSystem3D::writeGeoObject(gridCube2.get(), outputPath + "/geo/gridCube2", WbWriterVtkXmlBinary::getInstance());
+        //GenBlocksGridVisitor genBlocks2(gridCube2);
+        //grid->accept(genBlocks2);
+
+        MultiphaseSetKernelBlockVisitor kernelVisitor2(kernel, nu_h_LB, nu_l_LB, 1e9, 1 ); // ,MultiphaseSetKernelBlockVisitor::AddKernel);
+         grid->accept(kernelVisitor2);
+
+        vector<SPtr<Block3D>> blocks;
+         grid->getBlocksByCuboid(0, g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3, blocks);
+
+        for (auto block : blocks) {
+            if (block) {
+                block->setActive(true);
+                SPtr<BCArray3D> bcArray = block->getKernel()->getBCSet()->getBCArray();
+
+                int minX1 = 0;
+                int minX2 = 0;
+                int minX3 = 0;
+
+                int maxX1 = (int)(bcArray->getNX1()) - 1;
+                int maxX2 = (int)(bcArray->getNX2()) - 1;
+                int maxX3 = (int)(bcArray->getNX3()) - 1;
+
+                for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
+                    for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
+                        for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
+                            bcArray->setFluid(ix1, ix2, ix3);
+                        }
+                    }
+                }
+            }
+            }
+
+
+        InteractorsHelper intHelper2(grid, metisVisitor, false);
+        intHelper2.addInteractor(intrInflowPipe);
+        intHelper2.addInteractor(intrInflowPipe2);
+        intHelper2.addInteractor(intrNozzleAirDistributor);
+        //intHelper2.addInteractor(intrFluidArea);
+        intHelper2.addInteractor(intrNozzleVolcanNozzle2);
         // intHelper.addInteractor(intrBox);
-        //intHelper.addInteractor(intrInflow);
-        // intHelper.addInteractor(intrAirInflow);
-        intHelper.addInteractor(intAirInlet1);
-        intHelper.addInteractor(intAirInlet2);
-        intHelper.addInteractor(intAirInlet3);
-        intHelper.addInteractor(intAirInlet4);
-        intHelper.addInteractor(intAirInlet5);
-        intHelper.addInteractor(intAirInlet6);
-        intHelper.addInteractor(intrOutflow);
+        intHelper2.addInteractor(intrInflow);
+        //// intHelper.addInteractor(intrAirInflow);
+        intHelper2.addInteractor(intAirInlet1);
+        intHelper2.addInteractor(intAirInlet2);
+        intHelper2.addInteractor(intAirInlet3);
+        intHelper2.addInteractor(intAirInlet4);
+        intHelper2.addInteractor(intAirInlet5);
+        intHelper2.addInteractor(intAirInlet6);
+        intHelper2.addInteractor(intrOutflow1);
+        intHelper2.addInteractor(intrOutflow2);
+        intHelper2.addInteractor(intrOutflow3);
+        intHelper2.addInteractor(intrOutflow4);
+        intHelper2.addInteractor(intrOutflow5);
+        intHelper2.addInteractor(intrOutflow6);
 
         // intHelper.addInteractor(intrNozzleAirDistributor);
         // intHelper.addInteractor(intrNozzleAirInlet);
@@ -706,20 +852,58 @@ int main(int argc, char *argv[])
         // intHelper.addInteractor(intrNozzleAccInlet);
         // intHelper.addInteractor(intrNozzleVolcanNozzle1);
 
-        intHelper.selectBlocks();
+        intHelper2.selectBlocks();
 
-        SPtr<SimulationObserver> ppblocks = make_shared<WriteBlocksSimulationObserver>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
+         // if (myid == 0) UBLOG(logINFO, Utilities::toString(grid, comm->getNumberOfProcesses()));
+
+        //SetKernelBlockVisitor kernelVisitor(kernel, nu_l_LB, comm->getNumberOfProcesses());
+
+
+        intHelper2.setBC();
+
+
+
+        //GenBlocksGridVisitor genBlocks2(gridCube2);
+        //grid->accept(genBlocks2);
+
+        //grid->accept(metisVisitor);
+
+        //MultiphaseSetKernelBlockVisitor kernelVisitor2(kernel, nu_h_LB, nu_l_LB, 1e9, 1, MultiphaseSetKernelBlockVisitor::AddKernel);
+        //grid->accept(kernelVisitor2);
+
+        //SetBcBlocksBlockVisitor v1(intrOutflow1);
+        //grid->accept(v1);
+        //intrOutflow1->initInteractor();
+
+
+        //SetBcBlocksBlockVisitor v2(intrOutflow2);
+        //grid->accept(v2);
+        //intrOutflow2->initInteractor();
+
+        //SetBcBlocksBlockVisitor v3(intrOutflow3);
+        //grid->accept(v3);
+        //intrOutflow3->initInteractor();
+
+        //SetBcBlocksBlockVisitor v4(intrOutflow4);
+        //grid->accept(v4);
+        //intrOutflow4->initInteractor();
+
+        //SetBcBlocksBlockVisitor v5(intrOutflow5);
+        //grid->accept(v5);
+        //intrOutflow5->initInteractor();
+
+        //SetBcBlocksBlockVisitor v6(intrOutflow6);
+        //grid->accept(v6);
+        //intrOutflow6->initInteractor();
+
+        //SetBcBlocksBlockVisitor v7(intrNozzleVolcanNozzle2);
+        //grid->accept(v7);
+        //intrNozzleVolcanNozzle2->initInteractor();
+
+
+       SPtr<SimulationObserver> ppblocks = make_shared<WriteBlocksSimulationObserver>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
         ppblocks->update(0);
         ppblocks.reset();
-
-        // if (myid == 0) UBLOG(logINFO, Utilities::toString(grid, comm->getNumberOfProcesses()));
-
-        SetKernelBlockVisitor kernelVisitor(kernel, nu_l_LB, comm->getNumberOfProcesses());
-        //MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h_LB, nu_l_LB, 1e9, 1);
-        grid->accept(kernelVisitor);
-
-
-        intHelper.setBC();
 
         // InitDistributionsBlockVisitor initVisitor;
         // grid->accept(initVisitor);
@@ -740,11 +924,11 @@ int main(int argc, char *argv[])
         fct1.DefineConst("radius", Ri);
         fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
 
-        //MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-        //initVisitor.setPhi(fct1);
+        MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
+        initVisitor.setPhi(fct1);
         //grid->accept(initVisitor);
 
-        InitDistributionsBlockVisitor initVisitor;
+        //InitDistributionsBlockVisitor initVisitor;
         grid->accept(initVisitor);
 
         // boundary conditions grid
@@ -757,12 +941,12 @@ int main(int argc, char *argv[])
 
         grid->accept(bcVisitor);
 
-        OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         // ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
-        int numOfThreads = 1;
+        int numOfThreads = 18;
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> nupsSch = std::make_shared<UbScheduler>(10, 10, 100);
@@ -772,16 +956,16 @@ int main(int argc, char *argv[])
         SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
         // SPtr<UbScheduler> visSch(new UbScheduler(1, 8700, 8800));
         // visSch->addSchedule(1, 8700, 8800);
-        //SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-        //writeMQSimulationObserver->update(0);
+        SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        writeMQSimulationObserver->update(0);
 
-        SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        //SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
         //writeMQSimulationObserver->update(0);
 
         int endTime = 10000000;
         SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));
         simulation->addSimulationObserver(nupsSimulationObserver);
-        simulation->addSimulationObserver(lcSimulationObserver);
+        //!!!//simulation->addSimulationObserver(lcSimulationObserver);
         simulation->addSimulationObserver(writeMQSimulationObserver);
 
         if (myid == 0) UBLOG(logINFO, "Simulation-start");

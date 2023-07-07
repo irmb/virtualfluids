@@ -40,6 +40,8 @@ int main(int argc, char *argv[])
 
         // int blockNX[3] = { 10, 10, 10 };
 
+        int gridNZ = 3;
+
         double g_minX1 = -1.31431;
         double g_minX2 = 0.375582;
         double g_minX3 = -0.21 + 0.035 * 8.0; //-0.21; //-210e-3 - 0.2 - 6e-3; //- 1e-3;
@@ -49,7 +51,7 @@ int main(int argc, char *argv[])
         double g_maxX3 = 0.175;//0.21;
 
         //int blockNX[3] = { 26, 26, 35 };
-        int blockNX[3] = { 26, 26, 35/5 };
+        int blockNX[3] = { 26, 26, 35 * gridNZ };
 
         double dx = 1e-3;
 
@@ -127,10 +129,10 @@ int main(int argc, char *argv[])
         if (myid == 0) VF_LOG_INFO("Yield stress = {} Pa", tau0);
         if (myid == 0) VF_LOG_INFO("Yield stress LB = {} ", tau0_LB);
 
-        SPtr<BC> noSlipBC(new NoSlipBC());
-        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //SPtr<BC> noSlipBC(new NoSlipBC());
-        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
+        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        SPtr<BC> noSlipBC(new NoSlipBC());
+        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
         // concrete inflow boundary condition
         mu::Parser fct;
@@ -162,10 +164,10 @@ int main(int argc, char *argv[])
         //    fct.DefineConst("U", uLB_ref * ((N + 3) / (N + 1)));
         //    fct.DefineConst("NplusOne", N + 1.0);
 
-        SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
-        inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
-        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
+        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
+        inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         // air inflow boundary condition
         //  Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering
@@ -318,10 +320,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("alpha", alpha);
         fctVx3.DefineConst("gamma", gamma);
 
-        SPtr<BC> inflowAirBC1(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));        
-        //SPtr<BC> inflowAirBC1(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC1(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));        
+        SPtr<BC> inflowAirBC1(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         fctVx1.DefineVar("x1", &cx1);
         fctVx1.DefineVar("x2", &cx2);
@@ -357,10 +359,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC2(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC2(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC2(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC2(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.2948374155694822;
         cx2 = 0.37733728717266285;
@@ -377,10 +379,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC3(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC3(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC3(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC3(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.28847;
         cx2 = 0.3885;
@@ -397,10 +399,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC4(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC4(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC4(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC4(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.294771417778694;
         cx2 = 0.399787947463142;
@@ -417,10 +419,10 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC5(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC5(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC5(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC5(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         cx1 = -1.3077338898450492;
         cx2 = 0.3998516560596088;
@@ -437,27 +439,27 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("x0", cx1);
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
-        SPtr<BC> inflowAirBC6(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        //SPtr<BC> inflowAirBC6(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
-        //inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
+        //SPtr<BC> inflowAirBC6(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
+        //inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        SPtr<BC> inflowAirBC6(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
+        inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         // Pressure BC for air inlet
         // SPtr<BC> inflowAirBC1(new DensityBC(p_air_LB));
         // inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
 
         SPtr<BC> outflowBC(new DensityBC(rhoLB));
-        outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
-        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
+        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+        outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
         
         // SPtr<BC> outflowBC(new DensityBC(rhoLB));
         //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
-        BoundaryConditionsBlockVisitor bcVisitor;
-        //MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        //BoundaryConditionsBlockVisitor bcVisitor;
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
         bcVisitor.addBC(noSlipBC);
-        //bcVisitor.addBC(inflowConcreteBC);
+        bcVisitor.addBC(inflowConcreteBC);
         bcVisitor.addBC(inflowAirBC1);
         bcVisitor.addBC(outflowBC);
 
@@ -466,7 +468,8 @@ int main(int argc, char *argv[])
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseSimpleVelocityBaseExternalPressureLBMKernel>();
         //SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
-        SPtr<LBMKernel> kernel = make_shared<IBcumulantK17LBMKernel>();
+        SPtr<LBMKernel> kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
+        //SPtr<LBMKernel> kernel = make_shared<IBcumulantK17LBMKernel>();
         //SPtr<LBMKernel> kernel = make_shared<IBsharpInterfaceLBMKernel>();
 
         kernel->setWithForcing(false);
@@ -495,11 +498,11 @@ int main(int argc, char *argv[])
         grid->setPeriodicX3(false);
         grid->setDeltaX(dx);
         grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
-        grid->setGhostLayerWidth(1);
+        grid->setGhostLayerWidth(2);
 
         string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
 
-        string outputPath = "d:/temp/NozzleFlowTest_SinglePhase_SmallTest_Blocks";
+        string outputPath = "d:/temp/NozzleFlowTest_MultiPhase_SmallTest_OneBlock";
         UbSystem::makeDirectory(outputPath);
         UbSystem::makeDirectory(outputPath + "/liggghts");
 
@@ -533,7 +536,7 @@ int main(int argc, char *argv[])
         wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
         wrapper.setVariable("dmp_dir", demOutDir);
 
-        wrapper.execFile((char *)inFile1.c_str());
+        //!!!!//wrapper.execFile((char *)inFile1.c_str());
         //wrapper.runUpto(demSubsteps - 1);
         // wrapper.runUpto(1000);
 
@@ -542,7 +545,7 @@ int main(int argc, char *argv[])
         SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
         SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, unitsAir);
         //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(std::ceil((g_maxX1 - g_minX1) / dx), std::ceil((g_maxX2 - g_minX2) / dx), std::ceil((g_maxX3 - g_minX3) / dx), wrapper.lmp);
-        SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(26,26,420, wrapper.lmp);
+        //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(blockNX[0], blockNX[1], blockNX[2] * gridNZ, wrapper.lmp);
         
         /////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////
@@ -684,12 +687,12 @@ int main(int argc, char *argv[])
         SPtr<Interactor3D> intAirInlet6 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshAirInlet6, grid, inflowAirBC6, Interactor3D::SOLID, Interactor3D::POINTS);
         ///////////////////////////////////////////////////////////
 
-        InteractorsHelper intHelper(grid, partVisitor, false);
+        InteractorsHelper intHelper(grid, metisVisitor, false);
 
         intHelper.addInteractor(intrFluidArea);
         //intHelper.addInteractor(intrNozzleVolcanNozzle2);
         // intHelper.addInteractor(intrBox);
-        //intHelper.addInteractor(intrInflow);
+        intHelper.addInteractor(intrInflow);
         // intHelper.addInteractor(intrAirInflow);
         intHelper.addInteractor(intAirInlet1);
         intHelper.addInteractor(intAirInlet2);
@@ -714,8 +717,8 @@ int main(int argc, char *argv[])
 
         // if (myid == 0) UBLOG(logINFO, Utilities::toString(grid, comm->getNumberOfProcesses()));
 
-        SetKernelBlockVisitor kernelVisitor(kernel, nu_l_LB, comm->getNumberOfProcesses());
-        //MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h_LB, nu_l_LB, 1e9, 1);
+        //SetKernelBlockVisitor kernelVisitor(kernel, nu_l_LB, comm->getNumberOfProcesses());
+        MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h_LB, nu_l_LB, 1e9, 1);
         grid->accept(kernelVisitor);
 
 
@@ -740,11 +743,11 @@ int main(int argc, char *argv[])
         fct1.DefineConst("radius", Ri);
         fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
 
-        //MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-        //initVisitor.setPhi(fct1);
+        MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
+        initVisitor.setPhi(fct1);
         //grid->accept(initVisitor);
 
-        InitDistributionsBlockVisitor initVisitor;
+        //InitDistributionsBlockVisitor initVisitor;
         grid->accept(initVisitor);
 
         // boundary conditions grid
@@ -757,8 +760,8 @@ int main(int argc, char *argv[])
 
         grid->accept(bcVisitor);
 
-        OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         // ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
@@ -772,16 +775,16 @@ int main(int argc, char *argv[])
         SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
         // SPtr<UbScheduler> visSch(new UbScheduler(1, 8700, 8800));
         // visSch->addSchedule(1, 8700, 8800);
-        //SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-        //writeMQSimulationObserver->update(0);
+        SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        writeMQSimulationObserver->update(0);
 
-        SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        //SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
         //writeMQSimulationObserver->update(0);
 
         int endTime = 10000000;
         SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));
         simulation->addSimulationObserver(nupsSimulationObserver);
-        simulation->addSimulationObserver(lcSimulationObserver);
+        //!!!//simulation->addSimulationObserver(lcSimulationObserver);
         simulation->addSimulationObserver(writeMQSimulationObserver);
 
         if (myid == 0) UBLOG(logINFO, "Simulation-start");

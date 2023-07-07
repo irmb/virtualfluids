@@ -99,6 +99,13 @@ void LiggghtsCouplingSimulationObserver::setSingleSphere3D(double *x, double *v,
     std::vector<SPtr<Block3D>> blocks;
     grid->getBlocksByCuboid(level, x[0] - r, x[1] - r, x[2] - r, x[0] + r, x[1] + r, x[2] + r, blocks);
 
+    //DEBUG
+    ///////////////////////
+    if (blocks.size() == 2) 
+        int test = 0;
+
+    ///////////////////////
+
     for (SPtr<Block3D> block : blocks) {
         if (block) {
             SPtr<ILBMKernel> kernel = block->getKernel();
