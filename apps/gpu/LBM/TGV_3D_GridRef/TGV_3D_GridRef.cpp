@@ -133,13 +133,6 @@ void multipleLevel(const std::string& configPath)
 {
     vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
 
-    auto gridFactory = GridFactory::make();
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
-
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
@@ -162,6 +155,7 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("viscosity = {}", viscosity);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
 	real dx = 2.0 * PI / real(nx);
 

@@ -94,14 +94,6 @@ int main()
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
-        // setup gridGenerator
-        //////////////////////////////////////////////////////////////////////////
-
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
-        //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
@@ -113,6 +105,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
+        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
         gridBuilder->addCoarseGrid(-1.0 * L, -0.6 * L, -0.6 * L, 
                                     2.0 * L,  0.6 * L,  0.6 * L, dx);
@@ -151,7 +144,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
+        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
