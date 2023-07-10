@@ -1978,6 +1978,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
                                                                  const int &lMaxX1, const int &lMaxX2,
                                                                  const int &lMaxX3, vector_type &data, int &index)
 {
+    using namespace vf::basics::constant;
     if (data.size() == 0)
         return;
     int ix1, ix2, ix3;

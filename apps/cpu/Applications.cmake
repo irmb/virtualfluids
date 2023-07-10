@@ -22,12 +22,12 @@ IF(${VFCPU_ENABLE_MultiphaseFlow})
 	add_subdirectory(${APPS_ROOT_CPU}/MultiphaseDropletTest)
 	add_subdirectory(${APPS_ROOT_CPU}/RisingBubble2D)
 	add_subdirectory(${APPS_ROOT_CPU}/JetBreakup)
+	add_subdirectory(${APPS_ROOT_CPU}/ShotcreteJet)
 ENDIF()
 
 IF(${VFCPU_ENABLE_LiggghtsCoupling} AND ${VFCPU_ENABLE_MultiphaseFlow})
 	add_subdirectory(${APPS_ROOT_CPU}/Nozzle)
 	add_subdirectory(${APPS_ROOT_CPU}/NozzleMultiphase)
-	add_subdirectory(${APPS_ROOT_CPU}/ShotcreteJet)
 ENDIF()
 
 #add_subdirectory(tests)

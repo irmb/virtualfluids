@@ -4,7 +4,7 @@
 
 #include "VirtualFluids.h"
 
-#include "LiggghtsCoupling/LiggghtsCoupling.h"
+//#include "LiggghtsCoupling/LiggghtsCoupling.h"
 
 #include "MultiphaseFlow/MultiphaseFlow.h"
 
@@ -15,12 +15,53 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     //Sleep(30000);
+    string configname;
+    if (argv != NULL) {
+        if (argv[1] != NULL) {
+            configname = string(argv[1]);
+        } else {
+            cout << "Configuration file is missing!" << endl;
+            return 0;
+        }
+    }
+
 
     try {
+
+        vf::basics::ConfigurationFile config;
+        config.load(configname);
+
+        string outputPath = config.getValue<string>("outputPath");
+        string geoPath = config.getValue<string>("geoPath");
+        bool logToFile = config.getValue<bool>("logToFile");
+        int vtkSteps = config.getValue<int>("vtkSteps");
+        bool newStart = config.getValue<bool>("newStart");
+        double cpStep  = config.getValue<double>("cpStep"); 
+        double cpStart = config.getValue<double>("cpStart");
+        double restartStep = config.getValue<int>("restartStep");
+        int endTime = config.getValue<int>("endTime");
 
         std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
+        if (myid == 0) UBLOG(logINFO, "Jet Breakup: Start!");
+
+        if (logToFile) {
+#if defined(__unix__)
+            if (myid == 0) {
+                const char *str = outputPath.c_str();
+                mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            }
+#endif
+
+            if (myid == 0) {
+                stringstream logFilename;
+                logFilename << outputPath + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
+                UbLog::output_policy::setStream(logFilename.str());
+            }
+        }        
+
+        //bool newStart = false;
         // bounding box
         // double g_minX1 = -1341.81e-3;
         // double g_minX2 =  348.087e-3;
@@ -40,7 +81,7 @@ int main(int argc, char *argv[])
 
         // int blockNX[3] = { 10, 10, 10 };
 
-        int gridNZ = 3;
+        //int gridNZ = 3;
 
         //double g_minX1 = -1.31431;
         //double g_minX2 = 0.375582;
@@ -50,28 +91,30 @@ int main(int argc, char *argv[])
         //double g_maxX2 = 0.401582;
         //double g_maxX3 = 0.175;//0.21;
 
+        double dx = 1e-3;
+
+        double g_maxX3_box = -0.065;        
+
         double g_minX1 = -1.49631;
         double g_minX2 = 0.193582;
-        double g_minX3 = -0.095; //-0.215; 
+        double g_minX3 = g_maxX3_box - 0.39;//-0.095; //-0.215; 
 
         double g_maxX1 = -1.10631;
         double g_maxX2 = 0.583582;
         double g_maxX3 = 0.175;
 
-        double g_maxX3_box = -0.065;
-        
+      
 
         //int blockNX[3] = { 26, 26, 35 };
         int blockNX[3] = { 15, 15, 15 };
 
-        double dx = 1e-3;
 
         double uLB_ref = 0.0001;
         // double rhoLB = 0.0;
 
         // concrete
         double d_part = 1e-3;
-        double V = 0.4*10.; // flow rate [m^3/h]
+        double V = 0.4; // flow rate [m^3/h]
         double D = 0.026;     // shotcrete inlet diameter [m]
         double R = D / 2.0;   // radius [m]
         double A = UbMath::PI * R * R;
@@ -223,10 +266,10 @@ int main(int argc, char *argv[])
         // double cx1 = -1.2788 + R;
         double cx2 = 0.385822 + R_air;
         double cx3 = 0.135562 + R_air;
-        double L_air = 0.00747;
+        //double L_air = 0.00747;
         double p_air = 7e5; // Pa = 7 Bar
-        double p1 = p_air;
-        double p2 = 1e5;
+        //double p1 = p_air;
+        //double p2 = 1e5;
         double mu_air = 17.2e-6; // Pa s, air 20° C
         double rho_air = 1.2041; // [kg/m^3]
         double Re_inlet = D_air * u_air * rho_air / mu_air;
@@ -511,9 +554,9 @@ int main(int argc, char *argv[])
         grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
         grid->setGhostLayerWidth(2);
 
-        string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
+        //string geoPath = "/home/niikonst/NozzleGeo";
 
-        string outputPath = "d:/temp/ShotcreteJet";
+        //string outputPath = "/scratch/projects/nii00154/ShotcreteJet2";
         UbSystem::makeDirectory(outputPath);
         UbSystem::makeDirectory(outputPath + "/liggghts");
 
@@ -526,43 +569,54 @@ int main(int argc, char *argv[])
         /////////////////////////////////////////////////////////////////////
         //LIGGGHTS things
         /////////////////////////////////////////////////////////////////////
-        string inFile1 = "d:/Projects/TRR277/Project/WP4/Config/in.nozzle";
-        // string inFile2 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
-        MPI_Comm mpi_comm = *(MPI_Comm *)(comm->getNativeCommunicator());
-        LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
+        // string inFile1 = "d:/Projects/TRR277/Project/WP4/Config/in.nozzle";
+        // // string inFile2 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
+        // MPI_Comm mpi_comm = *(MPI_Comm *)(comm->getNativeCommunicator());
+        // LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
 
-        double v_frac = 0.1;
-        double dt_phys = units->getFactorTimeLbToW();
-        int demSubsteps = 10;
-        double dt_dem = dt_phys / (double)demSubsteps;
-        int vtkSteps = 10;
-        string demOutDir = outputPath + "/liggghts";
+        // double v_frac = 0.1;
+        // double dt_phys = units->getFactorTimeLbToW();
+        // int demSubsteps = 10;
+        // double dt_dem = dt_phys / (double)demSubsteps;
+         //int vtkSteps = 1000;
+        // string demOutDir = outputPath + "/liggghts";
 
-        // wrapper.execCommand("echo none");
+        // // wrapper.execCommand("echo none");
 
-        // wrapper.execFile((char*)inFile1.c_str());
+        // // wrapper.execFile((char*)inFile1.c_str());
 
-        //// set timestep and output directory
-        //////wrapper.setVariable("t_step", dt_dem);
-        //////wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
-        //////wrapper.setVariable("dmp_dir", demOutDir);
+        // //// set timestep and output directory
+        // //////wrapper.setVariable("t_step", dt_dem);
+        // //////wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
+        // //////wrapper.setVariable("dmp_dir", demOutDir);
 
-        //!!!!//wrapper.execFile((char *)inFile1.c_str());
-        //wrapper.runUpto(demSubsteps - 1);
-        // wrapper.runUpto(1000);
+        // //!!!!//wrapper.execFile((char *)inFile1.c_str());
+        // //wrapper.runUpto(demSubsteps - 1);
+        // // wrapper.runUpto(1000);
 
-        //LatticeDecomposition lDec((g_maxX1 - g_minX1) / dx, (g_maxX2 - g_minX2) / dx, (g_maxX3 - g_minX3) / dx, wrapper.lmp, grid);
+        // //LatticeDecomposition lDec((g_maxX1 - g_minX1) / dx, (g_maxX2 - g_minX2) / dx, (g_maxX3 - g_minX3) / dx, wrapper.lmp, grid);
 
         SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
-        SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, unitsAir);
-        //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(std::ceil((g_maxX1 - g_minX1) / dx), std::ceil((g_maxX2 - g_minX2) / dx), std::ceil((g_maxX3 - g_minX3) / dx), wrapper.lmp);
-        //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(blockNX[0], blockNX[1], blockNX[2] * gridNZ, wrapper.lmp);
+        // SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, unitsAir);
+        // //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(std::ceil((g_maxX1 - g_minX1) / dx), std::ceil((g_maxX2 - g_minX2) / dx), std::ceil((g_maxX3 - g_minX3) / dx), wrapper.lmp);
+        // //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(blockNX[0], blockNX[1], blockNX[2] * gridNZ, wrapper.lmp);
         
-        /////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////
+        // /////////////////////////////////////////////////////////////////////
+        // /////////////////////////////////////////////////////////////////////
         
         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::KWAY));
 
+        //////////////////////////////////////////////////////////////////////////
+        // restart
+        //double cpStep  = 15000; 
+        //double cpStart = 10;
+        SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
+        SPtr<MPIIOMigrationSimulationObserver> rcp(new MPIIOMigrationSimulationObserver(grid, rSch, metisVisitor, outputPath, comm));
+        rcp->setLBMKernel(kernel);
+        rcp->setBCSet(bcProc);
+        //////////////////////////////////////////////////////////////////////////
+
+if (newStart) {
         SPtr<GbObject3D> gridCube = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
@@ -571,7 +625,7 @@ int main(int argc, char *argv[])
 
         // geo
         //////////////////////////////////////////////////////////
-        int accuracy = Interactor3D::EDGES;
+        //int accuracy = Interactor3D::EDGES;
         ///////////////////////////////////
         SPtr<GbTriFaceMesh3D> meshNozzleAirDistributor = std::make_shared<GbTriFaceMesh3D>();
         if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirDistributor:start");
@@ -939,6 +993,18 @@ int main(int argc, char *argv[])
             ppgeo.reset();
         }
 
+
+
+}
+else
+{
+            //double restartStep = 10;
+            rcp->restart((int)restartStep);
+            grid->setTimeStep(restartStep);
+
+            if (myid == 0)  UBLOG(logINFO, "Restart - end");
+}
+        
         grid->accept(bcVisitor);
 
         //OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
@@ -946,7 +1012,7 @@ int main(int argc, char *argv[])
         // ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
-        int numOfThreads = 18;
+        int numOfThreads = 1;
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> nupsSch = std::make_shared<UbScheduler>(10, 10, 100);
@@ -962,11 +1028,12 @@ int main(int argc, char *argv[])
         //SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
         //writeMQSimulationObserver->update(0);
 
-        int endTime = 10000000;
+        //int endTime = 20;
         SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));
         simulation->addSimulationObserver(nupsSimulationObserver);
         //!!!//simulation->addSimulationObserver(lcSimulationObserver);
         simulation->addSimulationObserver(writeMQSimulationObserver);
+        simulation->addSimulationObserver(rcp);
 
         if (myid == 0) UBLOG(logINFO, "Simulation-start");
         simulation->run();
