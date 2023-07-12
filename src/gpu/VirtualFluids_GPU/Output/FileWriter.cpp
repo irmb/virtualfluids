@@ -197,11 +197,10 @@ std::string VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFileMedian(std::
     return pFileName;
 }
 
-std::string VIRTUALFLUIDS_GPU_EXPORT FileWriter::writePvdCollectionFileForTimeSeries(const Parameter &para)
+std::string FileWriter::writePvdCollectionFileForTimeSeries(const Parameter &para)
 {
-    std::string filename = makePvdCollectionFileName(para.getFName(), para.getMyProcessID());
-    std::string pvdFileName = WbWriterVtkXmlBinary::getInstance()->writeCollectionForTimeSeries(filename, this->fileNamesForCollectionFileTimeSeries, false);
-    return pvdFileName;
+    const std::string filename = makePvdCollectionFileName(para.getFName(), para.getMyProcessID());
+    return WbWriterVtkXmlBinary::getInstance()->writeCollectionForTimeSeries(filename, this->fileNamesForCollectionFileTimeSeries, false);
 }
 
 std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
