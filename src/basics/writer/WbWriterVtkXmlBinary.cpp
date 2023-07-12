@@ -43,7 +43,7 @@ ofstream createFileStream(const std::string &vtkFilename)
 {
     ofstream outputFileStream(vtkFilename.c_str(), ios::out | ios::binary);
     if (!outputFileStream) {
-        outputFileStream.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
+        outputFileStream.clear();
         const std::string path = UbSystem::getPathFromString(vtkFilename);
         if (!path.empty()) {
             UbSystem::makeDirectory(path);
