@@ -730,11 +730,11 @@ public:
     int getTimeCalcMedEnd();
     int getMaxDev();
     //! \returns the ID of the current MPI process
-    int getMyProcessID();
-    int getNumprocs();
+    int getMyProcessID() const;
+    int getNumprocs() const;
     std::string getOutputPath();
     std::string getOutputPrefix();
-    std::string getFName();
+    std::string getFName() const;
     std::string getGridPath();
     std::string getGeometryFileC();
     std::string getGeometryFileM();

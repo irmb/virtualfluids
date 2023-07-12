@@ -1883,7 +1883,7 @@ std::string Parameter::getOutputPrefix()
 {
     return this->oPrefix;
 }
-std::string Parameter::getFName()
+std::string Parameter::getFName() const
 {
     return this->fname;
 }
@@ -1955,11 +1955,11 @@ int Parameter::getMaxDev()
 {
     return this->maxdev;
 }
-int Parameter::getMyProcessID()
+int Parameter::getMyProcessID() const
 {
     return this->myProcessId;
 }
-int Parameter::getNumprocs()
+int Parameter::getNumprocs() const
 {
     return this->numprocs;
 }
