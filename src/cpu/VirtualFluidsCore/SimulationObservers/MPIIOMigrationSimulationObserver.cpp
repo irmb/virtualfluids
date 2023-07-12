@@ -31,7 +31,7 @@ MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> 
     //-------------------------   define MPI types  ---------------------------------
 
     MPI_Datatype typesDataSet[3] = { MPI_DOUBLE, MPI_INT, MPI_CHAR };
-    int blocksDataSet[3]         = { 5, 2, 2 };
+    int blocksDataSet[3]         = { 12, 2, 2 };
     MPI_Aint offsetsDatatSet[3], lbDataSet, extentDataSet;
 
     offsetsDatatSet[0] = 0;
@@ -172,6 +172,14 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
             dataSetArray[ic].collFactorL = kernel->getCollisionFactorL();
             dataSetArray[ic].collFactorG = kernel->getCollisionFactorG();
             dataSetArray[ic].densityRatio = kernel->getDensityRatio();
+
+            dataSetArray[ic].sigma = kernel->getSigma();
+            dataSetArray[ic].contactAngle = kernel->getContactAngle();
+            dataSetArray[ic].phiL = kernel->getPhiL();
+            dataSetArray[ic].phiH = kernel->getPhiH();
+            dataSetArray[ic].tauH = kernel->getPhaseFieldRelaxation();
+            dataSetArray[ic].mob  = kernel->getMobility();
+            dataSetArray[ic].interfaceWidth = kernel->getInterfaceWidth();
 
             D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
             localDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getLocalDistributions();
@@ -1153,6 +1161,14 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
         kernel->setWithForcing(dataSetArray[n].withForcing);
         kernel->setCollisionFactorMultiphase(dataSetArray[n].collFactorL, dataSetArray[n].collFactorG);
         kernel->setDensityRatio(dataSetArray[n].densityRatio);
+
+        kernel->setSigma(dataSetArray[n].sigma);
+        kernel->setContactAngle(dataSetArray[n].contactAngle);
+        kernel->setPhiL(dataSetArray[n].phiL);
+        kernel->setPhiH(dataSetArray[n].phiH);
+        kernel->setPhaseFieldRelaxation(dataSetArray[n].tauH);
+        kernel->setMobility(dataSetArray[n].mob);
+        kernel->setInterfaceWidth(dataSetArray[n].interfaceWidth);
 
         SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
         dataSetPtr->setFdistributions(mFdistributions);

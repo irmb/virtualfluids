@@ -64,6 +64,13 @@ struct DataSetRestart {
     real collFactorL; // for Multiphase model
     real collFactorG; // for Multiphase model
     real densityRatio;// for Multiphase model
+    real sigma;           // for Multiphase model
+    real contactAngle;    // for Multiphase model
+    real phiL;            // for Multiphase model
+    real phiH;            // for Multiphase model
+    real tauH;            // for Multiphase model
+    real mob;             // for Multiphase model
+    real interfaceWidth;  // for Multiphase model
     int x1;
     int x2;
     int x3;
@@ -82,6 +89,13 @@ struct DataSetMigration {
     real collFactorL; // for Multiphase model
     real collFactorG; // for Multiphase model
     real densityRatio;// for Multiphase model
+    real sigma;          // for Multiphase model
+    real contactAngle;   // for Multiphase model
+    real phiL;           // for Multiphase model
+    real phiH;           // for Multiphase model
+    real tauH;           // for Multiphase model
+    real mob;            // for Multiphase model
+    real interfaceWidth; // for Multiphase model
     int globalID;
     int ghostLayerWidth;
     bool compressible;

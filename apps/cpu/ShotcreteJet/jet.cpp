@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
         double g_minX1 = -1.49631;
         double g_minX2 = 0.193582;
-        double g_minX3 = g_maxX3_box - 0.39;//-0.095; //-0.215; 
+        double g_minX3 = g_maxX3_box - 0.03;//-0.095; //-0.215; 
 
         double g_maxX1 = -1.10631;
         double g_maxX2 = 0.583582;
@@ -616,7 +616,7 @@ int main(int argc, char *argv[])
         rcp->setBCSet(bcProc);
         //////////////////////////////////////////////////////////////////////////
 
-if (newStart) {
+//if (newStart) {
         SPtr<GbObject3D> gridCube = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
@@ -725,7 +725,7 @@ if (newStart) {
         ///////////////////////////////////////////////////////////
         SPtr<GbTriFaceMesh3D> meshInflowPipe2 = std::make_shared<GbTriFaceMesh3D>();
         if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:start");
-        meshInflowPipe2->readMeshFromSTLFileBinary(geoPath + "/LongTube.stl", true);
+        meshInflowPipe2->readMeshFromSTLFileBinary(geoPath + "/LongTube2.stl", true);
         if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe2.get(), outputPath + "/geo/LongTube", WbWriterVtkXmlBinary::getInstance());
         SPtr<Interactor3D> intrInflowPipe2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe2, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
@@ -734,23 +734,23 @@ if (newStart) {
         ///////////////////////////////////////////////////////////
         //outflows 
         //////////////////////////////////////////////////////////
-        SPtr<GbObject3D> geoOutflow1 = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3-2.0*dx, g_maxX1, g_maxX2, g_minX3);
+        SPtr<GbObject3D> geoOutflow1 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_minX3);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow1.get(), outputPath + "/geo/geoOutflow1", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrOutflow1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBC, Interactor3D::SOLID));
 
-        SPtr<GbObject3D> geoOutflow2 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2, g_minX3 - 2.0 * dx, g_minX1, g_maxX2, g_maxX3);
+        SPtr<GbObject3D> geoOutflow2 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow2.get(), outputPath + "/geo/geoOutflow2", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrOutflow2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBC, Interactor3D::SOLID));
 
-        SPtr<GbObject3D> geoOutflow3 = make_shared<GbCuboid3D>(g_maxX1, g_minX2, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2, g_maxX3);
+        SPtr<GbObject3D> geoOutflow3 = make_shared<GbCuboid3D>(g_maxX1, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow3.get(), outputPath + "/geo/geoOutflow3", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrOutflow3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBC, Interactor3D::SOLID));
 
-        SPtr<GbObject3D> geoOutflow4 = make_shared<GbCuboid3D>(g_minX1, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1, g_minX2, g_maxX3);
+        SPtr<GbObject3D> geoOutflow4 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_minX2, g_maxX3 + 2.0 * dx);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow4.get(), outputPath + "/geo/geoOutflow4", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrOutflow4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBC, Interactor3D::SOLID));
 
-        SPtr<GbObject3D> geoOutflow5 = make_shared<GbCuboid3D>(g_minX1, g_maxX2, g_minX3 - 2.0 * dx, g_maxX1, g_maxX2 + 2.0 * dx, g_maxX3);
+        SPtr<GbObject3D> geoOutflow5 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_maxX2, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow5.get(), outputPath + "/geo/geoOutflow5", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrOutflow5 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow5, grid, outflowBC, Interactor3D::SOLID));
 
@@ -876,6 +876,13 @@ if (newStart) {
             }
             }
 
+        if (!newStart)
+        {
+            rcp->readBlocks((int)restartStep);
+            grid->accept(metisVisitor);
+            rcp->readDataSet((int)restartStep);
+            grid->setTimeStep(restartStep);
+        }
 
         InteractorsHelper intHelper2(grid, metisVisitor, false);
         intHelper2.addInteractor(intrInflowPipe);
@@ -959,32 +966,6 @@ if (newStart) {
         ppblocks->update(0);
         ppblocks.reset();
 
-        // InitDistributionsBlockVisitor initVisitor;
-        // grid->accept(initVisitor);
-
-        double x1c = -1.31431 + R;
-        double x2c = 0.375582 + R;
-        double Ri = 5;
-        double x3c = 0.136 + Ri;
-
-        //R = 0.2 - 0.145; // 0.078-0.04; // 0.2;
-
-        mu::Parser fct1;
-        // fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
-        fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
-        fct1.DefineConst("x1c", x1c);
-        fct1.DefineConst("x2c", x2c);
-        fct1.DefineConst("x3c", x3c);
-        fct1.DefineConst("radius", Ri);
-        fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
-
-        MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-        initVisitor.setPhi(fct1);
-        //grid->accept(initVisitor);
-
-        //InitDistributionsBlockVisitor initVisitor;
-        grid->accept(initVisitor);
-
         // boundary conditions grid
         {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
@@ -995,24 +976,63 @@ if (newStart) {
 
 
 
-}
-else
-{
-            //double restartStep = 10;
-            rcp->restart((int)restartStep);
-            grid->setTimeStep(restartStep);
+        if (newStart)
+        {
+            double x1c = -1.31431 + R;
+            double x2c = 0.375582 + R;
+            double Ri = 5;
+            double x3c = 0.136 + Ri;
 
-            if (myid == 0)  UBLOG(logINFO, "Restart - end");
-}
+            mu::Parser fct1;
+            // fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
+            fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
+            fct1.DefineConst("x1c", x1c);
+            fct1.DefineConst("x2c", x2c);
+            fct1.DefineConst("x3c", x3c);
+            fct1.DefineConst("radius", Ri);
+            fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
+
+            MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
+            initVisitor.setPhi(fct1);
+            grid->accept(initVisitor);
+        }
+        //else
+        //{
+        //    //rcp->restart((int)restartStep);
+        //    rcp->readBlocks((int)restartStep);
+        //    grid->accept(metisVisitor);
+        //    rcp->readDataSet((int)restartStep);
+        //    grid->setTimeStep(restartStep);
+        //}
+
+
+       
+
+//}
+//else
+//{
+//            //double restartStep = 10;
+//            rcp->restart((int)restartStep);
+//            grid->setTimeStep(restartStep);
+//
+//            //GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3 - 2.0 * dx, -1.30181 + 0.0005, 0.390872 - 0.00229, g_maxX3 + 2.0 * dx, 0.013));
+//            //if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlBinary::getInstance());
+//            //SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBC, Interactor3D::SOLID));
+//            //SetBcBlocksBlockVisitor v1(intrInflow);
+//            //grid->accept(v1);
+//            //intrInflow->initInteractor();
+//
+//            if (myid == 0)  UBLOG(logINFO, "Restart - end");
+//}
         
-        grid->accept(bcVisitor);
 
+        grid->accept(bcVisitor);
         //OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
         TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         // ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
-        int numOfThreads = 1;
+        int numOfThreads = 18;
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> nupsSch = std::make_shared<UbScheduler>(10, 10, 100);
@@ -1023,7 +1043,7 @@ else
         // SPtr<UbScheduler> visSch(new UbScheduler(1, 8700, 8800));
         // visSch->addSchedule(1, 8700, 8800);
         SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-        writeMQSimulationObserver->update(0);
+        //writeMQSimulationObserver->update(10);
 
         //SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
         //writeMQSimulationObserver->update(0);
