@@ -54,6 +54,12 @@ std::string makeMedianCollectionFileName(const std::string &prefix, int ID, int 
     return prefix + "_bin_median" + makeCollectionFileNameEnding(ID, timestep);
 }
 
+std::string makePvdCollectionFileName(const std::string &prefix, int mpiProcessID)
+{
+    return prefix + "_bin" + "_ID_" + StringUtil::toString<int>(mpiProcessID);
+}
+
+
 void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     unsigned int timestep = para->getTimestepInit();
@@ -62,6 +68,7 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<Cuda
         writeTimestep(para, timestep, level);
     }
 
+    this->fileNamesForCollectionFileTimeSeries[timestep] = this->fileNamesForCollectionFile;
     this->writeCollectionFile(para, timestep);
 
     if( para->getCalcMedian() )
@@ -72,6 +79,10 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 {
     for (int level = para->getCoarse(); level <= para->getFine(); level++)
         writeTimestep(para, timestep, level);
+
+    this->fileNamesForCollectionFileTimeSeries[timestep] = this->fileNamesForCollectionFile;
+    if (timestep == para->getTimestepEnd())
+        this->writePvdCollectionFileForTimeSeries(*para);
 
     this->writeCollectionFile(para, timestep);
 
@@ -97,7 +108,6 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     std::vector<std::string> fnamesLong = writeUnstructuredGridLT(para, level, fnames);
     for(auto fname : fnamesLong)
         this->fileNamesForCollectionFile.push_back(fname.substr( fname.find_last_of('/') + 1 ));
-
 
     if (para->getCalcMedian())
     {
@@ -185,6 +195,12 @@ std::string VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFileMedian(std::
     std::string pFileName =  WbWriterVtkXmlBinary::getInstance()->writeParallelFile(filename, this->fileNamesForCollectionFileMedian, nodeDataNames, cellDataNames);
     this->fileNamesForCollectionFileMedian.clear();
     return pFileName;
+}
+
+std::string FileWriter::writePvdCollectionFileForTimeSeries(const Parameter &para)
+{
+    const std::string filename = makePvdCollectionFileName(para.getFName(), para.getMyProcessID());
+    return WbWriterVtkXmlBinary::getInstance()->writeCollectionForTimeSeries(filename, this->fileNamesForCollectionFileTimeSeries, false);
 }
 
 std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
