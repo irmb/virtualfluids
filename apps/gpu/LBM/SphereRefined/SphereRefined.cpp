@@ -97,9 +97,7 @@ int main()
         // setup gridGenerator
         //////////////////////////////////////////////////////////////////////////
 
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
