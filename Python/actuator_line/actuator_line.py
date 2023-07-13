@@ -36,7 +36,7 @@ r"""
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
-from pyfluids.bindings import basics, gpu, logger
+from pyfluids import basics, gpu, logger
 #%%
 sim_name = "ABL"
 config_file = Path(__file__).parent/"configActuatorLine.txt"
@@ -47,10 +47,8 @@ output_path.mkdir(exist_ok=True)
 #%%
 logger.Logger.initialize_logger()
 
-#%%
-grid_factory = gpu.grid_generator.GridFactory.make()
-grid_builder = gpu.grid_generator.MultipleGridBuilder.make_shared(grid_factory)
-communicator = gpu.Communicator.get_instance()
+grid_builder = gpu.grid_generator.MultipleGridBuilder()
+communicator = gpu.MpiCommunicator.get_instance()
 
 config = basics.ConfigurationFile()
 config.load(str(config_file))
