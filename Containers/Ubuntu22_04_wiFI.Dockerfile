@@ -55,6 +55,6 @@ RUN apt-get update &&   \
 # git clone --recurse-submodules https://source.coderefinery.org/Hkorb/wifi.git
 # cd wifi
 # git checkout develop
-COPY --chown=root:docker wifi /workspaces/VirtualFluids_dev/wifi
+COPY --chown=$(whoami):docker wifi /workspaces/VirtualFluids_dev/wifi
 WORKDIR "workspaces/VirtualFluids_dev/wifi"
 RUN pip3 install -e .
