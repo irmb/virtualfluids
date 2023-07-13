@@ -48,9 +48,8 @@ output_path.mkdir(exist_ok=True)
 logger.Logger.initialize_logger()
 
 #%%
-grid_factory = gpu.grid_generator.GridFactory.make()
-grid_builder = gpu.grid_generator.MultipleGridBuilder.make_shared(grid_factory)
-communicator = gpu.Communicator.get_instance()
+grid_builder = gpu.grid_generator.MultipleGridBuilder()
+communicator = gpu.MpiCommunicator.get_instance()
 
 config = basics.ConfigurationFile()
 config.load(str(config_file))
