@@ -115,17 +115,13 @@ msvc_17:
 
 
 ###############################################################################
-##                             Build Python                                  ##
-###############################################################################
 gcc_12_python:
-  stage: build_python
-
-  needs: ["gcc_12"]
+  stage: build
 
   cache:
     key: "gcc_12-$CI_COMMIT_REF_SLUG"
     paths:
-      - build
+      - pybuild/
 
   artifacts:
     expire_in: 1 hrs
