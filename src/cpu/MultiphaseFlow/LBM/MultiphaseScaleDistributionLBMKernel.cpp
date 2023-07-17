@@ -590,7 +590,8 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 									real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 									
-									if ((phi[D3Q27System::INVDIR[fdir]] > phiLim)) {
+									//if ((phi[D3Q27System::INVDIR[fdir]] > phiLim))
+									{
 										///here we need reconstruction from scrach
 									real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 									real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
@@ -1076,40 +1077,54 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                                         //ff[D3Q27System::INVDIR[fdir]] = (fGEQ - WEIGTH[fdir] * dvDir * (c1o1 / collFactorL - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
                                         //real vNG = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
                                         //ff[D3Q27System::INVDIR[fdir]] = (fGEQ - WEIGTH[fdir] * dvDir * (c1o1 / collFactorL)) - c6o1 * WEIGTH[fdir] * (vDir) / (c1o1 - vDir + vNG);
-                                        real fG, fBCPseudo;
-                                        if (phi2[fdir] <= phiLim)
-                                            {
+          //                              real fG, fBCPseudo;
+          //                              if (phi2[fdir] <= phiLim)
+          //                                  {
 
-                                            fG = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
-                                            fBCPseudo = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
-                                        } else {
-                                            // 13.07.2023
-                                            real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
-											real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                                                                                (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                                                                                (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
-                                            real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                                                                                (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+          //                                  fG = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
+          //                                  fBCPseudo = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
+          //                              }
+										//else {
+          //                                  // 13.07.2023
+          // //                                 real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
+										//	//real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                                     (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                                     (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+          // //                                 real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                                     (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 
-                                            fBCPseudo = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1);
+          // //                                 fBCPseudo = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1);
 
 
-                                            //fBCPseudo = -c1o3*WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1) + D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                            //                                                                                                        (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                            //                                                                                                        (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                            //                                                                                                        (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
-                                            fG = -c1o3*WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1) +
-                                                 D3Q27System::getIncompFeqForDirection(fdir, (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                                                                       (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
-                                        }
+          //                                  //unfortunately we have to reconstruct our own populations because they are overwritten by our neighbor. This is realy ugly but doing it the right way would require a completly other code structure.
+										//	//fBCPseudo = -c1o3*WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1) + D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                                                                                         (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                                                                                         (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                                                                                         (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+          // //                                 fG = -c1o3*WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1) +
+          // //                                      D3Q27System::getIncompFeqForDirection(fdir, (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          // //                                                                            (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+          //                              // 16.07.23 attempt to make it at least momentum conserving
+          //                                  fG = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
+          //                                  fBCPseudo = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 , x2 , x3 ),
+          //                                                                                    (*vxNode)(x1 , x2 , x3 ), (*vyNode)(x1 , x2 , x3 ),
+          //                                                                                    (*vzNode)(x1 , x2 , x3 )) + fG - D3Q27System::getIncompFeqForDirection(fdir, (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          //                                                                                    (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+										//}
 
-										real eqBCN = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                                                                           (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
-                                        real eqGN = D3Q27System::getIncompFeqForDirection(fdir, 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
-                                                                                          (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+										//real eqBCN = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          //                                                                                 (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+          //                              real eqGN = D3Q27System::getIncompFeqForDirection(fdir, 0, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
+          //                                                                                (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 
-										ff[D3Q27System::INVDIR[fdir]] = (laplacePressure * WEIGTH[fdir] + (fBCPseudo + fG) / densityRatio + (eqBCN + eqGN) * (c1o1 - c1o1 / densityRatio))*c1o2 +(fG-fBCPseudo)*c1o2;
-                        
+										//ff[D3Q27System::INVDIR[fdir]] = (laplacePressure * WEIGTH[fdir] + (fBCPseudo + fG) / densityRatio + (eqBCN + eqGN) * (c1o1 - c1o1 / densityRatio))*c1o2 +(fG-fBCPseudo)*c1o2;
+										//16.07.2023: alternative: In attempt to balance the momentum loss in the generation of new gas nodes the inverse operation is performed here with the liquid phase:
+                                        real fG = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
+										real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+										real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoL, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+                                        real fBC = feqNew + (fG - feqOLD) * (c1o1 / collFactorL - c1o1) / (c1o1 / collFactorG - c1o1);
+										//not adding laplace pressure as it should be included in rhoL;
+                                        ff[D3Q27System::INVDIR[fdir]] = fBC;
 										//15.5.23
 										//ff[D3Q27System::INVDIR[fdir]] = (fGEQ - WEIGTH[fdir] * dvDir * (c1o1 / collFactorL)) - c6o1 * WEIGTH[fdir] * (vDir);
 										//real fBC = (distribution->getDistributionInvForDirection(x1, x2, x3, D3Q27System::INVDIR[fdir]) - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorL - c1o1)) ;
@@ -4317,9 +4332,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					//#endif
 
 					if (UbMath::isNaN(rho_post) || UbMath::isInfinity(rho_post))
-						UB_THROW(UbException(
-							UB_EXARGS, "rho_post is not a number (nan or -1.#IND) or infinity number -1.#INF, node=" + UbSystem::toString(x1) + "," +
-							UbSystem::toString(x2) + "," + UbSystem::toString(x3)));
+						UB_THROW(UbException(UB_EXARGS, "rho_post is not a number (nan or -1.#IND) or infinity number -1.#INF, node=" + UbSystem::toString(x1) + "," + UbSystem::toString(x2) + "," + UbSystem::toString(x3) + ",phi=" + UbSystem::toString(phi[DIR_000])));
 
 					//////////////////////////////////////////////////////////////////////////
 					//write distribution
@@ -5248,7 +5261,8 @@ void MultiphaseScaleDistributionLBMKernel::findNeighbors2(CbArray3D<real, Indexe
 			phi2[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		}
 		else {
-			phi2[k] = 0.05;
+			phi2[k] = 0.0;
+            // phi2[k] = (*ph)(x1 , x2, x3 );// neutral wetting
 		}
 	}
 }
