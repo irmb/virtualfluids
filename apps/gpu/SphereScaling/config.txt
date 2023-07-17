@@ -1,12 +1,12 @@
 # Tesla 03
-# mpiexec -n 2 "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/build/bin/Release/SphereScaling.exe" "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/apps/gpu/LBM/SphereScaling/config.txt"
+# mpiexec -n 2 "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/build/bin/Release/SphereScaling.exe" "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/apps/gpu/SphereScaling/config.txt"
 # Phoenix
-# mpirun -np 2 "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/LBM/SphereScaling/config.txt"
+# mpirun -np 2 "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/SphereScaling/config.txt"
 
 # Phoenix mpich
-# mpirun -np 2 nvprof -f -o SphereScaling.%q{PMI_RANK}.nvprof "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/LBM/SphereScaling/configPhoenix4GPU.txt"
+# mpirun -np 2 nvprof -f -o SphereScaling.%q{PMI_RANK}.nvprof "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/SphereScaling/configPhoenix4GPU.txt"
 # Phoenix openmpi
-# mpirun -np 2 nvprof -f -o SphereScaling.%q{OMPI_COMM_WORLD_RANK}.nvprof "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/LBM/SphereScaling/configPhoenix4GPU.txt"
+# mpirun -np 2 nvprof -f -o SphereScaling.%q{OMPI_COMM_WORLD_RANK}.nvprof "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/SphereScaling/configPhoenix4GPU.txt"
 
 ##################################################
 #GPU Mapping

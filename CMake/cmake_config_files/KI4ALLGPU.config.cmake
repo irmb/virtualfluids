@@ -6,7 +6,7 @@
 
 set(CMAKE_CUDA_ARCHITECTURES 80)     # Nvidia Tesla A100
 
-set(GPU_APP "apps/gpu/LBM/")
+set(GPU_APP "apps/gpu/")
 list(APPEND USER_APPS 
     "${GPU_APP}ChannelFlow"
     "${GPU_APP}SphereScaling"

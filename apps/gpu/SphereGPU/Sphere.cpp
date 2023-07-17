@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         vf::basics::ConfigurationFile config;
         if (useConfigFile) {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            config = vf::basics::loadConfig(argc, argv, "./apps/gpu/LBM/SphereGPU/config.txt");
+            config = vf::basics::loadConfig(argc, argv, "./apps/gpu/SphereGPU/config.txt");
             para = std::make_shared<Parameter>(&config);
         } else {
             para = std::make_shared<Parameter>();
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
         // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
 
         // use stl
-        std::string stlPath = "./apps/gpu/LBM/SphereGPU/sphere02.stl";
+        std::string stlPath = "./apps/gpu/SphereGPU/sphere02.stl";
         if (useConfigFile && config.contains("STLPath")) {
             stlPath = config.getValue<std::string>("STLPath");
         }
