@@ -123,6 +123,7 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
 void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
     UBLOGML(logDEBUG1, "\nLBMTriFaceMeshInteractor - setQs start ");
     if (!this->grid.lock())
@@ -168,7 +169,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     // grobe Blocklaengen
     SPtr<CoordinateTransformation3D> trafo = grid.lock()->getCoordinateTransformator();
     double cblockDeltaX1, cblockDeltaX2, cblockDeltaX3, delta;
-    cblockDeltaX1 = cblockDeltaX2 = cblockDeltaX3 = delta = 1.0 / (double)(1 << coarsestInitLevel);
+    cblockDeltaX1 = cblockDeltaX2 = cblockDeltaX3 = delta = c1o1 / (double)(1 << coarsestInitLevel);
     if (trafo) {
         cblockDeltaX1 = trafo->getX1CoordinateScaling() * delta;
         cblockDeltaX2 = trafo->getX2CoordinateScaling() * delta;
@@ -208,12 +209,12 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
         // blockDeltaCalculator->getMinX1Delta(level) -> ein geinlinter wert wird geholt
 
         // TODO: set 5.0 as variable parameter in constructor, default 2.0
-        deltaMinX1[level] = (float)(5.0 * nodeDeltaX1); // kein minus da unten -deltaMin
-        deltaMinX2[level] = (float)(5.0 * nodeDeltaX2);
-        deltaMinX3[level] = (float)(5.0 * nodeDeltaX3);
-        deltaMaxX1[level] = (float)(5.0 * nodeDeltaX1);
-        deltaMaxX2[level] = (float)(5.0 * nodeDeltaX2);
-        deltaMaxX3[level] = (float)(5.0 * nodeDeltaX3);
+        deltaMinX1[level] = (float)(c5o1 * nodeDeltaX1); // kein minus da unten -deltaMin
+        deltaMinX2[level] = (float)(c5o1 * nodeDeltaX2);
+        deltaMinX3[level] = (float)(c5o1 * nodeDeltaX3);
+        deltaMaxX1[level] = (float)(c5o1 * nodeDeltaX1);
+        deltaMaxX2[level] = (float)(c5o1 * nodeDeltaX2);
+        deltaMaxX3[level] = (float)(c5o1 * nodeDeltaX3);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -237,7 +238,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     std::vector<GbTriFaceMesh3D::Vertex> &nodes      = *mesh->getNodes();
     std::map<SPtr<Block3D>, std::set<UbTupleInt3>> tmpSolidNodesFromOtherInteractors;
 
-    int onePercent = UbMath::integerRounding(triangles.size() * 0.01);
+    int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
     UbTimer setQTimer;
@@ -330,13 +331,13 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                 blockMaxX[1] = (float)(val<2>(coords) + val<2>(deltas) + deltaMaxX2[level]);
                 blockMaxX[2] = (float)(val<3>(coords) + val<3>(deltas) + deltaMaxX3[level]);
 
-                boxCenter[0] = (float)(0.5 * (blockMaxX[0] + blockMinX[0]));
-                boxCenter[1] = (float)(0.5 * (blockMaxX[1] + blockMinX[1]));
-                boxCenter[2] = (float)(0.5 * (blockMaxX[2] + blockMinX[2]));
+                boxCenter[0] = (float)(c1o2 * (blockMaxX[0] + blockMinX[0]));
+                boxCenter[1] = (float)(c1o2 * (blockMaxX[1] + blockMinX[1]));
+                boxCenter[2] = (float)(c1o2 * (blockMaxX[2] + blockMinX[2]));
 
-                halfBoxSize[0] = (float)(0.5 * (blockMaxX[0] - blockMinX[0]));
-                halfBoxSize[1] = (float)(0.5 * (blockMaxX[1] - blockMinX[1]));
-                halfBoxSize[2] = (float)(0.5 * (blockMaxX[2] - blockMinX[2]));
+                halfBoxSize[0] = (float)(c1o2 * (blockMaxX[0] - blockMinX[0]));
+                halfBoxSize[1] = (float)(c1o2 * (blockMaxX[1] - blockMinX[1]));
+                halfBoxSize[2] = (float)(c1o2 * (blockMaxX[2] - blockMinX[2]));
 
                 // wenn dreieck "vergroesserten cube" nicht schneidet/beruehrt -> keine BC moeglich -> continue
                 if (!GbMeshTools3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
@@ -445,11 +446,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                 a = e1x1 * px1 + e1x2 * px2 + e1x3 * px3;
                                 if (fabs(a) < 1.E-10)
                                     continue;
-                                f = 1.0 / a;
+                                f = c1o1 / a;
 
                                 // u = f * ( s dot p)
                                 u = f * (sx1 * px1 + sx2 * px2 + sx3 * px3);
-                                if (u < -1.E-10 || u > 1.0 + 1.E-10)
+                                if (u < -1.E-10 || u > c1o1 + 1.E-10)
                                     continue;
 
                                 // q = s x e1
@@ -459,7 +460,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
 
                                 // v = f*(e2 dot q)
                                 v = f * (this->rayX1[fdir] * qx1 + this->rayX2[fdir] * qx2 + this->rayX3[fdir] * qx3);
-                                if (v < -1.E-10 || (u + v) > 1.0 + 1.E-10)
+                                if (v < -1.E-10 || (u + v) > c1o1 + 1.E-10)
                                     continue;
 
                                 // t = f * (e2 dot q)
@@ -492,7 +493,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                          (z1 - internX3) * (z1 - internX3));
                                 q_ehsan /= nodeDeltaToNeigh[level][fdir];
                                 q = q_ehsan;
-                                if (UbMath::greater(q, 1.0) || UbMath::lessEqual(q, 0.0))
+                                if (UbMath::greater(q, c1o1) || UbMath::lessEqual(q, 0.0))
                                     continue;
 
                                 // gefundenes q auf gueltigkeit pruefen
@@ -507,9 +508,9 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                     continue;
                                 }
 
-                                if (UbMath::inClosedInterval(q, 1.0, 1.0))
-                                    q = 1.0;
-                                if (UbMath::greater(q, 0.0) && UbMath::lessEqual(q, 1.0)) {
+                                if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                    q = c1o1;
+                                if (UbMath::greater(q, 0.0) && UbMath::lessEqual(q, c1o1)) {
                                     gotQs = blockGotBCs = true;
 
                                     bc = bcMatrix->getBC(ix1, ix2, ix3);
@@ -591,6 +592,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
 void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
     UBLOGML(logDEBUG1, "\nLBMTriFaceMeshInteractor - initInteractor start ");
     if (!this->grid.lock())
@@ -642,7 +644,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     // grobe Blocklaengen
     SPtr<CoordinateTransformation3D> trafo = grid.lock()->getCoordinateTransformator();
     double cblockDeltaX1, cblockDeltaX2, cblockDeltaX3, delta;
-    cblockDeltaX1 = cblockDeltaX2 = cblockDeltaX3 = delta = 1.0 / (double)(1 << coarsestInitLevel);
+    cblockDeltaX1 = cblockDeltaX2 = cblockDeltaX3 = delta = c1o1 / (double)(1 << coarsestInitLevel);
     if (trafo) {
         cblockDeltaX1 = trafo->getX1CoordinateScaling() * delta;
         cblockDeltaX2 = trafo->getX2CoordinateScaling() * delta;
@@ -735,13 +737,13 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 
     // notwendige variablen initialisieren (u.a. blockDeltas des groben levels)
     float triPoints[3][3];
-    real vx1 = 0.0, vx2 = 0.0, vx3 = 0.0;
+    real vx1 = c0o1, vx2 = c0o1, vx3 = c0o1;
     unsigned counterTriBoxOverlap = 0, counterAABBTriFace = 0, counterHalfspace = 0, counterBilligOBB = 0;
     std::vector<GbTriFaceMesh3D::TriFace> &triangles = *mesh->getTriangles();
     std::vector<GbTriFaceMesh3D::Vertex> &nodes      = *mesh->getNodes();
     std::map<SPtr<Block3D>, std::set<std::vector<int>>> tmpSolidNodesFromOtherInteractors;
 
-    int onePercent = UbMath::integerRounding(triangles.size() * 0.01);
+    int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
     UbTimer setQTimer;
@@ -845,13 +847,13 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                 blockMaxX[1] = (float)(val<2>(coords) + val<2>(deltas) + deltaMaxX2[level]);
                 blockMaxX[2] = (float)(val<3>(coords) + val<3>(deltas) + deltaMaxX3[level]);
 
-                boxCenter[0] = (float)(0.5 * (blockMaxX[0] + blockMinX[0]));
-                boxCenter[1] = (float)(0.5 * (blockMaxX[1] + blockMinX[1]));
-                boxCenter[2] = (float)(0.5 * (blockMaxX[2] + blockMinX[2]));
+                boxCenter[0] = (float)(c1o2 * (blockMaxX[0] + blockMinX[0]));
+                boxCenter[1] = (float)(c1o2 * (blockMaxX[1] + blockMinX[1]));
+                boxCenter[2] = (float)(c1o2 * (blockMaxX[2] + blockMinX[2]));
 
-                halfBoxSize[0] = (float)(0.5 * (blockMaxX[0] - blockMinX[0]));
-                halfBoxSize[1] = (float)(0.5 * (blockMaxX[1] - blockMinX[1]));
-                halfBoxSize[2] = (float)(0.5 * (blockMaxX[2] - blockMinX[2]));
+                halfBoxSize[0] = (float)(c1o2 * (blockMaxX[0] - blockMinX[0]));
+                halfBoxSize[1] = (float)(c1o2 * (blockMaxX[1] - blockMinX[1]));
+                halfBoxSize[2] = (float)(c1o2 * (blockMaxX[2] - blockMinX[2]));
 
                 // wenn dreieck "vergroesserten cube" nicht schneidet/beruehrt -> keine BC moeglich -> continue
                 if (!GbMeshTools3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
@@ -887,9 +889,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                 double qEinflussDelta = 1.1 * sqrt(nodeDx1 * nodeDx1 + nodeDx2 * nodeDx2 + nodeDx3 * nodeDx3);
 
                 for (int ix3 = indexMinX3; ix3 < indexMaxX3; ix3++) {
-                    internX3 = val<3>(coords) + nodeDx3 * ix3 - 0.5 * nodeDx3;
+                    internX3 = val<3>(coords) + nodeDx3 * ix3 - c1o2 * nodeDx3;
                     for (int ix2 = indexMinX2; ix2 < indexMaxX2; ix2++) {
-                        internX2 = val<2>(coords) + nodeDx2 * ix2 - 0.5 * nodeDx2;
+                        internX2 = val<2>(coords) + nodeDx2 * ix2 - c1o2 * nodeDx2;
                         for (int ix1 = indexMinX1; ix1 < indexMaxX1; ix1++) {
 
                             //					  int blx1 =block->getX1();
@@ -930,7 +932,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                                 }
                             }
 
-                            internX1 = val<1>(coords) + nodeDx1 * ix1 - 0.5 * nodeDx1;
+                            internX1 = val<1>(coords) + nodeDx1 * ix1 - c1o2 * nodeDx1;
 
                             //////////////////////////////////////////////////////////////////////////
                             // Punkt in AABB von Dreieck?
@@ -996,11 +998,11 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                                 a = e1x1 * px1 + e1x2 * px2 + e1x3 * px3;
                                 if (fabs(a) < 1.E-10)
                                     continue;
-                                f = 1.0 / a;
+                                f = c1o1 / a;
 
                                 // u = f * ( s dot p)
                                 u = f * (sx1 * px1 + sx2 * px2 + sx3 * px3);
-                                if (u < -1.E-10 || u > 1.0 + 1.E-10)
+                                if (u < -1.E-10 || u > c1o1 + 1.E-10)
                                     continue;
 
                                 // q = s x e1
@@ -1010,7 +1012,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 
                                 // v = f*(e2 dot q)
                                 v = f * (this->rayX1[fdir] * qx1 + this->rayX2[fdir] * qx2 + this->rayX3[fdir] * qx3);
-                                if (v < -1.E-10 || (u + v) > 1.0 + 1.E-10)
+                                if (v < -1.E-10 || (u + v) > c1o1 + 1.E-10)
                                     continue;
 
                                 // t = f * (e2 dot q)
@@ -1029,9 +1031,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                                     continue;
                                 }
 
-                                if (UbMath::inClosedInterval(q, 1.0, 1.0))
-                                    q = 1.0;
-                                if (UbMath::greater(q, 0.0) && UbMath::lessEqual(q, 1.0)) {
+                                if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                    q = c1o1;
+                                if (UbMath::greater(q, 0.0) && UbMath::lessEqual(q, c1o1)) {
                                     // if( !solidFromOtherInteractor ) //--> Knoten schon solid-->BC setzen
                                     // ueberfluessig SG changed to if( solidFromOtherInteractor ) //--> Knoten schon
                                     // solid-->BC setzen ueberfluessig
@@ -1211,9 +1213,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                             //						  int ride=0;
                             //					  }
                             if (flagField(bx1, bx2, bx3) == UNDEF_FLAG) {
-                                if (mesh->isPointInGbObject3D(val<1>(coords) + bx1 * nodeDeltaX1 - 0.5 * nodeDeltaX1,
-                                                              val<2>(coords) + bx2 * nodeDeltaX2 - 0.5 * nodeDeltaX2,
-                                                              val<3>(coords) + bx3 * nodeDeltaX3 - 0.5 * nodeDeltaX3)) {
+                                if (mesh->isPointInGbObject3D(val<1>(coords) + bx1 * nodeDeltaX1 - c1o2 * nodeDeltaX1,
+                                                              val<2>(coords) + bx2 * nodeDeltaX2 - c1o2 * nodeDeltaX2,
+                                                              val<3>(coords) + bx3 * nodeDeltaX3 - c1o2 * nodeDeltaX3)) {
                                     (this->*gridFill)(flagField, bx1, bx2, bx3, SOLID_FLAG);
                                 } else {
                                     (this->*gridFill)(flagField, bx1, bx2, bx3, FLUID_FLAG);
@@ -1309,6 +1311,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 //////////////////////////////////////////////////////////////////////////
 void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDistance, real stopDistance)
 {
+    using namespace vf::basics::constant;
+
     UBLOG(logDEBUG1, "D3Q27TriFaceMeshInteractor::refineBlockGridToLevel - start");
 
     // ToDo: evtl checken, ob man noch einen HalbraumCheck für StopDistance einbaut
@@ -1365,27 +1369,27 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
 
         // Boundingbox um massgebliches dx erweitern -> zur Bestimmung der zu testenden Bloecke
         if (triangle.nx > 1.0E-8) {
-            minX1 = triangle.getMinX(nodes) + 1.05 * triangle.nx * startDistance;
-            maxX1 = triangle.getMaxX(nodes) + 1.05 * triangle.nx * stopDistance;
+            minX1 = triangle.getMinX(nodes) + c21o20 * triangle.nx * startDistance;
+            maxX1 = triangle.getMaxX(nodes) + c21o20 * triangle.nx * stopDistance;
         } else {
-            minX1 = triangle.getMinX(nodes) + 1.05 * triangle.nx * stopDistance;
-            maxX1 = triangle.getMaxX(nodes) + 1.05 * triangle.nx * startDistance;
+            minX1 = triangle.getMinX(nodes) + c21o20 * triangle.nx * stopDistance;
+            maxX1 = triangle.getMaxX(nodes) + c21o20 * triangle.nx * startDistance;
         }
 
         if (triangle.ny > 1.0E-8) {
-            minX2 = triangle.getMinY(nodes) + 1.05 * triangle.ny * startDistance;
-            maxX2 = triangle.getMaxY(nodes) + 1.05 * triangle.ny * stopDistance;
+            minX2 = triangle.getMinY(nodes) + c21o20 * triangle.ny * startDistance;
+            maxX2 = triangle.getMaxY(nodes) + c21o20 * triangle.ny * stopDistance;
         } else {
-            minX2 = triangle.getMinY(nodes) + 1.05 * triangle.ny * stopDistance;
-            maxX2 = triangle.getMaxY(nodes) + 1.05 * triangle.ny * startDistance;
+            minX2 = triangle.getMinY(nodes) + c21o20 * triangle.ny * stopDistance;
+            maxX2 = triangle.getMaxY(nodes) + c21o20 * triangle.ny * startDistance;
         }
 
         if (triangle.nz > 1.0E-8) {
-            minX3 = triangle.getMinZ(nodes) + 1.05 * triangle.nz * startDistance;
-            maxX3 = triangle.getMaxZ(nodes) + 1.05 * triangle.nz * stopDistance;
+            minX3 = triangle.getMinZ(nodes) + c21o20 * triangle.nz * startDistance;
+            maxX3 = triangle.getMaxZ(nodes) + c21o20 * triangle.nz * stopDistance;
         } else {
-            minX3 = triangle.getMinZ(nodes) + 1.05 * triangle.nz * stopDistance;
-            maxX3 = triangle.getMaxZ(nodes) + 1.05 * triangle.nz * startDistance;
+            minX3 = triangle.getMinZ(nodes) + c21o20 * triangle.nz * stopDistance;
+            maxX3 = triangle.getMaxZ(nodes) + c21o20 * triangle.nz * startDistance;
         }
 
         int flag = 0;
@@ -1435,15 +1439,15 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
                     // blockseite ermitteln (skalarprodukt dreiecks-normale, vector (midTri->midCub) )
                     // je nachdem muss für den massgeblichen block start oder stopdistance verwendet werden
                     // liegt block auf pos seite -> stopdistance ansonsten startdistance
-                    double skalarprod = triangle.nx * (0.5 * (x1a + x1b) - triangle.getX1Centroid(nodes)) +
-                                        triangle.ny * (0.5 * (x2a + x2b) - triangle.getX2Centroid(nodes)) +
-                                        triangle.nz * (0.5 * (x3a + x3b) - triangle.getX3Centroid(nodes));
+                    double skalarprod = triangle.nx * (c1o2 * (x1a + x1b) - triangle.getX1Centroid(nodes)) +
+                                        triangle.ny * (c1o2 * (x2a + x2b) - triangle.getX2Centroid(nodes)) +
+                                        triangle.nz * (c1o2 * (x3a + x3b) - triangle.getX3Centroid(nodes));
 
-                    double blockdelta = 1.05 * stopDistance;
+                    double blockdelta = c21o20 * stopDistance;
                     if (skalarprod < 1.E-8)
-                        blockdelta = -1.05 * startDistance; // startDistance<0!!
+                        blockdelta = -c21o20 * startDistance; // startDistance<0!!
                     else if (fabs(skalarprod) < 1.E-8)
-                        blockdelta = 1.05 * UbMath::max(-startDistance, stopDistance);
+                        blockdelta = c21o20 * UbMath::max(-startDistance, stopDistance);
 
                     // block anpassen
                     blockMinX[0] = (float)(val<1>(coords) - blockdelta);
@@ -1454,13 +1458,13 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
                     blockMaxX[1] = (float)(val<2>(coords) + val<2>(deltas) + blockdelta);
                     blockMaxX[2] = (float)(val<3>(coords) + val<3>(deltas) + blockdelta);
 
-                    boxCenter[0] = (float)(0.5 * (blockMaxX[0] + blockMinX[0]));
-                    boxCenter[1] = (float)(0.5 * (blockMaxX[1] + blockMinX[1]));
-                    boxCenter[2] = (float)(0.5 * (blockMaxX[2] + blockMinX[2]));
+                    boxCenter[0] = (float)(c1o2 * (blockMaxX[0] + blockMinX[0]));
+                    boxCenter[1] = (float)(c1o2 * (blockMaxX[1] + blockMinX[1]));
+                    boxCenter[2] = (float)(c1o2 * (blockMaxX[2] + blockMinX[2]));
 
-                    halfBoxSize[0] = (float)(0.5 * (blockMaxX[0] - blockMinX[0]));
-                    halfBoxSize[1] = (float)(0.5 * (blockMaxX[1] - blockMinX[1]));
-                    halfBoxSize[2] = (float)(0.5 * (blockMaxX[2] - blockMinX[2]));
+                    halfBoxSize[0] = (float)(c1o2 * (blockMaxX[0] - blockMinX[0]));
+                    halfBoxSize[1] = (float)(c1o2 * (blockMaxX[1] - blockMinX[1]));
+                    halfBoxSize[2] = (float)(c1o2 * (blockMaxX[2] - blockMinX[2]));
 
                     GbTriFaceMesh3D::Vertex &v1_ = nodes[triangle.v1];
                     GbTriFaceMesh3D::Vertex &v2_ = nodes[triangle.v2];
@@ -1558,10 +1562,11 @@ UbTupleDouble3 D3Q27TriFaceMeshInteractor::getForces()
     //}
     ////return getForcesTriangle();
     // this->calculateForces();
+    using namespace vf::basics::constant;
 
-    real forceX1 = 0.0;
-    real forceX2 = 0.0;
-    real forceX3 = 0.0;
+    real forceX1 = c0o1;
+    real forceX2 = c0o1;
+    real forceX3 = c0o1;
 
     // double area = 0.0;
 
@@ -1580,9 +1585,11 @@ UbTupleDouble3 D3Q27TriFaceMeshInteractor::getForces()
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 D3Q27TriFaceMeshInteractor::getForcesTriangle()
 {
-    real forceX1 = 0.0;
-    real forceX2 = 0.0;
-    real forceX3 = 0.0;
+    using namespace vf::basics::constant;
+    
+    real forceX1 = c0o1;
+    real forceX2 = c0o1;
+    real forceX3 = c0o1;
 
     // D3Q19BlockGrid& grid.lock() = dynamic_cast<D3Q19BlockGrid&>(*this->grid.lock());
     ////   CoordinateTransformation3D *trafo = this->grid.lock()->getTransformation();
@@ -1829,6 +1836,8 @@ string D3Q27TriFaceMeshInteractor::toString()
 //////////////////////////////////////////////////////////////////////////
 void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const real & /*timeStep*/)
 {
+    using namespace vf::basics::constant;
+
     // alle solid Bloecke wieder solid setzen
     std::vector<SPtr<Block3D>> &solidBlocks = this->getSolidBlockSet();
     for (size_t i = 0; i < solidBlocks.size(); i++) {
@@ -1879,9 +1888,9 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const real & /*timeStep*/)
             // es handelt sich un ein statisches Objekt und beim Propeller gibt
             // es Schwierigkeiten an den Flügelspitzen, dass kann daher kommen,
             // dass dort zuviel bc-flaggs sind und mit Geschwindigkeit ergibt dies ziemlich grosse Werte
-            bc->setBoundaryVelocityX1(0.0);
-            bc->setBoundaryVelocityX2(0.0);
-            bc->setBoundaryVelocityX3(0.0);
+            bc->setBoundaryVelocityX1(c0o1);
+            bc->setBoundaryVelocityX2(c0o1);
+            bc->setBoundaryVelocityX3(c0o1);
             // TODO: HACK GEHOERT NICHT HIERHIER!!! - end
 
             bool gotQs = false;

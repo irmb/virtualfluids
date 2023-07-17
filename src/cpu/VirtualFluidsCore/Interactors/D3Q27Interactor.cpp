@@ -88,80 +88,81 @@ D3Q27Interactor::~D3Q27Interactor() = default;
 void D3Q27Interactor::initRayVectors()
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
     int fdir;
     real c1oS2 = vf::basics::constant::one_over_sqrt2;
     real c1oS3 = vf::basics::constant::one_over_sqrt3;
     fdir         = DIR_P00;
-    rayX1[fdir]  = 1.0;
-    rayX2[fdir]  = 0.0;
-    rayX3[fdir]  = 0.0;
+    rayX1[fdir]  = c1o1;
+    rayX2[fdir]  = c0o1;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_M00;
-    rayX1[fdir]  = -1.0;
-    rayX2[fdir]  = 0.0;
-    rayX3[fdir]  = 0.0;
+    rayX1[fdir]  = -c1o1;
+    rayX2[fdir]  = c0o1;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_0P0;
-    rayX1[fdir]  = 0.0;
-    rayX2[fdir]  = 1.0;
-    rayX3[fdir]  = 0.0;
+    rayX1[fdir]  = c0o1;
+    rayX2[fdir]  = c1o1;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_0M0;
-    rayX1[fdir]  = 0.0;
-    rayX2[fdir]  = -1.0;
-    rayX3[fdir]  = 0.0;
+    rayX1[fdir]  = c0o1;
+    rayX2[fdir]  = -c1o1;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_00P;
-    rayX1[fdir]  = 0.0;
-    rayX2[fdir]  = 0.0;
-    rayX3[fdir]  = 1.0;
+    rayX1[fdir]  = c0o1;
+    rayX2[fdir]  = c0o1;
+    rayX3[fdir]  = c1o1;
     fdir         = DIR_00M;
-    rayX1[fdir]  = 0.0;
-    rayX2[fdir]  = 0.0;
-    rayX3[fdir]  = -1.0;
+    rayX1[fdir]  = c0o1;
+    rayX2[fdir]  = c0o1;
+    rayX3[fdir]  = -c1o1;
     fdir         = DIR_PP0;
     rayX1[fdir]  = c1oS2;
     rayX2[fdir]  = c1oS2;
-    rayX3[fdir]  = 0.0;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_MM0;
     rayX1[fdir]  = -c1oS2;
     rayX2[fdir]  = -c1oS2;
-    rayX3[fdir]  = 0.0;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_PM0;
     rayX1[fdir]  = c1oS2;
     rayX2[fdir]  = -c1oS2;
-    rayX3[fdir]  = 0.0;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_MP0;
     rayX1[fdir]  = -c1oS2;
     rayX2[fdir]  = c1oS2;
-    rayX3[fdir]  = 0.0;
+    rayX3[fdir]  = c0o1;
     fdir         = DIR_P0P;
     rayX1[fdir]  = c1oS2;
-    rayX2[fdir]  = 0.0;
+    rayX2[fdir]  = c0o1;
     rayX3[fdir]  = c1oS2;
     fdir         = DIR_M0M;
     rayX1[fdir]  = -c1oS2;
-    rayX2[fdir]  = 0.0;
+    rayX2[fdir]  = c0o1;
     rayX3[fdir]  = -c1oS2;
     fdir         = DIR_P0M;
     rayX1[fdir]  = c1oS2;
-    rayX2[fdir]  = 0.0;
+    rayX2[fdir]  = c0o1;
     rayX3[fdir]  = -c1oS2;
     fdir         = DIR_M0P;
     rayX1[fdir]  = -c1oS2;
-    rayX2[fdir]  = 0.0;
+    rayX2[fdir]  = c0o1;
     rayX3[fdir]  = c1oS2;
     fdir         = DIR_0PP;
-    rayX1[fdir]  = 0.0;
+    rayX1[fdir]  = c0o1;
     rayX2[fdir]  = c1oS2;
     rayX3[fdir]  = c1oS2;
     fdir         = DIR_0MM;
-    rayX1[fdir]  = 0.0;
+    rayX1[fdir]  = c0o1;
     rayX2[fdir]  = -c1oS2;
     rayX3[fdir]  = -c1oS2;
     fdir         = DIR_0PM;
-    rayX1[fdir]  = 0.0;
+    rayX1[fdir]  = c0o1;
     rayX2[fdir]  = c1oS2;
     rayX3[fdir]  = -c1oS2;
     fdir         = DIR_0MP;
-    rayX1[fdir]  = 0.0;
+    rayX1[fdir]  = c0o1;
     rayX2[fdir]  = -c1oS2;
     rayX3[fdir]  = c1oS2;
 
@@ -285,6 +286,7 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
 bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
     if (!block)
         return false;
@@ -297,7 +299,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
     solidNodeIndicesMap[block]              = set<UbTupleInt3>();
     set<UbTupleInt3> &solidNodeIndices      = solidNodeIndicesMap[block];
 
-    real timestep    = 0;
+    real timestep    = c0o1;
     bool oneEntryGotBC = false;
     bool gotQs         = false;
     SPtr<BoundaryConditions> bc;
@@ -396,11 +398,11 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                                                            rayX2[fdir], rayX3[fdir]);
                             q /= distNeigh[fdir];
 
-                            // assert(UbMath::lessEqual(q, 1.0));
+                            // assert(UbMath::lessEqual(q, c1o1));
 
-                            if (UbMath::inClosedInterval(q, 1.0, 1.0))
-                                q = 1.0;
-                            if (UbMath::greater(q, 0.0) && UbMath::lessEqual(q, 1.0)) {
+                            if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                q = c1o1;
+                            if (UbMath::greater(q, c0o1) && UbMath::lessEqual(q, c1o1)) {
                                 //#pragma omp critical (BC_CHANGE)
                                 {
                                     bc = bcArray->getBC(ix1, ix2, ix3);
@@ -410,9 +412,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                     }
 
                                     if (bc->hasNoSlipBoundary()) {
-                                        bc->setBoundaryVelocityX1(0.0);
-                                        bc->setBoundaryVelocityX2(0.0);
-                                        bc->setBoundaryVelocityX3(0.0);
+                                        bc->setBoundaryVelocityX1(c0o1);
+                                        bc->setBoundaryVelocityX2(c0o1);
+                                        bc->setBoundaryVelocityX3(c0o1);
                                     }
 
                                     for (int index = (int)BCs.size() - 1; index >= 0; --index)
@@ -499,7 +501,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                             GbLine3D *clippedLine = this->geoObject3D->createClippedLine3D(pointA, pointB);
 
                             if (clippedLine) {
-                                real q = 0.0;
+                                real q = c0o1;
                                 if (!this->isInverseSolid()) // A is outside
                                 {
                                     real distanceAB = pointA.getDistance(&pointB); // pointA to B
@@ -518,16 +520,16 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                                    pointB.getX1Coordinate(), pointB.getX2Coordinate(),
                                                    pointB.getX3Coordinate(), pointIsOnBoundary) &&
                                                pointIsOnBoundary) {
-                                        // A is definitely inside, B is exactly on ObjectBoundary => q = 1.0
-                                        q = 1.0;
+                                        // A is definitely inside, B is exactly on ObjectBoundary => q = c1o1
+                                        q = c1o1;
                                     } else {
-                                        q = 0.0;
+                                        q = c0o1;
                                     }
                                 }
 
-                                if (UbMath::inClosedInterval(q, 1.0, 1.0))
-                                    q = 1.0;
-                                if (UbMath::lessEqual(q, 1.0) && UbMath::greater(q, 0.0)) {
+                                if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                    q = c1o1;
+                                if (UbMath::lessEqual(q, c1o1) && UbMath::greater(q, c0o1)) {
                                     {
                                         bc = bcArray->getBC(ix1, ix2, ix3);
                                         if (!bc) {

@@ -375,7 +375,7 @@ void CompressibleOffsetInterpolator::calcInterpolatedCoefficiets(const D3Q27ICel
    x_BE = c1o4*eps_new*(-((c2o1*axx - c3o1*axz - c2o1*bxy - c6o1*cxx + cxz))/(c54o1*o));
    x_TN = c1o4*eps_new*(-((-c4o1*axx + bxy + c3o1*bxz + c3o1*cxy + cxz))/(c54o1*o));
    x_BN = c1o4*eps_new*(-((-c4o1*axx + bxy - c3o1*bxz - c3o1*cxy + cxz))/(c54o1*o));
-   x_ZERO = 0.;
+   x_ZERO = c0o1;
    x_TNE = c1o4*eps_new*(-((axy + axz + c2o1*bxx + bxz + c2o1*cxx + cxy))/(c72o1*o));
    x_TSW = c1o4*eps_new*(((-axy + axz - c2o1*bxx + bxz + c2o1*cxx + cxy))/(c72o1*o));
    x_TSE = c1o4*eps_new*(((axy - axz + c2o1*bxx + bxz - c2o1*cxx + cxy))/(c72o1*o));
@@ -390,7 +390,7 @@ void CompressibleOffsetInterpolator::calcInterpolatedCoefficiets(const D3Q27ICel
    y_BE = c1o4*eps_new*(-((axy - c3o1*ayz - c4o1*byy - c3o1*cxy + cyz))/(c54o1*o));
    y_TN = c1o4*eps_new*(-((-c2o1*axy + c2o1*byy + c3o1*byz + c6o1*cyy + cyz))/(c54o1*o));
    y_BN = c1o4*eps_new*(-((-c2o1*axy + c2o1*byy - c3o1*byz - c6o1*cyy + cyz))/(c54o1*o));
-   y_ZERO = 0.;
+   y_ZERO = c0o1;
    y_TNE = c1o4*eps_new*(-((c2o1*ayy + ayz + bxy + byz + cxy + c2o1*cyy))/(c72o1*o));
    y_TSW = c1o4*eps_new*(((-c2o1*ayy + ayz - bxy + byz + cxy + c2o1*cyy))/(c72o1*o));
    y_TSE = c1o4*eps_new*(((c2o1*ayy - ayz + bxy + byz - cxy + c2o1*cyy))/(c72o1*o));
@@ -405,7 +405,7 @@ void CompressibleOffsetInterpolator::calcInterpolatedCoefficiets(const D3Q27ICel
    z_BE = c1o4*eps_new*(-((axz - c6o1*azz - c2o1*byz - c3o1*cxz + c2o1*czz))/(c54o1*o));
    z_TN = c1o4*eps_new*(-((-c2o1*axz + byz + c6o1*bzz + c3o1*cyz + c2o1*czz))/(c54o1*o));
    z_BN = c1o4*eps_new*(-((-c2o1*axz + byz - c6o1*bzz - c3o1*cyz + c2o1*czz))/(c54o1*o));
-   z_ZERO = 0.;
+   z_ZERO = c0o1;
    z_TNE = c1o4*eps_new*(-((ayz + c2o1*azz + bxz + c2o1*bzz + cxz + cyz))/(c72o1*o));
    z_TSW = c1o4*eps_new*(((-ayz + c2o1*azz - bxz + c2o1*bzz + cxz + cyz))/(c72o1*o));
    z_TSE = c1o4*eps_new*(((ayz - c2o1*azz + bxz + c2o1*bzz - cxz + cyz))/(c72o1*o));

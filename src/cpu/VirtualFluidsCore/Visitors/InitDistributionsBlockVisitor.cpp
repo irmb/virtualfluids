@@ -182,7 +182,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                rho = muRho.Eval();
 
                //x-derivative
-               real deltaX=dx*0.5;
+               real deltaX=dx*c1o2;
                x1 = coords[0]+deltaX;
                real vx1Plusx1 = muVx1.Eval();
                real vx2Plusx1 = muVx2.Eval();
