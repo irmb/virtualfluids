@@ -11,7 +11,8 @@ if(BUILD_VF_ALL_SAMPLES)
     "apps/gpu/LBM/DrivenCavityMultiGPU"
     "apps/gpu/LBM/ActuatorLine"
     "apps/gpu/LBM/SphereScaling" 
-    "apps/gpu/LBM/TGV_3D")
+    "apps/gpu/LBM/TGV_3D"
+    "apps/gpu/LBM/gridGeneratorTest")
 endif()
 
 #############################################################
