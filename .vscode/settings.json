@@ -1,4 +1,9 @@
 {
-    "c-cpp-flylint.flexelint.enable": false,
-    "c-cpp-flylint.flawfinder.enable": false
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.cache/**": true
+      }
+    
 }

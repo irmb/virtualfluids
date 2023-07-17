@@ -41,12 +41,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
+#include <basics/DataTypes.h>
 #include <logger/Logger.h>
 
 #include "PointerDefinitions.h"
-
-#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +64,6 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,7 +71,7 @@
 int main()
 {
     try {
-         vf::logging::Logger::initializeLogger();
+        vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
