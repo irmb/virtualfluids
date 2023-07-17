@@ -141,7 +141,7 @@ if(BUILD_VF_GPU)
 
     # we disable the usage of cuda response files here
     # usually CUDA_INCLUDES.rsp is genereated by cmake containing all include paths and is passed in compile_commands.json via the --options-file flag
-    # this rsp can not be parsed by clangd and therefore we disable it
+    # this .rsp file can not be parsed by clangd and therefore we disable it
     set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_INCLUDES 0)
 endif()
 
