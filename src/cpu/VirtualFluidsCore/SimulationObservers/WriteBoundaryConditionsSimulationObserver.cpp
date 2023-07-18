@@ -132,6 +132,8 @@ void WriteBoundaryConditionsSimulationObserver::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteBoundaryConditionsSimulationObserver::addDataGeo(SPtr<Block3D> block)
 {
+    using namespace vf::basics::constant;
+
     UbTupleDouble3 org        = grid->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
     real dx                 = grid->getDeltaX(block);
@@ -178,22 +180,22 @@ void WriteBoundaryConditionsSimulationObserver::addDataGeo(SPtr<Block3D> block)
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
                     if (!bcArray->hasBC(ix1, ix2, ix3)) {
-                        data[0].push_back(0.0);
+                        data[0].push_back(c0o1);
                     } else if (bcArray->getBC(ix1, ix2, ix3)->hasNoSlipBoundary())
-                        data[0].push_back(1.0);
+                        data[0].push_back(c1o1);
                     else if (bcArray->getBC(ix1, ix2, ix3)->hasVelocityBoundary())
-                        data[0].push_back(2.0);
+                        data[0].push_back(c2o1);
                     else if (bcArray->getBC(ix1, ix2, ix3)->hasDensityBoundary())
-                        data[0].push_back(3.0);
+                        data[0].push_back(c3o1);
                     else if (bcArray->getBC(ix1, ix2, ix3)->hasSlipBoundary())
-                        data[0].push_back(4.0);
+                        data[0].push_back(c4o1);
                     // else
                     //   data[0].push_back(5.0);
 
                     if (bcArray->isSolid(ix1, ix2, ix3)) {
-                        data[1].push_back(1.0);
+                        data[1].push_back(c1o1);
                     } else {
-                        data[1].push_back(0.0);
+                        data[1].push_back(c0o1);
                     }
 
                     data[2].push_back(level);

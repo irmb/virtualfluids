@@ -51,6 +51,7 @@ ThreeDistributionsDoubleGhostLayerFullVectorConnector::ThreeDistributionsDoubleG
 void ThreeDistributionsDoubleGhostLayerFullVectorConnector::init()
 {
     using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
 
    FullVectorConnector::init();
 
@@ -64,26 +65,26 @@ void ThreeDistributionsDoubleGhostLayerFullVectorConnector::init()
    {
    case DIR_000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
    case DIR_P00:
-   case DIR_M00: sender->getData().resize(maxX2*maxX3*anz*2, 0.0);   break;
+   case DIR_M00: sender->getData().resize(maxX2*maxX3*anz*2, c0o1);   break;
    case DIR_0P0:
-   case DIR_0M0: sender->getData().resize(maxX1*maxX3*anz*2, 0.0);   break;
+   case DIR_0M0: sender->getData().resize(maxX1*maxX3*anz*2, c0o1);   break;
    case DIR_00P:
-   case DIR_00M: sender->getData().resize(maxX1*maxX2*anz*2, 0.0);   break;
+   case DIR_00M: sender->getData().resize(maxX1*maxX2*anz*2, c0o1);   break;
 
    case DIR_PP0:
    case DIR_MM0:
    case DIR_PM0:
-   case DIR_MP0:  sender->getData().resize(maxX3*anz*4, 0.0);   break;
+   case DIR_MP0:  sender->getData().resize(maxX3*anz*4, c0o1);   break;
 
    case DIR_P0P:
    case DIR_M0M:
    case DIR_P0M:
-   case DIR_M0P:  sender->getData().resize(maxX2*anz*4, 0.0);   break;
+   case DIR_M0P:  sender->getData().resize(maxX2*anz*4, c0o1);   break;
 
    case DIR_0PP:
    case DIR_0MM:
    case DIR_0PM:
-   case DIR_0MP:  sender->getData().resize(maxX1*anz*4, 0.0);   break;
+   case DIR_0MP:  sender->getData().resize(maxX1*anz*4, c0o1);   break;
 
    case DIR_PPP:
    case DIR_MMM:
@@ -92,7 +93,7 @@ void ThreeDistributionsDoubleGhostLayerFullVectorConnector::init()
    case DIR_PMP:
    case DIR_MPM:
    case DIR_PMM:
-   case DIR_MPP:  sender->getData().resize(anz*8, 0.0);   break;
+   case DIR_MPP:  sender->getData().resize(anz*8, c0o1);   break;
 
    default: UB_THROW(UbException(UB_EXARGS, "unknown sendDir"));
    }

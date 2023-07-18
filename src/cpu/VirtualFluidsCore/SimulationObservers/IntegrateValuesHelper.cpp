@@ -174,6 +174,8 @@ void IntegrateValuesHelper::calculateAV()
 //////////////////////////////////////////////////////////////////////////
 void IntegrateValuesHelper::calculateMQ()
 {
+    using namespace vf::basics::constant;
+
     real f[D3Q27System::ENDF + 1];
     real vx1, vx2, vx3, rho;
     clearData();
@@ -186,7 +188,7 @@ void IntegrateValuesHelper::calculateMQ()
 
     for (CalcNodes cn : cnodes) {
         SPtr<ILBMKernel> kernel = cn.block->getKernel();
-        real dx              = 1.0 / (real)(1 << cn.block->getLevel());
+        real dx              = c1o1 / (real)(1 << cn.block->getLevel());
         real cellVolume      = dx * dx * dx;
 
         if (kernel->getCompressible()) {

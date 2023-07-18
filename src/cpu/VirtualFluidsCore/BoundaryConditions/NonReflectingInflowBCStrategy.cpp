@@ -98,14 +98,14 @@ void NonReflectingInflowBCStrategy::applyBC()
     LBMReal rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     //vx1                  = 0.;
-    LBMReal BCVeloWeight =  0.5;
+    LBMReal BCVeloWeight = c1o2;
     // LBMReal velocity     = 0.004814077025232405; 
      // LBMReal velocity     = 0.00057735;
     //LBMReal velocity = 0.04; 
       // LBMReal velocity = 0.01; 
      // LBMReal velocity = 1./112.; 
     // LBMReal velocity = 1./126.; 
-     LBMReal velocity = 1./200.; 
+     LBMReal velocity = c1o100/2;
      // LBMReal velocity = 0.005; 
     //LBMReal delf         =(-velocity+vx1)*0.5 ;
     LBMReal delf; 
@@ -114,15 +114,15 @@ void NonReflectingInflowBCStrategy::applyBC()
         case DIR_P00:
             delf = (-velocity + vx1) * BCVeloWeight; 
             // delf = (-velocity ) * BCVeloWeight;
-            f[DIR_P00]   = ftemp[DIR_P00] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_P00] - delf* WEIGTH[DIR_P00];
-            f[DIR_PP0]  = ftemp[DIR_PP0] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_PP0]- delf* WEIGTH[DIR_PP0];
-            f[DIR_PM0]  = ftemp[DIR_PM0] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_PM0]- delf* WEIGTH[DIR_PM0];
-            f[DIR_P0P]  = ftemp[DIR_P0P] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_P0P]- delf* WEIGTH[DIR_P0P];
-            f[DIR_P0M]  = ftemp[DIR_P0M] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_P0M]- delf* WEIGTH[DIR_P0M];
-            f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_PPP]- delf* WEIGTH[DIR_PPP];
-            f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_PMP]- delf* WEIGTH[DIR_PMP];
-            f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_PPM]- delf* WEIGTH[DIR_PPM];
-            f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_PMM]- delf* WEIGTH[DIR_PMM];
+            f[DIR_P00]   = ftemp[DIR_P00] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_P00] - delf* WEIGTH[DIR_P00];
+            f[DIR_PP0]  = ftemp[DIR_PP0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PP0]- delf* WEIGTH[DIR_PP0];
+            f[DIR_PM0]  = ftemp[DIR_PM0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PM0]- delf* WEIGTH[DIR_PM0];
+            f[DIR_P0P]  = ftemp[DIR_P0P] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_P0P]- delf* WEIGTH[DIR_P0P];
+            f[DIR_P0M]  = ftemp[DIR_P0M] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_P0M]- delf* WEIGTH[DIR_P0M];
+            f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PPP]- delf* WEIGTH[DIR_PPP];
+            f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PMP]- delf* WEIGTH[DIR_PMP];
+            f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PPM]- delf* WEIGTH[DIR_PPM];
+            f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PMM]- delf* WEIGTH[DIR_PMM];
             //f[DIR_P00] = (ftemp[DIR_P00] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_P00]) *
             //           (1 - BCVeloWeight) +
             //       (ftemp[DIR_M00] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[DIR_M00] +
@@ -181,23 +181,23 @@ void NonReflectingInflowBCStrategy::applyBC()
             break;
         case DIR_M00:
             delf = (-velocity - vx1) * BCVeloWeight;
-            f[DIR_M00] = ftemp[DIR_M00] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M00] -
+            f[DIR_M00] = ftemp[DIR_M00] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_M00] -
                    delf * WEIGTH[DIR_M00];
-            f[DIR_MP0] = ftemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MP0] -
+            f[DIR_MP0] = ftemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MP0] -
                     delf * WEIGTH[DIR_MP0];
-            f[DIR_MM0] = ftemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MM0] -
+            f[DIR_MM0] = ftemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MM0] -
                     delf * WEIGTH[DIR_MM0];
-            f[DIR_M0P] = ftemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M0P] -
+            f[DIR_M0P] = ftemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_M0P] -
                     delf * WEIGTH[DIR_M0P];
-            f[DIR_M0M] = ftemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_M0M] -
+            f[DIR_M0M] = ftemp[DIR_M0M] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_M0M] -
                     delf * WEIGTH[DIR_M0M];
-            f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MPP] -
+            f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MPP] -
                      delf * WEIGTH[DIR_MPP];
-            f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MMP] -
+            f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MMP] -
                      delf * WEIGTH[DIR_MMP];
-            f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MPM] -
+            f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MPM] -
                      delf * WEIGTH[DIR_MPM];
-            f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[DIR_MMM] -
+            f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MMM] -
                      delf * WEIGTH[DIR_MMM];
 
             distributions->setDistributionInvForDirection(f[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
@@ -212,23 +212,23 @@ void NonReflectingInflowBCStrategy::applyBC()
             break;
         case DIR_0P0:
             delf = (-velocity + vx2) * BCVeloWeight;
-            f[DIR_0P0] = ftemp[DIR_0P0] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_0P0] -
+            f[DIR_0P0] = ftemp[DIR_0P0] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_0P0] -
                    delf * WEIGTH[DIR_0P0];
-            f[DIR_PP0] = ftemp[DIR_PP0] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_PP0] -
+            f[DIR_PP0] = ftemp[DIR_PP0] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_PP0] -
                     delf * WEIGTH[DIR_PP0];
-            f[DIR_MP0] = ftemp[DIR_MP0] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_MP0] -
+            f[DIR_MP0] = ftemp[DIR_MP0] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_MP0] -
                     delf * WEIGTH[DIR_MP0];
-            f[DIR_0PP] = ftemp[DIR_0PP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_0PP] -
+            f[DIR_0PP] = ftemp[DIR_0PP] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_0PP] -
                     delf * WEIGTH[DIR_0PP];
-            f[DIR_0PM] = ftemp[DIR_0PM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_0PM] -
+            f[DIR_0PM] = ftemp[DIR_0PM] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_0PM] -
                     delf * WEIGTH[DIR_0PM];
-            f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_PPP] -
+            f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_PPP] -
                      delf * WEIGTH[DIR_PPP];
-            f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_MPP] -
+            f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_MPP] -
                      delf * WEIGTH[DIR_MPP];
-            f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_PPM] -
+            f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_PPM] -
                      delf * WEIGTH[DIR_PPM];
-            f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[DIR_MPM] -
+            f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[DIR_MPM] -
                      delf * WEIGTH[DIR_MPM];
 
             distributions->setDistributionInvForDirection(f[DIR_0P0], x1 + DX1[DIR_0M0], x2 + DX2[DIR_0M0], x3 + DX3[DIR_0M0], DIR_0M0);
@@ -243,23 +243,23 @@ void NonReflectingInflowBCStrategy::applyBC()
             break;
         case DIR_0M0:
             delf = (-velocity - vx2) * BCVeloWeight;
-            f[DIR_0M0] = ftemp[DIR_0M0] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_0M0] -
+            f[DIR_0M0] = ftemp[DIR_0M0] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_0M0] -
                    delf * WEIGTH[DIR_0M0];
-            f[DIR_PM0] = ftemp[DIR_PM0] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_PM0] -
+            f[DIR_PM0] = ftemp[DIR_PM0] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_PM0] -
                     delf * WEIGTH[DIR_PM0];
-            f[DIR_MM0] = ftemp[DIR_MM0] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_MM0] -
+            f[DIR_MM0] = ftemp[DIR_MM0] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_MM0] -
                     delf * WEIGTH[DIR_MM0];
-            f[DIR_0MP] = ftemp[DIR_0MP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_0MP] -
+            f[DIR_0MP] = ftemp[DIR_0MP] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_0MP] -
                     delf * WEIGTH[DIR_0MP];
-            f[DIR_0MM] = ftemp[DIR_0MM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_0MM] -
+            f[DIR_0MM] = ftemp[DIR_0MM] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_0MM] -
                     delf * WEIGTH[DIR_0MM];
-            f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_PMP] -
+            f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_PMP] -
                      delf * WEIGTH[DIR_PMP];
-            f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_MMP] -
+            f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_MMP] -
                      delf * WEIGTH[DIR_MMP];
-            f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_PMM] -
+            f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_PMM] -
                      delf * WEIGTH[DIR_PMM];
-            f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[DIR_MMM] -
+            f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[DIR_MMM] -
                      delf * WEIGTH[DIR_MMM];
 
             distributions->setDistributionInvForDirection(f[DIR_0M0], x1 + DX1[DIR_0P0], x2 + DX2[DIR_0P0], x3 + DX3[DIR_0P0], DIR_0P0);
@@ -274,23 +274,23 @@ void NonReflectingInflowBCStrategy::applyBC()
             break;
         case DIR_00P:
             delf = (-velocity + vx3) * BCVeloWeight;
-            f[DIR_00P] = ftemp[DIR_00P] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_00P] -
+            f[DIR_00P] = ftemp[DIR_00P] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_00P] -
                    delf * WEIGTH[DIR_00P];
-            f[DIR_P0P] = ftemp[DIR_P0P] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_P0P] -
+            f[DIR_P0P] = ftemp[DIR_P0P] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_P0P] -
                     delf * WEIGTH[DIR_P0P];
-            f[DIR_M0P] = ftemp[DIR_M0P] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_M0P] -
+            f[DIR_M0P] = ftemp[DIR_M0P] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_M0P] -
                     delf * WEIGTH[DIR_M0P];
-            f[DIR_0PP] = ftemp[DIR_0PP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_0PP] -
+            f[DIR_0PP] = ftemp[DIR_0PP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_0PP] -
                     delf * WEIGTH[DIR_0PP];
-            f[DIR_0MP] = ftemp[DIR_0MP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_0MP] -
+            f[DIR_0MP] = ftemp[DIR_0MP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_0MP] -
                     delf * WEIGTH[DIR_0MP];
-            f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_PPP] -
+            f[DIR_PPP] = ftemp[DIR_PPP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_PPP] -
                      delf * WEIGTH[DIR_PPP];
-            f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_MPP] -
+            f[DIR_MPP] = ftemp[DIR_MPP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_MPP] -
                      delf * WEIGTH[DIR_MPP];
-            f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_PMP] -
+            f[DIR_PMP] = ftemp[DIR_PMP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_PMP] -
                      delf * WEIGTH[DIR_PMP];
-            f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[DIR_MMP] -
+            f[DIR_MMP] = ftemp[DIR_MMP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[DIR_MMP] -
                      delf * WEIGTH[DIR_MMP];
 
             distributions->setDistributionInvForDirection(f[DIR_00P], x1 + DX1[DIR_00M], x2 + DX2[DIR_00M], x3 + DX3[DIR_00M], DIR_00M);
@@ -305,23 +305,23 @@ void NonReflectingInflowBCStrategy::applyBC()
             break;
         case DIR_00M:
             delf = (-velocity - vx3) * BCVeloWeight;
-            f[DIR_00M] = ftemp[DIR_00M] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_00M] -
+            f[DIR_00M] = ftemp[DIR_00M] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_00M] -
                    delf * WEIGTH[DIR_00M];
-            f[DIR_P0M] = ftemp[DIR_P0M] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_P0M] -
+            f[DIR_P0M] = ftemp[DIR_P0M] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_P0M] -
                     delf * WEIGTH[DIR_P0M];
-            f[DIR_M0M] = ftemp[DIR_M0M] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_M0M] -
+            f[DIR_M0M] = ftemp[DIR_M0M] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_M0M] -
                     delf * WEIGTH[DIR_M0M];
-            f[DIR_0PM] = ftemp[DIR_0PM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_0PM] -
+            f[DIR_0PM] = ftemp[DIR_0PM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_0PM] -
                     delf * WEIGTH[DIR_0PM];
-            f[DIR_0MM] = ftemp[DIR_0MM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_0MM] -
+            f[DIR_0MM] = ftemp[DIR_0MM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_0MM] -
                     delf * WEIGTH[DIR_0MM];
-            f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_PPM] -
+            f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_PPM] -
                      delf * WEIGTH[DIR_PPM];
-            f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_MPM] -
+            f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_MPM] -
                      delf * WEIGTH[DIR_MPM];
-            f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_PMM] -
+            f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_PMM] -
                      delf * WEIGTH[DIR_PMM];
-            f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[DIR_MMM] -
+            f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[DIR_MMM] -
                      delf * WEIGTH[DIR_MMM];
 
             distributions->setDistributionInvForDirection(f[DIR_00M], x1 + DX1[DIR_00P], x2 + DX2[DIR_00P], x3 + DX3[DIR_00P], DIR_00P);

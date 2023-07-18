@@ -54,18 +54,20 @@ void BCStrategy::setBcPointer(SPtr<BoundaryConditions> bcPtr) { this->bcPtr = bc
 //////////////////////////////////////////////////////////////////////////
 void BCStrategy::setCompressible(bool c)
 {
+    using namespace vf::basics::constant;
+
     compressible = c;
 
     if (this->compressible) {
         calcFeqsForDirFct  = &D3Q27System::getCompFeqForDirection;
         calcMacrosFct      = &D3Q27System::calcCompMacroscopicValues;
         calcFeqFct         = &D3Q27System::calcCompFeq;
-        compressibleFactor = 1.0;
+        compressibleFactor = c1o1;
     } else {
         calcFeqsForDirFct  = &D3Q27System::getIncompFeqForDirection;
         calcMacrosFct      = &D3Q27System::calcIncompMacroscopicValues;
         calcFeqFct         = &D3Q27System::calcIncompFeq;
-        compressibleFactor = 0.0;
+        compressibleFactor = c0o1;
     }
 }
 //////////////////////////////////////////////////////////////////////////
