@@ -161,7 +161,9 @@ void run(string configname)
 
 
         double Bm = (tau0 * D) / (muConcrete * u);
-        double tau0_LB = Bm *nu_h *U_LB / (D / dx);
+        double tau0_LB = 0;
+        //0.02;
+        //Bm *nu_h *U_LB / (D / dx);
 
         SPtr<Rheology> rheo = Rheology::getInstance();
         rheo->setYieldStress(tau0_LB);
@@ -237,7 +239,7 @@ void run(string configname)
         kernel->setContactAngle(theta);
         kernel->setInterfaceWidth(interfaceWidth);
         // dynamicPointerCast<MultiphasePressureFilterLBMKernel>(kernel)->setPhaseFieldBC(0.0);
-        kernel->setSigma(sigma);
+        kernel->setSigma(sigma_LB);
 
         SPtr<BCSet> bcProc(new BCSet());
         // BCSetPtr bcProc(new ThinWallBCSet());
@@ -394,9 +396,9 @@ void run(string configname)
             grid->setDeltaX(dx);
             grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
-            grid->setPeriodicX1(false);
-            grid->setPeriodicX2(false);
-            grid->setPeriodicX3(false);
+            //grid->setPeriodicX1(false);
+            //grid->setPeriodicX2(false);
+            //grid->setPeriodicX3(false);
 
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
@@ -413,17 +415,17 @@ void run(string configname)
             SPtr<D3Q27Interactor> outflowInt(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
             // Create boundary conditions geometry
-            GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_minX1, g_maxX2 + 2.0*dx, g_maxX3));
+            GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx));
             GbSystem3D::writeGeoObject(wallXmin.get(), pathname + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
+            GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx));
             GbSystem3D::writeGeoObject(wallXmax.get(), pathname + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
             GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_minX3));
             GbSystem3D::writeGeoObject(wallZmin.get(), pathname + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
             GbCuboid3DPtr wallZmax(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_maxX3, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3 + 2.0*dx));
             GbSystem3D::writeGeoObject(wallZmax.get(), pathname + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - 2.0*dx, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_minX2, g_maxX3));
+            GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_minX2, g_maxX3 + 2.0 * dx));
             GbSystem3D::writeGeoObject(wallYmin.get(), pathname + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - 2.0*dx, g_maxX2, g_minX3 - 2.0*dx, g_maxX1 + 2.0*dx, g_maxX2 + 2.0*dx, g_maxX3));
+            GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - 2.0 * dx, g_maxX2, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx));
             GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
 
             // Add boundary conditions to grid generator
@@ -436,7 +438,7 @@ void run(string configname)
 
 
 //////////////////////////
-            real inflowLength = 30;
+            real inflowLength = 10;
             GbCuboid3DPtr wallInfZmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_minX3 + (g_maxX3 - g_minX3) / 3.0));
             GbSystem3D::writeGeoObject(wallInfZmin.get(), pathname + "/geo/wallInfZmin", WbWriterVtkXmlASCII::getInstance());
             GbCuboid3DPtr wallInfZmax(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_maxX3 - (g_maxX3 - g_minX3) / 3.0, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx));
@@ -568,7 +570,7 @@ void run(string configname)
                 fct2.DefineConst("interfaceThickness", interfaceWidth * dx);
 
                 MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-                initVisitor.setPhi(fct1);
+                //initVisitor.setPhi(fct1);
                 grid->accept(initVisitor);
             }
 
