@@ -574,10 +574,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 
 int main(int argc, char *argv[])
 {
-    MPI_Init(&argc, &argv);
-    std::string str, str2, configFile;
-
-    if (argv != NULL) {
+    if (argc > 1) {
 
         try {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
@@ -595,7 +592,5 @@ int main(int argc, char *argv[])
             VF_LOG_CRITICAL("Unknown exception!");
         }
     }
-
-    MPI_Finalize();
     return 0;
 }

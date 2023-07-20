@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1
 
 stages:
   - build
@@ -115,17 +115,13 @@ msvc_17:
 
 
 ###############################################################################
-##                             Build Python                                  ##
-###############################################################################
 gcc_12_python:
-  stage: build_python
-
-  needs: ["gcc_12"]
+  stage: build
 
   cache:
     key: "gcc_12-$CI_COMMIT_REF_SLUG"
     paths:
-      - build
+      - pybuild/
 
   artifacts:
     expire_in: 1 hrs
@@ -138,7 +134,7 @@ gcc_12_python:
 
   script:
     - export SKBUILD_BUILD_DIR="pybuild"
-    - export SKBUILD_CMAKE_ARGS="-DBUILD_VF_CPU=ON;-DBUILD_VF_DOUBLE_ACCURACY=ON;-DCMAKE_CXX_COMPILER_LAUNCHER=ccache;-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache;-DCMAKE_C_COMPILER_LAUNCHER=ccache;-G=Ninja"
+    - export SKBUILD_CMAKE_ARGS="-DBUILD_VF_CPU=ON;-DBUILD_VF_GPU=ON;-DCMAKE_CUDA_ARCHITECTURES=70;-DBUILD_VF_DOUBLE_ACCURACY=ON;-DCMAKE_CXX_COMPILER_LAUNCHER=ccache;-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache;-DCMAKE_C_COMPILER_LAUNCHER=ccache;-G=Ninja"
     - pip install . -v
 
 ###############################################################################
