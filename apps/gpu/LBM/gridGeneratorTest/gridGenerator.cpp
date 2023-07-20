@@ -1,18 +1,10 @@
-//#define MPI_LOGGING
-
-//Martin Branch
-
 #include <mpi.h>
-#if defined( MPI_LOGGING )
-	#include <mpe.h>
-#endif
-
-#include <string>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <fstream>
+#include <string>
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 
 #include "StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
@@ -56,44 +48,24 @@
 #include "utilities/transformator/TransformatorImp.h"
 
 
-void multipleLevel(const std::string& configPath)
+void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 {
-    auto gridFactory = GridFactory::make();
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
+    vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
-    vf::basics::ConfigurationFile config;
-    config.load(configPath);
     SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
 
-    if(useGridGenerator){
-
-        enum testCase{
-			TGV,
-			TGV3D,
-			SphereTest,
-			DrivAer,
-            PaperPlane,
-            DLC,
-            MultiGPU,
-            StlGroupTest
-        };
+    if (useGridGenerator) {
+        enum testCase { TGV, TGV3D, SphereTest, DrivAer, PaperPlane, DLC, MultiGPU, StlGroupTest };
 
         int testcase = SphereTest;
 
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if (testcase == TGV)
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		{
@@ -540,7 +512,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->addGrid(DLC_RefBox_Level_3, 3);
             gridBuilder->addGrid(DLC_RefBox_Level_4, 4);
 
-            Conglomerate* refinement = new Conglomerate();
+            auto refinement = std::make_shared<Conglomerate>();
             refinement->add(DLC_RefBox_Level_5);
             refinement->add(VW370_SERIE_STL);
 
@@ -555,10 +527,10 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
 
             gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
@@ -700,12 +672,12 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
             if( generatePart == 0 ){
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
             }
 
             if( generatePart == 1 ){
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
             }
 
@@ -752,75 +724,46 @@ void multipleLevel(const std::string& configPath)
             //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
-    }
-    else
-    {
+    } else {
         //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         //gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    logFile.close();
-
     //return;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
     SPtr<GridProvider> gridGenerator;
-    if( useGridGenerator ) gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
-    else                   gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
+    if (useGridGenerator)
+        gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+    else
+        gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory);
     sim.run();
 }
 
-int main( int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    MPI_Init(&argc, &argv);
-    std::string str, str2;
-    if ( argv != NULL )
-    {
-        //str = static_cast<std::string>(argv[0]);
+    if (argc > 1) {
 
-        try
-        {
-            //////////////////////////////////////////////////////////////////////////
-
-			std::string targetPath;
-
-			targetPath = __FILE__;
-
-#ifdef _WIN32
-			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
-#else
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-#endif
-
-			std::cout << targetPath << std::endl;
-
-			multipleLevel(targetPath + "config.txt");
+        try {
+            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
+            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv);
+            runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////
-		}
-        catch (const std::bad_alloc& e)
-        {
-            std::cout << "Bad alloc: " << e.what() << std::flush;
+        } catch (const spdlog::spdlog_ex &ex) {
+            std::cout << "Log initialization failed: " << ex.what() << std::endl;
+        } catch (const std::bad_alloc &e) {
+            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
+        } catch (const std::exception &e) {
+            VF_LOG_CRITICAL("exception: {}", e.what());
+        } catch (...) {
+            VF_LOG_CRITICAL("Unknown exception!");
         }
-        catch (const std::exception& e)
-        {
-            std::cout << e.what() << std::flush;
-        }
-        catch (...)
-        {
-            std::cout << "unknown exeption" << std::endl;
-        }
-
     }
-
-   MPI_Finalize();
-   return 0;
+    return 0;
 }
