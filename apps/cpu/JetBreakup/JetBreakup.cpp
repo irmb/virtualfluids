@@ -360,21 +360,19 @@ void run(string configname)
 
             //GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1 - 2.0*dx, 0.0, 0.0, g_minX1, 0.0, 0.0, Dg / 2.0));
 
-            GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 + (g_maxX2 - g_minX2) / 3.0, g_minX3 + (g_maxX3 - g_minX3) / 3.0, g_minX1 + 2.0 * dx, g_maxX2 - (g_maxX2 - g_minX2) / 3.0, g_maxX3 - (g_maxX3 - g_minX3) / 3.0));
 
-            if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
-            GbCylinder3DPtr geoSolid(new GbCylinder3D(g_minX1 - 2.0 * dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1+2.0*dx, g_maxX2 / 2.0, g_maxX3 / 2.0, 1.5*D / 2.0));
-            if (myid == 0) GbSystem3D::writeGeoObject(geoSolid.get(), pathname + "/geo/geoSolid", WbWriterVtkXmlASCII::getInstance());
+            //GbCylinder3DPtr geoSolid(new GbCylinder3D(g_minX1 - 2.0 * dx, g_maxX2 / 2.0, g_maxX3 / 2.0, g_minX1+2.0*dx, g_maxX2 / 2.0, g_maxX3 / 2.0, 1.5*D / 2.0));
+            //if (myid == 0) GbSystem3D::writeGeoObject(geoSolid.get(), pathname + "/geo/geoSolid", WbWriterVtkXmlASCII::getInstance());
 
-            SPtr<GbTriFaceMesh3D> meshInflowPipe = std::make_shared<GbTriFaceMesh3D>();
-            if (myid == 0) UBLOG(logINFO, "Read meshInflowPipe:start");
-            meshInflowPipe->readMeshFromSTLFileBinary(pathGeo + "/JetTube4.stl", false);
-            //meshInflowPipe->readMeshFromSTLFileASCII(pathGeo + "/JetTubeScaled5.stl", false);
-            if (myid == 0) UBLOG(logINFO, "Read meshInflowPipe:end");
-            //meshInflowPipe->scale(1e-04, 1e-04, 1e-04);
-            if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe.get(), pathname + "/geo/meshInflowPipe", WbWriterVtkXmlBinary::getInstance());
-            SPtr<Interactor3D> intrInflowPipe = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
+            //SPtr<GbTriFaceMesh3D> meshInflowPipe = std::make_shared<GbTriFaceMesh3D>();
+            //if (myid == 0) UBLOG(logINFO, "Read meshInflowPipe:start");
+            //meshInflowPipe->readMeshFromSTLFileBinary(pathGeo + "/JetTube4.stl", false);
+            ////meshInflowPipe->readMeshFromSTLFileASCII(pathGeo + "/JetTubeScaled5.stl", false);
+            //if (myid == 0) UBLOG(logINFO, "Read meshInflowPipe:end");
+            ////meshInflowPipe->scale(1e-04, 1e-04, 1e-04);
+            //if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe.get(), pathname + "/geo/meshInflowPipe", WbWriterVtkXmlBinary::getInstance());
+            //SPtr<Interactor3D> intrInflowPipe = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
 
             // GbCylinder3DPtr cylinder2(
             //    new GbCylinder3D(0.0, g_minX2 - 2.0 * dx / 2.0, 0.0, 0.0, g_minX2 + 4.0 * dx, 0.0, 8.0+2.0*dx));
@@ -439,13 +437,15 @@ void run(string configname)
 
 //////////////////////////
             real inflowLength = 10;
-            GbCuboid3DPtr wallInfZmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_minX3 + (g_maxX3 - g_minX3) / 3.0));
+            real difX2 = (g_maxX2 - g_minX2) / 2.0 - 0.5*Dg;
+            real difX3 = (g_maxX3 - g_minX3) / 2.0 - 0.5 * Dg;
+            GbCuboid3DPtr wallInfZmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_minX3 + difX3));
             GbSystem3D::writeGeoObject(wallInfZmin.get(), pathname + "/geo/wallInfZmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallInfZmax(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_maxX3 - (g_maxX3 - g_minX3) / 3.0, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx));
+            GbCuboid3DPtr wallInfZmax(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_maxX3 - difX3, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx));
             GbSystem3D::writeGeoObject(wallInfZmax.get(), pathname + "/geo/wallInfZmax", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallInfYmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_minX2 + (g_maxX2 - g_minX2) / 3.0, g_maxX3));
+            GbCuboid3DPtr wallInfYmin(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_minX2 + difX2, g_maxX3));
             GbSystem3D::writeGeoObject(wallInfYmin.get(), pathname + "/geo/wallInfYmin", WbWriterVtkXmlASCII::getInstance());
-            GbCuboid3DPtr wallInfYmax(new GbCuboid3D(g_minX1 - 2.0 * dx, g_maxX2 - (g_maxX2 - g_minX2) / 3.0, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_maxX3));
+            GbCuboid3DPtr wallInfYmax(new GbCuboid3D(g_minX1 - 2.0 * dx, g_maxX2 - difX2, g_minX3 - 2.0 * dx, g_minX1 + inflowLength * dx, g_maxX2 + 2.0 * dx, g_maxX3));
             GbSystem3D::writeGeoObject(wallInfYmax.get(), pathname + "/geo/wallInfYmax", WbWriterVtkXmlASCII::getInstance());
 
             // Add boundary conditions to grid generator
@@ -453,7 +453,13 @@ void run(string configname)
             SPtr<D3Q27Interactor> wallInfZmaxInt(new D3Q27Interactor(wallInfZmax, grid, noSlipBC, Interactor3D::SOLID));
             SPtr<D3Q27Interactor> wallInfYminInt(new D3Q27Interactor(wallInfYmin, grid, noSlipBC, Interactor3D::SOLID));
             SPtr<D3Q27Interactor> wallInfYmaxInt(new D3Q27Interactor(wallInfYmax, grid, noSlipBC, Interactor3D::SOLID));
-//////////////////////////////////////
+
+
+
+            GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - 2.0 * dx, g_minX2 + difX2, g_minX3 + difX3, g_minX1 + 2.0 * dx, g_maxX2 - difX2, g_maxX3 - difX3));
+
+            if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+            //////////////////////////////////////
 
 
 
@@ -471,10 +477,10 @@ void run(string configname)
             if (myid == 0) GbSystem3D::writeGeoObject(geoAirInflow.get(), pathname + "/geo/geoAirInflow", WbWriterVtkXmlASCII::getInstance());            
             SPtr<D3Q27Interactor> inflowAirInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoAirInflow, grid, velBCF2, Interactor3D::SOLID));
 
-            SPtr<D3Q27Interactor> solidInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoSolid, grid, noSlipBC, Interactor3D::SOLID));
+            //SPtr<D3Q27Interactor> solidInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoSolid, grid, noSlipBC, Interactor3D::SOLID));
 
 
-            InteractorsHelper intHelper(grid, metisVisitor, true);
+            InteractorsHelper intHelper(grid, metisVisitor, false);
             //intHelper.addInteractor(cylInt);
             //intHelper.addInteractor(tubes);
             //intHelper.addInteractor(outflowInt);
