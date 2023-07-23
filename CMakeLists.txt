@@ -221,7 +221,7 @@ if (BUILD_VF_CPU)
     include(cpu.cmake)
 endif()
 if(BUILD_VF_GPU)
-    add_subdirectory(src/cuda)
+    add_subdirectory(src/gpu/cuda_helper)
     include(gpu.cmake)
 endif()
 

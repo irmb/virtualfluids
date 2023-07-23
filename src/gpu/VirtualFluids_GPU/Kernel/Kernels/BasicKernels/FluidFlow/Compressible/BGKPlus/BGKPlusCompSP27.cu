@@ -2,7 +2,7 @@
 
 #include "BGKPlusCompSP27_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<BGKPlusCompSP27> BGKPlusCompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

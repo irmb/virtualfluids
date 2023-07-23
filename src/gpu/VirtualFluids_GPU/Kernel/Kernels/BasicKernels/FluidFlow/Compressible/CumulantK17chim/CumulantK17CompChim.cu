@@ -2,7 +2,7 @@
 
 #include "Parameter/Parameter.h"
 #include "CumulantK17CompChim_Device.cuh"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<CumulantK17CompChim> CumulantK17CompChim::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
