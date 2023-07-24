@@ -40,9 +40,9 @@
 #include <omp.h>
 #endif
 
-#include <mpi/Communicator.h>
-#include <mpi/MPICommunicator.h>
-#include <mpi/NullCommunicator.h>
+#include <parallel/Communicator.h>
+#include <parallel/MPICommunicator.h>
+#include <parallel/NullCommunicator.h>
 
 #include <basics/PointerDefinitions.h>
 

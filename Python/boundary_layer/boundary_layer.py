@@ -36,7 +36,7 @@ r"""
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
-from pyfluids import basics, gpu, logger
+from pyfluids import basics, gpu, logger, communicator
 #%%
 sim_name = "ABL"
 config_file = Path(__file__).parent/"configBoundaryLayer.txt"
@@ -49,12 +49,12 @@ logger.Logger.initialize_logger()
 
 #%%
 grid_builder = gpu.grid_generator.MultipleGridBuilder()
-communicator = gpu.MpiCommunicator.get_instance()
+communicator = communicator.Communicator.get_instance()
 
 config = basics.ConfigurationFile()
 config.load(str(config_file))
 
-para = gpu.Parameter(communicator.get_number_of_process(), communicator.get_pid(), config)
+para = gpu.Parameter(communicator.get_number_of_processes(), communicator.get_process_id(), config)
 bc_factory = gpu.BoundaryConditionFactory()
 
 #%%

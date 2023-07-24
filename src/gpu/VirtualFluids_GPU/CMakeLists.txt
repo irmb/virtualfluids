@@ -1,11 +1,7 @@
 project(VirtualFluids_GPU LANGUAGES CUDA CXX)
 
-set(additional_libraries "")
-if(MSVC)
-    set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
-endif()
 
-vf_add_library(PUBLIC_LINK basics lbm PRIVATE_LINK ${additional_libraries} GridGenerator MPI::MPI_CXX vf_cuda)
+vf_add_library(PUBLIC_LINK basics lbm parallel PRIVATE_LINK GridGenerator vf_cuda)
 
 #SET(TPN_WIN32 "/EHsc")
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake

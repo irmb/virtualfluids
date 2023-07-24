@@ -39,7 +39,7 @@ void run(string configname)
 
       //UbLog::reportingLevel() = logDEBUG5;
 
-      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
 

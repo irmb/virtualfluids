@@ -15,7 +15,7 @@ void chanel(const char *cstr1)
       double availMem = 0;
 
       //CommunicatorPtr comm = FETOLCommunicator::getInstance();
-      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
       int mybundle = comm->getBundleID();

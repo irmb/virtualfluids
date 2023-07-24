@@ -46,7 +46,7 @@
 
 
 class SimulationObserver;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class LiggghtsCouplingWrapper;
 class Grid3D;
 class Block3D;
@@ -61,7 +61,7 @@ struct ParticleData {
 class LiggghtsCouplingSimulationObserver : public SimulationObserver
 {
 public:
-    LiggghtsCouplingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<vf::mpi::Communicator> comm,
+    LiggghtsCouplingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<vf::parallel::Communicator> comm,
                                 LiggghtsCouplingWrapper &wrapper, int demSteps, SPtr<LBMUnitConverter> units);
     virtual ~LiggghtsCouplingSimulationObserver();
 
@@ -88,7 +88,7 @@ protected:
     void addTorque(int const partId, int const coord, double const value, double *torque);
 
 private:
-    SPtr<vf::mpi::Communicator> comm;
+    SPtr<vf::parallel::Communicator> comm;
     LiggghtsCouplingWrapper &wrapper;
     SPtr<LBMUnitConverter> units;
     int demSteps;

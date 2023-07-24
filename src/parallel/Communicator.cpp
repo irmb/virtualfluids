@@ -26,27 +26,25 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file communicator.cpp
-//! \ingroup submodules
-//! \author Henry Korb
+//! \file Communicator.cpp
+//! \ingroup Parallel
+//! \author Konstantin Kutscher
 //=======================================================================================
-#include <pybind11/pybind11.h>
-#include <gpu/VirtualFluids_GPU/Communication/Communicator.h>
-#include <gpu/VirtualFluids_GPU/Communication/MpiCommunicator.h>
 
-namespace communicator
+#include "Communicator.h"
+#include <basics/utilities/UbException.h>
+
+namespace vf::parallel
 {
-    namespace py = pybind11;
+std::mutex Communicator::instantiation_mutex = std::mutex();
+std::shared_ptr<Communicator> Communicator::instance = std::shared_ptr<Communicator>();
+//////////////////////////////////////////////////////////////////////////
+std::shared_ptr<Communicator> Communicator::getInstance()
+{
+    if (!instance)
+        UB_THROW(UbException(UB_EXARGS, "Communicator isn't initialized correctly! You can not create a new instance "
+                                        "of abstract Communicator class!"));
+    return instance;
+}
 
-    void makeModule(py::module_ &parentModule)
-    {
-        py::class_<vf::gpu::CommunicationRoutine, std::unique_ptr<vf::gpu::CommunicationRoutine, py::nodelete>>(parentModule, "CommunicationRoutine");
-
-        py::class_<vf::gpu::Communicator, vf::gpu::CommunicationRoutine, std::unique_ptr<vf::gpu::Communicator, py::nodelete>>(parentModule, "Communicator")
-            .def("get_number_of_process", &vf::gpu::Communicator::getNumberOfProcess)
-            .def("get_pid", &vf::gpu::Communicator::getPID);
-
-        py::class_<vf::gpu::MpiCommunicator, vf::gpu::Communicator, std::unique_ptr<vf::gpu::MpiCommunicator, py::nodelete>>(parentModule, "MpiCommunicator")
-            .def_static("get_instance", &vf::gpu::MpiCommunicator::getInstance, py::return_value_policy::reference);
-    }
-} // namespace communicator
+}

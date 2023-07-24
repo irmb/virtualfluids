@@ -1,4 +1,3 @@
-#include <mpi.h>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -10,7 +9,6 @@
 #include "basics/config/ConfigurationFile.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -47,13 +45,14 @@
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
 
+#include <parallel/MPICommunicator.h>
 
 void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 {
-    vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -621,7 +620,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setMaxDev(2);
 
             //const uint generatePart = 1;
-            const uint generatePart = communicator.getPID();
+            const uint generatePart = communicator.getProcessID();
 
             std::ofstream logFile2;
 

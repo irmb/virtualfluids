@@ -34,43 +34,43 @@
 #ifndef MPI_COMMUNICATOR_H
 #define MPI_COMMUNICATOR_H
 
+#include <memory>
+#include <mutex>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <memory>
-#include <sstream>
-#include <mutex>
 
+#include <basics/DataTypes.h>
 
-namespace vf::mpi 
+namespace vf::parallel
 {
 
 //! \brief An abstract class for communication between processes in parallel computation
 class Communicator
 {
 public:
-    Communicator(const Communicator&) = delete;
-    Communicator & operator=(const Communicator& rhs) = delete;
+    Communicator(const Communicator &) = delete;
+    Communicator &operator=(const Communicator &rhs) = delete;
     static std::shared_ptr<Communicator> getInstance();
 
     virtual ~Communicator() = default;
 
-    virtual int getBundleID()                      = 0;
-    virtual int getNumberOfBundles()               = 0;
-    virtual int getProcessID()                     = 0;
-    virtual int getProcessID(int bundle, int rank) = 0;
-    virtual int getNumberOfProcesses()             = 0;
-    virtual bool isRoot()                          = 0;
-    virtual void *getNativeCommunicator()          = 0;
+    virtual int getBundleID() const                      = 0;
+    virtual int getNumberOfBundles() const               = 0;
+    virtual int getProcessID() const                     = 0;
+    virtual int getProcessID(int bundle, int rank) const = 0;
+    virtual bool isRoot() const                          = 0;
+    virtual void *getNativeCommunicator()                = 0;
 
     virtual void sendSerializedObject(std::stringstream &ss, int target)    = 0;
     virtual void receiveSerializedObject(std::stringstream &ss, int source) = 0;
 
-    virtual int getRoot()                                = 0;
-    virtual int getBundleRoot()                          = 0;
-    virtual int getProcessRoot()                         = 0;
-    virtual int getNumberOfProcessesInBundle(int bundle) = 0;
-    virtual void barrier()                               = 0;
-    virtual void abort(int errorcode)                    = 0;
+    virtual int getRoot() const                                = 0;
+    virtual int getBundleRoot() const                          = 0;
+    virtual int getProcessRoot() const                         = 0;
+    virtual int getNumberOfProcessesInBundle(int bundle) const = 0;
+    virtual void barrier()                                     = 0;
+    virtual void abort(int errorcode)                          = 0;
 
     virtual std::vector<std::string> gather(const std::string &str)                         = 0;
     virtual std::vector<int> gather(std::vector<int> &values)                               = 0;
@@ -91,6 +91,20 @@ public:
     virtual void broadcast(std::vector<float> &values)    = 0;
     virtual void broadcast(std::vector<double> &values)   = 0;
     virtual void broadcast(std::vector<long int> &values) = 0;
+
+    virtual void receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+                             int size_buffer_send, int neighbor_rank_send) const = 0;
+    virtual int getNumberOfProcesses() const = 0;
+    virtual void send(real *sbuf, int count_s, int nb_rank) const = 0;
+    virtual double reduceSum(double quantityPerProcess) const = 0;
+    virtual int mapCudaDevicesOnHosts(const std::vector<unsigned int> &devices, int numberOfDevices) const = 0;
+    virtual void receiveSend(real *buffer_send, int size_buffer_send, real *buffer_receive, int size_buffer_recv,
+                             int neighbor_rank) const = 0;
+    virtual void receiveNonBlocking(real *rbuf, int count_r, int sourceRank) = 0;
+    virtual void sendNonBlocking(real *sbuf, int count_s, int destinationRank) = 0;
+    virtual void send(real *sbuf, int count_s, int destinationRank) = 0;
+    virtual void waitAll() = 0;
+    virtual void resetRequests() = 0;
 
 protected:
     Communicator() = default;

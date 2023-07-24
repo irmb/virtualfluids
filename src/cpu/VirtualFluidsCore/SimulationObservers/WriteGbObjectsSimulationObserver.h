@@ -7,7 +7,7 @@
 #include <vector>
 
 class GbObject3D;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -21,7 +21,7 @@ class WriteGbObjectsSimulationObserver : public SimulationObserver
 {
 public:
     WriteGbObjectsSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, WbWriter *const writer,
-                              std::shared_ptr<vf::mpi::Communicator> comm);
+                              std::shared_ptr<vf::parallel::Communicator> comm);
     ~WriteGbObjectsSimulationObserver() override;
     //! calls collectData.
     void update(real step) override;
@@ -35,7 +35,7 @@ private:
     std::vector<SPtr<GbObject3D>> objects;
     std::string path;
     WbWriter *writer;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 };
 
 #endif // WriteGbObjectsSimulationObserver_h__

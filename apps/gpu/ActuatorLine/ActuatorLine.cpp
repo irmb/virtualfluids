@@ -31,28 +31,25 @@
 //! \author Henry Korb, Henrik Asmuth
 //=======================================================================================
 #define _USE_MATH_DEFINES
-#include <math.h>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <stdexcept>
-#include <fstream>
+#include <cmath>
 #include <exception>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
-#include "PointerDefinitions.h"
-
-#include "StringUtilities/StringUtil.h"
-
-
-
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/StringUtilities/StringUtil.h>
 #include <basics/config/ConfigurationFile.h>
 
 #include <logger/Logger.h>
 
+#include <parallel/MPICommunicator.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +66,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -105,7 +101,7 @@ std::string simulationName("ActuatorLine");
 
 void multipleLevel(const std::string& configPath)
 {
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
@@ -134,7 +130,7 @@ void multipleLevel(const std::string& configPath)
     const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
     const float tOutProbe           =  config.getValue<real>("tOutProbe");
         
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
 

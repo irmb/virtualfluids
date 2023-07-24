@@ -38,14 +38,14 @@
 #include "Grid3D.h"
 #include "Block3D.h"
 #include "LBMUnitConverter.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "WbWriter.h"
 
 class WriteThixotropyQuantitiesSimulationObserver : public  SimulationObserver
 {
 public:
 	WriteThixotropyQuantitiesSimulationObserver();
-	WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
+	WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::parallel::Communicator> comm);
 	~WriteThixotropyQuantitiesSimulationObserver() = default;
 
    void update(real step) override;
@@ -69,7 +69,7 @@ private:
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
-   std::shared_ptr<vf::mpi::Communicator> comm;
+   std::shared_ptr<vf::parallel::Communicator> comm;
 //	double ConcentrationSum;
 };
 #endif

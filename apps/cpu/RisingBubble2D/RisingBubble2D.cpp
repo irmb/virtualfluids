@@ -52,7 +52,7 @@ void run(string configname)
         bool newStart = config.getValue<bool>("newStart");
         // double rStep = config.getValue<double>("rStep");
 
-        std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+        std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
         if (myid == 0) UBLOG(logINFO, "2D Rising Bubble: Start!");

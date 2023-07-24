@@ -4,14 +4,22 @@
 #define MPI_MPICOMMUNICATOR_H
 
 #include "Communicator.h"
-#include <PointerDefinitions.h>
+#include <basics/PointerDefinitions.h>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbLogger.h>
 #include <mpi.h>
 #include <string>
 #include <vector>
 
-namespace vf::mpi 
+//////////////////////////////////
+#ifdef VF_DOUBLE_ACCURACY
+#define VF_MPI_REAL MPI_DOUBLE
+#else
+#define VF_MPI_REAL MPI_FLOAT
+#endif
+//////////////////////////////////
+
+namespace vf::parallel
 {
 
 //! \brief A class uses MPI library to communication.
@@ -25,17 +33,17 @@ public:
 
     ~MPICommunicator() override;
     static std::shared_ptr<Communicator> getInstance();
-    int getBundleID() override;
-    int getNumberOfBundles() override;
-    int getProcessID() override;
-    int getProcessID(int bundle, int rank) override;
-    int getNumberOfProcesses() override;
+    int getBundleID() const override;
+    int getNumberOfBundles() const override;
+    int getProcessID() const override;
+    int getProcessID(int bundle, int rank) const override;
+    int getNumberOfProcesses() const override;
     void *getNativeCommunicator() override;
-    int getRoot() override;
-    int getBundleRoot() override;
-    int getProcessRoot() override;
-    int getNumberOfProcessesInBundle(int bundle) override;
-    bool isRoot() override;
+    int getRoot() const override;
+    int getBundleRoot() const override;
+    int getProcessRoot() const override;
+    int getNumberOfProcessesInBundle(int bundle) const override;
+    bool isRoot() const override;
     void abort(int errorcode) override;
 
     void sendSerializedObject(std::stringstream &ss, int target) override;
@@ -75,12 +83,30 @@ public:
     template <class T>
     void broadcast(T &value);
 
+    void receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+                     int size_buffer_send, int neighbor_rank_send) const override;
+
+    void send(real *sbuf, int count_s, int nb_rank) const override;
+    double reduceSum(double quantityPerProcess) const override;
+
+    int mapCudaDevicesOnHosts(const std::vector<unsigned int> &devices, int numberOfDevices) const override;
+    void receiveSend(real *buffer_send, int size_buffer_send, real *buffer_receive, int size_buffer_recv,
+                     int neighbor_rank) const override;
+
+    void receiveNonBlocking(real *rbuf, int count_r, int sourceRank) override;
+    void sendNonBlocking(real *sbuf, int count_s, int destinationRank) override;
+    void send(real *sbuf, int count_s, int destinationRank) override;
+    void waitAll() override;
+    void resetRequests() override;
+
 private:
     MPICommunicator();
 
     int numprocs, PID;
     MPI_Comm comm;
     int root;
+
+    std::vector<MPI_Request> requests;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,6 +122,8 @@ std::vector<T> MPICommunicator::gather(std::vector<T> &values)
         mpiDataType = MPI_INT;
     else if ((std::string) typeid(T).name() == (std::string) typeid(unsigned long long).name())
         mpiDataType = MPI_UNSIGNED_LONG_LONG;
+    else if ((std::string) typeid(T).name() == (std::string) typeid(char).name())
+        mpiDataType = MPI_CHAR;
     else
         throw UbException(UB_EXARGS, "no MpiDataType for T" + (std::string) typeid(T).name());
 
@@ -208,6 +236,7 @@ void MPICommunicator::broadcast(T &value)
     MPI_Bcast(&value, 1, mpiDataType, this->root, comm);
 }
 //////////////////////////////////////////////////////////////////////////
+
 
 #endif
 

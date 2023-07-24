@@ -4,7 +4,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
@@ -16,7 +16,7 @@ ShearStressSimulationObserver::ShearStressSimulationObserver(SPtr<Grid3D> grid, 
                                                SPtr<UbScheduler> s, SPtr<UbScheduler> rs)
     : SimulationObserver(grid, s), Resetscheduler(rs), path(path), writer(writer)
 {
-    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
     normals.push_back(0);
     normals.push_back(0);
     normals.push_back(1);
@@ -62,7 +62,7 @@ void ShearStressSimulationObserver::collectData(real step)
 
     // vector<string> cellDataNames;
 
-    // std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+    // std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
     // vector<string> pieces = comm->gatherStrings(piece);
     // if (comm->getProcessID() == comm->getRoot())
     //{
@@ -94,7 +94,7 @@ void ShearStressSimulationObserver::collectData(real step)
     piece           = subfolder + "/" + piece;
 
     vector<string> cellDataNames;
-    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
     vector<string> pieces   = comm->gather(piece);
     if (comm->getProcessID() == comm->getRoot()) {
         string pname =

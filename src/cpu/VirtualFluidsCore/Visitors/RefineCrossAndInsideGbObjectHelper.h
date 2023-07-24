@@ -4,7 +4,7 @@
 #include <PointerDefinitions.h>
 #include <vector>
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class GbObject3D;
 
@@ -17,7 +17,7 @@ public:
     //! Constructor
     //! \param grid a smart pointer to the grid object
     //! \param maxRefineLevel an integer for maximal refinement level
-    RefineCrossAndInsideGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, std::shared_ptr<vf::mpi::Communicator> comm);
+    RefineCrossAndInsideGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, std::shared_ptr<vf::parallel::Communicator> comm);
     virtual ~RefineCrossAndInsideGbObjectHelper();
     //! add geometric object
     //! \param object a smart pointer to bounding box
@@ -31,7 +31,7 @@ private:
     std::vector<SPtr<GbObject3D>> objects;
     std::vector<int> levels;
     int maxRefineLevel;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 };
 
 #endif

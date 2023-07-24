@@ -7,7 +7,7 @@
 #include "SimulationObserver.h"
 #include "lbm/constants/D3Q27.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class UbScheduler;
 class Grid3D;
 class IntegrateValuesHelper;
@@ -22,7 +22,7 @@ class AdjustForcingSimulationObserver : public SimulationObserver
 {
 public:
     AdjustForcingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                             SPtr<IntegrateValuesHelper> integrateValues, real vTarged, std::shared_ptr<vf::mpi::Communicator> comm);
+                             SPtr<IntegrateValuesHelper> integrateValues, real vTarged, std::shared_ptr<vf::parallel::Communicator> comm);
     //!< calls collect PostprocessData
     void update(real step) override;
 
@@ -31,7 +31,7 @@ protected:
     SPtr<IntegrateValuesHelper> integrateValues;
     //!< compares velocity in integrateValues with target velocity and adjusts forcing accordingly.
     void collectData(real step);
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 
 private:
     real vx1Targed; //!< target velocity.
