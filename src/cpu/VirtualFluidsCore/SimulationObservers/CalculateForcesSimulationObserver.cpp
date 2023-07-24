@@ -4,7 +4,7 @@
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "DataSet3D.h"
 #include "DistributionArray3D.h"
@@ -14,7 +14,7 @@
 #include "UbScheduler.h"
 
 CalculateForcesSimulationObserver::CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                       std::shared_ptr<vf::mpi::Communicator> comm, real v, real a)
+                                                       std::shared_ptr<vf::parallel::Communicator> comm, real v, real a)
     : SimulationObserver(grid, s), path(path), comm(comm), v(v), a(a), forceX1global(0), forceX2global(0), forceX3global(0)
 {
     if (comm->getProcessID() == comm->getRoot()) {

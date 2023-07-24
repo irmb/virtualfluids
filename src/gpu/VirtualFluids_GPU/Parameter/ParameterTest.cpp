@@ -9,12 +9,13 @@
 #include "PointerDefinitions.h"
 #include "basics/config/ConfigurationFile.h"
 
+#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "Factories/BoundaryConditionFactory.h"
 #include "Factories/GridScalingFactory.h"
-#include "Communication/Communicator.h"
-#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+
+#include <parallel/Communicator.h>
 
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
@@ -212,7 +213,7 @@ class MockGridGenerator : public GridGenerator
 
 public:
     MockGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
-                      std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator &communicator)
+                      std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator &communicator)
         : GridGenerator(builder, para, cudaMemoryManager, communicator)
     {
     }

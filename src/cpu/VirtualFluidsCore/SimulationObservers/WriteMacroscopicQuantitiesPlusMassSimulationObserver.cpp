@@ -52,7 +52,7 @@ WriteMacroscopicQuantitiesPlusMassSimulationObserver::WriteMacroscopicQuantities
                                                                              const std::string &path,
                                                                              WbWriter *const writer,
                                                                              SPtr<LBMUnitConverter> conv,
-                                                                             std::shared_ptr<vf::mpi::Communicator> comm)
+                                                                             std::shared_ptr<vf::parallel::Communicator> comm)
         : SimulationObserver(grid, s), path(path), writer(writer), conv(conv), comm(comm)
 {
     gridRank = comm->getProcessID();

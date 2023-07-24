@@ -6,11 +6,13 @@
 
 #include <PointerDefinitions.h>
 
-#include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
+#include "Utilities/Buffer2D.hpp"
 
-
-namespace vf::gpu { class Communicator; }
+namespace vf::parallel
+{
+class Communicator;
+}
 
 class CudaMemoryManager;
 class Parameter;
@@ -37,9 +39,9 @@ class Simulation
 {
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory = nullptr);	
+               vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory = nullptr);	
 	Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-               vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory = nullptr);
+               vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory = nullptr);
 
     ~Simulation();
     void run();
@@ -76,7 +78,7 @@ private:
 	Buffer2D <int> geo_rbuf_b;
 
 
-	vf::gpu::Communicator& communicator;
+	vf::parallel::Communicator& communicator;
     SPtr<Parameter> para;
     std::shared_ptr<DataWriter> dataWriter;
 	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;

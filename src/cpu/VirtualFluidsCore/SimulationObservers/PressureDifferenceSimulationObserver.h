@@ -14,7 +14,7 @@
 #include "SimulationObserver.h"
 #include "LBMSystem.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class LBMUnitConverter;
@@ -26,7 +26,7 @@ public:
     PressureDifferenceSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                   SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2, real rhoReal,
                                   real uReal, real uLB,
-                                  /*const SPtr<LBMUnitConverter> conv,*/ std::shared_ptr<vf::mpi::Communicator> comm);
+                                  /*const SPtr<LBMUnitConverter> conv,*/ std::shared_ptr<vf::parallel::Communicator> comm);
     ~PressureDifferenceSimulationObserver() override;
 
     void update(real step) override;
@@ -36,7 +36,7 @@ protected:
     std::string path;
     SPtr<LBMUnitConverter> conv;
     void collectData(real step);
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     real factor1; //= (1/3)*rhoReal*(uReal/uLB)^2 for calculation pReal = rhoLB * (1/3)*rhoReal*(uReal/uLB)^2,
                      //rhoReal and uReal in SI
     real factor2; //= rhoReal*(uReal/uLB)^2       for calculation pReal = press * rhoReal*(uReal/uLB)^2, rhoReal and

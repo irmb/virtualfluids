@@ -42,9 +42,11 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+
 #include <logger/Logger.h>
 
-#include "PointerDefinitions.h"
+#include <parallel/MPICommunicator.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -57,7 +59,6 @@
 
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -65,6 +66,7 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -157,12 +159,11 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =
             GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
-
 
         //////////////////////////////////////////////////////////////////////////
         // run simulation

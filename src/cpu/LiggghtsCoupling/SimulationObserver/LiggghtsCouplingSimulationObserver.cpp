@@ -13,7 +13,7 @@
 #include "fix_lb_coupling_onetoone.h"
 
 LiggghtsCouplingSimulationObserver::LiggghtsCouplingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-                                                         SPtr<vf::mpi::Communicator> comm,
+                                                         SPtr<vf::parallel::Communicator> comm,
                                                          LiggghtsCouplingWrapper &wrapper, int demSteps,
                                                          SPtr<LBMUnitConverter> units)
     : SimulationObserver(grid, s), comm(comm), wrapper(wrapper), demSteps(demSteps), units(units)

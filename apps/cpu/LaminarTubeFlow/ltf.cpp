@@ -33,7 +33,7 @@ void run(string configname)
       real          cpStep = config.getValue<real>("cpStep");
       bool            newStart = config.getValue<bool>("newStart");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

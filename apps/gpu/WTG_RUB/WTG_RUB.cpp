@@ -31,7 +31,7 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -40,8 +40,6 @@
 #include <exception>
 #include <memory>
 #include <filesystem>
-
-#include "mpi.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +66,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -77,6 +74,7 @@
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 
+#include <parallel/MPICommunicator.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,11 +127,8 @@ std::string chooseVariation();
 
 void multipleLevel(const std::string& configPath)
 {
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
-
-    auto gridFactory = GridFactory::make();
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
+    auto gridBuilder = MultipleGridBuilder::makeShared();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +213,7 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

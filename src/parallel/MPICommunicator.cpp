@@ -1,17 +1,26 @@
 #if defined VF_MPI
+#if defined (_WIN32) || defined (_WIN64)
+   #include <Winsock2.h>
+#elif defined (__unix__)
+   #include <unistd.h>
+#endif
 
 #include "MPICommunicator.h"
+
 #include <mpi.h>
 
 #include <sstream>
+
+#include <logger/Logger.h>
+
 using namespace std;
 
-namespace vf::mpi 
+namespace vf::parallel
 {
 std::shared_ptr<Communicator> MPICommunicator::getInstance()
 {
     std::lock_guard<std::mutex> myLock(instantiation_mutex);
-    if (!instance){
+    if (!instance) {
         instance = std::shared_ptr<MPICommunicator>(new MPICommunicator);
     }
     return instance;
@@ -22,13 +31,11 @@ MPICommunicator::MPICommunicator()
     // proof if MPI is initialized
     int mpiInitialized = 0; // false
     MPI_Initialized(&mpiInitialized);
-    if (!mpiInitialized) {
+    if (mpiInitialized == 0) {
         MPI_Init(NULL, NULL);
-        // MPI_Init_thread(NULL, NULL, MPI_THREAD_FUNNELED, NULL);
     }
     MPI_Comm_rank(MPI_COMM_WORLD, &PID);
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-    // numprocs = 1000;
     comm = MPI_COMM_WORLD;
     root = 0;
 }
@@ -38,9 +45,8 @@ MPICommunicator::~MPICommunicator()
     // proof if MPI is finalized
     int _mpiFinalized = 0; // false
     MPI_Finalized(&_mpiFinalized);
-    if (!_mpiFinalized) {
+    if (_mpiFinalized == 0) {
         MPI_Finalize();
-        // UBLOG(logINFO, "MPI_Finalize()");
     }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -88,27 +94,27 @@ std::vector<unsigned long long> MPICommunicator::gather(std::vector<unsigned lon
     return gather<unsigned long long>(values);
 }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getProcessID() { return PID; }
+int MPICommunicator::getProcessID() const { return PID; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getProcessID(int /*bundle*/, int /*rank*/) { return PID; }
+int MPICommunicator::getProcessID(int /*bundle*/, int /*rank*/) const { return PID; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getNumberOfProcesses() { return numprocs; }
+int MPICommunicator::getNumberOfProcesses() const { return numprocs; }
 //////////////////////////////////////////////////////////////////////////
 void *MPICommunicator::getNativeCommunicator() { return &comm; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getBundleID() { return 0; }
+int MPICommunicator::getBundleID() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getNumberOfBundles() { return 1; }
+int MPICommunicator::getNumberOfBundles() const { return 1; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getRoot() { return root; }
+int MPICommunicator::getRoot() const { return root; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getBundleRoot() { return 0; }
+int MPICommunicator::getBundleRoot() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getProcessRoot() { return 0; }
+int MPICommunicator::getProcessRoot() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getNumberOfProcessesInBundle(int /*bundle*/) { return numprocs; }
+int MPICommunicator::getNumberOfProcessesInBundle(int /*bundle*/) const { return numprocs; }
 //////////////////////////////////////////////////////////////////////////
-bool MPICommunicator::isRoot() { return PID == root; }
+bool MPICommunicator::isRoot() const { return PID == root; }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::sendSerializedObject(std::stringstream &ss, int target)
 {
@@ -168,6 +174,120 @@ void MPICommunicator::broadcast(float &value) { broadcast<float>(value); }
 void MPICommunicator::broadcast(double &value) { broadcast<double>(value); }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(long int &value) { broadcast<long int>(value); }
+
+void MPICommunicator::receiveSend(uint *buffer_receive, int size_buffer_recv,
+                                  int neighbor_rank_recv, uint *buffer_send, int size_buffer_send,
+                                  int neighbor_rank_send) const
+{
+    MPI_Request recv_request;
+    MPI_Irecv(buffer_receive, size_buffer_recv, MPI_UNSIGNED, neighbor_rank_recv, 0, comm,
+              &recv_request);
+    // printf("receive_send PID: %i,   nbRev: nb_rank_recv: %i", this->getPID(), nb_rank_r);
+    // fflush(stdout);
+    MPI_Send(buffer_send, size_buffer_send, MPI_UNSIGNED, neighbor_rank_send, 0, comm);
+    // printf("receive_send PID: %i,   sendUintGPU: nb_rank_send: %i", this->getPID(), nb_rank_s);
+    // fflush(stdout);
+    MPI_Wait(&recv_request, MPI_STATUSES_IGNORE); // TODO: Do we have a benefit here or could we simply do a blocking receiv.
+}
+
+void MPICommunicator::receiveSend(real *buffer_send, int size_buffer_send, real *buffer_receive, int size_buffer_recv,
+                     int neighbor_rank) const
+{
+    MPI_Send(buffer_send, size_buffer_send, VF_MPI_REAL, neighbor_rank, 0, comm);
+    MPI_Recv(buffer_receive, size_buffer_recv, VF_MPI_REAL, neighbor_rank, 0, comm, MPI_STATUS_IGNORE);
+}
+
+void MPICommunicator::send(real *sbuf, int count_s, int nb_rank) const
+{
+    MPI_Send(sbuf, count_s, VF_MPI_REAL, nb_rank, 0, comm);
+}
+
+double MPICommunicator::reduceSum(double quantityPerProcess) const
+{
+    double *buffer_send = &quantityPerProcess;
+    double *buffer_recv = (double *)malloc(sizeof(double));
+
+    MPI_Reduce(buffer_send, buffer_recv, 1, MPI_DOUBLE, MPI_SUM, 0, comm);
+
+    return *buffer_recv;
+}
+
+int MPICommunicator::mapCudaDevicesOnHosts(const std::vector<unsigned int> &devices, int numberOfDevices) const
+{
+    int device        = -1;
+    char *host        = (char *)malloc(sizeof(char) * getNumberOfProcesses() * 255);
+    unsigned int *map = (unsigned int *)malloc(sizeof(unsigned int) * getNumberOfProcesses());
+
+    char hostname[255];
+    gethostname(hostname, 254);
+    hostname[254] = 0;
+
+    MPI_Gather(hostname, 255, MPI_BYTE, host, 255, MPI_BYTE, 0, MPI_COMM_WORLD);
+
+    int i, j;
+    if (isRoot()) {
+        for (i = 0; i < getNumberOfProcesses(); i++) {
+            int counter = 0;
+            for (j = 0; j < i; j++) {
+                if (strcmp(&host[i * 255], &host[j * 255]) == 0)
+                    counter++;
+            }
+            if (counter >= numberOfDevices) {
+                VF_LOG_CRITICAL("More processes than GPUs!");
+                exit(1);
+            }
+            map[i] = devices[counter];
+        }
+    }
+
+    MPI_Scatter(map, 1, MPI_UNSIGNED, &device, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+
+    VF_LOG_INFO("Rank: {} runs on host: {} with GPU: {}", getProcessID(), hostname, device);
+
+    free(map);
+    free(host);
+    return device;
+}
+
+void MPICommunicator::receiveNonBlocking(real *rbuf, int count_r, int sourceRank)
+{
+    // printf("\n Start Recv Rank: %d, neighbor Rank: %d, request = %d \n", PID, nb_rank, (int)requestGPU.size());
+    // fflush(stdout);
+
+    MPI_Request request;
+    MPI_Irecv(rbuf, count_r, VF_MPI_REAL, sourceRank, 0, comm, &request);
+    requests.push_back(request);
+
+    // printf("\n End Recv - Rank: %d , neighbor Rank: %d \n", PID, nb_rank);
+    // fflush(stdout);
+}
+
+void MPICommunicator::sendNonBlocking(real *sbuf, int count_s, int destinationRank)
+{
+    // printf("\n Start Send Rank: %d, neighbor Rank: %d, request = %d \n", PID, nb_rank, (int)requestGPU.size());
+    // fflush(stdout);
+
+    MPI_Request request;
+    MPI_Isend(sbuf, count_s, VF_MPI_REAL, destinationRank, 0, comm, &request);
+    requests.push_back(request);
+    // printf("\n End Send - Rank: %d , neighbor Rank: %d \n", PID, nb_rank);
+    // fflush(stdout);
+}
+
+void MPICommunicator::send(real *sbuf, int count_s, int destinationRank)
+{
+    MPI_Send(sbuf, count_s, VF_MPI_REAL, destinationRank, 0, comm);
+}
+
+void MPICommunicator::waitAll()
+{
+    MPI_Waitall((int)requests.size(), requests.data(), MPI_STATUSES_IGNORE);
+}
+
+void MPICommunicator::resetRequests()
+{
+    requests.clear();
+}
 
 }
 

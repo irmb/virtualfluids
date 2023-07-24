@@ -41,15 +41,12 @@
 #include <stdexcept>
 #include <string>
 
-#include "mpi.h"
-
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
-
-#include "PointerDefinitions.h"
-#include "config/ConfigurationFile.h"
-#include <logger/Logger.h>
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/StringUtilities/StringUtil.h>
+#include <basics/config/ConfigurationFile.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +61,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -74,6 +70,8 @@
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////
+
+#include <parallel/MPICommunicator.h>
 
 int main(int argc, char *argv[])
 {
@@ -94,21 +92,21 @@ int main(int argc, char *argv[])
         // setup simulation parameters (without config file)
         //////////////////////////////////////////////////////////////////////////
 
-        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
-        const int numberOfProcesses = communicator.getNumberOfProcess();
-        SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, communicator.getPID());
+        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
+        const int numberOfProcesses = communicator.getNumberOfProcesses();
+        const auto processID = communicator.getProcessID();
+        SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, processId);
         std::vector<uint> devices(10);
         std::iota(devices.begin(), devices.end(), 0);
         para->setDevices(devices);
-        para->setMaxDev(communicator.getNumberOfProcess());
+        para->setMaxDev(communicator.getNumberOfProcesses());
         BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
         //////////////////////////////////////////////////////////////////////////
         // setup logger
         //////////////////////////////////////////////////////////////////////////
-
         vf::logging::Logger::changeLogPath("output/vflog_process" +
-                                           std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + ".txt");
+                                           std::to_string(processId) + ".txt");
         vf::logging::Logger::initializeLogger();
 
         //////////////////////////////////////////////////////////////////////////
@@ -150,7 +148,6 @@ int main(int argc, char *argv[])
         para->setOutputPrefix("ChannelFlow");
         para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
 
-        const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
         real overlap = (real)8.0 * dx;
 
         if (numberOfProcesses > 1) {
@@ -159,15 +156,15 @@ int main(int argc, char *argv[])
             // add coarse grids
             //////////////////////////////////////////////////////////////////////////
 
-            real subdomainMinX = channelWidth * generatePart;
+            real subdomainMinX = channelWidth * processId;
             real subdomainMinXoverlap = subdomainMinX;
             real subdomainMaxX = subdomainMinX + channelWidth;
             real subdomainMaxXoverlap = subdomainMaxX;
 
-            if (generatePart != 0)
+            if (processID != 0)
                 subdomainMinXoverlap -= overlap;
 
-            if (generatePart != numberOfProcesses - 1)
+            if (processID != numberOfProcesses - 1)
                 subdomainMaxXoverlap += overlap;
 
             auto gridBuilder = std::make_shared<MultipleGridBuilder>();
@@ -192,14 +189,14 @@ int main(int argc, char *argv[])
             // configure communication neighbors
             //////////////////////////////////////////////////////////////////////////
 
-            if (generatePart != 0) {
+            if (processID != 0) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, generatePart - 1);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, processId - 1);
             }
 
-            if (generatePart != numberOfProcesses - 1) {
+            if (processID != numberOfProcesses - 1) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, generatePart + 1);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, processId + 1);
             }
 
             //////////////////////////////////////////////////////////////////////////
@@ -208,10 +205,10 @@ int main(int argc, char *argv[])
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            if (generatePart == 0) {
+            if (processID == 0) {
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
             }
-            if (generatePart == numberOfProcesses - 1) {
+            if (processID == numberOfProcesses - 1) {
                 gridBuilder->setPressureBoundaryCondition(SideType::PX,
                                                           0.0); // set pressure boundary condition last
                 bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);

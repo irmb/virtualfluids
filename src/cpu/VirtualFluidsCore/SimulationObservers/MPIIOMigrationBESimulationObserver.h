@@ -10,7 +10,7 @@
 
 class Grid3D;
 class UbScheduler;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class BCSet;
 class LBMKernel;
 class Grid3DVisitor;
@@ -33,7 +33,7 @@ class MPIIOMigrationBESimulationObserver : public MPIIOSimulationObserver
 
 public:
     MPIIOMigrationBESimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path,
-                                std::shared_ptr<vf::mpi::Communicator> comm);
+                                std::shared_ptr<vf::parallel::Communicator> comm);
     ~MPIIOMigrationBESimulationObserver() override;
     //! Each timestep writes the grid into the files
     void update(real step) override;

@@ -17,7 +17,7 @@
 #include "D3Q27System.h"
 
 class ForceCalculator;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class D3Q27Interactor;
@@ -29,7 +29,7 @@ class CalculateTorqueSimulationObserver: public SimulationObserver
 {
 public:
    //! Constructor
-   CalculateTorqueSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+   CalculateTorqueSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm);
 	virtual ~CalculateTorqueSimulationObserver();             
 	void update(real step); 
    void addInteractor(SPtr<D3Q27Interactor> interactor);
@@ -42,7 +42,7 @@ protected:
 
 private:
    std::string path;
-   std::shared_ptr<vf::mpi::Communicator> comm;
+   std::shared_ptr<vf::parallel::Communicator> comm;
    std::vector<SPtr<D3Q27Interactor> > interactors;
    real torqueX1global;
    real torqueX2global;

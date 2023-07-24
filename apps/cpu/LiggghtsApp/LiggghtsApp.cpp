@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 {
     //Sleep(30000);
 
-    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
     int myid                                        = comm->getProcessID();
 
 

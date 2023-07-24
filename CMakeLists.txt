@@ -210,7 +210,7 @@ ENDIF()
 
 add_subdirectory(src/logger)
 add_subdirectory(src/basics)
-add_subdirectory(src/mpi)
+add_subdirectory(src/parallel)
 add_subdirectory(src/lbm)
 
 

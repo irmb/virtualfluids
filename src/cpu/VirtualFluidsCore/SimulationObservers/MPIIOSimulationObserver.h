@@ -8,14 +8,14 @@
 
 class Grid3D;
 class UbScheduler;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 
 //! \class MPIWriteBlocksBESimulationObserver
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating
 class MPIIOSimulationObserver : public SimulationObserver
 {
 public:
-    MPIIOSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+    MPIIOSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm);
     ~MPIIOSimulationObserver() override;
 
     //! Each timestep writes the grid into the files
@@ -37,7 +37,7 @@ public:
 
 protected:
     std::string path;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     MPI_Datatype gridParamType, block3dType, dataSetParamType, boundCondType, arrayPresenceType;
 };
 #endif // ! _MPIIOSimulationObserver_H_

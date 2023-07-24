@@ -31,28 +31,27 @@
 //! \author Henry Korb, Henrik Asmuth
 //=======================================================================================
 #define _USE_MATH_DEFINES
-#include <math.h>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <stdexcept>
-#include <fstream>
+#include <cmath>
 #include <exception>
+#include <fstream>
+#include <iostream>
 #include <memory>
 #include <numeric>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
-#include "PointerDefinitions.h"
-
-#include "StringUtilities/StringUtil.h"
-
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/StringUtilities/StringUtil.h>
 #include <basics/config/ConfigurationFile.h>
-#include "basics/constants/NumericConstants.h"
+#include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
 
+#include <parallel/MPICommunicator.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +70,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
@@ -102,19 +100,18 @@ using namespace vf::basics::constant;
 void multipleLevel(const std::string& configPath)
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory  = GridScalingFactory();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    const int  nProcs = communicator.getNumberOfProcess();
-    const uint procID = vf::gpu::MpiCommunicator::getInstance().getPID();
+    const int nProcs = communicator.getNumberOfProcesses();
+    const uint procID = communicator.getProcessID();
     std::vector<uint> devices(10);
     std::iota(devices.begin(), devices.end(), 0);
     para->setDevices(devices);
@@ -422,7 +419,6 @@ void multipleLevel(const std::string& configPath)
         SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities, 1000);
         para->addProbe(precursorWriter);
     }
-
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 

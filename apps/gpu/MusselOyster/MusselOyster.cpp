@@ -36,7 +36,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -50,6 +49,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "utilities/communication.h"
+#include <parallel/MPICommunicator.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,12 +85,12 @@ const std::string simulationName("MusselOyster");
 
 void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
     SPtr<Parameter> para =
-        std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+        std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,12 +188,12 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
             bivalveRef_1_STL = std::make_shared<TriangularMesh>(stlPath + bivalveType + "_Level1.stl");
 
         if (para->getNumprocs() > 1) {
-            const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
+            const uint generatePart = communicator.getProcessID();
 
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
-            if (communicator.getNumberOfProcess() == 2) {
+            if (communicator.getNumberOfProcesses() == 2) {
                 const real zSplit = 0.0; // round(((double)bbzp + bbzm) * 0.5);
 
                 if (generatePart == 0) {
@@ -244,7 +244,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                 gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNumberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcesses() == 4) {
 
                 const real xSplit = 100.0;
                 const real zSplit = 0.0;
@@ -334,7 +334,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNumberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcesses() == 8) {
                 real xSplit = 140.0; // 100.0 // mit groesserem Level 1 140.0
                 real ySplit = 32.0;  // 32.0
                 real zSplit = 0.0;

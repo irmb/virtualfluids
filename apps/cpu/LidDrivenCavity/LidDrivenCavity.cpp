@@ -80,7 +80,7 @@ int main(int  /*argc*/, char*  /*argv*/[])
       double g_maxX3 = 0.5;
 
       // NullCommunicator is a place-holder for interprocess communication
-      SPtr<vf::mpi::Communicator> comm = NullCommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = NullCommunicator::getInstance();
       // new grid object
       SPtr<Grid3D> grid(new Grid3D(comm));
       // set grid spacing

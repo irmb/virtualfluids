@@ -39,7 +39,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "LBMUnitConverter.h"
@@ -52,7 +52,7 @@ WriteSharpInterfaceQuantitiesSimulationObserver::WriteSharpInterfaceQuantitiesSi
                                                                              const std::string &path,
                                                                              WbWriter *const writer,
                                                                              SPtr<LBMUnitConverter> conv,
-                                                                             std::shared_ptr<vf::mpi::Communicator> comm)
+                                                                             std::shared_ptr<vf::parallel::Communicator> comm)
         : SimulationObserver(grid, s), path(path), writer(writer), conv(conv), comm(comm)
 {
     gridRank = comm->getProcessID();

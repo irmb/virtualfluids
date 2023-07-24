@@ -4,7 +4,7 @@
 #include "D3Q27System.h"
 //#include <mpi.h>
 
-RenumberGridVisitor::RenumberGridVisitor(std::shared_ptr<vf::mpi::Communicator> com) : comm(com) {}
+RenumberGridVisitor::RenumberGridVisitor(std::shared_ptr<vf::parallel::Communicator> com) : comm(com) {}
 
 //////////////////////////////////////////////////////////////////////////
 void RenumberGridVisitor::visit(SPtr<Grid3D> grid)

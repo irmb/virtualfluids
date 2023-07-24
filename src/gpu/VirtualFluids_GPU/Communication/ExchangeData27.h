@@ -1,12 +1,16 @@
 #ifndef EXCHANGEDATA27_H
 #define EXCHANGEDATA27_H
 
-#include "Communication/Communicator.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
+
+namespace vf::parallel
+{
+class Communicator;
+}
 
 //! \file ExchangeData27.h
 //! \ingroup GPU
@@ -15,9 +19,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 // 1D domain decomposition
-void exchangePreCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager, 
+void exchangePreCollDataGPU27(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager, 
                                          int level);
-void exchangePostCollDataGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager, 
+void exchangePostCollDataGPU27(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager, 
                                           int level);
 //////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition
@@ -62,7 +66,7 @@ void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level, CudaStre
 //! \param CudaMemoryManager is needed for moving the data between host and device
 //! \param sendProcessNeighborDev, recvProcessNeighborDev, sendProcessNeighborHost, recvProcessNeighborHost are pointers
 //! to the send and receive arrays, both on the device and the host
-void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangeCollDataXGPU27(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager,
                                        int level, CudaStreamIndex streamIndex,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
@@ -70,14 +74,14 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMe
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborHost);
 //! \brief Calls exchangeCollDataXGPU27() for exchanging all nodes
 //! \details Used in the communication after collision step
-void exchangeCollDataXGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeCollDataXGPU27AllNodes(Parameter *para, vf::parallel::Communicator& comm,
                                                CudaMemoryManager *cudaMemoryManager, int level, CudaStreamIndex streamIndex);
 //! \brief Calls exchangeCollDataXGPU27() for exchanging the nodes, which are part of the communication between the two
 //! interpolation processes on refined grids 
 //! \details Only exchange nodes which are part of the interpolation process on
 //! refined grids. This function is used in the exchange which takes place after the interpolation fine to coarse and
 //! before the interpolation coarse to fine. See [master thesis of Anna Wellmann]
-void exchangeCollDataXGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeCollDataXGPU27AfterFtoC(Parameter *para, vf::parallel::Communicator& comm,
                                                 CudaMemoryManager *cudaMemoryManager, int level, CudaStreamIndex streamIndex);
 //! \brief Distribute the receive nodes (x direction) from the buffer on the gpu
 //! \details Needed to exchange all nodes, used in the communication after collision step
@@ -94,15 +98,15 @@ void scatterNodesFromRecvBufferXGPU27AfterFtoC(Parameter *para, int level, CudaS
 void prepareExchangeCollDataYGPU27AllNodes(Parameter *para, int level, CudaStreamIndex streamIndex);
 void prepareExchangeCollDataYGPU27AfterFtoC(Parameter *para, int level, CudaStreamIndex streamIndex);
 
-void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangeCollDataYGPU27(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager,
                                        int level,CudaStreamIndex streamIndex,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborHos);
-void exchangeCollDataYGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeCollDataYGPU27AllNodes(Parameter *para, vf::parallel::Communicator& comm,
                                                CudaMemoryManager *cudaMemoryManager, int level, CudaStreamIndex streamIndex);
-void exchangeCollDataYGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeCollDataYGPU27AfterFtoC(Parameter *para, vf::parallel::Communicator& comm,
                                                 CudaMemoryManager *cudaMemoryManager, int level, CudaStreamIndex streamIndex);
 void scatterNodesFromRecvBufferYGPU27AllNodes(Parameter *para, int level, CudaStreamIndex streamIndex);
 void scatterNodesFromRecvBufferYGPU27AfterFtoC(Parameter *para, int level, CudaStreamIndex streamIndex);
@@ -111,15 +115,15 @@ void scatterNodesFromRecvBufferYGPU27AfterFtoC(Parameter *para, int level, CudaS
 void prepareExchangeCollDataZGPU27AllNodes(Parameter *para, int level, CudaStreamIndex streamIndex);
 void prepareExchangeCollDataZGPU27AfterFtoC(Parameter *para, int level, CudaStreamIndex streamIndex);
 
-void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangeCollDataZGPU27(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager,
                                        int level, CudaStreamIndex streamIndex,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                        std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
                                        std::vector<ProcessNeighbor27> *recvProcessNeighborHost);
-void exchangeCollDataZGPU27AllNodes(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeCollDataZGPU27AllNodes(Parameter *para, vf::parallel::Communicator& comm,
                                                CudaMemoryManager *cudaMemoryManager, int level, CudaStreamIndex streamIndex);
-void exchangeCollDataZGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator &comm,
+void exchangeCollDataZGPU27AfterFtoC(Parameter *para, vf::parallel::Communicator& comm,
                                                 CudaMemoryManager *cudaMemoryManager, int level, CudaStreamIndex streamIndex);
 
 void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter *para, int level, CudaStreamIndex streamIndex);
@@ -127,28 +131,25 @@ void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter *para, int level, CudaS
 
 //////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition convection diffusion
-void exchangePreCollDataADXGPU27(Parameter *para, vf::gpu::Communicator &comm,
+void exchangePreCollDataADXGPU27(Parameter *para, vf::parallel::Communicator& comm,
                                             CudaMemoryManager *cudaMemoryManager, int level);
-void exchangePreCollDataADYGPU27(Parameter *para, vf::gpu::Communicator &comm,
+void exchangePreCollDataADYGPU27(Parameter *para, vf::parallel::Communicator& comm,
                                             CudaMemoryManager *cudaMemoryManager, int level);
-void exchangePreCollDataADZGPU27(Parameter *para, vf::gpu::Communicator &comm,
+void exchangePreCollDataADZGPU27(Parameter *para, vf::parallel::Communicator& comm,
                                             CudaMemoryManager *cudaMemoryManager, int level);
-void exchangePostCollDataADXGPU27(Parameter *para, vf::gpu::Communicator &comm,
+void exchangePostCollDataADXGPU27(Parameter *para, vf::parallel::Communicator& comm,
                                              CudaMemoryManager *cudaMemoryManager, int level);
-void exchangePostCollDataADYGPU27(Parameter *para, vf::gpu::Communicator &comm,
+void exchangePostCollDataADYGPU27(Parameter *para, vf::parallel::Communicator& comm,
                                              CudaMemoryManager *cudaMemoryManager, int level);
-void exchangePostCollDataADZGPU27(Parameter *para, vf::gpu::Communicator &comm,
+void exchangePostCollDataADZGPU27(Parameter *para, vf::parallel::Communicator& comm,
                                              CudaMemoryManager *cudaMemoryManager, int level);
 //////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition F3 - K18/K20
-void exchangeCollDataF3XGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangeCollDataF3XGPU(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager,
                                        int level);
-void exchangeCollDataF3YGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangeCollDataF3YGPU(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager,
                                        int level);
-void exchangeCollDataF3ZGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaMemoryManager,
+void exchangeCollDataF3ZGPU(Parameter *para, vf::parallel::Communicator& comm, CudaMemoryManager *cudaMemoryManager,
                                        int level);
-//////////////////////////////////////////////////////////////////////////
-void barrierGPU(vf::gpu::Communicator &comm);
-//////////////////////////////////////////////////////////////////////////
 
 #endif

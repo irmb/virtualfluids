@@ -60,7 +60,6 @@
 
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -70,12 +69,14 @@
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
+#include <parallel/MPICommunicator.h>
+
 //////////////////////////////////////////////////////////////////////////
 
 int main()
 {
     try {
-        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
         vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters

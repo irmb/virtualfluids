@@ -316,7 +316,7 @@ void run(const char *cstr, bool firststart)
       stringstream logFilename;
       double availMem = 0;
 
-      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr);

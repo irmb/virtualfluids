@@ -20,7 +20,7 @@ if(BUILD_USE_OPENMP)
     list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel PRIVATE_LINK lbm logger)
 
 vf_add_tests()
 

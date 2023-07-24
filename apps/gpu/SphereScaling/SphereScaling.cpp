@@ -1,15 +1,13 @@
 #define _USE_MATH_DEFINES
+#include <cmath>
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <math.h>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <filesystem>
-
-#include "mpi.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +36,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -57,6 +54,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "utilities/communication.h"
+#include <parallel/MPICommunicator.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,9 +62,9 @@
 
 void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
@@ -166,12 +164,12 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
         const real dCubeLev1   = 72.0; // Phoenix: 72.0
 
         if (para->getNumprocs() > 1) {
-            const uint generatePart = vf::gpu::MpiCommunicator::getInstance().getPID();
+            const uint generatePart = communicator.getProcessID();
 
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
-            if (communicator.getNumberOfProcess() == 2) {
+            if (communicator.getNumberOfProcesses() == 2) {
                 real zSplit = 0.5 * sideLengthCube;
 
                 if (scalingType == "weak") {
@@ -245,7 +243,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
 
-            } else if (communicator.getNumberOfProcess() == 4) {
+            } else if (communicator.getNumberOfProcesses() == 4) {
                 real ySplit = 0.5 * sideLengthCube;
                 real zSplit = 0.5 * sideLengthCube;
 
@@ -361,7 +359,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
-            } else if (communicator.getNumberOfProcess() == 8) {
+            } else if (communicator.getNumberOfProcesses() == 8) {
                 real xSplit = 0.5 * sideLengthCube;
                 real ySplit = 0.5 * sideLengthCube;
                 real zSplit = 0.5 * sideLengthCube;

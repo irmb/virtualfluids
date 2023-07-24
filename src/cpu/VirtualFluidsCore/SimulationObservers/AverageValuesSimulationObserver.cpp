@@ -7,7 +7,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -185,7 +185,7 @@ void AverageValuesSimulationObserver::collectData(real step)
     piece           = subfolder + "/" + piece;
 
     vector<string> cellDataNames;
-    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
     vector<string> pieces   = comm->gather(piece);
     if (comm->getProcessID() == comm->getRoot()) {
         string pname =
@@ -448,7 +448,7 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 ////////////////////////////////////////////////////////////////////////////
 // void AverageValuesSimulationObserver::initPlotData(double step)
 //{
-//   std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+//   std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
 //	if (comm->getProcessID() == comm->getRoot())
 //	{
 //		std::ofstream ostr;

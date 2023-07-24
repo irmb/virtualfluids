@@ -26,65 +26,24 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NullCommunicator.h
-//! \ingroup Parallel
-//! \author Konstantin Kutscher
+//! \file communicator.cpp
+//! \ingroup submodules
+//! \author Henry Korb
 //=======================================================================================
+#include <pybind11/cast.h>
+#include <pybind11/pybind11.h>
 
-#ifndef MPI_NullCommunicator_H
-#define MPI_NullCommunicator_H
+#include <parallel/MPICommunicator.h>
 
-#include "Communicator.h"
-
-namespace vf::mpi
+namespace communicator_bindings
 {
+namespace py = pybind11;
 
-//! \brief A class implements Communicator for shared memory.
-//! \details NullCommunicator is only a place-holder. It is only one process in shared memory.
-class NullCommunicator : public Communicator
+PYBIND11_MODULE(communicator, m)
 {
-public:
-    static std::shared_ptr<Communicator> getInstance();
-
-    int getBundleID();
-    int getNumberOfBundles();
-    int getProcessID();
-    int getProcessID(int bundle, int rank);
-    int getNumberOfProcesses();
-    bool isRoot();
-    void *getNativeCommunicator();
-
-    void sendSerializedObject(std::stringstream &ss, int target);
-    void receiveSerializedObject(std::stringstream &ss, int source);
-
-    int getRoot();
-    int getBundleRoot();
-    int getProcessRoot();
-    int getNumberOfProcessesInBundle(int bundle);
-    void barrier();
-    void abort(int errorcode);
-
-    std::vector<std::string> gather(const std::string &str);
-    std::vector<int> gather(std::vector<int> &values);
-    std::vector<float> gather(std::vector<float> &values);
-    std::vector<double> gather(std::vector<double> &values);
-    std::vector<unsigned long long> gather(std::vector<unsigned long long> &values);
-
-    void allGather(std::vector<int> &svalues, std::vector<int> &rvalues);
-    void allGather(std::vector<float> &svalues, std::vector<float> &rvalues);
-    void allGather(std::vector<double> &svalues, std::vector<double> &rvalues);
-    void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues);
-
-    void broadcast(int &value);
-    void broadcast(float &value);
-    void broadcast(double &value);
-    void broadcast(long int &value);
-    void broadcast(std::vector<int> &values);
-    void broadcast(std::vector<float> &values);
-    void broadcast(std::vector<double> &values);
-    void broadcast(std::vector<long int> &values);
-};
-
+    py::class_<vf::parallel::MPICommunicator, std::shared_ptr<vf::parallel::MPICommunicator>>(m, "Communicator")
+        .def_static("get_instance", &vf::parallel::MPICommunicator::getInstance)
+        .def("get_number_of_processes", &vf::parallel::MPICommunicator::getNumberOfProcesses)
+        .def("get_process_id", py::overload_cast<>(&vf::parallel::MPICommunicator::getProcessID, py::const_));
 }
-
-#endif
+} // namespace communicator_bindings
