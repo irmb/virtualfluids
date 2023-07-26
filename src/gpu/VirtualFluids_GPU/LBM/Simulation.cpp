@@ -56,12 +56,12 @@
 #include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "Kernel/Kernel.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-#include <cuda/DeviceInfo.h>
+
+#include <cuda_helper/DeviceInfo.h>
 
 #include <logger/Logger.h>
 
 #include <parallel/Communicator.h>
-
 
 std::string getFileName(const std::string& fname, int step, int myID)
 {

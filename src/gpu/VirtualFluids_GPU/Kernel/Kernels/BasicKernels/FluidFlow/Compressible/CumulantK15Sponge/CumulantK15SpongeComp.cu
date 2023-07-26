@@ -2,7 +2,7 @@
 
 #include "CumulantK15SpongeComp_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<CumulantK15SpongeComp> CumulantK15SpongeComp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

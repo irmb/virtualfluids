@@ -1,7 +1,7 @@
 project(VirtualFluids_GPU LANGUAGES CUDA CXX)
 
 
-vf_add_library(PUBLIC_LINK basics lbm parallel PRIVATE_LINK GridGenerator vf_cuda)
+vf_add_library(PUBLIC_LINK basics lbm parallel PRIVATE_LINK GridGenerator cuda_helper)
 
 #SET(TPN_WIN32 "/EHsc")
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake

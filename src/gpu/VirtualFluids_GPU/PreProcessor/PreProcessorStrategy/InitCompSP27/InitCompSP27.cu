@@ -2,7 +2,7 @@
 
 #include "InitCompSP27_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<PreProcessorStrategy> InitCompSP27::getNewInstance(std::shared_ptr<Parameter> para)
 {
