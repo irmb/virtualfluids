@@ -2,7 +2,7 @@
 
 #include "K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include "cuda_helper/CudaGrid.h"
 
 std::shared_ptr<K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants> K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

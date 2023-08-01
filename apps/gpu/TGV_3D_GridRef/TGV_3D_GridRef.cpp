@@ -67,7 +67,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
+#include "parallel/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -131,11 +131,12 @@ std::string simulationName("TGV_3D_Gridref_noSqPress");
 
 void multipleLevel(const std::string& configPath)
 {
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
+    //vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
