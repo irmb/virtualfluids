@@ -95,6 +95,7 @@ namespace grid_generator
         .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"));
 
         py::class_<MultipleGridBuilder, LevelGridBuilder, std::shared_ptr<MultipleGridBuilder>>(gridGeneratorModule, "MultipleGridBuilder")
+        .def(py::init())
         .def("add_coarse_grid", &MultipleGridBuilder::addCoarseGrid, py::arg("start_x"), py::arg("start_y"), py::arg("start_z"), py::arg("end_x"), py::arg("end_y"), py::arg("end_z"), py::arg("delta"))
         .def("add_grid", py::overload_cast<SPtr<Object>>(&MultipleGridBuilder::addGrid), py::arg("grid_shape"))
         .def("add_grid", py::overload_cast<SPtr<Object>, uint>(&MultipleGridBuilder::addGrid), py::arg("grid_shape"), py::arg("level_fine"))

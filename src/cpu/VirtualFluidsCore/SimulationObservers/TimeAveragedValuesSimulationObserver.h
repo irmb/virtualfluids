@@ -9,7 +9,7 @@
 #include "IntegrateValuesHelper.h"
 #include "LBMSystem.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -41,9 +41,9 @@ public:
 public:
     TimeAveragedValuesSimulationObserver();
     TimeAveragedValuesSimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                  SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm, int options);
+                                  SPtr<UbScheduler> s, std::shared_ptr<vf::parallel::Communicator> comm, int options);
     TimeAveragedValuesSimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                  SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm, int options, std::vector<int> levels,
+                                  SPtr<UbScheduler> s, std::shared_ptr<vf::parallel::Communicator> comm, int options, std::vector<int> levels,
                                   std::vector<real> &levelCoords, std::vector<real> &bounds,
                                   bool timeAveraging = true);
     //! Make update
@@ -70,7 +70,7 @@ protected:
     void calculateAverageValuesForPlane(std::vector<IntegrateValuesHelper::CalcNodes> &cnodes);
 
 private:
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;

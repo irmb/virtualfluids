@@ -38,7 +38,7 @@ void bflow(string configname)
       real          Bn = config.getValue<real>("Bn");
       vector<real>  sphereCenter = config.getVector<real>("sphereCenter");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

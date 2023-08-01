@@ -1,7 +1,6 @@
 #include "Init/VfReader.h"
 
 #include "Parameter/Parameter.h"
-#include "Communication/Communicator.h"
 #include "Init/PositionReader.h"
 #include "GPU/CudaMemoryManager.h"
 

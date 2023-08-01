@@ -43,7 +43,7 @@ void bflow(string configname)
 
       //outputPath = outputPath + "/rheometerBingham_" + config.getValue<string>("resolution") + "_" + config.getValue<string>("OmegaLB");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

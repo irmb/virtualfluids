@@ -25,7 +25,7 @@ int main()
     const auto lbmUnitConverter = std::make_shared<LBMUnitConverter>();
     const auto writer = WbWriterVtkXmlBinary::getInstance();
 
-    const auto communicator = vf::mpi::MPICommunicator::getInstance();
+    const auto communicator = vf::parallel::MPICommunicator::getInstance();
     const auto kernel = std::make_shared<CompressibleCumulant4thOrderViscosityLBMKernel>();
     kernel->setBCProcessor(std::make_shared<BCProcessor>());
     kernel->setForcingX1(1e-6 * lbmUnitConverter->getFactorForceWToLb());

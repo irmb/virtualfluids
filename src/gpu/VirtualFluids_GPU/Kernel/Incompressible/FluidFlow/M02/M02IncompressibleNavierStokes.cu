@@ -2,7 +2,7 @@
 
 #include "M02IncompressibleNavierStokes_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<M02IncompressibleNavierStokes> M02IncompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

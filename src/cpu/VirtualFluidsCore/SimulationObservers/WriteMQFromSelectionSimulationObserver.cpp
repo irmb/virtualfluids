@@ -6,7 +6,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "DataSet3D.h"
 #include "GbObject3D.h"
 #include "Grid3D.h"
@@ -19,7 +19,7 @@ WriteMQFromSelectionSimulationObserver::WriteMQFromSelectionSimulationObserver()
 WriteMQFromSelectionSimulationObserver::WriteMQFromSelectionSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                  SPtr<GbObject3D> gbObject, const std::string &path,
                                                                  WbWriter *const writer, SPtr<LBMUnitConverter> conv,
-                                                                 std::shared_ptr<vf::mpi::Communicator> comm)
+                                                                 std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), gbObject(gbObject), path(path), writer(writer), conv(conv), comm(comm)
 {
     gridRank     = comm->getProcessID();
@@ -80,7 +80,7 @@ void WriteMQFromSelectionSimulationObserver::collectData(real step)
     piece                = subfolder + "/" + piece;
 
     std::vector<std::string> cellDataNames;
-    std::shared_ptr<vf::mpi::Communicator> comm         = vf::mpi::Communicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm         = vf::parallel::Communicator::getInstance();
     std::vector<std::string> pieces = comm->gather(piece);
     if (comm->getProcessID() == comm->getRoot()) {
         std::string pname =

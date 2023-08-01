@@ -2,7 +2,7 @@
 
 #include "K15IncompressibleNavierStokesIsoCheck_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<K15IncompressibleNavierStokesIsoCheck> K15IncompressibleNavierStokesIsoCheck::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

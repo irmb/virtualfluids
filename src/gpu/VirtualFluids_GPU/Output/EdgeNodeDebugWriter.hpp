@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <sstream>
-#include <stdio.h>
+#include <cstdio>
 // #include <math.h>
 #include "StringUtilities/StringUtil.h"
 #include "lbm/constants/D3Q27.h"
@@ -13,7 +13,6 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <cmath>
 
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
 
 namespace EdgeNodeDebugWriter
 {
@@ -25,7 +24,7 @@ void addCoordinatesToNodeVector(SPtr<LBMSimulationParameter> parH, std::vector<U
             nodesVec[indexInNodesVector] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 }
 
-void writeEdgeNodesXZ_Send(SPtr<Parameter> para)
+void writeEdgeNodesXZ_Send(SPtr<Parameter> para, int processID = 0)
 {
     std::vector<UbTupleFloat3> nodesVec;
     std::vector<std::string> datanames = { "SparseIndex", "ProcessNeighbor", "IndexInSendVector", "AfterFtoC" };
@@ -54,14 +53,14 @@ void writeEdgeNodesXZ_Send(SPtr<Parameter> para)
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeEdgeNodesXZ_Send_PID_" +
-                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
+                                  std::to_string(processID) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
     }
 }
 
-void writeEdgeNodesXZ_Recv(SPtr<Parameter> para)
+void writeEdgeNodesXZ_Recv(SPtr<Parameter> para, int processID = 0)
 {
     std::vector<UbTupleFloat3> nodesVec;
     std::vector<std::string> datanames = { "SparseIndex", "ProcessNeighbor", "IndexInRecvVector", "AfterFtoC" };
@@ -90,7 +89,7 @@ void writeEdgeNodesXZ_Recv(SPtr<Parameter> para)
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeEdgeNodesXZ_Recv_PID_" +
-                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
+                                  std::to_string(processID) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);

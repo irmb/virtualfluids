@@ -6,14 +6,15 @@
 #include "Parameter/Parameter.h"
 #include <logger/Logger.h>
 
-namespace vf::gpu{
-    class Communicator;
+namespace vf::parallel
+{
+class Communicator;
 }
 class Parameter;
 
 class Timer
 {
-    public:
+public:
     Timer(std::string _name): name(_name)
     {
         this->initTimer();
@@ -29,13 +30,12 @@ class Timer
     void startTimer();
     void stopTimer();
     void resetTimer();
-    void outputPerformance(uint t, Parameter* para, vf::gpu::Communicator& communicator);
+    void outputPerformance(uint t, Parameter* para, vf::parallel::Communicator& communicator);
 
     float getElapsedTime(){ return this->elapsedTime; }
     float getTotalElapsedTime(){ return this->totalElapsedTime; }
 
-    private:
-    
+private:
     cudaEvent_t start_t, stop_t;
     float elapsedTime = 0.0;
     float totalElapsedTime = 0.0;
@@ -43,7 +43,5 @@ class Timer
 
     bool firstOutput = true;
 };
-
-
 
 #endif 

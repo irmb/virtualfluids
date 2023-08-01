@@ -5,15 +5,14 @@
             "extensions": [
                 "mhutchie.git-graph",
                 "donjayamanne.githistory",
-                "twxs.cmake",
-                "ms-vscode.cpptools",
-                "visualstudioexptteam.vscodeintellicode",
-                "xaver.clang-format",
-                "notskm.clang-tidy",
-                "streetsidesoftware.code-spell-checker",
-                "llvm-vs-code-extensions.vscode-clangd",
-                "jbenden.c-cpp-flylint",
                 "ms-python.python",
+                "twxs.cmake",
+                //"ms-vscode.cpptools",
+                "usernamehw.errorlens", // show warnings in code
+                "streetsidesoftware.code-spell-checker",
+                "xaver.clang-format",
+                "msekoranja.clang-format-checker", // currently this extensions results in a lot of warnings
+                "llvm-vs-code-extensions.vscode-clangd" // code index based on clang using the compile_commannds.json
             ]
         }
     },
@@ -21,5 +20,5 @@
     "runArgs": ["--gpus","all",                     // remove this line in case you have no gpus available
                 "--hostname=${localEnv:HOSTNAME}"], // HOSTNAME needs to be known by the vscode environment. It is probably necessary to add "export HOSTNAME=<hostname>" to the config file of your host machine's bash.
 
-    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0"
+    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1"
 }

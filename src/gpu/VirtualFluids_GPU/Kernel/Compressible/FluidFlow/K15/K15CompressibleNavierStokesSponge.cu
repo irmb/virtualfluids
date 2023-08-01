@@ -2,7 +2,7 @@
 
 #include "K15CompressibleNavierStokesSponge_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<K15CompressibleNavierStokesSponge> K15CompressibleNavierStokesSponge::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

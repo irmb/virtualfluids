@@ -1,7 +1,7 @@
 #include "Probe.h"
 #include "PlaneProbe.h"
 
-#include <cuda/CudaGrid.h>
+#include <cuda_helper/CudaGrid.h>
 
 #include <cuda.h>
 #include <cuda_runtime.h>

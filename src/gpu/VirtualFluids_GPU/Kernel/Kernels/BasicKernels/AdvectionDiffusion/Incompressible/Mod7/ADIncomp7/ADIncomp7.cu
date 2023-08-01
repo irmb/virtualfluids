@@ -2,7 +2,7 @@
 
 #include "ADIncomp7_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<ADIncomp7> ADIncomp7::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

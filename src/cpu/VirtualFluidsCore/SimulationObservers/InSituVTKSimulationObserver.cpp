@@ -30,7 +30,7 @@ InSituVTKSimulationObserver::InSituVTKSimulationObserver(SPtr<Grid3D> grid, SPtr
                                            SPtr<LBMUnitConverter> conv)
     : SimulationObserver(grid, s), conv(conv)
 {
-    gridRank     = vf::mpi::Communicator::getInstance()->getProcessID();
+    gridRank     = vf::parallel::Communicator::getInstance()->getProcessID();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
     maxInitLevel = this->grid->getFinestInitializedLevel();
 
@@ -269,7 +269,7 @@ void InSituVTKSimulationObserver::readConfigFile(const std::string &configFile)
     string dummy;
     int wRank = 0;
     getline(ifs, dummy);
-    int np = vf::mpi::Communicator::getInstance()->getNumberOfProcesses();
+    int np = vf::parallel::Communicator::getInstance()->getNumberOfProcesses();
 
     while (ifs.good()) {
         getline(ifs, dummy, ';');

@@ -2,7 +2,7 @@
 
 #include "B92CompressibleNavierStokes_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<B92CompressibleNavierStokes> B92CompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

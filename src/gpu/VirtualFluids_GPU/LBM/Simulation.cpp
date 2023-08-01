@@ -4,10 +4,8 @@
 
 #include <helper_timer.h>
 
-
 #include "Factories/GridScalingFactory.h"
 #include "LBM/LB.h"
-#include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
@@ -58,11 +56,12 @@
 #include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "Kernel/Kernel.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-#include <cuda/DeviceInfo.h>
+
+#include <cuda_helper/DeviceInfo.h>
 
 #include <logger/Logger.h>
 
-
+#include <parallel/Communicator.h>
 
 std::string getFileName(const std::string& fname, int step, int myID)
 {
@@ -70,7 +69,7 @@ std::string getFileName(const std::string& fname, int step, int myID)
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-                       vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory)
+                       vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory)
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
@@ -79,7 +78,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-                       vf::gpu::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
+                       vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
@@ -90,8 +89,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 {
     gridProvider.initalGridInformations();
 
-    vf::cuda::verifyAndSetDevice(
-        communicator.mapCudaDevice(para->getMyProcessID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+    vf::cuda::verifyAndSetDevice(communicator.mapCudaDevicesOnHosts(para->getDevices(), para->getMaxDev()));
 
     para->initLBMSimulationParameter();
 

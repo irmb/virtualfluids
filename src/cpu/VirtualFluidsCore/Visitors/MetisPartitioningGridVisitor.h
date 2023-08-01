@@ -9,7 +9,7 @@
 #include "Grid3DVisitor.h"
 #include "MetisPartitioner.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 
 ////////////////////////////////////////////////////////////////////////
 //! \brief The class implements domain decomposition with METIS library
@@ -32,7 +32,7 @@ public:
     //! \param numOfDirs - maximum number of neighbors for each process
     //! \param threads - on/off decomposition for threads
     //! \param numberOfThreads - number of threads
-    MetisPartitioningGridVisitor(std::shared_ptr<vf::mpi::Communicator> comm, GraphType graphType, int numOfDirs,
+    MetisPartitioningGridVisitor(std::shared_ptr<vf::parallel::Communicator> comm, GraphType graphType, int numOfDirs,
                                  MetisPartitioner::PartType partType = MetisPartitioner::KWAY, bool threads = false,
                                  int numberOfThreads = 0);
     ~MetisPartitioningGridVisitor() override;
@@ -52,7 +52,7 @@ protected:
     int numOfDirs;
     std::vector<int> blockID;
     std::vector<idx_t> parts;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     int bundleRoot;
     int processRoot;
     int bundleID;

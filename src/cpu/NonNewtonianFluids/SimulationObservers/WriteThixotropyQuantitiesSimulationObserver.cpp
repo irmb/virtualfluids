@@ -49,7 +49,7 @@ using namespace std;
 
 WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver() = default;
 //////////////////////////////////////////////////////////////////////////
-WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm) : SimulationObserver(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
+WriteThixotropyQuantitiesSimulationObserver::WriteThixotropyQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::parallel::Communicator> comm) : SimulationObserver(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
 {
 	gridRank = comm->getProcessID();
 	minInitLevel = this->grid->getCoarsestInitializedLevel();

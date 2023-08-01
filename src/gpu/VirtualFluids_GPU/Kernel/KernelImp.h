@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <cuda/CudaGrid.h>
+#include <cuda_helper/CudaGrid.h>
 
 class CheckParameterStrategy;
 class Parameter;

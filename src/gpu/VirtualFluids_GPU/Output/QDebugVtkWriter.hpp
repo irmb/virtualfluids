@@ -11,7 +11,6 @@
 #include <logger/Logger.h>
 
 #include "gpu/GridGenerator/grid/NodeValues.h"
-#include "gpu/VirtualFluids_GPU/Communication/Communicator.h"
 #include "gpu/VirtualFluids_GPU/LBM/LB.h"
 #include "gpu/VirtualFluids_GPU/Parameter/Parameter.h"
 #include "gpu/VirtualFluids_GPU/Utilities/FindNeighbors.h"

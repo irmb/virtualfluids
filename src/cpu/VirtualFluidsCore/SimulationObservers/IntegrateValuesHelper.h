@@ -5,7 +5,7 @@
 
 #include "Block3D.h"
 #include "CbArray2D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "D3Q27System.h"
 #include "GbCuboid3D.h"
 #include "Grid3D.h"
@@ -36,9 +36,9 @@ public:
     };
 
 public:
-    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, real minX1, real minX2, real minX3,
+    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::parallel::Communicator> comm, real minX1, real minX2, real minX3,
                           real maxX1, real maxX2, real maxX3);
-    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, real minX1, real minX2, real minX3,
+    IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::parallel::Communicator> comm, real minX1, real minX2, real minX3,
                           real maxX1, real maxX2, real maxX3, int level);
     virtual ~IntegrateValuesHelper();
 
@@ -77,7 +77,7 @@ private:
     real sAvVx1, sAvVx2, sAvVx3, sTSx1, sTSx2, sTSx3, sTSx1x3;
     std::vector<CalcNodes> cnodes;
     GbCuboid3DPtr boundingBox;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     CbArray2D<Node> cnodes2DMatrix;
     enum Values { AvVx = 0, AvVy = 1, AvVz = 2, AvVxx = 3, AvVyy = 4, AvVzz = 5, AvVxy = 6, AvVyz = 7, AvVxz = 8 };
 };

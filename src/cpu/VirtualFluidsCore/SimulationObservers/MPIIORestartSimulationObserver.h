@@ -11,7 +11,7 @@
 
 class Grid3D;
 class UbScheduler;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class BCSet;
 class LBMKernel;
 
@@ -32,7 +32,7 @@ public:
         PressureField = 9
     };
 
-    MPIIORestartSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+    MPIIORestartSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm);
     ~MPIIORestartSimulationObserver() override;
     //! Each timestep writes the grid into the files
     void update(real step) override;

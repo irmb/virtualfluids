@@ -27,7 +27,7 @@ void run(const char *cstr)
 
       UbLog::reportingLevel() = logINFO;
 
-      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if(machine == "PIPPINNEU") 

@@ -39,7 +39,7 @@
 #include "SimulationObserver.h"
 #include "basics/utilities/UbTiming.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 
@@ -54,7 +54,7 @@ public:
     //! \param s is UbScheduler object for scheduling of observer
     //! \param numOfThreads is number of threads
     //! \param comm is Communicator object
-    NUPSCounterSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, std::shared_ptr<vf::mpi::Communicator> comm);
+    NUPSCounterSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, std::shared_ptr<vf::parallel::Communicator> comm);
     ~NUPSCounterSimulationObserver() override;
 
     void update(real step) override;
@@ -70,7 +70,7 @@ protected:
     real nup;
     real nup_t;
     real nupsStep;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 };
 
 #endif

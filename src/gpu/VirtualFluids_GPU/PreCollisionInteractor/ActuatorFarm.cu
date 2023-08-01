@@ -36,7 +36,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 

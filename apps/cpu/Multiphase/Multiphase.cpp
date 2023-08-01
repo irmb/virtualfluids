@@ -55,7 +55,7 @@ void run(string configname)
         real beta = 12 * sigma / interfaceWidth;
         real kappa = 1.5 * interfaceWidth * sigma;
 
-        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+        SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
 
         if (myid == 0)

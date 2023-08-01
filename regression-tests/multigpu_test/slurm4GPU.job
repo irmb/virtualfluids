@@ -26,13 +26,13 @@ module list
 cd multigpu_test
 rm -rf build && mkdir -p build
 cd build
-cmake .. -DBUILD_VF_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/LBM/DrivenCavityMultiGPU\;apps/gpu/LBM/SphereScaling
+cmake .. -DBUILD_VF_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/DrivenCavityMultiGPU\;apps/gpu/SphereScaling
 make -j 16
 cd ..
 mkdir -p output
 
 echo $'\n\n\n\n---First test: DrivenCavityMultiGPU on 4 GPUs\n\n'
-mpirun -np 4 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/LBM/DrivenCavityMultiGPU/configPhoenix4GPU_regressionTest.txt"
+mpirun -np 4 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/DrivenCavityMultiGPU/configPhoenix4GPU_regressionTest.txt"
 
 echo $'\n\n\n\n---Second test: SphereScaling on 4 GPUs\n\n'
-mpirun -np 4 "./build/bin/SphereScaling"        "apps/gpu/LBM/SphereScaling/configPhoenix4GPU_regressionTest.txt"
+mpirun -np 4 "./build/bin/SphereScaling"        "apps/gpu/SphereScaling/configPhoenix4GPU_regressionTest.txt"

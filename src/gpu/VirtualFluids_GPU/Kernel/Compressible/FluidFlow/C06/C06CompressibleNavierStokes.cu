@@ -2,7 +2,7 @@
 
 #include "C06CompressibleNavierStokes_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<C06CompressibleNavierStokes> C06CompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

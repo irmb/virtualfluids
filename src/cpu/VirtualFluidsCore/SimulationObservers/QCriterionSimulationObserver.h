@@ -13,7 +13,7 @@
 #include "LBMSystem.h"
 #include "UbTuple.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -29,7 +29,7 @@ class QCriterionSimulationObserver : public SimulationObserver
 {
 public:
     QCriterionSimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer, SPtr<UbScheduler> s,
-                          std::shared_ptr<vf::mpi::Communicator> comm);
+                          std::shared_ptr<vf::parallel::Communicator> comm);
     //! Make update if timestep is write-timestep specified in SPtr<UbScheduler> s
     void update(real step) override;
 
@@ -58,7 +58,7 @@ private:
     int gridRank; // comm-Rank des aktuellen prozesses
     std::string path;
     WbWriter *writer;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     enum Values { xdir = 0, ydir = 1, zdir = 2 }; // labels for the different components
 };
 

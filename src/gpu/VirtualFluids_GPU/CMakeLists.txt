@@ -1,11 +1,7 @@
 project(VirtualFluids_GPU LANGUAGES CUDA CXX)
 
-set(additional_libraries "")
-if(MSVC)
-    set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
-endif()
 
-vf_add_library(PUBLIC_LINK basics lbm PRIVATE_LINK ${additional_libraries} GridGenerator MPI::MPI_CXX vf_cuda)
+vf_add_library(PUBLIC_LINK basics lbm parallel PRIVATE_LINK GridGenerator cuda_helper)
 
 #SET(TPN_WIN32 "/EHsc")
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake
@@ -13,10 +9,15 @@ vf_add_library(PUBLIC_LINK basics lbm PRIVATE_LINK ${additional_libraries} GridG
 
 set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON POSITION_INDEPENDENT_CODE ON)
 
+
+if(MSVC)
+    set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+endif()
+
 vf_add_tests()
 
 if(BUILD_VF_UNIT_TESTS)
-    set_target_properties(VirtualFluids_GPUTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+    # set_target_properties(VirtualFluids_GPUTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
     target_include_directories(VirtualFluids_GPUTests PRIVATE "${VF_THIRD_DIR}/cuda_samples/")
     target_include_directories(VirtualFluids_GPUTests PRIVATE "${VF_ROOT_DIR}/src/gpu/GridGenerator/")
     set_source_files_properties(Communication/ExchangeData27Test.cpp PROPERTIES LANGUAGE CUDA)

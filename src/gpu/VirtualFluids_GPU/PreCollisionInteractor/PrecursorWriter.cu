@@ -36,7 +36,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 #include "StringUtilities/StringUtil.h"

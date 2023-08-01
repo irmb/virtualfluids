@@ -3,7 +3,7 @@
 #include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -22,7 +22,7 @@
 
 using namespace MPIIODataStructures;
 
-MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
+MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : MPIIOSimulationObserver(grid, s, path, comm)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));

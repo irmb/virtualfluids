@@ -33,12 +33,12 @@
 
 #include "NUPSCounterSimulationObserver.h"
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3D.h"
 #include "UbScheduler.h"
 
 NUPSCounterSimulationObserver::NUPSCounterSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads,
-                                               std::shared_ptr<vf::mpi::Communicator> comm)
+                                               std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), numOfThreads(numOfThreads), nup(0), nup_t(0), nupsStep(0.0), comm(comm)
 {
     if (comm->getProcessID() == comm->getRoot()) {
