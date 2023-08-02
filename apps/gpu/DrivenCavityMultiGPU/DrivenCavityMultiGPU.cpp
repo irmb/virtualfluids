@@ -109,7 +109,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     para->setPrintFiles(true);
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
-    para->setMainKernel(vf::CollisionKernel::Compressible::CumulantK17);
+    para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

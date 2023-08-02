@@ -73,6 +73,7 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include <parallel/MPICommunicator.h>
 
@@ -128,7 +129,7 @@ std::string chooseVariation();
 void multipleLevel(const std::string& configPath)
 {
     vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
-    auto gridBuilder = MultipleGridBuilder::makeShared();
+    //auto gridBuilder = MultipleGridBuilder::makeShared();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,6 +187,7 @@ void multipleLevel(const std::string& configPath)
     // bool reset_diff = false;
     bool reset_flow = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
     gridBuilder->addCoarseGrid(x_min, y_min, z_min,
                                x_max, y_max, z_max, dx);
@@ -222,8 +224,8 @@ void multipleLevel(const std::string& configPath)
 	//const real vx = velocityLB / (real)sqrt(2.0); // LB units
 	//const real vy = velocityLB / (real)sqrt(2.0); // LB units
 
-    VF_LOG_INFO("velocityLB [dx/dt] = " << velocityLB);
-    VF_LOG_INFO("viscosityLB [dx^2/dt] = " << viscosityLB);
+    VF_LOG_INFO("velocityLB [dx/dt] = {}", velocityLB);
+    VF_LOG_INFO("viscosityLB [dx^2/dt] = {}", viscosityLB);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -241,7 +243,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setVelocityRatio(velocity/ velocityLB);
 
-	para->setMainKernel("CumulantK17CompChim"); // CumulantK17Unified, CumulantK17CompChim
+	para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
 	para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -401,14 +403,14 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FineGrid Level 2 -> dx = 1 cm; lvl 2
         auto FG2_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
         auto FG2_2 = std::make_shared<Cuboid>(500, -20,  5 + z_offset, 680, 210, 50 + z_offset);
-        auto FG2   = new Conglomerate();
+        auto FG2   = std::make_shared<Conglomerate>();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
 
         // FineGrid Level 3 ->dx = 5 mm; lvl 3
         auto FG3_1 = std::make_shared<Cuboid>(517, -20, -5 + z_offset, 665, 200, 30 + z_offset);
         auto FG3_2 = std::make_shared<Cuboid>(550, 58, -5 + z_offset, 650, 132, 40 + z_offset);
-        auto FG3   = new Conglomerate();
+        auto FG3   = std::make_shared<Conglomerate>();
         FG3->add(FG3_1);
         FG3->add(FG3_2);
 
@@ -458,7 +460,7 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         //auto FG1_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
         auto FG1_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 20 + z_offset);
         auto FG1_2 = std::make_shared<Cuboid>(500, -20,  5 + z_offset, 680, 210, 50 + z_offset);
-        auto FG1   = new Conglomerate();
+        auto FG1   = std::make_shared<Conglomerate>();
         FG1->add(FG1_1);
         FG1->add(FG1_2);
 
@@ -505,14 +507,14 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FineGrid Level 1 -> dx = 8.0 mm; lvl 1
         auto FG1_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 780, 200, 30 + z_offset);
         auto FG1_2 = std::make_shared<Cuboid>(500, -20, 5 + z_offset, 720, 210, 75 + z_offset);
-        auto FG1 = new Conglomerate();
+        auto FG1   = std::make_shared<Conglomerate>();
         FG1->add(FG1_1);
         FG1->add(FG1_2);
 
         // FineGrid Level 2 -> dx = 4.0 mm; lvl 2
         auto FG2_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
         auto FG2_2 = std::make_shared<Cuboid>(520, -20, 5 + z_offset, 700, 210, 50 + z_offset);
-        auto FG2 = new Conglomerate();
+        auto FG2   = std::make_shared<Conglomerate>();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
 
@@ -560,7 +562,7 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FineGrid Level 2 -> dx = 1 cm; lvl 2
         auto FG2_1 = std::make_shared<Cuboid>(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
         auto FG2_2 = std::make_shared<Cuboid>(500, -20, 5 + z_offset, 680, 210, 50 + z_offset);
-        auto FG2 = new Conglomerate();
+        auto FG2   = std::make_shared<Conglomerate>();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
 

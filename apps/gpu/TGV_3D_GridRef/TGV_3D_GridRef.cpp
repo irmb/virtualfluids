@@ -67,7 +67,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
+#include "parallel/MpiCommunicator.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -77,6 +77,7 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel( "CumulantK17CompChimRedesigned" );
+std::string kernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
 std::string path("D:/out/TGV_3D/"); //MOLLOK
 
@@ -131,18 +132,12 @@ std::string simulationName("TGV_3D_Gridref_noSqPress");
 
 void multipleLevel(const std::string& configPath)
 {
-    vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
-
-    auto gridFactory = GridFactory::make();
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
-
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    //vf::gpu::Communicator& communicator = vf::gpu::MpiCommunicator::getInstance();
+    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcess(), communicator.getPID(), &config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
@@ -158,11 +153,11 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = nx / ( 2.0 * PI ) * velocity / Re;
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity = " << velocity << " s\n";
-
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity = " << viscosity << "\n";
+    VF_LOG_INFO("velocity = {}", velocity);
+    VF_LOG_INFO("viscosity = {}", viscosity);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
 	real dx = 2.0 * PI / real(nx);
 
@@ -268,7 +263,7 @@ void multipleLevel(const std::string& configPath)
 
     } );
 
-    para->setMainKernel( kernel );
+    para->configureMainKernel( kernel );
 
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );

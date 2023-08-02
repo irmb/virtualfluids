@@ -7,32 +7,32 @@
 #include "Kernel/Utilities/KernelTypes.h"
 
 //LBM kernel (compressible)
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGK/BGKCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKUnified/BGKUnified.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKPlus/BGKPlusCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cascade/CascadeCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cumulant/CumulantCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Unified/CumulantK17Unified.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17chim/CumulantK17CompChim.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK20/CumulantK20Comp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15/CumulantK15Comp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Unified/CumulantK15Unified.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/MRT/MRTCompSP27.h"
+#include "Kernel/Compressible/FluidFlow/B92/B92CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/B15/B15CompressibleNavierStokesBGKplusUnified.h"
+#include "Kernel/Compressible/FluidFlow/B15/B15CompressibleNavierStokesBGKplus.h"
+#include "Kernel/Compressible/FluidFlow/M02/M02CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/C06/C06CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/K08/K08CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokesBulkViscosity.h"
+#include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokesSponge.h"
+#include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokesUnified.h"
+#include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesChimeraLegacy.h"
+#include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesBulkViscosity.h"
+#include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesUnified.h"
+#include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants.h"
+#include "Kernel/Compressible/FluidFlow/K18/K18CompressibleNavierStokes.h"
+#include "Kernel/Compressible/FluidFlow/K20/K20CompressibleNavierStokes.h"
 
 //LBM kernel (inkompressible)
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/BGK/BGKIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/BGKPlus/BGKPlusIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/Cascade/CascadeIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/Cumulant1hSP27/Cumulant1hIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/CumulantIsoSP27/CumulantIsoIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/CumulantK15/CumulantK15Incomp.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/MRT/MRTIncompSP27.h"
+#include "Kernel/Incompressible/FluidFlow/B92/B92IncompressibleNavierStokes.h"
+#include "Kernel/Incompressible/FluidFlow/B15/B15IncompressibleNavierStokesBGKplus.h"
+#include "Kernel/Incompressible/FluidFlow/C06/C06IncompressibleNavierStokes.h"
+#include "Kernel/Incompressible/FluidFlow/K15/K15IncompressibleNavierStokesRotatingVelocityField.h"
+#include "Kernel/Incompressible/FluidFlow/K15/K15IncompressibleNavierStokesIsoCheck.h"
+#include "Kernel/Incompressible/FluidFlow/K15/K15IncompressibleNavierStokes.h"
+#include "Kernel/Incompressible/FluidFlow/M02/M02IncompressibleNavierStokes.h"
 
 //advection diffusion kernel (compressible)
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADComp27/ADComp27.h"
@@ -52,8 +52,8 @@
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
 
 //strategies
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/FluidFlowCompStrategy.h"
-#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/FluidFlowIncompStrategy.h"
+#include "Kernel/Compressible/FluidFlow/FluidFlowCompStrategy.h"
+#include "Kernel/Incompressible/FluidFlow/FluidFlowIncompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADMod27CompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod7/ADMod7CompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod27/ADMod27IncompStrategy.h"
@@ -101,49 +101,49 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
     if (kernel == CollisionKernel::Compressible::BGK) {
-        newKernel     = BGKCompSP27::getNewInstance(para, level);               // compressible
+        newKernel     = B92CompressibleNavierStokes::getNewInstance(para, level);               // compressible
         checkStrategy = FluidFlowCompStrategy::getInstance();                   //      ||
     } else if (kernel == CollisionKernel::Compressible::BGKUnified) {           //      \/
-        newKernel     = std::make_shared<vf::gpu::BGKUnified>(para, level);
+        newKernel     = std::make_shared<vf::gpu::B15CompressibleNavierStokesBGKplusUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::BGKPlus) {
-        newKernel     = BGKPlusCompSP27::getNewInstance(para, level);
+        newKernel     = B15CompressibleNavierStokesBGKplus::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::MRT) {
-        newKernel     = MRTCompSP27::getNewInstance(para, level);
+        newKernel     = M02CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::Cascade) {
-        newKernel     = CascadeCompSP27::getNewInstance(para, level);
+        newKernel     = C06CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::CumulantClassic) {
-        newKernel     = CumulantCompSP27::getNewInstance(para, level);
+        newKernel     = K08CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::CumulantK15Unified) {
-        newKernel     = std::make_shared<vf::gpu::CumulantK15Unified>(para, level);
+        newKernel     = std::make_shared<vf::gpu::K15CompressibleNavierStokesUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17Unified) {
-        newKernel     = std::make_shared<vf::gpu::CumulantK17Unified>(para, level);
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesUnified) {
+        newKernel     = std::make_shared<vf::gpu::K17CompressibleNavierStokesUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17Bulk) {
-        newKernel     = CumulantK17BulkComp::getNewInstance(para, level);
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesBulkViscosity) {
+        newKernel     = K17CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17Chim) {
-        newKernel     = CumulantK17CompChim::getNewInstance(para, level);
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesChimeraLegacy) {
+        newKernel     = K17CompressibleNavierStokesChimeraLegacy::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK17){
+    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokes){
         switch(para->getTurbulenceModel())
         {
             case TurbulenceModel::AMD:
-                newKernel = CumulantK17<TurbulenceModel::AMD>::getNewInstance(para, level);
+                newKernel = K17CompressibleNavierStokes<TurbulenceModel::AMD>::getNewInstance(para, level);
                 break;
             case TurbulenceModel::Smagorinsky:
-                newKernel = CumulantK17<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);
+                newKernel = K17CompressibleNavierStokes<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);
                 break;
             case TurbulenceModel::QR:
-                newKernel = CumulantK17<TurbulenceModel::QR>::getNewInstance(para, level);
+                newKernel = K17CompressibleNavierStokes<TurbulenceModel::QR>::getNewInstance(para, level);
                 break;
             case TurbulenceModel::None:
-                newKernel = CumulantK17<TurbulenceModel::None>::getNewInstance(para, level);
+                newKernel = K17CompressibleNavierStokes<TurbulenceModel::None>::getNewInstance(para, level);
                 break;
             default:
                 throw std::runtime_error("Unknown turbulence model!");
@@ -151,44 +151,44 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         }
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::CumulantAll4SP27) {
-        newKernel     = CumulantAll4CompSP27::getNewInstance(para, level);
+        newKernel     = K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::CumulantK18) {
-        newKernel     = CumulantK18Comp::getNewInstance(para, level);
+        newKernel     = K18CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Compressible::CumulantK20) {
-        newKernel     = CumulantK20Comp::getNewInstance(para, level);
+        newKernel     = K20CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK15) {
-        newKernel     = CumulantK15Comp::getNewInstance(para, level);
+    } else if (kernel == CollisionKernel::Compressible::K15CompressibleNavierStokes) {
+        newKernel     = K15CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK15Bulk) {
-        newKernel     = CumulantK15BulkComp::getNewInstance(para, level);
+    } else if (kernel == CollisionKernel::Compressible::K15CompressibleNavierStokesBulk) {
+        newKernel     = K15CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK15Sponge) {    //     /\      //
-        newKernel     = CumulantK15SpongeComp::getNewInstance(para, level);     //     ||
+    } else if (kernel == CollisionKernel::Compressible::K15CompressibleNavierStokesSponge) { //     /\      //
+        newKernel     = K15CompressibleNavierStokesSponge::getNewInstance(para, level);     //     ||
         checkStrategy = FluidFlowCompStrategy::getInstance();                   // compressible
     }                                                                           //===============
     else if (  kernel == CollisionKernel::Incompressible::BGK) {                // incompressible
-        newKernel     = BGKIncompSP27::getNewInstance(para, level);             //     ||
+        newKernel     = B92IncompressibleNavierStokes::getNewInstance(para, level);             //     ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                 //     \/
     } else if (kernel == CollisionKernel::Incompressible::BGKPlus) {
-        newKernel     = BGKPlusIncompSP27::getNewInstance(para, level);
+        newKernel     = B15IncompressibleNavierStokesBGKplus::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Incompressible::MRT) {
-        newKernel     = MRTIncompSP27::getNewInstance(para, level);
+        newKernel     = M02IncompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Incompressible::Cascade) {
-        newKernel     = CascadeIncompSP27::getNewInstance(para, level);
+        newKernel     = C06IncompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Incompressible::Cumulant1h) {
-        newKernel     = Cumulant1hIncompSP27::getNewInstance(para, level);
+        newKernel     = K15IncompressibleNavierStokesRotatingVelocityField::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Incompressible::CumulantIsometric) {
-        newKernel     = CumulantIsoIncompSP27::getNewInstance(para, level);
-        checkStrategy = FluidFlowIncompStrategy::getInstance();
+    //} else if (kernel == CollisionKernel::Incompressible::CumulantIsometric) {
+    //    newKernel     = K15IncompressibleNavierStokesIsoTest::getNewInstance(para, level);
+    //    checkStrategy = FluidFlowIncompStrategy::getInstance();
     } else if (kernel == CollisionKernel::Incompressible::CumulantK15) {          //     /\      //
-        newKernel     = CumulantK15Incomp::getNewInstance(para, level);           //     ||
+        newKernel     = K15IncompressibleNavierStokes::getNewInstance(para, level);           //     ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                   // incompressible
     }                                                                             //===============
     else if (kernel == CollisionKernel::PorousMedia::CumulantOne) {               // porous media

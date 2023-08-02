@@ -346,7 +346,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Kernel
     if (configData.contains("MainKernelName"))
-        this->setMainKernel(configData.getValue<std::string>("MainKernelName"));
+        this->configureMainKernel(configData.getValue<std::string>("MainKernelName"));
 
     if (configData.contains("MultiKernelOn"))
         this->setMultiKernelOn(configData.getValue<bool>("MultiKernelOn"));
@@ -599,7 +599,7 @@ void Parameter::initLBMSimulationParameter()
 
 void Parameter::checkParameterValidityCumulantK17() const
 {
-    if (this->mainKernel != "CumulantK17")
+    if (this->mainKernel != vf::CollisionKernel::Compressible::K17CompressibleNavierStokes)
         return;
 
     const real viscosity = this->parH[maxlevel]->viscosity;
@@ -1635,10 +1635,10 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
     this->outflowNormalZ = outflowNormalZ;
 }
-void Parameter::setMainKernel(std::string kernel)
+void Parameter::configureMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if ( kernel.find("CumulantK17") != std::string::npos )
+    if (kernel == vf::CollisionKernel::Compressible::K17CompressibleNavierStokes)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
