@@ -14,6 +14,7 @@
 #include "Factories/GridScalingFactory.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include <parallel/Communicator.h>
 
@@ -271,7 +272,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 {
 
     para.setVelocityLB(0.11);
-    para.setMainKernel("K17CompressibleNavierStokes");
+    para.setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();

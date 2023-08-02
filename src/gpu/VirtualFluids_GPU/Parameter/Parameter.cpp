@@ -599,7 +599,7 @@ void Parameter::initLBMSimulationParameter()
 
 void Parameter::checkParameterValidityCumulantK17() const
 {
-    if (this->mainKernel != "K17CompressibleNavierStokes")
+    if (this->mainKernel != vf::CollisionKernel::Compressible::K17CompressibleNavierStokes)
         return;
 
     const real viscosity = this->parH[maxlevel]->viscosity;
@@ -1638,7 +1638,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if ( kernel.find("K17CompressibleNavierStokes") != std::string::npos )
+    if ( kernel.find(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes) != std::string::npos )
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)

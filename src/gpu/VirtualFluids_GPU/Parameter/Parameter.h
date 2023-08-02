@@ -43,6 +43,7 @@
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -1085,7 +1086,7 @@ private:
 
 
     // Kernel
-    std::string mainKernel{ "K17CompressibleNavierStokes" };
+    std::string mainKernel{ vf::CollisionKernel::Compressible::K17CompressibleNavierStokes };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

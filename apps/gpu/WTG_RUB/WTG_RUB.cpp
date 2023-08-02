@@ -73,6 +73,7 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include <parallel/MPICommunicator.h>
 
@@ -242,7 +243,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setVelocityRatio(velocity/ velocityLB);
 
-	para->setMainKernel("K17CompressibleNavierStokes"); // K17CompressibleNavierStokesUnified, K17CompressibleNavierStokesChimeraLegacy
+	para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
 	para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;

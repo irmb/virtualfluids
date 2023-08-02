@@ -77,6 +77,7 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel( "CumulantK17CompChimRedesigned" );
+std::string kernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
 std::string path("D:/out/TGV_3D/"); //MOLLOK
 
