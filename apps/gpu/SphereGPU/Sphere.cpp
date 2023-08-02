@@ -70,6 +70,7 @@
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 int main(int argc, char *argv[])
 {
@@ -169,6 +170,8 @@ int main(int argc, char *argv[])
 
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
+
+        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
