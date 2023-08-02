@@ -1638,6 +1638,8 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
+    if ( kernel.find(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes) != std::string::npos )
+        this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
 {
