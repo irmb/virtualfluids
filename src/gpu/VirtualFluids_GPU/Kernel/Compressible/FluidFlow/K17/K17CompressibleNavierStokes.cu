@@ -9,6 +9,7 @@
 template<TurbulenceModel turbulenceModel>
 std::shared_ptr< K17CompressibleNavierStokes<turbulenceModel> > K17CompressibleNavierStokes<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
+    para->setKernelNeedsFluidNodeIndicesToRun(true);
     return std::shared_ptr<K17CompressibleNavierStokes<turbulenceModel> >(new K17CompressibleNavierStokes<turbulenceModel>(para,level));
 }
 
