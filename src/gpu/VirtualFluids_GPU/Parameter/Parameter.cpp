@@ -346,7 +346,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Kernel
     if (configData.contains("MainKernelName"))
-        this->setMainKernel(configData.getValue<std::string>("MainKernelName"));
+        this->configureMainKernel(configData.getValue<std::string>("MainKernelName"));
 
     if (configData.contains("MultiKernelOn"))
         this->setMultiKernelOn(configData.getValue<bool>("MultiKernelOn"));
@@ -1635,10 +1635,10 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
     this->outflowNormalZ = outflowNormalZ;
 }
-void Parameter::setMainKernel(std::string kernel)
+void Parameter::configureMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if ( kernel.find(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes) != std::string::npos )
+    if (kernel == vf::CollisionKernel::Compressible::K17CompressibleNavierStokes)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)

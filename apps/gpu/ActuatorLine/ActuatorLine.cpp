@@ -178,7 +178,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;

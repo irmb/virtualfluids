@@ -151,7 +151,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setUseWale(false);
 
-            para->setMainKernel("CumulantK15Comp");
+            para->configureMainKernel("CumulantK15Comp");
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -236,7 +236,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setUseWale(false);
 
-            para->setMainKernel("CumulantK20Comp");
+            para->configureMainKernel("CumulantK20Comp");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -339,7 +339,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setUseWale(false);
 
-            para->setMainKernel("CumulantAA2016CompSP27");
+            para->configureMainKernel("CumulantAA2016CompSP27");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -417,8 +417,8 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setUseWale(false);
 
-            para->setMainKernel("CumulantAA2016CompSP27");
-            //para->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
+            para->configureMainKernel("CumulantAA2016CompSP27");
+            //para->configureMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -614,7 +614,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setUseWale(false);
 
-            para->setMainKernel("CumulantK15Comp");
+            para->configureMainKernel("CumulantK15Comp");
 
             para->setDevices( { 0, 1 } );
             para->setMaxDev(2);

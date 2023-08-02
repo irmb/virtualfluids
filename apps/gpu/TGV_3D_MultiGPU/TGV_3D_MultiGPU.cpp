@@ -309,7 +309,7 @@ void multipleLevel(const std::string& configPath)
 
     } );
 
-    para->setMainKernel(kernel);
+    para->configureMainKernel(kernel);
 
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );

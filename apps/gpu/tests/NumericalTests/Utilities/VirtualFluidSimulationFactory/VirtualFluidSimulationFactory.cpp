@@ -98,7 +98,7 @@ std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<Simulat
     // TODO: Find out if we still need this
     // para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 
-    para->setMainKernel(simPara->getKernelConfiguration()->getMainKernel());
+    para->configureMainKernel(simPara->getKernelConfiguration()->getMainKernel());
     para->setMultiKernelOn(simPara->getKernelConfiguration()->getMultiKernelOn());
     para->setMultiKernelLevel(simPara->getKernelConfiguration()->getMultiKernelLevel());
     para->setMultiKernel(simPara->getKernelConfiguration()->getMultiKernel());

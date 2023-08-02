@@ -134,7 +134,7 @@ int main()
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
 
-        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+        para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions

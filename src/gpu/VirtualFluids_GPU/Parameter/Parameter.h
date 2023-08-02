@@ -677,7 +677,7 @@ public:
     void setOutflowBoundaryNormalY(std::string outflowNormalY);
     void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
     // Kernel
-    void setMainKernel(std::string kernel);
+    void configureMainKernel(std::string kernel);
     void setMultiKernelOn(bool isOn);
     void setMultiKernelLevel(std::vector<int> kernelLevel);
     void setMultiKernel(std::vector<std::string> kernel);

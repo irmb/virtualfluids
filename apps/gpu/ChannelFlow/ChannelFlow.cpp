@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
         para->setTimestepEnd(timeStepEnd);
 
         para->setOutputPrefix("ChannelFlow");
-        para->setMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+        para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
         real overlap = (real)8.0 * dx;
 
