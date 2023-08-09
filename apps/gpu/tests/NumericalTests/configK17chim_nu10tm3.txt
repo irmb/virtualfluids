@@ -6,7 +6,7 @@ Devices=0
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest=CumulantK17CompChim
+KernelsToTest=K17CompressibleNavierStokesChimeraLegacy
 NumberOfTimeSteps=20
 Viscosity=0.001
 Rho0=1.0

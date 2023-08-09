@@ -26,7 +26,7 @@ GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling1GPU/
 #LBM Version
 ##################################################
 #D3Qxx=27
-#MainKernelName=CumulantK17CompChim
+#MainKernelName=K17CompressibleNavierStokes
 
 ##################################################
 #simulation parameter
