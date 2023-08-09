@@ -33,7 +33,7 @@
 //!
 //! Any probe should be initiated in the app and added via para->addProbe( someProbe )
 //! Note, that all probes generally require that macroscopic variables have been updated in the 
-//! time step they are called in. Most collision kernels (atm, all except TurbulentViscosityCumulantK17CompChim )
+//! time step they are called in. Most collision kernels (atm, all except K17CompressibleNavierStokes)
 //! don't do this and would require an explicit call of calcMacroscopicQuantities. It does seem quite 
 //! inexpensive though to simply save vx, vy, etc., directly in the collider.
 //!

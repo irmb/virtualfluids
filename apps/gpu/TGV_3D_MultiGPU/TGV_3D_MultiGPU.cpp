@@ -127,7 +127,7 @@ bool useWale = false;
 int mpirank;
 int mpiWorldSize;
 
-std::string kernel( "CumulantK17CompChim" );
+std::string kernel( "K17CompressibleNavierStokes" );
 
 //std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 //std::string path("results/"); //PHOENIX

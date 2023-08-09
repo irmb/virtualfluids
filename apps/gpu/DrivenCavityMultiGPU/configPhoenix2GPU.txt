@@ -25,7 +25,7 @@ GridPath=/work/y0078217/Grids/GridDrivenCavityMultiGPU/2GPU/
 #LBM Version
 ##################################################
 #D3Qxx=27
-#MainKernelName=CumulantK17CompChim
+#MainKernelName=K17CompressibleNavierStokes
 
 ##################################################
 #simulation parameter

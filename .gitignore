@@ -40,6 +40,9 @@ scripts/
 # stl files
 stl/
 
+# test data for regression tests
+test_data/
+
 # MacOS
 .DS_Store
 
