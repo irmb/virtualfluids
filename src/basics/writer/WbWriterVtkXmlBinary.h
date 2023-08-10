@@ -91,6 +91,10 @@ public:
     // nodenumbering must start with 0!
     std::string writeLines(const std::string &filename, std::vector<UbTupleFloat3> &nodes,
                            std::vector<UbTupleInt2> &lines) override;
+    std::string writePolyLines(const std::string &filename, real* coordinatesX,
+                                                    real* coordinatesY, real*coordinatesZ, uint numberOfCoordinates) override;
+    std::string writePolyLines(const std::string & filename, std::vector<real>& coordinatesX,
+                                                    std::vector<real>& coordinatesY,  std::vector<real>& coordinatesZ) override;
     // std::string writeLinesWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes,
     // std::vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >&
     // nodedata);
