@@ -36,13 +36,24 @@
 
 #include "basics/DataTypes.h"
 
-__host__ __device__ __inline__ uint calcNodeIndexInBladeArrays(uint bladeNode, uint numberOfNodesPerBlade, uint blade, uint numberOfBlades, uint turbine, uint numberOfTurbines)
+struct TurbineNodeIndex {
+    uint turbine;
+    uint blade;
+    uint bladeNode;
+};
+
+__host__ __device__ __inline__ uint calcNodeIndexInBladeArrays(uint bladeNode, uint numberOfNodesPerBlade, uint blade, uint numberOfBlades, uint turbine)
 {
     // see https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/merge_requests/248 for visualization
     return bladeNode + numberOfNodesPerBlade * (blade + numberOfBlades * turbine);
 }
 
-__host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint &bladeNode, uint numberOfNodesPerBlade, uint &blade, uint numberOfBlades, uint &turbine, uint numberOfTurbines)
+__host__ __device__ __inline__ uint calcNodeIndexInBladeArrays(const TurbineNodeIndex &turbineNodeIndex, uint numberOfNodesPerBlade, uint numberOfBlades)
+{
+    return calcNodeIndexInBladeArrays(turbineNodeIndex.bladeNode, numberOfNodesPerBlade, turbineNodeIndex.blade, numberOfBlades, turbineNodeIndex.turbine);
+}
+
+__host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint &bladeNode, uint numberOfNodesPerBlade, uint &blade, uint numberOfBlades, uint &turbine)
 {
     // see https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/merge_requests/248 for visualization
     turbine = node / (numberOfNodesPerBlade * numberOfBlades);
@@ -50,6 +61,14 @@ __host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint
     blade = (node - x_off) / numberOfNodesPerBlade;
     uint y_off = numberOfNodesPerBlade * blade + x_off;
     bladeNode = node - y_off;
+}
+__host__ __device__ __inline__ TurbineNodeIndex calcTurbineBladeAndBladeNode(uint node, uint numberOfNodesPerBlade, uint numberOfBlades)
+{
+    uint turbine;
+    uint blade;
+    uint bladeNode;
+    calcTurbineBladeAndBladeNode(node, bladeNode, numberOfNodesPerBlade, blade, numberOfBlades, turbine);
+    return { /*.turbine = */ turbine, /*.blade = */ blade, /*.bladeNode = */ bladeNode }; // Designated initializers are a C++ 20 feature
 }
 
 #endif

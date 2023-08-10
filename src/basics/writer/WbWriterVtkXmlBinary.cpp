@@ -329,6 +329,32 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
 }
 
 /*===============================================================================*/
+std::string WbWriterVtkXmlBinary::writePolyLines(const std::string &filename,
+                                                 real *coordinatesX, real *coordinatesY, real *coordinatesZ,
+                                                 uint numberOfCoordinates)
+{
+    std::vector<UbTupleFloat3> nodes;
+    std::vector<UbTupleInt2> lines;
+
+    auto actualNodeNumber = 0;
+
+    for (uint i = 0; i < numberOfCoordinates - 1; i++) {
+        nodes.push_back(makeUbTuple(float(coordinatesX[i]), float(coordinatesY[i]), float(coordinatesZ[i])));
+        nodes.push_back(makeUbTuple(float(coordinatesX[i + 1]), float(coordinatesY[i + 1]), float(coordinatesZ[i + 1])));
+        lines.push_back(makeUbTuple(actualNodeNumber, actualNodeNumber + 1));
+        actualNodeNumber += 2;
+    }
+    return WbWriterVtkXmlBinary::writeLines(filename, nodes, lines);
+}
+
+std::string WbWriterVtkXmlBinary::writePolyLines(const std::string & filename, std::vector<real>& coordinatesX,
+                                                 std::vector<real>& coordinatesY,  std::vector<real>& coordinatesZ)
+{
+    return this->writePolyLines(filename, coordinatesX.data(), coordinatesY.data(), coordinatesZ.data(),
+                                                                       (uint)coordinatesX.size());
+}
+
+/*===============================================================================*/
 string WbWriterVtkXmlBinary::writeLinesWithLineData(const string &filename, vector<UbTupleFloat3> &nodes,
                                                     vector<UbTupleInt2> &lines, vector<string> &datanames,
                                                     vector<vector<float>> &celldata)

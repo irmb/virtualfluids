@@ -40,6 +40,7 @@
 #include <string>
 #include <vector>
 
+#include <basics/DataTypes.h>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbTuple.h>
@@ -80,6 +81,16 @@ public:
     // nodenumbering must start with 0!
     virtual std::string writeLines(const std::string & /*filename*/, std::vector<UbTupleFloat3> & /*nodes*/,
                                    std::vector<UbTupleInt2> & /*lines*/)
+    {
+        throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
+    }
+    virtual std::string writePolyLines(const std::string & /*filename*/, real*  /*coordinatesX*/,
+                                                            real*  /*coordinatesY*/, real* /*coordinatesZ*/, uint  /*numberOfCoordinates*/)
+    {
+        throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
+    }
+    virtual std::string writePolyLines(const std::string & /*filename*/, std::vector<real>&  /*coordinatesX*/,
+                                                            std::vector<real>&  /*coordinatesY*/,  std::vector<real>& /*coordinatesZ*/)
     {
         throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
     }
