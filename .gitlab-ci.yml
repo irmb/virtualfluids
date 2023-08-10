@@ -686,8 +686,8 @@ vf_wheel_to_jupyterhub:
 
 ###############################################################################
 # sonar-scanner runs sonar-project.properties
-# the reports in this file needs to match the artifacts.
-# This job only run on the development branch of the parent repository, not on forks!
+# the reports in this file need to match the artifacts.
+# This job only runs on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
 
