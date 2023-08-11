@@ -13,7 +13,7 @@
 
 #include <iomanip>
 
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 #include "Parameter/Parameter.h"
 // includes, kernels

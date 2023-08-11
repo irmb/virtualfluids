@@ -9,7 +9,7 @@
 #include "SimulationObserver.h"
 #include "LBMSystem.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class GbLine3D;
@@ -27,7 +27,7 @@ public:
 
 public:
     LineTimeSeriesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<GbLine3D> line,
-                              int level, std::shared_ptr<vf::mpi::Communicator> comm);
+                              int level, std::shared_ptr<vf::parallel::Communicator> comm);
     ~LineTimeSeriesSimulationObserver() override = default;
 
     void update(real step) override;

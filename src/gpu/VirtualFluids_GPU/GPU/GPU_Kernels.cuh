@@ -64,16 +64,17 @@ __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
     real* forces,
     bool EvenOrOdd);
 
-__global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
-                                                        unsigned int* bcMatD,
-                                                        unsigned int* neighborX,
-                                                        unsigned int* neighborY,
-                                                        unsigned int* neighborZ,
-                                                        real* DDStart,
-                                                        unsigned long long numberOfLBnodes,
-                                                        int level,
-                                                        real* forces,
-                                                        bool EvenOrOdd);
+__global__ void K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants_Device(
+    real omega,
+    unsigned int* bcMatD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* DDStart,
+    unsigned long long numberOfLBnodes,
+    int level,
+    real* forces,
+    bool EvenOrOdd);
 
 
 __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,

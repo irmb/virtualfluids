@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class Vector3D;
@@ -23,7 +23,7 @@ class MicrophoneArraySimulationObserver : public SimulationObserver
 {
 public:
     MicrophoneArraySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                               std::shared_ptr<vf::mpi::Communicator> comm);
+                               std::shared_ptr<vf::parallel::Communicator> comm);
     ~MicrophoneArraySimulationObserver() override;
 
     //! calls collectData.
@@ -38,7 +38,7 @@ protected:
 
 private:
     std::string path;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 
     struct Mic {
         unsigned int id;

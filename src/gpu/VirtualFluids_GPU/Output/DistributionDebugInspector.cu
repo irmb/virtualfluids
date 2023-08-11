@@ -37,7 +37,7 @@
 #include "basics/constants/NumericConstants.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
-#include <cuda/CudaGrid.h>
+#include <cuda_helper/CudaGrid.h>
 #include <cuda.h>
 
 #include <iostream>

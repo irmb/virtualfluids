@@ -138,6 +138,11 @@ if(BUILD_VF_GPU)
     set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}" CACHE STRING "Cuda Architecture (compute capabilitiy)")
 
     set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
+
+    # we disable the usage of cuda response files here
+    # usually CUDA_INCLUDES.rsp is genereated by cmake containing all include paths and is passed in compile_commands.json via the --options-file flag
+    # this .rsp file can not be parsed by clangd and therefore we disable it
+    set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_INCLUDES 0)
 endif()
 
 
@@ -205,7 +210,7 @@ ENDIF()
 
 add_subdirectory(src/logger)
 add_subdirectory(src/basics)
-add_subdirectory(src/mpi)
+add_subdirectory(src/parallel)
 add_subdirectory(src/lbm)
 
 
@@ -216,7 +221,7 @@ if (BUILD_VF_CPU)
     include(cpu.cmake)
 endif()
 if(BUILD_VF_GPU)
-    add_subdirectory(src/cuda)
+    add_subdirectory(src/gpu/cuda_helper)
     include(gpu.cmake)
 endif()
 

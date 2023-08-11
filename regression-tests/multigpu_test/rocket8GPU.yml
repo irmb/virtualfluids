@@ -31,8 +31,8 @@ copy:
     to: "multigpu_test/CMakePresets.json"
     overwrite: true
 
-  - from: "apps/gpu/LBM/"
-    to: "multigpu_test/apps/gpu/LBM/"
+  - from: "apps/gpu/"
+    to: "multigpu_test/apps/gpu/"
     overwrite: true
 
 collect:

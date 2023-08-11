@@ -6,7 +6,7 @@
 ////two plates flow with forcing
 //void pf3()
 //{
-//   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+//   SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
 //   int myid = comm->getProcessID();
 //
 //   //parameters

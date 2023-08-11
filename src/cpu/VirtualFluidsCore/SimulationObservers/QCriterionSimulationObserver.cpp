@@ -7,11 +7,11 @@
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
 #include "BCArray3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "UbScheduler.h"
 
 QCriterionSimulationObserver::QCriterionSimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                             SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm)
+                                             SPtr<UbScheduler> s, std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), path(path), comm(comm), writer(writer)
 {
     init();

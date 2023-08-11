@@ -1,7 +1,7 @@
 #include "CalculateTorqueSimulationObserver.h"
 #include "BCSet.h"
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "UbScheduler.h"
 #include "Grid3D.h"
@@ -14,7 +14,7 @@
 #include "DistributionArray3D.h"
 #include "NonNewtonianFluids/LBM/Rheology.h"
 
-CalculateTorqueSimulationObserver::CalculateTorqueSimulationObserver( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::mpi::Communicator> comm) : SimulationObserver(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
+CalculateTorqueSimulationObserver::CalculateTorqueSimulationObserver( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::parallel::Communicator> comm) : SimulationObserver(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
 {
    if (comm->getProcessID() == comm->getRoot())
    {

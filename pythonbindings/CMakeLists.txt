@@ -41,18 +41,27 @@ target_include_directories(lbm_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
 target_include_directories(lbm_bindings PRIVATE ${CMAKE_BINARY_DIR})
 add_dependencies(python_bindings lbm_bindings)
 
+pybind11_add_module(communicator_bindings MODULE src/communicator.cpp)
+set_target_properties(  communicator_bindings PROPERTIES
+                        LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
+                        OUTPUT_NAME "communicator")
+target_link_libraries(communicator_bindings PRIVATE parallel)
+target_include_directories(communicator_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
+target_include_directories(communicator_bindings PRIVATE ${CMAKE_BINARY_DIR})
+target_compile_definitions(communicator_bindings PRIVATE VF_MPI)
+add_dependencies(python_bindings communicator_bindings)
+
 
 IF(BUILD_VF_GPU)
     pybind11_add_module(gpu_bindings MODULE src/gpu/gpu.cpp)
     set_target_properties(  gpu_bindings PROPERTIES
                             LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
                             OUTPUT_NAME "gpu")
-    target_link_libraries(gpu_bindings PRIVATE basics)
     set_source_files_properties(src/gpu/gpu.cpp PROPERTIES LANGUAGE CUDA)
 
     target_include_directories(gpu_bindings PRIVATE ${VF_THIRD_DIR}/cuda_samples/)
 
-    target_link_libraries(gpu_bindings PRIVATE GridGenerator VirtualFluids_GPU)
+    target_link_libraries(gpu_bindings PRIVATE basics GridGenerator VirtualFluids_GPU parallel)
 
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_BINARY_DIR})
@@ -70,14 +79,8 @@ IF(BUILD_VF_CPU)
     target_include_directories(cpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(cpu_bindings PRIVATE ${CMAKE_BINARY_DIR})
 
-    target_compile_definitions(cpu_bindings PUBLIC VF_DOUBLE_ACCURACY) # TODO: remove this and always set it dynamically
-    target_compile_definitions(basics_bindings PUBLIC VF_DOUBLE_ACCURACY)
-    target_compile_definitions(logger_bindings PUBLIC VF_DOUBLE_ACCURACY)
-    target_compile_definitions(lbm_bindings PUBLIC VF_DOUBLE_ACCURACY)
-
     target_compile_definitions(cpu_bindings PRIVATE VF_METIS VF_MPI)
     add_dependencies(python_bindings cpu_bindings)
-
 
     # include bindings for muparsers
     pybind11_add_module(pymuparser MODULE src/muParser.cpp)
@@ -91,3 +94,16 @@ IF(BUILD_VF_CPU)
     target_compile_definitions(pymuparser PRIVATE VF_METIS VF_MPI)
     target_link_libraries(pymuparser PRIVATE muparser)
 ENDIF()
+
+if(BUILD_VF_DOUBLE_ACCURACY)
+IF(BUILD_VF_CPU)
+    target_compile_definitions(cpu_bindings PRIVATE VF_DOUBLE_ACCURACY)
+endif()
+    target_compile_definitions(basics_bindings PRIVATE VF_DOUBLE_ACCURACY)
+    target_compile_definitions(logger_bindings PRIVATE VF_DOUBLE_ACCURACY)
+    target_compile_definitions(lbm_bindings PRIVATE VF_DOUBLE_ACCURACY)
+    IF(BUILD_VF_GPU)
+    target_compile_definitions(gpu_bindings PRIVATE VF_DOUBLE_ACCURACY)
+    endif()
+    target_compile_definitions(communicator_bindings PRIVATE VF_DOUBLE_ACCURACY)
+endif()

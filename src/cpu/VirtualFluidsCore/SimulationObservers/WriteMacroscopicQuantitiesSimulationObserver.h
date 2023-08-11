@@ -42,7 +42,7 @@
 #include "LBMSystem.h"
 #include "UbTuple.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class LBMUnitConverter;
@@ -63,7 +63,7 @@ public:
     //! \param conv is LBMUnitConverter object
     //! \param comm is Communicator object
     WriteMacroscopicQuantitiesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                          WbWriter *const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
+                                          WbWriter *const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::parallel::Communicator> comm);
     ~WriteMacroscopicQuantitiesSimulationObserver() override = default;
 
     void update(real step) override;
@@ -90,7 +90,7 @@ private:
     int minInitLevel;
     int maxInitLevel;
     int gridRank;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 
     using CalcMacrosFct = void (*)(const real *const &, real &, real &, real &, real &);
     CalcMacrosFct calcMacros;

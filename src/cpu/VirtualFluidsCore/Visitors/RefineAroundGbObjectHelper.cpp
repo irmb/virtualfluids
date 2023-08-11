@@ -1,5 +1,5 @@
 #include "RefineAroundGbObjectHelper.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "OverlapBlockVisitor.h"
 #include "RatioBlockVisitor.h"
 #include "RatioSmoothBlockVisitor.h"
@@ -11,7 +11,7 @@
 RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int refineLevel,
                                                        SPtr<D3Q27TriFaceMeshInteractor> objectIter,
                                                        real startDistance, real stopDistance,
-                                                       std::shared_ptr<vf::mpi::Communicator> comm)
+                                                       std::shared_ptr<vf::parallel::Communicator> comm)
     : grid(grid), refineLevel(refineLevel), objectIter(objectIter), startDistance(startDistance),
       stopDistance(stopDistance), comm(comm)
 {

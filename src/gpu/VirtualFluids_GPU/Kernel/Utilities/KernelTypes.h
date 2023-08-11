@@ -11,20 +11,20 @@ namespace vf::CollisionKernel::Compressible {
     static const std::string CumulantClassic = "CumulantCompSP27";
 
     static const std::string CumulantK15Unified = "CumulantK15Unified";
-    static const std::string CumulantK17Unified = "CumulantK17Unified";
+    static const std::string K17CompressibleNavierStokesUnified = "K17CompressibleNavierStokesUnified";
 
-    static const std::string CumulantK17Bulk = "CumulantK17BulkComp";
-    static const std::string CumulantK17Chim = "CumulantK17CompChim";
-    static const std::string CumulantK17 = "CumulantK17";
+    static const std::string K17CompressibleNavierStokes = "K17CompressibleNavierStokes";
+    static const std::string K17CompressibleNavierStokesBulkViscosity = "K17CompressibleNavierStokesBulkViscosity";
+    static const std::string K17CompressibleNavierStokesChimeraLegacy = "K17CompressibleNavierStokesChimeraLegacy";
 
     static const std::string CumulantAll4SP27 = "CumulantAll4CompSP27";
     static const std::string CumulantK18 = "CumulantK18Comp";
     static const std::string CumulantK20 = "CumulantK20Comp";
 
-    static const std::string CumulantK15 = "CumulantK15Comp";
-    static const std::string CumulantK15Bulk = "CumulantK15BulkComp";
-    static const std::string CumulantK15Sponge = "CumulantK15SpongeComp";
-}
+    static const std::string K15CompressibleNavierStokes = "K15CompressibleNavierStokes";
+    static const std::string K15CompressibleNavierStokesBulk = "K15CompressibleNavierStokesBulk";
+    static const std::string K15CompressibleNavierStokesSponge = "K15CompressibleNavierStokesSponge";
+    }
 
 namespace vf::CollisionKernel::Incompressible {
     static const std::string BGK = "BGKIncompSP27";

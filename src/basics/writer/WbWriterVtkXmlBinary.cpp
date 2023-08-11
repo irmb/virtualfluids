@@ -39,50 +39,78 @@
 
 using namespace std;
 
-/*===============================================================================*/
-const std::string WbWriterVtkXmlBinary::pvdEndTag = "   </Collection>\n</VTKFile>";
-/*===============================================================================*/
-string WbWriterVtkXmlBinary::writeCollection(const string &filename, const vector<string> &filenames,
-                                             const double &timeStep, const bool &sepGroups)
+ofstream createFileStream(const std::string &vtkFilename)
 {
-    string vtkfilename = filename + ".pvd";
-    ofstream out(vtkfilename.c_str());
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
+    ofstream outputFileStream(vtkFilename.c_str(), ios::out | ios::binary);
+    if (!outputFileStream) {
+        outputFileStream.clear();
+        const std::string path = UbSystem::getPathFromString(vtkFilename);
+        if (!path.empty()) {
             UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str());
+            outputFileStream.open(vtkFilename.c_str(), ios::out | ios::binary);
         }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
+        if (!outputFileStream) throw UbException(UB_EXARGS, "couldn't open file " + vtkFilename);
     }
+    return outputFileStream;
+}
 
-    string endian;
-    if (UbSystem::isLittleEndian())
-        endian = "LittleEndian";
-    else
-        endian = "BigEndian";
-    out << "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"" << endian << "\" >" << endl;
-    out << "   <Collection>" << endl;
+void addCollectionHeader(std::ofstream &outputFileStream)
+{
+    std::string endian = UbSystem::isLittleEndian() ? "LittleEndian" : "BigEndian";
+    outputFileStream << "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"" << endian << "\" >" << endl;
+    outputFileStream << "   <Collection>" << endl;
+}
 
+void addCollectionDatasetsForTimeStep(std::ofstream &outputFileStream, const vector<string> &filenames, double timeStep, bool separateGroups)
+{
     int group = 0, part = 0;
     for (size_t i = 0; i < filenames.size(); i++) {
-        out << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << part
-            << "\" file=\"" << filenames[i] << "\"/>" << endl;
-        if (sepGroups)
+        outputFileStream << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << part << "\" file=\"" << filenames[i] << "\"/>" << endl;
+        if (separateGroups)
             group++;
         else
             part++;
     }
-    out << pvdEndTag;
-    out.close();
-
-    return vtkfilename;
 }
+
+std::string getCollectionEndString()
+{
+    return "   </Collection>\n</VTKFile>";
+}
+
+void finalizeCollectionFile(std::ofstream &outputFileStream)
+{
+    outputFileStream << getCollectionEndString();
+    outputFileStream.close();
+}
+
+std::string WbWriterVtkXmlBinary::writeCollectionForTimeSeries(const std::string &filename,
+                                                               const std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps, bool separateGroups) const
+{
+    std::string vtkFilename = filename + ".pvd";
+    ofstream out = createFileStream(vtkFilename);
+    addCollectionHeader(out);
+    for (auto [timeStep, filenames]: filesNamesForTimeSteps) {
+        addCollectionDatasetsForTimeStep(out, filenames, timeStep, separateGroups);
+    }
+    finalizeCollectionFile(out);
+    return vtkFilename;
+}
+
+string WbWriterVtkXmlBinary::writeCollection(const string &filename, const vector<string> &filenames,
+                                             const double &timeStep, const bool &separateGroups) const
+{
+    std::string vtkFilename = filename + ".pvd";
+    ofstream out = createFileStream(vtkFilename);
+    addCollectionHeader(out);
+    addCollectionDatasetsForTimeStep(out, filenames, timeStep, separateGroups);
+    finalizeCollectionFile(out);
+    return vtkFilename;
+}
+
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::addFilesToCollection(const string &filename, const vector<string> &filenames,
-                                                  const double &timeStep, const bool &sepGroups)
+                                                  const double &timeStep, const bool &separateGroups) const
 {
     string vtkfilename = filename;
     fstream test(vtkfilename.c_str(), ios::in);
@@ -91,41 +119,31 @@ string WbWriterVtkXmlBinary::addFilesToCollection(const string &filename, const 
         vtkfilename += ".pvd";
         test.open(vtkfilename.c_str(), ios::in);
         if (!test)
-            return this->writeCollection(filename, filenames, timeStep, sepGroups);
+            return this->writeCollection(filename, filenames, timeStep, separateGroups);
     }
 
     fstream out(vtkfilename.c_str(), ios::in | ios::out);
-    out.seekp(-(int)pvdEndTag.size() - 1, ios_base::end);
+    out.seekp(-(int)getCollectionEndString().size() - 1, ios_base::end);
 
     int group = 0;
     for (size_t i = 0; i < filenames.size(); i++) {
         out << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << i << "\" file=\""
             << filenames[i] << "\"/>" << endl;
-        if (sepGroups)
+        if (separateGroups)
             group++;
     }
-    out << pvdEndTag;
+    out <<  getCollectionEndString();
 
     return vtkfilename;
 }
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::writeParallelFile(const string &filename, vector<string> &pieceSources,
-                                               vector<string> &pointDataNames, vector<string> &cellDataNames)
+                                               vector<string> &pointDataNames, vector<string> &cellDataNames) const
 {
     string vtkfilename = filename + ".pvtu";
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeParallelFile to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str());
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str());
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    std::ofstream out = createFileStream(vtkfilename);
 
     // VTK FILE
     out << "<?xml version=\"1.0\"?>\n";
@@ -159,25 +177,6 @@ string WbWriterVtkXmlBinary::writeParallelFile(const string &filename, vector<st
 }
 
 /*===============================================================================*/
-
-// helper functions
-
-ofstream createFileStream(std::string vtkfilename)
-{
-
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
-    return out;
-}
 
 void writeVtkHeader(ofstream &out, int numberOfNodes, int numberOfCells)
 {
@@ -286,7 +285,7 @@ void writeCellData(ofstream &out, int bytesPerByteVal, int bytesScalarData, vect
     }
 }
 
-void writeEndOfFile(ofstream &out)
+void writeEndOfVtkFile(ofstream &out)
 {
     out << "\n</AppendedData>\n";
     out << "</VTKFile>";
@@ -323,10 +322,36 @@ string WbWriterVtkXmlBinary::writeLines(const string &filename, vector<UbTupleFl
     writeCellConnectivity(out, bytesPerByteVal, bytesCellConnectivity, lines);
     writeCellOffsets(out, bytesPerByteVal, bytesCellOffsets, nofCells);
     writeCellTypes(out, bytesPerByteVal, bytesCellTypes, nofCells);
-    writeEndOfFile(out);
+    writeEndOfVtkFile(out);
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLines to " << vtkfilename << " - end");
 
     return vtkfilename;
+}
+
+/*===============================================================================*/
+std::string WbWriterVtkXmlBinary::writePolyLines(const std::string &filename,
+                                                 real *coordinatesX, real *coordinatesY, real *coordinatesZ,
+                                                 uint numberOfCoordinates)
+{
+    std::vector<UbTupleFloat3> nodes;
+    std::vector<UbTupleInt2> lines;
+
+    auto actualNodeNumber = 0;
+
+    for (uint i = 0; i < numberOfCoordinates - 1; i++) {
+        nodes.push_back(makeUbTuple(float(coordinatesX[i]), float(coordinatesY[i]), float(coordinatesZ[i])));
+        nodes.push_back(makeUbTuple(float(coordinatesX[i + 1]), float(coordinatesY[i + 1]), float(coordinatesZ[i + 1])));
+        lines.push_back(makeUbTuple(actualNodeNumber, actualNodeNumber + 1));
+        actualNodeNumber += 2;
+    }
+    return WbWriterVtkXmlBinary::writeLines(filename, nodes, lines);
+}
+
+std::string WbWriterVtkXmlBinary::writePolyLines(const std::string & filename, std::vector<real>& coordinatesX,
+                                                 std::vector<real>& coordinatesY,  std::vector<real>& coordinatesZ)
+{
+    return this->writePolyLines(filename, coordinatesX.data(), coordinatesY.data(), coordinatesZ.data(),
+                                                                       (uint)coordinatesX.size());
 }
 
 /*===============================================================================*/
@@ -362,7 +387,7 @@ string WbWriterVtkXmlBinary::writeLinesWithLineData(const string &filename, vect
     writeCellOffsets(out, bytesPerByteVal, bytesCellOffsets, nofCells);
     writeCellTypes(out, bytesPerByteVal, bytesCellTypes, nofCells);
     writeCellData(out, bytesPerByteVal, bytesScalarData, datanames, celldata);
-    writeEndOfFile(out);
+    writeEndOfVtkFile(out);
 
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeLinesWithLineData to " << vtkfilename << " - end");
 
@@ -494,17 +519,7 @@ string WbWriterVtkXmlBinary::writeTriangles(const string &filename, vector<UbTup
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeTriangles to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)triangles.size();
@@ -599,17 +614,7 @@ string WbWriterVtkXmlBinary::writeTrianglesWithNodeData(const string &filename, 
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeTrianglesWithNodeData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -722,17 +727,7 @@ string WbWriterVtkXmlBinary::writeQuads(const string &filename, vector<UbTupleFl
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeQuads to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -827,17 +822,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeData(const string &filename, vect
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeQuadsWithNodeData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -952,17 +937,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithCellData(const string &filename, vect
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeQuadsWithCellData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -1081,17 +1056,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeAndCellData(const string &filenam
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeQuadsWithNodeAndCellData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -1225,17 +1190,7 @@ string WbWriterVtkXmlBinary::writeOctsWithCellData(const string &filename, vecto
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeOctsWithCellData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -1354,17 +1309,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string &filename, vecto
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeOctsWithNodeData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -1483,17 +1428,7 @@ string WbWriterVtkXmlBinary::writeOcts(const string &filename, vector<UbTupleFlo
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeOcts to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
@@ -1589,17 +1524,7 @@ std::string WbWriterVtkXmlBinary::writeNodes(const std::string &filename, std::v
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeNodes to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
 
@@ -1684,17 +1609,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string &file
     string vtkfilename = filename + getFileExtension();
     UBLOG(logDEBUG1, "WbWriterVtkXmlBinary::writeNodesWithNodeData to " << vtkfilename << " - start");
 
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-    if (!out) {
-        out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
-        if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
-            out.open(vtkfilename.c_str(), ios::out | ios::binary);
-        }
-        if (!out)
-            throw UbException(UB_EXARGS, "couldn't open file " + vtkfilename);
-    }
+    ofstream out = createFileStream(vtkfilename);
 
     int nofNodes = (int)nodes.size();
 

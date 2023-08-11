@@ -32,7 +32,6 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <gpu/VirtualFluids_GPU/LBM/Simulation.h>
-#include <gpu/VirtualFluids_GPU/Communication/Communicator.h>
 #include <gpu/VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactory.h>
 #include <gpu/VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
 #include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
@@ -43,6 +42,7 @@
 #include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "gpu/VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "parallel/Communicator.h"
 
 namespace simulation
 {
@@ -54,7 +54,7 @@ namespace simulation
         py::class_<Simulation>(parentModule, "Simulation")
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
-                        vf::gpu::Communicator &,
+                        vf::parallel::Communicator &,
                         GridProvider &,
                         BoundaryConditionFactory*,
                         GridScalingFactory*>(), 
@@ -66,7 +66,7 @@ namespace simulation
                         py::arg("gridScalingFactory"))
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
-                        vf::gpu::Communicator &,
+                        vf::parallel::Communicator &,
                         GridProvider &,
                         BoundaryConditionFactory*>(), 
                         py::arg("parameter"),
@@ -76,7 +76,7 @@ namespace simulation
                         py::arg("bcFactory"))
         .def(py::init<  std::shared_ptr<Parameter>,
                         std::shared_ptr<CudaMemoryManager>,
-                        vf::gpu::Communicator &,
+                        vf::parallel::Communicator &,
                         GridProvider &,
                         BoundaryConditionFactory*,
                         std::shared_ptr<TurbulenceModelFactory>,

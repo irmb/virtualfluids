@@ -35,7 +35,7 @@
 #define CREATETRANSMITTERSHELPER_H
 
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 
 #include "LBMSystem.h"
 
@@ -61,7 +61,7 @@ public:
 public:
     CreateTransmittersHelper();
     void createTransmitters(const SPtr<Block3D> sblock, const SPtr<Block3D> tblock, int dir, IBlock ib,
-                            TransmitterPtr &sender, TransmitterPtr &receiver, std::shared_ptr<vf::mpi::Communicator> comm,
+                            TransmitterPtr &sender, TransmitterPtr &receiver, std::shared_ptr<vf::parallel::Communicator> comm,
                             TransmitterType tType);
 
 protected:

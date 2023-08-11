@@ -11,7 +11,6 @@
 
 #include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"
-#include "gpu/VirtualFluids_GPU/Communication/Communicator.h"
 
 namespace NeighborDebugWriter
 {

@@ -11,7 +11,7 @@
 
 class UbScheduler;
 class Grid3D;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 
 //! \brief The class sets viscosity/collision factor according to a previously defined function in time.
 //! \details initialization in test case (example):
@@ -28,7 +28,7 @@ namespace vf::mpi {class Communicator;}
 class DecreaseViscositySimulationObserver : public SimulationObserver
 {
 public:
-    DecreaseViscositySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, mu::Parser *nueFunc, std::shared_ptr<vf::mpi::Communicator> comm);
+    DecreaseViscositySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, mu::Parser *nueFunc, std::shared_ptr<vf::parallel::Communicator> comm);
     ~DecreaseViscositySimulationObserver() override;
     //! calls collect PostprocessData.
     void update(real step) override;
@@ -36,7 +36,7 @@ public:
 protected:
     //! resets the collision factor depending on the current timestep.
     void setViscosity(real step);
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 
 private:
     mutable mu::value_type timeStep;

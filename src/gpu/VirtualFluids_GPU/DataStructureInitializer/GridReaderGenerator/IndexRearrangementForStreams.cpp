@@ -1,17 +1,18 @@
 #include "IndexRearrangementForStreams.h"
 
-#include "Communication/Communicator.h"
 #include "Logger.h"
 #include "Parameter/Parameter.h"
 #include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
+
+#include <parallel/Communicator.h>
 
 #include <algorithm>
 #include <iostream>
 
 IndexRearrangementForStreams::IndexRearrangementForStreams(std::shared_ptr<Parameter> para,
                                                            std::shared_ptr<GridBuilder> builder,
-                                                           vf::gpu::CommunicationRoutine &communicator)
+                                                           vf::parallel::Communicator &communicator)
     : para(para), builder(builder), communicator(communicator)
 {
 }
@@ -108,7 +109,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX
     std::vector<uint> recvIndicesForCommAfterFtoCPositions(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes * 2, 0);
 
-    communicator.receive_send(
+    communicator.receiveSend(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
@@ -135,7 +136,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY
     std::vector<uint> recvIndicesForCommAfterFtoCPositions(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes * 2, 0);
 
-    communicator.receive_send(
+    communicator.receiveSend(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
@@ -162,7 +163,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ
     std::vector<uint> recvIndicesForCommAfterFtoCPositions(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes * 2, 0);
 
-    communicator.receive_send(
+    communicator.receiveSend(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
         para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
@@ -368,7 +369,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     for (uint i = 0; i < (uint)sendIndicesOther.size(); i++)
         sendIndices[i + numberOfSendNodesAfterFtoC] = sendIndicesOther[i];
 
-    VF_LOG_INFO("Reorder send indices: process {}, numberOfSendNodesAfterFtoC {}", communicator.getPID(),
+    VF_LOG_INFO("Reorder send indices: process {}, numberOfSendNodesAfterFtoC {}", communicator.getProcessID(),
                 numberOfSendNodesAfterFtoC);
 
     if (numberOfSendNodesAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
@@ -514,7 +515,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
     for (uint i = 0; i < (uint)recvIndicesOther.size(); i++)
         recvIndices[i + numberOfRecvNodesAfterFtoC] = recvIndicesOther[i];
 
-    VF_LOG_INFO("Reorder send indices: process {}, numberOfRecvNodesAfterFtoC {}", communicator.getPID(),
+    VF_LOG_INFO("Reorder send indices: process {}, numberOfRecvNodesAfterFtoC {}", communicator.getProcessID(),
                 numberOfRecvNodesAfterFtoC);
 
     if (numberOfRecvNodesAfterFtoC + recvIndicesOther.size() != numberOfRecvIndices) {

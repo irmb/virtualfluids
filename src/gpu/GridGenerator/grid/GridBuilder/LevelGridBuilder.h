@@ -50,7 +50,7 @@
 using namespace vf::basics::constant;
 
 struct Vertex;
-class  Grid;
+class Grid;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;

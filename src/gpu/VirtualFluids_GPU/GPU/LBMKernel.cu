@@ -11,7 +11,7 @@
 #include <helper_cuda.h>
 
 #include "LBM/LB.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"

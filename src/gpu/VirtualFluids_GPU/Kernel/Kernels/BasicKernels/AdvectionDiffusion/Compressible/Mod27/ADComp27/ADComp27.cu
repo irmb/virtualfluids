@@ -2,7 +2,7 @@
 
 #include "ADComp27_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<ADComp27> ADComp27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
