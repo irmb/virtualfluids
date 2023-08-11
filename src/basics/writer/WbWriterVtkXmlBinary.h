@@ -72,7 +72,8 @@ public:
     std::string writeCollection(const std::string &filename, const std::vector<std::string> &filenames,
                                 const double &timeStep, const bool &separateGroups) const;
     std::string writeCollectionForTimeSeries(const std::string &filename,
-                                             const std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps, bool separateGroups) const;
+                                             const std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps,
+                                             bool separateGroups) const;
     std::string addFilesToCollection(const std::string &filename, const std::vector<std::string> &filenames,
                                      const double &timeStep, const bool &separateGroups) const;
     std::string writeParallelFile(const std::string &filename, std::vector<std::string> &pieceSources,

@@ -61,11 +61,13 @@ void addCollectionHeader(std::ofstream &outputFileStream)
     outputFileStream << "   <Collection>" << endl;
 }
 
-void addCollectionDatasetsForTimeStep(std::ofstream &outputFileStream, const vector<string> &filenames, double timeStep, bool separateGroups)
+void addCollectionDatasetsForTimeStep(std::ofstream &outputFileStream, const vector<string> &filenames, double timeStep,
+                                      bool separateGroups)
 {
     int group = 0, part = 0;
     for (size_t i = 0; i < filenames.size(); i++) {
-        outputFileStream << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << part << "\" file=\"" << filenames[i] << "\"/>" << endl;
+        outputFileStream << "       <DataSet timestep=\"" << timeStep << "\" group=\"" << group << "\" part=\"" << part
+                         << "\" file=\"" << filenames[i] << "\"/>" << endl;
         if (separateGroups)
             group++;
         else
@@ -84,8 +86,10 @@ void finalizeCollectionFile(std::ofstream &outputFileStream)
     outputFileStream.close();
 }
 
-std::string WbWriterVtkXmlBinary::writeCollectionForTimeSeries(const std::string &filename,
-                                                               const std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps, bool separateGroups) const
+std::string
+WbWriterVtkXmlBinary::writeCollectionForTimeSeries(const std::string &filename,
+                                                   const std::map<uint, std::vector<std::string>> &filesNamesForTimeSteps,
+                                                   bool separateGroups) const
 {
     std::string vtkFilename = filename + ".pvd";
     ofstream out = createFileStream(vtkFilename);

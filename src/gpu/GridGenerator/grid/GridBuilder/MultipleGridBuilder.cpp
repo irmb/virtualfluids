@@ -49,10 +49,9 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/STLReaderWriter/STLWriter.h"
 
-
-MultipleGridBuilder::MultipleGridBuilder() : LevelGridBuilder(), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
+MultipleGridBuilder::MultipleGridBuilder()
+    : numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr), gridFactory(GridFactory::make())
 {
-    gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 }
 
