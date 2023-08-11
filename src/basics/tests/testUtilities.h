@@ -19,4 +19,20 @@ inline auto RealNear = [](auto value, auto max_abs_error) {
 #endif
 };
 
+namespace testingVF
+{
+
+__inline__ void captureStdOut()
+{
+    testing::internal::CaptureStdout();
+}
+
+__inline__ bool stdoutContainsWarning()
+{
+    std::string output = testing::internal::GetCapturedStdout();
+    return output.find("warning") != std::string::npos;
+}
+
+} // namespace testingVF
+
 #endif

@@ -18,6 +18,8 @@
 
 #include <parallel/Communicator.h>
 
+using namespace testingVF;
+
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
     // assuming that the config files is stored parallel to this file.
@@ -257,12 +259,6 @@ class ParameterTestCumulantK17 : public testing::Test
 protected:
     void SetUp() override
     {
-    }
-
-    bool stdoutContainsWarning()
-    {
-        std::string output = testing::internal::GetCapturedStdout();
-        return output.find("warning") != std::string::npos;
     }
 
     Parameter para;

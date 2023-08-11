@@ -102,18 +102,16 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape)
 
 void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
 {
-    if (!coarseGridExists())
-        return emitNoCoarseGridExistsWarning();
+    if (!coarseGridExists()) return emitNoCoarseGridExistsWarning();
 
-    for( uint level = this->getNumberOfLevels(); level <= levelFine; level++ ){
+    for (uint level = this->getNumberOfLevels(); level <= levelFine; level++) {
         const auto grid = makeGrid(gridShape, level, levelFine);
 
-        if(level != levelFine){
+        if (level != levelFine) {
             grid->setInnerRegionFromFinerGrid(true);
-            grid->setNumberOfLayers( this->numberOfLayersBetweenLevels );
-        }
-        else{
-            grid->setNumberOfLayers( this->numberOfLayersFine );
+            grid->setNumberOfLayers(this->numberOfLayersBetweenLevels);
+        } else {
+            grid->setNumberOfLayers(this->numberOfLayersFine);
         }
 
         grids.push_back(grid);
@@ -124,15 +122,14 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
     // this did not work for concave geometries
     //////////////////////////////////////////////////////////////////////////
 
-    //const uint nodesBetweenGrids = 12;
-    //const uint levelDifference = levelFine - getNumberOfLevels();
-    //const uint oldGridSize = this->getNumberOfLevels();
+    // const uint nodesBetweenGrids = 12;
+    // const uint levelDifference = levelFine - getNumberOfLevels();
+    // const uint oldGridSize = this->getNumberOfLevels();
 
-    //addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, gridShape);
-    //addFineGridToList(levelFine, gridShape->clone());
+    // addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, gridShape);
+    // addFineGridToList(levelFine, gridShape->clone());
 
-
-    //eraseGridsFromListIfInvalid(oldGridSize);
+    // eraseGridsFromListIfInvalid(oldGridSize);
 }
 
 void MultipleGridBuilder::addFineGridToList(uint level, SPtr<Object> gridShape)
