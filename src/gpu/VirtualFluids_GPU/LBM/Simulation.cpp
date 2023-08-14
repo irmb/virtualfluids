@@ -19,7 +19,7 @@
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
 #include "Output/EdgeNodeDebugWriter.hpp"
-#include "Output/NeighborDebugWriter.hpp"
+#include "Output/NeighborDebugWriter.h"
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"

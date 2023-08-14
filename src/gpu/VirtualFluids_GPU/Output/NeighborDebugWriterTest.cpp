@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
-#include "NeighborDebugWriter.hpp"
+#include "NeighborDebugWriter.h"
 #include "gpu/VirtualFluids_GPU/Utilities/testUtilitiesGPU.h"
+#include <basics/writer/WbWriterVtkXmlBinary.h>
 
 class WbWriterSpy : public WbWriter
 {
@@ -18,8 +19,11 @@ public:
     std::string getFileExtension() override { return ""; }
 };
 
-class NeighborDebugWriterTest : public testing::Test
+class NeighborDebugWriterTest : public testing::Test, public NeighborDebugWriter
 {
+public:
+    using NeighborDebugWriter::writeNeighborLinkLines;
+
 protected:
     void SetUp() override
     {

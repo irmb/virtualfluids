@@ -1,5 +1,4 @@
-#ifndef NEIGHBORDEBUG_HPP
-#define NEIGHBORDEBUG_HPP
+#include "NeighborDebugWriter.h"
 
 #include "LBM/LB.h"
 #include "Logger.h"
@@ -12,10 +11,7 @@
 #include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"
 
-namespace NeighborDebugWriter
-{
-
-inline void writeNeighborLinkLines(LBMSimulationParameter *parH, int direction, const std::string &name,
+void NeighborDebugWriter::writeNeighborLinkLines(LBMSimulationParameter *parH, int direction, const std::string &name,
                                    WbWriter *writer)
 {
     VF_LOG_INFO("Write node links in direction {}.", direction);
@@ -48,7 +44,7 @@ inline void writeNeighborLinkLines(LBMSimulationParameter *parH, int direction, 
     writer->writeLines(name, nodes, cells);
 }
 
-inline void writeNeighborLinkLinesDebug(Parameter *para)
+void NeighborDebugWriter::writeNeighborLinkLinesDebug(Parameter *para)
 {
     for (int level = 0; level <= para->getMaxLevel(); level++) {
         for (size_t direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
@@ -58,7 +54,3 @@ inline void writeNeighborLinkLinesDebug(Parameter *para)
         }
     }
 }
-
-} // namespace NeighborDebugWriter
-
-#endif
