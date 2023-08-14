@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
-#include "Output/InterfaceDebugWriter.hpp"
+#include "Output/InterfaceDebugWriter.h"
 #include "Output/EdgeNodeDebugWriter.hpp"
 #include "Output/NeighborDebugWriter.h"
 #include "Output/VeloASCIIWriter.hpp"

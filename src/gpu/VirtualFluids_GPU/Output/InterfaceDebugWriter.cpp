@@ -1,15 +1,14 @@
-#ifndef INTERFACEDEBUG_HPP
-#define INTERFACEDEBUG_HPP
-
 #include <fstream>
 #include <sstream>
+#include <cmath>
+
+#include "InterfaceDebugWriter.h"
 #include "StringUtilities/StringUtil.h"
-#include "lbm/constants/D3Q27.h"
+#include <lbm/constants/D3Q27.h>
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
-#include "basics/utilities/UbSystem.h"
+#include <basics/utilities/UbSystem.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
-#include <cmath>
 
 namespace InterfaceDebugWriter
 {
@@ -601,7 +600,7 @@ void checkForSendNodeZ(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCZ, 8.0);
 }
 
-void writeInterfaceFCC_Send(Parameter *para, int processID = 0)
+void writeInterfaceFCC_Send(Parameter *para, int processID)
 {
     std::vector<UbTupleFloat3> nodesVec;
     int nodeNumberVec = 0;
@@ -655,7 +654,7 @@ void writeInterfaceFCC_Send(Parameter *para, int processID = 0)
     }
 }
 
-void writeInterfaceCFC_Recv(Parameter *para, int processID = 0)
+void writeInterfaceCFC_Recv(Parameter *para, int processID)
 {
     std::vector<UbTupleFloat3> nodesVec;
     int nodeNumberVec = 0;
@@ -716,7 +715,7 @@ void addToNodesVector(const int level, const int pos, std::vector<UbTupleFloat3>
     nodesVec.push_back(makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 }
 
-void writeSendNodesStream(Parameter *para, int processID = 0)
+void writeSendNodesStream(Parameter *para, int processID)
 {
     std::vector<UbTupleFloat3> nodesVec;
 
@@ -813,7 +812,7 @@ void writeSendNodesStream(Parameter *para, int processID = 0)
     }
 }
 
-void writeRecvNodesStream(Parameter *para, int processID = 0)
+void writeRecvNodesStream(Parameter *para, int processID)
 {
     std::vector<UbTupleFloat3> nodesVec;
 
@@ -900,4 +899,3 @@ void writeRecvNodesStream(Parameter *para, int processID = 0)
 }
 
 } // namespace InterfaceDebugWriter
-#endif
