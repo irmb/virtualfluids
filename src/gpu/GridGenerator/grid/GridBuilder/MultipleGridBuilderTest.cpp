@@ -138,3 +138,24 @@ TEST_F(MultipleGridBuilderTestFixture, fineGridExists_addGridWithoutLevel_addsGr
     EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(3));
     EXPECT_THAT(gridBuilder.getGrid(2)->getDelta(), testing::Eq(0.5 * 0.5 * delta));
 }
+
+TEST_F(MultipleGridBuilderTestFixture, addGridWithPredefinedDelta_hasCorrectDelta)
+{
+    gridBuilder.addGridWithSameDeltaAsPreviousGrid(gridShape);
+    EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(2));
+    EXPECT_THAT(gridBuilder.getGrid(1)->getDelta(), RealEq(gridBuilder.getGrid(0)->getDelta()));
+
+    gridBuilder.addGridWithSameDeltaAsPreviousGrid(gridShape);
+    EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(3));
+    EXPECT_THAT(gridBuilder.getGrid(2)->getDelta(), RealEq(gridBuilder.getGrid(1)->getDelta()));
+}
+
+TEST(MultipleGridBuilderTest, noCoarseGrid_addGridWithPredefinedDelta_warns)
+{
+    MultipleGridBuilder gridBuilder;
+    SPtr<Object> gridShape;
+    
+    testingVF::captureStdOut();
+    gridBuilder.addGridWithSameDeltaAsPreviousGrid(gridShape);
+    EXPECT_TRUE(testingVF::stdoutContainsWarning());
+}

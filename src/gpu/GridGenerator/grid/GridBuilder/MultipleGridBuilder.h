@@ -33,6 +33,7 @@
 #ifndef MULTIPLE_GRID_BUILDER_H
 #define MULTIPLE_GRID_BUILDER_H
 
+#include <optional>
 #include <vector>
 #include <array>
 
@@ -52,6 +53,7 @@ public:
 
     GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape);
+    GRIDGENERATOR_EXPORT void addGridWithSameDeltaAsPreviousGrid(SPtr<Object> gridShape);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape, uint levelFine);
 
     GRIDGENERATOR_EXPORT void addGeometry(SPtr<Object> gridShape);
@@ -93,7 +95,7 @@ private:
     std::array<real, 3> getOffset(real delta) const;
     std::vector<uint> getSpacingFactors(uint levelDifference) const;
 
-    SPtr<Grid> makeGrid(SPtr<Object> gridShape, uint level, uint levelFine);
+    SPtr<Grid> makeGrid(SPtr<Object> gridShape, uint level, uint levelFine, std::optional<real> deltaPredefined = std::nullopt);
     SPtr<Grid> makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
 
     static void emitNoCoarseGridExistsWarning();

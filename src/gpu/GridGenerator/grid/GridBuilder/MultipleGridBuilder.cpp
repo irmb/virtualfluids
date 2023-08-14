@@ -95,7 +95,17 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape)
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
-    const auto grid = makeGrid(gridShape, getNumberOfLevels(), 0);
+    const auto grid = makeGrid(std::move(gridShape), getNumberOfLevels(), 0);
+
+    addGridToListIfValid(grid);
+}
+
+void MultipleGridBuilder::addGridWithSameDeltaAsPreviousGrid(SPtr<Object> gridShape)
+{
+    if (!coarseGridExists())
+        return emitNoCoarseGridExistsWarning();
+
+    const auto grid = makeGrid(std::move(gridShape), getNumberOfLevels(), 0, grids.back()->getDelta());
 
     addGridToListIfValid(grid);
 }
@@ -195,17 +205,17 @@ bool MultipleGridBuilder::coarseGridExists() const
     return !grids.empty();
 }
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uint levelFine)
+SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uint levelFine, std::optional<real> deltaPredefined)
 {
     boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
 
-    const real delta = calculateDelta(level);
+    const real delta = deltaPredefined ? deltaPredefined.value() : calculateDelta(level);
 
     bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
+    auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
 
-	SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
+    SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
                                                    staggeredCoordinates[1],
                                                    staggeredCoordinates[2],
                                                    staggeredCoordinates[3],
