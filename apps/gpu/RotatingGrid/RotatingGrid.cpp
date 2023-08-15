@@ -76,8 +76,11 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        std::string path("./output/RotatingGrid");
-        std::string simulationName("RotatingGrid");
+        enum RotationOrInterpolation {Rot, Int};
+        const RotationOrInterpolation rotOrInt = Rot;
+
+        const std::string path("./output/RotatingGrid");
+        const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid";
 
         const real L = 1.0;
         const real Re = 2000.0;
@@ -104,7 +107,9 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -1.5 * L, 0.5 * L, 0.5 * L, 1.5 * L, dx);
 
-        gridBuilder->addGridRotatingGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.5 * L));
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L));
+        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L), 1);
+
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -192,10 +197,11 @@ int main()
 
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
 
-        // gridBuilder->writeGridsToVtk(para->getOutputPath() + "grid");
+        const std::string gridName = rotOrInt == Rot ? "rot_grid" : "rot";
+        gridBuilder->writeGridsToVtk(para->getOutputPath() + gridName);
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
-        sim.run();
+        // sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;

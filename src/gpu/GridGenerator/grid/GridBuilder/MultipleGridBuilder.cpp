@@ -105,7 +105,13 @@ void MultipleGridBuilder::addGridRotatingGrid(SPtr<VerticalCylinder> cylinder)
 {
     if (!coarseGridExists()) return emitNoCoarseGridExistsWarning();
 
-    const auto grid = makeRotatingGrid(std::move(cylinder), getNumberOfLevels(), 0);
+    const uint level = getNumberOfLevels();
+    const uint levelFine = 1;
+
+    VF_LOG_WARNING("Make rotating Grid... {}, {}", level, levelFine);
+    const auto grid = makeRotatingGrid(std::move(cylinder), level, levelFine);
+
+    // grid->setNumberOfLayers(this->numberOfLayersFine);
 
     if (!isGridInCoarseGrid(grid)) return emitGridIsNotInCoarseGridWarning();
 
@@ -118,6 +124,7 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
     if (!coarseGridExists()) return emitNoCoarseGridExistsWarning();
 
     for (uint level = this->getNumberOfLevels(); level <= levelFine; level++) {
+        VF_LOG_WARNING("Make Grid... {}, {}", level, levelFine);
         const auto grid = makeGrid(gridShape, level, levelFine);
 
         if (level != levelFine) {
@@ -218,6 +225,14 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uin
 
     const auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
 
+    VF_LOG_WARNING("Object Size x : {}, {} \n z: {}, {}", gridShape->getX1Minimum(), gridShape->getX1Maximum(), gridShape->getX3Minimum(), gridShape->getX3Maximum());
+    VF_LOG_WARNING("MakeGrid {}, {}, {}, {}, {}, {}, delta: {}, level: {}", staggeredCoordinates[0],
+                                                   staggeredCoordinates[1],
+                                                   staggeredCoordinates[2],
+                                                   staggeredCoordinates[3],
+                                                   staggeredCoordinates[4],
+                                                   staggeredCoordinates[5], delta, level);
+
     SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
                                                    staggeredCoordinates[1],
                                                    staggeredCoordinates[2],
@@ -225,12 +240,13 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uin
                                                    staggeredCoordinates[4],
                                                    staggeredCoordinates[5], delta, level);
 
+    VF_LOG_WARNING("oddStart, {} {} {}", xOddStart, yOddStart, zOddStart);
     newGrid->setOddStart(xOddStart, yOddStart, zOddStart);
 
     return newGrid;
 }
 
-SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<Object> gridShape, uint level, uint levelFine)
+SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<VerticalCylinder> cylinder, uint level, uint levelFine)
 {
     boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
 
@@ -238,15 +254,28 @@ SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<Object> gridShape, uint le
 
     bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-    const auto staggeredCoordinates =
-        getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart, { 0.5, 0.5, 0.5 });
+    const std::array<double, 3> staggeringRelative = { 0.5, 0.5, 0.5 };
 
-    SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
-                                                   staggeredCoordinates[1],
-                                                   staggeredCoordinates[2],
-                                                   staggeredCoordinates[3],
-                                                   staggeredCoordinates[4],
-                                                   staggeredCoordinates[5], delta, level);
+    const auto staggeredCoordinates =
+        getStaggeredCoordinates(cylinder, level, levelFine, xOddStart, yOddStart, zOddStart, staggeringRelative, true);
+
+    VF_LOG_WARNING("RotGr: Cylinder Size x : {}, {} \n z: {}, {}", cylinder->getX1Minimum(), cylinder->getX1Maximum(), cylinder->getX3Minimum(), cylinder->getX3Maximum());
+    VF_LOG_WARNING("RotGr: MakeGrid {}, {}, {}, {}, {}, {}, delta: {}, level: {}", staggeredCoordinates[0],
+                                                              staggeredCoordinates[1],
+                                                              staggeredCoordinates[2],
+                                                              staggeredCoordinates[3],
+                                                              staggeredCoordinates[4],
+                                                              staggeredCoordinates[5], delta, level);
+
+    cylinder = std::make_shared<VerticalCylinder>(cylinder->getX1Centroid(), cylinder->getX2Centroid(), cylinder->getX3Centroid(), cylinder->getRadius()+5*delta, cylinder->getHeight()+6*delta);
+    VF_LOG_WARNING("RotGr: LargerCylinder Size x : {}, {} \n z: {}, {}", cylinder->getX1Minimum(), cylinder->getX1Maximum(), cylinder->getX3Minimum(), cylinder->getX3Maximum());
+
+    SPtr<Grid> newGrid = this->makeGrid(cylinder, staggeredCoordinates[0],
+                                                  staggeredCoordinates[1],
+                                                  staggeredCoordinates[2],
+                                                  staggeredCoordinates[3],
+                                                  staggeredCoordinates[4],
+                                                  staggeredCoordinates[5], delta, level);
 
     newGrid->setOddStart(xOddStart, yOddStart, zOddStart);
 
@@ -261,7 +290,10 @@ real MultipleGridBuilder::calculateDelta(uint level) const
     return delta;
 }
 
-std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart, std::array<double, 3> relativeStagger) const
+std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine,
+                                                                 bool &xOddStart, bool &yOddStart, bool &zOddStart,
+                                                                 const std::array<double, 3> &relativeStagger,
+                                                                 bool gridIsForRotation) const
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -286,9 +318,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
     //
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real deltaCoarse = this->grids[level-1]->getDelta();
-    const real delta = 0.5 * deltaCoarse;
+    const real deltaCoarse = this->grids[level - 1]->getDelta();
+    const real delta = gridIsForRotation ? deltaCoarse : 0.5 * deltaCoarse;
 
+    VF_LOG_WARNING("getStaggeredCoordinates: create grid for rotation {}: ", gridIsForRotation);
+    VF_LOG_WARNING("delta = {}", delta);
+    VF_LOG_WARNING("level={}, levelFine={}", levelFine, levelFine);
 
 	std::array<real, 6> staggeredCoordinates;
 
@@ -373,6 +408,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
     while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= delta;
     while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= delta;
 
+    VF_LOG_WARNING("end of getStaggeredCoordinates()");
 	return staggeredCoordinates;
 }
 

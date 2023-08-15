@@ -84,7 +84,8 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
             cf.numberOfEntries++;
 
             coarseGrid->setNonStopperOutOfGridCellTo(indexOnCoarseGrid, FLUID_CFC);
-            fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridCF, FLUID_CFF);
+            // fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridCF, FLUID_CFF);
+            fineGrid->getField().setFieldEntry(indexOnFineGridCF, FLUID_CFF);
             break;
         }
     }
@@ -119,12 +120,12 @@ void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, G
             cf.numberOfEntries++;
 
             coarseGrid->setNonStopperOutOfGridCellTo(indexOnCoarseGrid, FLUID_CFC);
-            fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridCF, FLUID_CFF);
+            fineGrid->getField().setFieldEntry(indexOnFineGridCF, FLUID_CFF);
+
             break;
         }
     }
 }
-
 
 void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
@@ -159,6 +160,113 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
 
 				fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, FLUID_FCF);
 				coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
+				break;
+			}
+		}
+    }
+}
+
+void GridInterface::findInterfaceFCwithGap(uint indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+{
+    const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
+    const bool nodeOnCoarseGridIsCoarseToFine = coarseGrid->getField().isCoarseToFineNode(indexOnCoarseGrid);
+    if (!nodeOnCoarseGridIsFluid || nodeOnCoarseGridIsCoarseToFine)
+        return;
+
+    const uint indexOnFineGridFC = getFineToCoarseIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
+    // if (indexOnFineGridFC == INVALID_INDEX)
+    //     return;
+
+    // const bool fineGridNodeIsFluid = fineGrid->getField().isFluid(indexOnFineGridFC);
+    // if (!fineGridNodeIsFluid)
+    //     return;
+
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    for (const auto dir : coarseGrid->distribution)
+    {
+        const uint neighborIndex = coarseGrid->transCoordToIndex(
+            x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
+        if (neighborIndex != INVALID_INDEX)
+		{
+			const bool neighborIsInterpolationGapNode = coarseGrid->getField().isInterpolationGapNode(neighborIndex);
+			if (neighborIsInterpolationGapNode)
+			{
+				fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
+				fc.fine[fc.numberOfEntries] = this->findOffsetFC(indexOnFineGridFC, fineGrid, fc.numberOfEntries);
+
+				fc.numberOfEntries++;
+
+				fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, FLUID_FCF);
+				coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
+				break;
+			}
+		}
+    }
+}
+
+void GridInterface::findInterpolationGapC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+{
+    const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
+    const bool nodeOnCoarseGridIsCoarseToFine = coarseGrid->getField().isCoarseToFineNode(indexOnCoarseGrid);
+    if (!nodeOnCoarseGridIsFluid || nodeOnCoarseGridIsCoarseToFine)
+        return;
+
+    const uint indexOnFineGridFC = getFineToCoarseIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
+    if (indexOnFineGridFC == INVALID_INDEX)
+        return;
+
+    const bool fineGridNodeIsFluid = fineGrid->getField().isFluid(indexOnFineGridFC);
+    if (!fineGridNodeIsFluid)
+        return;
+
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    for (const auto dir : coarseGrid->distribution)
+    {
+        const uint neighborIndex = coarseGrid->transCoordToIndex(
+            x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
+        if (neighborIndex != INVALID_INDEX)
+		{
+			const bool neighborBelongsToCoarseToFineInterpolationCell = coarseGrid->getField().isCoarseToFineNode(neighborIndex);
+			if (neighborBelongsToCoarseToFineInterpolationCell)
+			{
+				// fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
+				// fc.fine[fc.numberOfEntries] = this->findOffsetFC(indexOnFineGridFC, fineGrid, fc.numberOfEntries);
+
+				// fc.numberOfEntries++;
+
+				// fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, INTERPOLATION_GAP);
+                // fineGrid->getField().setFieldEntry(indexOnFineGridFC, INTERPOLATION_GAP);
+				coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, INTERPOLATION_GAP);
+				break;
+			}
+		}
+    }
+}
+
+void GridInterface::findInterpolationGapF(const uint& indexOnFineGrid, GridImp* fineGrid)
+{
+    const bool nodeIsFluid = fineGrid->getField().isFluid(indexOnFineGrid);
+    const bool nodeIsCoarseToFine = fineGrid->getField().is(indexOnFineGrid, FLUID_CFF);
+    if (!nodeIsFluid || nodeIsCoarseToFine)
+        return;
+
+    real x, y, z;
+    fineGrid->transIndexToCoords(indexOnFineGrid, x, y, z);
+
+    for (const auto dir : fineGrid->distribution)
+    {
+        const uint neighborIndex = fineGrid->transCoordToIndex(
+            x + dir[0] * fineGrid->getDelta(), y + dir[1] * fineGrid->getDelta(), z + dir[2] * fineGrid->getDelta());
+        if (neighborIndex != INVALID_INDEX)
+		{
+			const bool neighborIsToCoarseToFine = fineGrid->getField().is(neighborIndex, FLUID_CFF);
+			if (neighborIsToCoarseToFine)
+			{
+                fineGrid->getField().setFieldEntry(indexOnFineGrid, INTERPOLATION_GAP);
 				break;
 			}
 		}

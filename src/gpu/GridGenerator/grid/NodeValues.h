@@ -44,6 +44,8 @@ static constexpr char FLUID_CFF = 2;
 static constexpr char FLUID_FCC = 3;
 static constexpr char FLUID_FCF = 4;
 
+static constexpr char INTERPOLATION_GAP = 5;
+
 static constexpr char MULTI_GPU_SEND    = 10;
 static constexpr char MULTI_GPU_RECIEVE = 11;
 

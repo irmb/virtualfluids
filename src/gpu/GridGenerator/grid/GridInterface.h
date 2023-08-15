@@ -49,6 +49,12 @@ public:
     void GRIDGENERATOR_EXPORT findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     void GRIDGENERATOR_EXPORT findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     
+    void GRIDGENERATOR_EXPORT findInterpolationGapC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    void GRIDGENERATOR_EXPORT findInterpolationGapF(const uint& indexOnFineGrid, GridImp* fineGrid);
+    void GRIDGENERATOR_EXPORT findInterfaceFCwithGap(uint indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+
+
+    
     void GRIDGENERATOR_EXPORT findInvalidBoundaryNodes(const uint& indexOnCoarseGrid, GridImp* coarseGrid);
 
     void GRIDGENERATOR_EXPORT findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index);

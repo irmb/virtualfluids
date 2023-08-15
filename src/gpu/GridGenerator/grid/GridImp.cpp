@@ -1105,15 +1105,15 @@ int GridImp::getSparseIndex(const real &x, const real &y, const real &z) const
 // --------------------------------------------------------- //
 void GridImp::findGridInterface(SPtr<Grid> finerGrid)
 {
-    auto fineGrid          = std::static_pointer_cast<GridImp>(finerGrid);
+    auto fineGridImp          = std::static_pointer_cast<GridImp>(finerGrid);
     const auto coarseLevel = this->getLevel();
-    const auto fineLevel   = fineGrid->getLevel();
+    const auto fineLevel   = fineGridImp->getLevel();
 
     VF_LOG_TRACE("find interface level {} -> {}", coarseLevel, fineLevel);
 
     this->gridInterface = new GridInterface();
     // TODO: this is stupid! concave refinements can easily have many more interface cells
-    const uint sizeCF = 10 * (fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz);
+    const uint sizeCF = 10 * (fineGridImp->nx * fineGridImp->ny + fineGridImp->ny * fineGridImp->nz + fineGridImp->nx * fineGridImp->nz);
     this->gridInterface->cf.coarse = new uint[sizeCF];
     this->gridInterface->cf.fine   = new uint[sizeCF];
     this->gridInterface->cf.offset = new uint[sizeCF];
@@ -1122,13 +1122,29 @@ void GridImp::findGridInterface(SPtr<Grid> finerGrid)
     this->gridInterface->fc.offset = new uint[sizeCF];
 
     for (uint index = 0; index < this->getSize(); index++)
-        this->findGridInterfaceCF(index, *fineGrid);
+        this->findGridInterfaceCF(index, *fineGridImp);
+
+    for (uint index = 0; index < this->getSize(); index++){
+        gridInterface->findInterpolationGapC(index, this, fineGridImp.get());
+    }
+
+    for (uint fineIndex; fineIndex < fineGridImp->getSize(); fineIndex++)
+        gridInterface->findInterpolationGapF(fineIndex, fineGridImp.get());
+
+    for (uint index = 0; index < this->getSize(); index++){
+        gridInterface->findInterfaceFCwithGap(index, this, fineGridImp.get());
+    }
 
     for (uint index = 0; index < this->getSize(); index++)
-        this->findGridInterfaceFC(index, *fineGrid);
+        this->findOverlapStopper(index, *fineGridImp);
 
     for (uint index = 0; index < this->getSize(); index++)
-        this->findOverlapStopper(index, *fineGrid);
+        if (this->getField().isInterpolationGapNode(index))
+            this->getField().setFieldEntry(index, FLUID);
+
+    for (uint fineIndex = 0; fineIndex < fineGridImp->getSize(); fineIndex++)
+        if (fineGridImp->getField().isInterpolationGapNode(fineIndex))
+            fineGridImp->getField().setFieldEntry(fineIndex, FLUID);
 
     VF_LOG_TRACE("  ... done.");
 }

@@ -76,6 +76,11 @@ bool Field::isCoarseToFineNode(uint index) const
     return field[index] == FLUID_CFC;
 }
 
+bool Field::isInterpolationGapNode(uint index) const
+{
+    return field[index] == INTERPOLATION_GAP;
+}
+
 bool Field::isFineToCoarseNode(uint index) const
 {
     return field[index] == FLUID_FCC;

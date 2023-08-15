@@ -116,3 +116,13 @@ void VerticalCylinder::scale(double delta)
     this->radius += delta;
     this->height += delta;
 }
+
+double VerticalCylinder::getRadius() const
+{
+    return radius;
+}
+
+double VerticalCylinder::getHeight() const
+{
+    return height;
+}

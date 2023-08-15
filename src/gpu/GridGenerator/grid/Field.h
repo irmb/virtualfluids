@@ -51,6 +51,7 @@ public:
     bool is(uint index, char type) const;
     bool isCoarseToFineNode(uint index) const;
     bool isFineToCoarseNode(uint index) const;
+    bool isInterpolationGapNode(uint index) const;
     bool isFluid(uint index) const;
     bool isInvalidSolid(uint index) const;
     bool isQ(uint index) const;
