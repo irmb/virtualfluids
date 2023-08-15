@@ -49,6 +49,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -79,7 +80,7 @@ int main()
         std::string simulationName("RotatingGrid");
 
         const real L = 1.0;
-        const real Re = 1000.0;
+        const real Re = 2000.0;
         const real velocity = 1.0;
         const real velocityLB = 0.05; // LB units
         const uint nx = 64;
@@ -94,9 +95,6 @@ int main()
         const real dx = L / real(nx);
         const real dt  = velocityLB / velocity * dx;
 
-        const real vxLB = velocityLB / sqrt(2.0); // LB units
-        const real vyLB = velocityLB / sqrt(2.0); // LB units
-
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
         //////////////////////////////////////////////////////////////////////////
@@ -104,9 +102,9 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -1.5 * L, 0.5 * L, 0.5 * L, 1.5 * L, dx);
 
-        gridBuilder->addGridWithSameDeltaAsPreviousGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25));
+        gridBuilder->addGridWithSameDeltaAsPreviousGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.5 * L));
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -127,7 +125,7 @@ int main()
         para->setVelocityLB(velocityLB);
         para->setViscosityLB(viscosityLB);
 
-        para->setVelocityRatio(velocity / velocityLB);
+        para->setVelocityRatio(1.0); // velocity / velocityLB);
         para->setDensityRatio(1.0);
 
         para->setTimestepOut(timeStepOut);
@@ -139,18 +137,20 @@ int main()
         // set boundary conditions
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+
+        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, velocityLB);
+        gridBuilder->setPressureBoundaryCondition(SideType::PZ, 0.0);
 
         BoundaryConditionFactory bcFactory;
 
-        bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
-        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
-
+        bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
+        // bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+        bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
@@ -179,8 +179,6 @@ int main()
         VF_LOG_INFO("Re                     = {}", Re);
         VF_LOG_INFO("lb_velocity [dx/dt]    = {}", velocityLB);
         VF_LOG_INFO("lb_viscosity [dx^2/dt] = {}", viscosityLB);
-        VF_LOG_INFO("lb_vx [dx/dt] (lb_velocity/sqrt(2)) = {}", vxLB);
-        VF_LOG_INFO("lb_vy [dx/dt] (lb_velocity/sqrt(2)) = {}", vyLB);
         printf("\n");
         VF_LOG_INFO("simulation parameter:");
         VF_LOG_INFO("--------------");

@@ -60,7 +60,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/BoundaryConditions/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
         const int numberOfProcesses = communicator.getNumberOfProcesses();
         const auto processID = communicator.getProcessID();
-        SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, processId);
+        SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, processID);
         std::vector<uint> devices(10);
         std::iota(devices.begin(), devices.end(), 0);
         para->setDevices(devices);
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
         // setup logger
         //////////////////////////////////////////////////////////////////////////
         vf::logging::Logger::changeLogPath("output/vflog_process" +
-                                           std::to_string(processId) + ".txt");
+                                           std::to_string(processID) + ".txt");
         vf::logging::Logger::initializeLogger();
 
         //////////////////////////////////////////////////////////////////////////
@@ -150,13 +150,15 @@ int main(int argc, char *argv[])
 
         real overlap = (real)8.0 * dx;
 
+        auto gridBuilder = std::make_shared<MultipleGridBuilder>();
+
         if (numberOfProcesses > 1) {
 
             //////////////////////////////////////////////////////////////////////////
             // add coarse grids
             //////////////////////////////////////////////////////////////////////////
 
-            real subdomainMinX = channelWidth * processId;
+            real subdomainMinX = channelWidth * processID;
             real subdomainMinXoverlap = subdomainMinX;
             real subdomainMaxX = subdomainMinX + channelWidth;
             real subdomainMaxXoverlap = subdomainMaxX;
@@ -166,8 +168,6 @@ int main(int argc, char *argv[])
 
             if (processID != numberOfProcesses - 1)
                 subdomainMaxXoverlap += overlap;
-
-            auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
             gridBuilder->addCoarseGrid(subdomainMinXoverlap, yGridMin, zGridMin, subdomainMaxXoverlap, yGridMax,
                                        zGridMax, dx);
@@ -190,13 +190,13 @@ int main(int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////////
 
             if (processID != 0) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, processId - 1);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, processID - 1);
             }
 
             if (processID != numberOfProcesses - 1) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, processId + 1);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, processID + 1);
             }
 
             //////////////////////////////////////////////////////////////////////////
