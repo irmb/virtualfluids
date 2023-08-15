@@ -85,7 +85,7 @@ int main()
         const real velocityLB = 0.05; // LB units
         const uint nx = 64;
 
-        const uint timeStepOut = 1000;
+        const uint timeStepOut = 10000;
         const uint timeStepEnd = 10000;
 
         //////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -1.5 * L, 0.5 * L, 0.5 * L, 1.5 * L, dx);
 
-        gridBuilder->addGridWithSameDeltaAsPreviousGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.5 * L));
+        gridBuilder->addGridRotatingGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.5 * L));
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -195,7 +195,7 @@ int main()
         // gridBuilder->writeGridsToVtk(para->getOutputPath() + "grid");
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
-        // sim.run();
+        sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;

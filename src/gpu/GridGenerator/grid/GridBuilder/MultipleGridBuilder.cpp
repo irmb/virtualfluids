@@ -45,6 +45,7 @@
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
 #include "grid/GridFactory.h"
+#include "geometries/VerticalCylinder/VerticalCylinder.h"
 
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/STLReaderWriter/STLWriter.h"
@@ -100,14 +101,16 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape)
     addGridToListIfValid(grid);
 }
 
-void MultipleGridBuilder::addGridWithSameDeltaAsPreviousGrid(SPtr<Object> gridShape)
+void MultipleGridBuilder::addGridRotatingGrid(SPtr<VerticalCylinder> cylinder)
 {
-    if (!coarseGridExists())
-        return emitNoCoarseGridExistsWarning();
+    if (!coarseGridExists()) return emitNoCoarseGridExistsWarning();
 
-    const auto grid = makeGrid(std::move(gridShape), getNumberOfLevels(), 0, grids.back()->getDelta());
+    const auto grid = makeRotatingGrid(std::move(cylinder), getNumberOfLevels(), 0);
 
-    addGridToListIfValid(grid);
+    if (!isGridInCoarseGrid(grid)) return emitGridIsNotInCoarseGridWarning();
+
+    rotatingGrid = grid;
+    addGridToList(grid);
 }
 
 void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
@@ -205,15 +208,15 @@ bool MultipleGridBuilder::coarseGridExists() const
     return !grids.empty();
 }
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uint levelFine, std::optional<real> deltaPredefined)
+SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uint levelFine)
 {
     boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
 
-    const real delta = deltaPredefined ? deltaPredefined.value() : calculateDelta(level);
+    const real delta = calculateDelta(level);
 
     bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-    auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
+    const auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
 
     SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
                                                    staggeredCoordinates[1],
@@ -222,7 +225,30 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uin
                                                    staggeredCoordinates[4],
                                                    staggeredCoordinates[5], delta, level);
 
-    newGrid->setOddStart( xOddStart, yOddStart, zOddStart );
+    newGrid->setOddStart(xOddStart, yOddStart, zOddStart);
+
+    return newGrid;
+}
+
+SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<Object> gridShape, uint level, uint levelFine)
+{
+    boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
+
+    const real delta = grids.back()->getDelta();
+
+    bool xOddStart = false, yOddStart = false, zOddStart = false;
+
+    const auto staggeredCoordinates =
+        getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart, { 0.5, 0.5, 0.5 });
+
+    SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
+                                                   staggeredCoordinates[1],
+                                                   staggeredCoordinates[2],
+                                                   staggeredCoordinates[3],
+                                                   staggeredCoordinates[4],
+                                                   staggeredCoordinates[5], delta, level);
+
+    newGrid->setOddStart(xOddStart, yOddStart, zOddStart);
 
     return newGrid;
 }
@@ -235,7 +261,7 @@ real MultipleGridBuilder::calculateDelta(uint level) const
     return delta;
 }
 
-std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart) const
+std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart, std::array<double, 3> relativeStagger) const
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -282,7 +308,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
 
             // use geometric series to account for overlap of higher levels:
             // overlap + overlap/2 + overlap/4 + ...
-            overlap *= 2.0 * ( 1.0 - pow(0.5, levelFine - level ) );
+            overlap *= 2.0 * ( 1.0 - pow(0.5, levelFine - level) );
         }
 
         // add overlap for finest level
@@ -316,12 +342,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
 
 	// Step 3
     // make the grid staggered with one layer of stopper nodes on the outside
-	staggeredCoordinates[0] -= 0.25 * deltaCoarse;
-	staggeredCoordinates[1] -= 0.25 * deltaCoarse;
-	staggeredCoordinates[2] -= 0.25 * deltaCoarse;
-	staggeredCoordinates[3] += 0.25 * deltaCoarse;
-	staggeredCoordinates[4] += 0.25 * deltaCoarse;
-	staggeredCoordinates[5] += 0.25 * deltaCoarse;
+	staggeredCoordinates[0] -= relativeStagger[0] * deltaCoarse;
+	staggeredCoordinates[1] -= relativeStagger[1] * deltaCoarse;
+	staggeredCoordinates[2] -= relativeStagger[2] * deltaCoarse;
+	staggeredCoordinates[3] += relativeStagger[0] * deltaCoarse;
+	staggeredCoordinates[4] += relativeStagger[1] * deltaCoarse;
+	staggeredCoordinates[5] += relativeStagger[2] * deltaCoarse;
 
 	// Step 4
     // add two layers until the refinement region is completely inside the fine grid
@@ -641,3 +667,7 @@ GRIDGENERATOR_EXPORT void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox>
     this->subDomainBox = subDomainBox;
 }
 
+GRIDGENERATOR_EXPORT SPtr<Grid> MultipleGridBuilder::getRotatingGrid()
+{
+    return rotatingGrid;
+}

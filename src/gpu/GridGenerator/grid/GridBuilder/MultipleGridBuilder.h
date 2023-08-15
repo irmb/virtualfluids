@@ -45,6 +45,7 @@
 
 class Object;
 class BoundingBox;
+class VerticalCylinder;
 
 class MultipleGridBuilder : public LevelGridBuilder
 {
@@ -53,7 +54,7 @@ public:
 
     GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape);
-    GRIDGENERATOR_EXPORT void addGridWithSameDeltaAsPreviousGrid(SPtr<Object> gridShape);
+    GRIDGENERATOR_EXPORT void addGridRotatingGrid(SPtr<VerticalCylinder> cylinder);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape, uint levelFine);
 
     GRIDGENERATOR_EXPORT void addGeometry(SPtr<Object> gridShape);
@@ -70,14 +71,21 @@ public:
     GRIDGENERATOR_EXPORT real getEndY(uint level) const;
     GRIDGENERATOR_EXPORT real getEndZ(uint level) const;
 
-    GRIDGENERATOR_EXPORT std::vector<SPtr<Grid> > getGrids() const;
+    GRIDGENERATOR_EXPORT std::vector<SPtr<Grid>> getGrids() const;
     GRIDGENERATOR_EXPORT void buildGrids(bool enableThinWalls = false);
 
-    GRIDGENERATOR_EXPORT void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
+    GRIDGENERATOR_EXPORT void setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels);
 
     GRIDGENERATOR_EXPORT void writeGridsToVtk(const std::string &path) const;
 
     GRIDGENERATOR_EXPORT void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
+
+    GRIDGENERATOR_EXPORT SPtr<Grid> getRotatingGrid();
+
+protected:
+    virtual SPtr<Grid> makeGrid(SPtr<Object> gridShape, uint level, uint levelFine);
+    virtual SPtr<Grid> makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
+    virtual SPtr<Grid> makeRotatingGrid(SPtr<Object> gridShape, uint level, uint levelFine);
 
 private:
     void addGridToList(SPtr<Grid> grid);
@@ -86,17 +94,16 @@ private:
     bool isGridInCoarseGrid(SPtr<Grid> grid) const;
 
     void addFineGridToList(uint level, SPtr<Object> gridShape);
-    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, SPtr<Object>gridShape);
+    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, SPtr<Object> gridShape);
     void eraseGridsFromListIfInvalid(uint oldSize);
     void addGridToListIfValid(SPtr<Grid> grid);
 
-    std::array<real, 6> getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine, bool &xOddStart, bool &yOddStart, bool &zOddStart) const;
+    std::array<real, 6> getStaggeredCoordinates(SPtr<Object> gridShape, uint level, uint levelFine, bool &xOddStart,
+                                                bool &yOddStart, bool &zOddStart,
+                                                std::array<double, 3> relativeStagger = { 0.25, 0.25, 0.25 }) const;
     std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
     std::array<real, 3> getOffset(real delta) const;
     std::vector<uint> getSpacingFactors(uint levelDifference) const;
-
-    SPtr<Grid> makeGrid(SPtr<Object> gridShape, uint level, uint levelFine, std::optional<real> deltaPredefined = std::nullopt);
-    SPtr<Grid> makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
 
     static void emitNoCoarseGridExistsWarning();
     static void emitGridIsNotInCoarseGridWarning();
@@ -106,6 +113,8 @@ private:
 
     uint numberOfLayersFine;
     uint numberOfLayersBetweenLevels;
+
+    SPtr<Grid> rotatingGrid = nullptr;
 
     SPtr<BoundingBox> subDomainBox;
 
