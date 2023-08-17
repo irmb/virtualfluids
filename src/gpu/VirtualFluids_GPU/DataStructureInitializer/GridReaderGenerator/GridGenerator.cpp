@@ -1,8 +1,11 @@
 #include "GridGenerator.h"
 
+#include <basics/geometry3d/Axis.h>
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "GridGenerator/grid/Grid.h"
+#include "GridGenerator/geometries/Object.h"
 #include "GPU/CudaMemoryManager.h"
 #include "Parameter/CudaStreamManager.h"
 #include "IndexRearrangementForStreams.h"
@@ -10,6 +13,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include "Parameter/ParameterRotatingGrid.h"
 #include "utilities/math/Math.h"
 #include "Output/QDebugWriter.hpp"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
@@ -94,6 +98,7 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             para->getParH(level)->typeOfGridNode,
             level);
 
+
         setInitialNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopyNeighborWSB(level);
@@ -102,6 +107,15 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaCopyBodyForce(level);
     }
+
+    if (builder->getUseRotatingGrid()) {
+        SPtr<const Object> cylinder = builder->getGrid(1)->getObject();
+        const std::array<real, 3> centerPointOfCylinder = { (real)cylinder->getX1Centroid(), (real)cylinder->getX2Centroid(),
+                                                            (real)cylinder->getX3Centroid() };
+        auto parameterRotatingGrid = std::make_shared<ParameterRotatingGrid>(centerPointOfCylinder, Axis::x);
+        para->setRotatingGridParameter(std::move(parameterRotatingGrid));
+    }
+
     VF_LOG_INFO("Number of Nodes: {}", numberOfNodesGlobal);
     VF_LOG_TRACE("-----finish Coord, Neighbor, Geo------");
 }

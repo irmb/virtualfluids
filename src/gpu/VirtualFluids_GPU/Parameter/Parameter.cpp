@@ -53,6 +53,7 @@
 
 #include "Logger.h"
 #include "Parameter/CudaStreamManager.h"
+#include "Parameter/ParameterRotatingGrid.h"
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 
@@ -1657,6 +1658,13 @@ void Parameter::setADKernel(std::string adKernel)
 {
     this->adKernel = adKernel;
 }
+void Parameter::setRotatingGridParameter(std::shared_ptr<ParameterRotatingGrid> parameterRotatingGrid)
+{
+    this->parameterRotatingGrid = std::move(parameterRotatingGrid);
+    this->parameterRotatingGrid->initializeNestedCoordinates(
+        { this->parH[1]->coordinateX, this->parH[1]->coordinateY, this->parH[1]->coordinateZ },
+        this->parH[1]->numberOfNodes);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // add-methods
@@ -2614,6 +2622,12 @@ std::string Parameter::getADKernel()
 {
     return adKernel;
 }
+
+SPtr<ParameterRotatingGrid> Parameter::getRotatingGridParameter()
+{
+    return parameterRotatingGrid;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // initial condition fluid
 void Parameter::setInitialCondition(

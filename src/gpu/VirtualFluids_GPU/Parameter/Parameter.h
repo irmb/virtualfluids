@@ -57,6 +57,8 @@ class CudaStreamManager;
 
 class TransientBCInputFileReader;
 
+struct ParameterRotatingGrid;
+
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
 //! \brief For this purpose it holds structures and pointer for host and device data, respectively.
@@ -681,8 +683,9 @@ public:
     void setMultiKernelOn(bool isOn);
     void setMultiKernelLevel(std::vector<int> kernelLevel);
     void setMultiKernel(std::vector<std::string> kernel);
-
     void setADKernel(std::string adKernel);
+    // rotating grid
+    void setRotatingGridParameter(std::shared_ptr<ParameterRotatingGrid> parameterRotatingGrid);
 
     // adder
     void addActuator(SPtr<PreCollisionInteractor> actuator);
@@ -937,8 +940,9 @@ public:
     bool getMultiKernelOn();
     std::vector<int> getMultiKernelLevel();
     std::vector<std::string> getMultiKernel();
-
     std::string getADKernel();
+    // rotating grid
+    SPtr<ParameterRotatingGrid> getRotatingGridParameter();
 
     // Forcing///////////////
     real *forcingH, *forcingD;
@@ -1121,6 +1125,8 @@ private:
     // PreCollisionInteractors //////////////
     std::vector<SPtr<PreCollisionInteractor>> actuators;
     std::vector<SPtr<PreCollisionInteractor>> probes;
+
+    SPtr<ParameterRotatingGrid> parameterRotatingGrid = nullptr;
 
     // Step of Ensight writing//
     unsigned int stepEnsight;

@@ -66,6 +66,7 @@
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Output/NeighborDebugWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Parameter/ParameterRotatingGrid.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -90,8 +91,8 @@ int main()
         const real velocityLB = 0.05; // LB units
         const uint nx = 64;
 
-        const uint timeStepOut = 10000;
-        const uint timeStepEnd = 10000;
+        const uint timeStepOut = 1;
+        const uint timeStepEnd = 1;
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -109,8 +110,8 @@ int main()
 
         gridBuilder->addCoarseGrid(-1.5 * L, -0.5 * L, -0.5 * L, 1.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::RotationalAxis::x));
-        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::RotationalAxis::x), 1);
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Axis::x));
+        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Axis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -200,9 +201,11 @@ int main()
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
 
         const std::string gridName = rotOrInt == Rot ? "rot_grid" : "grid";
-        gridBuilder->writeGridsToVtk(para->getOutputPath() + gridName);
+        // gridBuilder->writeGridsToVtk(para->getOutputPath() + gridName);
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
+        SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
+        paraRot->transformNestedToBase({para->getParH(1)->coordinateX, para->getParH(1)->coordinateY, para->getParH(1)->coordinateZ});
         sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {
