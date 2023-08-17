@@ -26,23 +26,30 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VerticalCylinder.h
+//! \file Cylinder.h
 //! \ingroup geometries
-//! \author Soeren Peters, Stephan Lenz
+//! \author Anna Wellmann
 //=======================================================================================
-#ifndef VERTICAL_CYLINDER_H
-#define VERTICAL_CYLINDER_H
 
-#include "global.h"
+
+#ifndef CYLINDER_H
+#define CYLINDER_H
+
 #include "geometries/Object.h"
+#include <basics/geometry3d/GbCylinder3D.h>
+#include <map>
 
-class GRIDGENERATOR_EXPORT VerticalCylinder : public Object
+class GRIDGENERATOR_EXPORT Cylinder : public Object
 {
 public:
-    VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height);
-    // the axis is in the z-direction
+    enum PrincipalAxis {
+        x = 0,
+        y = 1,
+        z = 2,
+    };
 
-    static SPtr<VerticalCylinder> makeShared(double centerX, double centerY, double centerZ, double radius, double height);
+    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, PrincipalAxis axis);
+    Cylinder(std::array<double, 3> center, double radius, double height, PrincipalAxis axis);
 
     SPtr<Object> clone() const override;
 
@@ -56,23 +63,24 @@ public:
     double getX3Minimum() override;
     double getX3Maximum() override;
 
-    double getRadius() const;
-    double getHeight() const;
-
-    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
-
-
+    bool isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
+                         const double &maxOffset) override;
     void scale(double delta) override;
 
-protected:
-    double centerX;
-    double centerY;
-    double centerZ;
+private:
+    double getCentroidCoordinate(PrincipalAxis coordinateDirection) const;
+    double getMinimunCoordinate(PrincipalAxis coordinateDirection) const;
+    double getMaximumCoordinate(PrincipalAxis coordinateDirection) const;
+
+    const std::map<PrincipalAxis, std::array<double, 3>> unitVectors{ { x, { 1, 0, 0 } },
+                                                                      { y, { 0, 1, 0 } },
+                                                                      { z, { 0, 0, 1 } } };
+
+    PrincipalAxis principalAxis;
+    const std::array<double, 3> center;
 
     double radius;
     double height;
 };
 
-
-
-#endif   
+#endif
