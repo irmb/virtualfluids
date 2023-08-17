@@ -42,14 +42,14 @@
 class GRIDGENERATOR_EXPORT Cylinder : public Object
 {
 public:
-    enum PrincipalAxis {
+    enum RotationalAxis {
         x = 0,
         y = 1,
         z = 2,
     };
 
-    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, PrincipalAxis axis);
-    Cylinder(std::array<double, 3> center, double radius, double height, PrincipalAxis axis);
+    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, RotationalAxis axis);
+    Cylinder(std::array<double, 3> center, double radius, double height, RotationalAxis axis);
 
     SPtr<Object> clone() const override;
 
@@ -65,24 +65,24 @@ public:
 
     double getRadius() const;
     double getHeight() const;
-    PrincipalAxis getPrincipalAxis() const;
+    RotationalAxis getRotationalAxis() const;
 
     bool isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
                          const double &maxOffset) override;
     void changeSizeByDelta(double delta) override;
 
 private:
-    double getCentroidCoordinate(PrincipalAxis coordinateDirection) const;
-    double getMinimunCoordinate(PrincipalAxis coordinateDirection) const;
-    double getMaximumCoordinate(PrincipalAxis coordinateDirection) const;
+    double getCentroidCoordinate(RotationalAxis coordinateDirection) const;
+    double getMinimunCoordinate(RotationalAxis coordinateDirection) const;
+    double getMaximumCoordinate(RotationalAxis coordinateDirection) const;
 
     bool isInCircle(double delta1, double delta2, double offset) const;
 
-    const std::map<PrincipalAxis, std::array<double, 3>> unitVectors{ { x, { 1, 0, 0 } },
-                                                                      { y, { 0, 1, 0 } },
-                                                                      { z, { 0, 0, 1 } } };
+    const std::map<RotationalAxis, std::array<double, 3>> unitVectors{ { x, { 1, 0, 0 } },
+                                                                       { y, { 0, 1, 0 } },
+                                                                       { z, { 0, 0, 1 } } };
 
-    PrincipalAxis principalAxis;
+    RotationalAxis rotationalAxis;
     const std::array<double, 3> center;
 
     double radius;

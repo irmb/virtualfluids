@@ -248,7 +248,7 @@ SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<Cylinder> cylinder, uint l
 
     // #TODO: change next line to use staggering
     cylinder = std::make_shared<Cylinder>(cylinder->getX1Centroid(), cylinder->getX2Centroid(), cylinder->getX3Centroid(),
-                                          cylinder->getRadius() + 6.0 * delta, cylinder->getHeight() + 6.0 * delta, cylinder->getPrincipalAxis());
+                                          cylinder->getRadius() + 6.0 * delta, cylinder->getHeight() + 6.0 * delta, cylinder->getRotationalAxis());
 
     SPtr<Grid> newGrid = this->makeGrid(cylinder, staggeredCoordinates[0],
                                                   staggeredCoordinates[1],

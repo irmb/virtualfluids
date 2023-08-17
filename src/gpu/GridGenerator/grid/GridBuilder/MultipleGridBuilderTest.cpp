@@ -18,7 +18,7 @@ protected:
 public:
     void SetUp() override
     {
-        cylinder = std::make_shared<Cylinder>(0.0, 0.0, 0.0, 2.0, 8.0, Cylinder::PrincipalAxis::x);
+        cylinder = std::make_shared<Cylinder>(0.0, 0.0, 0.0, 2.0, 8.0, Cylinder::RotationalAxis::x);
         gridBuilder.addCoarseGrid(-10. + 0.5 * delta, -10. + 0.5 * delta, -10. + 0.5 * delta, 10. - 0.5 * delta,
                                   10. - 0.5 * delta, 10. - 0.5 * delta, delta);
     }

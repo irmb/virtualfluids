@@ -36,7 +36,7 @@ public:
     std::array<double, 3> center = { 0.1, 0.2, 0.3 };
     double radius = 2.0;
     double height = 8.0;
-    Cylinder cylinder = Cylinder(center[0], center[1], center[2], radius, height, Cylinder::PrincipalAxis::x);
+    Cylinder cylinder = Cylinder(center[0], center[1], center[2], radius, height, Cylinder::RotationalAxis::x);
 };
 
 TEST_F(CylinderTestAxisNormalToX, getCentroid)
@@ -97,7 +97,7 @@ protected:
     std::array<double, 3> center = { 0.1, 0.2, 0.3 };
     double radius = 2.0;
     double height = 8.0;
-    Cylinder cylinder = Cylinder({ center[0], center[1], center[2] }, radius, height, Cylinder::PrincipalAxis::y);
+    Cylinder cylinder = Cylinder({ center[0], center[1], center[2] }, radius, height, Cylinder::RotationalAxis::y);
 };
 
 TEST_F(CylinderTestAxisNormalToY, getCentroid)
@@ -158,7 +158,7 @@ protected:
     std::array<double, 3> center = { 0.1, 0.2, 0.3 };
     double radius = 2.0;
     double height = 8.0;
-    Cylinder cylinder = Cylinder({ center[0], center[1], center[2] }, radius, height, Cylinder::PrincipalAxis::z);
+    Cylinder cylinder = Cylinder({ center[0], center[1], center[2] }, radius, height, Cylinder::RotationalAxis::z);
 };
 
 TEST_F(CylinderTestAxisNormalToZ, getCentroid)

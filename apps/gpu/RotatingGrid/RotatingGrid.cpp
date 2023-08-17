@@ -109,8 +109,8 @@ int main()
 
         gridBuilder->addCoarseGrid(-1.5 * L, -0.5 * L, -0.5 * L, 1.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::PrincipalAxis::x));
-        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::PrincipalAxis::x), 1);
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::RotationalAxis::x));
+        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::RotationalAxis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);

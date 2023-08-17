@@ -1,36 +1,36 @@
 #include "Cylinder.h"
 #include <numeric>
 
-Cylinder::Cylinder(double centerX, double centerY, double centerZ, double radius, double height, PrincipalAxis axis)
-    : center({ centerX, centerY, centerZ }), radius(radius), height(height), principalAxis(axis)
+Cylinder::Cylinder(double centerX, double centerY, double centerZ, double radius, double height, RotationalAxis axis)
+    : center({ centerX, centerY, centerZ }), radius(radius), height(height), rotationalAxis(axis)
 {
 }
 
-Cylinder::Cylinder(std::array<double, 3> center, double radius, double height, PrincipalAxis axis)
-    : center(center), radius(radius), height(height), principalAxis(axis)
+Cylinder::Cylinder(std::array<double, 3> center, double radius, double height, RotationalAxis axis)
+    : center(center), radius(radius), height(height), rotationalAxis(axis)
 {
 }
 
 SPtr<Object> Cylinder::clone() const
 {
-    return std::make_shared<Cylinder>(center, radius, height, principalAxis);
+    return std::make_shared<Cylinder>(center, radius, height, rotationalAxis);
 }
 
-double Cylinder::getCentroidCoordinate(PrincipalAxis coordinateDirection) const
+double Cylinder::getCentroidCoordinate(RotationalAxis coordinateDirection) const
 {
     return center.at(coordinateDirection);
 }
 
-double Cylinder::getMinimunCoordinate(PrincipalAxis coordinateDirection) const
+double Cylinder::getMinimunCoordinate(RotationalAxis coordinateDirection) const
 {
-    const auto unitVector = unitVectors.at(principalAxis);
+    const auto unitVector = unitVectors.at(rotationalAxis);
     return center.at(coordinateDirection) - 0.5 * height * unitVector.at(coordinateDirection) +
            radius * (unitVector.at(coordinateDirection) - 1);
 }
 
-double Cylinder::getMaximumCoordinate(PrincipalAxis coordinateDirection) const
+double Cylinder::getMaximumCoordinate(RotationalAxis coordinateDirection) const
 {
-    const auto unitVector = unitVectors.at(principalAxis);
+    const auto unitVector = unitVectors.at(rotationalAxis);
     return center.at(coordinateDirection) + 0.5 * height * unitVector.at(coordinateDirection) -
            radius * (unitVector.at(coordinateDirection) - 1);
 }
@@ -90,9 +90,9 @@ double Cylinder::getHeight() const
     return height;
 }
 
-Cylinder::PrincipalAxis Cylinder::getPrincipalAxis() const
+Cylinder::RotationalAxis Cylinder::getRotationalAxis() const
 {
-    return principalAxis;
+    return rotationalAxis;
 }
 
 bool Cylinder::isInCircle(double delta1, double delta2, double offset) const
@@ -110,7 +110,7 @@ bool Cylinder::isPointInObject(const double &x1, const double &x2, const double 
     const double deltaX2 = x2 - center.at(y);
     const double deltaX3 = x3 - center.at(z);
 
-    switch (principalAxis) {
+    switch (rotationalAxis) {
         case x:
             if (deltaX1 > 0.5 * height || deltaX1 < -0.5 * height) return false;
             return isInCircle(deltaX2, deltaX3, offset);
@@ -122,7 +122,7 @@ bool Cylinder::isPointInObject(const double &x1, const double &x2, const double 
             return isInCircle(deltaX1, deltaX2, offset);
     }
 
-    VF_LOG_CRITICAL("Unknown principal axis in Cylinder.");
+    VF_LOG_CRITICAL("Unknown rotational axis in Cylinder.");
     return false;
 }
 
