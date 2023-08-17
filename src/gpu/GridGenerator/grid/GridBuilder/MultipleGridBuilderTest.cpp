@@ -150,12 +150,12 @@ TEST_F(MultipleGridBuilderTestFixture, addRotatingGrid_hasCorrectDelta)
 {
     EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(1));
     gridBuilder.addGridRotatingGrid(cylinder);
-    EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(1)) << "Rotating grid is not added to list of grids.";
-    EXPECT_THAT(gridBuilder.getGrid(0)->getDelta(), RealEq(gridBuilder.getRotatingGrid()->getDelta()));
+    EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(2));
+    EXPECT_THAT(gridBuilder.getGrid(0)->getDelta(), RealEq(gridBuilder.getGrid(1)->getDelta()));
 
     gridBuilder.addGridRotatingGrid(cylinder);
-    EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(1)) << "Rotating grid is not added to list of grids.";
-    EXPECT_THAT(gridBuilder.getGrid(0)->getDelta(), RealEq(gridBuilder.getRotatingGrid()->getDelta()));
+    EXPECT_THAT(gridBuilder.getGrids().size(), testing::Eq(3));
+    EXPECT_THAT(gridBuilder.getGrid(1)->getDelta(), RealEq(gridBuilder.getGrid(2)->getDelta()));
 }
 
 TEST(MultipleGridBuilderTest, noCoarseGrid_addGridWithPredefinedDelta_warns)

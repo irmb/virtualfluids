@@ -78,6 +78,8 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         enum RotationOrInterpolation {Rot, Int};
         const RotationOrInterpolation rotOrInt = Rot;
+        if (rotOrInt == Int) VF_LOG_INFO("Use interpolation.");
+        if (rotOrInt == Rot) VF_LOG_INFO("Use rotation.");
 
         const std::string path("./output/RotatingGrid");
         const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid";
@@ -201,7 +203,7 @@ int main()
         gridBuilder->writeGridsToVtk(para->getOutputPath() + gridName);
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
-        // sim.run();
+        sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;

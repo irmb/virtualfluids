@@ -38,11 +38,17 @@ namespace vf::gpu
 
 static constexpr char FLUID = 0;
 
-static constexpr char FLUID_CFC = 1;
-static constexpr char FLUID_CFF = 2;
+static constexpr char FLUID_CFC = 1;           // interpolation coarse to fine, coarse node (source node)
+static constexpr char FLUID_CFF = 2;           // interpolation coarse to fine, fine node (destination node)
 
-static constexpr char FLUID_FCC = 3;
-static constexpr char FLUID_FCF = 4;
+static constexpr char FLUID_FCC = 3;           // interpolation fine to coarse, coarse node (destination node)
+static constexpr char FLUID_FCF = 4;           // interpolation fine to coarse, fine node (source node)
+
+// C --> B(ase), F --> N(ested)
+static constexpr char FLUID_BNB = FLUID_CFC; // = 1  // interpolation base to nested, base node (source node)
+static constexpr char FLUID_BNN = FLUID_CFF; // = 2  // interpolation base to nested, nested node (destination node)
+static constexpr char FLUID_NBB = FLUID_FCC; // = 3  // nested to base, base node (destination node)
+static constexpr char FLUID_NBN = FLUID_FCF; // = 4  // nested to base, nested node (source node)
 
 static constexpr char INTERPOLATION_GAP = 5;
 

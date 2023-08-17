@@ -113,6 +113,7 @@ public:
     virtual void setOddStart(bool xOddStart, bool yOddStart, bool zOddStart) = 0;
 
     virtual void findGridInterface(SPtr<Grid> grid) = 0;
+    virtual void findGridInterfaceForRotatingGrid(SPtr<Grid> rotatingGrid) = 0;
 
     virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
 

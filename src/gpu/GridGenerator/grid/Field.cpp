@@ -71,7 +71,7 @@ bool Field::is(uint index, char type) const
     return field[index] == type;
 }
 
-bool Field::isCoarseToFineNode(uint index) const
+bool Field::isBaseToNestedNode(uint index) const
 {
     return field[index] == FLUID_CFC;
 }

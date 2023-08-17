@@ -34,26 +34,25 @@
 #define GRID_INTERFACE_H
 
 #include "gpu/GridGenerator/global.h"
+#include "grid/distributions/Distribution.h"
 
 class GridImp;
 
 class GridInterface
 {
 public:
-    GRIDGENERATOR_EXPORT GridInterface();
-    GRIDGENERATOR_EXPORT ~GridInterface();
+    GRIDGENERATOR_EXPORT GridInterface() = default;
+    GRIDGENERATOR_EXPORT ~GridInterface() = default;
 
-    void GRIDGENERATOR_EXPORT findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    void GRIDGENERATOR_EXPORT findInterfaceBaseToNested(const uint& indexOnBaseGrid, GridImp* baseGrid, GridImp* nestedGrid, bool isRotatingGrid);
     void GRIDGENERATOR_EXPORT findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
 
     void GRIDGENERATOR_EXPORT findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     void GRIDGENERATOR_EXPORT findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     
-    void GRIDGENERATOR_EXPORT findInterpolationGapC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
-    void GRIDGENERATOR_EXPORT findInterpolationGapF(const uint& indexOnFineGrid, GridImp* fineGrid);
-    void GRIDGENERATOR_EXPORT findInterfaceFCwithGap(uint indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
-
-
+    void GRIDGENERATOR_EXPORT findInterpolationGapOnBaseGrid(const uint &indexOnBaseGrid, GridImp *baseGrid, GridImp *nestedGrid);
+    void GRIDGENERATOR_EXPORT findInterpolationGapOnNestedGrid(const uint& indexOnNestedGrid, GridImp* nestedGrid);
+    void GRIDGENERATOR_EXPORT findInterfaceNestedToBaseWithGap(uint indexOnBaseGrid, GridImp* baseGrid, GridImp* nestedGrid);
     
     void GRIDGENERATOR_EXPORT findInvalidBoundaryNodes(const uint& indexOnCoarseGrid, GridImp* coarseGrid);
 
@@ -66,23 +65,24 @@ public:
 
     struct Interface
     {
-        uint *fine, *coarse;
+        uint *nested, *base;
         uint numberOfEntries = 0;
         uint *offset;
-    } fc{}, cf{};
+    } nb{}, bn{};
 
 
 private:
-    uint getCoarseToFineIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
-    bool isNeighborFineInvalid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
+    uint getBaseToNestedIndexOnFineGrid(const uint& indexOnBaseGrid, const GridImp* baseGrid, const GridImp* nestedGrid);
+    bool isNeighborNestedInvalid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
 
-    uint getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
+    uint getNestedToBaseIndexOnFineGrid(const uint& indexOnBaseGrid, const GridImp* baseGrid, const GridImp* nestedGrid);
 
     static void findSparseIndex(uint* indices, GridImp* grid, uint index);
 
-    uint findOffsetCF( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
+    uint findOffsetBaseToNested( const uint& indexOnBaseGrid, GridImp* baseGrid, uint interfaceIndex );
+    uint findOffsetNestedToBase( const uint& indexOnBaseGrid, GridImp* baseGrid, uint interfaceIndex );
 
-    uint findOffsetFC( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
+    static uint findNeighborIndex(real coordX, real coordY, real coordZ, GridImp *grid, Direction dir);
 };
 
 

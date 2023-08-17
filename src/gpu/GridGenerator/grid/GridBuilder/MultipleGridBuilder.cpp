@@ -108,14 +108,11 @@ void MultipleGridBuilder::addGridRotatingGrid(SPtr<Cylinder> cylinder)
     const uint level = getNumberOfLevels();
     const uint levelFine = 1;
 
-    VF_LOG_WARNING("Make rotating Grid... {}, {}", level, levelFine);
     const auto grid = makeRotatingGrid(std::move(cylinder), level, levelFine);
-
-    // grid->setNumberOfLayers(this->numberOfLayersFine);
 
     if (!isGridInCoarseGrid(grid)) return emitGridIsNotInCoarseGridWarning();
 
-    rotatingGrid = grid;
+    useGridRotation = true;
     addGridToList(grid);
 }
 
@@ -124,7 +121,6 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape, uint levelFine)
     if (!coarseGridExists()) return emitNoCoarseGridExistsWarning();
 
     for (uint level = this->getNumberOfLevels(); level <= levelFine; level++) {
-        VF_LOG_WARNING("Make Grid... {}, {}", level, levelFine);
         const auto grid = makeGrid(gridShape, level, levelFine);
 
         if (level != levelFine) {
@@ -225,14 +221,6 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uin
 
     const auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
 
-    VF_LOG_WARNING("Object Size x : {}, {} \n z: {}, {}", gridShape->getX1Minimum(), gridShape->getX1Maximum(), gridShape->getX3Minimum(), gridShape->getX3Maximum());
-    VF_LOG_WARNING("MakeGrid {}, {}, {}, {}, {}, {}, delta: {}, level: {}", staggeredCoordinates[0],
-                                                   staggeredCoordinates[1],
-                                                   staggeredCoordinates[2],
-                                                   staggeredCoordinates[3],
-                                                   staggeredCoordinates[4],
-                                                   staggeredCoordinates[5], delta, level);
-
     SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0],
                                                    staggeredCoordinates[1],
                                                    staggeredCoordinates[2],
@@ -240,7 +228,6 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uin
                                                    staggeredCoordinates[4],
                                                    staggeredCoordinates[5], delta, level);
 
-    VF_LOG_WARNING("oddStart, {} {} {}", xOddStart, yOddStart, zOddStart);
     newGrid->setOddStart(xOddStart, yOddStart, zOddStart);
 
     return newGrid;
@@ -313,10 +300,6 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
 
     const real deltaCoarse = this->grids[level - 1]->getDelta();
     const real delta = gridIsForRotation ? deltaCoarse : 0.5 * deltaCoarse;
-
-    VF_LOG_WARNING("getStaggeredCoordinates: create grid for rotation {}: ", gridIsForRotation);
-    VF_LOG_WARNING("delta = {}", delta);
-    VF_LOG_WARNING("level={}, levelFine={}", levelFine, levelFine);
 
 	std::array<real, 6> staggeredCoordinates;
 
@@ -401,7 +384,6 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
     while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= delta;
     while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= delta;
 
-    VF_LOG_WARNING("end of getStaggeredCoordinates()");
 	return staggeredCoordinates;
 }
 
@@ -615,13 +597,22 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
 
     //////////////////////////////////////////////////////////////////////////
 
-    // find the interface interpolations cells
-    // For further documentation see Section 5.2.4 and Figure 5.3 in the dissertation
-    // of Stephan Lenz:
-    // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
-    //
-    for (size_t i = 0; i < grids.size() - 1; i++)
-        grids[i]->findGridInterface(grids[i + 1]);
+    if (useGridRotation) {
+        // find the interface for the interpolation between a static and a rotating grid
+        //
+
+        // #TODO
+        if (this->grids.size() > 2) throw std::runtime_error("The rotating grid does not work with grid refinement yet.");
+        grids[0]->findGridInterfaceForRotatingGrid(grids[1]);
+    } else {
+        // find the interface interpolations cells
+        // For further documentation see Section 5.2.4 and Figure 5.3 in the dissertation
+        // of Stephan Lenz:
+        // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
+        //
+        for (size_t i = 0; i < grids.size() - 1; i++)
+            grids[i]->findGridInterface(grids[i + 1]);
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -694,9 +685,4 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
 GRIDGENERATOR_EXPORT void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
 {
     this->subDomainBox = subDomainBox;
-}
-
-GRIDGENERATOR_EXPORT SPtr<Grid> MultipleGridBuilder::getRotatingGrid()
-{
-    return rotatingGrid;
 }

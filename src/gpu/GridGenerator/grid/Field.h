@@ -49,7 +49,7 @@ public:
     char getFieldEntry(uint index) const;
 
     bool is(uint index, char type) const;
-    bool isCoarseToFineNode(uint index) const;
+    bool isBaseToNestedNode(uint index) const;
     bool isFineToCoarseNode(uint index) const;
     bool isInterpolationGapNode(uint index) const;
     bool isFluid(uint index) const;

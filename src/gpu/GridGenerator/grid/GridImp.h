@@ -165,6 +165,8 @@ public:
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
     void findGridInterface(SPtr<Grid> grid) override;
+    void findGridInterfaceForRotatingGrid(SPtr<Grid> rotatingGrid) override;
+
 
     void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
@@ -195,6 +197,7 @@ public:
     Distribution distribution;
 
     void initalNodeToOutOfGrid(uint index);
+    void initializeGridInterface(GridImp* gridImp);
 
     void findInnerNodes();
     void findInnerNode(uint index);
@@ -215,7 +218,7 @@ public:
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
-    void findGridInterfaceCF(uint index, GridImp &finerGrid);
+    void findInterfaceCF(uint index, GridImp &finerGrid);
     void findGridInterfaceFC(uint index, GridImp &finerGrid);
     void findOverlapStopper(uint index, GridImp &finerGrid);
     void findInvalidBoundaryNodes(uint index);

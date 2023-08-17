@@ -1100,6 +1100,19 @@ int GridImp::getSparseIndex(const real &x, const real &y, const real &z) const
     return sparseIndices[matrixIndex];
 }
 
+void GridImp::initializeGridInterface(GridImp* fineGridImp)
+{
+    this->gridInterface = new GridInterface();
+    // TODO: this is stupid! concave refinements can easily have many more interface cells
+    const uint sizeCF = 10 * (fineGridImp->nx * fineGridImp->ny + fineGridImp->ny * fineGridImp->nz + fineGridImp->nx * fineGridImp->nz);
+    this->gridInterface->bn.base = new uint[sizeCF];
+    this->gridInterface->bn.nested   = new uint[sizeCF];
+    this->gridInterface->bn.offset = new uint[sizeCF];
+    this->gridInterface->nb.base = new uint[sizeCF];
+    this->gridInterface->nb.nested   = new uint[sizeCF];
+    this->gridInterface->nb.offset = new uint[sizeCF];
+}
+
 // --------------------------------------------------------- //
 //                    Find Interface                         //
 // --------------------------------------------------------- //
@@ -1111,40 +1124,56 @@ void GridImp::findGridInterface(SPtr<Grid> finerGrid)
 
     VF_LOG_TRACE("find interface level {} -> {}", coarseLevel, fineLevel);
 
-    this->gridInterface = new GridInterface();
-    // TODO: this is stupid! concave refinements can easily have many more interface cells
-    const uint sizeCF = 10 * (fineGridImp->nx * fineGridImp->ny + fineGridImp->ny * fineGridImp->nz + fineGridImp->nx * fineGridImp->nz);
-    this->gridInterface->cf.coarse = new uint[sizeCF];
-    this->gridInterface->cf.fine   = new uint[sizeCF];
-    this->gridInterface->cf.offset = new uint[sizeCF];
-    this->gridInterface->fc.coarse = new uint[sizeCF];
-    this->gridInterface->fc.fine   = new uint[sizeCF];
-    this->gridInterface->fc.offset = new uint[sizeCF];
+    this->initializeGridInterface(fineGridImp.get());
 
     for (uint index = 0; index < this->getSize(); index++)
-        this->findGridInterfaceCF(index, *fineGridImp);
+        this->findInterfaceCF(index, *fineGridImp);
 
-    for (uint index = 0; index < this->getSize(); index++){
-        gridInterface->findInterpolationGapC(index, this, fineGridImp.get());
-    }
-
-    for (uint fineIndex; fineIndex < fineGridImp->getSize(); fineIndex++)
-        gridInterface->findInterpolationGapF(fineIndex, fineGridImp.get());
-
-    for (uint index = 0; index < this->getSize(); index++){
-        gridInterface->findInterfaceFCwithGap(index, this, fineGridImp.get());
-    }
+    for (uint index = 0; index < this->getSize(); index++)
+        this->findGridInterfaceFC(index, *fineGridImp);
 
     for (uint index = 0; index < this->getSize(); index++)
         this->findOverlapStopper(index, *fineGridImp);
 
-    for (uint index = 0; index < this->getSize(); index++)
-        if (this->getField().isInterpolationGapNode(index))
-            this->getField().setFieldEntry(index, FLUID);
+    VF_LOG_TRACE("  ... done.");
+}
 
-    for (uint fineIndex = 0; fineIndex < fineGridImp->getSize(); fineIndex++)
-        if (fineGridImp->getField().isInterpolationGapNode(fineIndex))
-            fineGridImp->getField().setFieldEntry(fineIndex, FLUID);
+void GridImp::findGridInterfaceForRotatingGrid(SPtr<Grid> rotatingGrid)
+{
+    auto rotatingGridImp          = std::static_pointer_cast<GridImp>(rotatingGrid);
+    const auto staticLevel = this->getLevel();
+    const auto rotatingLevel   = rotatingGridImp->getLevel();
+
+    VF_LOG_TRACE("find rotating grid interface level {} -> {}", staticLevel, rotatingLevel);
+
+    this->initializeGridInterface(rotatingGridImp.get());
+
+    for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++)
+        gridInterface->findInterfaceBaseToNested(indexOnStaticGrid, this, &*rotatingGridImp, true);
+
+    for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++){
+        gridInterface->findInterpolationGapOnBaseGrid(indexOnStaticGrid, this, rotatingGridImp.get());
+    }
+
+    for (uint indexOnRotatingGrid; indexOnRotatingGrid < rotatingGridImp->getSize(); indexOnRotatingGrid++)
+        gridInterface->findInterpolationGapOnNestedGrid(indexOnRotatingGrid, rotatingGridImp.get());
+
+    for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++){
+        gridInterface->findInterfaceNestedToBaseWithGap(indexOnStaticGrid, this, rotatingGridImp.get());
+    }
+    
+    for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++)
+        this->findOverlapStopper(indexOnStaticGrid, *rotatingGridImp);
+
+    // // change interface gap nodes to fluid nodes on static grid
+    // for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++)
+    //     if (this->getField().isInterpolationGapNode(indexOnStaticGrid))
+    //         this->getField().setFieldEntry(indexOnStaticGrid, FLUID);
+
+    // // change interface gap nodes to fluid nodes on rotating grid
+    // for (uint indexOnRotatingGrid = 0; indexOnRotatingGrid < rotatingGridImp->getSize(); indexOnRotatingGrid++)
+    //     if (rotatingGridImp->getField().isInterpolationGapNode(indexOnRotatingGrid))
+    //         rotatingGridImp->getField().setFieldEntry(indexOnRotatingGrid, FLUID);
 
     VF_LOG_TRACE("  ... done.");
 }
@@ -1191,9 +1220,9 @@ void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
     }
 }
 
-void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid)
+void GridImp::findInterfaceCF(uint index, GridImp& finerGrid)
 {
-    gridInterface->findInterfaceCF            (index, this, &finerGrid);
+    gridInterface->findInterfaceBaseToNested(index, this, &finerGrid, false);
     gridInterface->findBoundaryGridInterfaceCF(index, this, &finerGrid);
 }
 
@@ -1952,53 +1981,53 @@ int* GridImp::getNeighborsNegative() const
 uint GridImp::getNumberOfNodesCF() const
 {
     if(this->gridInterface)
-        return this->gridInterface->cf.numberOfEntries;
+        return this->gridInterface->bn.numberOfEntries;
     return 0;
 }
 
 uint GridImp::getNumberOfNodesFC() const
 {
     if (this->gridInterface)
-        return this->gridInterface->fc.numberOfEntries;
+        return this->gridInterface->nb.numberOfEntries;
     return 0;
 }
 
 uint* GridImp::getCF_coarse() const
 {
-    return this->gridInterface->cf.coarse;
+    return this->gridInterface->bn.base;
 }
 
 uint* GridImp::getCF_fine() const
 {
-    return this->gridInterface->cf.fine;
+    return this->gridInterface->bn.nested;
 }
 
 uint * GridImp::getCF_offset() const
 {
-    return this->gridInterface->cf.offset;
+    return this->gridInterface->bn.offset;
 }
 
 uint* GridImp::getFC_coarse() const
 {
-    return this->gridInterface->fc.coarse;
+    return this->gridInterface->nb.base;
 }
 
 uint* GridImp::getFC_fine() const
 {
-    return this->gridInterface->fc.fine;
+    return this->gridInterface->nb.nested;
 }
 
 uint * GridImp::getFC_offset() const
 {
-    return this->gridInterface->fc.offset;
+    return this->gridInterface->nb.offset;
 }
 
 void GridImp::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const
 {
-    getGridInterface(iCellCfc, this->gridInterface->cf.coarse, this->gridInterface->cf.numberOfEntries);
-    getGridInterface(iCellCff, this->gridInterface->cf.fine, this->gridInterface->cf.numberOfEntries);
-    getGridInterface(iCellFcc, this->gridInterface->fc.coarse, this->gridInterface->fc.numberOfEntries);
-    getGridInterface(iCellFcf, this->gridInterface->fc.fine, this->gridInterface->fc.numberOfEntries);
+    getGridInterface(iCellCfc, this->gridInterface->bn.base, this->gridInterface->bn.numberOfEntries);
+    getGridInterface(iCellCff, this->gridInterface->bn.nested, this->gridInterface->bn.numberOfEntries);
+    getGridInterface(iCellFcc, this->gridInterface->nb.base, this->gridInterface->nb.numberOfEntries);
+    getGridInterface(iCellFcf, this->gridInterface->nb.nested, this->gridInterface->nb.numberOfEntries);
 }
 
 void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size)
