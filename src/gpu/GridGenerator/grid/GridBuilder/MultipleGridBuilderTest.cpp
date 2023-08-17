@@ -1,5 +1,5 @@
 #include "basics/tests/testUtilities.h"
-#include "geometries/VerticalCylinder/VerticalCylinder.h"
+#include "geometries/Cylinder/Cylinder.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 
 class MultipleGridBuilderForTest: public MultipleGridBuilder{
@@ -12,13 +12,13 @@ class MultipleGridBuilderTestFixture : public testing::Test
 {
 protected:
     MultipleGridBuilderForTest gridBuilder;
-    SPtr<VerticalCylinder> cylinder;
+    SPtr<Cylinder> cylinder;
     real delta = 0.1;
 
 public:
     void SetUp() override
     {
-        cylinder = std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 2.0, 8.0);
+        cylinder = std::make_shared<Cylinder>(0.0, 0.0, 0.0, 2.0, 8.0, Cylinder::PrincipalAxis::x);
         gridBuilder.addCoarseGrid(-10. + 0.5 * delta, -10. + 0.5 * delta, -10. + 0.5 * delta, 10. - 0.5 * delta,
                                   10. - 0.5 * delta, 10. - 0.5 * delta, delta);
     }
@@ -161,7 +161,7 @@ TEST_F(MultipleGridBuilderTestFixture, addRotatingGrid_hasCorrectDelta)
 TEST(MultipleGridBuilderTest, noCoarseGrid_addGridWithPredefinedDelta_warns)
 {
     MultipleGridBuilder gridBuilder;
-    SPtr<VerticalCylinder> cylinder;
+    SPtr<Cylinder> cylinder;
 
     testingVF::captureStdOut();
     gridBuilder.addGridRotatingGrid(cylinder);

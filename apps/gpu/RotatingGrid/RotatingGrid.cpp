@@ -49,7 +49,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
-#include "GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h"
+#include "GridGenerator/geometries/Cylinder/Cylinder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -77,7 +77,7 @@ int main()
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
         enum RotationOrInterpolation {Rot, Int};
-        const RotationOrInterpolation rotOrInt = Int;
+        const RotationOrInterpolation rotOrInt = Rot;
 
         const std::string path("./output/RotatingGrid");
         const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid";
@@ -105,10 +105,10 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -1.5 * L, 0.5 * L, 0.5 * L, 1.5 * L, dx);
+        gridBuilder->addCoarseGrid(-1.5 * L, -0.5 * L, -0.5 * L, 1.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L));
-        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<VerticalCylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L), 1);
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::PrincipalAxis::x));
+        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Cylinder::PrincipalAxis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -142,13 +142,13 @@ int main()
         // set boundary conditions
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->setSlipBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
         gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+        gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, velocityLB);
-        gridBuilder->setPressureBoundaryCondition(SideType::PZ, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
         BoundaryConditionFactory bcFactory;
 

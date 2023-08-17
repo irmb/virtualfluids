@@ -90,6 +90,11 @@ double Cylinder::getHeight() const
     return height;
 }
 
+Cylinder::PrincipalAxis Cylinder::getPrincipalAxis() const
+{
+    return principalAxis;
+}
+
 bool Cylinder::isInCircle(double delta1, double delta2, double offset) const
 {
     return (delta1 * delta1 + delta2 * delta2) < ((this->radius - offset) * (this->radius - offset));

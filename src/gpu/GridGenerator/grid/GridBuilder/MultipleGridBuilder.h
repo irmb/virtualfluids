@@ -45,7 +45,7 @@
 
 class Object;
 class BoundingBox;
-class VerticalCylinder;
+class Cylinder;
 
 class MultipleGridBuilder : public LevelGridBuilder
 {
@@ -54,7 +54,7 @@ public:
 
     GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape);
-    GRIDGENERATOR_EXPORT void addGridRotatingGrid(SPtr<VerticalCylinder> cylinder);
+    GRIDGENERATOR_EXPORT void addGridRotatingGrid(SPtr<Cylinder> cylinder);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape, uint levelFine);
 
     GRIDGENERATOR_EXPORT void addGeometry(SPtr<Object> gridShape);
@@ -85,7 +85,7 @@ public:
 protected:
     virtual SPtr<Grid> makeGrid(SPtr<Object> gridShape, uint level, uint levelFine);
     virtual SPtr<Grid> makeGrid(SPtr<Object> gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
-    virtual SPtr<Grid> makeRotatingGrid(SPtr<VerticalCylinder> cylinder, uint level, uint levelFine);
+    virtual SPtr<Grid> makeRotatingGrid(SPtr<Cylinder> cylinder, uint level, uint levelFine);
 
 private:
     void addGridToList(SPtr<Grid> grid);

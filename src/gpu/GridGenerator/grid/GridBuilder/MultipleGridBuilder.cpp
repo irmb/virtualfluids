@@ -45,7 +45,7 @@
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
 #include "grid/GridFactory.h"
-#include "geometries/VerticalCylinder/VerticalCylinder.h"
+#include "geometries/Cylinder/Cylinder.h"
 
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/STLReaderWriter/STLWriter.h"
@@ -101,7 +101,7 @@ void MultipleGridBuilder::addGrid(SPtr<Object> gridShape)
     addGridToListIfValid(grid);
 }
 
-void MultipleGridBuilder::addGridRotatingGrid(SPtr<VerticalCylinder> cylinder)
+void MultipleGridBuilder::addGridRotatingGrid(SPtr<Cylinder> cylinder)
 {
     if (!coarseGridExists()) return emitNoCoarseGridExistsWarning();
 
@@ -246,7 +246,7 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(SPtr<Object> gridShape, uint level, uin
     return newGrid;
 }
 
-SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<VerticalCylinder> cylinder, uint level, uint levelFine)
+SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<Cylinder> cylinder, uint level, uint levelFine)
 {
     boundaryConditions.push_back(std::make_shared<BoundaryConditions>());
 
@@ -259,20 +259,9 @@ SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<VerticalCylinder> cylinder
     const auto staggeredCoordinates =
         getStaggeredCoordinates(cylinder, level, levelFine, xOddStart, yOddStart, zOddStart, staggeringRelative, true);
 
-    VF_LOG_WARNING("RotGr: Cylinder Size x : {}, {} \n z: {}, {}", cylinder->getX1Minimum(), cylinder->getX1Maximum(), cylinder->getX3Minimum(), cylinder->getX3Maximum());
-    VF_LOG_WARNING("RotGr: MakeGrid {}, {}, {}, {}, {}, {}, delta: {}, level: {}", staggeredCoordinates[0],
-                                                              staggeredCoordinates[1],
-                                                              staggeredCoordinates[2],
-                                                              staggeredCoordinates[3],
-                                                              staggeredCoordinates[4],
-                                                              staggeredCoordinates[5], delta, level);
-
     // #TODO: change next line to use staggering
-    cylinder = std::make_shared<VerticalCylinder>(cylinder->getX1Centroid(), cylinder->getX2Centroid(),
-                                                  cylinder->getX3Centroid(), cylinder->getRadius() + 6.0 * delta,
-                                                  cylinder->getHeight() + 6.0 * delta);
-    VF_LOG_WARNING("RotGr: LargerCylinder Size x : {}, {} \n z: {}, {}", cylinder->getX1Minimum(), cylinder->getX1Maximum(),
-                   cylinder->getX3Minimum(), cylinder->getX3Maximum());
+    cylinder = std::make_shared<Cylinder>(cylinder->getX1Centroid(), cylinder->getX2Centroid(), cylinder->getX3Centroid(),
+                                          cylinder->getRadius() + 6.0 * delta, cylinder->getHeight() + 6.0 * delta, cylinder->getPrincipalAxis());
 
     SPtr<Grid> newGrid = this->makeGrid(cylinder, staggeredCoordinates[0],
                                                   staggeredCoordinates[1],
