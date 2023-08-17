@@ -162,13 +162,13 @@ bool Conglomerate::isPointInObject(const double& x1, const double& x2, const dou
     return false;
 }
 
-void Conglomerate::scale(double delta)
+void Conglomerate::changeSizeByDelta(double delta)
 {
     for (uint i = 0; i < numberOfAddObjects; i++)
-        addObjects[i]->scale(delta);
+        addObjects[i]->changeSizeByDelta(delta);
 
     for (uint i = 0; i < numberOfSubtractObjects; i++)
-        subtractObjects[i]->scale(delta);
+        subtractObjects[i]->changeSizeByDelta(delta);
 }
 
 void Conglomerate::findInnerNodes(SPtr<GridImp> grid)

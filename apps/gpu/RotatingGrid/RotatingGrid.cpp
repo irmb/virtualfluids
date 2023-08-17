@@ -77,7 +77,7 @@ int main()
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
         enum RotationOrInterpolation {Rot, Int};
-        const RotationOrInterpolation rotOrInt = Rot;
+        const RotationOrInterpolation rotOrInt = Int;
 
         const std::string path("./output/RotatingGrid");
         const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid";
@@ -197,7 +197,7 @@ int main()
 
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
 
-        const std::string gridName = rotOrInt == Rot ? "rot_grid" : "rot";
+        const std::string gridName = rotOrInt == Rot ? "rot_grid" : "grid";
         gridBuilder->writeGridsToVtk(para->getOutputPath() + gridName);
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 

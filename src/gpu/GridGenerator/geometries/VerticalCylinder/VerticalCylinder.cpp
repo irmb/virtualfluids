@@ -111,10 +111,10 @@ bool VerticalCylinder::isPointInObject(const double& x1, const double& x2, const
 }
 
 
-void VerticalCylinder::scale(double delta)
+void VerticalCylinder::changeSizeByDelta(double delta)
 {
     this->radius += delta;
-    this->height += delta;
+    this->height += 2 * delta;
 }
 
 double VerticalCylinder::getRadius() const

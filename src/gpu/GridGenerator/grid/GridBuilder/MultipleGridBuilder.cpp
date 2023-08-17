@@ -86,7 +86,7 @@ void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject, uint level)
 {
     this->solidObject = solidObject;
     auto gridShape = solidObject->clone();
-    gridShape->scale(4.0);
+    gridShape->changeSizeByDelta(4.0);
 
     this->addGrid(gridShape, level);
 }
@@ -169,7 +169,7 @@ void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint 
         {
             const real scalingFactor = nodesBetweenGrids * spacings[i] * calculateDelta(levelFine);
             SPtr<Object> gridShapeClone = gridShape->clone();
-            gridShapeClone->scale(scalingFactor);
+            gridShapeClone->changeSizeByDelta(scalingFactor);
 
             const auto grid = makeGrid(gridShapeClone, level++, 0);
             grids.push_back(grid);
@@ -267,8 +267,12 @@ SPtr<Grid> MultipleGridBuilder::makeRotatingGrid(SPtr<VerticalCylinder> cylinder
                                                               staggeredCoordinates[4],
                                                               staggeredCoordinates[5], delta, level);
 
-    cylinder = std::make_shared<VerticalCylinder>(cylinder->getX1Centroid(), cylinder->getX2Centroid(), cylinder->getX3Centroid(), cylinder->getRadius()+5*delta, cylinder->getHeight()+6*delta);
-    VF_LOG_WARNING("RotGr: LargerCylinder Size x : {}, {} \n z: {}, {}", cylinder->getX1Minimum(), cylinder->getX1Maximum(), cylinder->getX3Minimum(), cylinder->getX3Maximum());
+    // #TODO: change next line to use staggering
+    cylinder = std::make_shared<VerticalCylinder>(cylinder->getX1Centroid(), cylinder->getX2Centroid(),
+                                                  cylinder->getX3Centroid(), cylinder->getRadius() + 6.0 * delta,
+                                                  cylinder->getHeight() + 6.0 * delta);
+    VF_LOG_WARNING("RotGr: LargerCylinder Size x : {}, {} \n z: {}, {}", cylinder->getX1Minimum(), cylinder->getX1Maximum(),
+                   cylinder->getX3Minimum(), cylinder->getX3Maximum());
 
     SPtr<Grid> newGrid = this->makeGrid(cylinder, staggeredCoordinates[0],
                                                   staggeredCoordinates[1],

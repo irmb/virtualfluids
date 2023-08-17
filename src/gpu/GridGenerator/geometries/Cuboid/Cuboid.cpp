@@ -131,7 +131,7 @@ bool Cuboid::isBetween(const real& coord, const real& start, const real& end)
 }
 
 
-void Cuboid::scale(double delta)
+void Cuboid::changeSizeByDelta(double delta)
 {
     this->minX1 -= delta;
     this->minX2 -= delta;
