@@ -97,7 +97,7 @@ public:
     double getX3Centroid() override { throw "Not implemented in TriangularMesh"; }
     double getX3Minimum() override { return minmax.minZ; }
     double getX3Maximum() override { return minmax.maxZ; }
-    void scale(double delta) override;
+    void changeSizeByDelta(double delta) override;
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
         const double& maxOffset) override {
         return false;

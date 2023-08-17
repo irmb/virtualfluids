@@ -80,14 +80,49 @@ double Cylinder::getX3Maximum()
     return getMaximumCoordinate(z);
 }
 
-////////////////// #TODO
-
-bool Cylinder::isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset)
+double Cylinder::getRadius() const
 {
- return false;
+    return radius;
 }
 
-
-void Cylinder::scale(double delta)
+double Cylinder::getHeight() const
 {
+    return height;
+}
+
+bool Cylinder::isInCircle(double delta1, double delta2, double offset) const
+{
+    return (delta1 * delta1 + delta2 * delta2) < ((this->radius - offset) * (this->radius - offset));
+}
+
+bool Cylinder::isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
+                               const double &maxOffset)
+{
+    double offset = maxOffset;
+    if (x1 < center.at(x) || x2 < center.at(y) || x3 < center.at(z)) offset = minOffset;
+
+    const double deltaX1 = x1 - center.at(x);
+    const double deltaX2 = x2 - center.at(y);
+    const double deltaX3 = x3 - center.at(z);
+
+    switch (principalAxis) {
+        case x:
+            if (deltaX1 > 0.5 * height || deltaX1 < -0.5 * height) return false;
+            return isInCircle(deltaX2, deltaX3, offset);
+        case y:
+            if (deltaX2 > 0.5 * height || deltaX2 < -0.5 * height) return false;
+            return isInCircle(deltaX1, deltaX3, offset);
+        case z:
+            if (deltaX3 > 0.5 * height || deltaX3 < -0.5 * height) return false;
+            return isInCircle(deltaX1, deltaX2, offset);
+    }
+
+    VF_LOG_CRITICAL("Unknown principal axis in Cylinder.");
+    return false;
+}
+
+void Cylinder::changeSizeByDelta(double delta)
+{
+    this->radius += delta;
+    this->height += 2 * delta;
 }

@@ -115,7 +115,7 @@ bool Sphere::isPointInObject(const double& x1, const double& x2, const double& x
 }
 
 
-void Sphere::scale(double delta)
+void Sphere::changeSizeByDelta(double delta)
 {
     this->radius += delta;
 }

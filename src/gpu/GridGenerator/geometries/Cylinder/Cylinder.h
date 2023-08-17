@@ -63,14 +63,19 @@ public:
     double getX3Minimum() override;
     double getX3Maximum() override;
 
+    double getRadius() const;
+    double getHeight() const;
+
     bool isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
                          const double &maxOffset) override;
-    void scale(double delta) override;
+    void changeSizeByDelta(double delta) override;
 
 private:
     double getCentroidCoordinate(PrincipalAxis coordinateDirection) const;
     double getMinimunCoordinate(PrincipalAxis coordinateDirection) const;
     double getMaximumCoordinate(PrincipalAxis coordinateDirection) const;
+
+    bool isInCircle(double delta1, double delta2, double offset) const;
 
     const std::map<PrincipalAxis, std::array<double, 3>> unitVectors{ { x, { 1, 0, 0 } },
                                                                       { y, { 0, 1, 0 } },

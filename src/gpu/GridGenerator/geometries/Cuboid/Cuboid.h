@@ -54,7 +54,7 @@ public:
     double getX3Minimum() override;
     double getX3Maximum() override;
 
-    void scale(double delta) override;
+    void changeSizeByDelta(double delta) override;
 
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 

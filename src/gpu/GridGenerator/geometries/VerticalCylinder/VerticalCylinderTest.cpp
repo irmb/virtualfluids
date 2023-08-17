@@ -32,4 +32,26 @@ TEST_F(VerticalCylinderTest, getMaximum)
     EXPECT_THAT(cylinder.getX3Maximum(), testing::Eq(0.5 * height + center[2]));
 }
 
-// TEST_F()
+TEST_F(VerticalCylinderTest, isPointInObject)
+{
+    double epsilon = 0.0001;
+    EXPECT_TRUE(cylinder.isPointInObject(center[0], center[1], center[2], 0.0, 0.0));
+
+    // x
+    EXPECT_TRUE(cylinder.isPointInObject(center[0] - radius + epsilon, center[1], center[2], 0.0, 0.0));
+    EXPECT_FALSE(cylinder.isPointInObject(center[0] - radius - epsilon, center[1], center[2], 0.0, 0.0));
+    EXPECT_TRUE(cylinder.isPointInObject(center[0] + radius - epsilon, center[1], center[2], 0.0, 0.0));
+    EXPECT_FALSE(cylinder.isPointInObject(center[0] + radius + epsilon, center[1], center[2], 0.0, 0.0));
+
+    // y
+    EXPECT_TRUE(cylinder.isPointInObject(center[0], center[1] - radius + epsilon, center[2], 0.0, 0.0));
+    EXPECT_FALSE(cylinder.isPointInObject(center[0], center[1] - radius - epsilon, center[2], 0.0, 0.0));
+    EXPECT_TRUE(cylinder.isPointInObject(center[0], center[1] + radius - epsilon, center[2], 0.0, 0.0));
+    EXPECT_FALSE(cylinder.isPointInObject(center[0], center[1] + radius + epsilon, center[2], 0.0, 0.0));
+
+    // z
+    EXPECT_TRUE(cylinder.isPointInObject(center[0], center[1], center[2] - 0.5 * height + epsilon, 0.0, 0.0));
+    EXPECT_FALSE(cylinder.isPointInObject(center[0], center[1], center[2] - 0.5 * height - epsilon, 0.0, 0.0));
+    EXPECT_TRUE(cylinder.isPointInObject(center[0], center[1], center[2] + 0.5 * height - epsilon, 0.0, 0.0));
+    EXPECT_FALSE(cylinder.isPointInObject(center[0], center[1], center[2] + 0.5 * height + epsilon, 0.0, 0.0));
+}

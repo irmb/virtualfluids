@@ -59,7 +59,7 @@ public:
     virtual double getX3Maximum()  = 0;
 
 
-    virtual void scale(double delta) = 0;
+    virtual void changeSizeByDelta(double delta) = 0;
 
 
     virtual bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) = 0;
