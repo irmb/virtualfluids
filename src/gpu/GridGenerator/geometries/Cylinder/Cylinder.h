@@ -35,54 +35,48 @@
 #ifndef CYLINDER_H
 #define CYLINDER_H
 
-#include "geometries/Object.h"
-#include <basics/geometry3d/GbCylinder3D.h>
 #include <map>
+
+#include <basics/geometry3d/GbCylinder3D.h>
+#include <basics/geometry3d/Axis.h>
+
+#include "geometries/Object.h"
 
 class GRIDGENERATOR_EXPORT Cylinder : public Object
 {
 public:
-    enum RotationalAxis {
-        x = 0,
-        y = 1,
-        z = 2,
-    };
 
-    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, RotationalAxis axis);
-    Cylinder(std::array<double, 3> center, double radius, double height, RotationalAxis axis);
+    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, Axis rotationalAxis);
+    Cylinder(std::array<double, 3> center, double radius, double height, Axis axis);
 
     SPtr<Object> clone() const override;
 
-    double getX1Centroid() override;
-    double getX1Minimum() override;
-    double getX1Maximum() override;
-    double getX2Centroid() override;
-    double getX2Minimum() override;
-    double getX2Maximum() override;
-    double getX3Centroid() override;
-    double getX3Minimum() override;
-    double getX3Maximum() override;
+    double getX1Centroid() const override;
+    double getX1Minimum() const override;
+    double getX1Maximum() const override;
+    double getX2Centroid() const override;
+    double getX2Minimum() const override;
+    double getX2Maximum() const override;
+    double getX3Centroid() const override;
+    double getX3Minimum() const override;
+    double getX3Maximum() const override;
 
     double getRadius() const;
     double getHeight() const;
-    RotationalAxis getRotationalAxis() const;
+    Axis getRotationalAxis() const;
 
     bool isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
                          const double &maxOffset) override;
     void changeSizeByDelta(double delta) override;
 
 private:
-    double getCentroidCoordinate(RotationalAxis coordinateDirection) const;
-    double getMinimunCoordinate(RotationalAxis coordinateDirection) const;
-    double getMaximumCoordinate(RotationalAxis coordinateDirection) const;
+    double getCentroidCoordinate(Axis coordinateDirection) const;
+    double getMinimunCoordinate(Axis coordinateDirection) const;
+    double getMaximumCoordinate(Axis coordinateDirection) const;
 
     bool isInCircle(double delta1, double delta2, double offset) const;
 
-    const std::map<RotationalAxis, std::array<double, 3>> unitVectors{ { x, { 1, 0, 0 } },
-                                                                       { y, { 0, 1, 0 } },
-                                                                       { z, { 0, 0, 1 } } };
-
-    RotationalAxis rotationalAxis;
+    Axis rotationalAxis;
     const std::array<double, 3> center;
 
     double radius;

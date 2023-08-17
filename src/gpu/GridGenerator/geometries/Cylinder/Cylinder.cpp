@@ -1,12 +1,12 @@
 #include "Cylinder.h"
 #include <numeric>
 
-Cylinder::Cylinder(double centerX, double centerY, double centerZ, double radius, double height, RotationalAxis axis)
-    : center({ centerX, centerY, centerZ }), radius(radius), height(height), rotationalAxis(axis)
+Cylinder::Cylinder(double centerX, double centerY, double centerZ, double radius, double height, Axis rotationalAxis)
+    : center({ centerX, centerY, centerZ }), radius(radius), height(height), rotationalAxis(rotationalAxis)
 {
 }
 
-Cylinder::Cylinder(std::array<double, 3> center, double radius, double height, RotationalAxis axis)
+Cylinder::Cylinder(std::array<double, 3> center, double radius, double height, Axis axis)
     : center(center), radius(radius), height(height), rotationalAxis(axis)
 {
 }
@@ -16,66 +16,66 @@ SPtr<Object> Cylinder::clone() const
     return std::make_shared<Cylinder>(center, radius, height, rotationalAxis);
 }
 
-double Cylinder::getCentroidCoordinate(RotationalAxis coordinateDirection) const
+double Cylinder::getCentroidCoordinate(Axis coordinateDirection) const
 {
     return center.at(coordinateDirection);
 }
 
-double Cylinder::getMinimunCoordinate(RotationalAxis coordinateDirection) const
+double Cylinder::getMinimunCoordinate(Axis coordinateDirection) const
 {
     const auto unitVector = unitVectors.at(rotationalAxis);
     return center.at(coordinateDirection) - 0.5 * height * unitVector.at(coordinateDirection) +
            radius * (unitVector.at(coordinateDirection) - 1);
 }
 
-double Cylinder::getMaximumCoordinate(RotationalAxis coordinateDirection) const
+double Cylinder::getMaximumCoordinate(Axis coordinateDirection) const
 {
     const auto unitVector = unitVectors.at(rotationalAxis);
     return center.at(coordinateDirection) + 0.5 * height * unitVector.at(coordinateDirection) -
            radius * (unitVector.at(coordinateDirection) - 1);
 }
 
-double Cylinder::getX1Centroid()
+double Cylinder::getX1Centroid() const
 {
     return getCentroidCoordinate(x);
 }
 
-double Cylinder::getX1Minimum()
+double Cylinder::getX1Minimum() const
 {
     return getMinimunCoordinate(x);
 }
 
-double Cylinder::getX1Maximum()
+double Cylinder::getX1Maximum() const
 {
     return getMaximumCoordinate(x);
 }
 
-double Cylinder::getX2Centroid()
+double Cylinder::getX2Centroid() const
 {
     return getCentroidCoordinate(y);
 }
 
-double Cylinder::getX2Minimum()
+double Cylinder::getX2Minimum() const
 {
     return getMinimunCoordinate(y);
 }
 
-double Cylinder::getX2Maximum()
+double Cylinder::getX2Maximum() const
 {
     return getMaximumCoordinate(y);
 }
 
-double Cylinder::getX3Centroid()
+double Cylinder::getX3Centroid() const
 {
     return getCentroidCoordinate(z);
 }
 
-double Cylinder::getX3Minimum()
+double Cylinder::getX3Minimum() const
 {
     return getMinimunCoordinate(z);
 }
 
-double Cylinder::getX3Maximum()
+double Cylinder::getX3Maximum() const
 {
     return getMaximumCoordinate(z);
 }
@@ -90,7 +90,7 @@ double Cylinder::getHeight() const
     return height;
 }
 
-Cylinder::RotationalAxis Cylinder::getRotationalAxis() const
+Axis Cylinder::getRotationalAxis() const
 {
     return rotationalAxis;
 }

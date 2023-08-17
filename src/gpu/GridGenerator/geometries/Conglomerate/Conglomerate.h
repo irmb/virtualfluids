@@ -53,15 +53,15 @@ public:
 
     SPtr<Object> clone() const override;
 
-    double getX1Centroid() override;
-    double getX1Minimum() override;
-    double getX1Maximum() override;
-    double getX2Centroid() override;
-    double getX2Minimum() override;
-    double getX2Maximum() override;
-    double getX3Centroid() override;
-    double getX3Minimum() override;
-    double getX3Maximum() override;
+    double getX1Centroid() const override;
+    double getX1Minimum() const override;
+    double getX1Maximum() const override;
+    double getX2Centroid() const override;
+    double getX2Minimum() const override;
+    double getX2Maximum() const override;
+    double getX3Centroid() const override;
+    double getX3Minimum() const override;
+    double getX3Maximum() const override;
 
     void changeSizeByDelta(double delta) override;
 

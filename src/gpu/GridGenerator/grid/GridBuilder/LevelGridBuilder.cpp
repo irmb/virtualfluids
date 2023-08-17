@@ -856,3 +856,8 @@ void LevelGridBuilder::getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllF
 {
     grids[level]->getFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
 }
+
+bool LevelGridBuilder::getUseRotatingGrid() const
+{
+    return useGridRotation;
+}

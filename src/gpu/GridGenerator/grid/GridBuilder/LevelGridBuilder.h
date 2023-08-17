@@ -144,6 +144,8 @@ public:
     GRIDGENERATOR_EXPORT virtual bool hasGeometryValues() const override;
     GRIDGENERATOR_EXPORT virtual void getGeometryValues(real *vx, real *vy, real *vz, int level) const override;
 
+    GRIDGENERATOR_EXPORT bool getUseRotatingGrid() const override;
+
     GRIDGENERATOR_EXPORT void writeArrows(std::string fileName) const override;
 
     GRIDGENERATOR_EXPORT SPtr<gg::BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
@@ -178,6 +180,8 @@ protected:
     std::array<uint, 6> communicationProcesses;
 
     void checkLevel(int level);
+
+    bool useGridRotation = false;
 
 protected:
     void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);

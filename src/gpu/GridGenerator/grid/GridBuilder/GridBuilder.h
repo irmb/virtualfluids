@@ -160,6 +160,8 @@ public:
     virtual uint getNumberOfFluidNodesAllFeatures(uint level) const = 0;
     virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, int level) const = 0;
 
+    virtual bool getUseRotatingGrid() const = 0;
+
 
 };
 

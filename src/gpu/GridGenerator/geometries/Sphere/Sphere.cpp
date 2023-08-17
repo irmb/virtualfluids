@@ -54,47 +54,47 @@ SPtr<Object> Sphere::clone() const
     return std::make_shared<Sphere>(centerX, centerY, centerZ, radius);
 }
 
-double Sphere::getX1Centroid()
+double Sphere::getX1Centroid() const
 {
     return centerX;
 }
 
-double Sphere::getX1Minimum()
+double Sphere::getX1Minimum() const
 {
     return centerX - radius;
 }
 
-double Sphere::getX1Maximum()
+double Sphere::getX1Maximum() const
 {
     return centerX + radius;
 }
 
-double Sphere::getX2Centroid()
+double Sphere::getX2Centroid() const
 {
     return centerY;
 }
 
-double Sphere::getX2Minimum()
+double Sphere::getX2Minimum() const
 {
     return centerY - radius;
 }
 
-double Sphere::getX2Maximum()
+double Sphere::getX2Maximum() const
 {
     return centerY + radius;
 }
 
-double Sphere::getX3Centroid()
+double Sphere::getX3Centroid() const
 {
     return centerZ;
 }
 
-double Sphere::getX3Minimum()
+double Sphere::getX3Minimum() const
 {
     return centerZ - radius;
 }
 
-double Sphere::getX3Maximum()
+double Sphere::getX3Maximum() const
 {
     return centerZ + radius;
 }

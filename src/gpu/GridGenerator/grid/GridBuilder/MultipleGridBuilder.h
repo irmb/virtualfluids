@@ -116,8 +116,6 @@ private:
 
     SPtr<BoundingBox> subDomainBox;
 
-    bool useGridRotation = false;
-
 public:
     GRIDGENERATOR_EXPORT void findCommunicationIndices(int direction);
 };

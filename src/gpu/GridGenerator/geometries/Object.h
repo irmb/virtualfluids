@@ -46,17 +46,17 @@ public:
     virtual ~Object() = default;
     virtual SPtr<Object> clone() const = 0;
 
-    virtual double getX1Centroid() = 0;
-    virtual double getX1Minimum()  = 0;
-    virtual double getX1Maximum()  = 0;
+    virtual double getX1Centroid() const = 0;
+    virtual double getX1Minimum() const  = 0;
+    virtual double getX1Maximum() const  = 0;
 
-    virtual double getX2Centroid() = 0;
-    virtual double getX2Minimum()  = 0;
-    virtual double getX2Maximum()  = 0;
+    virtual double getX2Centroid() const = 0;
+    virtual double getX2Minimum() const  = 0;
+    virtual double getX2Maximum() const  = 0;
 
-    virtual double getX3Centroid() = 0;
-    virtual double getX3Minimum()  = 0;
-    virtual double getX3Maximum()  = 0;
+    virtual double getX3Centroid() const = 0;
+    virtual double getX3Minimum() const  = 0;
+    virtual double getX3Maximum() const  = 0;
 
 
     virtual void changeSizeByDelta(double delta) = 0;

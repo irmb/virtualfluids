@@ -48,47 +48,47 @@ SPtr<Object> VerticalCylinder::clone() const
     return std::make_shared<VerticalCylinder>(centerX, centerY, centerZ, radius, height);
 }
 
-double VerticalCylinder::getX1Centroid()
+double VerticalCylinder::getX1Centroid() const
 {
     return centerX;
 }
 
-double VerticalCylinder::getX1Minimum()
+double VerticalCylinder::getX1Minimum() const
 {
     return centerX - radius;
 }
 
-double VerticalCylinder::getX1Maximum()
+double VerticalCylinder::getX1Maximum() const
 {
     return centerX + radius;
 }
 
-double VerticalCylinder::getX2Centroid()
+double VerticalCylinder::getX2Centroid() const
 {
     return centerY;
 }
 
-double VerticalCylinder::getX2Minimum()
+double VerticalCylinder::getX2Minimum() const
 {
     return centerY - radius;
 }
 
-double VerticalCylinder::getX2Maximum()
+double VerticalCylinder::getX2Maximum() const
 {
     return centerY + radius;
 }
 
-double VerticalCylinder::getX3Centroid()
+double VerticalCylinder::getX3Centroid() const
 {
     return centerZ;
 }
 
-double VerticalCylinder::getX3Minimum()
+double VerticalCylinder::getX3Minimum() const
 {
     return centerZ - 0.5 * height;
 }
 
-double VerticalCylinder::getX3Maximum()
+double VerticalCylinder::getX3Maximum() const
 {
     return centerZ + 0.5 * height;
 }
