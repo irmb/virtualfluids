@@ -10,6 +10,7 @@
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/EdgeNodeFinder.h"
+#include "Parameter/ParameterRotatingGrid.h"
 #include "GPU/GPU_Interface.h"
 #include "GPU/KineticEnergyAnalyzer.h"
 #include "GPU/EnstrophyAnalyzer.h"
@@ -371,6 +372,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     dataWriter->writeInit(para, cudaMemoryManager);
     if (para->getCalcParticles())
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
+
     VF_LOG_INFO("... done.");
 
     //////////////////////////////////////////////////////////////////////////
@@ -381,8 +383,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
-    // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-    // InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+    InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get(), 0);
+    InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get(), 0);
 
     // writers for version with communication hiding
     //    if(para->getNumprocs() > 1 && para->getUseStreams()){
@@ -965,6 +967,18 @@ void Simulation::readAndWriteFiles(uint timestep)
         //writeAllTiDatafToFile(para.get(), t);
     }
     ////////////////////////////////////////////////////////////////////////
+    // rotating grid
+                 
+    UpdateGlobalCoordinates(para->getParD(1).get(), para->getRotatingGridParameter()->parameterRotDevice.get());
+    cudaMemoryManager->cudaCopyCoordDeviceToHost(1);
+    // cudaMemoryManager->cudaCopyCoordRotationDeviceToHost(1);
+    cudaMemoryManager->cudaCopyInterfaceCFDeviceToHost(0);
+    cudaMemoryManager->cudaCopyInterfaceFCDeviceToHost(0);
+    InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get(), timestep);
+    InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get(), timestep);
+
+    ////////////////////////////////////////////////////////////////////////
+
     dataWriter->writeTimestep(para, timestep);
     ////////////////////////////////////////////////////////////////////////
     if (para->getCalcTurbulenceIntensity()) {

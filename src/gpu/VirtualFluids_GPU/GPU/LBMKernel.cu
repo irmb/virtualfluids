@@ -17,6 +17,8 @@
 #include "GPU/GPU_Kernels.cuh"
 
 #include "Parameter/Parameter.h"
+#include "Parameter/ParameterRotatingGrid.h"
+
 //////////////////////////////////////////////////////////////////////////
 void KernelCas27(
     unsigned int grid_nx,
@@ -4052,6 +4054,70 @@ template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationPara
 template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream);
 template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream);
 
+void InterpolateStaticToRotating(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *baseToNested,
+    ICellNeigh &neighborBaseToNested)
+{
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceS->numberofthreads, baseToNested->numberOfCells);
+    dim3 threads(parameterDeviceS->numberofthreads, 1, 1);
+
+    interpolateStaticToRotating<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
+        baseToNested->numberOfCells,
+        baseToNested->coarseCellIndices,
+        baseToNested->fineCellIndices,
+        paraRotDevice->nestedCoordinatesX,
+        paraRotDevice->nestedCoordinatesY,
+        paraRotDevice->nestedCoordinatesZ,
+        parameterDeviceS->coordinateX,
+        parameterDeviceS->coordinateY,
+        parameterDeviceS->coordinateZ,
+        parameterDeviceS->neighborX,
+        parameterDeviceS->neighborY,
+        parameterDeviceS->neighborZ,
+        parameterDeviceS->neighborInverse,
+        paraRotDevice->centerPoint[0],
+        paraRotDevice->centerPoint[1],
+        paraRotDevice->centerPoint[2],
+        paraRotDevice->gridAngle[0],
+        paraRotDevice->gridAngle[1],
+        paraRotDevice->gridAngle[2],
+        paraRotDevice->angularVelocity[0],
+        paraRotDevice->angularVelocity[1],
+        paraRotDevice->angularVelocity[2],
+        parameterDeviceS->gridSpacing
+    );
+
+    getLastCudaError("interpolateStaticToRotating execution failed");
+}
+
+void UpdateGlobalCoordinates(
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice
+)
+{
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceR->numberofthreads, parameterDeviceR->numberOfNodes);
+    dim3 threads(parameterDeviceR->numberofthreads, 1, 1);
+
+    updateGlobalCoordinates<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
+        parameterDeviceR->numberOfNodes,
+        parameterDeviceR->coordinateX,
+        parameterDeviceR->coordinateY,
+        parameterDeviceR->coordinateZ,
+        paraRotDevice->nestedCoordinatesX,
+        paraRotDevice->nestedCoordinatesY,
+        paraRotDevice->nestedCoordinatesZ,
+        paraRotDevice->centerPoint[0],
+        paraRotDevice->centerPoint[1],
+        paraRotDevice->centerPoint[2],
+        paraRotDevice->gridAngle[0],
+        paraRotDevice->gridAngle[1],
+        paraRotDevice->gridAngle[2]
+    );
+    getLastCudaError("updateGlobalCoordinates execution failed");
+}
 //////////////////////////////////////////////////////////////////////////
 void ScaleCF_RhoSq_3rdMom_comp_27(
     real* DC,

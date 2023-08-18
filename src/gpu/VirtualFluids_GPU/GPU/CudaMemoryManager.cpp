@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include <Parameter/Parameter.h>
+#include <Parameter/ParameterRotatingGrid.h>
 
 #include "Parameter/CudaStreamManager.h"
 #include "PreCollisionInteractor/ActuatorFarm.h"
@@ -46,31 +47,74 @@ void CudaMemoryManager::cudaCopyMedianPrint(int lev)
 }
 void CudaMemoryManager::cudaAllocCoord(int lev)
 {
-	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordinateX      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordinateY      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordinateZ      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
-	//Device (spinning ship + uppsala)
-	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordinateX      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
-	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordinateY      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
-	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordinateZ      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
-	//////////////////////////////////////////////////////////////////////////
-	double tmp = 3. * (double)parameter->getParH(lev)->memSizeRealLBnodes;
-	setMemsizeGPU(tmp, false);
+    //Host
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordinateX      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordinateY      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordinateZ      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
+    //Device (spinning ship + uppsala)
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordinateX      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordinateY      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordinateZ      ), parameter->getParH(lev)->memSizeRealLBnodes  ));
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = 3. * (double)parameter->getParH(lev)->memSizeRealLBnodes;
+    setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyCoord(int lev)
 {
-	//copy host to device
-	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->coordinateX,  parameter->getParH(lev)->coordinateX,  parameter->getParH(lev)->memSizeRealLBnodes     , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->coordinateY,  parameter->getParH(lev)->coordinateY,  parameter->getParH(lev)->memSizeRealLBnodes     , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->coordinateZ,  parameter->getParH(lev)->coordinateZ,  parameter->getParH(lev)->memSizeRealLBnodes     , cudaMemcpyHostToDevice));
+    //copy host to device
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->coordinateX,  parameter->getParH(lev)->coordinateX,  parameter->getParH(lev)->memSizeRealLBnodes     , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->coordinateY,  parameter->getParH(lev)->coordinateY,  parameter->getParH(lev)->memSizeRealLBnodes     , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->coordinateZ,  parameter->getParH(lev)->coordinateZ,  parameter->getParH(lev)->memSizeRealLBnodes     , cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaCopyCoordDeviceToHost(int lev)
+{
+    //copy device to host
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->coordinateX, parameter->getParD(lev)->coordinateX, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->coordinateY, parameter->getParD(lev)->coordinateY, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->coordinateZ, parameter->getParD(lev)->coordinateZ, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaFreeCoord(int lev)
 {
-	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordinateX   ));
-	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordinateY   ));
-	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordinateZ   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordinateX   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordinateY   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordinateZ   ));
 }
+void CudaMemoryManager::cudaAllocCoordRotation(int lev)
+{
+//Host
+    unsigned long long memSize = parameter->getRotatingGridParameter()->parameterRotHost->memorySizeOfNestedCoordinates;
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesX), memSize ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesY), memSize ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesZ), memSize ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesX), memSize ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesY), memSize ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesZ), memSize ));
+    //////////////////////////////////////////////////////////////////////////
+    setMemsizeGPU(3. * memSize, false);
+}
+void CudaMemoryManager::cudaCopyCoordRotation(int lev)
+{
+    //copy host to device
+    unsigned long long memSize = parameter->getRotatingGridParameter()->parameterRotHost->memorySizeOfNestedCoordinates;
+    checkCudaErrors( cudaMemcpy(parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesX,  parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesX, memSize , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesY,  parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesY, memSize , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesZ,  parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesZ, memSize , cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaCopyCoordRotationDeviceToHost(int lev)
+{
+    //copy device to host
+    unsigned long long memSize = parameter->getRotatingGridParameter()->parameterRotHost->memorySizeOfNestedCoordinates;
+    checkCudaErrors( cudaMemcpy(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesX, parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesX, memSize, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesY, parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesY, memSize, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesZ, parameter->getRotatingGridParameter()->parameterRotDevice->nestedCoordinatesZ, memSize, cudaMemcpyDeviceToHost));
+}
+void CudaMemoryManager::cudaFreeCoordRotation(int lev)
+{
+    checkCudaErrors( cudaFreeHost(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesX ));
+    checkCudaErrors( cudaFreeHost(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesY ));
+    checkCudaErrors( cudaFreeHost(parameter->getRotatingGridParameter()->parameterRotHost->nestedCoordinatesZ ));
+}
+
 void CudaMemoryManager::cudaAllocBodyForce(int lev)
 {
     //Host
@@ -84,7 +128,6 @@ void CudaMemoryManager::cudaAllocBodyForce(int lev)
 	//////////////////////////////////////////////////////////////////////////
 	double tmp = 3. * (double)parameter->getParH(lev)->memSizeRealLBnodes;
 	setMemsizeGPU(tmp, false);
-
 }
 void CudaMemoryManager::cudaCopyBodyForce(int lev)
 {
@@ -1124,6 +1167,13 @@ void CudaMemoryManager::cudaCopyInterfaceCF(int lev)
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->coarseToFine.coarseCellIndices, parameter->getParH(lev)->coarseToFine.coarseCellIndices, mem_size_kCF, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->coarseToFine.fineCellIndices, parameter->getParH(lev)->coarseToFine.fineCellIndices, mem_size_kCF, cudaMemcpyHostToDevice));
 }
+void CudaMemoryManager::cudaCopyInterfaceCFDeviceToHost(int lev)
+{
+    uint mem_size_kCF = sizeof(uint) * parameter->getParH(lev)->coarseToFine.numberOfCells;
+
+    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->coarseToFine.coarseCellIndices, parameter->getParD(lev)->coarseToFine.coarseCellIndices, mem_size_kCF, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->coarseToFine.fineCellIndices  , parameter->getParD(lev)->coarseToFine.fineCellIndices,   mem_size_kCF, cudaMemcpyDeviceToHost));
+}
 void CudaMemoryManager::cudaFreeInterfaceCF(int lev)
 {
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coarseToFine.coarseCellIndices));
@@ -1150,6 +1200,12 @@ void CudaMemoryManager::cudaCopyInterfaceFC(int lev)
 
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fineToCoarse.fineCellIndices, parameter->getParH(lev)->fineToCoarse.fineCellIndices, mem_size_kFC, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fineToCoarse.coarseCellIndices, parameter->getParH(lev)->fineToCoarse.coarseCellIndices, mem_size_kFC, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaCopyInterfaceFCDeviceToHost(int lev){
+    uint mem_size_kFC = sizeof(uint) * parameter->getParH(lev)->fineToCoarse.numberOfCells;
+
+    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->fineToCoarse.fineCellIndices  , parameter->getParD(lev)->fineToCoarse.fineCellIndices  , mem_size_kFC, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->fineToCoarse.coarseCellIndices, parameter->getParD(lev)->fineToCoarse.coarseCellIndices, mem_size_kFC, cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaCheckInterfaceFCBulk(int lev)
 {

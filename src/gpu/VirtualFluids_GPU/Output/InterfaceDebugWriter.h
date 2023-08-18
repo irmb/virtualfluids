@@ -1,12 +1,14 @@
 #ifndef INTERFACEDEBUG_HPP
 #define INTERFACEDEBUG_HPP
 
+#include <basics/DataTypes.h>
+
 class Parameter;
 namespace InterfaceDebugWriter
 {
 
-void writeInterfaceLinesDebugCF(Parameter *para);
-void writeInterfaceLinesDebugFC(Parameter *para);
+void writeInterfaceLinesDebugCF(Parameter *para, uint timeStep=0);
+void writeInterfaceLinesDebugFC(Parameter *para, uint timeStep=0);
 
 void writeInterfaceLinesDebugCFCneighbor(Parameter *para);
 void writeInterfaceLinesDebugCFFneighbor(Parameter *para);

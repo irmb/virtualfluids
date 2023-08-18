@@ -1165,15 +1165,15 @@ void GridImp::findGridInterfaceForRotatingGrid(SPtr<Grid> rotatingGrid)
     for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++)
         this->findOverlapStopper(indexOnStaticGrid, *rotatingGridImp);
 
-    // // change interface gap nodes to fluid nodes on static grid
-    // for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++)
-    //     if (this->getField().isInterpolationGapNode(indexOnStaticGrid))
-    //         this->getField().setFieldEntry(indexOnStaticGrid, FLUID);
+    // change interface gap nodes to fluid nodes on static grid
+    for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++)
+        if (this->getField().isInterpolationGapNode(indexOnStaticGrid))
+            this->getField().setFieldEntry(indexOnStaticGrid, FLUID);
 
-    // // change interface gap nodes to fluid nodes on rotating grid
-    // for (uint indexOnRotatingGrid = 0; indexOnRotatingGrid < rotatingGridImp->getSize(); indexOnRotatingGrid++)
-    //     if (rotatingGridImp->getField().isInterpolationGapNode(indexOnRotatingGrid))
-    //         rotatingGridImp->getField().setFieldEntry(indexOnRotatingGrid, FLUID);
+    // change interface gap nodes to fluid nodes on rotating grid
+    for (uint indexOnRotatingGrid = 0; indexOnRotatingGrid < rotatingGridImp->getSize(); indexOnRotatingGrid++)
+        if (rotatingGridImp->getField().isInterpolationGapNode(indexOnRotatingGrid))
+            rotatingGridImp->getField().setFieldEntry(indexOnRotatingGrid, FLUID);
 
     VF_LOG_TRACE("  ... done.");
 }
@@ -1185,6 +1185,8 @@ void GridImp::repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid)
 
 void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
 {
+    VF_LOG_TRACE("Limit to subdomain box.");
+
     for( uint index = 0; index < this->size; index++ ){
 
         real x, y, z;

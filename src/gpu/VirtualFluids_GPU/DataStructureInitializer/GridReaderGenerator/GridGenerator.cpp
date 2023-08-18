@@ -50,9 +50,9 @@ void GridGenerator::initalGridInformations()
         builder->findFluidNodes(para->getUseStreams());
     std::vector<int> gridX, gridY, gridZ;
     std::vector<int> distX, distY, distZ;
-    const int numberOfGridLevels = builder->getNumberOfGridLevels();
+    const uint numberOfGridLevels = builder->getNumberOfGridLevels();
     builder->getGridInformations(gridX, gridY, gridZ, distX, distY, distZ);
-    para->setMaxLevel(numberOfGridLevels);
+    para->setMaxLevel((int) numberOfGridLevels);
     para->setGridX(gridX);
     para->setGridY(gridY);
     para->setGridZ(gridZ);
@@ -108,12 +108,23 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             cudaMemoryManager->cudaCopyBodyForce(level);
     }
 
+    
     if (builder->getUseRotatingGrid()) {
+        VF_LOG_INFO("Init parameters for rotating grid.");
         SPtr<const Object> cylinder = builder->getGrid(1)->getObject();
         const std::array<real, 3> centerPointOfCylinder = { (real)cylinder->getX1Centroid(), (real)cylinder->getX2Centroid(),
                                                             (real)cylinder->getX3Centroid() };
-        auto parameterRotatingGrid = std::make_shared<ParameterRotatingGrid>(centerPointOfCylinder, Axis::x);
-        para->setRotatingGridParameter(std::move(parameterRotatingGrid));
+        para->setRotatingGridParameter(
+            std::make_shared<ParameterRotatingGrid>(centerPointOfCylinder, Axis::x, para->getParH(1)->numberOfNodes));
+        cudaMemoryManager->cudaAllocCoordRotation(1);
+        para->fillCoordinateVectorsForRotatingGrid(1);
+        cudaMemoryManager->cudaCopyCoordRotation(1);
+    }
+
+    for (int i = 0; i <= para->getMaxLevel(); i++) {
+        para->getParH(i)->gridSpacing = builder->getGrid(i)->getDelta();
+        para->getParD(i)->gridSpacing = builder->getGrid(i)->getDelta();
+        VF_LOG_WARNING("{}", builder->getGrid(i)->getDelta());
     }
 
     VF_LOG_INFO("Number of Nodes: {}", numberOfNodesGlobal);

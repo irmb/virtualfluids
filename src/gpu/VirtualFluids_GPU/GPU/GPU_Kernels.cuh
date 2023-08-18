@@ -1868,6 +1868,46 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     real* turbulentViscosityFine,
     ICellNeigh offsetCF);
 
+__global__ void interpolateStaticToRotating(
+    unsigned int numberOfInterfaceNodes,
+    unsigned int *indicesStaticMMM,
+    unsigned int *indicesRotating,
+    const real *coordDestinationX,
+    const real *coordDestinationY,
+    const real *coordDestinationZ,
+    const real *coordSourceX,
+    const real *coordSourceY,
+    const real *coordSourceZ,
+    const uint *neighborXstatic,
+    const uint *neighborYstatic,
+    const uint *neighborZstatic,
+    const uint *neighborMMMstatic,
+    real centerCoordX,
+    real centerCoordY,
+    real centerCoordZ,
+    real angleX,
+    real angleY,
+    real angleZ,
+    real angularVelocityX,
+    real angularVelocityY,
+    real angularVelocityZ,
+    real dx);
+
+__global__ void updateGlobalCoordinates(
+    unsigned int numberOfNodes,
+    real *globalX,
+    real *globalY,
+    real *globalZ,
+    const real *localX,
+    const real *localY,
+    const real *localZ,
+    real centerCoordX,
+    real centerCoordY,
+    real centerCoordZ,
+    real angleX,
+    real angleY,
+    real angleZ);
+
 __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
                                                         real* DF,
                                                         unsigned int* neighborCX,

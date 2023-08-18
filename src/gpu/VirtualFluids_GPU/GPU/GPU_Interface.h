@@ -25,6 +25,7 @@
 #endif
 
 struct LBMSimulationParameter;
+struct ParameterRotatingGridSimulation;
 class Parameter;
 
 //////////////////////////////////////////////////////////////////////////
@@ -1622,6 +1623,17 @@ void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulat
 
 template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * interpolationCellsCoarseToFine, ICellNeigh &neighborCoarseToFine, CUstream_st *stream);
 
+void InterpolateStaticToRotating(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *baseToNested,
+    ICellNeigh &neighborBaseToNested);
+
+void UpdateGlobalCoordinates(
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice
+);
 void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
 											  unsigned int* neighborCX,

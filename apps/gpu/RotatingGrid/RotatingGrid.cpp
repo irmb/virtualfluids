@@ -92,7 +92,7 @@ int main()
         const uint nx = 64;
 
         const uint timeStepOut = 1;
-        const uint timeStepEnd = 1;
+        const uint timeStepEnd = 10;
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -110,7 +110,7 @@ int main()
 
         gridBuilder->addCoarseGrid(-1.5 * L, -0.5 * L, -0.5 * L, 1.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Axis::x));
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.1, 0.1, 0.1, 0.25 * L, 1. * L, Axis::x));
         if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Axis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
@@ -205,7 +205,6 @@ int main()
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
         SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
-        paraRot->transformNestedToBase({para->getParH(1)->coordinateX, para->getParH(1)->coordinateY, para->getParH(1)->coordinateZ});
         sim.run();
 
     } catch (const spdlog::spdlog_ex &ex) {

@@ -4,7 +4,7 @@
 #include <basics/DataTypes.h>
 #include <math.h>
 
-__inline__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX,
+__inline__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX,
                                                               real localY, real localZ, real centerCoordX, real centerCoordY,
                                                               real centerCoordZ, real angleX, real angleY, real angleZ)
 {

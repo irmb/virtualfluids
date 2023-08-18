@@ -518,7 +518,7 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->Lx               = ((real)1.0 * parH[i]->gridNX - (real)1.0) / (pow((real)2.0, i));
         parH[i]->Ly               = ((real)1.0 * parH[i]->gridNY - (real)1.0) / (pow((real)2.0, i));
         parH[i]->Lz               = ((real)1.0 * parH[i]->gridNZ - (real)1.0) / (pow((real)2.0, i));
-        parH[i]->dx               = (real)1.0 / pow((real)2.0, i);
+        parH[i]->scalingFactorOfGridSpacing = (real)1.0 / pow((real)2.0, i);
         parH[i]->XdistKn          = getDistX().at(i);
         parH[i]->YdistKn          = getDistY().at(i);
         parH[i]->ZdistKn          = getDistZ().at(i);
@@ -539,9 +539,9 @@ void Parameter::initLBMSimulationParameter()
             ////////////////////////////////////////////////////////////////////////////
         } else {
             // Geller
-            parH[i]->distX = ((real)getDistX().at(i) + (real)0.25) * parH[i - 1]->dx;
-            parH[i]->distY = ((real)getDistY().at(i) + (real)0.25) * parH[i - 1]->dx;
-            parH[i]->distZ = ((real)getDistZ().at(i) + (real)0.25) * parH[i - 1]->dx;
+            parH[i]->distX = ((real)getDistX().at(i) + (real)0.25) * parH[i - 1]->scalingFactorOfGridSpacing;
+            parH[i]->distY = ((real)getDistY().at(i) + (real)0.25) * parH[i - 1]->scalingFactorOfGridSpacing;
+            parH[i]->distZ = ((real)getDistZ().at(i) + (real)0.25) * parH[i - 1]->scalingFactorOfGridSpacing;
             // parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
             // parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
             // parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
@@ -586,7 +586,7 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->Lx               = parH[i]->Lx;
         parD[i]->Ly               = parH[i]->Ly;
         parD[i]->Lz               = parH[i]->Lz;
-        parD[i]->dx               = parH[i]->dx;
+        parD[i]->scalingFactorOfGridSpacing = parH[i]->scalingFactorOfGridSpacing;
         parD[i]->XdistKn          = parH[i]->XdistKn;
         parD[i]->YdistKn          = parH[i]->YdistKn;
         parD[i]->ZdistKn          = parH[i]->ZdistKn;
@@ -1661,9 +1661,12 @@ void Parameter::setADKernel(std::string adKernel)
 void Parameter::setRotatingGridParameter(std::shared_ptr<ParameterRotatingGrid> parameterRotatingGrid)
 {
     this->parameterRotatingGrid = std::move(parameterRotatingGrid);
-    this->parameterRotatingGrid->initializeNestedCoordinates(
-        { this->parH[1]->coordinateX, this->parH[1]->coordinateY, this->parH[1]->coordinateZ },
-        this->parH[1]->numberOfNodes);
+}
+
+    void Parameter::fillCoordinateVectorsForRotatingGrid(uint level)
+{
+    this->parameterRotatingGrid->fillNestedCoordinateVectorsOnHost(
+        { this->parH[level]->coordinateX, this->parH[level]->coordinateY, this->parH[level]->coordinateZ });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2669,27 +2672,27 @@ real Parameter::TrafoXtoMGsWorld(int CoordX, int level)
 {
     real temp = 0;
     for (int i = 0; i <= level; i++) {
-        temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->dx;
+        temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->scalingFactorOfGridSpacing;
     }
-    temp += (real)((CoordX)*parH[level]->dx);
+    temp += (real)((CoordX)*parH[level]->scalingFactorOfGridSpacing);
     return temp;
 }
 real Parameter::TrafoYtoMGsWorld(int CoordY, int level)
 {
     real temp = 0;
     for (int i = 0; i <= level; i++) {
-        temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->dx;
+        temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->scalingFactorOfGridSpacing;
     }
-    temp += (real)((CoordY)*parH[level]->dx);
+    temp += (real)((CoordY)*parH[level]->scalingFactorOfGridSpacing);
     return temp;
 }
 real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 {
     real temp = 0;
     for (int i = 0; i <= level; i++) {
-        temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->dx;
+        temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->scalingFactorOfGridSpacing;
     }
-    temp += (real)((CoordZ)*parH[level]->dx);
+    temp += (real)((CoordZ)*parH[level]->scalingFactorOfGridSpacing);
     return temp;
 }
 

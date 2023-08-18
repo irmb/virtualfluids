@@ -59,6 +59,8 @@ private:
     void interactWithActuators(int level, unsigned int t);
     void interactWithProbes(int level, unsigned int t);
 
+    void rotationInterpolation(int level);
+
 private:
     CollisionStrategy collision;
     friend class CollisionAndExchange_noStreams_indexKernel;

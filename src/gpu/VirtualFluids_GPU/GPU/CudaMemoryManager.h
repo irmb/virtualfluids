@@ -49,6 +49,12 @@ public:
     void cudaAllocCoord(int lev);
     void cudaCopyCoord(int lev);
     void cudaFreeCoord(int lev);
+    void cudaCopyCoordDeviceToHost(int lev);
+
+    void cudaAllocCoordRotation(int lev);
+    void cudaCopyCoordRotation(int lev);
+    void cudaFreeCoordRotation(int lev);
+    void cudaCopyCoordRotationDeviceToHost(int lev);
 
     void cudaAllocBodyForce(int lev);
     void cudaCopyBodyForce(int lev);
@@ -164,10 +170,12 @@ public:
 
     void cudaAllocInterfaceCF(int lev);
     void cudaCopyInterfaceCF(int lev);
+    void cudaCopyInterfaceCFDeviceToHost(int lev);
     void cudaFreeInterfaceCF(int lev);
 
     void cudaAllocInterfaceFC(int lev);
     void cudaCopyInterfaceFC(int lev);
+    void cudaCopyInterfaceFCDeviceToHost(int lev);
     void cudaCheckInterfaceFCBulk(int lev);
     void cudaFreeInterfaceFC(int lev);
 

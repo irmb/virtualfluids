@@ -441,13 +441,13 @@ struct LBMSimulationParameter {
 
     // print///////////////////
     unsigned int startz, endz;
-    real Lx, Ly, Lz, dx;
+    real Lx, Ly, Lz, scalingFactorOfGridSpacing;
     real distX, distY, distZ;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
 
-
+    real gridSpacing;
 
     //////////////////////////////////////////////////////////////////////////
 };
@@ -686,6 +686,7 @@ public:
     void setADKernel(std::string adKernel);
     // rotating grid
     void setRotatingGridParameter(std::shared_ptr<ParameterRotatingGrid> parameterRotatingGrid);
+    void fillCoordinateVectorsForRotatingGrid(uint level);
 
     // adder
     void addActuator(SPtr<PreCollisionInteractor> actuator);

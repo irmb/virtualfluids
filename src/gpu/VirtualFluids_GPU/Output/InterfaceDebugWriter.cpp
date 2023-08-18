@@ -39,18 +39,18 @@ void writeGridInterfaceLines(Parameter *para, int level, const uint *coarse, con
     WbWriterVtkXmlBinary::getInstance()->writeLines(name, nodes, cells);
 }
 
-void writeInterfaceLinesDebugCF(Parameter *para)
+void writeInterfaceLinesDebugCF(Parameter *para, uint timeStep)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugCF.vtk";
+        const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugCF_" + StringUtil::toString<int>(timeStep) + ".vtk";
         writeGridInterfaceLines(para, level, para->getParH(level)->coarseToFine.coarseCellIndices, para->getParH(level)->coarseToFine.fineCellIndices, para->getParH(level)->coarseToFine.numberOfCells, fileName);
     }
 }
 
-void writeInterfaceLinesDebugFC(Parameter *para)
+void writeInterfaceLinesDebugFC(Parameter *para, uint timeStep)
 {
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugFC.vtk";
+        const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugFC_" + StringUtil::toString<int>(timeStep) + ".vtk";
         writeGridInterfaceLines(para, level, para->getParH(level)->fineToCoarse.coarseCellIndices, para->getParH(level)->fineToCoarse.fineCellIndices, para->getParH(level)->fineToCoarse.numberOfCells, fileName);
     }
 }

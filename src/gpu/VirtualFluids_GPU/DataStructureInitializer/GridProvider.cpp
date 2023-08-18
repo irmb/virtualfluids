@@ -149,6 +149,7 @@ void GridProvider::freeMemoryOnHost()
         cudaMemoryManager->cudaFreeCoord(level);
         cudaMemoryManager->cudaFreeSP(level);
     }
+    cudaMemoryManager->cudaFreeCoordRotation(1);
 }
 
 void GridProvider::cudaCopyDataToHost(int level)
