@@ -51,6 +51,7 @@ static constexpr char FLUID_NBB = FLUID_FCC; // = 3  // nested to base, base nod
 static constexpr char FLUID_NBN = FLUID_FCF; // = 4  // nested to base, nested node (source node)
 
 static constexpr char INTERPOLATION_GAP = 5;
+static constexpr char INTERPOLATION_GAP2 = 6;
 
 static constexpr char MULTI_GPU_SEND    = 10;
 static constexpr char MULTI_GPU_RECIEVE = 11;

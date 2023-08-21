@@ -222,6 +222,34 @@ void GridInterface::findInterpolationGapOnBaseGrid(const uint &indexOnBaseGrid, 
     }
 }
 
+void GridInterface::findSecondInterpolationGapOnBaseGrid(const uint &indexOnBaseGrid, GridImp *baseGrid, GridImp *nestedGrid)
+{
+    const bool nodeIsFluid = baseGrid->getField().isFluid(indexOnBaseGrid);
+    const bool nodeIsBaseToNested = baseGrid->getField().isBaseToNestedNode(indexOnBaseGrid);
+    const bool nodeIsGap = baseGrid->getField().is(indexOnBaseGrid, INTERPOLATION_GAP);
+    if (!nodeIsFluid || nodeIsBaseToNested || nodeIsGap) return;
+
+    const uint indexOnFineGridNestedToBase = getNestedToBaseIndexOnFineGrid(indexOnBaseGrid, baseGrid, nestedGrid);
+    if (indexOnFineGridNestedToBase == INVALID_INDEX) return;
+
+    const bool nestedGridNodeIsFluid = nestedGrid->getField().isFluid(indexOnFineGridNestedToBase);
+    if (!nestedGridNodeIsFluid) return;
+
+    real x, y, z;
+    baseGrid->transIndexToCoords(indexOnBaseGrid, x, y, z);
+
+    for (const auto dir : baseGrid->distribution) {
+        const uint neighborIndex = findNeighborIndex(x, y, z, baseGrid, dir);
+        if (neighborIndex == INVALID_INDEX) continue;
+        const bool neighborIsGap = baseGrid->getField().is(neighborIndex, INTERPOLATION_GAP);
+
+        if (neighborIsGap) {
+            baseGrid->getField().setFieldEntry(indexOnBaseGrid, INTERPOLATION_GAP2);
+            break;
+        }
+    }
+}
+
 void GridInterface::findInterpolationGapOnNestedGrid(const uint &indexOnNestedGrid, GridImp *nestedGrid)
 {
     const bool nodeIsFluid = nestedGrid->getField().isFluid(indexOnNestedGrid);

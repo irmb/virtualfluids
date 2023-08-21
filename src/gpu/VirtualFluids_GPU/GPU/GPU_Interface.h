@@ -1630,10 +1630,18 @@ void InterpolateStaticToRotating(
     ICells *baseToNested,
     ICellNeigh &neighborBaseToNested);
 
+void InterpolateRotatingToStatic(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *nestedToBase,
+    ICellNeigh &neighborNestedToBase);
+
 void UpdateGlobalCoordinates(
     LBMSimulationParameter *parameterDeviceR,
     ParameterRotatingGridSimulation *paraRotDevice
 );
+
 void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
 											  unsigned int* neighborCX,

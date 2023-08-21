@@ -12,7 +12,7 @@ __inline__ __host__ __device__ uint traverseSourceCell(real coordDestinationX, r
     uint yTraverse = (uint)floor((coordDestinationY - coordInvNeighborCellY) / dx);
     uint zTraverse = (uint)floor((coordDestinationZ - coordInvNeighborCellZ) / dx);
 
-    printf("s %.4f, d %.4f, delta %.4f, dx %.4f, xTraverse %d\n", coordInvNeighborCellX, coordDestinationX, coordDestinationX - coordInvNeighborCellX, dx, xTraverse);
+    // printf("s %.4f, d %.4f, delta %.4f, dx %.4f, xTraverse %d\n", coordInvNeighborCellX, coordDestinationX, coordDestinationX - coordInvNeighborCellX, dx, xTraverse);
 
     uint newIndexOfSourceCell = indexOfInverseNeighborOfSourceCell;
     for (uint ix = 1; ix <= xTraverse; ix++) {

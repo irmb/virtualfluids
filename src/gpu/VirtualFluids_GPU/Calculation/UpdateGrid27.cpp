@@ -78,7 +78,6 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
 void UpdateGrid27::rotationInterpolation(int level)
 {
-    VF_LOG_WARNING("Interpolation");
     // base to nested
     InterpolateStaticToRotating(
         para->getParD(level).get(),
@@ -86,7 +85,14 @@ void UpdateGrid27::rotationInterpolation(int level)
         para->getRotatingGridParameter()->parameterRotDevice.get(),
         &para->getParD(level)->coarseToFine,
         para->getParD(level)->neighborCoarseToFine);
+
     // nested to base
+    InterpolateRotatingToStatic(
+        para->getParD(level).get(),
+        para->getParD(level+1).get(),
+        para->getRotatingGridParameter()->parameterRotDevice.get(),
+        &para->getParD(level)->fineToCoarse,
+        para->getParD(level)->neighborFineToCoarse);
 }
 
 void UpdateGrid27::collisionAllNodes(int level, unsigned int t)

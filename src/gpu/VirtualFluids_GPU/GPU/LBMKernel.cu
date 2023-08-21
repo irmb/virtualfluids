@@ -4093,6 +4093,45 @@ void InterpolateStaticToRotating(
     getLastCudaError("interpolateStaticToRotating execution failed");
 }
 
+void InterpolateRotatingToStatic(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *nestedToBase,
+    ICellNeigh &neighborNestedToBase)
+{
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceS->numberofthreads, nestedToBase->numberOfCells);
+    dim3 threads(parameterDeviceS->numberofthreads, 1, 1);
+
+    interpolateRotatingToStatic<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
+        nestedToBase->numberOfCells,
+        nestedToBase->coarseCellIndices,
+        nestedToBase->fineCellIndices,
+        parameterDeviceS->coordinateX,
+        parameterDeviceS->coordinateY,
+        parameterDeviceS->coordinateZ,
+        paraRotDevice->nestedCoordinatesX,
+        paraRotDevice->nestedCoordinatesY,
+        paraRotDevice->nestedCoordinatesZ,
+        parameterDeviceR->neighborX,
+        parameterDeviceR->neighborY,
+        parameterDeviceR->neighborZ,
+        parameterDeviceR->neighborInverse,
+        paraRotDevice->centerPoint[0],
+        paraRotDevice->centerPoint[1],
+        paraRotDevice->centerPoint[2],
+        paraRotDevice->gridAngle[0],
+        paraRotDevice->gridAngle[1],
+        paraRotDevice->gridAngle[2],
+        paraRotDevice->angularVelocity[0],
+        paraRotDevice->angularVelocity[1],
+        paraRotDevice->angularVelocity[2],
+        parameterDeviceS->gridSpacing
+    );
+
+    getLastCudaError("interpolateStaticToRotating execution failed");
+}
+
 void UpdateGlobalCoordinates(
     LBMSimulationParameter *parameterDeviceR,
     ParameterRotatingGridSimulation *paraRotDevice

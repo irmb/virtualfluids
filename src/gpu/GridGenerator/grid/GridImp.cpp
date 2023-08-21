@@ -1155,7 +1155,11 @@ void GridImp::findGridInterfaceForRotatingGrid(SPtr<Grid> rotatingGrid)
         gridInterface->findInterpolationGapOnBaseGrid(indexOnStaticGrid, this, rotatingGridImp.get());
     }
 
-    for (uint indexOnRotatingGrid; indexOnRotatingGrid < rotatingGridImp->getSize(); indexOnRotatingGrid++)
+    for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++){
+        gridInterface->findSecondInterpolationGapOnBaseGrid(indexOnStaticGrid, this, rotatingGridImp.get());
+    }
+
+    for (uint indexOnRotatingGrid = 0; indexOnRotatingGrid < rotatingGridImp->getSize(); indexOnRotatingGrid++)
         gridInterface->findInterpolationGapOnNestedGrid(indexOnRotatingGrid, rotatingGridImp.get());
 
     for (uint indexOnStaticGrid = 0; indexOnStaticGrid < this->getSize(); indexOnStaticGrid++){

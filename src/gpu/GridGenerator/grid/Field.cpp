@@ -78,7 +78,7 @@ bool Field::isBaseToNestedNode(uint index) const
 
 bool Field::isInterpolationGapNode(uint index) const
 {
-    return field[index] == INTERPOLATION_GAP;
+    return field[index] == INTERPOLATION_GAP || field[index] == INTERPOLATION_GAP2;
 }
 
 bool Field::isFineToCoarseNode(uint index) const

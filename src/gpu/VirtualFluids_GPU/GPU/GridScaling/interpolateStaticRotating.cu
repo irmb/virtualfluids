@@ -44,7 +44,7 @@
 __global__ void interpolateStaticToRotating(
     unsigned int numberOfInterfaceNodes,
     unsigned int * indicesStaticCell,
-    unsigned int *indicesRotating,
+    const unsigned int *indicesRotating,
     const real *coordDestinationX,
     const real *coordDestinationY,
     const real *coordDestinationZ,
@@ -82,17 +82,58 @@ __global__ void interpolateStaticToRotating(
                               coordDestinationY[destinationIndex], coordDestinationZ[destinationIndex], centerCoordX,
                               centerCoordY, centerCoordZ, angleX, angleY, angleZ);
 
-    // printf("coordDestinationX %.4f,  coordSourceX %.4f, d-s %.4f \n", globalX, coordSourceX[sourceIndex],
-    //        globalX - coordSourceX[sourceIndex]);
-
     indicesStaticCell[listIndex] = traverseSourceCell(
         globalX, globalY, globalZ,
         indexNeighborMMMsource, coordSourceX[indexNeighborMMMsource], coordSourceY[indexNeighborMMMsource],
         coordSourceZ[indexNeighborMMMsource], neighborXstatic, neighborYstatic, neighborZstatic, dx);
+}
 
-    // if (sourceIndex !=  indicesStaticCell[listIndex]) {
-    //     printf("sourceIndex: old = %d, new = %d\t", indicesStaticCell[listIndex], sourceIndex);
-    // }
+__global__ void interpolateRotatingToStatic(
+    unsigned int numberOfInterfaceNodes,
+    const unsigned int *indicesStatic,
+    unsigned int *indicesRotatingCell,
+    const real *coordDestinationX,
+    const real *coordDestinationY,
+    const real *coordDestinationZ,
+    const real *coordSourceX,
+    const real *coordSourceY,
+    const real *coordSourceZ,
+    const uint *neighborXrotating,
+    const uint *neighborYrotating,
+    const uint *neighborZrotating,
+    const uint *neighborMMMrotating,
+    real centerCoordX,
+    real centerCoordY,
+    real centerCoordZ,
+    real angleX,
+    real angleY,
+    real angleZ,
+    real angularVelocityX,
+    real angularVelocityY,
+    real angularVelocityZ,
+    real dx)
+{
+    const unsigned listIndex = vf::gpu::getNodeIndex();
+
+    if (listIndex >= numberOfInterfaceNodes) return;
+
+    uint destinationIndex = indicesStatic[listIndex];
+    uint sourceIndex = indicesRotatingCell[listIndex];
+    uint indexNeighborMMMsource = neighborMMMrotating[sourceIndex];
+
+    real rotatedDestinationX;
+    real rotatedDestinationY;
+    real rotatedDestinationZ;
+
+    transformGlobalToRotating(rotatedDestinationX, rotatedDestinationY, rotatedDestinationZ,
+                              coordDestinationX[destinationIndex], coordDestinationY[destinationIndex],
+                              coordDestinationZ[destinationIndex], centerCoordX, centerCoordY, centerCoordZ, angleX, angleY,
+                              angleZ);
+
+    indicesRotatingCell[listIndex] = traverseSourceCell(
+        rotatedDestinationX, rotatedDestinationY, rotatedDestinationZ, indexNeighborMMMsource,
+        coordSourceX[indexNeighborMMMsource], coordSourceY[indexNeighborMMMsource], coordSourceZ[indexNeighborMMMsource],
+        neighborXrotating, neighborYrotating, neighborZrotating, dx);
 }
 
 __global__ void updateGlobalCoordinates(
@@ -120,8 +161,6 @@ __global__ void updateGlobalCoordinates(
 
     transformRotatingToGlobal(globalXtemp, globalYtemp, globalZtemp, localX[nodeIndex], localY[nodeIndex], localZ[nodeIndex], centerCoordX,
                               centerCoordY, centerCoordZ, angleX, angleY, angleZ);
-
-    // printf("%.3f\t", localY[nodeIndex]);
 
     globalX[nodeIndex] = globalXtemp;
     globalY[nodeIndex] = globalYtemp;

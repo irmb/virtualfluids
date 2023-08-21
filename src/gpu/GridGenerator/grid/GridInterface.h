@@ -51,6 +51,7 @@ public:
     void GRIDGENERATOR_EXPORT findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     
     void GRIDGENERATOR_EXPORT findInterpolationGapOnBaseGrid(const uint &indexOnBaseGrid, GridImp *baseGrid, GridImp *nestedGrid);
+    void GRIDGENERATOR_EXPORT findSecondInterpolationGapOnBaseGrid(const uint &indexOnBaseGrid, GridImp *baseGrid, GridImp *nestedGrid);
     void GRIDGENERATOR_EXPORT findInterpolationGapOnNestedGrid(const uint& indexOnNestedGrid, GridImp* nestedGrid);
     void GRIDGENERATOR_EXPORT findInterfaceNestedToBaseWithGap(uint indexOnBaseGrid, GridImp* baseGrid, GridImp* nestedGrid);
     
