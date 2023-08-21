@@ -159,6 +159,18 @@ int main()
         // bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
         bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
         bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
+
+        //////////////////////////////////////////////////////////////////////////
+        // set initial condition
+        //////////////////////////////////////////////////////////////////////////
+
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+            rho = (real)0.0;
+            vx = velocityLB;
+            vy = 0.0;
+            vz = 0.0;
+        });
+
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////

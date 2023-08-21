@@ -19,10 +19,11 @@
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
+    SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
 
     if (level != para->getFine()) {
         updateGrid(level + 1, t);
-        updateGrid(level + 1, t);
+        if (paraRot == nullptr) updateGrid(level + 1, t);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -54,7 +55,6 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
     if (level != para->getFine()) {
-        SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
         if ( paraRot != nullptr) {
             // rotation
             paraRot->parameterRotHost->gridAngle[0] += paraRot->parameterRotHost->angularVelocity[0];

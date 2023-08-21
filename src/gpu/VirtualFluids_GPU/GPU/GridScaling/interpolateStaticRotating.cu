@@ -41,9 +41,13 @@
 #include <lbm/refinement/Coefficients.h>
 #include <lbm/refinement/InterpolationCF.h>
 
+using namespace vf::lbm;
+
 __global__ void interpolateStaticToRotating(
+    real *distributionsStatic,
+    real *distributionsRotating,
     unsigned int numberOfInterfaceNodes,
-    unsigned int * indicesStaticCell,
+    unsigned int *indicesStaticCell,
     const unsigned int *indicesRotating,
     const real *coordDestinationX,
     const real *coordDestinationY,
@@ -64,28 +68,358 @@ __global__ void interpolateStaticToRotating(
     real angularVelocityX,
     real angularVelocityY,
     real angularVelocityZ,
+    real omegaStatic,
+    bool isEvenTimestep,
     real dx)
 {
     const unsigned listIndex = vf::gpu::getNodeIndex();
 
     if (listIndex >= numberOfInterfaceNodes) return;
 
-    uint destinationIndex = indicesRotating[listIndex];
-    uint sourceIndex =  indicesStaticCell[listIndex];
-    uint indexNeighborMMMsource = neighborMMMstatic[sourceIndex];
+    const uint destinationIndex = indicesRotating[listIndex];
+    const uint previousSourceIndex = indicesStaticCell[listIndex];
+    const uint indexNeighborMMMsource = neighborMMMstatic[previousSourceIndex];
 
-    real globalX;
-    real globalY;
-    real globalZ;
+    real globalCoordDestinationX;
+    real globalCoordDestinationY;
+    real globalCoordDestinationZ;
 
-    transformRotatingToGlobal(globalX, globalY, globalZ, coordDestinationX[destinationIndex],
+    transformRotatingToGlobal(globalCoordDestinationX, globalCoordDestinationY, globalCoordDestinationZ, coordDestinationX[destinationIndex],
                               coordDestinationY[destinationIndex], coordDestinationZ[destinationIndex], centerCoordX,
                               centerCoordY, centerCoordZ, angleX, angleY, angleZ);
 
-    indicesStaticCell[listIndex] = traverseSourceCell(
-        globalX, globalY, globalZ,
-        indexNeighborMMMsource, coordSourceX[indexNeighborMMMsource], coordSourceY[indexNeighborMMMsource],
-        coordSourceZ[indexNeighborMMMsource], neighborXstatic, neighborYstatic, neighborZstatic, dx);
+    const uint sourceIndex =
+        traverseSourceCell(globalCoordDestinationX, globalCoordDestinationY, globalCoordDestinationZ, indexNeighborMMMsource, coordSourceX[indexNeighborMMMsource],
+                           coordSourceY[indexNeighborMMMsource], coordSourceZ[indexNeighborMMMsource], neighborXstatic,
+                           neighborYstatic, neighborZstatic, dx);
+    indicesStaticCell[listIndex] = sourceIndex;
+
+    // ...
+    const real cellCoordDestinationX = (coordSourceX[sourceIndex] - globalCoordDestinationX) / dx + c1o2;
+    const real cellCoordDestinationY = (coordSourceY[sourceIndex] - globalCoordDestinationY) / dx + c1o2;
+    const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] - globalCoordDestinationZ) / dx + c1o2;
+
+    // 1. calculate moments
+    vf::lbm::MomentsOnSourceNodeSet momentsSet;
+    vf::gpu::calculateMomentSet<false>(momentsSet, listIndex, distributionsStatic, neighborXstatic, neighborYstatic,
+                                       neighborZstatic, indicesStaticCell, nullptr, numberOfInterfaceNodes, omegaStatic,
+                                       isEvenTimestep);
+
+    // 2. calculate coefficients
+    vf::lbm::Coefficients coefficients;
+    momentsSet.calculateCoefficients(coefficients, cellCoordDestinationX, cellCoordDestinationY, cellCoordDestinationZ);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Set all moments to zero
+    //!
+    real m111 = c0o1;
+    real m211 = c0o1;
+    real m011 = c0o1;
+    real m121 = c0o1;
+    real m101 = c0o1;
+    real m112 = c0o1;
+    real m110 = c0o1;
+    real m221 = c0o1;
+    real m001 = c0o1;
+    real m201 = c0o1;
+    real m021 = c0o1;
+    real m212 = c0o1;
+    real m010 = c0o1;
+    real m210 = c0o1;
+    real m012 = c0o1;
+    real m122 = c0o1;
+    real m100 = c0o1;
+    real m120 = c0o1;
+    real m102 = c0o1;
+    real m222 = c0o1;
+    real m022 = c0o1;
+    real m202 = c0o1;
+    real m002 = c0o1;
+    real m220 = c0o1;
+    real m020 = c0o1;
+    real m200 = c0o1;
+    real m000 = c0o1;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Define aliases to use the same variable for the distributions (f's):
+    //!
+    real& f000 = m111;
+    real& fP00 = m211;
+    real& fM00 = m011;
+    real& f0P0 = m121;
+    real& f0M0 = m101;
+    real& f00P = m112;
+    real& f00M = m110;
+    real& fPP0 = m221;
+    real& fMM0 = m001;
+    real& fPM0 = m201;
+    real& fMP0 = m021;
+    real& fP0P = m212;
+    real& fM0M = m010;
+    real& fP0M = m210;
+    real& fM0P = m012;
+    real& f0PP = m122;
+    real& f0MM = m100;
+    real& f0PM = m120;
+    real& f0MP = m102;
+    real& fPPP = m222;
+    real& fMPP = m022;
+    real& fPMP = m202;
+    real& fMMP = m002;
+    real& fPPM = m220;
+    real& fMPM = m020;
+    real& fPMM = m200;
+    real& fMMM = m000;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Declare local variables for destination nodes
+    //!
+    real vvx, vvy, vvz, vxsq, vysq, vzsq;
+    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Set macroscopic values on destination node (zeroth and first order moments)
+    //!
+    m000  = coefficients.d000; // m000 is press, if drho is interpolated directly
+    vvx   = coefficients.a000;
+    vvy   = coefficients.b000;
+    vvz   = coefficients.c000;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - The magic for the rotating grid begins here: subtract tangential velocity from the velocity in the inertial frame of reference
+    //!
+    real coordDestinationXlocal = coordDestinationX[destinationIndex] / dx;
+    real coordDestinationYlocal = coordDestinationY[destinationIndex] / dx;
+    real coordDestinationZlocal = coordDestinationZ[destinationIndex] / dx;
+
+    vvx -= angularVelocityY * coordDestinationZlocal - angularVelocityZ * coordDestinationYlocal;
+    vvy -= angularVelocityZ * coordDestinationXlocal - angularVelocityX * coordDestinationZlocal;
+    vvz -= angularVelocityX * coordDestinationYlocal - angularVelocityY * coordDestinationXlocal;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - calculate the forces due to the rotating frame of reference
+    //!
+
+    // centrifugal force
+    real forceX = angularVelocityY * angularVelocityY * coordDestinationXlocal +
+                  angularVelocityZ * angularVelocityZ * coordDestinationXlocal -
+                  angularVelocityX * angularVelocityY * coordDestinationYlocal -
+                  angularVelocityX * angularVelocityZ * coordDestinationZlocal;
+    real forceY = -angularVelocityX * angularVelocityY * coordDestinationXlocal +
+                   angularVelocityX * angularVelocityX * coordDestinationYlocal +
+                   angularVelocityZ * angularVelocityZ * coordDestinationYlocal -
+                   angularVelocityY * angularVelocityZ * coordDestinationZlocal;
+    real forceZ = -angularVelocityX * angularVelocityZ * coordDestinationXlocal -
+                   angularVelocityY * angularVelocityZ * coordDestinationYlocal +
+                   angularVelocityX * angularVelocityX * coordDestinationZlocal +
+                   angularVelocityY * angularVelocityY * coordDestinationZlocal;
+
+    // Coriolis force
+    forceX += c2o1 * (angularVelocityZ * vvy - angularVelocityY * vvz);
+    forceY += -c2o1 * (angularVelocityZ * vvx - angularVelocityX * vvz);
+    forceZ += c2o1 * (angularVelocityY * vvx - angularVelocityX * vvy);
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - subtract half the force from the velocities
+    //!
+
+    vvx -= c1o2 * forceX;
+    vvy -= c1o2 * forceY;
+    vvz -= c1o2 * forceZ;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - rotate the velocities
+    //!
+
+    if (angleX != 0) {
+        vvy = vvy * cos(angleX) - vvz * sin(angleX);
+        vvz = vvy * sin(angleX) + vvz * cos(angleX);
+    }
+    if (angleY != 0) {
+        // rotate in y
+        vvx = vvx * cos(angleY) + vvz * sin(angleY);
+        vvz = -vvx * sin(angleY) + vvz * cos(angleY);
+    }
+    if (angleZ != 0) {
+        // rotate in z
+        vvx = vvx * cos(angleZ) - vvy * sin(angleZ);
+        vvy = vvx * sin(angleZ) + vvy * cos(angleZ);
+    }
+
+    // rotate in the inverse direction compared to above
+    // if (angleX != 0) {
+    //    vvy = vvy * cos(angleX) + vvz * sin(angleX);
+    //    vvz = -vvy * sin(angleX) + vvz * cos(angleX);
+    // }
+    // if (angleY != 0) {
+    //    vvx = vvx * cos(angleY) - vvz * sin(angleY);
+    //    vvz = vvx * sin(angleY) + vvz * cos(angleY);
+    // }
+    // if (angleZ != 0) {
+    //    vvx = vvx * cos(angleZ) + vvy * sin(angleZ);
+    //    vvy = -vvx * sin(angleZ) + vvy * cos(angleZ);
+    // }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // calculate the squares of the velocities
+    //
+    vxsq = vvx * vvx;
+    vysq = vvy * vvy;
+    vzsq = vvz * vvz;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Set moments (second to sixth order) on destination node
+    //!
+    // linear combinations for second order moments
+    // The second order moments have to be rotated. First they are computed in a static frame of reference (SFOR)
+
+    real mxxPyyPzz = m000;
+
+    real mxxMyySFOR = -c2o3 * ((coefficients.a100 - coefficients.b010)) / omegaStatic * (c1o1 + m000);
+    real mxxMzzSFOR = -c2o3 * ((coefficients.a100 - coefficients.c001)) / omegaStatic * (c1o1 + m000);
+
+    m011 = -c1o3 * ((coefficients.b001 + coefficients.c010)) / omegaStatic * (c1o1 + m000);
+    m101 = -c1o3 * ((coefficients.a001 + coefficients.c100)) / omegaStatic * (c1o1 + m000);
+    m110 = -c1o3 * ((coefficients.a010 + coefficients.b100)) / omegaStatic * (c1o1 + m000);
+
+    // rotate some second order moments
+    real mxxMyy;
+    real mxxMzz;
+    if (angleX != 0) {
+        mxxMyy = c1o2 * (mxxMyySFOR + mxxMzzSFOR + ( mxxMyySFOR - mxxMzzSFOR) * cos(angleX * c2o1) +
+                         c2o1 * m011 * sin(angleX * c2o1));
+        mxxMzz = c1o2 * (mxxMyySFOR + mxxMzzSFOR + (-mxxMyySFOR + mxxMzzSFOR) * cos(angleX * c2o1) -
+                         c2o1 * m011 * sin(angleX * c2o1));
+
+        m011 = m011 * cos(angleX * c2o1) + (-mxxMyySFOR + mxxMzzSFOR) * cos(angleX) * sin(angleX);
+        m101 = m101 * cos(angleX) + m110 * sin(angleX);
+        m110 = m110 * cos(angleX) - m101 * sin(angleX);
+    }
+    if (angleY != 0) {
+        mxxMyySFOR = mxxMyy;
+        mxxMzzSFOR = mxxMzz;
+        mxxMyy = mxxMyySFOR - c1o2 * mxxMzzSFOR + c1o2 * mxxMzzSFOR * cos(angleY * c2o1) + m101 * sin(angleY * c2o1);
+        mxxMzz = mxxMzzSFOR * cos(angleY * c2o1) + c2o1 * m101 * sin(angleY * c2o1);
+
+        m011 = m011 * cos(angleY) - m110 * sin(angleY);
+        m101 = m101 * cos(angleY * c2o1) - mxxMzzSFOR * cos(angleY) * sin(angleY);
+        m110 = m110 * cos(angleY) + m011 * sin(angleY);
+    }
+    if (angleZ != 0) {
+        mxxMyySFOR = mxxMyy;
+        mxxMzzSFOR = mxxMzz;
+
+        mxxMyy = mxxMyySFOR * cos(angleY * c2o1) - c2o1 * m110 * sin(angleY * c2o1);
+        mxxMzz = -c1o2 * mxxMyySFOR + mxxMzzSFOR + c1o2 * mxxMyySFOR * cos(angleY * c2o1) - m110 * sin(angleY * c2o1);
+
+        m011 = m011 * cos(angleZ) + m101 * sin(angleZ);
+        m101 = m101 * cos(angleZ) - m011 * sin(angleZ);
+        m110 = m110 * cos(angleZ * c2o1) + mxxMyySFOR * cos(angleZ) * sin(angleZ);
+    }
+
+    // calculate remaining second order moments from previously rotated moments
+    m200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    m020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    m002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * useNEQ;
+
+    // linear combinations for third order moments
+    real mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+    m111 = c0o1;
+
+    mxxyPyzz = c0o1;
+    mxxyMyzz = c0o1;
+    mxxzPyyz = c0o1;
+    mxxzMyyz = c0o1;
+    mxyyPxzz = c0o1;
+    mxyyMxzz = c0o1;
+
+    m210 = ( mxxyMyzz + mxxyPyzz) * c1o2;
+    m012 = (-mxxyMyzz + mxxyPyzz) * c1o2;
+    m201 = ( mxxzMyyz + mxxzPyyz) * c1o2;
+    m021 = (-mxxzMyyz + mxxzPyyz) * c1o2;
+    m120 = ( mxyyMxzz + mxyyPxzz) * c1o2;
+    m102 = (-mxyyMxzz + mxyyPxzz) * c1o2;
+
+    // fourth order moments
+    m022 = m000 * c1o9;
+    m202 = m022;
+    m220 = m022;
+
+    // fifth order moments
+
+    // sixth order moments
+    m222 = m000 * c1o27;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
+    //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
+    //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a> see also Eq. (88)-(96) in <a
+    //! href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040
+    //! ]</b></a>
+    //!
+    ////////////////////////////////////////////////////////////////////////////////////
+    // X - Dir
+    backwardInverseChimeraWithK(m000, m100, m200, vvx, vxsq, c1o1, c1o1);
+    backwardChimera(            m010, m110, m210, vvx, vxsq);
+    backwardInverseChimeraWithK(m020, m120, m220, vvx, vxsq, c3o1, c1o3);
+    backwardChimera(            m001, m101, m201, vvx, vxsq);
+    backwardChimera(            m011, m111, m211, vvx, vxsq);
+    backwardChimera(            m021, m121, m221, vvx, vxsq);
+    backwardInverseChimeraWithK(m002, m102, m202, vvx, vxsq, c3o1, c1o3);
+    backwardChimera(            m012, m112, m212, vvx, vxsq);
+    backwardInverseChimeraWithK(m022, m122, m222, vvx, vxsq, c9o1, c1o9);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Y - Dir
+    backwardInverseChimeraWithK(m000, m010, m020, vvy, vysq, c6o1, c1o6);
+    backwardChimera(            m001, m011, m021, vvy, vysq);
+    backwardInverseChimeraWithK(m002, m012, m022, vvy, vysq, c18o1, c1o18);
+    backwardInverseChimeraWithK(m100, m110, m120, vvy, vysq, c3o2, c2o3);
+    backwardChimera(            m101, m111, m121, vvy, vysq);
+    backwardInverseChimeraWithK(m102, m112, m122, vvy, vysq, c9o2, c2o9);
+    backwardInverseChimeraWithK(m200, m210, m220, vvy, vysq, c6o1, c1o6);
+    backwardChimera(            m201, m211, m221, vvy, vysq);
+    backwardInverseChimeraWithK(m202, m212, m222, vvy, vysq, c18o1, c1o18);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Z - Dir
+    backwardInverseChimeraWithK(m000, m001, m002, vvz, vzsq, c36o1, c1o36);
+    backwardInverseChimeraWithK(m010, m011, m012, vvz, vzsq, c9o1,  c1o9);
+    backwardInverseChimeraWithK(m020, m021, m022, vvz, vzsq, c36o1, c1o36);
+    backwardInverseChimeraWithK(m100, m101, m102, vvz, vzsq, c9o1,  c1o9);
+    backwardInverseChimeraWithK(m110, m111, m112, vvz, vzsq, c9o4,  c4o9);
+    backwardInverseChimeraWithK(m120, m121, m122, vvz, vzsq, c9o1,  c1o9);
+    backwardInverseChimeraWithK(m200, m201, m202, vvz, vzsq, c36o1, c1o36);
+    backwardInverseChimeraWithK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
+    backwardInverseChimeraWithK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
+
+    distributionsRotating[DIR_000] = f000;
+    distributionsRotating[DIR_P00] = fP00;
+    distributionsRotating[DIR_M00] = fM00;
+    distributionsRotating[DIR_0P0] = f0P0;
+    distributionsRotating[DIR_0M0] = f0M0;
+    distributionsRotating[DIR_00P] = f00P;
+    distributionsRotating[DIR_00M] = f00M;
+    distributionsRotating[DIR_PP0] = fPP0;
+    distributionsRotating[DIR_MM0] = fMM0;
+    distributionsRotating[DIR_PM0] = fPM0;
+    distributionsRotating[DIR_MP0] = fMP0;
+    distributionsRotating[DIR_P0P] = fP0P;
+    distributionsRotating[DIR_M0M] = fM0M;
+    distributionsRotating[DIR_P0M] = fP0M;
+    distributionsRotating[DIR_M0P] = fM0P;
+    distributionsRotating[DIR_0PP] = f0PP;
+    distributionsRotating[DIR_0MM] = f0MM;
+    distributionsRotating[DIR_0PM] = f0PM;
+    distributionsRotating[DIR_0MP] = f0MP;
+    distributionsRotating[DIR_PPP] = fPPP;
+    distributionsRotating[DIR_MPP] = fMPP;
+    distributionsRotating[DIR_PMP] = fPMP;
+    distributionsRotating[DIR_MMP] = fMMP;
+    distributionsRotating[DIR_PPM] = fPPM;
+    distributionsRotating[DIR_MPM] = fMPM;
+    distributionsRotating[DIR_PMM] = fPMM;
+    distributionsRotating[DIR_MMM] = fMMM;
 }
 
 __global__ void interpolateRotatingToStatic(
@@ -117,21 +451,21 @@ __global__ void interpolateRotatingToStatic(
 
     if (listIndex >= numberOfInterfaceNodes) return;
 
-    uint destinationIndex = indicesStatic[listIndex];
-    uint sourceIndex = indicesRotatingCell[listIndex];
-    uint indexNeighborMMMsource = neighborMMMrotating[sourceIndex];
+    const uint destinationIndex = indicesStatic[listIndex];
+    const uint sourceIndex = indicesRotatingCell[listIndex];
+    const uint indexNeighborMMMsource = neighborMMMrotating[sourceIndex];
 
-    real rotatedDestinationX;
-    real rotatedDestinationY;
-    real rotatedDestinationZ;
+    real rotatedCoordDestinationX;
+    real rotatedCoordDestinationY;
+    real rotatedCoordDestinationZ;
 
-    transformGlobalToRotating(rotatedDestinationX, rotatedDestinationY, rotatedDestinationZ,
+    transformGlobalToRotating(rotatedCoordDestinationX, rotatedCoordDestinationY, rotatedCoordDestinationZ,
                               coordDestinationX[destinationIndex], coordDestinationY[destinationIndex],
                               coordDestinationZ[destinationIndex], centerCoordX, centerCoordY, centerCoordZ, angleX, angleY,
                               angleZ);
 
     indicesRotatingCell[listIndex] = traverseSourceCell(
-        rotatedDestinationX, rotatedDestinationY, rotatedDestinationZ, indexNeighborMMMsource,
+        rotatedCoordDestinationX, rotatedCoordDestinationY, rotatedCoordDestinationZ, indexNeighborMMMsource,
         coordSourceX[indexNeighborMMMsource], coordSourceY[indexNeighborMMMsource], coordSourceZ[indexNeighborMMMsource],
         neighborXrotating, neighborYrotating, neighborZrotating, dx);
 }

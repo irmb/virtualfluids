@@ -407,26 +407,26 @@ public:
         //
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         a000 = a000 + xoff * a100 + yoff * a010 + zoff * a001 + xoffsq * a200 + yoffsq * a020 + zoffsq * a002 +
-            xoff * yoff * a110 + xoff * zoff * a101 + yoff * zoff * a011;
-        a100 = a100 + c2o1 * xoff * a200 + yoff * a110 + zoff * a101;
-        a010 = a010 + c2o1 * yoff * a020 + xoff * a110 + zoff * a011;
-        a001 = a001 + c2o1 * zoff * a002 + xoff * a101 + yoff * a011;
+            xoff * yoff * a110 + xoff * zoff * a101 + yoff * zoff * a011 + xoff * yoff * zoff * a111;
+        a100 = a100 + c2o1 * xoff * a200 + yoff * a110 + zoff * a101 + yoff * zoff * a111;
+        a010 = a010 + c2o1 * yoff * a020 + xoff * a110 + zoff * a011 + xoff * zoff * a111;
+        a001 = a001 + c2o1 * zoff * a002 + xoff * a101 + yoff * a011 + xoff * yoff * a111;
         b000 = b000 + xoff * b100 + yoff * b010 + zoff * b001 + xoffsq * b200 + yoffsq * b020 + zoffsq * b002 +
-                xoff * yoff * b110 + xoff * zoff * b101 + yoff * zoff * b011;
-        b100 = b100 + c2o1 * xoff * b200 + yoff * b110 + zoff * b101;
-        b010 = b010 + c2o1 * yoff * b020 + xoff * b110 + zoff * b011;
-        b001 = b001 + c2o1 * zoff * b002 + xoff * b101 + yoff * b011;
+                xoff * yoff * b110 + xoff * zoff * b101 + yoff * zoff * b011 + xoff * yoff * zoff * b111;
+        b100 = b100 + c2o1 * xoff * b200 + yoff * b110 + zoff * b101 + yoff * zoff * b111;
+        b010 = b010 + c2o1 * yoff * b020 + xoff * b110 + zoff * b011 + xoff * zoff * b111;
+        b001 = b001 + c2o1 * zoff * b002 + xoff * b101 + yoff * b011 + xoff * yoff * b111;
         c000 = c000 + xoff * c100 + yoff * c010 + zoff * c001 + xoffsq * c200 + yoffsq * c020 + zoffsq * c002 +
-                xoff * yoff * c110 + xoff * zoff * c101 + yoff * zoff * c011;
-        c100 = c100 + c2o1 * xoff * c200 + yoff * c110 + zoff * c101;
-        c010 = c010 + c2o1 * yoff * c020 + xoff * c110 + zoff * c011;
-        c001 = c001 + c2o1 * zoff * c002 + xoff * c101 + yoff * c011;
+                xoff * yoff * c110 + xoff * zoff * c101 + yoff * zoff * c011 + xoff * yoff * zoff * c111;
+        c100 = c100 + c2o1 * xoff * c200 + yoff * c110 + zoff * c101 + yoff * zoff * c111;
+        c010 = c010 + c2o1 * yoff * c020 + xoff * c110 + zoff * c011 + xoff * zoff * c111;
+        c001 = c001 + c2o1 * zoff * c002 + xoff * c101 + yoff * c011 + xoff * yoff * c111;
         d000 = d000 + xoff * d100 + yoff * d010 + zoff * d001 + 
-                xoff * yoff * d110 + xoff * zoff * d101 + yoff * zoff * d011;
+                xoff * yoff * d110 + xoff * zoff * d101 + yoff * zoff * d011 + xoff * yoff * zoff * d111;
 
-        d100 = d100 + yoff * d110 + zoff * d101;
-        d010 = d010 + xoff * d110 + zoff * d011;
-        d001 = d001 + xoff * d101 + yoff * d011;
+        d100 = d100 + yoff * d110 + zoff * d101; // + yoff * zoff * d111 // not needed, as we do NOT use a diagonal offset
+        d010 = d010 + xoff * d110 + zoff * d011; // + xoff * zoff * d111
+        d001 = d001 + xoff * d101 + yoff * d011; // + xoff * yoff * d111
     }
 
 };

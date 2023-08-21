@@ -1869,6 +1869,8 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     ICellNeigh offsetCF);
 
 __global__ void interpolateStaticToRotating(
+    real *distributionsStatic,
+    real *distributionsRotating,
     unsigned int numberOfInterfaceNodes,
     unsigned int *indicesStaticMMM,
     const unsigned int *indicesRotating,
@@ -1891,6 +1893,8 @@ __global__ void interpolateStaticToRotating(
     real angularVelocityX,
     real angularVelocityY,
     real angularVelocityZ,
+    real omega,
+    bool isEvenTimestep,
     real dx);
 
 __global__ void interpolateRotatingToStatic(

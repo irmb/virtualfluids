@@ -124,7 +124,6 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
     for (int i = 0; i <= para->getMaxLevel(); i++) {
         para->getParH(i)->gridSpacing = builder->getGrid(i)->getDelta();
         para->getParD(i)->gridSpacing = builder->getGrid(i)->getDelta();
-        VF_LOG_WARNING("{}", builder->getGrid(i)->getDelta());
     }
 
     VF_LOG_INFO("Number of Nodes: {}", numberOfNodesGlobal);
