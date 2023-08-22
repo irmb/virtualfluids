@@ -77,7 +77,7 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
     SPtr<ILBMKernel> kernel = block->getKernel();
     SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
 
-    real internX1, internX2, internX3;
+    double internX1, internX2, internX3;
 
     int startIX1 = 0, startIX2 = 0, startIX3 = 0;
     int stopIX1 = (int)bcArray->getNX1(), stopIX2 = (int)bcArray->getNX2(), stopIX3 = (int)bcArray->getNX3();

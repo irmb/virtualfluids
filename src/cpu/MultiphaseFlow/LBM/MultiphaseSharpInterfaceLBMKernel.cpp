@@ -1658,8 +1658,8 @@ void MultiphaseSharpInterfaceLBMKernel::findNeighbors(CbArray3D<real, IndexerX3X
 		if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
 			phi[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		} else {
-			phi[k] = (*ph)(x1 , x2, x3 );// neutral wetting
-			//phi[k] = 0.0;//unwetting
+			//phi[k] = (*ph)(x1 , x2, x3 );// neutral wetting
+			phi[k] = 0.0;//unwetting
 		}
 	}
 }

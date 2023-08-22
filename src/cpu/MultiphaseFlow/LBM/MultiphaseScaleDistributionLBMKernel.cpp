@@ -4014,11 +4014,26 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					///////
 
                     // non Newtonian fluid collision factor
-                    if (phi[DIR_000] > phiLim) {
+                    //if (phi[DIR_000] > phiLim) {
+                    //    real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
+                    //    collFactorM = Rheology::getBinghamCollFactor(collFactorM, shearRate, c1o1);
+                    //    collFactorM = (collFactorM < c1o1) ? c1o1 : collFactorM;
+                    //}
+
+				//low viscouse non Newtonian fluid
+                if (phi[DIR_000] > phiLim) {
                         real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
                         collFactorM = Rheology::getBinghamCollFactor(collFactorM, shearRate, c1o1);
-                        collFactorM = (collFactorM < c1o1) ? c1o1 : collFactorM;
+                        collFactorM = (collFactorM < c1o12) ? c1o12 : collFactorM;
+                        if (collFactorM < c1o1) {
+                            OxyyPxzz = c1o1;
+                            OxyyMxzz = c1o1;
+                            Oxyz = c1o1;
+                            A = 0.0;
+                            BB = 0.0;
+                        }
                     }
+
 
 					real mxxMyyh = -c2o1 * (dxux - dyuy) / collFactorMInv * c1o3;
 					real mxxMzzh = -c2o1 * (dxux - dzuz) / collFactorMInv * c1o3;
@@ -5239,8 +5254,11 @@ void MultiphaseScaleDistributionLBMKernel::findNeighbors(CbArray3D<real, Indexer
 		if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
 			phi[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		} else {
-			//phi[k] = (*ph)(x1 , x2, x3 );// neutral wetting
-			phi[k] = 0.0;//unwetting
+            //if (bcArray->getBC(x1, x2, x3)->hasVelocityBoundaryFlag(D3Q27System::INVDIR[k]))
+            //    phi[k] = (*ph)(x1, x2, x3); // neutral wetting
+            //else
+                phi[k] = 0.0; // unwetting
+            //phi[k] = (*ph)(x1, x2, x3) * 0.7;
 		}
 	}
 }
@@ -5261,8 +5279,11 @@ void MultiphaseScaleDistributionLBMKernel::findNeighbors2(CbArray3D<real, Indexe
 			phi2[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		}
 		else {
-			phi2[k] = 0.0;
-            // phi2[k] = (*ph)(x1 , x2, x3 );// neutral wetting
+            //if (bcArray->getBC(x1, x2, x3)->hasVelocityBoundaryFlag(D3Q27System::INVDIR[k]))
+            //    phi2[k] = (*ph)(x1, x2, x3); // neutral wetting
+            //else
+                phi2[k] = 0.0; // unwetting
+           // phi2[k] = (*ph)(x1, x2, x3) * 0.7;
 		}
 	}
 }
