@@ -3,9 +3,9 @@
 
 #include <basics/DataTypes.h>
 #include <math.h>
-__inline__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX,
-                                                              real localY, real localZ, real centerCoordX, real centerCoordY,
-                                                              real centerCoordZ, real angleX, real angleY, real angleZ)
+__inline__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX, real localY,
+                                                     real localZ, real centerCoordX, real centerCoordY, real centerCoordZ,
+                                                     real angleX, real angleY, real angleZ)
 {
     globalX = localX;
     globalY = localY;
@@ -42,9 +42,9 @@ __inline__ __device__ void transformGlobalToRotating(real &rotatingX, real &rota
     globalY -= centerCoordY;
     globalZ -= centerCoordZ;
 
-    rotatingX=globalX;
-    rotatingY=globalY;
-    rotatingZ=globalZ;
+    rotatingX = globalX;
+    rotatingY = globalY;
+    rotatingZ = globalZ;
     // rotate
     if (angleX != 0) {
         // rotate in x

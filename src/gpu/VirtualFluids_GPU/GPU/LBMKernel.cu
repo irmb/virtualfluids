@@ -4067,6 +4067,8 @@ void InterpolateStaticToRotating(
     interpolateStaticToRotating<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
         parameterDeviceS->distributions.f[0],
         parameterDeviceR->distributions.f[0],
+        parameterDeviceS->numberOfNodes,
+        parameterDeviceR->numberOfNodes,
         baseToNested->numberOfCells,
         baseToNested->coarseCellIndices,
         baseToNested->fineCellIndices,
@@ -4080,6 +4082,9 @@ void InterpolateStaticToRotating(
         parameterDeviceS->neighborY,
         parameterDeviceS->neighborZ,
         parameterDeviceS->neighborInverse,
+        parameterDeviceR->neighborX,
+        parameterDeviceR->neighborY,
+        parameterDeviceR->neighborZ,
         paraRotDevice->centerPoint[0],
         paraRotDevice->centerPoint[1],
         paraRotDevice->centerPoint[2],

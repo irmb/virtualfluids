@@ -1871,6 +1871,8 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 __global__ void interpolateStaticToRotating(
     real *distributionsStatic,
     real *distributionsRotating,
+    unsigned int numberOfLBNodesStatic,
+    unsigned int numberOfLBNodesRotating,
     unsigned int numberOfInterfaceNodes,
     unsigned int *indicesStaticMMM,
     const unsigned int *indicesRotating,
@@ -1884,6 +1886,9 @@ __global__ void interpolateStaticToRotating(
     const uint *neighborYstatic,
     const uint *neighborZstatic,
     const uint *neighborMMMstatic,
+    const uint *neighborXrotating,
+    const uint *neighborYrotating,
+    const uint *neighborZrotating,
     real centerCoordX,
     real centerCoordY,
     real centerCoordZ,

@@ -102,8 +102,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleFC_compressible(
 
     // 1.calculate moments
     vf::lbm::MomentsOnSourceNodeSet momentsSet;
-    vf::gpu::calculateMomentSet<hasTurbulentViscosity>(
-        momentsSet, nodeIndex, distributionsFine, neighborXfine, neighborYfine, neighborZfine, indicesFineMMM, turbulentViscosityFine, numberOfLBnodesFine, omegaFine, true);
+    vf::gpu::calculateMomentSet<hasTurbulentViscosity>(momentsSet, nodeIndex, distributionsFine, neighborXfine,
+                                                       neighborYfine, neighborZfine, indicesFineMMM, turbulentViscosityFine,
+                                                       numberOfLBnodesFine, omegaFine, true);
 
     // 2.calculate coefficients
     vf::lbm::Coefficients coefficients;
