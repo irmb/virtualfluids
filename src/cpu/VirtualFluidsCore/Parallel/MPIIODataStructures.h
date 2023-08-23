@@ -9,8 +9,8 @@ namespace MPIIODataStructures
 //! \brief Structure describes parameters of the grid
 //! \details The structure is nessasary to restore the grid correctly
 struct GridParam {
-    real trafoParams[33];
-    real deltaX;
+    double trafoParams[33]; // not float!!!
+    double deltaX;          // not float!!!
     int blockNx1;
     int blockNx2;
     int blockNx3;
@@ -59,18 +59,11 @@ struct dataSetParam {
 //! \brief Structure describes parameters of the dataSet in MPIIORestartSimulationObserver format
 //! \details The structure is used when reading from the file
 struct DataSetRestart {
-    real collFactor;
-    real deltaT;
-    real collFactorL; // for Multiphase model
-    real collFactorG; // for Multiphase model
-    real densityRatio;// for Multiphase model
-    real sigma;           // for Multiphase model
-    real contactAngle;    // for Multiphase model
-    real phiL;            // for Multiphase model
-    real phiH;            // for Multiphase model
-    real tauH;            // for Multiphase model
-    real mob;             // for Multiphase model
-    real interfaceWidth;  // for Multiphase model
+    double collFactor; // not float!!!
+    double deltaT;     // not float!!!
+    double collFactorL; // for Multiphase model  // not float!!!
+    double collFactorG; // for Multiphase model // not float!!!
+    double densityRatio;// for Multiphase model // not float!!!
     int x1;
     int x2;
     int x3;
@@ -84,18 +77,11 @@ struct DataSetRestart {
 //! \brief Structure describes parameters of the dataSet in MPIIOMigrationSimulationObserver format
 //! \details The structure is used to find the needed block in the grid when restoring a dataSet
 struct DataSetMigration {
-    real collFactor;
-    real deltaT;
-    real collFactorL; // for Multiphase model
-    real collFactorG; // for Multiphase model
-    real densityRatio;// for Multiphase model
-    real sigma;          // for Multiphase model
-    real contactAngle;   // for Multiphase model
-    real phiL;           // for Multiphase model
-    real phiH;           // for Multiphase model
-    real tauH;           // for Multiphase model
-    real mob;            // for Multiphase model
-    real interfaceWidth; // for Multiphase model
+    double collFactor;  // not float!!!
+    double deltaT;      // not float!!!
+    double collFactorL; // for Multiphase model
+    double collFactorG; // for Multiphase model
+    double densityRatio;// for Multiphase model
     int globalID;
     int ghostLayerWidth;
     bool compressible;
@@ -129,14 +115,14 @@ struct BoundaryCondition {
     long long densityBoundaryFlags;
     long long wallModelBoundaryFlags;
 
-    real bcVelocityX1;
-    real bcVelocityX2;
-    real bcVelocityX3;
-    real bcDensity;
-    real bcPhaseField;
+    float bcVelocityX1;    //  not double!!!
+    float bcVelocityX2;    //  not double!!!
+    float bcVelocityX3;    //  not double!!!
+    float bcDensity;       //  not double!!!
+    float bcPhaseField;    //  not double!!!
 
-    real nx1, nx2, nx3;
-    real q[26];
+    float nx1, nx2, nx3;    //  not double!!!
+    float  q[26];           //  not double!!!
 
     char algorithmType;
 };

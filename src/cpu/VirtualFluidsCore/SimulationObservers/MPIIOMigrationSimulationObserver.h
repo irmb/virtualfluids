@@ -25,10 +25,10 @@ public:
         AverageFluktuations = 3,
         AverageTriple       = 4,
         ShearStressVal      = 5,
-        RelaxationFactor = 6,
-        PhaseField1 = 7,
-        PhaseField2 = 8,
-        PressureField = 9
+        RelaxationFactor    = 6,
+        PhaseField1         = 7,
+        PhaseField2         = 8,
+        PressureField       = 9
     };
 
     MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
@@ -82,6 +82,7 @@ private:
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCSet> bcSet;
     SPtr<Grid3DVisitor> metisVisitor;
+
 };
 
 #endif
