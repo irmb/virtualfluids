@@ -39,10 +39,10 @@
 #include "D3Q27System.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Interpolator.h"
 
-SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, real nue, SPtr<Interpolator> iProcessor) :
+SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm, real nue, SPtr<Interpolator> iProcessor) :
 Block3DVisitor(0, D3Q27System::MAXLEVEL), 
 	comm(comm),
 	nue(nue),

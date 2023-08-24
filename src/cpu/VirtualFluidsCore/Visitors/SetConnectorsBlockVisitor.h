@@ -41,7 +41,7 @@
 #include "D3Q27System.h"
 #include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "OneDistributionFullDirectConnector.h"
 #include "OneDistributionFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
@@ -62,19 +62,19 @@ public:
     using LocalConnector  = T1;
     using RemoteConnector = T2;
 public:
-    SetConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm);
+    SetConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm);
     ~SetConnectorsBlockVisitor() override;
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
     //////////////////////////////////////////////////////////////////////////
 protected:
     void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
     void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir);
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     int gridRank{0};
 };
 
 template <class T1, class T2>
-SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm)
+SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm)
     : Block3DVisitor(0, D3Q27System::MAXLEVEL), comm(comm)
 {
 }

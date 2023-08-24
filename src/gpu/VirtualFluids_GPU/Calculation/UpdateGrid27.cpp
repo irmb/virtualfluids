@@ -13,6 +13,8 @@
 #include "CollisionStrategy.h"
 #include "RefinementStrategy.h"
 
+#include <parallel/Communicator.h>
+
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -381,7 +383,7 @@ void UpdateGrid27::exchangeData(int level)
     exchangeMultiGPU_noStreams_withPrepare(level, false);
 }
 
-UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
+UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
                            std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory>  tmFactory, GridScalingFactory* scalingFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels), tmFactory(tmFactory)
 {

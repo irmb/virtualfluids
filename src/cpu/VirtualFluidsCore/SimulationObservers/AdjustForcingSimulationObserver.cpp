@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3D.h"
 #include "IntegrateValuesHelper.h"
 #include "UbScheduler.h"
@@ -14,7 +14,7 @@
 
 AdjustForcingSimulationObserver::AdjustForcingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                                    SPtr<IntegrateValuesHelper> integrateValues, real vTarged,
-                                                   std::shared_ptr<vf::mpi::Communicator> comm)
+                                                   std::shared_ptr<vf::parallel::Communicator> comm)
 
     : SimulationObserver(grid, s), path(path), integrateValues(integrateValues), comm(comm), vx1Targed(vTarged)
 {

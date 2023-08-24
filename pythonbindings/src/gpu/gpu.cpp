@@ -35,7 +35,6 @@
 #include "submodules/simulation.cpp"
 #include "submodules/parameter.cpp"
 #include "submodules/boundary_conditions.cpp"
-#include "submodules/communicator.cpp"
 #include "submodules/cuda_memory_manager.cpp"
 #include "submodules/probes.cpp"
 #include "submodules/precursor_writer.cpp"
@@ -48,23 +47,20 @@
 
 namespace gpu_bindings
 {
-    namespace py = pybind11;
-
-    PYBIND11_MODULE(gpu, m)
-    {
-        simulation::makeModule(m);
-        parameter::makeModule(m);
-        pre_collision_interactor::makeModule(m);
-        actuator_farm::makeModule(m);
-        boundary_conditions::makeModule(m);
-        transient_bc_setter::makeModule(m);
-        communicator::makeModule(m); 
-        cuda_memory_manager::makeModule(m);
-        probes::makeModule(m);
-        precursor_writer::makeModule(m);
-        grid_generator::makeModule(m);
-        grid_provider::makeModule(m);
-        turbulence_model::makeModule(m);
-        grid_scaling_factory::makeModule(m);
-    }
+PYBIND11_MODULE(gpu, m)
+{
+    simulation::makeModule(m);
+    parameter::makeModule(m);
+    pre_collision_interactor::makeModule(m);
+    actuator_farm::makeModule(m);
+    boundary_conditions::makeModule(m);
+    transient_bc_setter::makeModule(m);
+    cuda_memory_manager::makeModule(m);
+    probes::makeModule(m);
+    precursor_writer::makeModule(m);
+    grid_generator::makeModule(m);
+    grid_provider::makeModule(m);
+    turbulence_model::makeModule(m);
+    grid_scaling_factory::makeModule(m);
 }
+} // namespace gpu_bindings

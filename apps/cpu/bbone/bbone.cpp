@@ -33,7 +33,7 @@ void sbonepd(string configname)
       bool            logToFile         = config.getBool("logToFile");
       double          deltaT            = config.getDouble("deltaT");
       
-      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

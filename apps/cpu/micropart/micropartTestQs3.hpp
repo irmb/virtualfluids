@@ -9,7 +9,7 @@ void micropartTestQs3(const char *cstr)
 {
    try
    {
-      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
       int numprocs = comm->getNumberOfProcesses();
 

@@ -1,6 +1,6 @@
 #include "MPIIOSimulationObserver.h"
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "Grid3D.h"
 #include "MPIIODataStructures.h"
@@ -13,7 +13,7 @@
 using namespace MPIIODataStructures;
 
 MPIIOSimulationObserver::MPIIOSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                   std::shared_ptr<vf::mpi::Communicator> comm)
+                                   std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), path(path), comm(comm)
 {
     UbSystem::makeDirectory(path + "/mpi_io_cp");

@@ -8,7 +8,7 @@
 #include "SimulationObserver.h"
 #include "UbTuple.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -18,7 +18,7 @@ class TurbulenceIntensitySimulationObserver : public SimulationObserver
 {
 public:
     TurbulenceIntensitySimulationObserver(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                   SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm);
+                                   SPtr<UbScheduler> s, std::shared_ptr<vf::parallel::Communicator> comm);
     void update(real step) override;
 
 protected:
@@ -39,7 +39,7 @@ private:
     int gridRank;
     std::string path;
     WbWriter *writer;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     enum Values { AvVx = 0, AvVy = 1, AvVz = 2, AvVxxyyzz = 3 };
 };
 #endif

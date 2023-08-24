@@ -9,7 +9,7 @@
 #include <GPU/CudaMemoryManager.h>
 
 
-std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::CommunicationRoutine& communicator)
+std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
 {
     return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaMemoryManager, communicator));
 }

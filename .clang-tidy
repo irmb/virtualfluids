@@ -53,5 +53,5 @@ cppcoreguidelines-special-member-functions,
 -cppcoreguidelines-interfaces-global-init
 
 '
-HeaderFilterRegex: '\.h$'
-...
+HeaderFilterRegex: '.*/src/.*'
+WarningsAsErrors: 'True'

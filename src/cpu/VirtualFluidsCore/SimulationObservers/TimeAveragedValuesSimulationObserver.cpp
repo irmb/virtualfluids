@@ -4,7 +4,7 @@
 #include "LBMKernel.h"
 
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -16,7 +16,7 @@ TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver() = d
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options)
+                                                             std::shared_ptr<vf::parallel::Communicator> comm, int options)
     : SimulationObserver(grid, s), path(path), writer(writer), comm(comm), options(options)
 {
     init();
@@ -26,7 +26,7 @@ TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver(SPtr<
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options,
+                                                             std::shared_ptr<vf::parallel::Communicator> comm, int options,
                                                              std::vector<int> levels, std::vector<real> &levelCoords,
                                                              std::vector<real> &bounds, bool timeAveraging)
     : SimulationObserver(grid, s), path(path), writer(writer), comm(comm), options(options), levels(levels),

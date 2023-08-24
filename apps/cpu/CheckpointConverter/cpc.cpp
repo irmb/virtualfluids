@@ -17,7 +17,7 @@ void run(string configname)
       int    step = config.getValue<int>("step");
       int    numberOfProcesses = config.getValue<int>("numberOfProcesses");
       
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       SPtr<Grid3D> grid(new Grid3D(comm));

@@ -40,7 +40,7 @@ void bflow(string configname)
 
       vf::basics::ConfigurationFile   viscosity;
 
-      std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

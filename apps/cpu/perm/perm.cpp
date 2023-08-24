@@ -44,7 +44,7 @@ void perm(string configname)
       double          deltax = config.getValue<double>("deltax");
       bool            writeSampleToFile = config.getValue<bool>("writeSampleToFile");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

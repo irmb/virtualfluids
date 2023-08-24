@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "UbScheduler.h"
 
 DecreaseViscositySimulationObserver::DecreaseViscositySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, mu::Parser *nueFunc,
-                                                           std::shared_ptr<vf::mpi::Communicator> comm)
+                                                           std::shared_ptr<vf::parallel::Communicator> comm)
 
     : SimulationObserver(grid, s), nueFunc(nueFunc), comm(comm)
 {

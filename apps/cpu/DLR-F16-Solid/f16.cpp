@@ -47,7 +47,7 @@ void run(string configname)
       double          timeAvStart       = config.getValue<double>("timeAvStart");
       double          timeAvStop        = config.getValue<double>("timeAvStop");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
