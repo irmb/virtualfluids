@@ -45,6 +45,7 @@ __inline__ __device__ void transformGlobalToRotating(real &rotatingX, real &rota
     rotatingX = globalX;
     rotatingY = globalY;
     rotatingZ = globalZ;
+
     // rotate
     if (angleX != 0) {
         // rotate in x

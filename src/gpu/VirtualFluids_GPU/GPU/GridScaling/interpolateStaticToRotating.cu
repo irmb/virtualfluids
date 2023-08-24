@@ -239,18 +239,22 @@ __global__ void interpolateStaticToRotating(
     //! - rotate the velocities
     //!
 
+    real vvxTemp, vvyTemp, vvzTemp;
     if (angleX != 0) {
-        vvy = vvy * cos(angleX) - vvz * sin(angleX);
-        vvz = vvy * sin(angleX) + vvz * cos(angleX);
+        vvyTemp = vvy * cos(angleX) - vvz * sin(angleX);
+        vvzTemp = vvy * sin(angleX) + vvz * cos(angleX);
     } else if (angleY != 0) {
         // rotate in y
-        vvx = vvx * cos(angleY) + vvz * sin(angleY);
-        vvz = -vvx * sin(angleY) + vvz * cos(angleY);
+        vvxTemp = vvx * cos(angleY) + vvz * sin(angleY);
+        vvzTemp = -vvx * sin(angleY) + vvz * cos(angleY);
     } else if (angleZ != 0) {
         // rotate in z
-        vvx = vvx * cos(angleZ) - vvy * sin(angleZ);
-        vvy = vvx * sin(angleZ) + vvy * cos(angleZ);
+        vvxTemp = vvx * cos(angleZ) - vvy * sin(angleZ);
+        vvyTemp = vvx * sin(angleZ) + vvy * cos(angleZ);
     }
+    vvx = vvxTemp;
+    vvy = vvyTemp;
+    vvz = vvzTemp;
 
     ////////////////////////////////////////////////////////////////////////////////
     // calculate the squares of the velocities
