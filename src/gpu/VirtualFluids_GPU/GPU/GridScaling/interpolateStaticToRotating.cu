@@ -113,9 +113,9 @@ __global__ void interpolateStaticToRotating(
     // 2. calculate the coefficients for the interpolation
     // For this the relative coordinates of the destination pooint inside the source cell are needed
     // this cell coordinate system is centered at the middle of the source cell. The source cell has a side lenght of one
-    const real cellCoordDestinationX = (coordSourceX[sourceIndex] - globalCoordDestinationX) / dx + c1o2;
-    const real cellCoordDestinationY = (coordSourceY[sourceIndex] - globalCoordDestinationY) / dx + c1o2;
-    const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] - globalCoordDestinationZ) / dx + c1o2;
+    const real cellCoordDestinationX = (coordSourceX[sourceIndex] + globalCoordDestinationX) / dx - c1o2;
+    const real cellCoordDestinationY = (coordSourceY[sourceIndex] + globalCoordDestinationY) / dx - c1o2;
+    const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] + globalCoordDestinationZ) / dx - c1o2;
     vf::lbm::Coefficients coefficients;
     momentsSet.calculateCoefficients(coefficients, cellCoordDestinationX, cellCoordDestinationY, cellCoordDestinationZ);
 
@@ -209,7 +209,6 @@ __global__ void interpolateStaticToRotating(
     ////////////////////////////////////////////////////////////////////////////////
     //! - calculate the forces due to the rotating frame of reference
     //!
-
     // centrifugal force
     real forceX = angularVelocityY * angularVelocityY * coordDestinationXlocal +
                   angularVelocityZ * angularVelocityZ * coordDestinationXlocal -
@@ -232,10 +231,9 @@ __global__ void interpolateStaticToRotating(
     ////////////////////////////////////////////////////////////////////////////////
     //! - subtract half the force from the velocities
     //!
-
-    vvx -= c1o2 * forceX;
-    vvy -= c1o2 * forceY;
-    vvz -= c1o2 * forceZ;
+    m100 -= c1o2 * forceX;
+    m010 -= c1o2 * forceY;
+    m001 -= c1o2 * forceZ;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - rotate the velocities
@@ -422,83 +420,4 @@ __global__ void interpolateStaticToRotating(
     // write
     vf::gpu::ListIndices writeIndicesRotating(destinationIndex, neighborXrotating, neighborYrotating, neighborZrotating);
     vf::gpu::write(distRoating, writeIndicesRotating, fRotating);
-}
-
-__global__ void interpolateRotatingToStatic(
-    unsigned int numberOfInterfaceNodes,
-    const unsigned int *indicesStatic,
-    unsigned int *indicesRotatingCell,
-    const real *coordDestinationX,
-    const real *coordDestinationY,
-    const real *coordDestinationZ,
-    const real *coordSourceX,
-    const real *coordSourceY,
-    const real *coordSourceZ,
-    const uint *neighborXrotating,
-    const uint *neighborYrotating,
-    const uint *neighborZrotating,
-    const uint *neighborMMMrotating,
-    real centerCoordX,
-    real centerCoordY,
-    real centerCoordZ,
-    real angleX,
-    real angleY,
-    real angleZ,
-    real angularVelocityX,
-    real angularVelocityY,
-    real angularVelocityZ,
-    real dx)
-{
-    const unsigned listIndex = vf::gpu::getNodeIndex();
-
-    if (listIndex >= numberOfInterfaceNodes) return;
-
-    const uint destinationIndex = indicesStatic[listIndex];
-    const uint sourceIndex = indicesRotatingCell[listIndex];
-    const uint indexNeighborMMMsource = neighborMMMrotating[sourceIndex];
-
-    real rotatedCoordDestinationX;
-    real rotatedCoordDestinationY;
-    real rotatedCoordDestinationZ;
-
-    transformGlobalToRotating(rotatedCoordDestinationX, rotatedCoordDestinationY, rotatedCoordDestinationZ,
-                              coordDestinationX[destinationIndex], coordDestinationY[destinationIndex],
-                              coordDestinationZ[destinationIndex], centerCoordX, centerCoordY, centerCoordZ, angleX, angleY,
-                              angleZ);
-
-    indicesRotatingCell[listIndex] = traverseSourceCell(
-        rotatedCoordDestinationX, rotatedCoordDestinationY, rotatedCoordDestinationZ, indexNeighborMMMsource,
-        coordSourceX[indexNeighborMMMsource], coordSourceY[indexNeighborMMMsource], coordSourceZ[indexNeighborMMMsource],
-        neighborXrotating, neighborYrotating, neighborZrotating, dx);
-}
-
-__global__ void updateGlobalCoordinates(
-    unsigned int numberOfNodes,
-    real *globalX,
-    real *globalY,
-    real *globalZ,
-    const real *localX,
-    const real *localY,
-    const real *localZ,
-    real centerCoordX,
-    real centerCoordY,
-    real centerCoordZ,
-    real angleX,
-    real angleY,
-    real angleZ)
-{
-    const unsigned nodeIndex = vf::gpu::getNodeIndex();
-
-    if (nodeIndex >= numberOfNodes) return;
-
-    real globalXtemp;
-    real globalYtemp;
-    real globalZtemp;
-
-    transformRotatingToGlobal(globalXtemp, globalYtemp, globalZtemp, localX[nodeIndex], localY[nodeIndex], localZ[nodeIndex], centerCoordX,
-                              centerCoordY, centerCoordZ, angleX, angleY, angleZ);
-
-    globalX[nodeIndex] = globalXtemp;
-    globalY[nodeIndex] = globalYtemp;
-    globalZ[nodeIndex] = globalZtemp;
 }

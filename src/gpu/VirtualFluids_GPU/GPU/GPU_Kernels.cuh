@@ -1903,6 +1903,10 @@ __global__ void interpolateStaticToRotating(
     real dx);
 
 __global__ void interpolateRotatingToStatic(
+    real *distributionsStatic,
+    real *distributionsRotating,
+    unsigned int numberOfLBNodesStatic,
+    unsigned int numberOfLBNodesRotating,
     unsigned int numberOfInterfaceNodes,
     const unsigned int *indicesStatic,
     unsigned int *indicesRotatingCell,
@@ -1925,6 +1929,8 @@ __global__ void interpolateRotatingToStatic(
     real angularVelocityX,
     real angularVelocityY,
     real angularVelocityZ,
+    real omegaRotating,
+    bool isEvenTimestep,
     real dx);
 
 __global__ void updateGlobalCoordinates(

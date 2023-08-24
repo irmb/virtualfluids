@@ -4113,6 +4113,10 @@ void InterpolateRotatingToStatic(
     dim3 threads(parameterDeviceS->numberofthreads, 1, 1);
 
     interpolateRotatingToStatic<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
+        parameterDeviceS->distributions.f[0],
+        parameterDeviceR->distributions.f[0],
+        parameterDeviceS->numberOfNodes,
+        parameterDeviceR->numberOfNodes,
         nestedToBase->numberOfCells,
         nestedToBase->coarseCellIndices,
         nestedToBase->fineCellIndices,
@@ -4135,6 +4139,8 @@ void InterpolateRotatingToStatic(
         paraRotDevice->angularVelocity[0],
         paraRotDevice->angularVelocity[1],
         paraRotDevice->angularVelocity[2],
+        parameterDeviceR->omega,
+        parameterDeviceS->isEvenTimestep,
         parameterDeviceS->gridSpacing
     );
 

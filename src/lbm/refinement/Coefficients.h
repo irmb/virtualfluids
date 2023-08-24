@@ -50,6 +50,17 @@ using namespace vf::lbm::dir;
 
 namespace vf::lbm
 {
+    
+enum InterpolationVertex{
+    PPP,
+    MPP,
+    PMP,
+    PPM,
+    MMP,
+    MPM,
+    PMM,
+    MMM
+};
 
 // The Coefficients struct needs be created like this:
 // Coefficients coeffs;
@@ -84,7 +95,7 @@ struct MomentsOnSourceNode
     real kxxMyyFromfcNEQ;
     real kxxMzzFromfcNEQ;
 
-    __host__ __device__ void calculate(const real* const f, const real omega)
+    __host__ __device__ void calculate(const real* const f, const real omega, real forceX, real forceY, real forceZ)
     {
         // const real f_000 = f[dir::DIR_000];
         const real fP00 = f[dir::DIR_P00];
@@ -116,6 +127,10 @@ struct MomentsOnSourceNode
 
         real oneOverRho;
         getCompressibleMacroscopicValues(f, this->drho, oneOverRho, this->velocityX, this->velocityY, this->velocityZ);
+
+        this->velocityX += forceX;
+        this->velocityY += forceY;
+        this->velocityZ += forceZ;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate second order moments for interpolation
@@ -159,44 +174,72 @@ private:
     vf::lbm::MomentsOnSourceNode momentsMMM;
 
 public:
-    __host__ __device__ void calculatePPP(const real *const f, const real omega)
+    __host__ __device__ void addToVelocity(const real* deltasVelocitiesX, const real* deltasVelocitiesY, const real* deltasVelocitiesZ)
     {
-        momentsPPP.calculate(f, omega);
+        momentsPPP.velocityX += deltasVelocitiesX[InterpolationVertex::PPP];
+        momentsPPP.velocityY += deltasVelocitiesY[InterpolationVertex::PPP];
+        momentsPPP.velocityZ += deltasVelocitiesZ[InterpolationVertex::PPP];
+        momentsMPP.velocityX += deltasVelocitiesX[InterpolationVertex::MPP];
+        momentsMPP.velocityY += deltasVelocitiesY[InterpolationVertex::MPP];
+        momentsMPP.velocityZ += deltasVelocitiesZ[InterpolationVertex::MPP];
+        momentsPMP.velocityX += deltasVelocitiesX[InterpolationVertex::PMP];
+        momentsPMP.velocityY += deltasVelocitiesY[InterpolationVertex::PMP];
+        momentsPMP.velocityZ += deltasVelocitiesZ[InterpolationVertex::PMP];
+        momentsMMP.velocityX += deltasVelocitiesX[InterpolationVertex::MMP];
+        momentsMMP.velocityY += deltasVelocitiesY[InterpolationVertex::MMP];
+        momentsMMP.velocityZ += deltasVelocitiesZ[InterpolationVertex::MMP];
+        momentsPPM.velocityX += deltasVelocitiesX[InterpolationVertex::PPM];
+        momentsPPM.velocityY += deltasVelocitiesY[InterpolationVertex::PPM];
+        momentsPPM.velocityZ += deltasVelocitiesZ[InterpolationVertex::PPM];
+        momentsMPM.velocityX += deltasVelocitiesX[InterpolationVertex::MPM];
+        momentsMPM.velocityY += deltasVelocitiesY[InterpolationVertex::MPM];
+        momentsMPM.velocityZ += deltasVelocitiesZ[InterpolationVertex::MPM];
+        momentsPMM.velocityX += deltasVelocitiesX[InterpolationVertex::PMM];
+        momentsPMM.velocityY += deltasVelocitiesY[InterpolationVertex::PMM];
+        momentsPMM.velocityZ += deltasVelocitiesZ[InterpolationVertex::PMM];
+        momentsMMM.velocityX += deltasVelocitiesX[InterpolationVertex::MMM];
+        momentsMMM.velocityY += deltasVelocitiesY[InterpolationVertex::MMM];
+        momentsMMM.velocityZ += deltasVelocitiesZ[InterpolationVertex::MMM];
     }
 
-    __host__ __device__ void calculateMPP(const real *const f, const real omega)
+    __host__ __device__ void calculatePPP(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsMPP.calculate(f, omega);
+        momentsPPP.calculate(f, omega, forceX, forceY, forceZ);
     }
 
-    __host__ __device__ void calculatePMP(const real *const f, const real omega)
+    __host__ __device__ void calculateMPP(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsPMP.calculate(f, omega);
+        momentsMPP.calculate(f, omega, forceX, forceY, forceZ);
     }
 
-    __host__ __device__ void calculateMMP(const real *const f, const real omega)
+    __host__ __device__ void calculatePMP(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsMMP.calculate(f, omega);
+        momentsPMP.calculate(f, omega, forceX, forceY, forceZ);
     }
 
-    __host__ __device__ void calculatePPM(const real *const f, const real omega)
+    __host__ __device__ void calculateMMP(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsPPM.calculate(f, omega);
+        momentsMMP.calculate(f, omega, forceX, forceY, forceZ);
     }
 
-    __host__ __device__ void calculateMPM(const real *const f, const real omega)
+    __host__ __device__ void calculatePPM(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsMPM.calculate(f, omega);
+        momentsPPM.calculate(f, omega, forceX, forceY, forceZ);
     }
 
-    __host__ __device__ void calculatePMM(const real *const f, const real omega)
+    __host__ __device__ void calculateMPM(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsPMM.calculate(f, omega);
+        momentsMPM.calculate(f, omega, forceX, forceY, forceZ);
     }
 
-    __host__ __device__ void calculateMMM(const real *const f, const real omega)
+    __host__ __device__ void calculatePMM(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
     {
-        momentsMMM.calculate(f, omega);
+        momentsPMM.calculate(f, omega, forceX, forceY, forceZ);
+    }
+
+    __host__ __device__ void calculateMMM(const real *const f, const real omega, real forceX = 0.0, real forceY = 0.0, real forceZ = 0.0)
+    {
+        momentsMMM.calculate(f, omega, forceX, forceY, forceZ);
     }
 
     __host__ __device__ void calculateCoefficients(Coefficients &coefficients, real xoff, real yoff, real zoff) const

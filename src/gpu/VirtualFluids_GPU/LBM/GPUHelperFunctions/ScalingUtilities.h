@@ -44,7 +44,7 @@
 #include <lbm/refinement/Coefficients.h>
 
 using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
+using namespace vf::lbm;
 
 namespace vf::gpu
 {
@@ -60,7 +60,10 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     real* turbulentViscosity,
     unsigned long long numberOfLBnodes,
     const real omega,
-    bool isEvenTimestep
+    bool isEvenTimestep,
+    real* forcesForAllNodesX = nullptr,
+    real* forcesForAllNodesY = nullptr,
+    real* forcesForAllNodesZ = nullptr
 )
 {
     real omega_ = omega;
@@ -100,7 +103,13 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     real f_fine[27];
 
     read(f_fine, distFine, indices);
-    momentsSet.calculateMMM(f_fine, omega_);
+
+    if (forcesForAllNodesX)
+        momentsSet.calculateMMM(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::MMM],
+                                forcesForAllNodesY[InterpolationVertex::MMM],
+                                forcesForAllNodesY[InterpolationVertex::MMM]);
+    else
+        momentsSet.calculateMMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSW = MMP
@@ -118,7 +127,12 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculateMMP(f_fine, omega_);
+
+    if (forcesForAllNodesX)
+        momentsSet.calculateMMP(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::MMP],
+                                forcesForAllNodesY[InterpolationVertex::MMP], forcesForAllNodesZ[InterpolationVertex::MMP]);
+    else
+        momentsSet.calculateMMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TSE = PMP
@@ -136,7 +150,11 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculatePMP(f_fine, omega_);
+    if (forcesForAllNodesX)
+        momentsSet.calculatePMP(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::PMP],
+                                forcesForAllNodesY[InterpolationVertex::PMP], forcesForAllNodesZ[InterpolationVertex::PMP]);
+    else
+        momentsSet.calculatePMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BSE = PMM 
@@ -154,7 +172,12 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculatePMM(f_fine, omega_);
+    if (forcesForAllNodesX)
+        momentsSet.calculatePMM(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::PMM],
+                                forcesForAllNodesY[InterpolationVertex::PMM], forcesForAllNodesZ[InterpolationVertex::PMM]);
+    else
+        momentsSet.calculatePMM(f_fine, omega_);
+
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNW = MPM
@@ -182,7 +205,11 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculateMPM(f_fine, omega_);
+    if (forcesForAllNodesX)
+        momentsSet.calculateMPM(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::MPM],
+                                forcesForAllNodesY[InterpolationVertex::MPM], forcesForAllNodesZ[InterpolationVertex::MPM]);
+    else
+        momentsSet.calculateMPM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNW = MPP
@@ -200,7 +227,11 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculateMPP(f_fine, omega_);
+    if (forcesForAllNodesX)
+        momentsSet.calculateMPP(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::MPP],
+                                forcesForAllNodesY[InterpolationVertex::MPP], forcesForAllNodesZ[InterpolationVertex::MPP]);
+    else
+        momentsSet.calculateMPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
@@ -218,7 +249,11 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculatePPP(f_fine, omega_);
+    if (forcesForAllNodesX)
+        momentsSet.calculatePPP(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::PPP],
+                                forcesForAllNodesY[InterpolationVertex::PPP], forcesForAllNodesZ[InterpolationVertex::PPP]);
+    else
+        momentsSet.calculatePPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -232,11 +267,15 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_M00 = neighborX[k_base_M00];
     indices.k_0M0 = k_base_MM0;
     indices.k_MM0 = neighborX[k_base_MM0];
-    
+
     omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
-    momentsSet.calculatePPM(f_fine, omega_);
+    if (forcesForAllNodesX)
+        momentsSet.calculatePPM(f_fine, omega_, forcesForAllNodesX[InterpolationVertex::PPM],
+                                forcesForAllNodesY[InterpolationVertex::PPM], forcesForAllNodesZ[InterpolationVertex::PPM]);
+    else
+        momentsSet.calculatePPM(f_fine, omega_);
 }
 
 }

@@ -8,6 +8,7 @@
 #define __device__
 #endif
 
+#include <gpu/VirtualFluids_GPU/LBM/LB.h>
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
@@ -101,6 +102,57 @@ inline __host__ __device__ void getCompressibleMacroscopicValues(const real *con
     getCompressibleMacroscopicValues(f, drho, oneOverRho, vx1, vx2, vx3);
 }
 
+inline __host__ __device__ void getCompressibleMacroscopicValues(const Distributions27 &dist /*[27] for all nodes*/, uint nodeIndex, real &drho, real &vx1, real &vx2, real &vx3)
+{
+    drho = ((dist.f[dir::DIR_PPP][nodeIndex] + dist.f[dir::DIR_MMM][nodeIndex]) +
+            (dist.f[dir::DIR_PMP][nodeIndex] + dist.f[dir::DIR_MPM][nodeIndex])) +
+           ((dist.f[dir::DIR_PMM][nodeIndex] + dist.f[dir::DIR_MPP][nodeIndex]) +
+            (dist.f[dir::DIR_MMP][nodeIndex] + dist.f[dir::DIR_PPM][nodeIndex])) +
+           (((dist.f[dir::DIR_PP0][nodeIndex] + dist.f[dir::DIR_MM0][nodeIndex]) +
+             (dist.f[dir::DIR_PM0][nodeIndex] + dist.f[dir::DIR_MP0][nodeIndex])) +
+            ((dist.f[dir::DIR_P0P][nodeIndex] + dist.f[dir::DIR_M0M][nodeIndex]) +
+             (dist.f[dir::DIR_P0M][nodeIndex] + dist.f[dir::DIR_M0P][nodeIndex])) +
+            ((dist.f[dir::DIR_0PM][nodeIndex] + dist.f[dir::DIR_0MP][nodeIndex]) +
+             (dist.f[dir::DIR_0PP][nodeIndex] + dist.f[dir::DIR_0MM][nodeIndex]))) +
+           ((dist.f[dir::DIR_P00][nodeIndex] + dist.f[dir::DIR_M00][nodeIndex]) +
+            (dist.f[dir::DIR_0P0][nodeIndex] + dist.f[dir::DIR_0M0][nodeIndex]) +
+            (dist.f[dir::DIR_00P][nodeIndex] + dist.f[dir::DIR_00M][nodeIndex])) +
+           dist.f[dir::DIR_000][nodeIndex];
+    real oneOverRho = vf::basics::constant::c1o1 / (drho + vf::basics::constant::c1o1);
+
+    vx1 = ((((dist.f[dir::DIR_PPP][nodeIndex] - dist.f[dir::DIR_MMM][nodeIndex]) +
+             (dist.f[dir::DIR_PMP][nodeIndex] - dist.f[dir::DIR_MPM][nodeIndex])) +
+            ((dist.f[dir::DIR_PMM][nodeIndex] - dist.f[dir::DIR_MPP][nodeIndex]) +
+             (dist.f[dir::DIR_PPM][nodeIndex] - dist.f[dir::DIR_MMP][nodeIndex]))) +
+           (((dist.f[dir::DIR_P0M][nodeIndex] - dist.f[dir::DIR_M0P][nodeIndex]) +
+             (dist.f[dir::DIR_P0P][nodeIndex] - dist.f[dir::DIR_M0M][nodeIndex])) +
+            ((dist.f[dir::DIR_PM0][nodeIndex] - dist.f[dir::DIR_MP0][nodeIndex]) +
+             (dist.f[dir::DIR_PP0][nodeIndex] - dist.f[dir::DIR_MM0][nodeIndex]))) +
+           (dist.f[dir::DIR_P00][nodeIndex] - dist.f[dir::DIR_M00][nodeIndex]));
+    vx1 *= oneOverRho;
+
+    vx2 = ((((dist.f[dir::DIR_PPP][nodeIndex] - dist.f[dir::DIR_MMM][nodeIndex]) +
+             (dist.f[dir::DIR_MPM][nodeIndex] - dist.f[dir::DIR_PMP][nodeIndex])) +
+            ((dist.f[dir::DIR_MPP][nodeIndex] - dist.f[dir::DIR_PMM][nodeIndex]) +
+             (dist.f[dir::DIR_PPM][nodeIndex] - dist.f[dir::DIR_MMP][nodeIndex]))) +
+           (((dist.f[dir::DIR_0PM][nodeIndex] - dist.f[dir::DIR_0MP][nodeIndex]) +
+             (dist.f[dir::DIR_0PP][nodeIndex] - dist.f[dir::DIR_0MM][nodeIndex])) +
+            ((dist.f[dir::DIR_MP0][nodeIndex] - dist.f[dir::DIR_PM0][nodeIndex]) +
+             (dist.f[dir::DIR_PP0][nodeIndex] - dist.f[dir::DIR_MM0][nodeIndex]))) +
+           (dist.f[dir::DIR_0P0][nodeIndex] - dist.f[dir::DIR_0M0][nodeIndex]));
+    vx2 *= oneOverRho;
+
+    vx3 = ((((dist.f[dir::DIR_PPP][nodeIndex] - dist.f[dir::DIR_MMM][nodeIndex]) +
+             (dist.f[dir::DIR_PMP][nodeIndex] - dist.f[dir::DIR_MPM][nodeIndex])) +
+            ((dist.f[dir::DIR_MPP][nodeIndex] - dist.f[dir::DIR_PMM][nodeIndex]) +
+             (dist.f[dir::DIR_MMP][nodeIndex] - dist.f[dir::DIR_PPM][nodeIndex]))) +
+           (((dist.f[dir::DIR_0MP][nodeIndex] - dist.f[dir::DIR_0PM][nodeIndex]) +
+             (dist.f[dir::DIR_0PP][nodeIndex] - dist.f[dir::DIR_0MM][nodeIndex])) +
+            ((dist.f[dir::DIR_M0P][nodeIndex] - dist.f[dir::DIR_P0M][nodeIndex]) +
+             (dist.f[dir::DIR_P0P][nodeIndex] - dist.f[dir::DIR_M0M][nodeIndex]))) +
+           (dist.f[dir::DIR_00P][nodeIndex] - dist.f[dir::DIR_00M][nodeIndex]));
+    vx3 *= oneOverRho;
+}
 
 /*
 * Pressure
