@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
         double restartStep = config.getValue<int>("restartStep");
         int endTime = config.getValue<int>("endTime");
 
-        std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+        std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
         if (myid == 0) UBLOG(logINFO, "Jet Breakup: Start!");

@@ -52,10 +52,10 @@ void run(string configname)
         real factorLy = config.getValue<real>("factorLy");
         real factorLz = config.getValue<real>("factorLz");
 
-        real dx = config.getValue<real>("dx");
+        //real dx = config.getValue<real>("dx");
 
 
-        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+        SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
         if (myid == 0) UBLOG(logINFO, "Jet Breakup: Start!");
@@ -141,7 +141,8 @@ void run(string configname)
         real Re = rho_h * Uo * D / mu_h;
         real We = rho_h * Uo * Uo * D / sigma;
 
-        //real dx = Dg / D_LB;
+        real dx = Dg / D_LB;
+        //real D_LB = Dg / dx;
         real nu_h = U_LB * D_LB / Re;
         real nu_l = nu_h;
         nu_h *= 0.1;
@@ -199,13 +200,30 @@ void run(string configname)
         real g_minX2 = -0.5 * Ly;
         real g_minX3 = -0.5 * Lz;
 
-        // double g_maxX1 = 8.0*D;
-        // double g_maxX2 = 2.5*D;
-        // double g_maxX3 = 2.5*D;
-
         real g_maxX1 = Lx;
         real g_maxX2 = 0.5 * Ly;
         real g_maxX3 = 0.5 * Lz;
+
+        //real g_minX1 = -0.5 * Lx;
+        //real g_minX2 = 0;
+        //real g_minX3 = -0.5 * Lz;
+
+        //real g_maxX1 = 0.5 * Lx;
+        //real g_maxX2 = Ly;
+        //real g_maxX3 = 0.5 * Lz;
+
+        //real g_minX1 = -0.5 * Lx;
+        //real g_minX2 = -0.5 * Ly;
+        //real g_minX3 = 0;
+
+        //real g_maxX1 = 0.5 * Lx;
+        //real g_maxX2 = 0.5 * Ly;
+        //real g_maxX3 = Lz;
+
+
+        // double g_maxX1 = 8.0*D;
+        // double g_maxX2 = 2.5*D;
+        // double g_maxX3 = 2.5*D;
 
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
@@ -361,6 +379,10 @@ void run(string configname)
             //                                WbWriterVtkXmlASCII::getInstance());
 
             GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1 - 2.0*dx, 0.0, 0.0, g_minX1, 0.0, 0.0, Dg / 2.0));
+
+            //GbCylinder3DPtr geoInflow(new GbCylinder3D(0.0, g_minX2 - 2.0 * dx, 0.0, 0.0, g_minX2, 0.0, Dg / 2.0));
+
+            //GbCylinder3DPtr geoInflow(new GbCylinder3D(0.0, 0.0, g_minX3 - 2.0 * dx, 0.0, 0.0, g_minX3, Dg / 2.0));
 
 
 

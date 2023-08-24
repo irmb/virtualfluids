@@ -1,6 +1,6 @@
 #include "LiggghtsCouplingSimulationObserver.h"
 #include "GbSphere3D.h"
-#include "mpi/MPICommunicator.h"
+#include "parallel/MPICommunicator.h"
 #include "SimulationObserver.h"
 #include "LiggghtsCoupling/3rdParty/LiggghtsCouplingWrapper.h"
 #include "Grid3D.h"

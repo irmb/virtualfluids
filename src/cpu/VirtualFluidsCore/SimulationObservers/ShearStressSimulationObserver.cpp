@@ -30,7 +30,7 @@ ShearStressSimulationObserver::ShearStressSimulationObserver(SPtr<Grid3D> grid, 
         for (SPtr<Block3D> block : blockVector[level]) {
             UbTupleInt3 nx                                   = grid->getBlockNX();
             SPtr<ShearStressValuesArray3D> shearStressValues = SPtr<ShearStressValuesArray3D>(
-                new ShearStressValuesArray3D(14, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, c0o1));
+                new ShearStressValuesArray3D(14, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, vf::basics::constant::c0o1));
             block->getKernel()->getDataSet()->setShearStressValues(shearStressValues);
         }
     }
