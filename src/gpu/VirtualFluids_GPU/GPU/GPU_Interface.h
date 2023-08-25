@@ -389,6 +389,22 @@ void CalcMacCompSP27(real* vxD,
 								real* DD,
 								bool isEvenTimestep);
 
+void CalcMacCompSP27RotatingToStatic(
+    real* vxD,
+    real* vyD,
+    real* vzD,
+    real* rhoD,
+    real* pressD,
+    unsigned int* geoD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    unsigned int numberOfThreads,
+    real* DD,
+    bool isEvenTimestep,
+    ParameterRotatingGridSimulation* parameterRotDevice);
+
 void CalcMacThS7(  real* Conc,
                               unsigned int* geoD,
                               unsigned int* neighborX,
@@ -1630,7 +1646,21 @@ void InterpolateStaticToRotating(
     ICells *baseToNested,
     ICellNeigh &neighborBaseToNested);
 
+void TraverseStaticToRotating(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *baseToNested,
+    ICellNeigh &neighborBaseToNested);
+
 void InterpolateRotatingToStatic(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *nestedToBase,
+    ICellNeigh &neighborNestedToBase);
+
+void TraverseRotatingToStatic(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
     ParameterRotatingGridSimulation *paraRotDevice,

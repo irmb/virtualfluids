@@ -16,7 +16,7 @@ struct ParameterRotatingGridSimulation {
     uint sizeOfNestedCoordinates;
     uint memorySizeOfNestedCoordinates;
     std::array<real, 3> gridAngle = { 0.0, 0.0, 0.0 };
-    std::array<real, 3> angularVelocity = { 0.02, 0.0, 0.0 };
+    std::array<real, 3> angularVelocity = { 0.0, 0.0, 0.0 };
 };
 
 struct ParameterRotatingGrid {

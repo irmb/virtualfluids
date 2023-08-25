@@ -820,6 +820,46 @@ void CalcMacCompSP27(
         isEvenTimestep);
     getLastCudaError("LBCalcMacCompSP27 execution failed");
 }
+
+
+void CalcMacCompSP27RotatingToStatic(
+    real* vxD,
+    real* vyD,
+    real* vzD,
+    real* rhoD,
+    real* pressD,
+    unsigned int* geoD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    unsigned int numberOfThreads,
+    real* DD,
+    bool isEvenTimestep,
+    ParameterRotatingGridSimulation* parameterRotDevice)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalcMacCompSP27RotatingToStatic<<< grid.grid, grid.threads >>> (
+        vxD,
+        vyD,
+        vzD,
+        rhoD,
+        pressD,
+        geoD,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        DD,
+        isEvenTimestep,
+        parameterRotDevice->gridAngle[0],
+        parameterRotDevice->gridAngle[1],
+        parameterRotDevice->gridAngle[2]
+        );
+    getLastCudaError("LBCalcMacCompSP27RotatingToStatic execution failed");
+}
+
 //////////////////////////////////////////////////////////////////////////
 void CalcMacThS7(
     real* Conc,
@@ -4102,6 +4142,43 @@ void InterpolateStaticToRotating(
     getLastCudaError("interpolateStaticToRotating execution failed");
 }
 
+
+void TraverseStaticToRotating(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *baseToNested,
+    ICellNeigh &neighborBaseToNested)
+{
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceS->numberofthreads, baseToNested->numberOfCells);
+    dim3 threads(parameterDeviceS->numberofthreads, 1, 1);
+
+    traverseStaticToRotating<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
+        baseToNested->numberOfCells,
+        baseToNested->coarseCellIndices,
+        baseToNested->fineCellIndices,
+        paraRotDevice->nestedCoordinatesX,
+        paraRotDevice->nestedCoordinatesY,
+        paraRotDevice->nestedCoordinatesZ,
+        parameterDeviceS->coordinateX,
+        parameterDeviceS->coordinateY,
+        parameterDeviceS->coordinateZ,
+        parameterDeviceS->neighborX,
+        parameterDeviceS->neighborY,
+        parameterDeviceS->neighborZ,
+        parameterDeviceS->neighborInverse,
+        paraRotDevice->centerPoint[0],
+        paraRotDevice->centerPoint[1],
+        paraRotDevice->centerPoint[2],
+        paraRotDevice->gridAngle[0],
+        paraRotDevice->gridAngle[1],
+        paraRotDevice->gridAngle[2],
+        parameterDeviceS->gridSpacing
+    );
+
+    getLastCudaError("traverseStaticToRotating execution failed");
+}
+
 void InterpolateRotatingToStatic(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
@@ -4148,6 +4225,42 @@ void InterpolateRotatingToStatic(
     );
 
     getLastCudaError("interpolateRotatingToStatic execution failed");
+}
+
+void TraverseRotatingToStatic(
+    LBMSimulationParameter *parameterDeviceS,
+    LBMSimulationParameter *parameterDeviceR,
+    ParameterRotatingGridSimulation *paraRotDevice,
+    ICells *nestedToBase,
+    ICellNeigh &neighborNestedToBase)
+{
+    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceS->numberofthreads, nestedToBase->numberOfCells);
+    dim3 threads(parameterDeviceS->numberofthreads, 1, 1);
+
+    traverseRotatingToStatic<<<grid, threads, 0, CU_STREAM_LEGACY>>>(
+        nestedToBase->numberOfCells,
+        nestedToBase->coarseCellIndices,
+        nestedToBase->fineCellIndices,
+        parameterDeviceS->coordinateX,
+        parameterDeviceS->coordinateY,
+        parameterDeviceS->coordinateZ,
+        paraRotDevice->nestedCoordinatesX,
+        paraRotDevice->nestedCoordinatesY,
+        paraRotDevice->nestedCoordinatesZ,
+        parameterDeviceR->neighborX,
+        parameterDeviceR->neighborY,
+        parameterDeviceR->neighborZ,
+        parameterDeviceR->neighborInverse,
+        paraRotDevice->centerPoint[0],
+        paraRotDevice->centerPoint[1],
+        paraRotDevice->centerPoint[2],
+        paraRotDevice->gridAngle[0],
+        paraRotDevice->gridAngle[1],
+        paraRotDevice->gridAngle[2],
+        parameterDeviceS->gridSpacing
+    );
+
+    getLastCudaError("traverseRotatingToStatic execution failed");
 }
 
 void UpdateGlobalCoordinates(

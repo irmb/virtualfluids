@@ -424,4 +424,50 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
+
+    SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
+
+    uint level = 0;
+    real finalRotation =  (real)0.78539816339744830961566084581988;
+    real steps = 400;
+    paraRot->parameterRotHost->angularVelocity[0] = finalRotation / steps;
+    paraRot->parameterRotDevice->angularVelocity[0] = paraRot->parameterRotHost->angularVelocity[0];
+    VF_LOG_WARNING("angular velocity: {}",paraRot->parameterRotHost->angularVelocity[0] );
+    for (int i =0; i < steps; i++){
+        paraRot->parameterRotHost->gridAngle[0] += paraRot->parameterRotHost->angularVelocity[0];
+        paraRot->parameterRotHost->gridAngle[1] += paraRot->parameterRotHost->angularVelocity[1];
+        paraRot->parameterRotHost->gridAngle[2] += paraRot->parameterRotHost->angularVelocity[2];
+        paraRot->parameterRotDevice->gridAngle[0] += paraRot->parameterRotDevice->angularVelocity[0];
+        paraRot->parameterRotDevice->gridAngle[1] += paraRot->parameterRotDevice->angularVelocity[1];
+        paraRot->parameterRotDevice->gridAngle[2] += paraRot->parameterRotDevice->angularVelocity[2];
+        
+        // base to nested
+        TraverseStaticToRotating(
+            para->getParD(level).get(),
+            para->getParD(level+1).get(),
+            para->getRotatingGridParameter()->parameterRotDevice.get(),
+            &para->getParD(level)->coarseToFine,
+            para->getParD(level)->neighborCoarseToFine);
+
+        // nested to base
+        TraverseRotatingToStatic(
+            para->getParD(level).get(),
+            para->getParD(level+1).get(),
+            para->getRotatingGridParameter()->parameterRotDevice.get(),
+            &para->getParD(level)->fineToCoarse,
+            para->getParD(level)->neighborFineToCoarse);
+    }
+    paraRot->parameterRotHost->angularVelocity[0] = 0.0;
+    paraRot->parameterRotHost->angularVelocity[1] = 0.0;
+    paraRot->parameterRotHost->angularVelocity[2] = 0.0;
+    paraRot->parameterRotDevice->angularVelocity[0] = 0.0;
+    paraRot->parameterRotDevice->angularVelocity[1] = 0.0;
+    paraRot->parameterRotDevice->angularVelocity[2] = 0.0;
+
+    VF_LOG_INFO("Angle x {}", paraRot->parameterRotHost->gridAngle[0]);
+    VF_LOG_INFO("Angle y {}", paraRot->parameterRotHost->gridAngle[1]);
+    VF_LOG_INFO("Angle z {}", paraRot->parameterRotHost->gridAngle[2]);
+    VF_LOG_INFO("Angular velocity x {}", paraRot->parameterRotHost->angularVelocity[0]);
+    VF_LOG_INFO("Angular velocity y {}", paraRot->parameterRotHost->angularVelocity[1]);
+    VF_LOG_INFO("Angular velocity z {}", paraRot->parameterRotHost->angularVelocity[2]);
 }

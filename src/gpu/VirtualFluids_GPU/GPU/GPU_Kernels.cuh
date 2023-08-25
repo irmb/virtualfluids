@@ -351,6 +351,24 @@ __global__ void LBCalcMacCompSP27( real* vxD,
                                               real* DD,
                                               bool isEvenTimestep);
 
+__global__ void LBCalcMacCompSP27RotatingToStatic(
+    real *vxD,
+    real *vyD,
+    real *vzD,
+    real *rhoD,
+    real *pressD,
+    unsigned int *geoD,
+    unsigned int *neighborX,
+    unsigned int *neighborY,
+    unsigned int *neighborZ,
+    unsigned long long numberOfLBnodes,
+    real *distributions,
+    bool isEvenTimestep,
+    real angleX,
+    real angleY,
+    real angleZ
+    );
+
 __global__ void CalcConc7( real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
@@ -1902,6 +1920,28 @@ __global__ void interpolateStaticToRotating(
     bool isEvenTimestep,
     real dx);
 
+__global__ void traverseStaticToRotating(
+    unsigned int numberOfInterfaceNodes,
+    unsigned int *indicesStaticCell,
+    const unsigned int *indicesRotating,
+    const real *coordDestinationX,
+    const real *coordDestinationY,
+    const real *coordDestinationZ,
+    const real *coordSourceX,
+    const real *coordSourceY,
+    const real *coordSourceZ,
+    const uint *neighborXstatic,
+    const uint *neighborYstatic,
+    const uint *neighborZstatic,
+    const uint *neighborMMMstatic,
+    real centerCoordX,
+    real centerCoordY,
+    real centerCoordZ,
+    real angleX,
+    real angleY,
+    real angleZ,
+    real dx);
+
 __global__ void interpolateRotatingToStatic(
     real *distributionsStatic,
     real *distributionsRotating,
@@ -1934,6 +1974,28 @@ __global__ void interpolateRotatingToStatic(
     real angularVelocityZ,
     real omegaRotating,
     bool isEvenTimestep,
+    real dx);
+
+__global__ void traverseRotatingToStatic(
+    unsigned int numberOfInterfaceNodes,
+    const unsigned int *indicesStatic,
+    unsigned int *indicesRotatingCell,
+    const real *coordDestinationX,
+    const real *coordDestinationY,
+    const real *coordDestinationZ,
+    const real *coordSourceX,
+    const real *coordSourceY,
+    const real *coordSourceZ,
+    const uint *neighborXrotating,
+    const uint *neighborYrotating,
+    const uint *neighborZrotating,
+    const uint *neighborMMMrotating,
+    real centerCoordX,
+    real centerCoordY,
+    real centerCoordZ,
+    real angleX,
+    real angleY,
+    real angleZ,
     real dx);
 
 __global__ void updateGlobalCoordinates(

@@ -768,6 +768,8 @@ void Simulation::readAndWriteFiles(uint timestep)
         //                        para->getParD(lev)->d0SP.f[0],
         //                        para->getParD(lev)->evenOrOdd);
         //     getLastCudaError("CalcMacSP27 execution failed");
+
+        if (lev == 0){
             CalcMacCompSP27(para->getParD(lev)->velocityX,
                             para->getParD(lev)->velocityY,
                             para->getParD(lev)->velocityZ,
@@ -782,6 +784,26 @@ void Simulation::readAndWriteFiles(uint timestep)
                             para->getParD(lev)->distributions.f[0],
                             para->getParD(lev)->isEvenTimestep);
             getLastCudaError("CalcMacSP27 execution failed");
+        }
+        if (lev == 1)
+        {
+            CalcMacCompSP27RotatingToStatic(para->getParD(lev)->velocityX,
+                            para->getParD(lev)->velocityY,
+                            para->getParD(lev)->velocityZ,
+                            para->getParD(lev)->rho,
+                            para->getParD(lev)->pressure,
+                            para->getParD(lev)->typeOfGridNode,
+                            para->getParD(lev)->neighborX,
+                            para->getParD(lev)->neighborY,
+                            para->getParD(lev)->neighborZ,
+                            para->getParD(lev)->numberOfNodes,
+                            para->getParD(lev)->numberofthreads,
+                            para->getParD(lev)->distributions.f[0],
+                            para->getParD(lev)->isEvenTimestep,
+                            para->getRotatingGridParameter()->parameterRotDevice.get());
+            getLastCudaError("CalcMacSP27 execution failed");
+        }
+
         //     // overwrite with wall nodes
         //     SetOutputWallVelocitySP27( para->getParD(lev)->numberofthreads,
         //                                para->getParD(lev)->velocityX,
@@ -971,7 +993,7 @@ void Simulation::readAndWriteFiles(uint timestep)
                  
     UpdateGlobalCoordinates(para->getParD(1).get(), para->getRotatingGridParameter()->parameterRotDevice.get());
     cudaMemoryManager->cudaCopyCoordDeviceToHost(1);
-    // cudaMemoryManager->cudaCopyCoordRotationDeviceToHost(1);
+
     // cudaMemoryManager->cudaCopyInterfaceCFDeviceToHost(0);
     // cudaMemoryManager->cudaCopyInterfaceFCDeviceToHost(0);
     // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get(), timestep);

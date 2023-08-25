@@ -34,6 +34,8 @@
 #include "lbm/constants/D3Q27.h"
 #include "basics/constants/NumericConstants.h"
 #include "lbm/MacroscopicQuantities.h"
+#include "LBM/GPUHelperFunctions/CoordinateTransformation.h"
+
 
 #include "Kernel/Utilities/DistributionHelper.cuh"
 
@@ -309,7 +311,56 @@ __global__ void LBCalcMacCompSP27(
 
 
 
+__global__ void LBCalcMacCompSP27RotatingToStatic(
+    real *vxD,
+    real *vyD,
+    real *vzD,
+    real *rhoD,
+    real *pressD,
+    unsigned int *geoD,
+    unsigned int *neighborX,
+    unsigned int *neighborY,
+    unsigned int *neighborZ,
+    unsigned long long numberOfLBnodes,
+    real *distributions,
+    bool isEvenTimestep,
+    real angleX,
+    real angleY,
+    real angleZ
+    )
+{
+    ////////////////////////////////////////////////////////////////////////////////
+    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
+    //!
+    const unsigned nodeIndex = getNodeIndex();
 
+    if(nodeIndex >= numberOfLBnodes)
+        return;
+
+    pressD[nodeIndex] = c0o1;
+    rhoD[nodeIndex]   = c0o1;
+    vxD[nodeIndex]    = c0o1;
+    vyD[nodeIndex]    = c0o1;
+    vzD[nodeIndex]    = c0o1;
+
+    if (!isValidFluidNode(geoD[nodeIndex]))
+        return;
+
+    DistributionWrapper distr_wrapper(distributions, numberOfLBnodes, isEvenTimestep, nodeIndex, neighborX, neighborY, neighborZ);
+    const auto &distribution = distr_wrapper.distribution;
+
+    rhoD[nodeIndex]   = vf::lbm::getDensity(distribution.f);
+    real velocityRotatingX    = vf::lbm::getCompressibleVelocityX1(distribution.f, rhoD[nodeIndex]);
+    real velocityRotatingY    = vf::lbm::getCompressibleVelocityX2(distribution.f, rhoD[nodeIndex]);
+    real velocityRotatingZ    = vf::lbm::getCompressibleVelocityX3(distribution.f, rhoD[nodeIndex]);
+    pressD[nodeIndex] = vf::lbm::getPressure(distribution.f, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]); 
+
+    rotateVelocityFromGlobalToRotating(velocityRotatingX, velocityRotatingY, velocityRotatingZ, angleX, angleY, angleZ);
+
+    vxD[nodeIndex] = velocityRotatingX;
+    vyD[nodeIndex] = velocityRotatingY;
+    vzD[nodeIndex] = velocityRotatingZ;
+}
 
 
 

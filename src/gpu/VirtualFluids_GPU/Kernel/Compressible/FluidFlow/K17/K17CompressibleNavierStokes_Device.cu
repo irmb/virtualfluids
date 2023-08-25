@@ -209,9 +209,9 @@ __global__ void K17CompressibleNavierStokes_Device(
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
     real factor = c1o1;
-    for (size_t i = 1; i <= level; i++) {
-        factor *= c2o1;
-    }
+    // for (size_t i = 1; i <= level; i++) {
+    //     factor *= c2o1;
+    // }
 
     real fx = forces[0];
     real fy = forces[1];

@@ -3,6 +3,33 @@
 
 #include <basics/DataTypes.h>
 #include <math.h>
+#include <basics/constants/NumericConstants.h>
+
+using namespace vf::basics::constant;
+
+__inline__ __device__ void rotateVelocityFromRotatingToGlobal(real &velocityX, real &velocityY, real &velocityZ, real angleX,
+                                                              real angleY, real angleZ)
+{
+    real velocityXTemp = velocityX;
+    real velocityYTemp = velocityY;
+    real velocityZTemp = velocityZ;
+    if (angleX != c0o1) {
+        velocityYTemp = velocityY * cos(angleX) - velocityZ * sin(angleX);
+        velocityZTemp = velocityY * sin(angleX) + velocityZ * cos(angleX);
+    } else if (angleY != c0o1) {
+        // rotate in y
+        velocityXTemp = velocityX * cos(angleY) + velocityZ * sin(angleY);
+        velocityZTemp = -velocityX * sin(angleY) + velocityZ * cos(angleY);
+    } else if (angleZ != c0o1) {
+        // rotate in z
+        velocityXTemp = velocityX * cos(angleZ) - velocityY * sin(angleZ);
+        velocityYTemp = velocityX * sin(angleZ) + velocityY * cos(angleZ);
+    }
+    velocityX = velocityXTemp;
+    velocityY = velocityYTemp;
+    velocityZ = velocityZTemp;
+}
+
 __inline__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX, real localY,
                                                      real localZ, real centerCoordX, real centerCoordY, real centerCoordZ,
                                                      real angleX, real angleY, real angleZ)
@@ -30,6 +57,30 @@ __inline__ __device__ void transformRotatingToGlobal(real &globalX, real &global
     globalX += centerCoordX;
     globalY += centerCoordY;
     globalZ += centerCoordZ;
+}
+
+
+__inline__ __device__ void rotateVelocityFromGlobalToRotating(real &velocityX, real &velocityY, real &velocityZ, real angleX,
+                                                              real angleY, real angleZ)
+{
+    real velocityXTemp = velocityX;
+    real velocityYTemp = velocityY;
+    real velocityZTemp = velocityZ;
+    if (angleX != c0o1) {
+        velocityYTemp = velocityY * cos(angleX) + velocityZ * sin(angleX);
+        velocityZTemp = -velocityY * sin(angleX) + velocityZ * cos(angleX);
+    } else if (angleY != c0o1) {
+        // rotate in y
+        velocityXTemp = velocityX * cos(angleY) - velocityZ * sin(angleY);
+        velocityZTemp = velocityX * sin(angleY) + velocityZ * cos(angleY);
+    } else if (angleZ != c0o1) {
+        // rotate in z
+        velocityXTemp = velocityX * cos(angleZ) + velocityY * sin(angleZ);
+        velocityYTemp = -velocityX * sin(angleZ) + velocityY * cos(angleZ);
+    }
+    velocityX = velocityXTemp;
+    velocityY = velocityYTemp;
+    velocityZ = velocityZTemp;
 }
 
 __inline__ __device__ void transformGlobalToRotating(real &rotatingX, real &rotatingY, real &rotatingZ, real globalX,

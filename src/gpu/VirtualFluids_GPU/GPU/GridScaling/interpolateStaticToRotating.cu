@@ -238,25 +238,7 @@ __global__ void interpolateStaticToRotating(
     ////////////////////////////////////////////////////////////////////////////////
     //! - rotate the velocities
     //!
-
-    real vvxTemp = vvx;
-    real vvyTemp = vvy;
-    real vvzTemp = vvz;
-    if (angleX != c0o1) {
-        vvyTemp = vvy * cos(angleX) - vvz * sin(angleX);
-        vvzTemp = vvy * sin(angleX) + vvz * cos(angleX);
-    } else if (angleY != c0o1) {
-        // rotate in y
-        vvxTemp = vvx * cos(angleY) + vvz * sin(angleY);
-        vvzTemp = -vvx * sin(angleY) + vvz * cos(angleY);
-    } else if (angleZ != c0o1) {
-        // rotate in z
-        vvxTemp = vvx * cos(angleZ) - vvy * sin(angleZ);
-        vvyTemp = vvx * sin(angleZ) + vvy * cos(angleZ);
-    }
-    vvx = vvxTemp;
-    vvy = vvyTemp;
-    vvz = vvzTemp;
+    rotateVelocityFromRotatingToGlobal(vvx, vvy, vvz, angleX, angleY, angleZ);
 
     ////////////////////////////////////////////////////////////////////////////////
     // calculate the squares of the velocities
@@ -426,4 +408,54 @@ __global__ void interpolateStaticToRotating(
     // write
     vf::gpu::ListIndices indicesRotatingForWriting(destinationIndex, neighborXrotating, neighborYrotating, neighborZrotating);
     vf::gpu::write(distRoating, indicesRotatingForWriting, fRotating);
+}
+
+__global__ void traverseStaticToRotating(
+    unsigned int numberOfInterfaceNodes,
+    unsigned int *indicesStaticCell,
+    const unsigned int *indicesRotating,
+    const real *coordDestinationX,
+    const real *coordDestinationY,
+    const real *coordDestinationZ,
+    const real *coordSourceX,
+    const real *coordSourceY,
+    const real *coordSourceZ,
+    const uint *neighborXstatic,
+    const uint *neighborYstatic,
+    const uint *neighborZstatic,
+    const uint *neighborMMMstatic,
+    real centerCoordX,
+    real centerCoordY,
+    real centerCoordZ,
+    real angleX,
+    real angleY,
+    real angleZ,
+    real dx)
+{
+    // Interpolate from a cell on the static grid (source cell) to a node on the rotating grid (destination cell)
+
+    // 1. calculate the indices of involved nodes
+    const unsigned listIndex = vf::gpu::getNodeIndex();
+    if (listIndex >= numberOfInterfaceNodes) return;
+    const uint destinationIndex = indicesRotating[listIndex];
+    const uint previousSourceIndex = indicesStaticCell[listIndex];
+    const uint indexNeighborMMMsource = neighborMMMstatic[previousSourceIndex];
+
+    // calculate the coordinates of the destination cell in the global coordinate system
+    real globalCoordDestinationX;
+    real globalCoordDestinationY;
+    real globalCoordDestinationZ;
+    transformRotatingToGlobal(globalCoordDestinationX, globalCoordDestinationY, globalCoordDestinationZ,
+                              coordDestinationX[destinationIndex], coordDestinationY[destinationIndex],
+                              coordDestinationZ[destinationIndex], centerCoordX, centerCoordY, centerCoordZ, angleX, angleY,
+                              angleZ);
+
+    // find the new index of the source cell (a static cell) after the rotation
+    const uint sourceIndex =
+        traverseSourceCell(globalCoordDestinationX, globalCoordDestinationY, globalCoordDestinationZ, indexNeighborMMMsource,
+                           coordSourceX[indexNeighborMMMsource], coordSourceY[indexNeighborMMMsource],
+                           coordSourceZ[indexNeighborMMMsource], neighborXstatic, neighborYstatic, neighborZstatic, dx);
+
+    // write the new source index to the array
+    indicesStaticCell[listIndex] = sourceIndex;
 }
