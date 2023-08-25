@@ -119,6 +119,18 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         cudaMemoryManager->cudaAllocCoordRotation(1);
         para->fillCoordinateVectorsForRotatingGrid(1);
         cudaMemoryManager->cudaCopyCoordRotation(1);
+        auto paraStaticGridH = para->getParH(0);
+        auto paraStaticGridD = para->getParD(0);
+        auto paraRotatingGridH = para->getParH(1);
+        auto paraRotatingGridD = para->getParD(1);
+        paraRotatingGridH->viscosity = paraStaticGridH->viscosity;
+        paraRotatingGridD->viscosity = paraStaticGridD->viscosity;
+        paraRotatingGridH->diffusivity = paraStaticGridH->diffusivity;
+        paraRotatingGridD->diffusivity = paraStaticGridD->diffusivity;
+        paraRotatingGridH->omega = paraStaticGridH->omega;
+        paraRotatingGridD->omega = paraStaticGridD->omega;
+        paraRotatingGridH->scalingFactorOfGridSpacing = 1.0;
+        paraRotatingGridD->scalingFactorOfGridSpacing = 1.0;
     }
 
     for (int i = 0; i <= para->getMaxLevel(); i++) {

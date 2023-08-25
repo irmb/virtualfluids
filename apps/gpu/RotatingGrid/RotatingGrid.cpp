@@ -91,8 +91,9 @@ int main()
         const real velocityLB = 0.05; // LB units
         const uint nx = 64;
 
-        const uint timeStepOut = 1;
-        const uint timeStepEnd = 10;
+        const uint timeStepOut = 1000;
+        const uint timeStepEnd = 10000;
+        const uint timeStepStartOutput = 0;
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -108,10 +109,10 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-1.5 * L, -0.5 * L, -0.5 * L, 1.5 * L, 0.5 * L, 0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 2.0 * L, 0.5 * L, 0.5 * L, dx);
 
         if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.1, 0.1, 0.1, 0.25 * L, 1. * L, Axis::x));
-        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.3 * L, 1. * L, Axis::x), 1);
+        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.1, 0.1, 0.1, 0.25 * L, 0.8 * L, Axis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -138,6 +139,7 @@ int main()
 
         para->setTimestepOut(timeStepOut);
         para->setTimestepEnd(timeStepEnd);
+        para->setTimestepStartOut(timeStepStartOutput);
 
         para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
 
@@ -145,11 +147,18 @@ int main()
         // set boundary conditions
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-        gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+        // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
+
+
+        // gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
         gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
@@ -164,12 +173,14 @@ int main()
         // set initial condition
         //////////////////////////////////////////////////////////////////////////
 
-        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-            rho = (real)0.0;
-            vx = velocityLB;
-            vy = 0.0;
-            vz = 0.0;
-        });
+        // para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+        //     rho = (real)0.0;
+        //     // if (coordX > -0.52 && coordY > 0.27 && coordZ > -0.1 && coordX < -0.49 && coordY < 0.3 && coordZ < 0.11) rho = 1e-5;
+        //     // if (coordX > -0.34 && coordY > 0.27 && coordZ > -0.1 && coordX < -0.32 && coordY < 0.3 && coordZ < 0.11) rho = 1e-5;
+        //     vx = 0.0;
+        //     vy = 0.0;
+        //     vz = 0.0;
+        // });
 
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation

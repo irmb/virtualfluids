@@ -972,10 +972,10 @@ void Simulation::readAndWriteFiles(uint timestep)
     UpdateGlobalCoordinates(para->getParD(1).get(), para->getRotatingGridParameter()->parameterRotDevice.get());
     cudaMemoryManager->cudaCopyCoordDeviceToHost(1);
     // cudaMemoryManager->cudaCopyCoordRotationDeviceToHost(1);
-    cudaMemoryManager->cudaCopyInterfaceCFDeviceToHost(0);
-    cudaMemoryManager->cudaCopyInterfaceFCDeviceToHost(0);
-    InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get(), timestep);
-    InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get(), timestep);
+    // cudaMemoryManager->cudaCopyInterfaceCFDeviceToHost(0);
+    // cudaMemoryManager->cudaCopyInterfaceFCDeviceToHost(0);
+    // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get(), timestep);
+    // InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get(), timestep);
 
     ////////////////////////////////////////////////////////////////////////
 

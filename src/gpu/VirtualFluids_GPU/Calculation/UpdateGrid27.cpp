@@ -63,7 +63,6 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
             paraRot->parameterRotDevice->gridAngle[0] += paraRot->parameterRotDevice->angularVelocity[0];
             paraRot->parameterRotDevice->gridAngle[1] += paraRot->parameterRotDevice->angularVelocity[1];
             paraRot->parameterRotDevice->gridAngle[2] += paraRot->parameterRotDevice->angularVelocity[2];
-            VF_LOG_DEBUG("gridAngleX = {}", paraRot->parameterRotDevice->gridAngle[0]);
             rotationInterpolation(level);
         } else {
             refinement(this, para.get(), level);

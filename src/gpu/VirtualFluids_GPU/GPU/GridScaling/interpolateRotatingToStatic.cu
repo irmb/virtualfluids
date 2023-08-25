@@ -174,8 +174,10 @@ __global__ void interpolateRotatingToStatic(
     bool isEvenTimestep,
     real dx)
 {
+
     const unsigned listIndex = vf::gpu::getNodeIndex();
     if (listIndex >= numberOfInterfaceNodes) return;
+
     const uint destinationIndex = indicesStatic[listIndex];
     const uint previousSourceIndex = indicesRotatingCell[listIndex];
     const uint indexNeighborMMMsource = neighborMMMrotating[previousSourceIndex];
@@ -201,7 +203,7 @@ __global__ void interpolateRotatingToStatic(
     real forcesVertexX [8];
     real forcesVertexY [8];
     real forcesVertexZ [8];
-        real tangentialVelocitiesX [8];
+    real tangentialVelocitiesX [8];
     real tangentialVelocitiesY [8];
     real tangentialVelocitiesZ [8];
 
@@ -274,16 +276,16 @@ __global__ void interpolateRotatingToStatic(
     // 1. calculate moments for the nodes of the source cell, add half of the rotational force to the velocity during the computation of the moments
     vf::lbm::MomentsOnSourceNodeSet momentsSet;
     vf::gpu::calculateMomentSet<false>(momentsSet, listIndex, distributionsRotating, neighborXrotating, neighborYrotating,
-                                       neighborZrotating, indicesRotatingCell, nullptr, numberOfLBNodesStatic, omegaRotating,
+                                       neighborZrotating, indicesRotatingCell, nullptr, numberOfLBNodesRotating, omegaRotating,
                                        isEvenTimestep, forcesVertexX, forcesVertexY, forcesVertexZ);
 
     // 2. calculate the coefficients for the interpolation
-    // For this the relative coordinates of the destination point inside the source cell are needed
-    // this cell coordinate system is centered at the middle of the source cell. The source cell has a side lenght of one
-    // add tangential velocity to velocity for coefficient computaion
-    const real cellCoordDestinationX = (coordSourceX[sourceIndex] + rotatedCoordDestinationX) / dx - c1o2;
-    const real cellCoordDestinationY = (coordSourceY[sourceIndex] + rotatedCoordDestinationY) / dx - c1o2;
-    const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] + rotatedCoordDestinationZ) / dx - c1o2;
+    // For this the relative coordinates of the source cell in the coordinate system of the destination node ("offsets")
+    // this cell coordinate system is centered at the destination node. The source cell has a side lenght of one.
+    // Also add the tangential velocity to velocity for coefficient computation
+    const real cellCoordDestinationX = (coordSourceX[sourceIndex] - rotatedCoordDestinationX) / dx + c1o2;
+    const real cellCoordDestinationY = (coordSourceY[sourceIndex] - rotatedCoordDestinationY) / dx + c1o2;
+    const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] - rotatedCoordDestinationZ) / dx + c1o2;
     momentsSet.addToVelocity(tangentialVelocitiesX, tangentialVelocitiesY, tangentialVelocitiesZ);
     vf::lbm::Coefficients coefficients;
     momentsSet.calculateCoefficients(coefficients, cellCoordDestinationX, cellCoordDestinationY, cellCoordDestinationZ);
@@ -363,18 +365,21 @@ __global__ void interpolateRotatingToStatic(
     vvyTemp = vvy;
     vvzTemp = vvz;
 
-    if (angleX != 0) {
+    if (angleX != c0o1) {
         vvyTemp = vvy * cos(angleX) + vvz * sin(angleX);
         vvzTemp = -vvy * sin(angleX) + vvz * cos(angleX);
-    } else if (angleY != 0) {
+    } else if (angleY != c0o1) {
         // rotate in y
         vvxTemp = vvx * cos(angleY) - vvz * sin(angleY);
         vvzTemp = vvx * sin(angleY) + vvz * cos(angleY);
-    } else if (angleZ != 0) {
+    } else if (angleZ != c0o1) {
         // rotate in z
         vvxTemp = vvx * cos(angleZ) + vvy * sin(angleZ);
         vvyTemp = -vvx * sin(angleZ) + vvy * cos(angleZ);
     }
+    vvx = vvxTemp;
+    vvy = vvyTemp;
+    vvz = vvzTemp;
 
     ////////////////////////////////////////////////////////////////////////////////
     // calculate the squares of the velocities
@@ -404,7 +409,7 @@ __global__ void interpolateRotatingToStatic(
     m011 = m011SFOR;
     m101 = m101SFOR;
     m110 = m110SFOR;
-    if (angleX != 0) {
+    if (angleX != c0o1) {
         mxxMyy = (mxxMyySFOR + mxxMzzSFOR + (mxxMyySFOR - mxxMzzSFOR) * cos(angleX * c2o1) -
                   c2o1 * m011SFOR * sin(angleX * c2o1)) *
                  c1o2;
@@ -415,14 +420,14 @@ __global__ void interpolateRotatingToStatic(
         m011 = m011SFOR * cos(angleX * c2o1) + (mxxMyySFOR - mxxMzzSFOR) * cos(angleX) * sin(angleX);
         m101 = m101SFOR * cos(angleX) - m110SFOR * sin(angleX);
         m110 = m110SFOR * cos(angleX) + m101SFOR * sin(angleX);
-    } else if (angleY != 0) {
+    } else if (angleY != c0o1) {
         mxxMyy = mxxMyySFOR - mxxMzzSFOR * c1o2 + c1o2 * mxxMzzSFOR * cos(angleY * c2o1) + m101SFOR * sin(angleY * c2o1);
         mxxMzz = mxxMzzSFOR * cos(angleY * c2o1) + c2o1 * m101SFOR * sin(angleY * c2o1);
 
         m011 = m011SFOR * cos(angleY) - m110SFOR * sin(angleY);
         m101 = m101SFOR * cos(angleY * c2o1) - mxxMzzSFOR * cos(angleY) * sin(angleY);
         m110 = m110SFOR * cos(angleY) + m011SFOR * sin(angleY);
-    } else if (angleZ != 0) {
+    } else if (angleZ != c0o1) {
         mxxMyy = mxxMyySFOR * cos(angleY * c2o1) - c2o1 * m110SFOR * sin(angleY * c2o1);
         mxxMzz = -c1o2 * mxxMyySFOR + mxxMzzSFOR + c1o2 * mxxMyySFOR * cos(angleY * c2o1) - m110SFOR * sin(angleY * c2o1);
 
@@ -545,8 +550,8 @@ __global__ void interpolateRotatingToStatic(
     vf::gpu::getPointersToDistributions(distStatic, distributionsStatic, numberOfLBNodesStatic, isEvenTimestep);
 
     // write
-    vf::gpu::ListIndices writeIndicesStatic(destinationIndex, neighborXstatic, neighborYstatic, neighborZstatic);
-    vf::gpu::write(distStatic, writeIndicesStatic, fStatic);
+    vf::gpu::ListIndices indicesStaticForWriting(destinationIndex, neighborXstatic, neighborYstatic, neighborZstatic);
+    vf::gpu::write(distStatic, indicesStaticForWriting, fStatic);
 }
 
 __global__ void updateGlobalCoordinates(
