@@ -3,8 +3,9 @@ build/
 bin/
 cmake-build-debug/
 run/
-buildGCC
-buildWSL
+buildGCC/
+buildWSL/
+buildCygwin/
 pybuild/
 
 # Python

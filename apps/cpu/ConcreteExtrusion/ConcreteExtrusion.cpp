@@ -144,7 +144,7 @@ void run(string configname)
         real nu_l = nu_h;
         nu_h *= 0.1;
 
-        real rho_h_LB = 1;
+        //real rho_h_LB = 1;
         // surface tension
         real sigma_LB = 0.0; //rho_h_LB *U_LB *U_LB *D_LB / We;
 
@@ -155,12 +155,12 @@ void run(string configname)
         real beta = 12.0 * sigma_LB / interfaceWidth;
         real kappa = 1.5 * interfaceWidth * sigma_LB;
 
-        double tau0 = 715.218181094648*1000.; // Pa
-        double muConcrete = 2.1133054011798826; // [Pa s]
-        real u = Uo; //[m/s]
+        //double tau0 = 715.218181094648*1000.; // Pa
+        //double muConcrete = 2.1133054011798826; // [Pa s]
+        //real u = Uo; //[m/s]
 
 
-        double Bm = (tau0 * D) / (muConcrete * u);
+        //double Bm = (tau0 * D) / (muConcrete * u);
         double tau0_LB = 0.02;
         //Bm *nu_h *U_LB / (D / dx);
 

@@ -361,9 +361,9 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 									vBC = (vBC + vDir) / (c2o1 + vBC - vDir);	
 
 									//27.04.23
-									real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-									real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-									real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+									// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+									// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+									// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
 									//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
 									//real dvDir = (vBC - vIDir)*c1o2;
 									real dvDir = (vBC - vDir);
@@ -410,9 +410,9 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
                                         //real dvDir = vBC - vDir;
 										//27.04.23
-										real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
 										//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
                                         //real dvDir = (vBC - vIDir)*c1o2;
 										real dvDir = (vBC - vDir);
@@ -499,10 +499,10 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
                                         //real dvDir = vBC - vDir;
 										//27.04.23
-										real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
+										// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
                                         //real dvDir = (vBC - vIDir)*c1o2;
 										real dvDir = (vBC - vDir);
 
@@ -609,10 +609,10 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 
 										//27.04.23
-										real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
-										real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
+										// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
 										//real dvDir = (vBC - vIDir)*c1o2;
 										real dvDir = (vBC - vDir);
 		
