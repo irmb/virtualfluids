@@ -37,6 +37,7 @@
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 #include "LBM/GPUHelperFunctions/GridTraversion.h"
 #include "LBM/GPUHelperFunctions/CoordinateTransformation.h"
+#include "GPU/GridScaling/interpolateRotatingToStaticInlines.h"
 
 #include <lbm/MacroscopicQuantities.h>
 #include <lbm/refinement/Coefficients.h>
@@ -356,7 +357,7 @@ __global__ void interpolateRotatingToStatic(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set macroscopic values on destination node (zeroth and first order moments)
     //!
-    real vvx, vvy, vvz, vvxTemp, vvyTemp, vvzTemp;
+    real vvx, vvy, vvz;
 
     m000 = coefficients.d000; // m000 is press, if drho is interpolated directly
     vvx = coefficients.a000;
@@ -379,49 +380,19 @@ __global__ void interpolateRotatingToStatic(
     //! - Set moments (second to sixth order) on destination node
     //!
     // linear combinations for second order moments
-    // The second order moments have to be rotated. First they are computed in a static frame of reference (SFOR)
+    // The second order moments have to be rotated. First they are computed in a rotating frame of reference
 
     real mxxPyyPzz = m000;
 
-    real mxxMyySFOR = -c2o3 * ((coefficients.a100 - coefficients.b010)) / omegaRotating * (c1o1 + m000);
-    real mxxMzzSFOR = -c2o3 * ((coefficients.a100 - coefficients.c001)) / omegaRotating * (c1o1 + m000);
+    real mxxMyy = -c2o3 * ((coefficients.a100 - coefficients.b010)) / omegaRotating * (c1o1 + m000);
+    real mxxMzz = -c2o3 * ((coefficients.a100 - coefficients.c001)) / omegaRotating * (c1o1 + m000);
 
-    real m011SFOR = -c1o3 * ((coefficients.b001 + coefficients.c010)) / omegaRotating * (c1o1 + m000);
-    real m101SFOR = -c1o3 * ((coefficients.a001 + coefficients.c100)) / omegaRotating * (c1o1 + m000);
-    real m110SFOR = -c1o3 * ((coefficients.a010 + coefficients.b100)) / omegaRotating * (c1o1 + m000);
+    m011 = -c1o3 * ((coefficients.b001 + coefficients.c010)) / omegaRotating * (c1o1 + m000);
+    m101 = -c1o3 * ((coefficients.a001 + coefficients.c100)) / omegaRotating * (c1o1 + m000);
+    m110 = -c1o3 * ((coefficients.a010 + coefficients.b100)) / omegaRotating * (c1o1 + m000);
 
     // rotate some second order moments
-    real mxxMyy = mxxMyySFOR;
-    real mxxMzz = mxxMzzSFOR;
-    m011 = m011SFOR;
-    m101 = m101SFOR;
-    m110 = m110SFOR;
-    if (angleX != c0o1) {
-        mxxMyy = (mxxMyySFOR + mxxMzzSFOR + (mxxMyySFOR - mxxMzzSFOR) * cos(angleX * c2o1) -
-                  c2o1 * m011SFOR * sin(angleX * c2o1)) *
-                 c1o2;
-        mxxMzz = (mxxMyySFOR + mxxMzzSFOR + (-mxxMyySFOR + mxxMzzSFOR) * cos(angleX * c2o1) +
-                  c2o1 * m011SFOR * sin(angleX * c2o1)) *
-                 c1o2;
-
-        m011 = m011SFOR * cos(angleX * c2o1) + (mxxMyySFOR - mxxMzzSFOR) * cos(angleX) * sin(angleX);
-        m101 = m101SFOR * cos(angleX) - m110SFOR * sin(angleX);
-        m110 = m110SFOR * cos(angleX) + m101SFOR * sin(angleX);
-    } else if (angleY != c0o1) {
-        mxxMyy = mxxMyySFOR - mxxMzzSFOR * c1o2 + c1o2 * mxxMzzSFOR * cos(angleY * c2o1) + m101SFOR * sin(angleY * c2o1);
-        mxxMzz = mxxMzzSFOR * cos(angleY * c2o1) + c2o1 * m101SFOR * sin(angleY * c2o1);
-
-        m011 = m011SFOR * cos(angleY) - m110SFOR * sin(angleY);
-        m101 = m101SFOR * cos(angleY * c2o1) - mxxMzzSFOR * cos(angleY) * sin(angleY);
-        m110 = m110SFOR * cos(angleY) + m011SFOR * sin(angleY);
-    } else if (angleZ != c0o1) {
-        mxxMyy = mxxMyySFOR * cos(angleY * c2o1) - c2o1 * m110SFOR * sin(angleY * c2o1);
-        mxxMzz = -c1o2 * mxxMyySFOR + mxxMzzSFOR + c1o2 * mxxMyySFOR * cos(angleY * c2o1) - m110SFOR * sin(angleY * c2o1);
-
-        m011 = m011SFOR * cos(angleZ) + m101SFOR * sin(angleZ);
-        m101 = m101SFOR * cos(angleZ) - m011SFOR * sin(angleZ);
-        m110 = m110SFOR * cos(angleZ * c2o1) + mxxMyySFOR * cos(angleZ) * sin(angleZ);
-    }
+    rotateSecondOrderMomentsGlobalToRotating(m011, m101, m110, mxxMyy, mxxMzz, angleX, angleY, angleZ);
 
     // calculate remaining second order moments from previously rotated moments
     real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
