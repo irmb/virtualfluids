@@ -66,8 +66,8 @@ __inline__ __host__ __device__ void rotateSecondOrderMomentsRotatingToGlobal(rea
         m101Rotated = m101 * cos(angleY * c2o1) - mxxMzz * cos(angleY) * sin(angleY);
         m110Rotated = m110 * cos(angleY) + m011 * sin(angleY);
     } else if (angleZ != c0o1) {
-        mxxMyyRotated = mxxMyy * cos(angleY * c2o1) - c2o1 * m110 * sin(angleY * c2o1);
-        mxxMzzRotated = -c1o2 * mxxMyy + mxxMzz + c1o2 * mxxMyy * cos(angleY * c2o1) - m110 * sin(angleY * c2o1);
+        mxxMyyRotated = mxxMyy * cos(angleZ * c2o1) - c2o1 * m110 * sin(angleZ * c2o1);
+        mxxMzzRotated = -c1o2 * mxxMyy + mxxMzz + c1o2 * mxxMyy * cos(angleZ * c2o1) - m110 * sin(angleZ * c2o1);
 
         m011Rotated = m011 * cos(angleZ) + m101 * sin(angleZ);
         m101Rotated = m101 * cos(angleZ) - m011 * sin(angleZ);

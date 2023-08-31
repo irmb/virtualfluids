@@ -4,11 +4,11 @@
 class RotateSecondOrderMomentsFromRotatingToGlobalTest : public testing::Test
 {
 protected:
-    const real mxxMyyBeforeRotation = -0.1;
-    const real mxxMzzBeforeRotation = -0.2;
+    const real mxxMyyBeforeRotation = -0.15;
+    const real mxxMzzBeforeRotation = -0.21;
     const real m011BeforeRotation = 0.1;
-    const real m101BeforeRotation = 0.2;
-    const real m110BeforeRotation = 0.3;
+    const real m101BeforeRotation = 0.22;
+    const real m110BeforeRotation = 0.333;
 
     real mxxMyy = mxxMyyBeforeRotation;
     real mxxMzz = mxxMzzBeforeRotation;
@@ -135,8 +135,10 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, yAngleIsPiHalf_momentsC
 
     // reversed
     EXPECT_THAT(m101, RealNear(-m101BeforeRotation, 1e-6));
-    EXPECT_THAT(mxxMyy, RealNear(-mxxMyyBeforeRotation, 1e-6));
     EXPECT_THAT(mxxMzz, RealNear(-mxxMzzBeforeRotation, 1e-6));
+
+    // combined
+    EXPECT_THAT(mxxMyy, RealNear(mxxMyyBeforeRotation - mxxMzzBeforeRotation, 1e-6));
 
     // switched
     EXPECT_THAT(m110, RealNear(m011BeforeRotation, 1e-6));
@@ -153,8 +155,10 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, yAngleIsMinusPiHalf_mom
 
     // reversed
     EXPECT_THAT(m101, RealNear(-m101BeforeRotation, 1e-6));
-    EXPECT_THAT(mxxMyy, RealNear(-mxxMyyBeforeRotation, 1e-6));
     EXPECT_THAT(mxxMzz, RealNear(-mxxMzzBeforeRotation, 1e-6));
+
+    // combined
+    EXPECT_THAT(mxxMyy, RealNear(mxxMyyBeforeRotation - mxxMzzBeforeRotation, 1e-6));
 
     // switched
     EXPECT_THAT(m011, RealNear(m110BeforeRotation, 1e-6));
@@ -169,12 +173,12 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, zAngleIsPiHalf_momentsC
 
     rotateSecondOrderMomentsRotatingToGlobal(m011, m101, m110, mxxMyy, mxxMzz, angles[0], angles[1], angles[2]);
 
-    // same
-    EXPECT_THAT(mxxMyy, RealNear(mxxMyyBeforeRotation, 1e-6));
-    EXPECT_THAT(mxxMzz, RealNear(mxxMzzBeforeRotation, 1e-6));
-
     // reversed
     EXPECT_THAT(m110, RealNear(-m110BeforeRotation, 1e-6));
+    EXPECT_THAT(mxxMyy, RealNear(-mxxMyyBeforeRotation, 1e-6));
+
+    // combined
+    EXPECT_THAT(mxxMzz, RealNear(-mxxMyyBeforeRotation + mxxMzzBeforeRotation, 1e-6));
 
     // switched
     EXPECT_THAT(m011, RealNear(m101BeforeRotation, 1e-6));
@@ -189,12 +193,12 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, zAngleIsMinusPiHalf_mom
 
     rotateSecondOrderMomentsRotatingToGlobal(m011, m101, m110, mxxMyy, mxxMzz, angles[0], angles[1], angles[2]);
 
-    // same
-    EXPECT_THAT(mxxMyy, RealNear(mxxMyyBeforeRotation, 1e-6));
-    EXPECT_THAT(mxxMzz, RealNear(mxxMzzBeforeRotation, 1e-6));
-
     // reversed
     EXPECT_THAT(m110, RealNear(-m110BeforeRotation, 1e-6));
+    EXPECT_THAT(mxxMyy, RealNear(-mxxMyyBeforeRotation, 1e-6));
+
+    // combined
+    EXPECT_THAT(mxxMzz, RealNear(-mxxMyyBeforeRotation + mxxMzzBeforeRotation, 1e-6));
 
     // switched
     EXPECT_THAT(m101, RealNear(m011BeforeRotation, 1e-6));

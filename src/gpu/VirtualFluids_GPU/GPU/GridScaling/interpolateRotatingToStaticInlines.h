@@ -58,19 +58,19 @@ __inline__ __host__ __device__ void rotateSecondOrderMomentsGlobalToRotating(rea
         m101Rotated = m101 * cos(angleX) - m110 * sin(angleX);
         m110Rotated = m110 * cos(angleX) + m101 * sin(angleX);
     } else if (angleY != c0o1) {
-        mxxMyyRotated = mxxMyy - mxxMzz * c1o2 + c1o2 * mxxMzz * cos(angleY * c2o1) + m101 * sin(angleY * c2o1);
-        mxxMzzRotated = mxxMzz * cos(angleY * c2o1) + c2o1 * m101 * sin(angleY * c2o1);
+        mxxMyyRotated = mxxMyy - mxxMzz * c1o2 + c1o2 * mxxMzz * cos(angleY * c2o1) - m101 * sin(angleY * c2o1);
+        mxxMzzRotated = mxxMzz * cos(angleY * c2o1) - 2 * m101 * sin(angleY * c2o1);
 
-        m011Rotated = m011 * cos(angleY) - m110 * sin(angleY);
-        m101Rotated = m101 * cos(angleY * c2o1) - mxxMzz * cos(angleY) * sin(angleY);
-        m110Rotated = m110 * cos(angleY) + m011 * sin(angleY);
+        m011Rotated = m011 * cos(angleY) + m110 * sin(angleY);
+        m101Rotated = m101 * cos(angleY * c2o1) + mxxMzz * cos(angleY) * sin(angleY);
+        m110Rotated = m110 * cos(angleY) - m011 * sin(angleY);
     } else if (angleZ != c0o1) {
-        mxxMyyRotated = mxxMyy * cos(angleY * c2o1) - c2o1 * m110 * sin(angleY * c2o1);
-        mxxMzzRotated = -c1o2 * mxxMyy + mxxMzz + c1o2 * mxxMyy * cos(angleY * c2o1) - m110 * sin(angleY * c2o1);
+        mxxMyyRotated = mxxMyy * cos(angleZ * c2o1) + c2o1 * m110 * sin(angleZ * c2o1);
+        mxxMzzRotated = -c1o2 * mxxMyy + mxxMzz + c1o2 * mxxMyy * cos(angleZ * c2o1) + m110 * sin(angleZ * c2o1);
 
-        m011Rotated = m011 * cos(angleZ) + m101 * sin(angleZ);
-        m101Rotated = m101 * cos(angleZ) - m011 * sin(angleZ);
-        m110Rotated = m110 * cos(angleZ * c2o1) + mxxMyy * cos(angleZ) * sin(angleZ);
+        m011Rotated = m011 * cos(angleZ) - m101 * sin(angleZ);
+        m101Rotated = m101 * cos(angleZ) + m011 * sin(angleZ);
+        m110Rotated = m110 * cos(angleZ * c2o1) - mxxMyy * cos(angleZ) * sin(angleZ);
     }
 
     mxxMyy = mxxMyyRotated;
