@@ -43,7 +43,7 @@
 #include "lbm/KernelParameter.h"
 #include "lbm/Chimera.h"
 
-#include "lbm/refinement/Coefficients.h"
+#include "lbm/interpolation/InterpolationCoefficients.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -51,7 +51,7 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, const real omegaC, const Coefficients& coefficients)
+inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
 {
 
     const real kxyAverage    = c0o1;

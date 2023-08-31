@@ -37,12 +37,12 @@
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
 #include <lbm/refinement/InterpolationCF.h>
-#include <lbm/refinement/Coefficients.h>
+#include <lbm/interpolation/InterpolationCoefficients.h>
 
 
 
 template <bool hasTurbulentViscosity> __device__ void interpolate(
-    vf::lbm::Coefficients& coefficients,
+    vf::lbm::InterpolationCoefficients& coefficients,
     const unsigned int nodeIndex,
     real* distributionsFine, 
     unsigned int* neighborXfine,
@@ -509,7 +509,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
     // - ###################################################################
 
     // 2.calculate coefficients
-    vf::lbm::Coefficients coefficients;
+    vf::lbm::InterpolationCoefficients coefficients;
     momentsSet.calculateCoefficients(coefficients, neighborCoarseToFine.x[nodeIndex], neighborCoarseToFine.y[nodeIndex], neighborCoarseToFine.z[nodeIndex]);
 
     // 3. interpolate coarse to fine

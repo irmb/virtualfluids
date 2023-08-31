@@ -44,7 +44,7 @@
 #include "lbm/KernelParameter.h"
 #include "lbm/Chimera.h"
 
-#include "lbm/refinement/Coefficients.h"
+#include "lbm/interpolation/InterpolationCoefficients.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -52,7 +52,7 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-inline __host__ __device__ void interpolateCF(real* const f, const real& omegaF, const real& epsnew, const Coefficients &coefficients, const real& x, const real& y, const real& z)
+inline __host__ __device__ void interpolateCF(real* const f, const real& omegaF, const real& epsnew, const InterpolationCoefficients &coefficients, const real& x, const real& y, const real& z)
 {
     const real useNEQ = c1o1;
 
