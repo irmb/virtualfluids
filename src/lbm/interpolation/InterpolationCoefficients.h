@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -37,13 +37,12 @@
 #define __device__
 #endif
 
+#include <basics/constants/NumericConstants.h>
 
 #include "lbm/constants/D3Q27.h"
-#include <basics/constants/NumericConstants.h>
 
 #include "lbm/KernelParameter.h"
 #include "lbm/MacroscopicQuantities.h"
-
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -52,15 +51,14 @@ namespace vf::lbm
 {
 
 // The Coefficients struct needs be created like this:
-// Coefficients coeffs;
 // MomentsOnSourceNodeSet momentsSet;
 // momentsSet.calculatePPP(f, omega);
 // ... and so on
-// Coefficients coeffs;
+// InterpolationCoefficients coeffs;
 // momentsSet.calculateCoefficients(coeffs);
 
 // Coefficients of the interpolation polynomial
-struct Coefficients
+struct InterpolationCoefficients
 {
     real a000, a100, a010, a001, a200, a020, a002, a110, a101, a011;
     real b000, b100, b010, b001, b200, b020, b002, b110, b101, b011;
@@ -70,9 +68,8 @@ struct Coefficients
     real LaplaceRho;
 };
 
-
 // Private struct - is only used within the MomentsOnSourceNodeSet
-struct MomentsOnSourceNode 
+struct MomentsOnSourceNode
 {
     real drho;
     real velocityX;
@@ -84,7 +81,7 @@ struct MomentsOnSourceNode
     real kxxMyyFromfcNEQ;
     real kxxMzzFromfcNEQ;
 
-    __host__ __device__ void calculate(const real* const f, const real omega)
+    __host__ __device__ void calculate(const real *const f, const real omega)
     {
         // const real f_000 = f[dir::DIR_000];
         const real fP00 = f[dir::DIR_P00];
@@ -199,7 +196,8 @@ public:
         momentsMMM.calculate(f, omega);
     }
 
-    __host__ __device__ void calculateCoefficients(Coefficients &coefficients, real xoff, real yoff, real zoff) const
+    __host__ __device__ void calculateCoefficients(InterpolationCoefficients &coefficients, real xoff, real yoff,
+                                                   real zoff) const
     {
         real& a000 = coefficients.a000;
         real& b000 = coefficients.b000;
@@ -431,6 +429,6 @@ public:
 
 };
 
-}
+} // namespace vf::lbm
 
 #endif

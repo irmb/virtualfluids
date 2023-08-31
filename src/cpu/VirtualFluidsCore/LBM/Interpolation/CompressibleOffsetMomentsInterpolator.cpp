@@ -6,10 +6,10 @@
 
 #include <lbm/refinement/InterpolationCF.h>
 #include <lbm/refinement/InterpolationFC.h>
-#include <lbm/refinement/Coefficients.h>
+#include <lbm/interpolation/InterpolationCoefficients.h>
 
 
-void calculateCoefficients(vf::lbm::Coefficients& coefficients, const D3Q27ICell& icell, real omega, real xoff, real yoff, real zoff)
+void calculateCoefficients(vf::lbm::InterpolationCoefficients& coefficients, const D3Q27ICell& icell, real omega, real xoff, real yoff, real zoff)
 {
     vf::lbm::MomentsOnSourceNodeSet momentsSet;
 
@@ -43,7 +43,7 @@ void CompressibleOffsetMomentsInterpolator::setOmegas(real omegaC, real omegaF)
 
 void CompressibleOffsetMomentsInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
-    vf::lbm::Coefficients coefficients;
+    vf::lbm::InterpolationCoefficients coefficients;
     calculateCoefficients(coefficients, icellC, omegaC, xoff, yoff, zoff);
 
      vf::lbm::interpolateCF(icellF.BSW, omegaF, vf::basics::constant::c1o2, coefficients, -0.25, -0.25, -0.25);
@@ -58,7 +58,7 @@ void CompressibleOffsetMomentsInterpolator::interpolateCoarseToFine(D3Q27ICell& 
 
 void CompressibleOffsetMomentsInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)
 {
-    vf::lbm::Coefficients coefficients;
+    vf::lbm::InterpolationCoefficients coefficients;
     calculateCoefficients(coefficients, icellF, omegaF, xoff, yoff, zoff);
 
     vf::lbm::interpolateFC(icellC, vf::basics::constant::c2o1, omegaC, coefficients);

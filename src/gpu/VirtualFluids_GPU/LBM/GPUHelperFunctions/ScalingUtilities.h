@@ -41,7 +41,7 @@
 #include <lbm/KernelParameter.h>
 #include <basics/DataTypes.h>
 
-#include <lbm/refinement/Coefficients.h>
+#include <lbm/interpolation/InterpolationCoefficients.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
