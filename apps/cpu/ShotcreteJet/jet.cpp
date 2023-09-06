@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
         double cpStart = config.getValue<double>("cpStart");
         double restartStep = config.getValue<int>("restartStep");
         int endTime = config.getValue<int>("endTime");
+        int numOfThreads = config.getValue<int>("numOfThreads");
 
         std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
 
         double g_minX1 = -1.49631e3;
         double g_minX2 = 0.193582e3;
-        double g_minX3 = g_maxX3_box - 0.03e3;//-0.095; //-0.215; 
+        double g_minX3 = g_maxX3_box - 0.39e3;//-0.095; //-0.215; 
 
         double g_maxX1 = -1.10631e3;
         double g_maxX2 = 0.583582e3;
@@ -114,7 +115,7 @@ int main(int argc, char *argv[])
 
         // concrete
         double d_part = 1e-3;
-        double V = 0.4; // flow rate [m^3/h]
+        double V = 0.4*7.0; // flow rate [m^3/h]
         double D = 0.026;     // shotcrete inlet diameter [m]
         double R = D / 2.0;   // radius [m]
         double A = UbMath::PI * R * R;
@@ -521,8 +522,8 @@ int main(int argc, char *argv[])
          //SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseSimpleVelocityBaseExternalPressureLBMKernel>();
-        SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
-        //SPtr<LBMKernel> kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
+        //SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
+        SPtr<LBMKernel> kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
         //SPtr<LBMKernel> kernel = make_shared<IBcumulantK17LBMKernel>();
         //SPtr<LBMKernel> kernel = make_shared<IBsharpInterfaceLBMKernel>();
 
@@ -736,7 +737,7 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////
         SPtr<GbObject3D> geoOutflow1 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_maxX1 + 2.0 * dx, g_maxX2 + 2.0 * dx, g_minX3);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow1.get(), outputPath + "/geo/geoOutflow1", WbWriterVtkXmlBinary::getInstance());
-        SPtr<D3Q27Interactor> intrOutflow1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBC, Interactor3D::SOLID));
+        SPtr<D3Q27Interactor> intrOutflow1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, noSlipBC, Interactor3D::SOLID));
 
         SPtr<GbObject3D> geoOutflow2 = make_shared<GbCuboid3D>(g_minX1 - 2.0 * dx, g_minX2 - 2.0 * dx, g_minX3 - 2.0 * dx, g_minX1, g_maxX2 + 2.0 * dx, g_maxX3 + 2.0 * dx);
         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow2.get(), outputPath + "/geo/geoOutflow2", WbWriterVtkXmlBinary::getInstance());
@@ -978,10 +979,10 @@ int main(int argc, char *argv[])
 
         if (newStart)
         {
-            double x1c = -1.31431 + R;
-            double x2c = 0.375582 + R;
-            double Ri = 5;
-            double x3c = 0.136 + Ri;
+            double x1c = -1.31431e3 + R;
+            double x2c = 0.375582e3 + R;
+            double Ri = 5e3;
+            double x3c = 0.136e3 + Ri;
 
             mu::Parser fct1;
             // fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
@@ -993,7 +994,7 @@ int main(int argc, char *argv[])
             fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
 
             MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
-            //initVisitor.setPhi(fct1);
+            initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
         }
         //else
@@ -1032,7 +1033,7 @@ int main(int argc, char *argv[])
         // ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
-        int numOfThreads = 18;
+        //int numOfThreads = 18;
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> nupsSch = std::make_shared<UbScheduler>(10, 10, 100);
