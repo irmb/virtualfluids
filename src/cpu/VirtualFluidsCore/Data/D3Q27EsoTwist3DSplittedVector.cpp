@@ -259,7 +259,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(real f, size_t x
                                                                 int direction)
 {
     using namespace vf::lbm::dir;
-
+ 
     switch (direction) {
         case DIR_P00:
             (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f;

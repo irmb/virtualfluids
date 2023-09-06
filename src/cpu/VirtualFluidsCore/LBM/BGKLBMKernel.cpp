@@ -138,7 +138,7 @@ void BGKLBMKernel::calculate(int step)
                     vx3 = f[DIR_00P] - f[DIR_00M] + f[DIR_P0P] - f[DIR_M0M] - f[DIR_P0M] + f[DIR_M0P] + f[DIR_0PP] - f[DIR_0MM] - f[DIR_0PM] + f[DIR_0MP] + f[DIR_PPP] +
                           f[DIR_MMP] + f[DIR_PMP] + f[DIR_MPP] - f[DIR_PPM] - f[DIR_MMM] - f[DIR_PMM] - f[DIR_MPM];
 
-                    real cu_sq = 1.5 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
+                    real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
                     feq[DIR_000] = c8o27 * (drho - cu_sq);
                     feq[DIR_P00]    = c2o27 * (drho + c3o1 * (vx1) + c9o2 * (vx1) * (vx1)-cu_sq);

@@ -957,7 +957,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                //vx2 = vx2+(vvy-vx2);
                //vx3 = vx3+(vvz-vx3);
 
-               real cu_sq = 1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+               real cu_sq = c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
                feq[DIR_000] = c8o27*(drho-cu_sq);
                feq[DIR_P00] = c2o27*(drho+c3o1*(vx1)+c9o2*(vx1)*(vx1)-cu_sq);

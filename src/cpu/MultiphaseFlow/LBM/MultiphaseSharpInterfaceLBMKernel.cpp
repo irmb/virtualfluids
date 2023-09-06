@@ -350,24 +350,32 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 							rhoG = sumRho / sumWeight;// uncheck excpetion: what if there is no adequate neighbor?
 							for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
 								if ((phi[fdir] > c1o2) ) {
+									// real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
+
+									if ((phi[D3Q27System::INVDIR[fdir]] > c1o2)) {
 									real vxBC = ((*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 									real vyBC = ((*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 									real vzBC = ((*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 									real vBC = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
 									real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
-									vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
-									real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
+									vBC = (vBC + vDir) / (c2o1 + vBC - vDir);	
 
-									if ((phi[D3Q27System::INVDIR[fdir]] > c1o2)) {
-										///here we need reconstruction from scrach
-									real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
-									real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+									//27.04.23
+									// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+									// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+									// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+									//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
+									//real dvDir = (vBC - vIDir)*c1o2;
+									real dvDir = (vBC - vDir);
+
+									LBMReal fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
+									LBMReal fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 									//real fBC = (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1) + feqNew;
 
 										//real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
 										//real fGEQOld = D3Q27System::getIncompFeqForDirection(fdir, (*rhoNode)(x1, x2, x3), vx, vy, vz);
 										//real fGEQNew = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
-									real fBC = (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1) + feqNew;// fL -feqOLD + feqNew;
+									//real fBC = (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1) + feqNew;// fL -feqOLD + feqNew;
 										//real fBC = fGG - c6o1 * WEIGTH[fdir] * (vBC);
 									distribution->setDistributionForDirection(fBC, x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 									///// other possibility is tor replace the node itself instead of the neighbor (only c1o1 of them is allowed!)
@@ -401,13 +409,21 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										real vBC = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
 										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
                                         //real dvDir = vBC - vDir;
+										//27.04.23
+										// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
+                                        //real dvDir = (vBC - vIDir)*c1o2;
+										real dvDir = (vBC - vDir);
+																				
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 										real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 										real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
-										real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
-                                        //real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
+										//real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
+                                        real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
                                         // real fBC = (-fGInv + fGInvEQ + fGEQ - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
-                                        //real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
+                                        real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
 										//real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 										//real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
@@ -482,14 +498,22 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 										real vBC = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
 										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
                                         //real dvDir = vBC - vDir;
+										//27.04.23
+										// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
+                                        //real dvDir = (vBC - vIDir)*c1o2;
+										real dvDir = (vBC - vDir);
+
 										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
 										real fL = distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 										real fG = distribution->getDistributionInvForDirection(x1, x2, x3, fdir);
-										real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
+										//real fBC = fG - c6o1 * WEIGTH[fdir] * (vBC);
 
-										//real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
+										real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
                                         // real fBC = (-fGInv + fGInvEQ + fGEQ - c6o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
-                                        //real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
+                                        real fBC = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
 										//real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], (*rhoNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 										//real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
@@ -577,9 +601,27 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 								for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
 									if (((phi[fdir] <= c1o2) ))//&& (((*phaseField)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir])) > c1o2))) 
 									{
-										real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, vx, vy, vz);
-										real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoL, vx, vy, vz);
-										ff[D3Q27System::INVDIR[fdir]] = (ff[D3Q27System::INVDIR[fdir]] - feqOLD) * (c1o1 / collFactorL - c1o1) / (c1o1 / collFactorG - c1o1) + feqNew;
+										real vxBC = ((*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+										real vyBC = ((*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+										real vzBC = ((*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
+										real vBC = (D3Q27System::DX1[fdir] * vxBC + D3Q27System::DX2[fdir] * vyBC + D3Q27System::DX3[fdir] * vzBC);
+										real vDir = (D3Q27System::DX1[fdir] * vx + D3Q27System::DX2[fdir] * vy + D3Q27System::DX3[fdir] * vz);
+										vBC = (vBC + vDir) / (c2o1 + vBC - vDir);
+
+										//27.04.23
+										// real vxI = ((*vxNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vyI = ((*vyNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										// real vzI = ((*vzNode)(x1 - D3Q27System::DX1[fdir], x2 - D3Q27System::DX2[fdir], x3 - D3Q27System::DX3[fdir]));
+										//real vIDir = (D3Q27System::DX1[fdir] * vxI + D3Q27System::DX2[fdir] * vyI + D3Q27System::DX3[fdir] * vzI);
+										//real dvDir = (vBC - vIDir)*c1o2;
+										real dvDir = (vBC - vDir);
+		
+
+										real fGEQ = D3Q27System::getIncompFeqForDirection(fdir, rhoG, vx, vy, vz);
+										ff[D3Q27System::INVDIR[fdir]] = (fGEQ - c3o1 * WEIGTH[fdir] * dvDir * (c1o1 / collFactorL - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);										
+										// real feqOLD = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, vx, vy, vz);
+										// real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoL, vx, vy, vz);
+										// ff[D3Q27System::INVDIR[fdir]] = (ff[D3Q27System::INVDIR[fdir]] - feqOLD) * (c1o1 / collFactorL - c1o1) / (c1o1 / collFactorG - c1o1) + feqNew;
 										distribution->setDistributionForDirection(ff[D3Q27System::INVDIR[fdir]], x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
 									}
 								}
@@ -918,21 +960,21 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 					real Dxz = -c3o1 * collFactorM * mfbab;
 					real Dyz = -c3o1 * collFactorM * mfabb;
 
-                    if (phi[DIR_000] > c1o2) {
-                        /// QR eddyviscosity:
-                        real eddyR = -(Dxy * Dxy + Dxz * Dxz + c1o3 * dxux * dxux) * (dxux) - (Dxy * Dxy + Dyz * Dyz + c1o3 * dyuy * dyuy) * dyuy - (Dxz * Dxz + Dyz * Dyz + c1o3 * dzuz * dzuz) * dzuz - c2o1 * Dxy * Dxz * Dyz;
-                        real eddyQ = Dxy * Dxz + Dxy * Dyz + Dxz * Dyz + c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz);
-                        real nuEddy = 5.0e1 * (eddyR / (eddyQ + 1e-100)) * (dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi);
-                        nuEddy = (nuEddy < c1o1 / collFactorM) ? c1o1 / collFactorM : nuEddy;
-                        collFactorM = c1o1 / nuEddy;
-                        // collFactorM = c1o1 / (c1o1 / collFactorM +1.e2*nuEddy*(dX1_phi*dX1_phi+dX2_phi*dX2_phi+dX3_phi*dX3_phi));
-                        collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
-                        OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
-                        OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
-                        Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
-                        A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
-                        BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
-                    }
+                    // if (phi[DIR_000] > c1o2) {
+                    //     /// QR eddyviscosity:
+                    //     real eddyR = -(Dxy * Dxy + Dxz * Dxz + c1o3 * dxux * dxux) * (dxux) - (Dxy * Dxy + Dyz * Dyz + c1o3 * dyuy * dyuy) * dyuy - (Dxz * Dxz + Dyz * Dyz + c1o3 * dzuz * dzuz) * dzuz - c2o1 * Dxy * Dxz * Dyz;
+                    //     real eddyQ = Dxy * Dxz + Dxy * Dyz + Dxz * Dyz + c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz);
+                    //     real nuEddy = 5.0e1 * (eddyR / (eddyQ + 1e-100)) * (dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi);
+                    //     nuEddy = (nuEddy < c1o1 / collFactorM) ? c1o1 / collFactorM : nuEddy;
+                    //     collFactorM = c1o1 / nuEddy;
+                    //     // collFactorM = c1o1 / (c1o1 / collFactorM +1.e2*nuEddy*(dX1_phi*dX1_phi+dX2_phi*dX2_phi+dX3_phi*dX3_phi));
+                    //     collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
+                    //     OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
+                    //     OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
+                    //     Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
+                    //     A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+                    //     BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+                    // }
 
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     // non Newtonian fluid collision factor
@@ -1616,8 +1658,8 @@ void MultiphaseSharpInterfaceLBMKernel::findNeighbors(CbArray3D<real, IndexerX3X
 		if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
 			phi[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		} else {
-			phi[k] = (*ph)(x1 , x2, x3 );// neutral wetting
-			//phi[k] = 0.0;//unwetting
+			//phi[k] = (*ph)(x1 , x2, x3 );// neutral wetting
+			phi[k] = 0.0;//unwetting
 		}
 	}
 }
