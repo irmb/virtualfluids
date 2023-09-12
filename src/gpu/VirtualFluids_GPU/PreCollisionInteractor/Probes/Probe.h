@@ -149,19 +149,19 @@ public:
         const bool _hasDeviceQuantityArray,
         const bool _outputTimeSeries
     ):  probeName(_probeName),
-        outputPath(_outputPath),
+        outputPath(_outputPath + (_outputPath.back() == '/' ? "" : "/")),
         tStartAvg(_tStartAvg),
         tStartTmpAveraging(_tStartTmpAvg),
         tAvg(_tAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
         hasDeviceQuantityArray(_hasDeviceQuantityArray),
-        outputTimeSeries(_outputTimeSeries),        
+        outputTimeSeries(_outputTimeSeries),
         PreCollisionInteractor()
     {
         if (tStartOut < tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
-    
+
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
