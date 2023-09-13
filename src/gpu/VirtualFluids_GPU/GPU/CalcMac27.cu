@@ -355,7 +355,7 @@ __global__ void LBCalcMacCompSP27RotatingToStatic(
     real velocityRotatingZ    = vf::lbm::getCompressibleVelocityX3(distribution.f, rhoD[nodeIndex]);
     pressD[nodeIndex] = vf::lbm::getPressure(distribution.f, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]); 
 
-    rotateVelocityFromGlobalToRotating(velocityRotatingX, velocityRotatingY, velocityRotatingZ, angleX, angleY, angleZ);
+    rotateDataFromGlobalToRotating(velocityRotatingX, velocityRotatingY, velocityRotatingZ, angleX, angleY, angleZ);
 
     vxD[nodeIndex] = velocityRotatingX;
     vyD[nodeIndex] = velocityRotatingY;

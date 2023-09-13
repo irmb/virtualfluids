@@ -7,27 +7,27 @@
 
 using namespace vf::basics::constant;
 
-__inline__ __device__ void rotateVelocityFromRotatingToGlobal(real &velocityX, real &velocityY, real &velocityZ, real angleX,
-                                                              real angleY, real angleZ)
+__inline__ __host__ __device__ void rotateDataFromRotatingToGlobal(real &datumX, real &datumY, real &datumZ, real angleX, real angleY,
+                                                          real angleZ)
 {
-    real velocityXTemp = velocityX;
-    real velocityYTemp = velocityY;
-    real velocityZTemp = velocityZ;
+    real datumXTemp = datumX;
+    real datumYTemp = datumY;
+    real datumZTemp = datumZ;
     if (angleX != c0o1) {
-        velocityYTemp = velocityY * cos(angleX) - velocityZ * sin(angleX);
-        velocityZTemp = velocityY * sin(angleX) + velocityZ * cos(angleX);
+        datumYTemp = datumY * cos(angleX) - datumZ * sin(angleX);
+        datumZTemp = datumY * sin(angleX) + datumZ * cos(angleX);
     } else if (angleY != c0o1) {
         // rotate in y
-        velocityXTemp = velocityX * cos(angleY) + velocityZ * sin(angleY);
-        velocityZTemp = -velocityX * sin(angleY) + velocityZ * cos(angleY);
+        datumXTemp = datumX * cos(angleY) + datumZ * sin(angleY);
+        datumZTemp = -datumX * sin(angleY) + datumZ * cos(angleY);
     } else if (angleZ != c0o1) {
         // rotate in z
-        velocityXTemp = velocityX * cos(angleZ) - velocityY * sin(angleZ);
-        velocityYTemp = velocityX * sin(angleZ) + velocityY * cos(angleZ);
+        datumXTemp = datumX * cos(angleZ) - datumY * sin(angleZ);
+        datumYTemp = datumX * sin(angleZ) + datumY * cos(angleZ);
     }
-    velocityX = velocityXTemp;
-    velocityY = velocityYTemp;
-    velocityZ = velocityZTemp;
+    datumX = datumXTemp;
+    datumY = datumYTemp;
+    datumZ = datumZTemp;
 }
 
 __inline__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX, real localY,
@@ -60,27 +60,27 @@ __inline__ __device__ void transformRotatingToGlobal(real &globalX, real &global
 }
 
 
-__inline__ __device__ void rotateVelocityFromGlobalToRotating(real &velocityX, real &velocityY, real &velocityZ, real angleX,
+__inline__ __device__ void rotateDataFromGlobalToRotating(real &datumX, real &datumY, real &datumZ, real angleX,
                                                               real angleY, real angleZ)
 {
-    real velocityXTemp = velocityX;
-    real velocityYTemp = velocityY;
-    real velocityZTemp = velocityZ;
+    real datumXTemp = datumX;
+    real datumYTemp = datumY;
+    real datumZTemp = datumZ;
     if (angleX != c0o1) {
-        velocityYTemp = velocityY * cos(angleX) + velocityZ * sin(angleX);
-        velocityZTemp = -velocityY * sin(angleX) + velocityZ * cos(angleX);
+        datumYTemp = datumY * cos(angleX) + datumZ * sin(angleX);
+        datumZTemp = -datumY * sin(angleX) + datumZ * cos(angleX);
     } else if (angleY != c0o1) {
         // rotate in y
-        velocityXTemp = velocityX * cos(angleY) - velocityZ * sin(angleY);
-        velocityZTemp = velocityX * sin(angleY) + velocityZ * cos(angleY);
+        datumXTemp = datumX * cos(angleY) - datumZ * sin(angleY);
+        datumZTemp = datumX * sin(angleY) + datumZ * cos(angleY);
     } else if (angleZ != c0o1) {
         // rotate in z
-        velocityXTemp = velocityX * cos(angleZ) + velocityY * sin(angleZ);
-        velocityYTemp = -velocityX * sin(angleZ) + velocityY * cos(angleZ);
+        datumXTemp = datumX * cos(angleZ) + datumY * sin(angleZ);
+        datumYTemp = -datumX * sin(angleZ) + datumY * cos(angleZ);
     }
-    velocityX = velocityXTemp;
-    velocityY = velocityYTemp;
-    velocityZ = velocityZTemp;
+    datumX = datumXTemp;
+    datumY = datumYTemp;
+    datumZ = datumZTemp;
 }
 
 __inline__ __device__ void transformGlobalToRotating(real &rotatingX, real &rotatingY, real &rotatingZ, real globalX,

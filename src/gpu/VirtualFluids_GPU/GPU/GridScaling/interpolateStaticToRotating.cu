@@ -238,7 +238,7 @@ __global__ void interpolateStaticToRotating(
     ////////////////////////////////////////////////////////////////////////////////
     //! - rotate the velocities
     //!
-    rotateVelocityFromRotatingToGlobal(vvx, vvy, vvz, angleX, angleY, angleZ);
+    rotateDataFromRotatingToGlobal(vvx, vvy, vvz, angleX, angleY, angleZ);
 
     ////////////////////////////////////////////////////////////////////////////////
     // calculate the squares of the velocities

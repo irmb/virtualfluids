@@ -990,7 +990,6 @@ void Simulation::readAndWriteFiles(uint timestep)
     }
     ////////////////////////////////////////////////////////////////////////
     // rotating grid
-                 
     UpdateGlobalCoordinates(para->getParD(1).get(), para->getRotatingGridParameter()->parameterRotDevice.get());
     cudaMemoryManager->cudaCopyCoordDeviceToHost(1);
 

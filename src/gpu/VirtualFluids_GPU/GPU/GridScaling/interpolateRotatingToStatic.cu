@@ -367,7 +367,7 @@ __global__ void interpolateRotatingToStatic(
     ////////////////////////////////////////////////////////////////////////////////
     //! - rotate the velocities
     //!
-    rotateVelocityFromGlobalToRotating(vvx, vvy, vvz, angleX, angleY, angleZ);
+    rotateDataFromGlobalToRotating(vvx, vvy, vvz, angleX, angleY, angleZ);
 
     ////////////////////////////////////////////////////////////////////////////////
     // calculate the squares of the velocities
@@ -382,23 +382,23 @@ __global__ void interpolateRotatingToStatic(
     // linear combinations for second order moments
     // The second order moments have to be rotated. First they are computed in a rotating frame of reference
 
+    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
     real mxxPyyPzz = m000;
 
     real mxxMyy = -c2o3 * ((coefficients.a100 - coefficients.b010)) / omegaRotating * (c1o1 + m000);
     real mxxMzz = -c2o3 * ((coefficients.a100 - coefficients.c001)) / omegaRotating * (c1o1 + m000);
 
-    m011 = -c1o3 * ((coefficients.b001 + coefficients.c010)) / omegaRotating * (c1o1 + m000);
-    m101 = -c1o3 * ((coefficients.a001 + coefficients.c100)) / omegaRotating * (c1o1 + m000);
-    m110 = -c1o3 * ((coefficients.a010 + coefficients.b100)) / omegaRotating * (c1o1 + m000);
+    m011 = -c1o3 * ((coefficients.b001 + coefficients.c010)) / omegaRotating * (c1o1 + m000) * useNEQ;
+    m101 = -c1o3 * ((coefficients.a001 + coefficients.c100)) / omegaRotating * (c1o1 + m000) * useNEQ;
+    m110 = -c1o3 * ((coefficients.a010 + coefficients.b100)) / omegaRotating * (c1o1 + m000) * useNEQ;
 
     // rotate some second order moments
     rotateSecondOrderMomentsGlobalToRotating(m011, m101, m110, mxxMyy, mxxMzz, angleX, angleY, angleZ);
 
     // calculate remaining second order moments from previously rotated moments
-    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
-    m200 = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz) * useNEQ;
-    m020 = c1o3 * (-c2o1 * mxxMyy + mxxMzz + mxxPyyPzz) * useNEQ;
-    m002 = c1o3 * (mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * useNEQ;
+    m200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    m020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    m002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * useNEQ;
 
     // linear combinations for third order moments
     real mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
