@@ -148,7 +148,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     std::cout << "Write result files to " << para->getFName() << std::endl;
 
     para->setUseStreams(useStreams);
-    para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     

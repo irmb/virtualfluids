@@ -100,37 +100,37 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     std::shared_ptr<KernelImp> newKernel;
     std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
-    if (kernel == CollisionKernel::Compressible::BGK) {
+    if (kernel == collisionKernel::compressible::BGK) {
         newKernel     = B92CompressibleNavierStokes::getNewInstance(para, level);               // compressible
         checkStrategy = FluidFlowCompStrategy::getInstance();                   //      ||
-    } else if (kernel == CollisionKernel::Compressible::BGKUnified) {           //      \/
+    } else if (kernel == collisionKernel::compressible::BGKUnified) {           //      \/
         newKernel     = std::make_shared<vf::gpu::B15CompressibleNavierStokesBGKplusUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::BGKPlus) {
+    } else if (kernel == collisionKernel::compressible::BGKPlus) {
         newKernel     = B15CompressibleNavierStokesBGKplus::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::MRT) {
+    } else if (kernel == collisionKernel::compressible::MRT) {
         newKernel     = M02CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::Cascade) {
+    } else if (kernel == collisionKernel::compressible::Cascade) {
         newKernel     = C06CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantClassic) {
+    } else if (kernel == collisionKernel::compressible::CumulantClassic) {
         newKernel     = K08CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK15Unified) {
+    } else if (kernel == collisionKernel::compressible::CumulantK15Unified) {
         newKernel     = std::make_shared<vf::gpu::K15CompressibleNavierStokesUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesUnified) {
+    } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesUnified) {
         newKernel     = std::make_shared<vf::gpu::K17CompressibleNavierStokesUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesBulkViscosity) {
+    } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesBulkViscosity) {
         newKernel     = K17CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokesChimeraLegacy) {
+    } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesChimeraLegacy) {
         newKernel     = K17CompressibleNavierStokesChimeraLegacy::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K17CompressibleNavierStokes){
+    } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokes){
         switch(para->getTurbulenceModel())
         {
             case TurbulenceModel::AMD:
@@ -150,61 +150,61 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
             break;
         }
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantAll4SP27) {
+    } else if (kernel == collisionKernel::compressible::CumulantAll4SP27) {
         newKernel     = K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK18) {
+    } else if (kernel == collisionKernel::compressible::CumulantK18) {
         newKernel     = K18CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::CumulantK20) {
+    } else if (kernel == collisionKernel::compressible::CumulantK20) {
         newKernel     = K20CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K15CompressibleNavierStokes) {
+    } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokes) {
         newKernel     = K15CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K15CompressibleNavierStokesBulk) {
+    } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokesBulk) {
         newKernel     = K15CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Compressible::K15CompressibleNavierStokesSponge) { //     /\      //
+    } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokesSponge) { //     /\      //
         newKernel     = K15CompressibleNavierStokesSponge::getNewInstance(para, level);     //     ||
         checkStrategy = FluidFlowCompStrategy::getInstance();                   // compressible
     }                                                                           //===============
-    else if (  kernel == CollisionKernel::Incompressible::BGK) {                // incompressible
+    else if (  kernel == collisionKernel::incompressible::BGK) {                // incompressible
         newKernel     = B92IncompressibleNavierStokes::getNewInstance(para, level);             //     ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                 //     \/
-    } else if (kernel == CollisionKernel::Incompressible::BGKPlus) {
+    } else if (kernel == collisionKernel::incompressible::BGKPlus) {
         newKernel     = B15IncompressibleNavierStokesBGKplus::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Incompressible::MRT) {
+    } else if (kernel == collisionKernel::incompressible::MRT) {
         newKernel     = M02IncompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Incompressible::Cascade) {
+    } else if (kernel == collisionKernel::incompressible::Cascade) {
         newKernel     = C06IncompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Incompressible::Cumulant1h) {
+    } else if (kernel == collisionKernel::incompressible::Cumulant1h) {
         newKernel     = K15IncompressibleNavierStokesRotatingVelocityField::getNewInstance(para, level);
         checkStrategy = FluidFlowIncompStrategy::getInstance();
-    //} else if (kernel == CollisionKernel::Incompressible::CumulantIsometric) {
+    //} else if (kernel == collisionKernel::incompressible::CumulantIsometric) {
     //    newKernel     = K15IncompressibleNavierStokesIsoTest::getNewInstance(para, level);
     //    checkStrategy = FluidFlowIncompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Incompressible::CumulantK15) {          //     /\      //
+    } else if (kernel == collisionKernel::incompressible::CumulantK15) {          //     /\      //
         newKernel     = K15IncompressibleNavierStokes::getNewInstance(para, level);           //     ||
         checkStrategy = FluidFlowIncompStrategy::getInstance();                   // incompressible
     }                                                                             //===============
-    else if (kernel == CollisionKernel::PorousMedia::CumulantOne) {               // porous media
+    else if (kernel == collisionKernel::porousMedia::CumulantOne) {               // porous media
         newKernel     = PMCumulantOneCompSP27::getNewInstance(para, pm, level);   //     ||
         checkStrategy = PMFluidFlowCompStrategy::getInstance();                   // porous media
     }                                                                             //===============
-    else if (kernel == CollisionKernel::Wale::CumulantK17) {                      // wale model
+    else if (kernel == collisionKernel::wale::CumulantK17) {                      // wale model
         newKernel     = WaleCumulantK17Comp::getNewInstance(para, level);         //     ||
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();                 //     \/
-    } else if (kernel == CollisionKernel::Wale::CumulantK17Debug) {
+    } else if (kernel == collisionKernel::wale::CumulantK17Debug) {
         newKernel     = WaleCumulantK17DebugComp::getNewInstance(para, level);
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Wale::CumulantK15) {
+    } else if (kernel == collisionKernel::wale::CumulantK15) {
         newKernel     = WaleCumulantK15Comp::getNewInstance(para, level);
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();
-    } else if (kernel == CollisionKernel::Wale::CumulantK15SoniMalav) {              //     /\      //
+    } else if (kernel == collisionKernel::wale::CumulantK15SoniMalav) {              //     /\      //
         newKernel     = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level); //     ||
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();                    // wale model
     }                                                                                //===============

@@ -1,7 +1,7 @@
 #ifndef KERNEL_TYPES_H
 #define KERNEL_TYPES_H
 
-namespace vf::CollisionKernel::Compressible {
+namespace vf::collisionKernel::compressible {
     static const std::string BGK = "BGKCompSP27";
     static const std::string BGKUnified = "BGKUnified";
     static const std::string BGKPlus = "BGKPlusCompSP27";
@@ -26,7 +26,7 @@ namespace vf::CollisionKernel::Compressible {
     static const std::string K15CompressibleNavierStokesSponge = "K15CompressibleNavierStokesSponge";
     }
 
-namespace vf::CollisionKernel::Incompressible {
+namespace vf::collisionKernel::incompressible {
     static const std::string BGK = "BGKIncompSP27";
     static const std::string BGKPlus = "BGKPlusIncompSP27";
     static const std::string MRT = "MRTIncompSP27";
@@ -37,11 +37,11 @@ namespace vf::CollisionKernel::Incompressible {
     static const std::string CumulantK15 = "CumulantK15Incomp";
 }
 
-namespace vf::CollisionKernel::PorousMedia {
+namespace vf::collisionKernel::porousMedia {
     static const std::string CumulantOne = "CumulantOneCompSP27";
 }
 
-namespace vf::CollisionKernel::Wale {
+namespace vf::collisionKernel::wale {
     static const std::string CumulantK17 = "WaleCumulantK17Comp";
     static const std::string CumulantK17Debug = "WaleCumulantK17DebugComp";
     static const std::string CumulantK15 = "WaleCumulantK15Comp";

@@ -123,7 +123,7 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
-std::string kernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+std::string kernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
 
 std::string path("D:/out/TGV_3D/"); //MOLLOK
 
