@@ -13,6 +13,7 @@
 
 #include "CollisionStrategy.h"
 #include "RefinementStrategy.h"
+#include "constants/NumericConstants.h"
 
 #include <parallel/Communicator.h>
 
@@ -415,7 +416,9 @@ void UpdateGrid27::exchangeData(int level)
 }
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory>  tmFactory, GridScalingFactory* scalingFactory)
+                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels,
+                           BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory,
+                           GridScalingFactory *scalingFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels), tmFactory(tmFactory)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
@@ -428,19 +431,22 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
 
     uint level = 0;
-    real finalRotation =  (real)0.78539816339744830961566084581988;
-    real steps = 400;
+    real finalRotation = (real) (vf::basics::constant::cPi);
+    VF_LOG_INFO("intended rotation: {} around center point ({}, {}, {})", finalRotation,
+                paraRot->parameterRotHost->centerPoint[0], paraRot->parameterRotHost->centerPoint[1],
+                paraRot->parameterRotHost->centerPoint[2]);
+    real steps = 800;
     paraRot->parameterRotHost->angularVelocity[0] = finalRotation / steps;
     paraRot->parameterRotDevice->angularVelocity[0] = paraRot->parameterRotHost->angularVelocity[0];
-    VF_LOG_WARNING("angular velocity: {}",paraRot->parameterRotHost->angularVelocity[0] );
-    for (int i =0; i < steps; i++){
+    VF_LOG_INFO("angular velocity: {}", paraRot->parameterRotHost->angularVelocity[0]);
+    for (int i = 0; i < steps; i++) {
         paraRot->parameterRotHost->gridAngle[0] += paraRot->parameterRotHost->angularVelocity[0];
         paraRot->parameterRotHost->gridAngle[1] += paraRot->parameterRotHost->angularVelocity[1];
         paraRot->parameterRotHost->gridAngle[2] += paraRot->parameterRotHost->angularVelocity[2];
         paraRot->parameterRotDevice->gridAngle[0] += paraRot->parameterRotDevice->angularVelocity[0];
         paraRot->parameterRotDevice->gridAngle[1] += paraRot->parameterRotDevice->angularVelocity[1];
         paraRot->parameterRotDevice->gridAngle[2] += paraRot->parameterRotDevice->angularVelocity[2];
-        
+
         // base to nested
         TraverseStaticToRotating(
             para->getParD(level).get(),

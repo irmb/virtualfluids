@@ -83,7 +83,7 @@ int main()
         if (rotOrInt == Rot) VF_LOG_INFO("Use rotation.");
 
         const std::string path("./output/RotatingGrid");
-        const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid";
+        const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid"; //PiHalbe";
 
         const real L = 1.0;
         const real Re = 2000.0;
@@ -92,8 +92,8 @@ int main()
         const uint nx = 64;
 
         const uint timeStepOut = 1;
-        const uint timeStepEnd = 10;
-        const uint timeStepStartOutput = 0;
+        const uint timeStepEnd = 30;
+        const uint timeStepStartOutput = 10;
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
@@ -111,7 +111,7 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 2.0 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 1. * L, Axis::x));
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.2, 0.0, 0.0, 0.25 * L, 1. * L, Axis::x));
         if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 0.8 * L, Axis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
@@ -141,7 +141,7 @@ int main()
         para->setTimestepEnd(timeStepEnd);
         para->setTimestepStartOut(timeStepStartOutput);
 
-        para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+        para->configureMainKernel(vf::CollisionKernel::Compressible::K15CompressibleNavierStokes);
 
         //////////////////////////////////////////////////////////////////////////
         // set boundary conditions
@@ -152,15 +152,15 @@ int main()
         // gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
         // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, -velocityLB, 0.0);
         // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
         BoundaryConditionFactory bcFactory;
 
@@ -185,14 +185,14 @@ int main()
                 return (real)0.0;
         };
 
-        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-            // rho = (real) 0.0;
-            // if (coordX > -0.52 && coordY > 0.27 && coordZ > -0.1 && coordX < -0.49 && coordY < 0.3 && coordZ < 0.11) rho = 1e-5;
-            rho =  setPressPoint({-0.2, 0.24, 0.0}, 1e-5, dx, {coordX, coordY, coordZ});
-            vx = 0.0;
-            vy = 0.0;
-            vz = 0.0;
-        });
+        // para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+        //     // rho = (real) 0.0;
+        //     // if (coordX > -0.52 && coordY > 0.27 && coordZ > -0.1 && coordX < -0.49 && coordY < 0.3 && coordZ < 0.11) rho = 1e-5;
+        //     rho =  setPressPoint({-0.2, 0.24, 0.0}, 1e-5, dx, {coordX, coordY, coordZ});
+        //     vx = 0.0;
+        //     vy = 0.0;
+        //     vz = 0.0;
+        // });
 
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation

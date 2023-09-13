@@ -290,6 +290,15 @@ public:
         const real drhoMPM = momentsMPM.drho, vx1MPM = momentsMPM.velocityX, vx2MPM = momentsMPM.velocityY, vx3MPM = momentsMPM.velocityZ;
         const real drhoPMM = momentsPMM.drho, vx1PMM = momentsPMM.velocityX, vx2PMM = momentsPMM.velocityY, vx3PMM = momentsPMM.velocityZ;
         const real drhoMMM = momentsMMM.drho, vx1MMM = momentsMMM.velocityX, vx2MMM = momentsMMM.velocityY, vx3MMM = momentsMMM.velocityZ;
+        // const real drhoPPP =0.0, vx1PPP = 0.0, vx2PPP = 0.001, vx3PPP = 0.0;
+        // const real drhoMPP =0.0, vx1MPP = 0.0, vx2MPP = 0.001, vx3MPP = 0.0;
+        // const real drhoPMP =0.0, vx1PMP = 0.0, vx2PMP = 0.001, vx3PMP = 0.0;
+        // const real drhoMMP =0.0, vx1MMP = 0.0, vx2MMP = 0.001, vx3MMP = 0.0;
+        // const real drhoPPM =0.0, vx1PPM = 0.0, vx2PPM = 0.001, vx3PPM = 0.0;
+        // const real drhoMPM =0.0, vx1MPM = 0.0, vx2MPM = 0.001, vx3MPM = 0.0;
+        // const real drhoPMM =0.0, vx1PMM = 0.0, vx2PMM = 0.001, vx3PMM = 0.0;
+        // const real drhoMMM =0.0, vx1MMM = 0.0, vx2MMM = 0.001, vx3MMM = 0.0;
+
 
         // second order moments at the source nodes
         const real kxyFromfcNEQPPP = momentsPPP.kxyFromfcNEQ, kyzFromfcNEQPPP = momentsPPP.kyzFromfcNEQ, kxzFromfcNEQPPP = momentsPPP.kxzFromfcNEQ, kxxMyyFromfcNEQPPP = momentsPPP.kxxMyyFromfcNEQ, kxxMzzFromfcNEQPPP = momentsPPP.kxxMzzFromfcNEQ;
@@ -300,6 +309,17 @@ public:
         const real kxyFromfcNEQMPM = momentsMPM.kxyFromfcNEQ, kyzFromfcNEQMPM = momentsMPM.kyzFromfcNEQ, kxzFromfcNEQMPM = momentsMPM.kxzFromfcNEQ, kxxMyyFromfcNEQMPM = momentsMPM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQMPM = momentsMPM.kxxMzzFromfcNEQ;
         const real kxyFromfcNEQPMM = momentsPMM.kxyFromfcNEQ, kyzFromfcNEQPMM = momentsPMM.kyzFromfcNEQ, kxzFromfcNEQPMM = momentsPMM.kxzFromfcNEQ, kxxMyyFromfcNEQPMM = momentsPMM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQPMM = momentsPMM.kxxMzzFromfcNEQ;
         const real kxyFromfcNEQMMM = momentsMMM.kxyFromfcNEQ, kyzFromfcNEQMMM = momentsMMM.kyzFromfcNEQ, kxzFromfcNEQMMM = momentsMMM.kxzFromfcNEQ, kxxMyyFromfcNEQMMM = momentsMMM.kxxMyyFromfcNEQ, kxxMzzFromfcNEQMMM = momentsMMM.kxxMzzFromfcNEQ;
+
+        // const real kxyFromfcNEQPPP = 0.0, kyzFromfcNEQPPP = 0.0, kxzFromfcNEQPPP = 0.0, kxxMyyFromfcNEQPPP = 0.0, kxxMzzFromfcNEQPPP = 0.0;
+        // const real kxyFromfcNEQMPP = 0.0, kyzFromfcNEQMPP = 0.0, kxzFromfcNEQMPP = 0.0, kxxMyyFromfcNEQMPP = 0.0, kxxMzzFromfcNEQMPP = 0.0;
+        // const real kxyFromfcNEQPMP = 0.0, kyzFromfcNEQPMP = 0.0, kxzFromfcNEQPMP = 0.0, kxxMyyFromfcNEQPMP = 0.0, kxxMzzFromfcNEQPMP = 0.0;
+        // const real kxyFromfcNEQMMP = 0.0, kyzFromfcNEQMMP = 0.0, kxzFromfcNEQMMP = 0.0, kxxMyyFromfcNEQMMP = 0.0, kxxMzzFromfcNEQMMP = 0.0;
+        // const real kxyFromfcNEQPPM = 0.0, kyzFromfcNEQPPM = 0.0, kxzFromfcNEQPPM = 0.0, kxxMyyFromfcNEQPPM = 0.0, kxxMzzFromfcNEQPPM = 0.0;
+        // const real kxyFromfcNEQMPM = 0.0, kyzFromfcNEQMPM = 0.0, kxzFromfcNEQMPM = 0.0, kxxMyyFromfcNEQMPM = 0.0, kxxMzzFromfcNEQMPM = 0.0;
+        // const real kxyFromfcNEQPMM = 0.0, kyzFromfcNEQPMM = 0.0, kxzFromfcNEQPMM = 0.0, kxxMyyFromfcNEQPMM = 0.0, kxxMzzFromfcNEQPMM = 0.0;
+        // const real kxyFromfcNEQMMM = 0.0, kyzFromfcNEQMMM = 0.0, kxzFromfcNEQMMM = 0.0, kxxMyyFromfcNEQMMM = 0.0, kxxMzzFromfcNEQMMM = 0.0;
+
+
 
         a000 = c1o64 * (
                 c2o1 * (
