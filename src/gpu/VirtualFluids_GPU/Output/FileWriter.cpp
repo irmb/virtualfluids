@@ -117,11 +117,12 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     }
 }
 
-bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5)
+bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number1, unsigned int number7)
 {
-    return (para->getParH(level)->coordinateX[number2] < para->getParH(level)->coordinateX[number1]) ||
-           (para->getParH(level)->coordinateY[number3] < para->getParH(level)->coordinateY[number1]) ||
-           (para->getParH(level)->coordinateZ[number5] < para->getParH(level)->coordinateZ[number1]);
+    real distance = sqrt(pow(para->getParH(level)->coordinateX[number7] - para->getParH(level)->coordinateX[number1], 2.) +
+                         pow(para->getParH(level)->coordinateY[number7] - para->getParH(level)->coordinateY[number1], 2.) +
+                         pow(para->getParH(level)->coordinateZ[number7] - para->getParH(level)->coordinateZ[number1], 2.));
+    return distance > 1.01 * sqrt(3 * para->getParH(level)->gridSpacing);
 }
 
 std::vector<std::string> FileWriter::getNodeDataNames(std::shared_ptr<Parameter> para)
@@ -328,8 +329,9 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
                 dn7 = number7 - startPosition;
                 dn8 = number8 - startPosition;
                 //////////////////////////////////////////////////////////////////////////
-                if (isPeriodicCell(para, level, number2, number1, number3, number5))
+                if (isPeriodicCell(para, level, number1, number7)){
                     continue;
+                }
                 //////////////////////////////////////////////////////////////////////////
                 if (neighborsAreFluid)
                     cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
@@ -436,7 +438,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
                 dn7 = number7 - startPosition;
                 dn8 = number8 - startPosition;
                 //////////////////////////////////////////////////////////////////////////
-                if (isPeriodicCell(para, level, number2, number1, number3, number5))
+                if (isPeriodicCell(para, level, number1, number7))
                     continue;
                 //////////////////////////////////////////////////////////////////////////
                 if (neighborsFluid == true) cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
