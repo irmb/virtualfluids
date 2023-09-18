@@ -1,9 +1,11 @@
 #include <gmock/gmock.h>
-#include "basics/tests/testUtilities.h"
 
-#include "DistributionHelper.cuh"
+#include <basics/tests/testUtilities.h>
 
-#include "lbm/constants/D3Q27.h"
+#include "KernelUtilities.h"
+
+#include <lbm/constants/D3Q27.h>
+
 using namespace vf::lbm::dir;
 
 TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBeEqualToInput)

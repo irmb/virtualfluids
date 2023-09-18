@@ -8,7 +8,6 @@
 
 //LBM kernel (compressible)
 #include "Kernel/Compressible/FluidFlow/B92/B92CompressibleNavierStokes.h"
-#include "Kernel/Compressible/FluidFlow/B15/B15CompressibleNavierStokesBGKplusUnified.h"
 #include "Kernel/Compressible/FluidFlow/B15/B15CompressibleNavierStokesBGKplus.h"
 #include "Kernel/Compressible/FluidFlow/M02/M02CompressibleNavierStokes.h"
 #include "Kernel/Compressible/FluidFlow/C06/C06CompressibleNavierStokes.h"
@@ -16,11 +15,9 @@
 #include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokes.h"
 #include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokesBulkViscosity.h"
 #include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokesSponge.h"
-#include "Kernel/Compressible/FluidFlow/K15/K15CompressibleNavierStokesUnified.h"
 #include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokes.h"
 #include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesChimeraLegacy.h"
 #include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesBulkViscosity.h"
-#include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesUnified.h"
 #include "Kernel/Compressible/FluidFlow/K17/K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants.h"
 #include "Kernel/Compressible/FluidFlow/K18/K18CompressibleNavierStokes.h"
 #include "Kernel/Compressible/FluidFlow/K20/K20CompressibleNavierStokes.h"
@@ -60,6 +57,8 @@
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADMod7IncompStrategy.h"
 #include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/PMFluidFlowCompStrategy.h"
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/WaleFluidFlowCompStrategy.h"
+
+#include <lbm/collision/TurbulentViscosity.h>
 
 using namespace vf;
 
@@ -103,9 +102,6 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     if (kernel == collisionKernel::compressible::BGK) {
         newKernel     = B92CompressibleNavierStokes::getNewInstance(para, level);               // compressible
         checkStrategy = FluidFlowCompStrategy::getInstance();                   //      ||
-    } else if (kernel == collisionKernel::compressible::BGKUnified) {           //      \/
-        newKernel     = std::make_shared<vf::gpu::B15CompressibleNavierStokesBGKplusUnified>(para, level);
-        checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::BGKPlus) {
         newKernel     = B15CompressibleNavierStokesBGKplus::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
@@ -118,12 +114,6 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == collisionKernel::compressible::CumulantClassic) {
         newKernel     = K08CompressibleNavierStokes::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == collisionKernel::compressible::CumulantK15Unified) {
-        newKernel     = std::make_shared<vf::gpu::K15CompressibleNavierStokesUnified>(para, level);
-        checkStrategy = FluidFlowCompStrategy::getInstance();
-    } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesUnified) {
-        newKernel     = std::make_shared<vf::gpu::K17CompressibleNavierStokesUnified>(para, level);
-        checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesBulkViscosity) {
         newKernel     = K17CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
@@ -133,17 +123,17 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokes){
         switch(para->getTurbulenceModel())
         {
-            case TurbulenceModel::AMD:
-                newKernel = K17CompressibleNavierStokes<TurbulenceModel::AMD>::getNewInstance(para, level);
+            case lbm::TurbulenceModel::AMD:
+                newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::AMD>::getNewInstance(para, level);
                 break;
-            case TurbulenceModel::Smagorinsky:
-                newKernel = K17CompressibleNavierStokes<TurbulenceModel::Smagorinsky>::getNewInstance(para, level);
+            case lbm::TurbulenceModel::Smagorinsky:
+                newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::Smagorinsky>::getNewInstance(para, level);
                 break;
-            case TurbulenceModel::QR:
-                newKernel = K17CompressibleNavierStokes<TurbulenceModel::QR>::getNewInstance(para, level);
+            case lbm::TurbulenceModel::QR:
+                newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::QR>::getNewInstance(para, level);
                 break;
-            case TurbulenceModel::None:
-                newKernel = K17CompressibleNavierStokes<TurbulenceModel::None>::getNewInstance(para, level);
+            case lbm::TurbulenceModel::None:
+                newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::None>::getNewInstance(para, level);
                 break;
             default:
                 throw std::runtime_error("Unknown turbulence model!");

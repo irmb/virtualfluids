@@ -2,7 +2,8 @@
 #define LBM_D3Q27_H
 
 #include <map>
-#include "basics/DataTypes.h"
+
+#include <basics/DataTypes.h>
 
 namespace vf::lbm::dir
 {
@@ -93,7 +94,8 @@ static constexpr size_t SGD_MPM = 23;
 static constexpr size_t SGD_PMM = 24;
 static constexpr size_t SGD_MMM = 25;
 
-struct countersForPointerChasing{
+struct countersForPointerChasing
+{
     uint counterInverse;
     uint counterX;
     uint counterY;
