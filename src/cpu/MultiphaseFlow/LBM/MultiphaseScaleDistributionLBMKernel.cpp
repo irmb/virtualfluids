@@ -158,7 +158,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 	forcingX1 = 0.0;
 	forcingX2 = 0.0;
 	forcingX3 = 0.0;
-    real phiLim = 0.5;
+    real phiLim = (phiH + phiL)*c1o2;
 
 	real oneOverInterfaceScale = c4o1 / interfaceWidth; //1.0;//1.5;
 														 /////////////////////////////////////
@@ -683,7 +683,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                                         real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
                                                                                             (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 
-                                        real fBC = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1);
+                                        real fBC = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1) ;
 
 										//real fBC = (fGEQ - WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
                                         
@@ -872,7 +872,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                                         real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
                                                                                             (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 
-                                        real fBC = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1);
+                                        real fBC = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1) ;
 
 										//real fBC = (fGEQ -  WEIGTH[fdir] * dvDir * (c1o1 / collFactorG - c1o1)) - c6o1 * WEIGTH[fdir] * (vBC);
 
@@ -960,7 +960,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                                             real feqNew = D3Q27System::getIncompFeqForDirection(D3Q27System::INVDIR[fdir], rhoG, (*vxNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]),
                                                                                                 (*vyNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]), (*vzNode)(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir]));
 
-                                            real fBC = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1);
+                                            real fBC = feqNew + (fL - feqOLD) * (c1o1 / collFactorG - c1o1) / (c1o1 / collFactorL - c1o1) ;
 
 											
 											distribution->setDistributionForDirection(laplacePressureBC* WEIGTH[fdir] + (fBC + fG) / densityRatio + (eqBCN + eqGN) * (c1o1 - c1o1 / densityRatio)  - fL , x1, x2, x3, fdir);
@@ -3856,6 +3856,16 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 					//FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
 					real BB =  (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+
+					//if ((phi[DIR_000] <= phiLim) && (phi[DIR_000] >0.1)) {
+     //                   collFactorM = (0.1 - phi[DIR_000] + collFactorM * phi[DIR_000] - collFactorM * phiLim) / (0.1 - phiLim);
+     //                   OxyyPxzz = c1o1;
+     //                   OxyyMxzz = c1o1;
+     //                   Oxyz = c1o1;
+     //                   A = 0.;
+     //                   BB = 0.;
+     //               }
+
 					//real stress = 1.0;// stress / (stress + 1.0e-10);
 					//stress = 1.0;
 					//OxyyPxzz += stress*(1.0-OxyyPxzz);
@@ -3938,10 +3948,16 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					real Dxz = -c3o1 * collFactorM * mfbab;
 					real Dyz = -c3o1 * collFactorM * mfabb;
                     // if (phi[DIR_000] > phiLim) 
-						if ((phi[DIR_000] > phiLim) && ((phi[DIR_P00] <= phiLim) || (phi[DIR_M00] <= phiLim) || (phi[DIR_00P] <= phiLim) || (phi[DIR_00M] <= phiLim) || (phi[DIR_0M0] <= phiLim) || (phi[DIR_0P0] <= phiLim) || (phi[DIR_PP0] <= phiLim) || (phi[DIR_PM0] <= phiLim) || (phi[DIR_P0P] <= phiLim) ||
+						if (((phi[DIR_000] > phiLim) && ((phi[DIR_P00] <= phiLim) || (phi[DIR_M00] <= phiLim) || (phi[DIR_00P] <= phiLim) || (phi[DIR_00M] <= phiLim) || (phi[DIR_0M0] <= phiLim) || (phi[DIR_0P0] <= phiLim) || (phi[DIR_PP0] <= phiLim) || (phi[DIR_PM0] <= phiLim) || (phi[DIR_P0P] <= phiLim) ||
                                                   (phi[DIR_P0M] <= phiLim) || (phi[DIR_MP0] <= phiLim) || (phi[DIR_MM0] <= phiLim) || (phi[DIR_M0P] <= phiLim) || (phi[DIR_M0M] <= phiLim) || (phi[DIR_0PM] <= phiLim) || (phi[DIR_0MM] <= phiLim) || (phi[DIR_0PP] <= phiLim) || (phi[DIR_0MP] <= phiLim) ||
                                                   (phi[DIR_PPP] <= phiLim) || (phi[DIR_PMP] <= phiLim) || (phi[DIR_MPP] <= phiLim) || (phi[DIR_MMP] <= phiLim) ||
-                         (phi[DIR_PPM] <= phiLim) || (phi[DIR_PMM] <= phiLim) || (phi[DIR_MPM] <= phiLim) || (phi[DIR_MMM] <= phiLim))) {
+                         (phi[DIR_PPM] <= phiLim) || (phi[DIR_PMM] <= phiLim) || (phi[DIR_MPM] <= phiLim) || (phi[DIR_MMM] <= phiLim))) 
+						/*
+                        || ((phi[DIR_000] <= phiLim) && ((phi[DIR_P00] > phiLim) || (phi[DIR_M00] > phiLim) || (phi[DIR_00P] > phiLim) || (phi[DIR_00M] > phiLim) || (phi[DIR_0M0] > phiLim) || (phi[DIR_0P0] > phiLim) || (phi[DIR_PP0] > phiLim) ||
+                                                                                 (phi[DIR_PM0] > phiLim) || (phi[DIR_P0P] > phiLim) || (phi[DIR_P0M] > phiLim) || (phi[DIR_MP0] > phiLim) || (phi[DIR_MM0] > phiLim) || (phi[DIR_M0P] > phiLim) || (phi[DIR_M0M] > phiLim) ||
+                                                                                 (phi[DIR_0PM] > phiLim) || (phi[DIR_0MM] > phiLim) || (phi[DIR_0PP] > phiLim) || (phi[DIR_0MP] > phiLim) || (phi[DIR_PPP] > phiLim) || (phi[DIR_PMP] > phiLim) || (phi[DIR_MPP] > phiLim) ||
+                                                                                 (phi[DIR_MMP] > phiLim) || (phi[DIR_PPM] > phiLim) || (phi[DIR_PMM] > phiLim) || (phi[DIR_MPM] > phiLim) || (phi[DIR_MMM] > phiLim))) 
+						*/){
 
 					// {
                         /// QR eddyviscosity:
@@ -3986,6 +4002,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					///////
 
                     // non Newtonian fluid collision factor
+                    if (phi[DIR_000] > phiLim /*- 0.3*/) {
                     //if (phi[DIR_000] > phiLim) {
                     //    real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
                     //    collFactorM = Rheology::getBinghamCollFactor(collFactorM, shearRate, c1o1);
@@ -3996,7 +4013,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                 if (phi[DIR_000] > phiLim) {
                         real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
                         collFactorM = Rheology::getBinghamCollFactor(collFactorM, shearRate, c1o1);
-                        collFactorM = (collFactorM < c1o12) ? c1o12 : collFactorM;
+                        collFactorM = (collFactorM < c1o54) ? c1o54 : collFactorM;
                         if (collFactorM < c1o1) {
                             OxyyPxzz = c1o1;
                             OxyyMxzz = c1o1;
@@ -4004,6 +4021,84 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                             A = 0.0;
                             BB = 0.0;
                         }
+							//Mathematica output 31.07.23
+      //                      if (collFactorM < c1o6) {
+						//
+						//		Oxyz = 24 * collFactorM * pow(-2 + collFactorM, 2) * (668 - 1738 * collFactorM + 1630 * pow(collFactorM, 2) - 523 * pow(collFactorM, 3) - 133 * pow(collFactorM, 4) + 122 * pow(collFactorM, 5) - 12 * pow(collFactorM, 6) - 6 * pow(collFactorM, 7) + pow(collFactorM, 8)) *
+      //                             pow(-7424 + 57424 * collFactorM - 138736 * pow(collFactorM, 2) + 151892 * pow(collFactorM, 3) - 69704 * pow(collFactorM, 4) - 9888 * pow(collFactorM, 5) +
+      //                                     pow(collFactorM, 11) * (19 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                          (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                           882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                                      0.5)) -
+      //                                     3 * pow(collFactorM, 10) *
+      //                                         (77 + 3 * pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                           (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) + 882 * pow(collFactorM, 8) -
+      //                                                            260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                       0.5)) +
+      //                                     pow(collFactorM, 8) * (251 + 4 * pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                              (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                               882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                                          0.5)) -
+      //                                     3 * pow(collFactorM, 7) *
+      //                                         (3361 + 14 * pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                              (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                               882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                          0.5)) +
+      //                                     2 * pow(collFactorM, 6) *
+      //                                         (12873 + 16 * pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                               (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                           0.5)) +
+      //                                     pow(collFactorM, 9) * (860 + 17 * pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                               (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                                882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                                           0.5)),
+      //                                 -1);
+      //                      OxyyMxzz = -12 * collFactorM * pow(-2 + collFactorM, 2) * (10 - 2 * collFactorM - 9 * pow(collFactorM, 2) + 4 * pow(collFactorM, 3)) *
+      //                                 pow(-232 + 248 * collFactorM - 6 * pow(collFactorM, 2) - 8 * pow(collFactorM, 3) - 63 * pow(collFactorM, 4) + 36 * pow(collFactorM, 5) +
+      //                                         pow(collFactorM, 6) * (-5 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                             (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                              882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                                         0.5)),
+      //                                     -1);
+						//	OxyyPxzz = 12 * collFactorM * pow(-2 + collFactorM, 2) * (-14 + 10 * collFactorM + pow(collFactorM, 2)) *
+      //                                 pow(-232 + 152 * collFactorM + 138 * pow(collFactorM, 2) - 56 * pow(collFactorM, 3) - 63 * pow(collFactorM, 4) + 36 * pow(collFactorM, 5) +
+      //                                         pow(collFactorM, 6) * (-5 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                             (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                              882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                                         0.5)),
+      //                                     -1);
+
+						//	A = -(pow(-2 + collFactorM, -3) * pow(-1 + collFactorM, -1) * pow(collFactorM, -2) * pow(3 - 3 * collFactorM + pow(collFactorM, 2), -1) *
+      //                            (464 - 1440 * collFactorM + 1652 * pow(collFactorM, 2) - 772 * pow(collFactorM, 3) + 20 * pow(collFactorM, 4) + 98 * pow(collFactorM, 5) +
+      //                             pow(collFactorM, 8) * (1 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                 882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                            0.5)) -
+      //                             2 * pow(collFactorM, 7) *
+      //                                 (2 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                              (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) + 882 * pow(collFactorM, 8) -
+      //                                               260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                          0.5)) +
+      //                             pow(collFactorM, 6) * (-19 + 2 * pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                      (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                       882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                                  0.5)))) /
+      //                          12.;
+						//	BB = (pow(-2 + collFactorM, -3) * pow(-1 + collFactorM, -1) * pow(collFactorM, -2) * pow(3 - 3 * collFactorM + pow(collFactorM, 2), -1) *
+      //                            (232 - 720 * collFactorM + 998 * pow(collFactorM, 2) - 718 * pow(collFactorM, 3) + 163 * pow(collFactorM, 4) + 141 * pow(collFactorM, 5) - 4 * pow(collFactorM, 8) +
+      //                             pow(collFactorM, 6) * (-123 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                   (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                    882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                               0.5)) -
+      //                             pow(collFactorM, 7) * (-37 + pow(pow(-2 + collFactorM, 2) * pow(collFactorM, -12) *
+      //                                                                  (13456 - 43152 * collFactorM + 45684 * pow(collFactorM, 2) - 2240 * pow(collFactorM, 3) - 35008 * pow(collFactorM, 4) + 31108 * pow(collFactorM, 5) - 10835 * pow(collFactorM, 6) + 376 * pow(collFactorM, 7) +
+      //                                                                   882 * pow(collFactorM, 8) - 260 * pow(collFactorM, 9) + 25 * pow(collFactorM, 10)),
+      //                                                              0.5)))) /
+      //                           6.;
+      //                      A = 0.;
+      //                      BB = 0.;
+						//}
                     }
 
 
@@ -4451,156 +4546,214 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 ////////////////////////////////////////////
 /////CUMULANT PHASE-FIELD
 					real omegaD =1.0/( 3.0 * mob + 0.5);
-					{
-						mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
-						mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
-						mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
-						mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
-						mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
-						mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
-						mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
-						mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
-						mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
-						mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
-						mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
-						mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
-						mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
-						mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
-						mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
-						mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
-						mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
-						mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
-						mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
-						mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
-						mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
-						mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
-						mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-						mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
-						mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
-						mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
-						mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
+                        {
+                        mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+                        mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+                        mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+                        mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+                        mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+                        mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+                        mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+                        mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+                        mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+                        mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+                        mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+                        mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+                        mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                        mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+                        mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+                        mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+                        mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+                        mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+                        mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+                        mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+                        mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+                        mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+                        mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                        mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                        mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                        mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
+                        mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
 
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
+                        //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+                        //!
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        // second component
+                        real concentration =
+                            ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) + (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) + ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        //bool inverseConcentration = false;
+                        //if (true) //(concentration <= phiLim)
+                        //{
+                        //    inverseConcentration = true;
+                        //    mfcbb = D3Q27System::getIncompFeqForDirection(DIR_PMM, c1o1, vvx, vvy, vvz) - mfcbb;
+                        //    mfbcb = D3Q27System::getIncompFeqForDirection(DIR_MPM, c1o1, vvx, vvy, vvz) - mfbcb;
+                        //    mfbbc = D3Q27System::getIncompFeqForDirection(DIR_MMP, c1o1, vvx, vvy, vvz) - mfbbc;
+                        //    mfccb = D3Q27System::getIncompFeqForDirection(DIR_PPM, c1o1, vvx, vvy, vvz) - mfccb;
+                        //    mfacb = D3Q27System::getIncompFeqForDirection(DIR_0PM, c1o1, vvx, vvy, vvz) - mfacb;
+                        //    mfcbc = D3Q27System::getIncompFeqForDirection(DIR_PMP, c1o1, vvx, vvy, vvz) - mfcbc;
+                        //    mfabc = D3Q27System::getIncompFeqForDirection(DIR_0MP, c1o1, vvx, vvy, vvz) - mfabc;
+                        //    mfbcc = D3Q27System::getIncompFeqForDirection(DIR_MPP, c1o1, vvx, vvy, vvz) - mfbcc;
+                        //    mfbac = D3Q27System::getIncompFeqForDirection(DIR_M0P, c1o1, vvx, vvy, vvz) - mfbac;
+                        //    mfccc = D3Q27System::getIncompFeqForDirection(DIR_PPP, c1o1, vvx, vvy, vvz) - mfccc;
+                        //    mfacc = D3Q27System::getIncompFeqForDirection(DIR_0PP, c1o1, vvx, vvy, vvz) - mfacc;
+                        //    mfcac = D3Q27System::getIncompFeqForDirection(DIR_P0P, c1o1, vvx, vvy, vvz) - mfcac;
+                        //    mfaac = D3Q27System::getIncompFeqForDirection(DIR_00P, c1o1, vvx, vvy, vvz) - mfaac;
+                        //    mfabb = D3Q27System::getIncompFeqForDirection(DIR_0MM, c1o1, vvx, vvy, vvz) - mfabb;
+                        //    mfbab = D3Q27System::getIncompFeqForDirection(DIR_M0M, c1o1, vvx, vvy, vvz) - mfbab;
+                        //    mfbba = D3Q27System::getIncompFeqForDirection(DIR_MM0, c1o1, vvx, vvy, vvz) - mfbba;
+                        //    mfaab = D3Q27System::getIncompFeqForDirection(DIR_00M, c1o1, vvx, vvy, vvz) - mfaab;
+                        //    mfcab = D3Q27System::getIncompFeqForDirection(DIR_P0M, c1o1, vvx, vvy, vvz) - mfcab;
+                        //    mfaba = D3Q27System::getIncompFeqForDirection(DIR_0M0, c1o1, vvx, vvy, vvz) - mfaba;
+                        //    mfcba = D3Q27System::getIncompFeqForDirection(DIR_PM0, c1o1, vvx, vvy, vvz) - mfcba;
+                        //    mfbaa = D3Q27System::getIncompFeqForDirection(DIR_M00, c1o1, vvx, vvy, vvz) - mfbaa;
+                        //    mfbca = D3Q27System::getIncompFeqForDirection(DIR_MP0, c1o1, vvx, vvy, vvz) - mfbca;
+                        //    mfaaa = D3Q27System::getIncompFeqForDirection(DIR_000, c1o1, vvx, vvy, vvz) - mfaaa;
+                        //    mfcaa = D3Q27System::getIncompFeqForDirection(DIR_P00, c1o1, vvx, vvy, vvz) - mfcaa;
+                        //    mfaca = D3Q27System::getIncompFeqForDirection(DIR_0P0, c1o1, vvx, vvy, vvz) - mfaca;
+                        //    mfcca = D3Q27System::getIncompFeqForDirection(DIR_PP0, c1o1, vvx, vvy, vvz) - mfcca;
+                        //    mfbbb = D3Q27System::getIncompFeqForDirection(DIR_MMM, c1o1, vvx, vvy, vvz) - mfbbb;
+                        //    normX1 *= -c1o1;
+                        //    normX2 *= -c1o1;
+                        //    normX3 *= -c1o1;
+                        //    concentration = c1o1 - concentration;
+                        //}
 
-						////////////////////////////////////////////////////////////////////////////////////
-						//! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
-						//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-						//!
-						////////////////////////////////////////////////////////////////////////////////////
-						// second component
-						real concentration =
-							((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
-								(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
-								((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
-						////////////////////////////////////////////////////////////////////////////////////
-						real oneMinusRho = c1o1- concentration;
+                        real oneMinusRho = c1o1 - concentration;
 
-						real cx =
-							((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
-								(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
-								(mfcbb - mfabb));
-						real cy =
-							((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
-								(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
-								(mfbcb - mfbab));
-						real cz =
-							((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
-								(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
-								(mfbbc - mfbba));
+                        real cx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) + (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) + (mfcbb - mfabb));
+                        real cy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) + (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) + (mfbcb - mfbab));
+                        real cz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) + (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) + (mfbbc - mfbba));
 
-						////////////////////////////////////////////////////////////////////////////////////
-						// calculate the square of velocities for this lattice node
-						real cx2 = cx * cx;
-						real cy2 = cy * cy;
-						real cz2 = cz * cz;
-						////////////////////////////////////////////////////////////////////////////////////
-						//! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
-						//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-						//! see also Eq. (6)-(14) in \ref
-						//! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
-						//!
-						////////////////////////////////////////////////////////////////////////////////////
-						// Z - Dir
-						forwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36o1, c1o36, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9o1, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36o1, c1o36, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9o1, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfbba, mfbbb, mfbbc, cz, cz2, c9o4, c4o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9o1, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36o1, c1o36, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9o1, c1o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36o1, c1o36, oneMinusRho);
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        // calculate the square of velocities for this lattice node
+                        real cx2 = cx * cx;
+                        real cy2 = cy * cy;
+                        real cz2 = cz * cz;
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
+                        //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+                        //! see also Eq. (6)-(14) in \ref
+                        //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
+                        //!
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        // Z - Dir
+                        forwardInverseChimeraWithKincompressible(mfaaa, mfaab, mfaac, cz, cz2, c36o1, c1o36, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfaba, mfabb, mfabc, cz, cz2, c9o1, c1o9, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfaca, mfacb, mfacc, cz, cz2, c36o1, c1o36, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfbaa, mfbab, mfbac, cz, cz2, c9o1, c1o9, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfbba, mfbbb, mfbbc, cz, cz2, c9o4, c4o9, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfbca, mfbcb, mfbcc, cz, cz2, c9o1, c1o9, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfcaa, mfcab, mfcac, cz, cz2, c36o1, c1o36, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfcba, mfcbb, mfcbc, cz, cz2, c9o1, c1o9, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36o1, c1o36, oneMinusRho);
 
-						////////////////////////////////////////////////////////////////////////////////////
-						// Y - Dir
-						forwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6o1, c1o6, oneMinusRho);
-						forwardChimera(mfaab, mfabb, mfacb, cy, cy2);
-						forwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18o1, c1o18, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfbaa, mfbba, mfbca, cy, cy2, c3o2, c2o3, oneMinusRho);
-						forwardChimera(mfbab, mfbbb, mfbcb, cy, cy2);
-						forwardInverseChimeraWithKincompressible(mfbac, mfbbc, mfbcc, cy, cy2, c9o2, c2o9, oneMinusRho);
-						forwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6o1, c1o6, oneMinusRho);
-						forwardChimera(mfcab, mfcbb, mfccb, cy, cy2);
-						forwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18o1, c1o18, oneMinusRho);
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        // Y - Dir
+                        forwardInverseChimeraWithKincompressible(mfaaa, mfaba, mfaca, cy, cy2, c6o1, c1o6, oneMinusRho);
+                        forwardChimera(mfaab, mfabb, mfacb, cy, cy2);
+                        forwardInverseChimeraWithKincompressible(mfaac, mfabc, mfacc, cy, cy2, c18o1, c1o18, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfbaa, mfbba, mfbca, cy, cy2, c3o2, c2o3, oneMinusRho);
+                        forwardChimera(mfbab, mfbbb, mfbcb, cy, cy2);
+                        forwardInverseChimeraWithKincompressible(mfbac, mfbbc, mfbcc, cy, cy2, c9o2, c2o9, oneMinusRho);
+                        forwardInverseChimeraWithKincompressible(mfcaa, mfcba, mfcca, cy, cy2, c6o1, c1o6, oneMinusRho);
+                        forwardChimera(mfcab, mfcbb, mfccb, cy, cy2);
+                        forwardInverseChimeraWithKincompressible(mfcac, mfcbc, mfccc, cy, cy2, c18o1, c1o18, oneMinusRho);
 
-						////////////////////////////////////////////////////////////////////////////////////
-						// X - Dir
-						forwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1o1, c1o1, oneMinusRho);
-						forwardChimera(mfaba, mfbba, mfcba, cx, cx2);
-						forwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3o1, c1o3, oneMinusRho);
-						forwardChimera(mfaab, mfbab, mfcab, cx, cx2);
-						forwardChimera(mfabb, mfbbb, mfcbb, cx, cx2);
-						forwardChimera(mfacb, mfbcb, mfccb, cx, cx2);
-						forwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3o1, c1o3, oneMinusRho);
-						forwardChimera(mfabc, mfbbc, mfcbc, cx, cx2);
-						forwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c3o1, c1o9, oneMinusRho);
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        // X - Dir
+                        forwardInverseChimeraWithKincompressible(mfaaa, mfbaa, mfcaa, cx, cx2, c1o1, c1o1, oneMinusRho);
+                        forwardChimera(mfaba, mfbba, mfcba, cx, cx2);
+                        forwardInverseChimeraWithKincompressible(mfaca, mfbca, mfcca, cx, cx2, c3o1, c1o3, oneMinusRho);
+                        forwardChimera(mfaab, mfbab, mfcab, cx, cx2);
+                        forwardChimera(mfabb, mfbbb, mfcbb, cx, cx2);
+                        forwardChimera(mfacb, mfbcb, mfccb, cx, cx2);
+                        forwardInverseChimeraWithKincompressible(mfaac, mfbac, mfcac, cx, cx2, c3o1, c1o3, oneMinusRho);
+                        forwardChimera(mfabc, mfbbc, mfcbc, cx, cx2);
+                        forwardInverseChimeraWithKincompressible(mfacc, mfbcc, mfccc, cx, cx2, c3o1, c1o9, oneMinusRho);
 
-						////////////////////////////////////////////////////////////////////////////////////
-						//! - experimental Cumulant ... to be published ... hopefully
-						//!
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        //! - experimental Cumulant ... to be published ... hopefully
+                        //!
 
-						// linearized orthogonalization of 3rd order central moments
-						real Mabc = mfabc - mfaba * c1o3;
-						real Mbca = mfbca - mfbaa * c1o3;
-						real Macb = mfacb - mfaab * c1o3;
-						real Mcba = mfcba - mfaba * c1o3;
-						real Mcab = mfcab - mfaab * c1o3;
-						real Mbac = mfbac - mfbaa * c1o3;
-						// linearized orthogonalization of 5th order central moments
-						real Mcbc = mfcbc - mfaba * c1o9;
-						real Mbcc = mfbcc - mfbaa * c1o9;
-						real Mccb = mfccb - mfaab * c1o9;
+                        // linearized orthogonalization of 3rd order central moments
+                        real Mabc = mfabc - mfaba * c1o3;
+                        real Mbca = mfbca - mfbaa * c1o3;
+                        real Macb = mfacb - mfaab * c1o3;
+                        real Mcba = mfcba - mfaba * c1o3;
+                        real Mcab = mfcab - mfaab * c1o3;
+                        real Mbac = mfbac - mfbaa * c1o3;
+                        // linearized orthogonalization of 5th order central moments
+                        real Mcbc = mfcbc - mfaba * c1o9;
+                        real Mbcc = mfbcc - mfbaa * c1o9;
+                        real Mccb = mfccb - mfaab * c1o9;
 
-						//25.03.2023 mixed normals
-						real MomX1 = vvx * concentration - cx;
-						real MomX2 = vvy * concentration - cy;
-						real MomX3 = vvz * concentration - cz;
-						real mixNormal = 0.5;
+                        // 25.03.2023 mixed normals
+                        real MomX1 = vvx * concentration - cx;
+                        real MomX2 = vvy * concentration - cy;
+                        real MomX3 = vvz * concentration - cz;
+                        real mixNormal = 0.5;
+                        // 0.75;
 
-						real MomXDenom = sqrt(MomX1 * MomX1 + MomX2 * MomX2 + MomX3 * MomX3)+1.0e-100;
-						real scaleNorm = (normX1 * MomX1 + normX2 * MomX2 + normX3 * MomX3) / MomXDenom;
-						scaleNorm = scaleNorm * scaleNorm;// *scaleNorm* scaleNorm;
+                        real MomXDenom = sqrt(MomX1 * MomX1 + MomX2 * MomX2 + MomX3 * MomX3) + 1.0e-100;
+                        real scaleNorm = (normX1 * MomX1 + normX2 * MomX2 + normX3 * MomX3) / MomXDenom;
+                        scaleNorm = scaleNorm * scaleNorm; //(c1o2 + c1o2 * scaleNorm) * scaleNorm; // scaleNorm * (c1o1+(c2o1*concentration - c1o1) * (c2o1*concentration - c1o1) * (scaleNorm-c1o1)); // *scaleNorm* scaleNorm;
 
-						normX1 = (normX1 * (c1o1 - mixNormal) + mixNormal * MomX1 / MomXDenom )* scaleNorm;
-						normX2 = (normX2 * (c1o1 - mixNormal) + mixNormal * MomX2 / MomXDenom )* scaleNorm;
-						normX3 = (normX3 * (c1o1 - mixNormal) + mixNormal * MomX3 / MomXDenom )* scaleNorm;
+                        if (phi[DIR_000] > phiLim)
+						{
+                        
+                        normX1 = (normX1 * (c1o1 - mixNormal) + mixNormal * MomX1 / MomXDenom) * scaleNorm;
+                        normX2 = (normX2 * (c1o1 - mixNormal) + mixNormal * MomX2 / MomXDenom) * scaleNorm;
+                        normX3 = (normX3 * (c1o1 - mixNormal) + mixNormal * MomX3 / MomXDenom) * scaleNorm;
 
-						//31.05.2022 addaptive mobility
-						//omegaD = c1o1 + (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration))) / (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration)) + fabs((1.0 - concentration) * (concentration)) * c1o6 * oneOverInterfaceScale+1.0e-200);
-						//omegaD = c2o1 * (concentration * (concentration - c1o1)) / (-c6o1 * (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration))) + (concentration * (concentration - c1o1))+1.0e-200);
-						// collision of 1st order moments
-						cx = cx * (c1o1 - omegaD) + omegaD * vvx * concentration +
-							normX1 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration) * c1o3 * oneOverInterfaceScale;
-						cy = cy * (c1o1 - omegaD) + omegaD * vvy * concentration +
-							normX2 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration) * c1o3 * oneOverInterfaceScale;
-						cz = cz * (c1o1 - omegaD) + omegaD * vvz * concentration +
-							normX3 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration) * c1o3 * oneOverInterfaceScale;
+                        // 31.05.2022 addaptive mobility
+                        // omegaD = c1o1 + (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration))) / (sqrt((cx - vvx * concentration) * (cx - vvx * concentration) + (cy - vvy *
+                        // concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration)) + fabs((1.0 - concentration) * (concentration)) * c1o6 * oneOverInterfaceScale+1.0e-200); omegaD = c2o1 * (concentration * (concentration - c1o1)) / (-c6o1 * (sqrt((cx -
+                        // vvx * concentration) * (cx - vvx * concentration) + (cy - vvy * concentration) * (cy - vvy * concentration) + (cz - vvz * concentration) * (cz - vvz * concentration))) + (concentration * (concentration - c1o1))+1.0e-200);
+                        //  collision of 1st order moments
+                        // 15.08.23 shifting of concentration
+                        // real modConcentration = (concentration - phiL) / (phiH - phiL);
+                        cx = cx * (c1o1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1o1 - 0.5 * omegaD) * (phiH - concentration) * (concentration - phiL) * c1o3 * oneOverInterfaceScale / (phiH - phiL);
+                        cy = cy * (c1o1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1o1 - 0.5 * omegaD) * (phiH - concentration) * (concentration - phiL) * c1o3 * oneOverInterfaceScale / (phiH - phiL);
+                        cz = cz * (c1o1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1o1 - 0.5 * omegaD) * (phiH - concentration) * (concentration - phiL) * c1o3 * oneOverInterfaceScale / (phiH - phiL);
+                        }
+                        else
+                        {
+                        real normX1FD = normX1;
+                        real normX2FD = normX2;
+                        real normX3FD = normX3;
+                        normX1 = (normX1 * (c1o1 - mixNormal) + mixNormal * MomX1 / MomXDenom) * scaleNorm;
+                        normX2 = (normX2 * (c1o1 - mixNormal) + mixNormal * MomX2 / MomXDenom) * scaleNorm;
+                        normX3 = (normX3 * (c1o1 - mixNormal) + mixNormal * MomX3 / MomXDenom) * scaleNorm;
+                        real scaleAdvectionContribution = (c1o1 - (concentration - phiL) / (phiH - phiL) * c2o1) ;
+                        scaleAdvectionContribution = scaleAdvectionContribution * scaleAdvectionContribution * scaleAdvectionContribution * scaleAdvectionContribution * scaleAdvectionContribution; 
+                        cx = scaleAdvectionContribution * (cx * (c1o1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1o1 - 0.5 * omegaD) * (phiH - concentration) * (concentration - phiL) * c1o3 * oneOverInterfaceScale / (phiH - phiL))
+							 +(c1o1-scaleAdvectionContribution)*(cx - normX1FD* (oneOverInterfaceScale * (concentration - phiH) * (concentration - phiL)) / ((phiH - phiL)) * c1o3);
+                        cy = scaleAdvectionContribution * (cy * (c1o1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1o1 - 0.5 * omegaD) * (phiH - concentration) * (concentration - phiL) * c1o3 * oneOverInterfaceScale / (phiH - phiL))
+							+(c1o1 - scaleAdvectionContribution) *
+                             (cy - normX2FD * (oneOverInterfaceScale * (concentration - phiH) * (concentration - phiL)) / ((phiH - phiL)) * c1o3);
+                        cz = scaleAdvectionContribution * (cz * (c1o1 - omegaD) + omegaD * vvx * concentration + normX3 * (c1o1 - 0.5 * omegaD) * (phiH - concentration) * (concentration - phiL) * c1o3 * oneOverInterfaceScale / (phiH - phiL))
+							+(c1o1 - scaleAdvectionContribution) *
+                             (cz - normX3FD * (oneOverInterfaceScale * (concentration - phiH) * (concentration - phiL)) / ((phiH - phiL)) * c1o3);
+                      //  cy = cy - normX2FD * (oneOverInterfaceScale * (concentration - phiH) * (concentration - phiL)) / ((phiH - phiL)) * c1o3;
+                      //  cz = cz - normX3FD * (oneOverInterfaceScale * (concentration - phiH) * (concentration - phiL)) / ((phiH - phiL)) * c1o3;
+                        }
+						//cx = cx * (c1o1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration)*c1o3 * oneOverInterfaceScale;
+                        //cy = cy * (c1o1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration)*c1o3 * oneOverInterfaceScale;
+                        //cz = cz * (c1o1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration)*c1o3 * oneOverInterfaceScale;
+
+						//cx = cx * (c1o1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration) * (c1o1-(1.0 - concentration) * (concentration)) * c1o3 * oneOverInterfaceScale;
+      //                  cy = cy * (c1o1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration) * (c1o1 - (1.0 - concentration) * (concentration)) * c1o3 * oneOverInterfaceScale;
+      //                  cz = cz * (c1o1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1o1 - 0.5 * omegaD) * (1.0 - concentration) * (concentration) * (c1o1 - (1.0 - concentration) * (concentration)) * c1o3 * oneOverInterfaceScale;
 
 						cx2 = cx * cx;
 						cy2 = cy * cy;
 						cz2 = cz * cz;
 
 						//// equilibration of 2nd order moments
-						mfbba = c0o1;
+                        mfbba = c0o1;
 						mfbab = c0o1;
 						mfabb = c0o1;
 
@@ -4620,13 +4773,23 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 
 
 						// equilibration of 3rd order moments
-						Mabc = c0o1;
-						Mbca = c0o1;
-						Macb = c0o1;
-						Mcba = c0o1;
-						Mcab = c0o1;
-						Mbac = c0o1;
-						mfbbb = c0o1;
+						//Mabc = c0o1;
+						//Mbca = c0o1;
+						//Macb = c0o1;
+						//Mcba = c0o1;
+						//Mcab = c0o1;
+						//Mbac = c0o1;
+						//mfbbb = c0o1;
+
+						///Overrelaxaton third moments
+                        real omePhiThird = 1.0;
+                        Mabc -= omePhiThird * Mabc;
+                        Mbca -= omePhiThird * Mbca;
+                        Macb -= omePhiThird * Macb;
+                        Mcba -= omePhiThird * Mcba;
+                        Mcab -= omePhiThird * Mcab;
+                        Mbac -= omePhiThird * Mbac;
+                        mfbbb -= omePhiThird *mfbbb;						
 
 						// from linearized orthogonalization 3rd order central moments to central moments
 						mfabc = Mabc + mfaba * c1o3;
@@ -4701,6 +4864,37 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 						backwardInverseChimeraWithKincompressible(mfcca, mfccb, mfccc, cz, cz2, c36o1, c1o36, oneMinusRho);
 
 
+						//if (inverseConcentration) {
+      //                      mfcbb = D3Q27System::getIncompFeqForDirection(DIR_PMM, c1o1, vvx, vvy, vvz) - mfcbb;
+      //                      mfbcb = D3Q27System::getIncompFeqForDirection(DIR_MPM, c1o1, vvx, vvy, vvz) - mfbcb;
+      //                      mfbbc = D3Q27System::getIncompFeqForDirection(DIR_MMP, c1o1, vvx, vvy, vvz) - mfbbc;
+      //                      mfccb = D3Q27System::getIncompFeqForDirection(DIR_PPM, c1o1, vvx, vvy, vvz) - mfccb;
+      //                      mfacb = D3Q27System::getIncompFeqForDirection(DIR_0PM, c1o1, vvx, vvy, vvz) - mfacb;
+      //                      mfcbc = D3Q27System::getIncompFeqForDirection(DIR_PMP, c1o1, vvx, vvy, vvz) - mfcbc;
+      //                      mfabc = D3Q27System::getIncompFeqForDirection(DIR_0MP, c1o1, vvx, vvy, vvz) - mfabc;
+      //                      mfbcc = D3Q27System::getIncompFeqForDirection(DIR_MPP, c1o1, vvx, vvy, vvz) - mfbcc;
+      //                      mfbac = D3Q27System::getIncompFeqForDirection(DIR_M0P, c1o1, vvx, vvy, vvz) - mfbac;
+      //                      mfccc = D3Q27System::getIncompFeqForDirection(DIR_PPP, c1o1, vvx, vvy, vvz) - mfccc;
+      //                      mfacc = D3Q27System::getIncompFeqForDirection(DIR_0PP, c1o1, vvx, vvy, vvz) - mfacc;
+      //                      mfcac = D3Q27System::getIncompFeqForDirection(DIR_P0P, c1o1, vvx, vvy, vvz) - mfcac;
+      //                      mfaac = D3Q27System::getIncompFeqForDirection(DIR_00P, c1o1, vvx, vvy, vvz) - mfaac;
+      //                      mfabb = D3Q27System::getIncompFeqForDirection(DIR_0MM, c1o1, vvx, vvy, vvz) - mfabb;
+      //                      mfbab = D3Q27System::getIncompFeqForDirection(DIR_M0M, c1o1, vvx, vvy, vvz) - mfbab;
+      //                      mfbba = D3Q27System::getIncompFeqForDirection(DIR_MM0, c1o1, vvx, vvy, vvz) - mfbba;
+      //                      mfaab = D3Q27System::getIncompFeqForDirection(DIR_00M, c1o1, vvx, vvy, vvz) - mfaab;
+      //                      mfcab = D3Q27System::getIncompFeqForDirection(DIR_P0M, c1o1, vvx, vvy, vvz) - mfcab;
+      //                      mfaba = D3Q27System::getIncompFeqForDirection(DIR_0M0, c1o1, vvx, vvy, vvz) - mfaba;
+      //                      mfcba = D3Q27System::getIncompFeqForDirection(DIR_PM0, c1o1, vvx, vvy, vvz) - mfcba;
+      //                      mfbaa = D3Q27System::getIncompFeqForDirection(DIR_M00, c1o1, vvx, vvy, vvz) - mfbaa;
+      //                      mfbca = D3Q27System::getIncompFeqForDirection(DIR_MP0, c1o1, vvx, vvy, vvz) - mfbca;
+      //                      mfaaa = D3Q27System::getIncompFeqForDirection(DIR_000, c1o1, vvx, vvy, vvz) - mfaaa;
+      //                      mfcaa = D3Q27System::getIncompFeqForDirection(DIR_P00, c1o1, vvx, vvy, vvz) - mfcaa;
+      //                      mfaca = D3Q27System::getIncompFeqForDirection(DIR_0P0, c1o1, vvx, vvy, vvz) - mfaca;
+      //                      mfcca = D3Q27System::getIncompFeqForDirection(DIR_PP0, c1o1, vvx, vvy, vvz) - mfcca;
+      //                      mfbbb = D3Q27System::getIncompFeqForDirection(DIR_MMM, c1o1, vvx, vvy, vvz) - mfbbb;
+
+      //                  }
+						
 
 						(*this->localDistributionsH1)(D3Q27System::ET_E,   x1,  x2,  x3) = mfabb;
 						(*this->localDistributionsH1)(D3Q27System::ET_N,   x1,  x2,  x3) = mfbab;
