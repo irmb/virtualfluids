@@ -48,7 +48,7 @@ class CoordinateTransformation3D;
 #include <Block3DVisitor.h>
 #include <Grid3DVisitor.h>
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Block3D;
 class Interactor3D;
 
@@ -65,8 +65,8 @@ public:
 
 public:
     Grid3D();
-    Grid3D(std::shared_ptr<vf::mpi::Communicator> comm);
-    Grid3D(std::shared_ptr<vf::mpi::Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3);
+    Grid3D(std::shared_ptr<vf::parallel::Communicator> comm);
+    Grid3D(std::shared_ptr<vf::parallel::Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3);
     virtual ~Grid3D() = default;
     //////////////////////////////////////////////////////////////////////////
     // blocks control
@@ -95,7 +95,7 @@ public:
     BlockIDMap &getBlockIDs();
     void deleteBlockIDs();
     void renumberBlockIDs();
-    void updateDistributedBlocks(std::shared_ptr<vf::mpi::Communicator> comm);
+    void updateDistributedBlocks(std::shared_ptr<vf::parallel::Communicator> comm);
     SPtr<Block3D> getSuperBlock(SPtr<Block3D> block);
     SPtr<Block3D> getSuperBlock(int ix1, int ix2, int ix3, int level);
     void getSubBlocks(SPtr<Block3D> block, int levelDepth, std::vector<SPtr<Block3D>> &blocks);

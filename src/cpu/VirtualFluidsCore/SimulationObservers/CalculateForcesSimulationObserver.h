@@ -17,7 +17,7 @@
 #include "lbm/constants/D3Q27.h"
 
 class ForceCalculator;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class D3Q27Interactor;
@@ -30,7 +30,7 @@ public:
     //! Constructor
     //! \param v - velocity of fluid in LB units
     //! \param a - area of object in LB units
-    CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm,
+    CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm,
                                real v, real a);
     ~CalculateForcesSimulationObserver() override;
     void update(real step) override;
@@ -46,7 +46,7 @@ protected:
 
 private:
     std::string path;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     std::vector<SPtr<D3Q27Interactor>> interactors;
     real forceX1global;
     real forceX2global;

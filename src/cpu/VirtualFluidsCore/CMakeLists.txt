@@ -20,7 +20,7 @@ if(BUILD_USE_OPENMP)
     list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel PRIVATE_LINK lbm logger)
 
 vf_add_tests()
 
@@ -31,6 +31,7 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Co
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Data)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Interactors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/LBM)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/LBM/Interpolation)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Parallel)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Simulation)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Visitors)

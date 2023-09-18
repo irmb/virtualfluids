@@ -90,6 +90,8 @@ private:
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
     void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
+    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override {};
+
 
 private:
     real posX, posY, posZ;

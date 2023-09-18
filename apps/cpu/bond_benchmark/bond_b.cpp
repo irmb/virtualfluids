@@ -35,7 +35,7 @@ void periodic(const char *cstr1, const char *cstr2)
 
       string comm_type = cf.getValue("comm");
       if(comm_type == "MPI")
-         comm = vf::mpi::MPICommunicator::getInstance();
+         comm = vf::parallel::MPICommunicator::getInstance();
       else if(comm_type == "BOND")
          comm = BondCommunicator::getInstance();
 

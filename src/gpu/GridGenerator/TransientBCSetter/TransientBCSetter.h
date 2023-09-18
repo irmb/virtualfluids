@@ -41,7 +41,7 @@ public:
     };
 
     void getData(real* data, uint numberOfNodes, const std::vector<uint>& readIndices, const std::vector<uint>& writeIndices, uint offsetRead, uint offsetWrite);
-    bool markNANs(std::vector<uint> readIndices);
+    bool markNANs(const std::vector<uint>& readIndices) const;
     bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
     bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
     bool inYBounds(real posY){ return posY<=maxY && posY>=minY; };
@@ -183,7 +183,7 @@ public:
     void getNextData(real* data, uint numberOfNodes, real time) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
 private:  
-    uint getWriteIndex(int level, int id, int linearIdx);
+    uint getWriteIndex(int level, int id, int linearIndex);
     void initializeIndexVectors();
 
 private:

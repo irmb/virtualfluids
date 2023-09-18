@@ -1,7 +1,7 @@
 #include "NonNewtonianFluids/SimulationObservers/CalculateTorqueSimulationObserver.h"
 #include "BCSet.h"
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "UbScheduler.h"
 #include "Grid3D.h"
@@ -14,7 +14,7 @@
 #include "DistributionArray3D.h"
 #include "NonNewtonianFluids/LBM/Rheology.h"
 
-CalculateTorqueSimulationObserver::CalculateTorqueSimulationObserver( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::mpi::Communicator> comm) : SimulationObserver(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
+CalculateTorqueSimulationObserver::CalculateTorqueSimulationObserver( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::parallel::Communicator> comm) : SimulationObserver(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
 {
    if (comm->getProcessID() == comm->getRoot())
    {
@@ -82,9 +82,11 @@ void CalculateTorqueSimulationObserver::collectData( real step )
 //////////////////////////////////////////////////////////////////////////
 void CalculateTorqueSimulationObserver::calculateForces()
 {
-   torqueX1global = 0.0;
-   torqueX2global = 0.0;
-   torqueX3global = 0.0;
+    using namespace  vf::basics::constant;
+
+   torqueX1global = c0o1;
+   torqueX2global = c0o1;
+   torqueX3global = c0o1;
 
    for(SPtr<D3Q27Interactor> interactor : interactors)
    {
@@ -94,9 +96,9 @@ void CalculateTorqueSimulationObserver::calculateForces()
 
       for(BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
-         real torqueX1 = 0.0;
-         real torqueX2 = 0.0;
-         real torqueX3 = 0.0;
+         real torqueX1 = c0o1;
+         real torqueX2 = c0o1;
+         real torqueX3 = c0o1;
 
          SPtr<Block3D> block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
@@ -167,9 +169,9 @@ void CalculateTorqueSimulationObserver::calculateForces()
    rvalues = comm->gather(values);
    if (comm->getProcessID() == comm->getRoot())
    {
-      torqueX1global = 0.0;
-      torqueX2global = 0.0;
-      torqueX3global = 0.0;
+      torqueX1global = c0o1;
+      torqueX2global = c0o1;
+      torqueX3global = c0o1;
       
       for (int i = 0; i < (int)rvalues.size(); i+=3)
       {
@@ -182,7 +184,9 @@ void CalculateTorqueSimulationObserver::calculateForces()
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 CalculateTorqueSimulationObserver::getForces(int x1, int x2, int x3,  SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc)
 {
-   UbTupleDouble3 force(0.0,0.0,0.0);
+    using namespace  vf::basics::constant;
+
+   UbTupleDouble3 force(c0o1,c0o1,c0o1);
 
    if(bc)
    {
@@ -217,7 +221,7 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForces(int x1, int x2, int 
 UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromMoments(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz)
 {
    using namespace vf::basics::constant;
-   UbTupleDouble3 force(0.0, 0.0, 0.0);
+   UbTupleDouble3 force(c0o1, c0o1, c0o1);
 
 
    if (bc) {
@@ -252,7 +256,7 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromMoments(int x1, i
 UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromStressTensor(int x1, int x2, int x3, SPtr<ILBMKernel> kernel, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc, real nx, real ny, real nz)
 {
    using namespace vf::basics::constant;
-   UbTupleDouble3 force(0.0, 0.0, 0.0);
+   UbTupleDouble3 force(c0o1, c0o1, c0o1);
 
    if (bc) {
       real f[D3Q27System::ENDF + 1];

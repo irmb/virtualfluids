@@ -43,14 +43,14 @@
 
 class Grid3D;
 class Block3D;
-namespace vf::mpi {class Communicator;}
-class InterpolationProcessor;
+namespace vf::parallel {class Communicator;}
+class Interpolator;
 
 //! \brief  A class sets connectors between blocks.
 class SetInterpolationConnectorsBlockVisitor : public Block3DVisitor
 {
 public:
-    SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, real nue, SPtr<InterpolationProcessor> iProcessor);
+    SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm, real nue, SPtr<Interpolator> iProcessor);
     ~SetInterpolationConnectorsBlockVisitor() override;
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
     //////////////////////////////////////////////////////////////////////////
@@ -63,10 +63,10 @@ protected:
                             CreateTransmittersHelper::TransmitterPtr &receiverCF,
                             CreateTransmittersHelper::TransmitterPtr &senderFC,
                             CreateTransmittersHelper::TransmitterPtr &receiverFC);
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     int gridRank;
     real nue;
-    SPtr<InterpolationProcessor> iProcessor;
+    SPtr<Interpolator> iProcessor;
 };
 
 #endif // SetInterpolationConnectorsBlockVisitor_H

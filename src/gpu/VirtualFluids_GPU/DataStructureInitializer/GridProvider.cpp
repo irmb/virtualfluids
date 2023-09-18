@@ -9,7 +9,7 @@
 #include <GPU/CudaMemoryManager.h>
 
 
-std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator)
+std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
 {
     return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaMemoryManager, communicator));
 }
@@ -35,7 +35,7 @@ void GridProvider::setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemp
     para->getParD(level)->numberOfTaggedFluidNodes[tag] = numberOfNodes;
 }
 
-void GridProvider::setInitalNodeValues(uint numberOfNodes, int level) const
+void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
 {
     for (uint pos = 1; pos <= numberOfNodes; pos++)
     {

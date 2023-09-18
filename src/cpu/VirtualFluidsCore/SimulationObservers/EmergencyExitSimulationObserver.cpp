@@ -1,5 +1,5 @@
 #include "EmergencyExitSimulationObserver.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3D.h"
 #include "MPIIORestartSimulationObserver.h"
 #include "UbLogger.h"
@@ -8,7 +8,7 @@
 #include <basics/utilities/UbFileOutputASCII.h>
 
 EmergencyExitSimulationObserver::EmergencyExitSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                   SPtr<MPIIORestartSimulationObserver> rp, std::shared_ptr<vf::mpi::Communicator> comm)
+                                                   SPtr<MPIIORestartSimulationObserver> rp, std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), path(path), rp(rp), comm(comm)
 {
     this->path = path + "/exit";

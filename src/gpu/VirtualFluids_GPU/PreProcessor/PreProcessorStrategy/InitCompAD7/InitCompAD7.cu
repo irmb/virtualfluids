@@ -2,7 +2,7 @@
 
 #include "InitCompAD7_Device.cuh"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 
 std::shared_ptr<InitCompAD7> InitCompAD7::getNewInstance(std::shared_ptr<Parameter> para)
 {

@@ -5,20 +5,23 @@
 add_subdirectory(src/gpu/GridGenerator)
 add_subdirectory(src/gpu/VirtualFluids_GPU)
 
-if(BUILD_VF_ALL_SAMPLES)
-    list(APPEND USER_APPS 
-    "apps/gpu/LBM/ActuatorLine"
-    "apps/gpu/LBM/SphereScaling" 
-    "apps/gpu/LBM/TGV_3D")
-endif()
-
 #############################################################
 ###                  Apps                                 ###
 #############################################################
 
-add_subdirectory(apps/gpu/LBM/DrivenCavity)
-add_subdirectory(apps/gpu/LBM/SphereGPU)
-add_subdirectory(apps/gpu/LBM/BoundaryLayer)
+if(BUILD_VF_ALL_SAMPLES)
+    list(APPEND USER_APPS
+    "apps/gpu/DrivenCavityUniform"
+    "apps/gpu/DrivenCavityMultiGPU"
+    "apps/gpu/ActuatorLine"
+    "apps/gpu/SphereScaling" 
+    "apps/gpu/TGV_3D"
+    "apps/gpu/gridGeneratorTest")
+endif()
+
+add_subdirectory(apps/gpu/DrivenCavity)
+add_subdirectory(apps/gpu/SphereGPU)
+add_subdirectory(apps/gpu/BoundaryLayer)
 
 #############################################################
 ###                   Numeric Tests                       ###

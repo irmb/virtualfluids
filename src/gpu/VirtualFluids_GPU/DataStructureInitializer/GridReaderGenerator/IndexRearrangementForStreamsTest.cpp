@@ -6,14 +6,14 @@
 
 #include "Utilities/testUtilitiesGPU.h"
 
-#include "Communication/Communicator.h"
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
 #include "basics/config/ConfigurationFile.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 #include "gpu/GridGenerator/utilities/communication.h"
-#include "gpu/VirtualFluids_GPU/Communication/MpiCommunicator.cpp"
+
+#include <parallel/NullCommunicator.h>
 
 namespace indexRearrangementTests
 {
@@ -148,8 +148,10 @@ private:
         para->initProcessNeighborsAfterFtoCX(sendIndices.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::MpiCommunicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, communicator));
     };
+
+    vf::parallel::NullCommunicator communicator;
 };
 
 TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesForCommAfterFtoCX)
@@ -171,19 +173,19 @@ TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesFo
 // Test exchangeIndicesForCommAfterFtoC
 //////////////////////////////////////////////////////////////////////////
 
-class CommunicationRoutineDouble : public vf::gpu::CommunicationRoutine
+class CommunicatorDouble : public vf::parallel::NullCommunicator
 {
 public:
-    void receive_send(uint *buffer_receive, int, int, uint *, int, int) const override
+    void receiveSend(uint *buffer_receive, int, int, uint *, int, int) const override
     {
         for (int i = 0; i < (int)receivedIndices.size(); ++i) {
             *(buffer_receive + i) = receivedIndices[i];
         }
     }
 
-    int getPID() const override
+    void receiveSend(real *buffer_send, int size_buffer_send, real *buffer_receive, int size_buffer_recv,
+                     int neighbor_rank) const override
     {
-        return 0;
     }
 
     void setReceivedIndices(const std::vector<uint>& receivedIndices)
@@ -199,9 +201,9 @@ class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX : public
 {
 
 public:
-    void createTestSubject(vf::gpu::CommunicationRoutine &CommunicationRoutine)
+    void createTestSubject(vf::parallel::Communicator &Communicator)
     {
-        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, CommunicationRoutine);
+        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, Communicator);
     }
 
 protected:
@@ -240,7 +242,7 @@ private:
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyRecvInX)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
     createTestSubject(communicator);
 
@@ -250,7 +252,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyR
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, zeroRecvIndexX)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     communicator.setReceivedIndices({ 0 });
     createTestSubject(communicator);
 
@@ -260,7 +262,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, zeroRe
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, oneRecvIndexX)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10 };
     std::vector<uint> receivedIndicesByComm(4, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -274,7 +276,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, oneRec
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeRecvIndicesX)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
     std::vector<uint> receivedIndicesByComm(5, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -289,7 +291,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeR
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRecvIndicesX)
 {
     // this test shows the limits of the current approach. The last index is always deleted
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30, 40, 50 };
     std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
     communicator.setReceivedIndices(receivedIndicesByComm);
@@ -302,7 +304,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRec
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, recvIndicesXContainZero)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 0, 20, 30, 40 };
     std::vector<uint> receivedIndicesByComm(6, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -318,9 +320,9 @@ class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY : public
 {
 
 public:
-    void createTestSubject(vf::gpu::CommunicationRoutine &CommunicationRoutine)
+    void createTestSubject(vf::parallel::Communicator &Communicator)
     {
-        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, CommunicationRoutine);
+        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, Communicator);
     }
 
 protected:
@@ -359,7 +361,7 @@ private:
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, emptyRecvInY)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
     createTestSubject(communicator);
 
@@ -369,7 +371,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, emptyR
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, zeroRecvIndexY)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     communicator.setReceivedIndices({ 0 });
     createTestSubject(communicator);
 
@@ -379,7 +381,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, zeroRe
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, oneRecvIndexY)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10 };
     std::vector<uint> receivedIndicesByComm(4, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -393,7 +395,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, oneRec
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, threeRecvIndicesY)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
     std::vector<uint> receivedIndicesByComm(5, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -408,7 +410,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, threeR
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, sixRecvIndicesY)
 {
     // this test shows the limits of the current approach. The last index is always deleted
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30, 40, 50 };
     std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
     communicator.setReceivedIndices(receivedIndicesByComm);
@@ -421,7 +423,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, sixRec
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, recvIndicesYContainZero)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 0, 20, 30, 40 };
     std::vector<uint> receivedIndicesByComm(6, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -437,9 +439,9 @@ class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ : public
 {
 
 public:
-    void createTestSubject(vf::gpu::CommunicationRoutine &CommunicationRoutine)
+    void createTestSubject(vf::parallel::Communicator &Communicator)
     {
-        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, CommunicationRoutine);
+        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, Communicator);
     }
 
 protected:
@@ -478,7 +480,7 @@ private:
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptyRecvInZ)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
     createTestSubject(communicator);
 
@@ -488,7 +490,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptyR
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, zeroRecvIndexZ)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     communicator.setReceivedIndices({ 0 });
     createTestSubject(communicator);
 
@@ -498,7 +500,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, zeroRe
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, oneRecvIndexZ)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10 };
     std::vector<uint> receivedIndicesBZComm(4, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
@@ -512,7 +514,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, oneRec
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, threeRecvIndicesZ)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
     std::vector<uint> receivedIndicesBZComm(5, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
@@ -527,7 +529,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, threeR
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRecvIndicesYZ)
 {
     // this test shows the limits of the current approach. The last index is always deleted
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30, 40, 50 };
     std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
     communicator.setReceivedIndices(receivedIndicesByComm);
@@ -540,7 +542,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRec
 
 TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, recvIndicesZContainZero)
 {
-    CommunicationRoutineDouble communicator;
+    CommunicatorDouble communicator;
     std::vector<uint> expected = { 0, 20, 30, 40 };
     std::vector<uint> receivedIndicesByComm(6, 0);
     std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
@@ -608,8 +610,10 @@ private:
         para = testingVF::createParameterForLevel(ri.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
-            IndexRearrangementForStreams(para, builder, vf::gpu::MpiCommunicator::getInstance()));
+            IndexRearrangementForStreams(para, builder, communicator));
     };
+
+    vf::parallel::NullCommunicator communicator;
 };
 
 TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreUnchanged)

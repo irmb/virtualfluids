@@ -5,7 +5,7 @@
 #include <memory>
 #include <set>
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 
 #include <geometry3d/GbPoint3D.h>
 #include <Interactors/Interactor3D.h>
@@ -78,7 +78,7 @@ private:
 
     std::shared_ptr<LBMKernel> lbmKernel;
     std::shared_ptr<AbstractLBMSystem> lbmSystem;
-    std::shared_ptr<vf::mpi::Communicator> communicator;
+    std::shared_ptr<vf::parallel::Communicator> communicator;
 
     std::shared_ptr<Grid3D> grid;
     std::vector<std::shared_ptr<Interactor3D>> interactors;

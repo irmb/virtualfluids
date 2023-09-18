@@ -9,7 +9,7 @@
 
 #include <fstream>
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3D.h"
 #include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
@@ -18,10 +18,12 @@
 PressureDifferenceSimulationObserver::PressureDifferenceSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                              const std::string &path, SPtr<IntegrateValuesHelper> h1,
                                                              SPtr<IntegrateValuesHelper> h2, real rhoReal,
-                                                             real uReal, real uLB, std::shared_ptr<vf::mpi::Communicator> comm)
+                                                             real uReal, real uLB, std::shared_ptr<vf::parallel::Communicator> comm)
 
     : SimulationObserver(grid, s), path(path), h1(h1), h2(h2), comm(comm)
 {
+    using namespace vf::basics::constant;
+
     if (comm->getProcessID() == comm->getRoot()) {
         std::ofstream ostr;
         std::string fname = path;
@@ -64,7 +66,7 @@ PressureDifferenceSimulationObserver::PressureDifferenceSimulationObserver(SPtr<
         ostr << std::endl;
         ostr.close();
 
-        factor1 = (1.0 / 3.0) * rhoReal * (uReal / uLB) * (uReal / uLB);
+        factor1 = (c1o1 / c3o1) * rhoReal * (uReal / uLB) * (uReal / uLB);
         factor2 = rhoReal * (uReal / uLB) * (uReal / uLB);
     }
 }

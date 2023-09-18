@@ -158,7 +158,8 @@ inline void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData(vector
 
    sdata[index++] = (*this->zeroHdistributions)(x1, x2, x3);
 
-   sdata[index++] = (*this->pressure)(x1, x2, x3);
+   if (this->pressure)
+      sdata[index++] = (*this->pressure)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 inline void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData(vector_type& rdata, int& index, int x1, int x2, int x3)
@@ -224,7 +225,8 @@ inline void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData(
 
    (*this->zeroHdistributions)(x1, x2, x3) = rdata[index++];
 
-   (*this->pressure)(x1, x2, x3) = rdata[index++];
+   if (this->pressure)
+      (*this->pressure)(x1, x2, x3) = rdata[index++];
 }
 
 

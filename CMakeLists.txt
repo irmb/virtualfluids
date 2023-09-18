@@ -58,7 +58,6 @@ option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
-option(BUILD_VF_COVERAGE "Add the -coverage compiler flag." OFF)
 
 option(BUILD_CUDA_LTO "Enables the cuda link optimization." OFF)
 
@@ -92,9 +91,12 @@ include(${VF_CMAKE_DIR}/Cache.cmake)
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
-IF( BUILD_VF_DOUBLE_ACCURACY )
+if(BUILD_VF_DOUBLE_ACCURACY)
     list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
-ENDIF()
+    message(STATUS "Configure VirtualFluids with double precision")
+else()
+    message(STATUS "Configure VirtualFluids with single precision")
+endif()
 
 # set gpu features
 if(BUILD_VF_GPU)
@@ -136,6 +138,11 @@ if(BUILD_VF_GPU)
     set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}" CACHE STRING "Cuda Architecture (compute capabilitiy)")
 
     set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
+
+    # we disable the usage of cuda response files here
+    # usually CUDA_INCLUDES.rsp is genereated by cmake containing all include paths and is passed in compile_commands.json via the --options-file flag
+    # this .rsp file can not be parsed by clangd and therefore we disable it
+    set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_INCLUDES 0)
 endif()
 
 
@@ -203,7 +210,7 @@ ENDIF()
 
 add_subdirectory(src/logger)
 add_subdirectory(src/basics)
-add_subdirectory(src/mpi)
+add_subdirectory(src/parallel)
 add_subdirectory(src/lbm)
 
 
@@ -214,7 +221,7 @@ if (BUILD_VF_CPU)
     include(cpu.cmake)
 endif()
 if(BUILD_VF_GPU)
-    add_subdirectory(src/cuda)
+    add_subdirectory(src/gpu/cuda_helper)
     include(gpu.cmake)
 endif()
 

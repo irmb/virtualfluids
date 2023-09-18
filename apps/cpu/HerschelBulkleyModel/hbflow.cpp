@@ -41,7 +41,7 @@ void bflow(string configname)
 //      double          Bn = config.getValue<double>("Bn");
       real          scaleFactor = config.getValue<real>("scaleFactor");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -290,7 +290,7 @@ void bflow(string configname)
 
 
       //set connectors
-      //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
       //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
       //grid->accept(setConnsVisitor);
 

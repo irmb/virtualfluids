@@ -1,14 +1,16 @@
 #include "GridGenerator.h"
 #include <gmock/gmock.h>
 
-#include "Communication/MpiCommunicator.h"
 #include "DataTypes.h"
 #include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
+#include "NullCommunicator.h"
 #include "Parameter/Parameter.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 #include "gpu/GridGenerator/utilities/communication.h"
+
+#include <parallel/NullCommunicator.h>
 
 namespace GridGeneratorTest
 {
@@ -69,7 +71,7 @@ class IndexRearrangementForStreamsDouble : public IndexRearrangementForStreams
 {
 public:
     IndexRearrangementForStreamsDouble(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder,
-                                       vf::gpu::Communicator &communicator)
+                                       vf::parallel::Communicator &communicator)
         : IndexRearrangementForStreams(para, builder, communicator){};
 
     void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int indexOfProcessNeighbor,
@@ -113,7 +115,7 @@ private:
         para->setNumprocs(2);
 
         builder = std::make_shared<LevelGridBuilderStub>(nullptr);
-        vf::gpu::Communicator &communicator = vf::gpu::MpiCommunicator::getInstance();
+        vf::parallel::NullCommunicator communicator;
 
         gridGenerator = std::make_shared<GridGenerator>(builder, para, std::make_shared<CudaMemoryManagerDouble>(para),
                                                         communicator);

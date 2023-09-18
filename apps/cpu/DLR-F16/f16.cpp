@@ -13,7 +13,7 @@ double rangeRandom1()
 
 void setBC(SPtr<Grid3D> grid, string pathGeo, string fngFileWhole, string zigZagTape, vector<double>  boundingBox, double uLB, double rhoLB, double blockLength, SPtr<BCProcessor> bcProcessor)
 {
-   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+   SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
    
    std::vector<std::vector<SPtr<Block3D>> > blockVector;
@@ -205,7 +205,7 @@ void run(string configname)
       int             chunk = config.getValue<int>("chunk");
 
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -978,8 +978,8 @@ void run(string configname)
 
 
          ////set connectors
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -1101,7 +1101,7 @@ void run(string configname)
          
                  
          ////////////////////////////////////////////////////////////////////////////
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 

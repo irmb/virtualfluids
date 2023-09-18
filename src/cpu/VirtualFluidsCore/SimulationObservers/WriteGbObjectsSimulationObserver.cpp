@@ -1,5 +1,5 @@
 #include "WriteGbObjectsSimulationObserver.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "GbObject3D.h"
 #include "UbScheduler.h"
 #include "WbWriterVtkXmlASCII.h"
@@ -7,7 +7,7 @@
 #include <vector>
 
 WriteGbObjectsSimulationObserver::WriteGbObjectsSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                     WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm)
+                                                     WbWriter *const writer, std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), path(path), writer(writer), comm(comm)
 {
 }

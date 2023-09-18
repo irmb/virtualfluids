@@ -33,8 +33,8 @@ namespace QDebugWriter
 				}
 			}
 			if (qKey > 0) {
-				real transportKey = *((real*)&qKey);
-				qNode.push_back(transportKey);
+				float transportKey = *((float*)&qKey);
+				qNode.push_back((real)transportKey);
 				qNode.push_back((real)k[j]);
 				qs.push_back(qNode);
 			}

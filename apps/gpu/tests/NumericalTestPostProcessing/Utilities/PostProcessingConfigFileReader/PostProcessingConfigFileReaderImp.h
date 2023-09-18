@@ -8,10 +8,10 @@ class PostProcessingConfigFileReaderImp : public PostProcessingConfigFileReader
 public:
 	static std::shared_ptr<PostProcessingConfigFileReader> getNewInstance();
 
-	std::shared_ptr<PostProcessingConfigData> readConfigFile(std::string filePath);
+	std::shared_ptr<PostProcessingConfigData> readConfigFile(std::string filePath) override;
 
 private:
-	PostProcessingConfigFileReaderImp();
+	PostProcessingConfigFileReaderImp() = default;
 
 };
 #endif

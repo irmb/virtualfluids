@@ -37,7 +37,15 @@
 #include <cstdlib>
 #include <optional>
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#pragma clang diagnostic ignored "-Wunused-but-set-parameter"
+#endif
 #include <curand_kernel.h>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #include "StringUtilities/StringUtil.h"
 
@@ -338,7 +346,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Kernel
     if (configData.contains("MainKernelName"))
-        this->setMainKernel(configData.getValue<std::string>("MainKernelName"));
+        this->configureMainKernel(configData.getValue<std::string>("MainKernelName"));
 
     if (configData.contains("MultiKernelOn"))
         this->setMultiKernelOn(configData.getValue<bool>("MultiKernelOn"));
@@ -591,7 +599,7 @@ void Parameter::initLBMSimulationParameter()
 
 void Parameter::checkParameterValidityCumulantK17() const
 {
-    if (this->mainKernel != "CumulantK17")
+    if (this->mainKernel != vf::CollisionKernel::Compressible::K17CompressibleNavierStokes)
         return;
 
     const real viscosity = this->parH[maxlevel]->viscosity;
@@ -1627,10 +1635,10 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
     this->outflowNormalZ = outflowNormalZ;
 }
-void Parameter::setMainKernel(std::string kernel)
+void Parameter::configureMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if ( kernel.find("CumulantK17") != std::string::npos )
+    if (kernel == vf::CollisionKernel::Compressible::K17CompressibleNavierStokes)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -1713,7 +1721,7 @@ unsigned int Parameter::getOutputCount()
 {
     return this->outputCount;
 }
-unsigned int Parameter::getlimitOfNodesForVTK()
+unsigned int Parameter::getLimitOfNodesForVTK()
 {
     return this->limitOfNodesForVTK;
 }
@@ -1875,7 +1883,7 @@ std::string Parameter::getOutputPrefix()
 {
     return this->oPrefix;
 }
-std::string Parameter::getFName()
+std::string Parameter::getFName() const
 {
     return this->fname;
 }
@@ -1947,11 +1955,11 @@ int Parameter::getMaxDev()
 {
     return this->maxdev;
 }
-int Parameter::getMyProcessID()
+int Parameter::getMyProcessID() const
 {
     return this->myProcessId;
 }
-int Parameter::getNumprocs()
+int Parameter::getNumprocs() const
 {
     return this->numprocs;
 }

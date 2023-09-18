@@ -40,9 +40,9 @@
 #include <omp.h>
 #endif
 
-#include <mpi/Communicator.h>
-#include <mpi/MPICommunicator.h>
-#include <mpi/NullCommunicator.h>
+#include <parallel/Communicator.h>
+#include <parallel/MPICommunicator.h>
+#include <parallel/NullCommunicator.h>
 
 #include <basics/PointerDefinitions.h>
 
@@ -208,14 +208,11 @@
 #include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
-//#include <LBM/D3Q27CompactInterpolationProcessor.h>
-#include <LBM/CompressibleOffsetInterpolationProcessor.h>
-#include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
-#include <LBM/CompressibleOffsetSquarePressureInterpolationProcessor.h>
-#include <LBM/IncompressibleOffsetInterpolationProcessor.h>
-#include <LBM/InterpolationHelper.h>
-#include <LBM/InterpolationProcessor.h>
-//#include <LBM/D3Q27OffsetInterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetInterpolator.h>
+#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
+#include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolator.h>
+#include <LBM/Interpolation/IncompressibleOffsetInterpolator.h>
+#include <LBM/Interpolation/Interpolator.h>
 #include <IncompressibleCumulantWithSpongeLayerLBMKernel.h>
 #include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
@@ -223,7 +220,6 @@
 #include <LBM/ICell.h>
 #include <LBM/IncompressibleCumulantLBMKernel.h>
 #include <LBM/InitDensityLBMKernel.h>
-#include <LBM/InterpolationProcessor.h>
 #include <LBM/LBMKernel.h>
 #include <LBM/LBMKernelETD3Q27BGK.h>
 #include <LBM/LBMSystem.h>
@@ -232,11 +228,6 @@
 
 #include <LBM/CumulantLBMKernel.h>
 #include <LBM/CumulantK17LBMKernel.h>
-//#include <LBM/RheologyModelLBMKernel.h>
-//#include <LBM/RheologyModelLBMKernel2.h>
-
-
-
 
 
 #include <geometry3d/CoordinateTransformation3D.h>

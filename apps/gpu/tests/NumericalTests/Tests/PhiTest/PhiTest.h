@@ -40,7 +40,6 @@ private:
 	std::vector<double> phiDiff;
 	double orderOfAccuracy;
 	double minOrderOfAccuracy;
-	double viscosity;
 	std::string dataToCalculate;
 
 	std::vector<std::shared_ptr<PhiTestPostProcessingStrategy> > postProStrategies;

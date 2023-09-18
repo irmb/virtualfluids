@@ -4,6 +4,7 @@
 class TimeTracking
 {
 public:
+	virtual ~TimeTracking() = default;
 	virtual void setSimulationStartTime() = 0;
 	virtual void setSimulationEndTime() = 0;
 

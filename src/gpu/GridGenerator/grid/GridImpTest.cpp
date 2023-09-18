@@ -172,9 +172,7 @@ protected:
 
     void SetUp() override
     {
-        auto gridFactory = GridFactory::make();
-        gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-        gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+        gridBuilder = std::make_shared<MultipleGridBuilder>();
     }
 };
 

@@ -11,7 +11,7 @@ void run(string configname)
 
    try
    {
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
 
@@ -267,14 +267,14 @@ void run(string configname)
 
       UBLOG(logINFO, "SetConnectors - start, id=" << myid);
       //set connectors
-      //SPtr<InterpolationProcessor> iProcessor(new  IncompressibleOffsetInterpolationProcessor());
-      //SPtr<CompressibleOffsetMomentsInterpolationProcessor> iProcessor(new  CompressibleOffsetMomentsInterpolationProcessor());
+      //SPtr<Interpolator> iProcessor(new  IncompressibleOffsetInterpolator());
+      //SPtr<CompressibleOffsetMomentsInterpolator> iProcessor(new  CompressibleOffsetMomentsInterpolator());
       //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
       SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 

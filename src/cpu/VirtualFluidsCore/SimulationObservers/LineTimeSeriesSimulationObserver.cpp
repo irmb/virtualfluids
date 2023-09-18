@@ -3,7 +3,7 @@
 #include "WbWriterVtkXmlASCII.h"
 
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "CompressibleCumulantLBMKernel.h"
 #include "CoordinateTransformation3D.h"
 #include "DataSet3D.h"
@@ -13,7 +13,7 @@
 #include "UbScheduler.h"
 
 LineTimeSeriesSimulationObserver::LineTimeSeriesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                     SPtr<GbLine3D> line, int level, std::shared_ptr<vf::mpi::Communicator> comm)
+                                                     SPtr<GbLine3D> line, int level, std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), path(path), length(0), ix1(0), ix2(0), ix3(0), level(level), line(line)
 {
     root  = comm->isRoot();

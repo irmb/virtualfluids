@@ -47,11 +47,8 @@ class BoundingBox;
 
 class MultipleGridBuilder : public LevelGridBuilder
 {
-private:
-    GRIDGENERATOR_EXPORT MultipleGridBuilder(SPtr<GridFactory> gridFactory);
-
 public:
-    GRIDGENERATOR_EXPORT static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory> gridFactory);
+    MultipleGridBuilder();
 
     GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape);

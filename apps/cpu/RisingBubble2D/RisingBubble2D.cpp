@@ -52,20 +52,21 @@ void run(string configname)
         bool newStart = config.getValue<bool>("newStart");
         // double rStep = config.getValue<double>("rStep");
 
-        std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+        std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
         if (myid == 0) UBLOG(logINFO, "2D Rising Bubble: Start!");
 
         if (logToFile) {
-#if defined(__unix__)
-            if (myid == 0) {
-                const char *str = pathname.c_str();
-                mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-            }
-#endif
+// #if defined(__unix__)
+//             if (myid == 0) {
+//                 const char *str = pathname.c_str();
+//                 mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+//             }
+// #endif
 
             if (myid == 0) {
+                UbSystem::makeDirectory(pathname);
                 stringstream logFilename;
                 logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
                 UbLog::output_policy::setStream(logFilename.str());
@@ -147,8 +148,8 @@ void run(string configname)
         // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
-        //kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
-        kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
+        kernel = make_shared<MultiphaseScaleDistributionLBMKernel>();
+        //kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
         mu::Parser fgr;
         fgr.SetExpr("-rho*g_y");
         fgr.DefineConst("g_y", g_y);
@@ -187,7 +188,7 @@ void run(string configname)
         SPtr<Grid3D> grid(new Grid3D(comm));
         grid->setDeltaX(dx);
         grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
-        grid->setPeriodicX1(false);
+        grid->setPeriodicX1(true);
         grid->setPeriodicX2(false);
         grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
@@ -246,8 +247,8 @@ void run(string configname)
             SPtr<WriteBlocksSimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
             InteractorsHelper intHelper(grid, metisVisitor, true);
-            intHelper.addInteractor(wallXminInt);
-            intHelper.addInteractor(wallXmaxInt);
+            //intHelper.addInteractor(wallXminInt);
+            //intHelper.addInteractor(wallXmaxInt);
             intHelper.addInteractor(wallYminInt);
             intHelper.addInteractor(wallYmaxInt);
             intHelper.selectBlocks();
@@ -360,13 +361,24 @@ void run(string configname)
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         // visSch->addSchedule(307200,307200,307200); //t=2
         // visSch->addSchedule(1228185,1228185,1228185);
-        double t_ast, t;
-        t_ast = 2;
-        t = (int)(t_ast / std::sqrt(g_y / D));
+
+        //Tlb = (np.sqrt(2 * dLB / gLB)) / (np.sqrt(2 * dLT / gLT))
+        double gLT = 0.98;
+        double dLT = 0.5;
+        double Tlb = (sqrt(2 * D / g_y)) / (sqrt(2. * dLT / gLT));
+        UBLOG(logINFO, "Tlb = " << Tlb);
+        double t = Tlb * 3.;
         visSch->addSchedule(t, t, t); // t=2
-        t_ast = 3;
-        t = (int)(t_ast / std::sqrt(g_y / D));
-        visSch->addSchedule(t, t, t); // t=3
+        UBLOG(logINFO, "T3 = " << t);
+
+
+        // double t_ast, t;
+        // t_ast = 2;
+        // t = (int)(t_ast / std::sqrt(g_y / D));
+        // visSch->addSchedule(t, t, t); // t=2
+        // t_ast = 3;
+        // t = (int)(t_ast / std::sqrt(g_y / D));
+        // visSch->addSchedule(t, t, t); // t=3
         // t_ast = 4;
         // t = (int)(t_ast/std::sqrt(g_y/D));
         // visSch->addSchedule(t,t,t); //t=4
@@ -391,7 +403,10 @@ void run(string configname)
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
-        // omp_set_num_threads(numOfThreads);
+        omp_set_num_threads(numOfThreads);
+
+        endTime = t + 1000;
+        UBLOG(logINFO, "endTime = " << endTime);
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
         SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));

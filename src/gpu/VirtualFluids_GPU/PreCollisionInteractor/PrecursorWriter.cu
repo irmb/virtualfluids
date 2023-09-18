@@ -36,7 +36,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 
 #include "StringUtilities/StringUtil.h"
@@ -208,7 +208,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ);
         precursorStructs[level]->extent = makeUbTuple(0, ny-1, 0, nz-1);
         precursorStructs[level]->numberOfPointsInData = ny*nz;
-        precursorStructs[level]->numberOfTimestepsPerFile = min(para->getlimitOfNodesForVTK()/(ny*nz), maxtimestepsPerFile);
+        precursorStructs[level]->numberOfTimestepsPerFile = min(para->getLimitOfNodesForVTK()/(ny*nz), maxtimestepsPerFile);
         precursorStructs[level]->numberOfFilesWritten = 0;
         precursorStructs[level]->numberOfTimestepsBuffered = 0;
         

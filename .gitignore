@@ -3,8 +3,10 @@ build/
 bin/
 cmake-build-debug/
 run/
-buildGCC
-buildWSL
+buildGCC/
+buildWSL/
+buildCygwin/
+pybuild/
 
 # Python
 _skbuild/
@@ -38,6 +40,9 @@ scripts/
 
 # stl files
 stl/
+
+# test data for regression tests
+test_data/
 
 # MacOS
 .DS_Store

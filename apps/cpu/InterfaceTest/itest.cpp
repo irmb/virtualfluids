@@ -11,7 +11,7 @@ void run()
 {
    try
    {
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       int    numOfThreads = 4;
@@ -94,9 +94,9 @@ void run()
       ppblocks.reset();
 
       //set connectors
-      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-      InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
+      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
+      InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolator());
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolator>(iProcessor)->setBulkOmegaToOmega(true);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");

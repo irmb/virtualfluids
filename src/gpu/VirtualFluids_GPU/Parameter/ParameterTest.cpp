@@ -9,12 +9,14 @@
 #include "PointerDefinitions.h"
 #include "basics/config/ConfigurationFile.h"
 
+#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "Factories/BoundaryConditionFactory.h"
 #include "Factories/GridScalingFactory.h"
-#include "Communication/Communicator.h"
-#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
+
+#include <parallel/Communicator.h>
 
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
@@ -212,7 +214,7 @@ class MockGridGenerator : public GridGenerator
 
 public:
     MockGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
-                      std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator &communicator)
+                      std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator &communicator)
         : GridGenerator(builder, para, cudaMemoryManager, communicator)
     {
     }
@@ -270,7 +272,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 {
 
     para.setVelocityLB(0.11);
-    para.setMainKernel("CumulantK17");
+    para.configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -281,7 +283,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsOk_expectNoWarning)
 {
     para.setVelocityLB(0.09);
-    para.setMainKernel("CumulantK17");
+    para.configureMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -292,7 +294,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsOk_expectNoWarning)
 TEST_F(ParameterTestCumulantK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarning)
 {
     para.setVelocityLB(42);
-    para.setMainKernel("K");
+    para.configureMainKernel("K");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -303,7 +305,7 @@ TEST_F(ParameterTestCumulantK17, NotCumulantK17_VelocityIsTooHigh_expectNoWarnin
 TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
 {
     para.setViscosityLB(0.024);
-    para.setMainKernel("CumulantK17");
+    para.configureMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -314,7 +316,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsTooHigh_expectWarning)
 TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsOk_expectNoWarning)
 {
     para.setViscosityLB(0.023);
-    para.setMainKernel("CumulantK17");
+    para.configureMainKernel("K17CompressibleNavierStokes");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();
@@ -325,7 +327,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_ViscosityIsOk_expectNoWarning)
 TEST_F(ParameterTestCumulantK17, NotCumulantK17_ViscosityIsTooHigh_expectNoWarning)
 {
     para.setViscosityLB(10);
-    para.setMainKernel("K");
+    para.configureMainKernel("K");
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();

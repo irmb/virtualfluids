@@ -154,6 +154,7 @@ private:
     void rotateBlades(real angle, uint turbineID);
 
     void writeBladeCoords(uint t);
+    void writeBladeCoordsToVtkForDebug(const std::string& filename);
     void writeBladeForces(uint t);
     void writeBladeVelocities(uint t);
 

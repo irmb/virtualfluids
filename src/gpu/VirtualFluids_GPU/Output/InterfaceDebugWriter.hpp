@@ -11,8 +11,6 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <cmath>
 
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
-
 namespace InterfaceDebugWriter
 {
 
@@ -603,7 +601,7 @@ void checkForSendNodeZ(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCZ, 8.0);
 }
 
-void writeInterfaceFCC_Send(Parameter *para)
+void writeInterfaceFCC_Send(Parameter *para, int processID = 0)
 {
     std::vector<UbTupleFloat3> nodesVec;
     int nodeNumberVec = 0;
@@ -650,14 +648,14 @@ void writeInterfaceFCC_Send(Parameter *para)
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeInterfaceFCC_Send_PID_" +
-                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
+                                  std::to_string(processID) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
     }
 }
 
-void writeInterfaceCFC_Recv(Parameter *para)
+void writeInterfaceCFC_Recv(Parameter *para, int processID = 0)
 {
     std::vector<UbTupleFloat3> nodesVec;
     int nodeNumberVec = 0;
@@ -703,7 +701,7 @@ void writeInterfaceCFC_Recv(Parameter *para)
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeInterfaceCFC_Recv_PID_" +
-                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
+                                  std::to_string(processID) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
@@ -718,7 +716,7 @@ void addToNodesVector(const int level, const int pos, std::vector<UbTupleFloat3>
     nodesVec.push_back(makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 }
 
-void writeSendNodesStream(Parameter *para)
+void writeSendNodesStream(Parameter *para, int processID = 0)
 {
     std::vector<UbTupleFloat3> nodesVec;
 
@@ -808,14 +806,14 @@ void writeSendNodesStream(Parameter *para)
             }
         }
         std::string filenameVec = para->getFName() + "_writeSendNodesStreams_PID_" +
-                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
+                                  std::to_string(processID) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
     }
 }
 
-void writeRecvNodesStream(Parameter *para)
+void writeRecvNodesStream(Parameter *para, int processID = 0)
 {
     std::vector<UbTupleFloat3> nodesVec;
 
@@ -894,7 +892,7 @@ void writeRecvNodesStream(Parameter *para)
         // Recv are nodes ghost nodes and therefore they can't be coarse cells for the interpolation from coarse to fine
 
         std::string filenameVec = para->getFName() + "_writeRecvNodesStreams_PID_" +
-                                  std::to_string(vf::gpu::MpiCommunicator::getInstance().getPID()) + "_" +
+                                  std::to_string(processID) + "_" +
                                   StringUtil::toString<int>(level);
 
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);

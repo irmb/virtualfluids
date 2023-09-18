@@ -1,6 +1,7 @@
 #include "MathematicaListOfListsImp.h"
 
 #include <iomanip>
+#include <limits>
 
 std::shared_ptr<MathematicaListOfLists> MathematicaListOfListsImp::getNewInstance(std::string listName, std::vector<std::vector<double>> listOfLists)
 {

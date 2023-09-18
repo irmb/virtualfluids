@@ -9,7 +9,7 @@
 
 class Grid3D;
 class UbScheduler;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class BCSet;
 class LBMKernel;
 class Grid3DVisitor;
@@ -25,13 +25,13 @@ public:
         AverageFluktuations = 3,
         AverageTriple       = 4,
         ShearStressVal      = 5,
-        RelaxationFactor = 6,
-        PhaseField1 = 7,
-        PhaseField2 = 8,
-        PressureField = 9
+        RelaxationFactor    = 6,
+        PhaseField1         = 7,
+        PhaseField2         = 8,
+        PressureField       = 9
     };
 
-    MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+    MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm);
     ~MPIIOMigrationSimulationObserver() override;
     //! Each timestep writes the grid into the files
     void update(real step) override;
@@ -82,6 +82,7 @@ private:
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCSet> bcSet;
     SPtr<Grid3DVisitor> metisVisitor;
+
 };
 
 #endif

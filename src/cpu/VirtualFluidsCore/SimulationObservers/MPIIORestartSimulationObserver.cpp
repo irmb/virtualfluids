@@ -3,7 +3,7 @@
 #include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -25,7 +25,7 @@
 
 using namespace MPIIODataStructures;
 
-MPIIORestartSimulationObserver::MPIIORestartSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
+MPIIORestartSimulationObserver::MPIIORestartSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : MPIIOSimulationObserver(grid, s, path, comm)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
@@ -849,16 +849,16 @@ void MPIIORestartSimulationObserver::writeBoundaryConds(int step)
                     bouCond->velocityBoundaryFlags  = bcArr->bcvector[bc]->getVelocityBoundary();
                     bouCond->densityBoundaryFlags   = bcArr->bcvector[bc]->getDensityBoundary();
                     bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-                    bouCond->bcVelocityX1           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX1();
-                    bouCond->bcVelocityX2           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX2();
-                    bouCond->bcVelocityX3           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX3();
-                    bouCond->bcDensity              = (real)bcArr->bcvector[bc]->getBoundaryDensity();
-                    bouCond->bcPhaseField           = (real)bcArr->bcvector[bc]->getBoundaryPhaseField();
-                    bouCond->nx1                    = (real)bcArr->bcvector[bc]->nx1;
-                    bouCond->nx2                    = (real)bcArr->bcvector[bc]->nx2;
-                    bouCond->nx3                    = (real)bcArr->bcvector[bc]->nx3;
+                    bouCond->bcVelocityX1           = bcArr->bcvector[bc]->getBoundaryVelocityX1();
+                    bouCond->bcVelocityX2           = bcArr->bcvector[bc]->getBoundaryVelocityX2();
+                    bouCond->bcVelocityX3           = bcArr->bcvector[bc]->getBoundaryVelocityX3();
+                    bouCond->bcDensity              = bcArr->bcvector[bc]->getBoundaryDensity();
+                    bouCond->bcPhaseField           = bcArr->bcvector[bc]->getBoundaryPhaseField();
+                    bouCond->nx1                    = bcArr->bcvector[bc]->nx1;
+                    bouCond->nx2                    = bcArr->bcvector[bc]->nx2;
+                    bouCond->nx3                    = bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
-                        bouCond->q[iq] = (real)bcArr->bcvector[bc]->getQ(iq);
+                        bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
                     bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
                 }
 

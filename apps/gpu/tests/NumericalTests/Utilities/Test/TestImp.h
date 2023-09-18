@@ -16,9 +16,9 @@ class TestImp : public Test
 {
 public:
 	void run() override;
-	void update();
-	TestStatus getTestStatus();
-	virtual void makeConsoleOutput();
+	void update() override;
+	TestStatus getTestStatus() override;
+	void makeConsoleOutput() override;
 
 	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy);
 		

@@ -1,0 +1,9 @@
+{
+    "c-cpp-flylint.flexelint.enable": false,
+    "c-cpp-flylint.flawfinder.enable": false,
+    "files.associations": {
+        "__mutex_base": "cpp",
+        "memory": "cpp",
+        "mutex": "cpp"
+    }
+}

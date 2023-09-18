@@ -45,6 +45,10 @@ class Parameter;
 class GridBuilder;
 class IndexRearrangementForStreams;
 class InterpolationCellGrouper;
+namespace vf::parallel
+{
+class Communicator;
+}
 
 //! \class GridGenerator derived class of GridProvider
 //! \brief mapping the grid of grid generator to data structure for simulation
@@ -63,7 +67,7 @@ private:
     const uint mpiProcessID;
 
 public:
-    VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
+    VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator);
     ~GridGenerator() override;
     //! \brief overwrites the default IndexRearrangementForStreams
     void setIndexRearrangementForStreams(std::unique_ptr<IndexRearrangementForStreams>&& indexRearrangement);

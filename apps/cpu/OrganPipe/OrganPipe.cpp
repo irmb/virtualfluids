@@ -8,7 +8,7 @@ void run(string configname)
 {
    try
    {
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (myid == 0) UBLOG(logINFO, "Testcase organ pipe");
@@ -389,9 +389,9 @@ void run(string configname)
          grid->setTimeStep(restartStep);
       }
       ////set connectors
-      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nu_LB, bulckViscosity);
+      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
+      SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolator>(iProcessor)->setBulkViscosity(nu_LB, bulckViscosity);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
       grid->accept(setConnsVisitor);
 

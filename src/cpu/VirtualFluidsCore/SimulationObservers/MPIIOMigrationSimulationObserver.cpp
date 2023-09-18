@@ -3,7 +3,7 @@
 #include "BCSet.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -22,7 +22,7 @@
 
 using namespace MPIIODataStructures;
 
-MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
+MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : MPIIOSimulationObserver(grid, s, path, comm)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
@@ -730,8 +730,6 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
 
     int blocksCount          = 0; // quantity of blocks, that belong to this process
     size_t allBytesCount     = 0; // quantity of bytes, that one process writes to the file
-    size_t count_boundCond   = 0; // how many BoundaryConditions in all blocks
-    int count_indexContainer = 0; // how many indexContainer-values in all blocks
 
     std::vector<SPtr<Block3D>> blocksVector[25];
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -778,24 +776,23 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
                     bouCond->velocityBoundaryFlags  = bcArr->bcvector[bc]->getVelocityBoundary();
                     bouCond->densityBoundaryFlags   = bcArr->bcvector[bc]->getDensityBoundary();
                     bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-                    bouCond->bcVelocityX1           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX1();
-                    bouCond->bcVelocityX2           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX2();
-                    bouCond->bcVelocityX3           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX3();
-                    bouCond->bcDensity              = (real)bcArr->bcvector[bc]->getBoundaryDensity();
-                    bouCond->bcPhaseField           = (real)bcArr->bcvector[bc]->getBoundaryPhaseField();
-                    bouCond->nx1                    = (real)bcArr->bcvector[bc]->nx1;
-                    bouCond->nx2                    = (real)bcArr->bcvector[bc]->nx2;
-                    bouCond->nx3                    = (real)bcArr->bcvector[bc]->nx3;
+                    bouCond->bcVelocityX1           = bcArr->bcvector[bc]->getBoundaryVelocityX1();
+                    bouCond->bcVelocityX2           = bcArr->bcvector[bc]->getBoundaryVelocityX2();
+                    bouCond->bcVelocityX3           = bcArr->bcvector[bc]->getBoundaryVelocityX3();
+                    bouCond->bcDensity              = bcArr->bcvector[bc]->getBoundaryDensity();
+                    bouCond->bcPhaseField           = bcArr->bcvector[bc]->getBoundaryPhaseField();
+                    bouCond->nx1                    = bcArr->bcvector[bc]->nx1;
+                    bouCond->nx2                    = bcArr->bcvector[bc]->nx2;
+                    bouCond->nx3                    = bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
-                        bouCond->q[iq] = (real)bcArr->bcvector[bc]->getQ(iq);
+                        bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
                     bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
                 }
 
                 bcVector[ic].push_back(*bouCond);
                 bcAddArray[ic].boundCond_count++;
-                count_boundCond++;
                 bytesCount[ic] += sizeof(BoundaryCondition);
-            }
+             }
 
             if (bcindexmatrixCountNotInit) 
             {
@@ -810,7 +807,6 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
 
             indexContainerVector[ic].insert(indexContainerVector[ic].begin(), bcArr->indexContainer.begin(), bcArr->indexContainer.end());
             bcAddArray[ic].indexContainer_count = static_cast<int>(bcArr->indexContainer.size());
-            count_indexContainer += bcAddArray[ic].indexContainer_count;
             bytesCount[ic] += bcAddArray[ic].indexContainer_count * sizeof(int);
 
             allBytesCount += bytesCount[ic];
@@ -1158,7 +1154,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
         kernel->setCollisionFactorMultiphase(dataSetArray[n].collFactorL, dataSetArray[n].collFactorG);
         kernel->setDensityRatio(dataSetArray[n].densityRatio);
 
-        SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
+         SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
         dataSetPtr->setFdistributions(mFdistributions);
         if (multiPhase1)
             dataSetPtr->setHdistributions(mH1distributions);
@@ -1505,8 +1501,8 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
 
             block1->getKernel()->setBCSet(bcProc);
 
-            delete bcArray;
-            delete intArray1;
+            delete[] bcArray;
+            delete[] intArray1;
 
             ic++;
         }

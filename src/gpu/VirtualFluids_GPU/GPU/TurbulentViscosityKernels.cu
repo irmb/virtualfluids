@@ -34,7 +34,7 @@
 #include "TurbulentViscosityKernels.h"
 #include "basics/constants/NumericConstants.h"
 #include "Parameter/Parameter.h"
-#include "cuda/CudaGrid.h"
+#include <cuda_helper/CudaGrid.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "LBM/LB.h"

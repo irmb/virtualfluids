@@ -35,7 +35,7 @@ void run(string configname)
       vector<int>     blockNx = config.getVector<int>("blockNx");
       real          dx = config.getValue<real>("dx");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -291,12 +291,13 @@ void run(string configname)
       }
 
 	  //set connectors
-	  //InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+	  //InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolator());
 	  //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
 	  grid->accept(setConnsVisitor);
 
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
+    //   SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor_old());
       SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nueLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 

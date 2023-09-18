@@ -64,7 +64,3 @@ std::shared_ptr<PostProcessingConfigData> PostProcessingConfigFileReaderImp::rea
 	
 	return data;
 }
-
-PostProcessingConfigFileReaderImp::PostProcessingConfigFileReaderImp()
-{
-}

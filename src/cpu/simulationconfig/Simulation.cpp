@@ -26,10 +26,10 @@
 #include <Simulation/Simulation.h>
 #include <Simulation/Grid3D.h>
 #include <Interactors/InteractorsHelper.h>
-#include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
+#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
 #include <LBM/LBMKernel.h>
 #include <LBM/LBMUnitConverter.h>
-#include <mpi/MPICommunicator.h>
+#include <parallel/MPICommunicator.h>
 #include <Visitors/GenBlocksGridVisitor.h>
 #include <Visitors/InitDistributionsBlockVisitor.h>
 #include <Visitors/MetisPartitioningGridVisitor.h>
@@ -45,7 +45,7 @@
 
 CPUSimulation::CPUSimulation()
 {
-    this->communicator = vf::mpi::MPICommunicator::getInstance();
+    this->communicator = vf::parallel::MPICommunicator::getInstance();
     this->grid = std::make_shared<Grid3D>(communicator);
 }
 

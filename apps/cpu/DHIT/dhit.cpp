@@ -29,7 +29,7 @@ void run(string configname)
       double          lambda = config.getDouble("lambda");
       double          initTime = config.getDouble("initTime");
 
-      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -117,7 +117,7 @@ void run(string configname)
       ppblocks.reset();
 
       //set connectors
-      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
       grid->accept(setConnsVisitor);
 

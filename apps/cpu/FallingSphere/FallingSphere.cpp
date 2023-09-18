@@ -11,7 +11,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
     int myid                                        = comm->getProcessID();
 
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     double g_maxX2 = 1;
     double g_maxX3 = 10;
 
-    int blockNX[3] = { 16, 16, 16 };
+    int blockNX[3] = { 32, 32, 32 };
     double dx = 1./32.;
 
     double d_part = 0.25;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     grid->setDeltaX(dx);
     grid->setBlockNX(blockNX[0], blockNX[1], blockNX[2]);
 
-    string outputPath = "f:/temp/FallingSpheresTest";
+    string outputPath = "f:/temp/FallingSpheresTestMPI";
 
     UbSystem::makeDirectory(outputPath);
     UbSystem::makeDirectory(outputPath + "/liggghts");
@@ -68,12 +68,6 @@ int main(int argc, char *argv[])
     GenBlocksGridVisitor genBlocks(gridCube);
     grid->accept(genBlocks);
 
-    SPtr<SimulationObserver> ppblocks =
-        make_shared <WriteBlocksSimulationObserver>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath,
-                                                          WbWriterVtkXmlBinary::getInstance(), comm);
-    ppblocks->update(0);
-    ppblocks.reset();
-
     double dx2 = 2.0 * dx;
     GbCuboid3DPtr wallZmin(
         new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_minX3));
@@ -85,10 +79,54 @@ int main(int argc, char *argv[])
     SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
     SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBC, Interactor3D::SOLID));
 
-    InteractorsHelper intHelper(grid, metisVisitor, true);
+
+    SPtr<SimulationObserver> ppblocks = make_shared<WriteBlocksSimulationObserver>(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
+    ppblocks->update(0);
+
+    MPI_Comm mpi_comm = *(MPI_Comm *)(comm->getNativeCommunicator());
+    LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
+    SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
+    string inFile1 = "d:/Projects/VirtualFluids_Develop/apps/cpu/FallingSphere/in.lbdem";
+    string inFile2 = "d:/Projects/VirtualFluids_Develop/apps/cpu/FallingSphere/in2.lbdem";
+
+    // SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, 1.480, 2060, r_p/dx);
+    // SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, LBMUnitConverter::AIR_20C, r_p / dx);
+    SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, 0.1, 1000, r_p / dx, 0.01);
+    std::cout << units->toString() << std::endl;
+
+    double v_frac = 0.1;
+    double dt_phys = units->getFactorTimeLbToW();
+    int demSubsteps = 10;
+    double dt_dem = dt_phys / (double)demSubsteps;
+    int vtkSteps = 100;
+    string demOutDir = outputPath;
+
+    wrapper.execCommand("echo none");
+
+    wrapper.setVariable("d_part", d_part);
+    // wrapper.setVariable("r_part", d_part/2.);
+    // wrapper.setVariable("v_frac", v_frac);
+
+    wrapper.execFile((char *)inFile1.c_str());
+
+    SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, units);
+    SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>((g_maxX1 - g_minX1) / dx, (g_maxX2 - g_minX2) / dx, (g_maxX3 - g_minX3) / dx, wrapper.lmp);
+
+    //// set timestep and output directory
+    wrapper.setVariable("t_step", dt_dem);
+    wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
+    wrapper.setVariable("dmp_dir", demOutDir);
+
+    wrapper.execFile((char *)inFile2.c_str());
+    wrapper.runUpto(demSubsteps - 1);
+
+    InteractorsHelper intHelper(grid, partVisitor, false);
     intHelper.addInteractor(wallZminInt);
     intHelper.addInteractor(wallZmaxInt);
     intHelper.selectBlocks();
+
+    ppblocks->update(1);
+    ppblocks.reset();
 
     SetKernelBlockVisitor kernelVisitor(kernel, nuLB, 1e9, 1e9);
     grid->accept(kernelVisitor);
@@ -97,45 +135,6 @@ int main(int argc, char *argv[])
 
     InitDistributionsBlockVisitor initVisitor;
     grid->accept(initVisitor);
-
-    SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
-    string inFile1 = "d:/Projects/VirtualFluids_Develop/apps/cpu/FallingSphere/in.lbdem";
-    string inFile2 = "d:/Projects/VirtualFluids_Develop/apps/cpu/FallingSphere/in2.lbdem";
-    MPI_Comm mpi_comm = *(MPI_Comm*)(comm->getNativeCommunicator());
-    LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
-
-
- 
-    // SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, 1.480, 2060, r_p/dx);
-    //SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, LBMUnitConverter::AIR_20C, r_p / dx);
-    SPtr<LBMUnitConverter> units = std::make_shared<LBMUnitConverter>(r_p, 0.1, 1000, r_p / dx, 0.01);
-    std::cout << units->toString() << std::endl;
-
-    double v_frac = 0.1;
-    double dt_phys   = units->getFactorTimeLbToW();
-    int demSubsteps = 10;
-    double dt_dem   = dt_phys / (double)demSubsteps;
-    int vtkSteps    = 100;
-    string demOutDir = outputPath; 
-
-    wrapper.execCommand("echo none");
-
-    wrapper.setVariable("d_part", d_part);
-    //wrapper.setVariable("r_part", d_part/2.);
-    //wrapper.setVariable("v_frac", v_frac);
-
-    wrapper.execFile((char*)inFile1.c_str());
- 
-    //// set timestep and output directory
-    wrapper.setVariable("t_step", dt_dem);
-    wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
-    wrapper.setVariable("dmp_dir", demOutDir);
-
-    wrapper.execFile((char *)inFile2.c_str());
-    wrapper.runUpto(demSubsteps - 1);
-  
-    SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver =
-        make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, units);
 
     // boundary conditions grid
     {
@@ -157,6 +156,9 @@ int main(int argc, char *argv[])
     SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(
         new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(),
                                                   SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+
+    int numOfThreads = 1;
+    omp_set_num_threads(numOfThreads);
 
     int endTime = 3000; //20;
     SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));

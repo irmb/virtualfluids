@@ -55,6 +55,8 @@ void VelocityWithDensityBCStrategy::addDistributions(SPtr<DistributionArray3D> d
 //////////////////////////////////////////////////////////////////////////
 void VelocityWithDensityBCStrategy::applyBC()
 {
+    using namespace vf::basics::constant;
+
    //velocity bc for non reflecting pressure bc
    real f[D3Q27System::ENDF+1];
    //real feq[D3Q27System::ENDF+1];
@@ -63,7 +65,7 @@ void VelocityWithDensityBCStrategy::applyBC()
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    //calcFeqFct(feq, drho, vx1, vx2, vx3);
    
-   rho = 1.0+drho*compressibleFactor;
+   rho = c1o1+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
    {

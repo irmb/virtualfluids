@@ -7,7 +7,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -78,6 +78,8 @@ void AverageValuesSimulationObserver::update(real step)
 
 void AverageValuesSimulationObserver::resetDataRMS(real step)
 {
+    using namespace vf::basics::constant;
+    
     resetStepRMS = (int)step;
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
@@ -103,13 +105,13 @@ void AverageValuesSimulationObserver::resetDataRMS(real step)
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values
                                 //////////////////////////////////////////////////////////////////////////
-                                (*av)(AvVxx, ix1, ix2, ix3)  = 0.0;
-                                (*av)(AvVyy, ix1, ix2, ix3)  = 0.0;
-                                (*av)(AvVzz, ix1, ix2, ix3)  = 0.0;
-                                (*av)(AvVxy, ix1, ix2, ix3)  = 0.0;
-                                (*av)(AvVxz, ix1, ix2, ix3)  = 0.0;
-                                (*av)(AvVyz, ix1, ix2, ix3)  = 0.0;
-                                (*av)(AvPrms, ix1, ix2, ix3) = 0.0;
+                                (*av)(AvVxx, ix1, ix2, ix3)  = c0o1;
+                                (*av)(AvVyy, ix1, ix2, ix3)  = c0o1;
+                                (*av)(AvVzz, ix1, ix2, ix3)  = c0o1;
+                                (*av)(AvVxy, ix1, ix2, ix3)  = c0o1;
+                                (*av)(AvVxz, ix1, ix2, ix3)  = c0o1;
+                                (*av)(AvVyz, ix1, ix2, ix3)  = c0o1;
+                                (*av)(AvPrms, ix1, ix2, ix3) = c0o1;
                                 //////////////////////////////////////////////////////////////////////////
                             }
                         }
@@ -122,6 +124,8 @@ void AverageValuesSimulationObserver::resetDataRMS(real step)
 //////////////////////////////////////////////////////////////////////////
 void AverageValuesSimulationObserver::resetDataMeans(real step)
 {
+    using namespace vf::basics::constant;
+    
     resetStepMeans = (int)step;
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
@@ -147,10 +151,10 @@ void AverageValuesSimulationObserver::resetDataMeans(real step)
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values
                                 //////////////////////////////////////////////////////////////////////////
-                                (*av)(AvVx, ix1, ix2, ix3) = 0.0;
-                                (*av)(AvVy, ix1, ix2, ix3) = 0.0;
-                                (*av)(AvVz, ix1, ix2, ix3) = 0.0;
-                                (*av)(AvP, ix1, ix2, ix3)  = 0.0;
+                                (*av)(AvVx, ix1, ix2, ix3) = c0o1;
+                                (*av)(AvVy, ix1, ix2, ix3) = c0o1;
+                                (*av)(AvVz, ix1, ix2, ix3) = c0o1;
+                                (*av)(AvP, ix1, ix2, ix3)  = c0o1;
                                 //////////////////////////////////////////////////////////////////////////
                             }
                         }
@@ -185,7 +189,7 @@ void AverageValuesSimulationObserver::collectData(real step)
     piece           = subfolder + "/" + piece;
 
     vector<string> cellDataNames;
-    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+    std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
     vector<string> pieces   = comm->gather(piece);
     if (comm->getProcessID() == comm->getRoot()) {
         string pname =
@@ -333,6 +337,7 @@ void AverageValuesSimulationObserver::addData(const SPtr<Block3D> block)
 void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 {
     using namespace D3Q27System;
+    using namespace vf::basics::constant;
 
     // Funktionszeiger
     calcMacros = NULL;
@@ -391,50 +396,50 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
                                 // mean velocity
                                 (*av)(AvVx, ix1, ix2, ix3) =
                                     ((*av)(AvVx, ix1, ix2, ix3) * timeStepAfterResetMeans + vx) /
-                                    (timeStepAfterResetMeans + 1.0);
+                                    (timeStepAfterResetMeans + c1o1);
                                 (*av)(AvVy, ix1, ix2, ix3) =
                                     ((*av)(AvVy, ix1, ix2, ix3) * timeStepAfterResetMeans + vy) /
-                                    (timeStepAfterResetMeans + 1.0);
+                                    (timeStepAfterResetMeans + c1o1);
                                 (*av)(AvVz, ix1, ix2, ix3) =
                                     ((*av)(AvVz, ix1, ix2, ix3) * timeStepAfterResetMeans + vz) /
-                                    (timeStepAfterResetMeans + 1.0);
+                                    (timeStepAfterResetMeans + c1o1);
 
                                 // rms
                                 (*av)(AvVxx, ix1, ix2, ix3) =
                                     ((vx - (*av)(AvVx, ix1, ix2, ix3)) * (vx - (*av)(AvVx, ix1, ix2, ix3)) +
                                      (*av)(AvVxx, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
                                 (*av)(AvVyy, ix1, ix2, ix3) =
                                     ((vy - (*av)(AvVy, ix1, ix2, ix3)) * (vy - (*av)(AvVy, ix1, ix2, ix3)) +
                                      (*av)(AvVyy, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
                                 (*av)(AvVzz, ix1, ix2, ix3) =
                                     ((vz - (*av)(AvVz, ix1, ix2, ix3)) * (vz - (*av)(AvVz, ix1, ix2, ix3)) +
                                      (*av)(AvVzz, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
 
                                 // cross-correlations
                                 (*av)(AvVxy, ix1, ix2, ix3) =
                                     ((vx - (*av)(AvVx, ix1, ix2, ix3)) * (vy - (*av)(AvVy, ix1, ix2, ix3)) +
                                      (*av)(AvVxy, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
                                 (*av)(AvVxz, ix1, ix2, ix3) =
                                     ((vx - (*av)(AvVx, ix1, ix2, ix3)) * (vz - (*av)(AvVz, ix1, ix2, ix3)) +
                                      (*av)(AvVxz, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
                                 (*av)(AvVyz, ix1, ix2, ix3) =
                                     ((vy - (*av)(AvVy, ix1, ix2, ix3)) * (vz - (*av)(AvVz, ix1, ix2, ix3)) +
                                      (*av)(AvVyz, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
 
                                 // mean and rms press
                                 (*av)(AvP, ix1, ix2, ix3) =
                                     ((*av)(AvP, ix1, ix2, ix3) * timeStepAfterResetMeans + press) /
-                                    (timeStepAfterResetMeans + 1.0);
+                                    (timeStepAfterResetMeans + c1o1);
                                 (*av)(AvPrms, ix1, ix2, ix3) =
                                     ((press - (*av)(AvP, ix1, ix2, ix3)) * (press - (*av)(AvP, ix1, ix2, ix3)) +
                                      (*av)(AvPrms, ix1, ix2, ix3) * timeStepAfterResetRMS) /
-                                    (timeStepAfterResetRMS + 1.0);
+                                    (timeStepAfterResetRMS + c1o1);
 
                                 //////////////////////////////////////////////////////////////////////////
                             }
@@ -448,7 +453,7 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 ////////////////////////////////////////////////////////////////////////////
 // void AverageValuesSimulationObserver::initPlotData(double step)
 //{
-//   std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
+//   std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
 //	if (comm->getProcessID() == comm->getRoot())
 //	{
 //		std::ofstream ostr;

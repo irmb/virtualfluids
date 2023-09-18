@@ -47,7 +47,7 @@ void run(string configname)
         bool newStart               = config.getValue<bool>("newStart");
 
         //SPtr<Communicator> comm = MPICommunicator::getInstance();
-        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+        SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
         //int numOfProcesses      = comm->getNumberOfProcesses();
 
@@ -447,7 +447,7 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
         // set connectors
-        SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
+        SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
         //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu, iProcessor);
         OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);

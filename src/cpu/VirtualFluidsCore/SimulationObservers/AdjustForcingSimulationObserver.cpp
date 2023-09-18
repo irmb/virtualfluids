@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3D.h"
 #include "IntegrateValuesHelper.h"
 #include "UbScheduler.h"
@@ -14,29 +14,31 @@
 
 AdjustForcingSimulationObserver::AdjustForcingSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                                    SPtr<IntegrateValuesHelper> integrateValues, real vTarged,
-                                                   std::shared_ptr<vf::mpi::Communicator> comm)
+                                                   std::shared_ptr<vf::parallel::Communicator> comm)
 
     : SimulationObserver(grid, s), path(path), integrateValues(integrateValues), comm(comm), vx1Targed(vTarged)
 {
+    using namespace  vf::basics::constant;
+
     // cnodes = integrateValues->getCNodes();
     root = comm->isRoot();
 
     Ta = scheduler->getMaxStep();
 
-    Kpcrit = 3.0 / Ta; // 0.3;
-    Tcrit  = 3.0 * Ta; // 30.0;
-    Tn     = 0.5 * Tcrit;
-    Tv     = 0.12 * Tcrit;
+    Kpcrit = c3o1 / Ta; // 0.3;
+    Tcrit  = c3o1 * Ta; // 30.0;
+    Tn     = c1o2 * Tcrit;
+    Tv     = c12o1 / c100o1 * Tcrit;
 
-    Kp = 0.6 * Kpcrit;
+    Kp = c6o1 / c10o1 * Kpcrit;
     Ki = Kp / Tn;
     Kd = Kp * Tv;
 
-    y       = 0;
-    e       = 0;
-    esum    = 0;
-    eold    = 0;
-    forcing = 0;
+    y       = c0o1;
+    e       = c0o1;
+    esum    = c0o1;
+    eold    = c0o1;
+    forcing = c0o1;
 
     if (root) {
         std::string fname = path + "/forcing/forcing.csv";

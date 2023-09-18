@@ -31,13 +31,13 @@ copy:
     to: "multigpu_test/CMakePresets.json"
     overwrite: true
 
-  - from: "apps/gpu/LBM/"
-    to: "multigpu_test/apps/gpu/LBM/"
+  - from: "apps/gpu/"
+    to: "multigpu_test/apps/gpu/"
     overwrite: true
 
 collect:
   - from: multigpu_test/output/8GPU/
-    to: output/8GPU
+    to: output/8GPU/
     overwrite: true
 
   - from: multigpu_test/slurm8GPU.out
@@ -45,7 +45,7 @@ collect:
     overwrite: true
 
 clean:
-  - multigpu_test/output/*
+  - multigpu_test/*
 
 sbatch: multigpu_test/slurm8GPU.job
 continue_if_job_fails: true

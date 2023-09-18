@@ -9,7 +9,7 @@
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 #include "gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
-namespace vf::gpu
+namespace vf::parallel
 {
 class Communicator;
 }
@@ -21,7 +21,7 @@ class CudaMemoryManager;
 class VIRTUALFLUIDS_GPU_EXPORT GridProvider
 {
 public:
-    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::gpu::Communicator& communicator);
+    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator);
     static std::shared_ptr<GridProvider> makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager);
 
     virtual void allocArrays_CoordNeighborGeo() = 0;
@@ -48,7 +48,7 @@ public:
 protected:
     void setNumberOfNodes(uint numberOfNodes, int level) const;
     void setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemplate tag, int level) const;
-    virtual void setInitalNodeValues(uint numberOfNodes, int level) const;
+    virtual void setInitialNodeValues(uint numberOfNodes, int level) const;
 
     void setPressSizePerLevel(int level, int sizePerLevel) const;
     void setVelocitySizePerLevel(int level, int sizePerLevel) const;

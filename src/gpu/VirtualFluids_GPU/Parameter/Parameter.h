@@ -43,6 +43,7 @@
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -676,7 +677,7 @@ public:
     void setOutflowBoundaryNormalY(std::string outflowNormalY);
     void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
     // Kernel
-    void setMainKernel(std::string kernel);
+    void configureMainKernel(std::string kernel);
     void setMultiKernelOn(bool isOn);
     void setMultiKernelLevel(std::vector<int> kernelLevel);
     void setMultiKernel(std::vector<std::string> kernel);
@@ -700,7 +701,7 @@ public:
     real getEndXHotWall();
     unsigned int getStepEnsight();
     unsigned int getOutputCount();
-    unsigned int getlimitOfNodesForVTK();
+    unsigned int getLimitOfNodesForVTK();
     unsigned int getStartTurn();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
@@ -730,11 +731,11 @@ public:
     int getTimeCalcMedEnd();
     int getMaxDev();
     //! \returns the ID of the current MPI process
-    int getMyProcessID();
-    int getNumprocs();
+    int getMyProcessID() const;
+    int getNumprocs() const;
     std::string getOutputPath();
     std::string getOutputPrefix();
-    std::string getFName();
+    std::string getFName() const;
     std::string getGridPath();
     std::string getGeometryFileC();
     std::string getGeometryFileM();
@@ -1085,7 +1086,7 @@ private:
 
 
     // Kernel
-    std::string mainKernel{ "CumulantK17CompChim" };
+    std::string mainKernel{ vf::CollisionKernel::Compressible::K17CompressibleNavierStokes };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

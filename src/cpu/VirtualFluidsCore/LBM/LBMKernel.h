@@ -128,7 +128,9 @@ public:
     void setPhaseFieldRelaxation(real tauH);
     real getPhaseFieldRelaxation() const;
     void setMobility(real mob);
+    real getMobility() const;
     void setInterfaceWidth(real w);
+    real getInterfaceWidth() const;
     void setSigma(real sigma);
     real getSigma() const;
 

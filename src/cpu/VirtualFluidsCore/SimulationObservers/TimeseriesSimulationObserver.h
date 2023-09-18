@@ -13,7 +13,7 @@
 
 #include "SimulationObserver.h"
 
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class IntegrateValuesHelper;
@@ -27,7 +27,7 @@ class TimeseriesSimulationObserver : public SimulationObserver
 {
 public:
     TimeseriesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1,
-                          const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+                          const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm);
     ~TimeseriesSimulationObserver() override;
 
     //! calls collectData.
@@ -38,7 +38,7 @@ protected:
 
     //! object that can compute spacial average values in 3D-subdomain.
     SPtr<IntegrateValuesHelper> h1;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
 
 private:
     std::string path; //! output filename, e.g.  pathname + "/steps/timeseries"

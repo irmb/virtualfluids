@@ -34,7 +34,7 @@
 #ifndef Block3DVisitor_h
 #define Block3DVisitor_h
 
-#include <PointerDefinitions.h>
+#include <basics/PointerDefinitions.h>
 
 class Block3D;
 class Grid3D;

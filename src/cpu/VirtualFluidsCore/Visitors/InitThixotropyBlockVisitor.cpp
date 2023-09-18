@@ -1,4 +1,4 @@
-//=======================================================================================
+ //=======================================================================================
 // ____          ____    __    ______     __________   __      __       __        __
 // \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 //  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -44,6 +44,8 @@
 InitThixotropyBlockVisitor::InitThixotropyBlockVisitor()
    : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
+    using namespace vf::basics::constant;
+
    //this->setVx1(0.0);
    //this->setVx2(0.0);
    //this->setVx3(0.0);
@@ -52,7 +54,7 @@ InitThixotropyBlockVisitor::InitThixotropyBlockVisitor()
    //this->setf2(0.0);
    //this->setf3(0.0);
    //this->setConcentration(0.0);
-   this->setLambda(0.0);
+   this->setLambda(c0o1);
 }
 //////////////////////////////////////////////////////////////////////////
 //InitThixotropyBlockVisitor::InitThixotropyBlockVisitor(LBMReal lambda /*LBMReal nu, LBMReal D, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal c, LBMReal f1, LBMReal f2, LBMReal f3*/)
@@ -218,6 +220,7 @@ void InitThixotropyBlockVisitor::setLambda(real lambda)
 void InitThixotropyBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    using namespace D3Q27System;
+   using namespace vf::basics::constant;
 
    if(!block) UB_THROW( UbException(UB_EXARGS,"block is not exist") );
 
@@ -283,7 +286,7 @@ void InitThixotropyBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
                real lambda = muLambda.Eval();
                
-               calcFeqsFct(h,lambda,0.0,0.0,0.0);
+               calcFeqsFct(h,lambda,c0o1,c0o1,c0o1);
                
                distributions->setDistribution(h, ix1, ix2, ix3);
                distributions->setDistributionInv(h, ix1, ix2, ix3);

@@ -8,7 +8,7 @@
 #ifndef RenumberGridVisitor_h
 #define RenumberGridVisitor_h
 
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "Grid3DVisitor.h"
 
 class Grid3D;
@@ -19,14 +19,14 @@ class Grid3D;
 class RenumberGridVisitor : public Grid3DVisitor
 {
 public:
-    RenumberGridVisitor(std::shared_ptr<vf::mpi::Communicator> com);
+    RenumberGridVisitor(std::shared_ptr<vf::parallel::Communicator> com);
 
     ~RenumberGridVisitor() override = default;
 
     void visit(SPtr<Grid3D> grid) override;
 
 private:
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     //   static int counter;
 };
 

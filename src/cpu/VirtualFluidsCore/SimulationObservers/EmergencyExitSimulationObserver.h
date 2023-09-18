@@ -14,7 +14,7 @@
 #include "SimulationObserver.h"
 
 class MPIIORestartSimulationObserver;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
 
@@ -22,7 +22,7 @@ class EmergencyExitSimulationObserver : public SimulationObserver
 {
 public:
     EmergencyExitSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                             SPtr<MPIIORestartSimulationObserver> rp, std::shared_ptr<vf::mpi::Communicator> comm);
+                             SPtr<MPIIORestartSimulationObserver> rp, std::shared_ptr<vf::parallel::Communicator> comm);
     ~EmergencyExitSimulationObserver() override;
 
     void update(real step) override;
@@ -35,7 +35,7 @@ protected:
 
 private:
     std::string path;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     SPtr<MPIIORestartSimulationObserver> rp;
     std::string metafile;
 };

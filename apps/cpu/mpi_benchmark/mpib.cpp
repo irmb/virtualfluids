@@ -8,7 +8,7 @@ using namespace std;
 
 void run(string configname)
 {
-   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
+   SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
 
    // Get the name of the processor
@@ -211,7 +211,7 @@ void run(string configname)
 
       //set connectors
       if (myid==0) UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
-      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
       grid->accept(setConnsVisitor);
       if (myid==0) UBLOG(logINFO, "SetConnectorsBlockVisitor:end");

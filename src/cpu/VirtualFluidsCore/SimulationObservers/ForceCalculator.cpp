@@ -4,13 +4,13 @@
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "DataSet3D.h"
 #include "DistributionArray3D.h"
 #include "LBMKernel.h"
 
-ForceCalculator::ForceCalculator(std::shared_ptr<vf::mpi::Communicator> comm)
+ForceCalculator::ForceCalculator(std::shared_ptr<vf::parallel::Communicator> comm)
     : comm(comm), forceX1global(0), forceX2global(0), forceX3global(0)
 {
 }
@@ -20,9 +20,11 @@ ForceCalculator::~ForceCalculator() = default;
 Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions,
                                     SPtr<BoundaryConditions> bc, const Vector3D &boundaryVelocity) const
 {
-    real forceX1 = 0;
-    real forceX2 = 0;
-    real forceX3 = 0;
+    using namespace vf::basics::constant;
+    
+    real forceX1 = c0o1;
+    real forceX2 = c0o1;
+    real forceX3 = c0o1;
     if (bc) {
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
@@ -31,7 +33,7 @@ Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArr
                 const real fnbr = distributions->getDistributionInvForDirection(
                     x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
-                real correction[3] = { 0.0, 0.0, 0.0 };
+                real correction[3] = { c0o1, c0o1, c0o1 };
                 if (bc->hasVelocityBoundaryFlag(fdir)) {
                     const real forceTerm = f - fnbr;
                     correction[0]          = forceTerm * boundaryVelocity[0];
@@ -54,15 +56,17 @@ Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArr
 
 void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interactors)
 {
-    forceX1global = 0.0;
-    forceX2global = 0.0;
-    forceX3global = 0.0;
+    using namespace vf::basics::constant;
+
+    forceX1global = c0o1;
+    forceX2global = c0o1;
+    forceX3global = c0o1;
 
     for (const auto &interactor : interactors) {
         for (const auto &t : interactor->getBcNodeIndicesMap()) {
-            real forceX1 = 0.0;
-            real forceX2 = 0.0;
-            real forceX3 = 0.0;
+            real forceX1 = c0o1;
+            real forceX2 = c0o1;
+            real forceX3 = c0o1;
 
             SPtr<Block3D> block                     = t.first;
             SPtr<ILBMKernel> kernel                 = block->getKernel();
@@ -104,6 +108,8 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interac
 
 void ForceCalculator::gatherGlobalForces()
 {
+    using namespace vf::basics::constant;
+
     std::vector<real>
         values; // intel compiler 17 dasn't support this { forceX1global , forceX2global, forceX3global };
     values.push_back(forceX1global);
@@ -112,9 +118,9 @@ void ForceCalculator::gatherGlobalForces()
     std::vector<real> rvalues = comm->gather(values);
 
     if (comm->isRoot()) {
-        forceX1global = 0.0;
-        forceX2global = 0.0;
-        forceX3global = 0.0;
+        forceX1global = c0o1;
+        forceX2global = c0o1;
+        forceX3global = c0o1;
 
         for (int i = 0; i < (int)rvalues.size(); i += 3) {
             forceX1global += rvalues[i];

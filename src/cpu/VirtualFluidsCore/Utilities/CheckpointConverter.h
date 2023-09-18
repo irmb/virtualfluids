@@ -8,14 +8,14 @@
 #include <vector>
 
 class Grid3D;
-namespace vf::mpi {class Communicator;}
+namespace vf::parallel {class Communicator;}
 
 //! \class UtilConvertor
 //! \brief Converts timestep data from MPIIORestartSimulationObserver format into MPIIOMigrationSimulationObserver format
 class CheckpointConverter
 {
 public:
-    CheckpointConverter(SPtr<Grid3D> grid, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
+    CheckpointConverter(SPtr<Grid3D> grid, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm);
     virtual ~CheckpointConverter();
 
     void convert(int step, int procCount);
@@ -26,7 +26,7 @@ public:
 
 protected:
     std::string path;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+    std::shared_ptr<vf::parallel::Communicator> comm;
     SPtr<Grid3D> grid;
 
 private:

@@ -36,7 +36,7 @@ r"""
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
-from pyfluids.bindings import basics, gpu, logger
+from pyfluids import basics, gpu, logger, communicator
 #%%
 sim_name = "ABL"
 config_file = Path(__file__).parent/"configActuatorLine.txt"
@@ -47,15 +47,13 @@ output_path.mkdir(exist_ok=True)
 #%%
 logger.Logger.initialize_logger()
 
-#%%
-grid_factory = gpu.grid_generator.GridFactory.make()
-grid_builder = gpu.grid_generator.MultipleGridBuilder.make_shared(grid_factory)
-communicator = gpu.Communicator.get_instance()
+grid_builder = gpu.grid_generator.MultipleGridBuilder()
+communicator = communicator.Communicator.get_instance()
 
 config = basics.ConfigurationFile()
 config.load(str(config_file))
 
-para = gpu.Parameter(communicator.get_number_of_process(), communicator.get_pid(), config)
+para = gpu.Parameter(communicator.get_number_of_processes(), communicator.get_number_of_processes(), config)
 bc_factory = gpu.BoundaryConditionFactory()
 
 #%%
@@ -104,8 +102,8 @@ length = np.array([6,4,1])*boundary_layer_height
 dx = boundary_layer_height/nodes_per_height
 dt = dx * mach / (np.sqrt(3) * velocity)
 velocity_ratio = dx/dt
-velocity_LB = velocity / velocity_ratio # LB units
-viscosity_LB = viscosity / (velocity_ratio * dx) # LB units
+velocity_LB = velocity / velocity_ratio  # LB units
+viscosity_LB = viscosity / (velocity_ratio * dx)  # LB units
 pressure_gradient = u_star * u_star / boundary_layer_height
 pressure_gradient_LB = pressure_gradient * (dt*dt)/dx
 
@@ -142,7 +140,7 @@ tm_factory.read_config_file(config)
 grid_scaling_factory = gpu.GridScalingFactory()
 grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
-grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
+grid_builder.add_coarse_grid(0.0, 0.0, 0.0, length[0], length[1], length[2], dx)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
 grid_builder.build_grids(False)
 
@@ -162,7 +160,7 @@ bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipBounceBack)
 bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
 if read_precursor:
     bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
-para.set_outflow_pressure_correction_factor(0.0); 
+para.set_outflow_pressure_correction_factor(0.0)
 #%%
 # don't use python init functions, they are very slow! Just kept as an example.
 # Define lambda in bindings and set it here.
@@ -176,7 +174,7 @@ para.set_outflow_pressure_correction_factor(0.0);
 para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, velocity_ratio)
 
 #%%
-turb_pos = np.array([3,3,3])*turbine_diameter
+turb_pos = np.array([3, 3, 3])*turbine_diameter
 epsilon = 1.5*dx
 density = 1.225
 level = 0
@@ -185,7 +183,7 @@ n_blade_nodes = 32
 omega = 1
 blade_radii = np.arange(n_blade_nodes, dtype=np.float32)/(0.5*turbine_diameter)
 alm = gpu.ActuatorFarm(n_blades, density, n_blade_nodes, epsilon, level, dt, dx, True)
-alm.add_turbine(turb_pos[0],turb_pos[1],turb_pos[2], turbine_diameter, omega, 0, 0, blade_radii)
+alm.add_turbine(turb_pos[0], turb_pos[1], turb_pos[2], turbine_diameter, omega, 0, 0, blade_radii)
 para.add_actuator(alm)
 #%%
 planar_average_probe = gpu.probes.PlanarAverageProbe("horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')

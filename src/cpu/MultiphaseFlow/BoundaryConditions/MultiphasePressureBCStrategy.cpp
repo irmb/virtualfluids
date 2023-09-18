@@ -88,19 +88,6 @@ void MultiphasePressureBCStrategy::applyBC()
    calcMacrosFct(f, p1, vx1, vx2, vx3);
    p1 = 0.0;
 
-   int nx1 = x1;
-   int nx2 = x2;
-   int nx3 = x3;
-
-   //flag points in direction of fluid
-   if      (bcPtr->hasVelocityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(DIR_M00)) { nx1 += 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
-   else if (bcPtr->hasVelocityBoundaryFlag(DIR_00M)) { nx3 += 1; }
-   //else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
-   
    phiBC = bcPtr->getBoundaryPhaseField();
    LBMReal rhoBC = bcPtr->getBoundaryDensity();
    D3Q27System::calcIncompFeq(feq, rhoBC, vx1, vx2, vx3);
@@ -109,11 +96,24 @@ void MultiphasePressureBCStrategy::applyBC()
 
    for (int fdir = D3Q27System::STARTF; fdir <= D3Q27System::ENDF; fdir++) {
        if (bcPtr->hasDensityBoundaryFlag(fdir)) {
-           LBMReal ftemp = -f[D3Q27System::INVDIR[fdir]] + feq[fdir] + feq[D3Q27System::INVDIR[fdir]];
-           distributions->setDistributionForDirection(ftemp, x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        // //if(D3Q27System::DX1[fdir]*vx1+D3Q27System::DX2[fdir]*vx2+D3Q27System::DX3[fdir]*vx3 <= 0)
+        //    if (false)//(phi<0.01)
+        //    {
+        //    LBMReal ftemp = -f[D3Q27System::INVDIR[fdir]] + feq[fdir] + feq[D3Q27System::INVDIR[fdir]];
+        //    distributions->setDistributionForDirection(ftemp, x1, x2, x3, D3Q27System::INVDIR[fdir]);
 
-           LBMReal hReturn = -h[D3Q27System::INVDIR[fdir]] + htemp[fdir] + htemp[D3Q27System::INVDIR[fdir]];
-           distributionsH->setDistributionForDirection(hReturn, x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        //    LBMReal hReturn = 0;
+        //    //h[fdir]; //-h[D3Q27System::INVDIR[fdir]] + htemp[fdir] +
+        //                                                    //htemp[D3Q27System::INVDIR[fdir]];
+        //    distributionsH->setDistributionForDirection(hReturn, x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        // } 
+
+        // else{
+        // //   //distributions->setDistributionForDirection(rhoBC*D3Q27System::WEIGTH[fdir], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        // //   //distributionsH->setDistributionForDirection(phiBC*D3Q27System::WEIGTH[fdir], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+           distributions->setDistributionForDirection(0.7*f[D3Q27System::INVDIR[fdir]], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+           distributionsH->setDistributionForDirection(0.7*h[D3Q27System::INVDIR[fdir]], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        // }
        }
    }
 }

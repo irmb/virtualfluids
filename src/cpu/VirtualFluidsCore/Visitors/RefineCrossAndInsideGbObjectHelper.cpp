@@ -1,6 +1,6 @@
 #include "RefineCrossAndInsideGbObjectHelper.h"
 #include "CheckRatioBlockVisitor.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "OverlapBlockVisitor.h"
 #include "RatioBlockVisitor.h"
 #include "RatioSmoothBlockVisitor.h"
@@ -11,7 +11,7 @@
 #include <Grid3D.h>
 
 RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel,
-                                                                       std::shared_ptr<vf::mpi::Communicator> comm)
+                                                                       std::shared_ptr<vf::parallel::Communicator> comm)
     : grid(grid), maxRefineLevel(maxRefineLevel), comm(comm)
 {
 }

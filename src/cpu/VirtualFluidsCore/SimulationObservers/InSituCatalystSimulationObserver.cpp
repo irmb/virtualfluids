@@ -20,7 +20,7 @@ InSituCatalystSimulationObserver::InSituCatalystSimulationObserver() {}
 InSituCatalystSimulationObserver::InSituCatalystSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::string script)
     : SimulationObserver(grid, s)
 {
-    gridRank     = vf::mpi::Communicator::getInstance()->getProcessID();
+    gridRank     = vf::parallel::Communicator::getInstance()->getProcessID();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
     maxInitLevel = this->grid->getFinestInitializedLevel();
 

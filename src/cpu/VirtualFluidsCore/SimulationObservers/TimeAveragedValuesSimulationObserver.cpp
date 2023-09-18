@@ -4,7 +4,7 @@
 #include "LBMKernel.h"
 
 #include "Block3D.h"
-#include <mpi/Communicator.h>
+#include <parallel/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -16,7 +16,7 @@ TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver() = d
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options)
+                                                             std::shared_ptr<vf::parallel::Communicator> comm, int options)
     : SimulationObserver(grid, s), path(path), writer(writer), comm(comm), options(options)
 {
     init();
@@ -26,7 +26,7 @@ TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver(SPtr<
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesSimulationObserver::TimeAveragedValuesSimulationObserver(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options,
+                                                             std::shared_ptr<vf::parallel::Communicator> comm, int options,
                                                              std::vector<int> levels, std::vector<real> &levelCoords,
                                                              std::vector<real> &bounds, bool timeAveraging)
     : SimulationObserver(grid, s), path(path), writer(writer), comm(comm), options(options), levels(levels),
@@ -354,6 +354,8 @@ void TimeAveragedValuesSimulationObserver::addData(const SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesSimulationObserver::calculateAverageValues(real timeSteps)
 {
+    using namespace vf::basics::constant;
+
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         int i;
         const int block_size = (int) blockVector[level].size();
@@ -433,25 +435,25 @@ void TimeAveragedValuesSimulationObserver::calculateAverageValues(real timeSteps
                                 if ((options & Triplecorrelations) == Triplecorrelations) {
                                     // mean triple-correlations
                                     (*at)(Vxxx, ix1, ix2, ix3) =
-                                        (*at)(Vxxx, ix1, ix2, ix3) / timeSteps - 3.0 * uxx * ux + 2.0 * ux * ux * ux;
+                                        (*at)(Vxxx, ix1, ix2, ix3) / timeSteps - c3o1 * uxx * ux + c2o1 * ux * ux * ux;
                                     (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) / timeSteps -
-                                                                 2.0 * uxy * ux - uxx * uy + 2.0 * ux * ux * uy;
+                                                                 c2o1 * uxy * ux - uxx * uy + c2o1 * ux * ux * uy;
                                     (*at)(Vxxz, ix1, ix2, ix3) = (*at)(Vxxz, ix1, ix2, ix3) / timeSteps -
-                                                                 2.0 * uxz * ux - uxx * uz + 2.0 * ux * ux * uz;
+                                                                 c2o1 * uxz * ux - uxx * uz + c2o1 * ux * ux * uz;
                                     (*at)(Vyyy, ix1, ix2, ix3) =
-                                        (*at)(Vyyy, ix1, ix2, ix3) / timeSteps - 3.0 * uyy * uy + 2.0 * uy * uy * uy;
+                                        (*at)(Vyyy, ix1, ix2, ix3) / timeSteps - c3o1 * uyy * uy + c2o1 * uy * uy * uy;
                                     (*at)(Vyyx, ix1, ix2, ix3) = (*at)(Vyyx, ix1, ix2, ix3) / timeSteps -
-                                                                 2.0 * uxy * uy - uyy * ux + 2.0 * uy * uy * ux;
+                                                                 c2o1 * uxy * uy - uyy * ux + c2o1 * uy * uy * ux;
                                     (*at)(Vyyz, ix1, ix2, ix3) = (*at)(Vyyz, ix1, ix2, ix3) / timeSteps -
-                                                                 2.0 * uyz * uy - uyy * uz + 2.0 * uy * uy * uz;
+                                                                 c2o1 * uyz * uy - uyy * uz + c2o1 * uy * uy * uz;
                                     (*at)(Vzzz, ix1, ix2, ix3) =
-                                        (*at)(Vzzz, ix1, ix2, ix3) / timeSteps - 3.0 * uzz * uz + 2.0 * uz * uz * uz;
+                                        (*at)(Vzzz, ix1, ix2, ix3) / timeSteps - c3o1 * uzz * uz + c2o1 * uz * uz * uz;
                                     (*at)(Vzzx, ix1, ix2, ix3) = (*at)(Vzzx, ix1, ix2, ix3) / timeSteps -
-                                                                 2.0 * uxz * uz - uzz * ux + 2.0 * uz * uz * ux;
+                                                                 c2o1 * uxz * uz - uzz * ux + c2o1 * uz * uz * ux;
                                     (*at)(Vzzy, ix1, ix2, ix3) = (*at)(Vzzy, ix1, ix2, ix3) / timeSteps -
-                                                                 2.0 * uyz * uz - uzz * uy + 2.0 * uz * uz * uy;
+                                                                 c2o1 * uyz * uz - uzz * uy + c2o1 * uz * uz * uy;
                                     (*at)(Vxyz, ix1, ix2, ix3) = (*at)(Vxyz, ix1, ix2, ix3) / timeSteps - uxy * uz -
-                                                                 uxz * uy - uyz * ux + 2.0 * ux * uy * uz;
+                                                                 uxz * uy - uyz * ux + c2o1 * ux * uy * uz;
                                 }
                                 //////////////////////////////////////////////////////////////////////////
                             }
@@ -577,6 +579,7 @@ void TimeAveragedValuesSimulationObserver::calculateSubtotal(real step)
 void TimeAveragedValuesSimulationObserver::planarAverage(real step)
 {
     std::ofstream ostr;
+    using namespace vf::basics::constant;
 
     if (root) {
         int istep         = int(step);
@@ -642,7 +645,7 @@ void TimeAveragedValuesSimulationObserver::planarAverage(real step)
             if (root) {
                 real numberOfFluidsNodes = intValHelp.getNumberOfFluidsNodes();
                 if (numberOfFluidsNodes > 0) {
-                    ostr << j + 0.5 * dx << std::setprecision(15);
+                    ostr << j + c1o2 * dx << std::setprecision(15);
 
                     // mean density
                     if ((options & Density) == Density) {

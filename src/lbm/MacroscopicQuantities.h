@@ -53,6 +53,14 @@ inline __host__ __device__ real getIncompressibleVelocityX3(const real *const &f
             (((f[dir::DIR_0MP] - f[dir::DIR_0PM]) + (f[dir::DIR_0PP] - f[dir::DIR_0MM])) + ((f[dir::DIR_M0P] - f[dir::DIR_P0M]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M]))) + (f[dir::DIR_00P] - f[dir::DIR_00M]));
 }
 
+inline __host__ __device__ void getIncompressibleMacroscopicValues(const real *const &f /*[27]*/, real &rho, real &vx1, real &vx2, real &vx3)
+{
+    rho = getDensity(f);
+    vx1 = getIncompressibleVelocityX1(f);
+    vx2 = getIncompressibleVelocityX2(f);
+    vx3 = getIncompressibleVelocityX3(f);
+}
+
 
 
 /*
@@ -74,6 +82,25 @@ inline __host__ __device__ real getCompressibleVelocityX3(const real *const &f27
 {
     return getIncompressibleVelocityX3(f27) / (rho + basics::constant::c1o1);
 }
+
+inline __host__ __device__ void getCompressibleMacroscopicValues(const real *const &f /*[27]*/, real &drho, real& oneOverRho, real &vx1, real &vx2, real &vx3)
+{
+    drho = getDensity(f);
+    vx1 = getIncompressibleVelocityX1(f);
+    vx2 = getIncompressibleVelocityX2(f);
+    vx3 = getIncompressibleVelocityX3(f);
+    oneOverRho = vf::basics::constant::c1o1 / (drho + vf::basics::constant::c1o1);
+    vx1 *= oneOverRho;
+    vx2 *= oneOverRho;
+    vx3 *= oneOverRho;
+}
+
+inline __host__ __device__ void getCompressibleMacroscopicValues(const real *const &f /*[27]*/, real &drho, real &vx1, real &vx2, real &vx3)
+{
+    real oneOverRho;
+    getCompressibleMacroscopicValues(f, drho, oneOverRho, vx1, vx2, vx3);
+}
+
 
 /*
 * Pressure

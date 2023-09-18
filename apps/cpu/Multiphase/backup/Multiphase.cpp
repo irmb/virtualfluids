@@ -78,7 +78,7 @@ void run(string configname)
       double beta  = 12*sigma/interfaceThickness;
 	  double kappa = 1.5*interfaceThickness*sigma;
 	  
-	  CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
+	  CommunicatorPtr comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -643,8 +643,8 @@ void run(string configname)
          grid->accept(initVisitor);
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
+         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
          //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
@@ -693,8 +693,8 @@ void run(string configname)
          //grid->accept(bcVisitor);
 
          //set connectors
-         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolator());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolator());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
