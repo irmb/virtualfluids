@@ -5229,8 +5229,16 @@ void MultiphaseScaleDistributionLBMKernel::findNeighbors(CbArray3D<real, Indexer
             //if (bcArray->getBC(x1, x2, x3)->hasVelocityBoundaryFlag(D3Q27System::INVDIR[k]))
             //    phi[k] = (*ph)(x1, x2, x3); // neutral wetting
             //else
-                phi[k] = 0.0; // unwetting
+            //    phi[k] = 0.0; // unwetting
             //phi[k] = (*ph)(x1, x2, x3) * 0.7;
+            if (bcArray->getBC(x1, x2, x3)->hasNoSlipBoundaryFlag(D3Q27System::INVDIR[k]))
+			{
+			   if(bcArray->getBC(x1, x2, x3)->getNoSlipSecondaryOption(D3Q27System::INVDIR[k]) == 0)
+                  phi[k] = (*ph)(x1, x2, x3); // neutral wetting
+			   else
+                  phi[k] = 0.0; // unwetting
+		    }
+
 		}
 	}
 }
