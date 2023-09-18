@@ -37,11 +37,12 @@
 #include <map>
 #include <string>
 #include <variant>
+#include <memory>
 
 #include "LBM/LB.h"
-#include "Parameter/Parameter.h"
-
 #include <basics/config/ConfigurationFile.h>
+
+#include <lbm/collision/TurbulentViscosity.h>
 
 class Parameter;
 
@@ -51,9 +52,9 @@ class TurbulenceModelFactory
 {
 public:
     
-    TurbulenceModelFactory(SPtr<Parameter> parameter): para(parameter) {}
+    TurbulenceModelFactory(std::shared_ptr<Parameter> parameter): para(parameter) {}
 
-    void setTurbulenceModel(TurbulenceModel _turbulenceModel);
+    void setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel);
 
     void setModelConstant(real modelConstant);
 
@@ -62,9 +63,9 @@ public:
     void runTurbulenceModelKernel(const int level) const;
 
 private:
-    TurbulenceModel turbulenceModel = TurbulenceModel::None;
+    vf::lbm::TurbulenceModel turbulenceModel = vf::lbm::TurbulenceModel::None;
     TurbulenceModelKernel turbulenceModelKernel = nullptr;
-    SPtr<Parameter> para;
+    std::shared_ptr<Parameter> para;
 
 };
 

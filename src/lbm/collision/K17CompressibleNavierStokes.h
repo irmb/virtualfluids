@@ -41,113 +41,76 @@
 //! are provided by the utilized PostCollisionInteractiors depending on they specific requirements (e.g. writeMacroscopicVariables for probes).
 
 //=======================================================================================
-#include "LBM/LB.h"
-#include "lbm/constants/D3Q27.h"
-#include "basics/constants/NumericConstants.h"
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
+#include <basics/constants/NumericConstants.h>
 
-#include "GPU/TurbulentViscosityInlines.cuh"
+#include "lbm/constants/D3Q27.h"
+
+#include "ChimeraTransformation.h"
+
+#include "TurbulentViscosity.h"
+
+#include "MacroscopicQuantities.h"
+
+#include "CollisionParameter.h"
+
+#ifndef __host__
+#define __host__
+#endif
+#ifndef __device__
+#define __device__
+#endif
+
+#ifdef __CUDACC__
+#define KERNEL_ABS abs
+#else
+#include <cmath>
+#define KERNEL_ABS std::abs
+#endif
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
 
-////////////////////////////////////////////////////////////////////////////////
-template<TurbulenceModel turbulenceModel, bool writeMacroscopicVariables, bool applyBodyForce>
-__global__ void K17CompressibleNavierStokes_Device(
-    real omega_in,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    real* distributions,
-    real* rho,
-    real* vx,
-    real* vy,
-    real* vz,
-    real* turbulentViscosity,
-    real SGSconstant,
-    unsigned long long numberOfLBnodes,
-    int level,
-    real* forces,
-    real* bodyForceX,
-    real* bodyForceY,
-    real* bodyForceZ,
-    real* quadricLimiters,
-    bool isEvenTimestep,
-    const uint *fluidNodeIndices,
-    uint numberOfFluidNodes)
+namespace vf::lbm
 {
-    //////////////////////////////////////////////////////////////////////////
-    //! Cumulant K17 Kernel is based on \ref
-    //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040
-    //! ]</b></a> and \ref <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017),
-    //! DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
-    //!
-    //! The cumulant kernel is executed in the following steps
-    //!
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-    //!
-    const unsigned nodeIndex = getNodeIndex();
 
-    //////////////////////////////////////////////////////////////////////////
-    // run for all indices in size_Mat and fluid nodes
-    if (nodeIndex >= numberOfFluidNodes)
-        return;
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Get the node index from the array containing all indices of fluid nodes
-    //!
-    const unsigned k_000 = fluidNodeIndices[nodeIndex];
+//////////////////////////////////////////////////////////////////////////
+//! Cumulant K17 Kernel is based on \ref
+//! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040
+//! ]</b></a> and \ref <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017),
+//! DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
+////////////////////////////////////////////////////////////////////////////////
+template <TurbulenceModel turbulenceModel, bool writeMacroscopicVariables>
+__host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
+{
+    auto& distribution = parameter.distribution;
 
-    //////////////////////////////////////////////////////////////////////////
-    //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
-    //! timestep is based on the esoteric twist algorithm \ref <a
-    //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
-    //! DOI:10.3390/computation5020019 ]</b></a>
-    //!
-    Distributions27 dist;
-    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Set neighbor indices (necessary for indirect addressing)
-    uint k_M00 = neighborX[k_000];
-    uint k_0M0 = neighborY[k_000];
-    uint k_00M = neighborZ[k_000];
-    uint k_MM0 = neighborY[k_M00];
-    uint k_M0M = neighborZ[k_M00];
-    uint k_0MM = neighborZ[k_0M0];
-    uint k_MMM = neighborZ[k_MM0];
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Set local distributions
-    //!
-    real f_000 = (dist.f[DIR_000])[k_000];
-    real f_P00 = (dist.f[DIR_P00])[k_000];
-    real f_M00 = (dist.f[DIR_M00])[k_M00];
-    real f_0P0 = (dist.f[DIR_0P0])[k_000];
-    real f_0M0 = (dist.f[DIR_0M0])[k_0M0];
-    real f_00P = (dist.f[DIR_00P])[k_000];
-    real f_00M = (dist.f[DIR_00M])[k_00M];
-    real f_PP0 = (dist.f[DIR_PP0])[k_000];
-    real f_MM0 = (dist.f[DIR_MM0])[k_MM0];
-    real f_PM0 = (dist.f[DIR_PM0])[k_0M0];
-    real f_MP0 = (dist.f[DIR_MP0])[k_M00];
-    real f_P0P = (dist.f[DIR_P0P])[k_000];
-    real f_M0M = (dist.f[DIR_M0M])[k_M0M];
-    real f_P0M = (dist.f[DIR_P0M])[k_00M];
-    real f_M0P = (dist.f[DIR_M0P])[k_M00];
-    real f_0PP = (dist.f[DIR_0PP])[k_000];
-    real f_0MM = (dist.f[DIR_0MM])[k_0MM];
-    real f_0PM = (dist.f[DIR_0PM])[k_00M];
-    real f_0MP = (dist.f[DIR_0MP])[k_0M0];
-    real f_PPP = (dist.f[DIR_PPP])[k_000];
-    real f_MPP = (dist.f[DIR_MPP])[k_M00];
-    real f_PMP = (dist.f[DIR_PMP])[k_0M0];
-    real f_MMP = (dist.f[DIR_MMP])[k_MM0];
-    real f_PPM = (dist.f[DIR_PPM])[k_00M];
-    real f_MPM = (dist.f[DIR_MPM])[k_M0M];
-    real f_PMM = (dist.f[DIR_PMM])[k_0MM];
-    real f_MMM = (dist.f[DIR_MMM])[k_MMM];
+    real f_000 = distribution[DIR_000];
+    real f_P00 = distribution[DIR_P00];
+    real f_M00 = distribution[DIR_M00];
+    real f_0P0 = distribution[DIR_0P0];
+    real f_0M0 = distribution[DIR_0M0];
+    real f_00P = distribution[DIR_00P];
+    real f_00M = distribution[DIR_00M];
+    real f_PP0 = distribution[DIR_PP0];
+    real f_MM0 = distribution[DIR_MM0];
+    real f_PM0 = distribution[DIR_PM0];
+    real f_MP0 = distribution[DIR_MP0];
+    real f_P0P = distribution[DIR_P0P];
+    real f_M0M = distribution[DIR_M0M];
+    real f_P0M = distribution[DIR_P0M];
+    real f_M0P = distribution[DIR_M0P];
+    real f_0PP = distribution[DIR_0PP];
+    real f_0MM = distribution[DIR_0MM];
+    real f_0PM = distribution[DIR_0PM];
+    real f_0MP = distribution[DIR_0MP];
+    real f_PPP = distribution[DIR_PPP];
+    real f_MPP = distribution[DIR_MPP];
+    real f_PMP = distribution[DIR_PMP];
+    real f_MMP = distribution[DIR_MMP];
+    real f_PPM = distribution[DIR_PPM];
+    real f_MPM = distribution[DIR_MPM];
+    real f_PMM = distribution[DIR_PMM];
+    real f_MMM = distribution[DIR_MMM];
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Define aliases to use the same variable for the moments (m's):
@@ -185,78 +148,17 @@ __global__ void K17CompressibleNavierStokes_Device(
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
-    real drho = ((((f_PPP + f_MMM) + (f_MPM + f_PMP)) + ((f_MPP + f_PMM) + (f_MMP + f_PPM))) +
-                (((f_0MP + f_0PM) + (f_0MM + f_0PP)) + ((f_M0P + f_P0M) + (f_M0M + f_P0P)) +
-                ((f_MP0 + f_PM0) + (f_MM0 + f_PP0))) +
-                ((f_M00 + f_P00) + (f_0M0 + f_0P0) + (f_00M + f_00P))) +
-                    f_000;
-
-    real oneOverRho = c1o1 / (c1o1 + drho);
-
-    real vvx = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_PMM - f_MPP) + (f_PPM - f_MMP))) +
-                (((f_P0M - f_M0P) + (f_P0P - f_M0M)) + ((f_PM0 - f_MP0) + (f_PP0 - f_MM0))) + (f_P00 - f_M00)) *
-            oneOverRho;
-    real vvy = ((((f_PPP - f_MMM) + (f_MPM - f_PMP)) + ((f_MPP - f_PMM) + (f_PPM - f_MMP))) +
-                (((f_0PM - f_0MP) + (f_0PP - f_0MM)) + ((f_MP0 - f_PM0) + (f_PP0 - f_MM0))) + (f_0P0 - f_0M0)) *
-            oneOverRho;
-    real vvz = ((((f_PPP - f_MMM) + (f_PMP - f_MPM)) + ((f_MPP - f_PMM) + (f_MMP - f_PPM))) +
-                (((f_0MP - f_0PM) + (f_0PP - f_0MM)) + ((f_M0P - f_P0M) + (f_P0P - f_M0M))) + (f_00P - f_00M)) *
-            oneOverRho;
+    real drho, oneOverRho, vvx, vvy, vvz;
+    getCompressibleMacroscopicValues(distribution, drho, oneOverRho, vvx, vvy, vvz);
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
-    real factor = c1o1;
-    for (size_t i = 1; i <= level; i++) {
-        factor *= c2o1;
-    }
-
-    real fx = forces[0];
-    real fy = forces[1];
-    real fz = forces[2];
-
-    if( applyBodyForce ){
-        fx += bodyForceX[k_000];
-        fy += bodyForceY[k_000];
-        fz += bodyForceZ[k_000];
-
-        // real vx = vvx;
-        // real vy = vvy;
-        // real vz = vvz;
-        real acc_x = fx * c1o2 / factor;
-        real acc_y = fy * c1o2 / factor;
-        real acc_z = fz * c1o2 / factor;
-
-        vvx += acc_x;
-        vvy += acc_y;
-        vvz += acc_z;
-
-        // Reset body force. To be used when not using round-off correction.
-        bodyForceX[k_000] = 0.0f;
-        bodyForceY[k_000] = 0.0f;
-        bodyForceZ[k_000] = 0.0f;
-
-        ////////////////////////////////////////////////////////////////////////////////////
-        //!> Round-off correction
-        //!
-        //!> Similar to Kahan summation algorithm (https://en.wikipedia.org/wiki/Kahan_summation_algorithm)
-        //!> Essentially computes the round-off error of the applied force and adds it in the next time step as a compensation.
-        //!> Seems to be necesseary at very high Re boundary layers, where the forcing and velocity can
-        //!> differ by several orders of magnitude.
-        //!> \note 16/05/2022: Testing, still ongoing!
-        //!
-        // bodyForceX[k_000] = (acc_x-(vvx-vx))*factor*c2o1;
-        // bodyForceY[k_000] = (acc_y-(vvy-vy))*factor*c2o1;
-        // bodyForceZ[k_000] = (acc_z-(vvz-vz))*factor*c2o1;
-    }
-    else{
-        vvx += fx * c1o2 / factor;
-        vvy += fy * c1o2 / factor;
-        vvz += fz * c1o2 / factor;
-    }
-
+    vvx += parameter.forceX;
+    vvy += parameter.forceY;
+    vvz += parameter.forceZ;
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
@@ -268,9 +170,9 @@ __global__ void K17CompressibleNavierStokes_Device(
     //! section 6 in \ref <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
     //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
     //!
-    real quadricLimitP = quadricLimiters[0];
-    real quadricLimitM = quadricLimiters[1];
-    real quadricLimitD = quadricLimiters[2];
+    real quadricLimitP = parameter.quadricLimiter[0];
+    real quadricLimitM = parameter.quadricLimiter[1];
+    real quadricLimitD = parameter.quadricLimiter[2];
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -335,8 +237,10 @@ __global__ void K17CompressibleNavierStokes_Device(
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate modified omega with turbulent viscosity
     //!
-    real omega = omega_in;
-    if(turbulenceModel != TurbulenceModel::None){ omega /= (c1o1 + c3o1*omega_in*turbulentViscosity[k_000]); }
+    real omega = parameter.omega;
+    if (turbulenceModel != TurbulenceModel::None) {
+        omega /= (c1o1 + c3o1 * parameter.omega * turbulentViscosity.value);
+    }
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
@@ -452,10 +356,10 @@ __global__ void K17CompressibleNavierStokes_Device(
     case TurbulenceModel::AMD:  //AMD is computed in separate kernel
         break;
     case TurbulenceModel::Smagorinsky:
-        turbulentViscosity[k_000] = calcTurbulentViscositySmagorinsky(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
+        turbulentViscosity.value = calcTurbulentViscositySmagorinsky(turbulentViscosity.SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
         break;
     case TurbulenceModel::QR:
-        turbulentViscosity[k_000] = calcTurbulentViscosityQR(SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
+        turbulentViscosity.value = calcTurbulentViscosityQR(turbulentViscosity.SGSconstant, dxux, dyuy, dzuz, Dxy, Dxz , Dyz);
         break;
     default:
         break;
@@ -487,19 +391,19 @@ __global__ void K17CompressibleNavierStokes_Device(
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
     //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
     //!
-    real wadjust = Oxyz + (c1o1 - Oxyz) * abs(m_111) / (abs(m_111) + quadricLimitD);
+    real wadjust = Oxyz + (c1o1 - Oxyz) * KERNEL_ABS(m_111) / (KERNEL_ABS(m_111) + quadricLimitD);
     m_111 += wadjust * (-m_111);
-    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxxyPyzz) / (abs(mxxyPyzz) + quadricLimitP);
+    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * KERNEL_ABS(mxxyPyzz) / (KERNEL_ABS(mxxyPyzz) + quadricLimitP);
     mxxyPyzz += wadjust * (-mxxyPyzz);
-    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxxyMyzz) / (abs(mxxyMyzz) + quadricLimitM);
+    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * KERNEL_ABS(mxxyMyzz) / (KERNEL_ABS(mxxyMyzz) + quadricLimitM);
     mxxyMyzz += wadjust * (-mxxyMyzz);
-    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxxzPyyz) / (abs(mxxzPyyz) + quadricLimitP);
+    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * KERNEL_ABS(mxxzPyyz) / (KERNEL_ABS(mxxzPyyz) + quadricLimitP);
     mxxzPyyz += wadjust * (-mxxzPyyz);
-    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxxzMyyz) / (abs(mxxzMyyz) + quadricLimitM);
+    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * KERNEL_ABS(mxxzMyyz) / (KERNEL_ABS(mxxzMyyz) + quadricLimitM);
     mxxzMyyz += wadjust * (-mxxzMyyz);
-    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * abs(mxyyPxzz) / (abs(mxyyPxzz) + quadricLimitP);
+    wadjust = OxyyPxzz + (c1o1 - OxyyPxzz) * KERNEL_ABS(mxyyPxzz) / (KERNEL_ABS(mxyyPxzz) + quadricLimitP);
     mxyyPxzz += wadjust * (-mxyyPxzz);
-    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * abs(mxyyMxzz) / (abs(mxyyMxzz) + quadricLimitM);
+    wadjust = OxyyMxzz + (c1o1 - OxyyMxzz) * KERNEL_ABS(mxyyMxzz) / (KERNEL_ABS(mxyyMxzz) + quadricLimitM);
     mxyyMxzz += wadjust * (-mxyyMxzz);
     //////////////////////////////////////////////////////////////////////////
     // no limiter
@@ -606,13 +510,12 @@ __global__ void K17CompressibleNavierStokes_Device(
     m_010 = -m_010;
     m_001 = -m_001;
 
-    //Write to array here to distribute read/write
-    if(writeMacroscopicVariables || turbulenceModel==TurbulenceModel::AMD)
-    {
-        rho[k_000] = drho;
-        vx[k_000] = vvx;
-        vy[k_000] = vvy;
-        vz[k_000] = vvz;
+    // Write to array here to distribute read/write
+    if (writeMacroscopicVariables || turbulenceModel == TurbulenceModel::AMD) {
+        macroscopicValues.rho = drho;
+        macroscopicValues.vx = vvx;
+        macroscopicValues.vy = vvy;
+        macroscopicValues.vz = vvz;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -658,69 +561,33 @@ __global__ void K17CompressibleNavierStokes_Device(
     backwardInverseChimeraWithK(m_210, m_211, m_212, vvz, vz2, c9o1, c1o9);
     backwardInverseChimeraWithK(m_220, m_221, m_222, vvz, vz2, c36o1, c1o36);
 
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Write distributions: style of reading and writing the distributions from/to
-    //! stored arrays dependent on timestep is based on the esoteric twist algorithm
-    //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
-    //! DOI:10.3390/computation5020019 ]</b></a>
-    //!
-    (dist.f[DIR_P00])[k_000] = f_M00;
-    (dist.f[DIR_M00])[k_M00] = f_P00;
-    (dist.f[DIR_0P0])[k_000] = f_0M0;
-    (dist.f[DIR_0M0])[k_0M0] = f_0P0;
-    (dist.f[DIR_00P])[k_000] = f_00M;
-    (dist.f[DIR_00M])[k_00M] = f_00P;
-    (dist.f[DIR_PP0])[k_000] = f_MM0;
-    (dist.f[DIR_MM0])[k_MM0] = f_PP0;
-    (dist.f[DIR_PM0])[k_0M0] = f_MP0;
-    (dist.f[DIR_MP0])[k_M00] = f_PM0;
-    (dist.f[DIR_P0P])[k_000] = f_M0M;
-    (dist.f[DIR_M0M])[k_M0M] = f_P0P;
-    (dist.f[DIR_P0M])[k_00M] = f_M0P;
-    (dist.f[DIR_M0P])[k_M00] = f_P0M;
-    (dist.f[DIR_0PP])[k_000] = f_0MM;
-    (dist.f[DIR_0MM])[k_0MM] = f_0PP;
-    (dist.f[DIR_0PM])[k_00M] = f_0MP;
-    (dist.f[DIR_0MP])[k_0M0] = f_0PM;
-    (dist.f[DIR_000])[k_000] = f_000;
-    (dist.f[DIR_PPP])[k_000] = f_MMM;
-    (dist.f[DIR_PMP])[k_0M0] = f_MPM;
-    (dist.f[DIR_PPM])[k_00M] = f_MMP;
-    (dist.f[DIR_PMM])[k_0MM] = f_MPP;
-    (dist.f[DIR_MPP])[k_M00] = f_PMM;
-    (dist.f[DIR_MMP])[k_MM0] = f_PPM;
-    (dist.f[DIR_MPM])[k_M0M] = f_PMP;
-    (dist.f[DIR_MMM])[k_MMM] = f_PPP;
+    distribution[DIR_P00] = f_P00;
+    distribution[DIR_M00] = f_M00;
+    distribution[DIR_0P0] = f_0P0;
+    distribution[DIR_0M0] = f_0M0;
+    distribution[DIR_00P] = f_00P;
+    distribution[DIR_00M] = f_00M;
+    distribution[DIR_PP0] = f_PP0;
+    distribution[DIR_MM0] = f_MM0;
+    distribution[DIR_PM0] = f_PM0;
+    distribution[DIR_MP0] = f_MP0;
+    distribution[DIR_P0P] = f_P0P;
+    distribution[DIR_M0M] = f_M0M;
+    distribution[DIR_P0M] = f_P0M;
+    distribution[DIR_M0P] = f_M0P;
+    distribution[DIR_0PP] = f_0PP;
+    distribution[DIR_0MM] = f_0MM;
+    distribution[DIR_0PM] = f_0PM;
+    distribution[DIR_0MP] = f_0MP;
+    distribution[DIR_000] = f_000;
+    distribution[DIR_PPP] = f_PPP;
+    distribution[DIR_PMP] = f_PMP;
+    distribution[DIR_PPM] = f_PPM;
+    distribution[DIR_PMM] = f_PMM;
+    distribution[DIR_MPP] = f_MPP;
+    distribution[DIR_MMP] = f_MMP;
+    distribution[DIR_MPM] = f_MPM;
+    distribution[DIR_MMM] = f_MMM;
 }
 
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::AMD, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::Smagorinsky, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::QR, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::None, true, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::AMD, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::Smagorinsky, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::QR, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::None, true, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::AMD, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::Smagorinsky, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::QR, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::None, false, true > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::AMD, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::Smagorinsky, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::QR, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
-
-template __global__ void K17CompressibleNavierStokes_Device < TurbulenceModel::None, false, false > ( real omega_in, uint* neighborX, uint* neighborY, uint* neighborZ, real* distributions, real* rho, real* vx, real* vy, real* vz, real* turbulentViscosity, real SGSconstant, unsigned long long numberOfLBnodes, int level, real* forces, real* bodyForceX, real* bodyForceY, real* bodyForceZ, real* quadricLimiters, bool isEvenTimestep, const uint *fluidNodeIndices, uint numberOfFluidNodes);
+} // namespace vf::lbm

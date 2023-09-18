@@ -10,6 +10,5 @@ class CheckParameterStrategy
 public:
     virtual ~CheckParameterStrategy() = default;
     virtual bool checkParameter(std::shared_ptr<Parameter> para) = 0;
-
 };
-#endif 
+#endif

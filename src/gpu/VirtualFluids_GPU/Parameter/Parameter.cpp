@@ -1008,7 +1008,7 @@ void Parameter::setUseWale(bool useWale)
     if (useWale)
         setUseTurbulentViscosity(true);
 }
-void Parameter::setTurbulenceModel(TurbulenceModel turbulenceModel)
+void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     this->turbulenceModel = turbulenceModel;
 }
@@ -2383,7 +2383,7 @@ bool Parameter::getUseWale()
 {
     return this->isWale;
 }
-TurbulenceModel Parameter::getTurbulenceModel()
+vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {
     return this->turbulenceModel;
 }

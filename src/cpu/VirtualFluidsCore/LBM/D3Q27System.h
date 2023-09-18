@@ -215,6 +215,33 @@ static const int ET_BNW = 11;
 static const int ET_TSW = 12;
 static const int ET_BNE = 12;
 
+static const int ET_P00 = 0;
+static const int ET_M00 = 0;
+static const int ET_0P0 = 1;
+static const int ET_0M0 = 1;
+static const int ET_00P = 2;
+static const int ET_00M = 2;
+static const int ET_PP0 = 3;
+static const int ET_MM0 = 3;
+static const int ET_PM0 = 4;
+static const int ET_MP0 = 4;
+static const int ET_P0P = 5;
+static const int ET_M0M = 5;
+static const int ET_P0M = 6;
+static const int ET_M0P = 6;
+static const int ET_0PP = 7;
+static const int ET_0MM = 7;
+static const int ET_0PM = 8;
+static const int ET_0MP = 8;
+static const int ET_PPP = 9;
+static const int ET_MMM = 9;
+static const int ET_MPP = 10;
+static const int ET_PMM = 10;
+static const int ET_PMP = 11;
+static const int ET_MPM = 11;
+static const int ET_MMP = 12;
+static const int ET_PPM = 12;
+
 //////////////////////////////////////////////////////////////////////////
 inline std::string getDirectionString(int direction)
 {

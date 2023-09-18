@@ -35,7 +35,6 @@
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
-#include <lbm/KernelParameter.h>
 #include <lbm/refinement/InterpolationFC.h>
 #include <lbm/interpolation/InterpolationCoefficients.h>
 
