@@ -4002,7 +4002,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
 					///////
 
                     // non Newtonian fluid collision factor
-                    if (phi[DIR_000] > phiLim /*- 0.3*/) {
+                    //if (phi[DIR_000] > phiLim /*- 0.3*/) {
                     //if (phi[DIR_000] > phiLim) {
                     //    real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
                     //    collFactorM = Rheology::getBinghamCollFactor(collFactorM, shearRate, c1o1);
