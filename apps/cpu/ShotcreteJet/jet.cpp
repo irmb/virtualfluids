@@ -189,6 +189,9 @@ int main(int argc, char *argv[])
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
+        SPtr<BC> unwettingNoSlipBC(new NoSlipBC(1));
+        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
+
         // concrete inflow boundary condition
         mu::Parser fct;
         fct.SetExpr("U");
@@ -633,7 +636,7 @@ int main(int argc, char *argv[])
         meshNozzleAirDistributor->readMeshFromSTLFileBinary(geoPath + "/01_Nozzle_Air_Distributor.stl", false);
         if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirDistributor:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleAirDistributor.get(), outputPath + "/geo/meshNozzleAirDistributor", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleAirDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirDistributor, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
+        SPtr<Interactor3D> intrNozzleAirDistributor = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleAirDistributor, grid, unwettingNoSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
         /////////////////////////////////////////////////////////////
         //SPtr<GbTriFaceMesh3D> meshNozzleAirInlet = std::make_shared<GbTriFaceMesh3D>();
         //if (myid == 0) UBLOG(logINFO, "Read meshNozzleAirInlet:start");
@@ -676,7 +679,7 @@ int main(int argc, char *argv[])
         meshNozzleVolcanNozzle2->readMeshFromSTLFileBinary(geoPath + "/Nozzle_Volcan_Nozzle_Shift.stl", true);
         if (myid == 0) UBLOG(logINFO, "Read meshNozzleVolcanNozzle2:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshNozzleVolcanNozzle2.get(), outputPath + "/geo/meshNozzleVolcanNozzle2", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
+        SPtr<Interactor3D> intrNozzleVolcanNozzle2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshNozzleVolcanNozzle2, grid, unwettingNoSlipBC, Interactor3D::SOLID, Interactor3D::POINTS);
         ///////////////////////////////////////////////////////////
         // box
         SPtr<D3Q27Interactor> intrBox = SPtr<D3Q27Interactor>(new D3Q27Interactor(gridCube, grid, noSlipBC, Interactor3D::INVERSESOLID));
@@ -720,7 +723,7 @@ int main(int argc, char *argv[])
         meshInflowPipe->readMeshFromSTLFileBinary(geoPath + "/InflowPipe.stl", true);
         if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe.get(), outputPath + "/geo/meshInflowPipe", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrInflowPipe = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
+        SPtr<Interactor3D> intrInflowPipe = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe, grid, unwettingNoSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
         ///////////////////////////////////////////////////////////
 
         ///////////////////////////////////////////////////////////
@@ -729,7 +732,7 @@ int main(int argc, char *argv[])
         meshInflowPipe2->readMeshFromSTLFileBinary(geoPath + "/LongTube2.stl", true);
         if (myid == 0) UBLOG(logINFO, "Read geoFluidArea:end");
         if (myid == 0) GbSystem3D::writeGeoObject(meshInflowPipe2.get(), outputPath + "/geo/LongTube", WbWriterVtkXmlBinary::getInstance());
-        SPtr<Interactor3D> intrInflowPipe2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe2, grid, noSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
+        SPtr<Interactor3D> intrInflowPipe2 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshInflowPipe2, grid, unwettingNoSlipBC, Interactor3D::SOLID, Interactor3D::EDGES);
         ///////////////////////////////////////////////////////////
 
         ///////////////////////////////////////////////////////////
@@ -982,7 +985,8 @@ int main(int argc, char *argv[])
             double x1c = -1.31431e3 + R;
             double x2c = 0.375582e3 + R;
             double Ri = 5e3;
-            double x3c = 0.136e3 + Ri;
+            //double x3c = 0.136e3 + Ri;
+            double x3c = -65 + Ri;
 
             mu::Parser fct1;
             // fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
@@ -1025,6 +1029,9 @@ int main(int argc, char *argv[])
 //
 //            if (myid == 0)  UBLOG(logINFO, "Restart - end");
 //}
+
+
+        if (myid == 0) VF_LOG_INFO("{}", Utilities::toString(grid, comm->getNumberOfProcesses()));
         
 
         grid->accept(bcVisitor);
