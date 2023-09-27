@@ -224,6 +224,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
     planeProbe->setProbePlane(5 * reference_diameter, -0.5 * L_y, -0.5 * L_z, dx, L_y, L_z);
     planeProbe->addStatistic(Statistic::Means);
+    planeProbe->addStatistic(Statistic::Variances);
     para->addProbe( planeProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
