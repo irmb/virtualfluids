@@ -75,19 +75,6 @@
 #include <string>
 #include <vector>
 
-//! \brief An enumeration for selecting a turbulence model
-enum class TurbulenceModel {
-   //! - Smagorinsky
-   Smagorinsky,
-    //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015), https://doi.org/10.1063/1.4928700
-   AMD,
-    //! - QR model by Verstappen 
-   QR,
-    //! - TODO: move the WALE model here from the old kernels
-    //WALE
-    //! - No turbulence model
-   None
-};
 
 //! \brief An enumeration for selecting a template of the collision kernel (CumulantK17)
 enum class CollisionTemplate {

@@ -41,7 +41,6 @@
 
 #include "lbm/constants/D3Q27.h"
 
-#include "lbm/KernelParameter.h"
 #include "lbm/MacroscopicQuantities.h"
 
 using namespace vf::basics::constant;

@@ -34,28 +34,59 @@
 #ifndef TURBULENT_VISCOSITY_INLINES_CUH_
 #define TURBULENT_VISCOSITY_INLINES_CUH_
 
-#include <cuda.h>
-#include <cuda_runtime.h>
+#ifndef __host__
+#define __host__
+#endif
+#ifndef __device__
+#define __device__
+#endif
 
-#include "LBM/LB.h" 
+#include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
 using namespace vf::basics::constant;
 
-__inline__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
+namespace vf::lbm
 {
-    return Cs*Cs * sqrt( c2o1 * ( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + Dxy*Dxy + Dxz*Dxz + Dyz*Dyz );
+
+//! \brief An enumeration for selecting a turbulence model
+enum class TurbulenceModel {
+    //! - Smagorinsky
+    Smagorinsky,
+    //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015),
+    //! https://doi.org/10.1063/1.4928700
+    AMD,
+    //! - QR model by Verstappen
+    QR,
+    //! - TODO: move the WALE model here from the old kernels
+    // WALE
+    //! - No turbulence model
+    None
+};
+
+inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz,
+                                                           real Dyz)
+{
+    return Cs * Cs * sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 }
 
-__inline__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz , real Dyz)
+template <typename T>
+__host__ __device__ int max( T a, T b )
 {
-        // ! Verstappen's QR model
-        //! Second invariant of the strain-rate tensor
-        real Q = c1o2*( dxux*dxux + dyuy*dyuy + dzuz*dzuz ) + c1o4*( Dxy*Dxy + Dxz*Dxz + Dyz*Dyz);
-        //! Third invariant of the strain-rate tensor (determinant)
-        // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
-        real R = - dxux*dyuy*dzuz + c1o4*( -Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
-        return C * max(R, c0o1) / Q;
+    return ( a > b ) ? a : b;
 }
 
-#endif //TURBULENT_VISCOSITY_H_e
+inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+{
+    // ! Verstappen's QR model
+    //! Second invariant of the strain-rate tensor
+    real Q = c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + c1o4 * (Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
+    //! Third invariant of the strain-rate tensor (determinant)
+    // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
+    real R = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
+    return C * max(R, c0o1) / Q;
+}
+
+} // namespace vf::lbm
+
+#endif //TURBULENT_VISCOSITY_H

@@ -38,14 +38,14 @@
 
 #include <variant>
 
-void TurbulenceModelFactory::setTurbulenceModel(TurbulenceModel _turbulenceModel)
+void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel)
 {
     this->turbulenceModel = _turbulenceModel;
     para->setTurbulenceModel(_turbulenceModel);
-    if(this->turbulenceModel != TurbulenceModel::None) para->setUseTurbulentViscosity(true);
+    if(this->turbulenceModel != vf::lbm::TurbulenceModel::None) para->setUseTurbulentViscosity(true);
 
     switch (this->turbulenceModel) {
-        case TurbulenceModel::AMD:
+        case vf::lbm::TurbulenceModel::AMD:
             this->turbulenceModelKernel = calcTurbulentViscosityAMD;
             break;
         default:
@@ -64,10 +64,10 @@ void TurbulenceModelFactory::readConfigFile(const vf::basics::ConfigurationFile 
     {
         std::string config = configData.getValue<std::string>("TurbulenceModel");
         
-        if      (config == "Smagorinsky") this->setTurbulenceModel( TurbulenceModel::Smagorinsky ); 
-        else if (config == "AMD")         this->setTurbulenceModel( TurbulenceModel::AMD );               
-        else if (config == "QR" )         this->setTurbulenceModel( TurbulenceModel::QR );             
-        else if (config == "None")        this->setTurbulenceModel( TurbulenceModel::None );           
+        if      (config == "Smagorinsky") this->setTurbulenceModel( vf::lbm::TurbulenceModel::Smagorinsky ); 
+        else if (config == "AMD")         this->setTurbulenceModel( vf::lbm::TurbulenceModel::AMD );               
+        else if (config == "QR" )         this->setTurbulenceModel( vf::lbm::TurbulenceModel::QR );             
+        else if (config == "None")        this->setTurbulenceModel( vf::lbm::TurbulenceModel::None );           
         else    std::runtime_error("TurbulenceModelFactory: Invalid turbulence model!");           
 
         VF_LOG_INFO("Turbulence model: {}", config);

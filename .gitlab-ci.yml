@@ -5,13 +5,9 @@ image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1
 
 stages:
   - build
-  - build_python
-  - container_upload
   - test
-  - benchmark
   - analyze
   - deploy
-  - release
 
 workflow:
   rules:
@@ -138,34 +134,6 @@ gcc_12_python:
     - pip install . -v
 
 ###############################################################################
-##                            Container Upload                               ##
-###############################################################################
-build_poiseuille_test_container:
-  image: 
-    name: quay.io/singularity/singularity:v3.10.2
-    entrypoint: [""]
-
-  stage: container_upload
-
-  rules:
-    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
-      when: always
-    - when: manual
-      allow_failure: true
-
-  tags:
-    - linux
-    - privileged
-
-  artifacts:
-    expire_in: 1 hrs
-    paths:
-      - Containers/PoiseuilleTestContainer.sif
-
-  script:
-    - singularity build "Containers/PoiseuilleTestContainer.sif" "Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def"
-
-###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
 gcc_12_unit_tests:
@@ -208,25 +176,6 @@ gcc_12_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
-
-###############################################################################
-gcc_12_python_hpc_test:
-  image: python:latest
-  stage: test
-
-  needs: ["build_poiseuille_test_container"]
-
-  rules:
-    - if: $REMOTE_USER && $REMOTE_HOST && $PRIVATE_KEY && $CI_PIPELINE_SOURCE == "schedule"
-      when: always
-    - when: manual
-      allow_failure: true
-
-  before_script:
-    - pip install hpc-rocket
-
-  script:
-    - hpc-rocket launch --watch Python/SlurmTests/poiseuille/rocket.yml
 
 ###############################################################################
 build-regression-tests-ci:
@@ -336,11 +285,10 @@ regression_test_8gpu:
     paths:
       - output/8GPU/slurm8GPU.out
     expire_in: 1 week
+
 ###############################################################################
-##                            Benchmark                                      ##
-###############################################################################
-nvidia_test:
-  stage: benchmark
+nvidia_env_test:
+  stage: test
 
   image: nvidia/cuda:12.1.1-devel-ubuntu22.04
 
@@ -356,7 +304,7 @@ nvidia_test:
 
 ###############################################################################
 gpu_numerical_tests:
-  stage: benchmark
+  stage: test
 
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -398,6 +346,24 @@ gpu_numerical_tests:
   artifacts:
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
+
+###############################################################################
+trigger-hpc-regression-tests:
+  stage: test
+
+  needs: []
+
+  rules:
+    - when: manual
+      allow_failure: true
+  
+  trigger:
+    include:
+      - local: regression-tests/hpc-test/.gitlab-ci-hpc-test.yml
+  
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+
 
 ###############################################################################
 ##                        Code analysis                                      ##
@@ -601,10 +567,14 @@ sanitizer-memory:
     - make -j8
     - ctest --output-on-failure
 
+
+
+###############################################################################
+##                               Deploy                                      ##
 ###############################################################################
 # doxgen
 pages:
-  stage: analyze
+  stage: deploy
 
   image: alpine
 
@@ -623,68 +593,8 @@ pages:
     paths:
     - public
 
-
 ###############################################################################
-##                               Deploy                                      ##
-###############################################################################
-.deploy_template:
-  stage: deploy
 
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
-    - echo $SSH_KEY >> ansible/private_key
-    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
-    - pip3 install ansible
-
-  variables:
-    SSH_KEY: ""
-    HOST: ""
-
-###############################################################################
-vf_to_phoenix:
-  extends: .deploy_template
-  stage: deploy
-  needs: ["gcc_12_python", "gcc_12_unit_tests", "gcc_12_python_bindings_test"]
-
-  when: manual
-
-  variables:
-    SSH_KEY: "$SSH_PRIVATE_KEY"
-    HOST: "phoenix.hlr.rz.tu-bs.de"
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_vf_deploy.yml
-
-  parallel:
-    matrix:
-      - ANSIBLE_MATRIX: 0
-        REMOTE_USER:
-          - y0054816
-
-###############################################################################
-vf_wheel_to_jupyterhub:
-  extends: .deploy_template
-  stage: deploy
-
-  only: ["manual"]
-
-  needs: ["gcc_12_python", "gcc_12_unit_tests", "gcc_12_python_bindings_test"]
-
-  variables:
-    HOST: "gitlab-runner01.irmb.bau.tu-bs.de"
-    SSH_KEY: "$SSH_PRIVATE_KEY"
-    REMOTE_USER: "runner"
-    jupyter_host: "runner"
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
-
-###############################################################################
 # sonar-scanner runs sonar-project.properties
 # the reports in this file need to match the artifacts.
 # This job only runs on the development branch of the parent repository, not on forks!

@@ -272,7 +272,7 @@ TEST_F(ParameterTestCumulantK17, CumulantK17_VelocityIsTooHigh_expectWarning)
 {
 
     para.setVelocityLB(0.11);
-    para.configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+    para.configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
     testing::internal::CaptureStdout();
 
     para.initLBMSimulationParameter();

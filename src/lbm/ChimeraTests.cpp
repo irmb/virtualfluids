@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 
-#include "Chimera.h"
+#include "ChimeraTransformation.h"
 
 #ifdef VF_DOUBLE_ACCURACY
 #define REAL_EQ(a) testing::DoubleEq(a)

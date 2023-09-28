@@ -16,4 +16,3 @@ RESULT_DATA_DIR=output/DrivenCavity
 
 
 run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
-

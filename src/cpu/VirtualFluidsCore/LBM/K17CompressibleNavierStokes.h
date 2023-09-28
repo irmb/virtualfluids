@@ -31,15 +31,14 @@
 //! \author Konstantin Kutscher, Martin Geier
 //=======================================================================================
 
-#ifndef CumulantK17LBMKernelUnified_h__
-#define CumulantK17LBMKernelUnified_h__
+#ifndef CPU_K17COMPRESSIBLENAVIERSTOKES_H
+#define CPU_K17COMPRESSIBLENAVIERSTOKES_H
+
+#include <memory>
+
+#include <basics/DataTypes.h>
 
 #include "LBMKernel.h"
-#include "BCSet.h"
-#include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
 
 //! \brief   Compressible cumulant LBM kernel.
 //! \details  LBM implementation that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
@@ -48,30 +47,19 @@
 //! <a href="http://dx.doi.org/10.1016/j.jcp.2017.05.040"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.05.040]</b></a>,
 //! <a href="http://dx.doi.org/10.1016/j.jcp.2017.07.004"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.07.004]</b></a>
 //!
-class CumulantK17LBMKernelUnified : public LBMKernel
+class K17CompressibleNavierStokes : public LBMKernel
 {
 public:
-    CumulantK17LBMKernelUnified();
-    ~CumulantK17LBMKernelUnified() = default;
+    K17CompressibleNavierStokes();
     void calculate(int step) override;
-    SPtr<LBMKernel> clone() override;
-    real getCalculationTime() override { return .0; }
+    std::shared_ptr<LBMKernel> clone() override;
+    real getCalculationTime() override
+    {
+        return .0;
+    }
 
-protected:
-    virtual void initDataSet();
-    real f[D3Q27System::ENDF + 1];
-
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr restDistributions;
-
-    mu::value_type muX1, muX2, muX3;
-    mu::value_type muDeltaT;
-    mu::value_type muNu;
-    real forcingX1;
-    real forcingX2;
-    real forcingX3;
+private:
+    void initDataSet();
 };
 
-
-#endif // CumulantK17LBMKernel_h__
+#endif

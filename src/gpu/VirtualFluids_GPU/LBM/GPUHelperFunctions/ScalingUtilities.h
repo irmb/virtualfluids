@@ -38,7 +38,6 @@
 #include <basics/constants/NumericConstants.h>
 
 #include <lbm/constants/D3Q27.h>
-#include <lbm/KernelParameter.h>
 #include <basics/DataTypes.h>
 
 #include <lbm/interpolation/InterpolationCoefficients.h>

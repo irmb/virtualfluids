@@ -117,7 +117,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     else
         para->setMaxLevel(1);
 
-    para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

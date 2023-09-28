@@ -30,14 +30,19 @@
 //! \ingroup LBM/GPUHelperFunctions
 //! \author Martin Schoenherr, Anna Wellmann, Soeren Peters
 //=======================================================================================
-#ifndef KERNEL_UTILITIES_H
-#define KERNEL_UTILITIES_H
+#ifndef GPU_DISTRIBUTION_HELPER_H
+#define GPU_DISTRIBUTION_HELPER_H
 
 #include "LBM/LB.h"
 
+#include <array>
 #include <cassert>
+#include <optional>
+
+#include <cuda_runtime.h>
 
 #include <lbm/constants/D3Q27.h>
+
 #include <basics/constants/NumericConstants.h>
 
 using namespace vf::basics::constant;
@@ -46,10 +51,19 @@ using namespace vf::lbm::dir;
 namespace vf::gpu
 {
 
+inline real getForceFactor(int level)
+{
+    real factor = c1o1;
+    for (size_t i = 1; i <= level; i++) {
+        factor *= c2o1;
+    }
+    factor = 1 / factor;
+    return factor;
+}
+
 __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
-    if (isEvenTimestep)
-    {
+    if (isEvenTimestep) {
         dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
         dist.f[DIR_P00] = &distributionArray[DIR_P00 * numberOfLBnodes];
         dist.f[DIR_M00] = &distributionArray[DIR_M00 * numberOfLBnodes];
@@ -77,37 +91,48 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
         dist.f[DIR_MMM] = &distributionArray[DIR_MMM * numberOfLBnodes];
         dist.f[DIR_PMM] = &distributionArray[DIR_PMM * numberOfLBnodes];
         dist.f[DIR_MPM] = &distributionArray[DIR_MPM * numberOfLBnodes];
+    } else {
+        dist.f[DIR_M00] = &distributionArray[DIR_P00 * numberOfLBnodes];
+        dist.f[DIR_P00] = &distributionArray[DIR_M00 * numberOfLBnodes];
+        dist.f[DIR_0M0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
+        dist.f[DIR_0P0] = &distributionArray[DIR_0M0 * numberOfLBnodes];
+        dist.f[DIR_00M] = &distributionArray[DIR_00P * numberOfLBnodes];
+        dist.f[DIR_00P] = &distributionArray[DIR_00M * numberOfLBnodes];
+        dist.f[DIR_MM0] = &distributionArray[DIR_PP0 * numberOfLBnodes];
+        dist.f[DIR_PP0] = &distributionArray[DIR_MM0 * numberOfLBnodes];
+        dist.f[DIR_MP0] = &distributionArray[DIR_PM0 * numberOfLBnodes];
+        dist.f[DIR_PM0] = &distributionArray[DIR_MP0 * numberOfLBnodes];
+        dist.f[DIR_M0M] = &distributionArray[DIR_P0P * numberOfLBnodes];
+        dist.f[DIR_P0P] = &distributionArray[DIR_M0M * numberOfLBnodes];
+        dist.f[DIR_M0P] = &distributionArray[DIR_P0M * numberOfLBnodes];
+        dist.f[DIR_P0M] = &distributionArray[DIR_M0P * numberOfLBnodes];
+        dist.f[DIR_0MM] = &distributionArray[DIR_0PP * numberOfLBnodes];
+        dist.f[DIR_0PP] = &distributionArray[DIR_0MM * numberOfLBnodes];
+        dist.f[DIR_0MP] = &distributionArray[DIR_0PM * numberOfLBnodes];
+        dist.f[DIR_0PM] = &distributionArray[DIR_0MP * numberOfLBnodes];
+        dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
+        dist.f[DIR_PPP] = &distributionArray[DIR_MMM * numberOfLBnodes];
+        dist.f[DIR_MMP] = &distributionArray[DIR_PPM * numberOfLBnodes];
+        dist.f[DIR_PMP] = &distributionArray[DIR_MPM * numberOfLBnodes];
+        dist.f[DIR_MPP] = &distributionArray[DIR_PMM * numberOfLBnodes];
+        dist.f[DIR_PPM] = &distributionArray[DIR_MMP * numberOfLBnodes];
+        dist.f[DIR_MMM] = &distributionArray[DIR_PPP * numberOfLBnodes];
+        dist.f[DIR_PMM] = &distributionArray[DIR_MPP * numberOfLBnodes];
+        dist.f[DIR_MPM] = &distributionArray[DIR_PMP * numberOfLBnodes];
     }
-    else
-    {
-         dist.f[DIR_M00] = &distributionArray[DIR_P00 * numberOfLBnodes];
-         dist.f[DIR_P00] = &distributionArray[DIR_M00 * numberOfLBnodes];
-         dist.f[DIR_0M0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
-         dist.f[DIR_0P0] = &distributionArray[DIR_0M0 * numberOfLBnodes];
-         dist.f[DIR_00M] = &distributionArray[DIR_00P * numberOfLBnodes];
-         dist.f[DIR_00P] = &distributionArray[DIR_00M * numberOfLBnodes];
-         dist.f[DIR_MM0] = &distributionArray[DIR_PP0 * numberOfLBnodes];
-         dist.f[DIR_PP0] = &distributionArray[DIR_MM0 * numberOfLBnodes];
-         dist.f[DIR_MP0] = &distributionArray[DIR_PM0 * numberOfLBnodes];
-         dist.f[DIR_PM0] = &distributionArray[DIR_MP0 * numberOfLBnodes];
-         dist.f[DIR_M0M] = &distributionArray[DIR_P0P * numberOfLBnodes];
-         dist.f[DIR_P0P] = &distributionArray[DIR_M0M * numberOfLBnodes];
-         dist.f[DIR_M0P] = &distributionArray[DIR_P0M * numberOfLBnodes];
-         dist.f[DIR_P0M] = &distributionArray[DIR_M0P * numberOfLBnodes];
-         dist.f[DIR_0MM] = &distributionArray[DIR_0PP * numberOfLBnodes];
-         dist.f[DIR_0PP] = &distributionArray[DIR_0MM * numberOfLBnodes];
-         dist.f[DIR_0MP] = &distributionArray[DIR_0PM * numberOfLBnodes];
-         dist.f[DIR_0PM] = &distributionArray[DIR_0MP * numberOfLBnodes];
-         dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
-         dist.f[DIR_PPP] = &distributionArray[DIR_MMM * numberOfLBnodes];
-         dist.f[DIR_MMP] = &distributionArray[DIR_PPM * numberOfLBnodes];
-         dist.f[DIR_PMP] = &distributionArray[DIR_MPM * numberOfLBnodes];
-         dist.f[DIR_MPP] = &distributionArray[DIR_PMM * numberOfLBnodes];
-         dist.f[DIR_PPM] = &distributionArray[DIR_MMP * numberOfLBnodes];
-         dist.f[DIR_MMM] = &distributionArray[DIR_PPP * numberOfLBnodes];
-         dist.f[DIR_PMM] = &distributionArray[DIR_MPP * numberOfLBnodes];
-         dist.f[DIR_MPM] = &distributionArray[DIR_PMP * numberOfLBnodes];
-    }
+}
+
+/**
+*  Getting references to the 27 directions.
+*  @params distributions 1D real* array containing all data (number of elements = 27 * matrix_size)
+*  @params matrix_size number of discretizations nodes
+*  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
+*  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
+*/
+__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes, const bool isEvenTimestep){
+    DistributionReferences27 distribution_references;
+    getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
+    return distribution_references;
 }
 
 __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances, const unsigned int numberOfSubgridIndices)
@@ -268,8 +293,33 @@ __device__ __inline__ void read(real *f, const Distributions27 &dist, const List
 
 __device__ __inline__ void readInverse(real *f, const Distributions27 &dist, const ListIndices &indices)
 {
-    //TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/101
-    assert((false) || !fprintf(stderr, "Not implemented yet.\n")); 
+    f[DIR_000] = (dist.f[DIR_000])[indices.k_000];
+    f[DIR_P00] = (dist.f[DIR_P00])[indices.k_000];
+    f[DIR_M00] = (dist.f[DIR_M00])[indices.k_M00];
+    f[DIR_0P0] = (dist.f[DIR_0P0])[indices.k_000];
+    f[DIR_0M0] = (dist.f[DIR_0M0])[indices.k_0M0];
+    f[DIR_00P] = (dist.f[DIR_00P])[indices.k_000];
+    f[DIR_00M] = (dist.f[DIR_00M])[indices.k_00M];
+    f[DIR_PP0] = (dist.f[DIR_PP0])[indices.k_000];
+    f[DIR_MM0] = (dist.f[DIR_MM0])[indices.k_MM0];
+    f[DIR_PM0] = (dist.f[DIR_PM0])[indices.k_0M0];
+    f[DIR_MP0] = (dist.f[DIR_MP0])[indices.k_M00];
+    f[DIR_P0P] = (dist.f[DIR_P0P])[indices.k_000];
+    f[DIR_M0M] = (dist.f[DIR_M0M])[indices.k_M0M];
+    f[DIR_P0M] = (dist.f[DIR_P0M])[indices.k_00M];
+    f[DIR_M0P] = (dist.f[DIR_M0P])[indices.k_M00];
+    f[DIR_0PP] = (dist.f[DIR_0PP])[indices.k_000];
+    f[DIR_0MM] = (dist.f[DIR_0MM])[indices.k_0MM];
+    f[DIR_0PM] = (dist.f[DIR_0PM])[indices.k_00M];
+    f[DIR_0MP] = (dist.f[DIR_0MP])[indices.k_0M0];
+    f[DIR_PPP] = (dist.f[DIR_PPP])[indices.k_000];
+    f[DIR_MPP] = (dist.f[DIR_MPP])[indices.k_M00];
+    f[DIR_PMP] = (dist.f[DIR_PMP])[indices.k_0M0];
+    f[DIR_MMP] = (dist.f[DIR_MMP])[indices.k_MM0];
+    f[DIR_PPM] = (dist.f[DIR_PPM])[indices.k_00M];
+    f[DIR_MPM] = (dist.f[DIR_MPM])[indices.k_M0M];
+    f[DIR_PMM] = (dist.f[DIR_PMM])[indices.k_0MM];
+    f[DIR_MMM] = (dist.f[DIR_MMM])[indices.k_MMM];
 }
 
 
@@ -278,7 +328,7 @@ __device__ __inline__ void readInverse(real *f, const Distributions27 &dist, con
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__inline__ __device__ void write(Distributions27 &destination, const ListIndices &indices, const real* f)
+__inline__ __device__ void write(Distributions27& destination, const ListIndices& indices, const real* f)
 {
     (destination.f[DIR_000])[indices.k_000] = f[DIR_000];
     (destination.f[DIR_P00])[indices.k_000] = f[DIR_P00];
@@ -309,14 +359,36 @@ __inline__ __device__ void write(Distributions27 &destination, const ListIndices
     (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_MMM];
 }
 
-__inline__ __device__ void writeInverse(Distributions27 &destination, const ListIndices &indices, const real* f)
+__inline__ __device__ void writeInverse(Distributions27& destination, const ListIndices& indices, const real* f)
 {
-    //TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/101
-    assert((false) || !fprintf(stderr, "Not implemented yet.\n")); 
+    (destination.f[DIR_000])[indices.k_000] = f[DIR_000];
+    (destination.f[DIR_P00])[indices.k_000] = f[DIR_M00];
+    (destination.f[DIR_M00])[indices.k_M00] = f[DIR_P00];
+    (destination.f[DIR_0P0])[indices.k_000] = f[DIR_0M0];
+    (destination.f[DIR_0M0])[indices.k_0M0] = f[DIR_0P0];
+    (destination.f[DIR_00P])[indices.k_000] = f[DIR_00M];
+    (destination.f[DIR_00M])[indices.k_00M] = f[DIR_00P];
+    (destination.f[DIR_PP0])[indices.k_000] = f[DIR_MM0];
+    (destination.f[DIR_MM0])[indices.k_MM0] = f[DIR_PP0];
+    (destination.f[DIR_PM0])[indices.k_0M0] = f[DIR_MP0];
+    (destination.f[DIR_MP0])[indices.k_M00] = f[DIR_PM0];
+    (destination.f[DIR_P0P])[indices.k_000] = f[DIR_M0M];
+    (destination.f[DIR_M0M])[indices.k_M0M] = f[DIR_P0P];
+    (destination.f[DIR_P0M])[indices.k_00M] = f[DIR_M0P];
+    (destination.f[DIR_M0P])[indices.k_M00] = f[DIR_P0M];
+    (destination.f[DIR_0PP])[indices.k_000] = f[DIR_0MM];
+    (destination.f[DIR_0MM])[indices.k_0MM] = f[DIR_0PP];
+    (destination.f[DIR_0PM])[indices.k_00M] = f[DIR_0MP];
+    (destination.f[DIR_0MP])[indices.k_0M0] = f[DIR_0PM];
+    (destination.f[DIR_PPP])[indices.k_000] = f[DIR_MMM];
+    (destination.f[DIR_MPP])[indices.k_M00] = f[DIR_PMM];
+    (destination.f[DIR_PMP])[indices.k_0M0] = f[DIR_MPM];
+    (destination.f[DIR_MMP])[indices.k_MM0] = f[DIR_PPM];
+    (destination.f[DIR_PPM])[indices.k_00M] = f[DIR_MMP];
+    (destination.f[DIR_MPM])[indices.k_M0M] = f[DIR_PMP];
+    (destination.f[DIR_PMM])[indices.k_0MM] = f[DIR_MPP];
+    (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_PPP];
 }
-
-
-
 
 __inline__ __device__ real calculateOmega(const real omega_old, real turbulenceViscosity)
 {
