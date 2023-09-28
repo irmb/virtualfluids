@@ -39,7 +39,7 @@
 #include "LBM/GPUHelperFunctions/CoordinateTransformation.h"
 #include "GPU/GridScaling/interpolateStaticToRotatingInlines.h"
 
-#include <lbm/refinement/Coefficients.h>
+#include <lbm/interpolation/InterpolationCoefficients.h>
 #include <lbm/refinement/InterpolationCF.h>
 
 using namespace vf::lbm;
@@ -117,7 +117,7 @@ __global__ void interpolateStaticToRotating(
     const real cellCoordDestinationX = (coordSourceX[sourceIndex] - globalCoordDestinationX) / dx + c1o2;
     const real cellCoordDestinationY = (coordSourceY[sourceIndex] - globalCoordDestinationY) / dx + c1o2;
     const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] - globalCoordDestinationZ) / dx + c1o2;
-    vf::lbm::Coefficients coefficients;
+    vf::lbm::InterpolationCoefficients coefficients;
     momentsSet.calculateCoefficients(coefficients, cellCoordDestinationX, cellCoordDestinationY, cellCoordDestinationZ);
 
     ////////////////////////////////////////////////////////////////////////////////////

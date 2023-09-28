@@ -213,6 +213,7 @@ __inline__ __device__ real getInterpolatedDistributionForVeloWithPressureBC(cons
 
 __inline__ __device__ unsigned int getNodeIndex()
 {
+    // get node index from CUDA threadIdx, blockIdx, blockDim and gridDim.
     const unsigned x = threadIdx.x;
     const unsigned y = blockIdx.x;
     const unsigned z = blockIdx.y;

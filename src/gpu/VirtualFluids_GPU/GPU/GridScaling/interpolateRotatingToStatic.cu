@@ -40,7 +40,7 @@
 #include "GPU/GridScaling/interpolateRotatingToStaticInlines.h"
 
 #include <lbm/MacroscopicQuantities.h>
-#include <lbm/refinement/Coefficients.h>
+#include <lbm/interpolation/InterpolationCoefficients.h>
 #include <lbm/refinement/InterpolationCF.h>
 
 
@@ -289,7 +289,7 @@ __global__ void interpolateRotatingToStatic(
     const real cellCoordDestinationY = (coordSourceY[sourceIndex] - rotatedCoordDestinationY) / dx + c1o2;
     const real cellCoordDestinationZ = (coordSourceZ[sourceIndex] - rotatedCoordDestinationZ) / dx + c1o2;
     momentsSet.addToVelocity(tangentialVelocitiesX, tangentialVelocitiesY, tangentialVelocitiesZ);
-    vf::lbm::Coefficients coefficients;
+    vf::lbm::InterpolationCoefficients coefficients;
     momentsSet.calculateCoefficients(coefficients, cellCoordDestinationX, cellCoordDestinationY, cellCoordDestinationZ);
 
     ////////////////////////////////////////////////////////////////////////////////////

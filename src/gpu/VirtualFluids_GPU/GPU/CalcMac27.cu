@@ -272,6 +272,33 @@ __global__ void LBCalcMacSP27(
 
 
 
+__inline__ __device__ void calcMacCompSP27ForNode(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD,
+                                                  unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
+                                                  unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                                                  real* distributions, bool isEvenTimestep, unsigned int nodeIndex)
+{
+    pressD[nodeIndex] = c0o1;
+    rhoD[nodeIndex] = c0o1;
+    vxD[nodeIndex] = c0o1;
+    vyD[nodeIndex] = c0o1;
+    vzD[nodeIndex] = c0o1;
+
+    if (!isValidFluidNode(geoD[nodeIndex]))
+       return;
+
+    Distributions27 dist;
+    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
+
+    real distribution[27];
+    vf::gpu::read(distribution, dist, listIndices);
+
+    rhoD[nodeIndex] = vf::lbm::getDensity(distribution);
+    vxD[nodeIndex] = vf::lbm::getCompressibleVelocityX1(distribution, rhoD[nodeIndex]);
+    vyD[nodeIndex] = vf::lbm::getCompressibleVelocityX2(distribution, rhoD[nodeIndex]);
+    vzD[nodeIndex] = vf::lbm::getCompressibleVelocityX3(distribution, rhoD[nodeIndex]);
+    pressD[nodeIndex] = vf::lbm::getPressure(distribution, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMacCompSP27(
@@ -288,35 +315,14 @@ __global__ void LBCalcMacCompSP27(
     real *distributions,
     bool isEvenTimestep)
 {
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-    //!
     const unsigned nodeIndex = getNodeIndex();
 
     if(nodeIndex >= numberOfLBnodes)
         return;
 
-    pressD[nodeIndex] = c0o1;
-    rhoD[nodeIndex]   = c0o1;
-    vxD[nodeIndex]    = c0o1;
-    vyD[nodeIndex]    = c0o1;
-    vzD[nodeIndex]    = c0o1;
-
-    if (!isValidFluidNode(geoD[nodeIndex]))
-        return;
-
-    Distributions27 dist;
-    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
-    vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
-
-    real distribution[27];
-    vf::gpu::read(distribution, dist, listIndices);
-
-    rhoD[nodeIndex] = vf::lbm::getDensity(distribution);
-    vxD[nodeIndex] = vf::lbm::getCompressibleVelocityX1(distribution, rhoD[nodeIndex]);
-    vyD[nodeIndex] = vf::lbm::getCompressibleVelocityX2(distribution, rhoD[nodeIndex]);
-    vzD[nodeIndex] = vf::lbm::getCompressibleVelocityX3(distribution, rhoD[nodeIndex]);
-    pressD[nodeIndex] = vf::lbm::getPressure(distribution, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]);
+    calcMacCompSP27ForNode(vxD, vyD, vzD, rhoD, pressD, geoD,
+                           neighborX, neighborY, neighborZ,
+                           numberOfLBnodes, distributions, isEvenTimestep, nodeIndex);
 }
 
 
@@ -339,37 +345,16 @@ __global__ void LBCalcMacCompSP27RotatingToStatic(
     real angleZ
     )
 {
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-    //!
     const unsigned nodeIndex = getNodeIndex();
 
     if(nodeIndex >= numberOfLBnodes)
         return;
 
-    pressD[nodeIndex] = c0o1;
-    rhoD[nodeIndex]   = c0o1;
-    vxD[nodeIndex]    = c0o1;
-    vyD[nodeIndex]    = c0o1;
-    vzD[nodeIndex]    = c0o1;
+    calcMacCompSP27ForNode(vxD, vyD, vzD, rhoD, pressD, geoD,
+                           neighborX, neighborY, neighborZ,
+                           numberOfLBnodes, distributions, isEvenTimestep, nodeIndex);
 
-    if (!isValidFluidNode(geoD[nodeIndex]))
-        return;
-
-    DistributionWrapper distr_wrapper(distributions, numberOfLBnodes, isEvenTimestep, nodeIndex, neighborX, neighborY, neighborZ);
-    const auto &distribution = distr_wrapper.distribution;
-
-    rhoD[nodeIndex]   = vf::lbm::getDensity(distribution.f);
-    real velocityRotatingX    = vf::lbm::getCompressibleVelocityX1(distribution.f, rhoD[nodeIndex]);
-    real velocityRotatingY    = vf::lbm::getCompressibleVelocityX2(distribution.f, rhoD[nodeIndex]);
-    real velocityRotatingZ    = vf::lbm::getCompressibleVelocityX3(distribution.f, rhoD[nodeIndex]);
-    pressD[nodeIndex] = vf::lbm::getPressure(distribution.f, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]); 
-
-    rotateDataFromGlobalToRotating(velocityRotatingX, velocityRotatingY, velocityRotatingZ, angleX, angleY, angleZ);
-
-    vxD[nodeIndex] = velocityRotatingX;
-    vyD[nodeIndex] = velocityRotatingY;
-    vzD[nodeIndex] = velocityRotatingZ;
+    rotateDataFromGlobalToRotating(vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex], angleX, angleY, angleZ);
 }
 
 
