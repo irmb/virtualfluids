@@ -74,6 +74,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorFarm.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/Probe.h"
 #include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
 #include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
 #include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
@@ -171,7 +172,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -190,7 +191,6 @@ void multipleLevel(const std::string& configPath)
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
-
     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
@@ -206,25 +206,26 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int level = 0; // grid level at which the turbine samples velocities and distributes forces
-    const real epsilon = dx*exp2(-level)*1.5; // width of gaussian smearing
+    const real smearing_width = dx*exp2(-level)*1.5; // width of gaussian smearing
     const real density = 1.225f;
     const uint nBlades = 3;
     const uint nBladeNodes = 32;
     const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
-    const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
+    const real rotor_speed = 2*tipspeed_ratio*velocity/reference_diameter;
 
 
-    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
+    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, smearing_width, level, dt, dx, true);
     std::vector<real> bladeRadii;
     real dr = reference_diameter/(nBladeNodes*2);
     for(uint node=0; node<nBladeNodes; node++){ bladeRadii.emplace_back(dr*(node+1)); }
-    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
+    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, rotor_speed, 0, 0, bladeRadii);
     para->addActuator( actuator_farm );
 
     SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
     planeProbe->setProbePlane(5 * reference_diameter, -0.5 * L_y, -0.5 * L_z, dx, L_y, L_z);
     planeProbe->addStatistic(Statistic::Means);
     planeProbe->addStatistic(Statistic::Variances);
+    planeProbe->addStatistic(Statistic::Instantaneous);
     para->addProbe( planeProbe );
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
