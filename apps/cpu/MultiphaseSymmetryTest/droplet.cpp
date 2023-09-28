@@ -30,7 +30,7 @@ void run(string configname)
         real nuG             = config.getValue<real>("nuG");
         real densityRatio    = config.getValue<real>("densityRatio");
         real sigma           = config.getValue<real>("sigma");
-        int interfaceThickness = config.getValue<int>("interfaceThickness");
+        real interfaceThickness = config.getValue<real>("interfaceThickness");
         real radius          = config.getValue<real>("radius");
         real theta           = config.getValue<real>("contactAngle");
         //double gr              = config.getValue<double>("gravity");
@@ -178,7 +178,7 @@ void run(string configname)
         kernel->setMultiphaseModelParameters(beta, kappa);
         kernel->setContactAngle(theta);
 
-        real sigma_LB = 1e-3;
+        real sigma_LB = 0*1e-3;
 
         kernel->setSigma(sigma_LB);
 
@@ -205,7 +205,7 @@ void run(string configname)
         grid->setDeltaX(dx);
         grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
         grid->setPeriodicX1(true);
-        grid->setPeriodicX2(false);
+        grid->setPeriodicX2(true);
         grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
@@ -261,8 +261,8 @@ void run(string configname)
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
             InteractorsHelper intHelper(grid, metisVisitor, true);
-            intHelper.addInteractor(wallYminInt);
-            intHelper.addInteractor(wallYmaxInt);
+            //intHelper.addInteractor(wallYminInt);
+            //intHelper.addInteractor(wallYmaxInt);
             intHelper.selectBlocks();
 
             ppblocks->update(0);
@@ -321,7 +321,7 @@ void run(string configname)
             fct1.DefineConst("interfaceThickness", interfaceThickness);
 
             mu::Parser fct2;
-            fct2.SetExpr("0.5*uLB-uLB*0.5*tanh(2*(sqrt(0*(x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct2.SetExpr("0.5*uLB-uLB*0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness*1.e10)");
             //fct2.SetExpr("uLB");
             fct2.DefineConst("uLB", uLB);
             fct2.DefineConst("x1c", x1c);

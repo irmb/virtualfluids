@@ -122,11 +122,6 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
 						bca->addDistributionsH(distributionsH);
                         if (distributionsH2)
                             bca->addDistributionsH2(distributionsH2);
-                        bca->setCollFactorL(collFactorL);
-						bca->setCollFactorG(collFactorG);
-						bca->setCollFactorPh(collFactorPh);
-						bca->setDensityRatio(densityRatio);
-						bca->setPhiBound(phiL, phiH);
                         bca->setCompressible(compressible);
                         bca->setBcArray(bcArray);
                         bcSet->addBC(bca);

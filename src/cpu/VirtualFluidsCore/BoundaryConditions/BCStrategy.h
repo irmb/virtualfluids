@@ -87,12 +87,6 @@ public:
     void setCompressible(bool c);
     void setCollFactor(real cf);
 
-    void setCollFactorL(real cf);
-    void setCollFactorG(real cf);
-    void setCollFactorPh(real cf);
-    void setDensityRatio(real dr);
-    void setPhiBound(real phiL, real phiH);
-
     char getType();
     bool isPreCollision();
     virtual SPtr<BCStrategy> clone() = 0;
@@ -115,9 +109,6 @@ protected:
     SPtr<Block3D> block;
 
     real collFactor;
-    real collFactorL, collFactorG, collFactorPh;
-    real densityRatio;
-    real phiL, phiH;
     int x1, x2, x3;
 
     real compressibleFactor;
