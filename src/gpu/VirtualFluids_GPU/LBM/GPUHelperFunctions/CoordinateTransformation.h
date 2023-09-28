@@ -30,7 +30,7 @@ __inline__ __host__ __device__ void rotateDataFromRotatingToGlobal(real &datumX,
     datumZ = datumZTemp;
 }
 
-__inline__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX, real localY,
+__inline__ __host__ __device__ void transformRotatingToGlobal(real &globalX, real &globalY, real &globalZ, real localX, real localY,
                                                      real localZ, real centerCoordX, real centerCoordY, real centerCoordZ,
                                                      real angleX, real angleY, real angleZ)
 {
@@ -38,20 +38,7 @@ __inline__ __device__ void transformRotatingToGlobal(real &globalX, real &global
     globalY = localY;
     globalZ = localZ;
 
-    // rotate
-    if (angleX != 0) {
-        // rotate in x
-        globalY = localY * cos(angleX) - localZ * sin(angleX);
-        globalZ = localY * sin(angleX) + localZ * cos(angleX);
-    } else if (angleY != 0) {
-        // rotate in y
-        globalX = localX * cos(angleY) + localZ * sin(angleY);
-        globalZ = -localX * sin(angleY) + localZ * cos(angleY);
-    } else if (angleZ != 0) {
-        // rotate in z
-        globalX = localX * cos(angleZ) - localY * sin(angleZ);
-        globalY = localX * sin(angleZ) + localY * cos(angleZ);
-    }
+    rotateDataFromRotatingToGlobal(globalX, globalY, globalZ, angleX, angleY, angleZ);
 
     // translate
     globalX += centerCoordX;
@@ -60,7 +47,7 @@ __inline__ __device__ void transformRotatingToGlobal(real &globalX, real &global
 }
 
 
-__inline__ __device__ void rotateDataFromGlobalToRotating(real &datumX, real &datumY, real &datumZ, real angleX,
+__inline__ __host__ __device__ void rotateDataFromGlobalToRotating(real &datumX, real &datumY, real &datumZ, real angleX,
                                                               real angleY, real angleZ)
 {
     real datumXTemp = datumX;
@@ -83,7 +70,7 @@ __inline__ __device__ void rotateDataFromGlobalToRotating(real &datumX, real &da
     datumZ = datumZTemp;
 }
 
-__inline__ __device__ void transformGlobalToRotating(real &rotatingX, real &rotatingY, real &rotatingZ, real globalX,
+__inline__ __host__ __device__ void transformGlobalToRotating(real &rotatingX, real &rotatingY, real &rotatingZ, real globalX,
                                                               real globalY, real globalZ, real centerCoordX, real centerCoordY,
                                                               real centerCoordZ, real angleX, real angleY, real angleZ)
 {
@@ -97,20 +84,7 @@ __inline__ __device__ void transformGlobalToRotating(real &rotatingX, real &rota
     rotatingY = globalY;
     rotatingZ = globalZ;
 
-    // rotate
-    if (angleX != 0) {
-        // rotate in x
-        rotatingY = globalY * cos(angleX) + globalZ * sin(angleX);
-        rotatingZ = -globalY * sin(angleX) + globalZ * cos(angleX);
-    } else if (angleY != 0) {
-        // rotate in y
-        rotatingX = globalX * cos(angleY) - globalZ * sin(angleY);
-        rotatingZ = globalX * sin(angleY) + globalZ * cos(angleY);
-    } else if (angleZ != 0) {
-        // rotate in z
-        rotatingX = globalX * cos(angleZ) + globalY * sin(angleZ);
-        rotatingY = -globalX * sin(angleZ) + globalY * cos(angleZ);
-    }
+    rotateDataFromGlobalToRotating(rotatingX, rotatingY, rotatingZ, angleX, angleY, angleZ);
 }
 
 #endif
