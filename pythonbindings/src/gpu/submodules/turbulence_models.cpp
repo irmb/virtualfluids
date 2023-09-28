@@ -37,6 +37,7 @@
 namespace turbulence_model
 {
     namespace py = pybind11;
+    using namespace vf::lbm;
 
     void makeModule(py::module_ &parentModule)
     {

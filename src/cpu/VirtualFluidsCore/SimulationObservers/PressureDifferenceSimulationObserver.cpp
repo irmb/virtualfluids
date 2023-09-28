@@ -22,6 +22,8 @@ PressureDifferenceSimulationObserver::PressureDifferenceSimulationObserver(SPtr<
 
     : SimulationObserver(grid, s), path(path), h1(h1), h2(h2), comm(comm)
 {
+    using namespace vf::basics::constant;
+
     if (comm->getProcessID() == comm->getRoot()) {
         std::ofstream ostr;
         std::string fname = path;
@@ -64,7 +66,7 @@ PressureDifferenceSimulationObserver::PressureDifferenceSimulationObserver(SPtr<
         ostr << std::endl;
         ostr.close();
 
-        factor1 = (1.0 / 3.0) * rhoReal * (uReal / uLB) * (uReal / uLB);
+        factor1 = (c1o1 / c3o1) * rhoReal * (uReal / uLB) * (uReal / uLB);
         factor2 = rhoReal * (uReal / uLB) * (uReal / uLB);
     }
 }

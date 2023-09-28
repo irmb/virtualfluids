@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "K17CompressibleNavierStokes.h"
 #include "VirtualFluids.h"
 
 using namespace std;
@@ -245,7 +246,7 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
+         SPtr<LBMKernel> kernel(new K17CompressibleNavierStokes());
 
          SPtr<BCSet> bcProc(new BCSet());
          kernel->setBCSet(bcProc);

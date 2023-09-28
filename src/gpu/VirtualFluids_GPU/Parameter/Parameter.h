@@ -45,6 +45,8 @@
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
+#include <lbm/collision/TurbulentViscosity.h>
+
 #include "VirtualFluids_GPU_export.h"
 
 struct curandStateXORWOW;
@@ -604,7 +606,7 @@ public:
     void setConcFile(bool concFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
-    void setTurbulenceModel(TurbulenceModel turbulenceModel);
+    void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
@@ -900,7 +902,7 @@ public:
     bool getConcFile();
     bool getUseMeasurePoints();
     bool getUseWale();
-    TurbulenceModel getTurbulenceModel();
+    vf::lbm::TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
     real getSGSConstant();
     bool getHasWallModelMonitor();
@@ -1087,11 +1089,11 @@ private:
     std::string concentration;
     std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
     
-    TurbulenceModel turbulenceModel{ TurbulenceModel::None };
+    vf::lbm::TurbulenceModel turbulenceModel{ vf::lbm::TurbulenceModel::None };
 
 
     // Kernel
-    std::string mainKernel{ vf::CollisionKernel::Compressible::K17CompressibleNavierStokes };
+    std::string mainKernel{ vf::collisionKernel::compressible::K17CompressibleNavierStokes };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

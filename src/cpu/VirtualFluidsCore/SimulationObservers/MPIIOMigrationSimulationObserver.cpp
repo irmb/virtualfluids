@@ -776,23 +776,23 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
                     bouCond->velocityBoundaryFlags  = bcArr->bcvector[bc]->getVelocityBoundary();
                     bouCond->densityBoundaryFlags   = bcArr->bcvector[bc]->getDensityBoundary();
                     bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-                    bouCond->bcVelocityX1           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX1();
-                    bouCond->bcVelocityX2           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX2();
-                    bouCond->bcVelocityX3           = (real)bcArr->bcvector[bc]->getBoundaryVelocityX3();
-                    bouCond->bcDensity              = (real)bcArr->bcvector[bc]->getBoundaryDensity();
-                    bouCond->bcPhaseField           = (real)bcArr->bcvector[bc]->getBoundaryPhaseField();
-                    bouCond->nx1                    = (real)bcArr->bcvector[bc]->nx1;
-                    bouCond->nx2                    = (real)bcArr->bcvector[bc]->nx2;
-                    bouCond->nx3                    = (real)bcArr->bcvector[bc]->nx3;
+                    bouCond->bcVelocityX1           = bcArr->bcvector[bc]->getBoundaryVelocityX1();
+                    bouCond->bcVelocityX2           = bcArr->bcvector[bc]->getBoundaryVelocityX2();
+                    bouCond->bcVelocityX3           = bcArr->bcvector[bc]->getBoundaryVelocityX3();
+                    bouCond->bcDensity              = bcArr->bcvector[bc]->getBoundaryDensity();
+                    bouCond->bcPhaseField           = bcArr->bcvector[bc]->getBoundaryPhaseField();
+                    bouCond->nx1                    = bcArr->bcvector[bc]->nx1;
+                    bouCond->nx2                    = bcArr->bcvector[bc]->nx2;
+                    bouCond->nx3                    = bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
-                        bouCond->q[iq] = (real)bcArr->bcvector[bc]->getQ(iq);
+                        bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
                     bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
                 }
 
                 bcVector[ic].push_back(*bouCond);
                 bcAddArray[ic].boundCond_count++;
                 bytesCount[ic] += sizeof(BoundaryCondition);
-            }
+             }
 
             if (bcindexmatrixCountNotInit) 
             {
@@ -1154,7 +1154,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
         kernel->setCollisionFactorMultiphase(dataSetArray[n].collFactorL, dataSetArray[n].collFactorG);
         kernel->setDensityRatio(dataSetArray[n].densityRatio);
 
-        SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
+         SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
         dataSetPtr->setFdistributions(mFdistributions);
         if (multiPhase1)
             dataSetPtr->setHdistributions(mH1distributions);

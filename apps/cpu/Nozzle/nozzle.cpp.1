@@ -14,7 +14,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    // Sleep(30000);
+    //Sleep(30000);
 
     try {
 
@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
 
         double g_minX1 = -1.31431;
         double g_minX2 = 0.375582;
-        double g_minX3 = 0.1; //-210e-3 - 0.2 - 6e-3; //- 1e-3;
+        double g_minX3 = -0.21; //-210e-3 - 0.2 - 6e-3; //- 1e-3;
 
         double g_maxX1 = -1.28831;
         double g_maxX2 = 0.401582;
-        double g_maxX3 = 0.206;
+        double g_maxX3 = 0.175;//0.21;
 
         int blockNX[3] = { 26, 26, 35 };
 
@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
         if (myid == 0) VF_LOG_INFO("Yield stress = {} Pa", tau0);
         if (myid == 0) VF_LOG_INFO("Yield stress LB = {} ", tau0_LB);
 
-        // SPtr<BC> noSlipBC(new NoSlipBC());
-        // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //SPtr<BC> noSlipBC(new NoSlipBC());
+        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
@@ -161,8 +161,8 @@ int main(int argc, char *argv[])
         //    fct.DefineConst("U", uLB_ref * ((N + 3) / (N + 1)));
         //    fct.DefineConst("NplusOne", N + 1.0);
 
-        // SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
-        // inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
+        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
         SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
         inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -444,13 +444,15 @@ int main(int argc, char *argv[])
         bcVisitor.addBC(noSlipBC);
         bcVisitor.addBC(inflowConcreteBC);
         bcVisitor.addBC(inflowAirBC1);
-        //bcVisitor.addBC(outflowBC);
+        bcVisitor.addBC(outflowBC);
 
         // SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
         // SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>();
         // SPtr<LBMKernel> kernel = make_shared<MultiphaseSimpleVelocityBaseExternalPressureLBMKernel>();
-        SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
+        //SPtr<LBMKernel> kernel = make_shared<MultiphaseSharpInterfaceLBMKernel>();
+        //SPtr<LBMKernel> kernel = make_shared<IBcumulantK17LBMKernel>();
+        SPtr<LBMKernel> kernel = make_shared<IBsharpInterfaceLBMKernel>();
 
         kernel->setWithForcing(false);
         kernel->setForcingX1(0.0);
@@ -482,7 +484,7 @@ int main(int argc, char *argv[])
 
         string geoPath = "d:/Projects/TRR277/Project/WP4/NozzleGeo";
 
-        string outputPath = "f:/temp/NozzleFlowTest_SharpInterface_OutflowPress";
+        string outputPath = "d:/temp/NozzleFlowTest_SharpInterface_With_Part_fraction_0.23";
         UbSystem::makeDirectory(outputPath);
         UbSystem::makeDirectory(outputPath + "/liggghts");
 
@@ -492,6 +494,44 @@ int main(int argc, char *argv[])
         //     UbLog::output_policy::setStream(logFilename.str());
         // }
 
+        /////////////////////////////////////////////////////////////////////
+        //LIGGGHTS things
+        /////////////////////////////////////////////////////////////////////
+        string inFile1 = "d:/Projects/TRR277/Project/WP4/Config/in.nozzle";
+        // string inFile2 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
+        MPI_Comm mpi_comm = *(MPI_Comm *)(comm->getNativeCommunicator());
+        LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
+
+        double v_frac = 0.1;
+        double dt_phys = units->getFactorTimeLbToW();
+        int demSubsteps = 10;
+        double dt_dem = dt_phys / (double)demSubsteps;
+        int vtkSteps = 1000;
+        string demOutDir = outputPath + "/liggghts";
+
+        // wrapper.execCommand("echo none");
+
+        // wrapper.execFile((char*)inFile1.c_str());
+
+        //// set timestep and output directory
+        wrapper.setVariable("t_step", dt_dem);
+        wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
+        wrapper.setVariable("dmp_dir", demOutDir);
+
+        wrapper.execFile((char *)inFile1.c_str());
+        //wrapper.runUpto(demSubsteps - 1);
+        // wrapper.runUpto(1000);
+
+        //LatticeDecomposition lDec((g_maxX1 - g_minX1) / dx, (g_maxX2 - g_minX2) / dx, (g_maxX3 - g_minX3) / dx, wrapper.lmp, grid);
+
+        SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
+        SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, unitsAir);
+        //SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(std::ceil((g_maxX1 - g_minX1) / dx), std::ceil((g_maxX2 - g_minX2) / dx), std::ceil((g_maxX3 - g_minX3) / dx), wrapper.lmp);
+        SPtr<Grid3DVisitor> partVisitor = make_shared<LiggghtsPartitioningGridVisitor>(26,26,420, wrapper.lmp);
+        
+        /////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+        
         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::RECURSIVE));
 
         SPtr<GbObject3D> gridCube = make_shared<GbCuboid3D>(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3);
@@ -557,7 +597,8 @@ int main(int argc, char *argv[])
         SPtr<D3Q27Interactor> intrBox = SPtr<D3Q27Interactor>(new D3Q27Interactor(gridCube, grid, noSlipBC, Interactor3D::INVERSESOLID));
         ///////////////////////////////////////////////////////////
         // inflow
-        GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.20105, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.23, 0.013));
+        //GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.20105, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.23, 0.013));
+        GbCylinder3DPtr geoInflow(new GbCylinder3D(-1.30181 + 0.0005, 0.390872 - 0.00229, 0.175, -1.30181 + 0.0005, 0.390872 - 0.00229, 0.21, 0.013));
         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlBinary::getInstance());
         SPtr<D3Q27Interactor> intrInflow = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowConcreteBC, Interactor3D::SOLID));
         ///////////////////////////////////////////////////////////
@@ -628,7 +669,7 @@ int main(int argc, char *argv[])
         SPtr<Interactor3D> intAirInlet6 = std::make_shared<D3Q27TriFaceMeshInteractor>(meshAirInlet6, grid, inflowAirBC6, Interactor3D::SOLID, Interactor3D::POINTS);
         ///////////////////////////////////////////////////////////
 
-        InteractorsHelper intHelper(grid, metisVisitor, true);
+        InteractorsHelper intHelper(grid, partVisitor, false);
 
         intHelper.addInteractor(intrFluidArea);
         intHelper.addInteractor(intrNozzleVolcanNozzle2);
@@ -658,9 +699,10 @@ int main(int argc, char *argv[])
 
         // if (myid == 0) UBLOG(logINFO, Utilities::toString(grid, comm->getNumberOfProcesses()));
 
-        // SetKernelBlockVisitor kernelVisitor(kernel, nuLB, comm->getNumberOfProcesses());
+        //SetKernelBlockVisitor kernelVisitor(kernel, nu_l_LB, comm->getNumberOfProcesses());
         MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h_LB, nu_l_LB, 1e9, 1);
         grid->accept(kernelVisitor);
+
 
         intHelper.setBC();
 
@@ -669,9 +711,10 @@ int main(int argc, char *argv[])
 
         double x1c = -1.31431 + R;
         double x2c = 0.375582 + R;
-        double x3c = 0.20105;
+        double Ri = 5;
+        double x3c = 0.136 + Ri;
 
-        R = 0.2 - 0.145; // 0.078-0.04; // 0.2;
+        //R = 0.2 - 0.145; // 0.078-0.04; // 0.2;
 
         mu::Parser fct1;
         // fct1.SetExpr(" 0.5 - 0.5 * tanh(2 * (sqrt((x1 - x1c) ^ 2 + (x2 - x2c) ^ 2 + (x3 - x3c) ^ 2) - radius) / interfaceThickness)");
@@ -679,40 +722,15 @@ int main(int argc, char *argv[])
         fct1.DefineConst("x1c", x1c);
         fct1.DefineConst("x2c", x2c);
         fct1.DefineConst("x3c", x3c);
-        fct1.DefineConst("radius", R);
+        fct1.DefineConst("radius", Ri);
         fct1.DefineConst("interfaceThickness", interfaceThickness * dx);
 
         MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
         initVisitor.setPhi(fct1);
         grid->accept(initVisitor);
 
-        string inFile1 = "d:/Projects/VirtualFluids_Develop/apps/cpu/Nozzle/in.nozzle";
-        //string inFile2 = "d:/Projects/VirtualFluids_LIGGGHTS_coupling/apps/cpu/LiggghtsApp/in2.lbdem";
-        MPI_Comm mpi_comm = *(MPI_Comm*)(comm->getNativeCommunicator());
-        LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
-
-        double v_frac = 0.1;
-        double dt_phys   = units->getFactorTimeLbToW();
-        int demSubsteps = 10;
-        double dt_dem   = dt_phys / (double)demSubsteps;
-        int vtkSteps = 100;
-        string demOutDir = outputPath + "/liggghts";
-
-        //wrapper.execCommand("echo none");
-
-        //wrapper.execFile((char*)inFile1.c_str());
-
-        //// set timestep and output directory
-        wrapper.setVariable("t_step", dt_dem);
-        wrapper.setVariable("dmp_stp", vtkSteps * demSubsteps);
-        wrapper.setVariable("dmp_dir", demOutDir);
-
-        //wrapper.execFile((char *)inFile1.c_str());
-        //wrapper.runUpto(demSubsteps - 1);
-        //wrapper.runUpto(1000);
-
-        SPtr<UbScheduler> lScheduler = make_shared<UbScheduler>(1);
-        SPtr<LiggghtsCouplingSimulationObserver> lcSimulationObserver = make_shared<LiggghtsCouplingSimulationObserver>(grid, lScheduler, comm, wrapper, demSubsteps, units);
+        //InitDistributionsBlockVisitor initVisitor;
+        //grid->accept(initVisitor);
 
         // boundary conditions grid
         {
@@ -724,12 +742,12 @@ int main(int argc, char *argv[])
 
         grid->accept(bcVisitor);
 
-        // OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
         TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         // ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
-        int numOfThreads = 18;
+        int numOfThreads = 1;
         omp_set_num_threads(numOfThreads);
 
         SPtr<UbScheduler> nupsSch = std::make_shared<UbScheduler>(10, 10, 100);
@@ -739,12 +757,16 @@ int main(int argc, char *argv[])
         SPtr<UbScheduler> visSch(new UbScheduler(vtkSteps));
         // SPtr<UbScheduler> visSch(new UbScheduler(1, 8700, 8800));
         // visSch->addSchedule(1, 8700, 8800);
-        SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteSharpInterfaceQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        //writeMQSimulationObserver->update(0);
+
+        //SPtr<WriteMacroscopicQuantitiesSimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+        //writeMQSimulationObserver->update(0);
 
         int endTime = 10000000;
         SPtr<Simulation> simulation(new Simulation(grid, lScheduler, endTime));
         simulation->addSimulationObserver(nupsSimulationObserver);
-        // Simulation->addSimulationObserver(lcSimulationObserver);
+        simulation->addSimulationObserver(lcSimulationObserver);
         simulation->addSimulationObserver(writeMQSimulationObserver);
 
         if (myid == 0) UBLOG(logINFO, "Simulation-start");

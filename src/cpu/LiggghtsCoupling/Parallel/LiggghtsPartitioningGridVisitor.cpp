@@ -1,3 +1,4 @@
+#include "LiggghtsPartitioningGridVisitor.h"
 //=======================================================================================
 // ____          ____    __    ______     __________   __      __       __        __
 // \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
@@ -26,52 +27,56 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CumulantK17LBMKernel.h
-//! \ingroup LBM
-//! \author Konstantin Kutscher, Martin Geier
+//! \file LiggghtsPartitioningGridVisitor.cpp
+//! \ingroup LiggghtsCoupling
+//! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef CumulantK17LBMKernelUnified_h__
-#define CumulantK17LBMKernelUnified_h__
+#include <comm.h>
+#include "LiggghtsPartitioningGridVisitor.h"
+#include "VirtualFluidsCore/Simulation/Grid3D.h"
+#include "VirtualFluidsCore/Simulation/Block3D.h"
 
-#include "LBMKernel.h"
-#include "BCSet.h"
-#include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
-
-//! \brief   Compressible cumulant LBM kernel.
-//! \details  LBM implementation that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
-//!
-//! The model is publisched in
-//! <a href="http://dx.doi.org/10.1016/j.jcp.2017.05.040"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.05.040]</b></a>,
-//! <a href="http://dx.doi.org/10.1016/j.jcp.2017.07.004"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.07.004]</b></a>
-//!
-class CumulantK17LBMKernelUnified : public LBMKernel
+LiggghtsPartitioningGridVisitor::LiggghtsPartitioningGridVisitor(int nx, int ny, int nz, LAMMPS_NS::LAMMPS *lmp) : nx(nx), ny(ny), nz(nz), lmp(*lmp)
 {
-public:
-    CumulantK17LBMKernelUnified();
-    ~CumulantK17LBMKernelUnified() = default;
-    void calculate(int step) override;
-    SPtr<LBMKernel> clone() override;
-    real getCalculationTime() override { return .0; }
+ 
+}
 
-protected:
-    virtual void initDataSet();
-    real f[D3Q27System::ENDF + 1];
+LiggghtsPartitioningGridVisitor::~LiggghtsPartitioningGridVisitor()
+{
 
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr restDistributions;
+}
 
-    mu::value_type muX1, muX2, muX3;
-    mu::value_type muDeltaT;
-    mu::value_type muNu;
-    real forcingX1;
-    real forcingX2;
-    real forcingX3;
-};
+void LiggghtsPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
+{
+    npx = lmp.comm->procgrid[0];
+    npy = lmp.comm->procgrid[1];
+    npz = lmp.comm->procgrid[2];
 
+    for (int i = 0; i <= npx; i++)
+        xVal.push_back(round(lmp.comm->xsplit[i] * (double)nx));
+    for (int i = 0; i <= npy; i++)
+        yVal.push_back(round(lmp.comm->ysplit[i] * (double)ny));
+    for (int i = 0; i <= npz; i++)
+        zVal.push_back(round(lmp.comm->zsplit[i] * (double)nz));
 
-#endif // CumulantK17LBMKernel_h__
+    UbTupleInt3 blockNX = grid->getBlockNX();
+
+    for (int iX = 0; iX < xVal.size() - 1; ++iX) {
+        for (int iY = 0; iY < yVal.size() - 1; ++iY) {
+            for (int iZ = 0; iZ < zVal.size() - 1; ++iZ) {
+
+                int rank = (int)lmp.comm->grid2proc[iX][iY][iZ];
+                int blockX1 = xVal[iX] / val<1>(blockNX);
+                int blockX2 = yVal[iY] / val<2>(blockNX);
+                int blockX3 = zVal[iZ] / val<3>(blockNX);
+                SPtr<Block3D> block = grid->getBlock(blockX1, blockX2, blockX3, 0);
+                block->setRank(rank);
+            }
+        }
+    }
+
+    xVal.clear();
+    yVal.clear();
+    zVal.clear();
+}

@@ -34,7 +34,7 @@
 #ifndef IBcumulantK17LBMKernel_h__
 #define IBcumulantK17LBMKernel_h__
 
-#include "LBMKernel.h"
+#include "LiggghtsCouplingLBMKernel.h"
 #include "BCSet.h"
 #include "D3Q27System.h"
 #include "UbTiming.h"
@@ -50,7 +50,7 @@
 //! <a href="http://dx.doi.org/10.1016/j.jcp.2017.05.040"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.05.040]</b></a>,
 //! <a href="http://dx.doi.org/10.1016/j.jcp.2017.07.004"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.07.004]</b></a>
 //!
-class IBcumulantK17LBMKernel : public LBMKernel
+class IBcumulantK17LBMKernel : public LiggghtsCouplingLBMKernel
 {
 public:
     IBcumulantK17LBMKernel();
@@ -58,11 +58,6 @@ public:
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
     double getCalculationTime() override { return .0; }
-    CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr getParticleData() { return particleData; };
-    void setParticleData(CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData)
-    {
-        this->particleData = particleData;
-    };
 
 protected:
     inline void forwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K);
@@ -72,9 +67,9 @@ protected:
 
     virtual void initDataSet();
 
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr restDistributions;
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr restDistributionsF;
 
     mu::value_type muX1, muX2, muX3;
     mu::value_type muDeltaT;
@@ -83,7 +78,6 @@ protected:
     LBMReal forcingX2;
     LBMReal forcingX3;
 
-    CbArray3D<SPtr<IBdynamicsParticleData>, IndexerX3X2X1>::CbArray3DPtr particleData;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

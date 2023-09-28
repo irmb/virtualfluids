@@ -30,14 +30,16 @@
 //! \ingroup GPU
 //! \author Martin Schoenherr, Soeren Peters
 //======================================================================================
-#include "LBM/LB.h" 
+#include "LBM/LB.h"
+
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+
 #include "lbm/constants/D3Q27.h"
 #include "basics/constants/NumericConstants.h"
 #include "lbm/MacroscopicQuantities.h"
 #include "LBM/GPUHelperFunctions/CoordinateTransformation.h"
 
 
-#include "Kernel/Utilities/DistributionHelper.cuh"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -81,13 +83,17 @@ __global__ void LBCalcMac27(
     vyD[k]  = c0o1;
     vzD[k]  = c0o1;
  
-    DistributionWrapper distr_wrapper(distributions, numberOfLBnodes, isEvenTimestep, k, neighborX, neighborY, neighborZ);
-    const auto& distribution = distr_wrapper.distribution;
+    Distributions27 dist;
+    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    vf::gpu::ListIndices listIndices(k, neighborX, neighborY, neighborZ);
+
+    real distribution[27];
+    vf::gpu::read(distribution, dist, listIndices);
  
-    rhoD[k] = vf::lbm::getDensity(distribution.f);
-    vxD[k] = vf::lbm::getIncompressibleVelocityX1(distribution.f);
-    vyD[k] = vf::lbm::getIncompressibleVelocityX2(distribution.f);
-    vzD[k] = vf::lbm::getIncompressibleVelocityX3(distribution.f);
+    rhoD[k] = vf::lbm::getDensity(distribution);
+    vxD[k] = vf::lbm::getIncompressibleVelocityX1(distribution);
+    vyD[k] = vf::lbm::getIncompressibleVelocityX2(distribution);
+    vzD[k] = vf::lbm::getIncompressibleVelocityX3(distribution);
 }
 
 
@@ -299,14 +305,18 @@ __global__ void LBCalcMacCompSP27(
     if (!isValidFluidNode(geoD[nodeIndex]))
         return;
 
-    DistributionWrapper distr_wrapper(distributions, numberOfLBnodes, isEvenTimestep, nodeIndex, neighborX, neighborY, neighborZ);
-    const auto &distribution = distr_wrapper.distribution;
+    Distributions27 dist;
+    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
 
-    rhoD[nodeIndex]   = vf::lbm::getDensity(distribution.f);
-    vxD[nodeIndex]    = vf::lbm::getCompressibleVelocityX1(distribution.f, rhoD[nodeIndex]);
-    vyD[nodeIndex]    = vf::lbm::getCompressibleVelocityX2(distribution.f, rhoD[nodeIndex]);
-    vzD[nodeIndex]    = vf::lbm::getCompressibleVelocityX3(distribution.f, rhoD[nodeIndex]);
-    pressD[nodeIndex] = vf::lbm::getPressure(distribution.f, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]); 
+    real distribution[27];
+    vf::gpu::read(distribution, dist, listIndices);
+
+    rhoD[nodeIndex] = vf::lbm::getDensity(distribution);
+    vxD[nodeIndex] = vf::lbm::getCompressibleVelocityX1(distribution, rhoD[nodeIndex]);
+    vyD[nodeIndex] = vf::lbm::getCompressibleVelocityX2(distribution, rhoD[nodeIndex]);
+    vzD[nodeIndex] = vf::lbm::getCompressibleVelocityX3(distribution, rhoD[nodeIndex]);
+    pressD[nodeIndex] = vf::lbm::getPressure(distribution, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]);
 }
 
 
