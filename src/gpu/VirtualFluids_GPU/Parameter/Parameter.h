@@ -447,7 +447,7 @@ struct LBMSimulationParameter {
     // testRoundoffError
     Distributions27 kDistTestRE;
 
-
+    real gridSpacing;
 
     //////////////////////////////////////////////////////////////////////////
 };
@@ -470,6 +470,9 @@ public:
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
 
+    std::shared_ptr<const LBMSimulationParameter> getParHConst(int level) const;
+    std::shared_ptr<const LBMSimulationParameter> getParDConst(int level) const;
+
     const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParHallLevels();
     const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParDallLevels();
 
@@ -483,7 +486,7 @@ public:
     void setAngularVelocity(real inAngVel);
     void setStepEnsight(unsigned int step);
     void setOutputCount(unsigned int outputCount);
-    void setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
+    void setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
     void setStartTurn(unsigned int inStartTurn);
     void setDiffOn(bool isDiff);
     void setCompOn(bool isComp);
@@ -703,7 +706,7 @@ public:
     real getEndXHotWall();
     unsigned int getStepEnsight();
     unsigned int getOutputCount();
-    unsigned int getLimitOfNodesForVTK();
+    unsigned int getLimitOfNodesForVTK() const;
     unsigned int getStartTurn();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
@@ -718,9 +721,9 @@ public:
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
     //! \returns index of finest level
-    int getFine();
+    int getFine() const;
     //! \returns index of coarsest level
-    int getCoarse();
+    int getCoarse() const;
     int getParticleBasicLevel();
     int getParticleInitLevel();
     int getNumberOfParticles();

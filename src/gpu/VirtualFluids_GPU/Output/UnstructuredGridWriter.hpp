@@ -14,8 +14,6 @@
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/utilities/UbTuple.h>
 
-//using namespace std;
-
 namespace UnstructuredGridWriter
 {
 	void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::string& filenameVec2) 

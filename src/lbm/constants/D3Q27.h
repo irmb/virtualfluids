@@ -10,6 +10,7 @@ namespace vf::lbm::dir
 
 static constexpr size_t STARTDIR = 0;
 static constexpr size_t ENDDIR = 26;
+static constexpr size_t NUMBER_Of_DIRECTIONS = ENDDIR + 1;
 
 // used in the CPU and the GPU version
 static constexpr size_t DIR_000 = 0;

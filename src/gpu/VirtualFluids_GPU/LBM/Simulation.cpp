@@ -100,7 +100,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     gridProvider.setBoundingBox();
 
     para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-    para->setlimitOfNodesForVTK(30000000); // max 30 Million nodes per VTK file
+    para->setLimitOfNodesForVTK(30000000); // max 30 Million nodes per VTK file
     if (para->getDoRestart())
         para->setStartTurn(para->getTimeDoRestart());
     else
