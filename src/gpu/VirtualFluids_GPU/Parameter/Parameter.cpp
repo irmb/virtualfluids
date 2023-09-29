@@ -1732,7 +1732,7 @@ unsigned int Parameter::getOutputCount()
 {
     return this->outputCount;
 }
-unsigned int Parameter::getLimitOfNodesForVTK()
+unsigned int Parameter::getLimitOfNodesForVTK() const
 {
     return this->limitOfNodesForVTK;
 }
@@ -1745,6 +1745,16 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParD(int level)
     return parD[level];
 }
 std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
+{
+    return parH[level];
+}
+
+std::shared_ptr<const LBMSimulationParameter> Parameter::getParDConst(int level) const
+{
+    return parD[level];
+}
+
+std::shared_ptr<const LBMSimulationParameter> Parameter::getParHConst(int level) const
 {
     return parH[level];
 }
@@ -1778,11 +1788,11 @@ unsigned int Parameter::getSizeMat(int level)
 //{
 //    return parH[level]->mem_size_real_yz;
 //}
-int Parameter::getFine()
+int Parameter::getFine() const
 {
     return fine;
 }
-int Parameter::getCoarse()
+int Parameter::getCoarse() const
 {
     return coarse;
 }

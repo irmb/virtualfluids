@@ -24,8 +24,6 @@ private:
                                                          std::vector<std::string> &fname);
     std::vector<std::string> writeUnstructuredGridMedianLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
 
-    bool isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number1, unsigned int number7);
-
     std::string writeCollectionFile( std::shared_ptr<Parameter> para, unsigned int timestep );
 
     std::string writeCollectionFileMedian( std::shared_ptr<Parameter> para, unsigned int timestep );

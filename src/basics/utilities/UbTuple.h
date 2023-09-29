@@ -33,6 +33,7 @@
 #ifndef UBTUPLE_H
 #define UBTUPLE_H
 
+#include <array>
 #include <iostream>
 #include <ostream>
 #include <string>
@@ -593,6 +594,15 @@ inline UbTuple<T1, T2, T3, T4, T5, T6, T7, T8> makeUbTuple(T1 const &a1, T2 cons
 {
     return UbTuple<T1, T2, T3, T4, T5, T6, T7, T8>(a1, a2, a3, a4, a5, a6, a7, a8);
 }
+
+// convenience function for 8 arguments
+template <typename T>
+inline UbTuple<T, T, T, T, T, T, T, T> makeUbTupleFromArray(const std::array<T, 8>& array)
+{
+    return UbTuple<T, T, T, T, T, T, T, T>(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7]);
+}
+
+
 
 // some typedefs
 using UbTupleFloat2        = UbTuple<float, float>;
