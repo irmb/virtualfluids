@@ -111,7 +111,7 @@ void multipleLevel(const std::string& configPath)
     const uint nodes_per_diameter = config.getValue<uint>("NodesPerDiameter");
     const real velocity = config.getValue<real>("Velocity");
 
-    const real L_x = 8 * reference_diameter;
+    const real L_x = 10 * reference_diameter;
     const real L_y = 4 * reference_diameter;
     const real L_z = 4 * reference_diameter;
 
@@ -157,6 +157,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
+    VF_LOG_INFO("dx = {}m", dx);
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
 
@@ -190,11 +191,11 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY, velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY, velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, velocityLB, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
@@ -206,7 +207,8 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int level = 0; // grid level at which the turbine samples velocities and distributes forces
-    const real smearing_width = dx*exp2(-level)*1.5; // width of gaussian smearing
+    const real smearing_width = dx*exp2(-level)*2; // width of gaussian smearing
+    VF_LOG_INFO("smearing_width = {}m", smearing_width);
     const real density = 1.225f;
     const uint nBlades = 3;
     const uint nBladeNodes = 32;
@@ -221,12 +223,31 @@ void multipleLevel(const std::string& configPath)
     actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, rotor_speed, 0, 0, bladeRadii);
     para->addActuator( actuator_farm );
 
-    SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
-    planeProbe->setProbePlane(5 * reference_diameter, -0.5 * L_y, -0.5 * L_z, dx, L_y, L_z);
-    planeProbe->addStatistic(Statistic::Means);
-    planeProbe->addStatistic(Statistic::Variances);
-    planeProbe->addStatistic(Statistic::Instantaneous);
-    para->addProbe( planeProbe );
+    std::vector<real> planePositions = {-1*reference_diameter, 1*reference_diameter, 3*reference_diameter};
+
+    for(int i=0; i < planePositions.size(); i++)
+    {
+        SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe_" + std::to_string(i), para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
+        planeProbe->setProbePlane(turbPos[0]+planePositions[i], -0.5 * L_y, -0.5 * L_z, dx, L_y, L_z);
+        planeProbe->addStatistic(Statistic::Means);
+        planeProbe->addStatistic(Statistic::Variances);
+        planeProbe->addStatistic(Statistic::Instantaneous);
+        para->addProbe( planeProbe );
+    }
+    SPtr<PlaneProbe> planeProbeVert = std::make_shared<PlaneProbe>("planeProbeVertical", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
+    planeProbeVert->setProbePlane(0, turbPos[1], -0.5 * L_z, L_x, dx, L_z);
+    planeProbeVert->addStatistic(Statistic::Means);
+    planeProbeVert->addStatistic(Statistic::Variances);
+    planeProbeVert->addStatistic(Statistic::Instantaneous);
+    para->addProbe( planeProbeVert );
+
+    SPtr<PlaneProbe> planeProbeHorz = std::make_shared<PlaneProbe>("planeProbeHorizontal", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
+    planeProbeHorz->setProbePlane(0, -0.5 * L_y, turbPos[2], L_x, L_y, dx);
+    planeProbeHorz->addStatistic(Statistic::Means);
+    planeProbeHorz->addStatistic(Statistic::Variances);
+    planeProbeHorz->addStatistic(Statistic::Instantaneous);
+    para->addProbe( planeProbeHorz );
+
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
