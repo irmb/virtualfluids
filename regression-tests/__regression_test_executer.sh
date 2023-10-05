@@ -25,5 +25,5 @@ run_regression_test () {
     $3
 
     # execute fieldcompare (A more comprehensive manual can be found here https://gitlab.com/dglaeser/fieldcompare)
-    fieldcompare dir $4 reference_data/$1 --include-files "*.vtu" --ignore-missing-reference-files
+    fieldcompare dir $4 reference_data/$1 --include-files "*.vtu" $5
 }

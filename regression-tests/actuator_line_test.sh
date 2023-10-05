@@ -15,5 +15,5 @@ APPLICATION=./build/bin/ActuatorLineRegression
 RESULT_DATA_DIR=output/ActuatorLine
 
 
-run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
+run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR" --ignore-missing-reference-files
 
