@@ -4,11 +4,14 @@
 #include <cuda_runtime.h>
 
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <lbm/collision/CollisionParameter.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
+
+using namespace vf::basics::constant;
 
 namespace vf::gpu
 {
@@ -58,9 +61,9 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
         para.forceZ = (collisionParameter.forces[2] + collisionParameter.bodyForceZ[k_000]) * c1o2 * collisionParameter.forceFactor;
 
         // Reset body force. To be used when not using round-off correction.
-        collisionParameter.bodyForceX[k_000] = 0.0f;
-        collisionParameter.bodyForceX[k_000] = 0.0f;
-        collisionParameter.bodyForceX[k_000] = 0.0f;
+        collisionParameter.bodyForceX[k_000] = c0o1;
+        collisionParameter.bodyForceY[k_000] = c0o1;
+        collisionParameter.bodyForceZ[k_000] = c0o1;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //!> Round-off correction
