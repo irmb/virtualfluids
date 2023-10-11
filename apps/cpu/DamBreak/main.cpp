@@ -416,7 +416,7 @@ void run(string configname)
         SPtr<WriteSharpInterfaceQuantitiesSimulationObserver> pp(new WriteSharpInterfaceQuantitiesSimulationObserver(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         //if(grid->getTimeStep() == 0) 
-            pp->update(restartStep);
+            pp->update(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterSimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
