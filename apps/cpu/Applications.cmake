@@ -25,6 +25,7 @@ IF(${VFCPU_ENABLE_MultiphaseFlow})
 	add_subdirectory(${APPS_ROOT_CPU}/ShotcreteJet)
 	add_subdirectory(${APPS_ROOT_CPU}/ConcreteExtrusion)
 	add_subdirectory(${APPS_ROOT_CPU}/MultiphaseSymmetryTest)
+	add_subdirectory(${APPS_ROOT_CPU}/DamBreak)
 ENDIF()
 
 IF(${VFCPU_ENABLE_LiggghtsCoupling} AND ${VFCPU_ENABLE_MultiphaseFlow})
