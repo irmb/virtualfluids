@@ -60,7 +60,7 @@ void K17CompressibleNavierStokes<turbulenceModel>::run()
 
     auto collision = [] __device__(vf::lbm::CollisionParameter & parameter, vf::lbm::MacroscopicValues & macroscopicValues,
                                    vf::lbm::TurbulentViscosity & turbulentViscosity) {
-        return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel, false>(parameter, macroscopicValues, turbulentViscosity);
+        return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel>(parameter, macroscopicValues, turbulentViscosity);
     };
 
     vf::gpu::runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads>>>(collision, kernelParameter);
@@ -75,24 +75,19 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
+    auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
+        return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel>(parameter, macroscopicValues, turbulentViscosity);
+    };
+
     switch (collisionTemplate) {
         case CollisionTemplate::Default: {
             vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
-
-            auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
-                return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel, false>(parameter, macroscopicValues, turbulentViscosity);
-            };
-
             vf::gpu::runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
 
             break;
         }
         case CollisionTemplate::WriteMacroVars: {
             vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
-
-            auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
-                return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel, true>(parameter, macroscopicValues, turbulentViscosity);
-            };
             vf::gpu::runCollision<decltype(collision), turbulenceModel, true, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
 
             break;
@@ -100,20 +95,12 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
         case CollisionTemplate::SubDomainBorder:
         case CollisionTemplate::AllFeatures: {
             vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
-
-            auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
-                return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel, true>(parameter, macroscopicValues, turbulentViscosity);
-            };
             vf::gpu::runCollision<decltype(collision), turbulenceModel, true, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
 
             break;
         }
         case CollisionTemplate::ApplyBodyForce: {
             vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
-
-            auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
-                return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel, false>(parameter, macroscopicValues, turbulentViscosity);
-            };
             vf::gpu::runCollision<decltype(collision), turbulenceModel, false, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
 
             break;
