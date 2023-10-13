@@ -24,11 +24,11 @@ tStartOutProbe=100
 tOutProbe=100
 
 ##################################################
-#TurbulenceModel = QR
-#SGSconstant = 0.3333333
-#
-#QuadricLimiterP = 100000.0
-#QuadricLimiterM = 100000.0
-#QuadricLimiterD = 100000.0
+TurbulenceModel = QR
+SGSconstant = 0.3333333
+
+QuadricLimiterP = 10000.0
+QuadricLimiterM = 10000.0
+QuadricLimiterD = 10000.0
 ##################################################
 
