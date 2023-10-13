@@ -87,9 +87,9 @@ inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real
     return C * max(R, c0o1) / Q;
 }
 
-inline __host__ __device__ real calculateOmegaWithturbulentViscosity(const real omega_old, real turbulenceViscosity)
+inline __host__ __device__ real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
 {
-    return omega_old / (c1o1 + c3o1 * omega_old * turbulenceViscosity);
+    return omega / (c1o1 + c3o1 * omega * turbulenceViscosity);
 }
 
 } // namespace vf::lbm
