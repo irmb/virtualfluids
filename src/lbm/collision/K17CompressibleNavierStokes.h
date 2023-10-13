@@ -237,7 +237,7 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate modified omega with turbulent viscosity
     //!
-    real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithturbulentViscosity(parameter.omega, turbulentViscosity.value);
+    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithturbulentViscosity(parameter.omega, turbulentViscosity.value);
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
