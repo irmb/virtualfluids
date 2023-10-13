@@ -153,11 +153,9 @@ void K17CompressibleNavierStokes::calculate(int step)
                 real quadricLimiter[3] = { 0.01, 0.01, 0.01 }; // TODO: Where do we configure the quadricLimiter?
                 parameter.quadricLimiter = quadricLimiter;
 
-                const bool writeMacroscopicVariables = false;
                 vf::lbm::MacroscopicValues mv;  // not used
                 vf::lbm::TurbulentViscosity tv; // not used
-                vf::lbm::runK17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None, writeMacroscopicVariables>(parameter,
-                                                                                                                   mv, tv);
+                vf::lbm::runK17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>(parameter, mv, tv);
                 dataSet->getFdistributions()->setDistribution(parameter.distribution, x1, x2, x3);
             }
         }

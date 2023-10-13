@@ -390,11 +390,6 @@ __inline__ __device__ void writeInverse(Distributions27& destination, const List
     (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_PPP];
 }
 
-__inline__ __device__ real calculateOmega(const real omega_old, real turbulenceViscosity)
-{
-    return omega_old / (c1o1 + c3o1 * omega_old * turbulenceViscosity);
-}
-
 }
 
 #endif
