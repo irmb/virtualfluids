@@ -4,14 +4,11 @@
 #include <cuda_runtime.h>
 
 #include <basics/DataTypes.h>
-#include <basics/constants/NumericConstants.h>
 
 #include <lbm/collision/CollisionParameter.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
-
-using namespace vf::basics::constant;
 
 namespace vf::gpu
 {
