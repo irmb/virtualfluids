@@ -71,5 +71,5 @@ void SlipBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions>
     else if (bc->hasSlipBoundaryFlag(DIR_00M))
         bc->setNormalVector(vf::basics::constant::c0o1, vf::basics::constant::c0o1, -vf::basics::constant::c1o1);
 
-    bc->setBCStrategyType(algorithmType);
+    bc->setBCStrategyType(strategyType);
 }

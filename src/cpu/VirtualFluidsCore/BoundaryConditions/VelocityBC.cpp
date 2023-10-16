@@ -302,7 +302,7 @@ void VelocityBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditi
                                 const real &worldX2, const real &worldX3, const real &time)
 {
     this->setNodeVelocity(interactor, bc, worldX1, worldX2, worldX3, time);
-    bc->setBCStrategyType(algorithmType);
+    bc->setBCStrategyType(strategyType);
 }
 /*==========================================================*/
 void VelocityBC::setNodeVelocity(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,

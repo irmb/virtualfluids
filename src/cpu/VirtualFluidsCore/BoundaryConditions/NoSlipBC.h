@@ -56,7 +56,7 @@ public:
     void adaptBC(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc, const real & /*worldX1*/,
                  const real & /*worldX2*/, const real & /*worldX3*/, const real & /*time*/ = 0) override
     {
-        bc->setBCStrategyType(algorithmType);
+        bc->setBCStrategyType(strategyType);
     }
 
 private:

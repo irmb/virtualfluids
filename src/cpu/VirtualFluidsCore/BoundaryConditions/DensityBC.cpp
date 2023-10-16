@@ -149,7 +149,7 @@ void DensityBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditio
                                const real &worldX2, const real &worldX3, const real &time)
 {
     this->setNodeDensity(interactor, bc, worldX1, worldX2, worldX3, time);
-    bc->setBCStrategyType(algorithmType);
+    bc->setBCStrategyType(strategyType);
 }
 /*==========================================================*/
 void DensityBC::setNodeDensity(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,

@@ -136,7 +136,7 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseBoundaryConditionsBlockVisitor::addBC(SPtr<BC> bc)
 {
-   bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getAlgorithm()));
+   bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getBCStrategy()));
 }
 
 

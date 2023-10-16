@@ -68,19 +68,19 @@ public:
 
     void setBCStrategy(SPtr<BCStrategy> alg)
     {
-        algorithmType = alg->getType();
-        algorithm     = alg;
+        strategyType = alg->getType();
+        strategy     = alg;
     }
-    SPtr<BCStrategy> getAlgorithm() { return algorithm; }
-    char getBCStrategyType() { return algorithmType; }
+    SPtr<BCStrategy> getBCStrategy() { return strategy; }
+    char getBCStrategyType() { return strategyType; }
 
 protected:
     short secondaryBcOption{ 0 };
 
     char type{ 0 };
 
-    SPtr<BCStrategy> algorithm;
-    char algorithmType{ -1 };
+    SPtr<BCStrategy> strategy;
+    char strategyType{ -1 };
 
     static const char TIMEDEPENDENT = 1 << 0; //'1';
     static const char TIMEPERIODIC  = 1 << 1; //'2';

@@ -43,7 +43,7 @@ class BCArray3D;
 class BoundaryConditions;
 class Block3D;
 
-//! \brief Abstract class of baundary conditions algorithm
+//! \brief Abstract class of baundary conditions strategy
 //! \details  BCStrategy provides interface for implementation of diferent boundary conditions
 class BCStrategy
 {
