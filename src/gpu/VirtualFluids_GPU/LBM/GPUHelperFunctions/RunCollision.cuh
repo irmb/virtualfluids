@@ -100,7 +100,7 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     vf::lbm::MacroscopicValues macroscopicValues;
     collision(para, macroscopicValues, turbulentViscosity);
 
-    if (writeMacroscopicVariables) {
+    if (writeMacroscopicVariables || turbulenceModel == vf::lbm::TurbulenceModel::AMD) {
         collisionParameter.vx[k_000] = macroscopicValues.vx;
         collisionParameter.vy[k_000] = macroscopicValues.vy;
         collisionParameter.vz[k_000] = macroscopicValues.vz;

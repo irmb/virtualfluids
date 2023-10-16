@@ -79,7 +79,7 @@ namespace vf::lbm
 //! ]</b></a> and \ref <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017),
 //! DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 ////////////////////////////////////////////////////////////////////////////////
-template <TurbulenceModel turbulenceModel, bool writeMacroscopicVariables>
+template <TurbulenceModel turbulenceModel>
 __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
 {
     auto& distribution = parameter.distribution;
@@ -237,10 +237,7 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate modified omega with turbulent viscosity
     //!
-    real omega = parameter.omega;
-    if (turbulenceModel != TurbulenceModel::None) {
-        omega /= (c1o1 + c3o1 * parameter.omega * turbulentViscosity.value);
-    }
+    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithturbulentViscosity(parameter.omega, turbulentViscosity.value);
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
@@ -510,14 +507,6 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     m_010 = -m_010;
     m_001 = -m_001;
 
-    // Write to array here to distribute read/write
-    if (writeMacroscopicVariables || turbulenceModel == TurbulenceModel::AMD) {
-        macroscopicValues.rho = drho;
-        macroscopicValues.vx = vvx;
-        macroscopicValues.vy = vvy;
-        macroscopicValues.vz = vvz;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -588,6 +577,11 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     distribution[DIR_MMP] = f_MMP;
     distribution[DIR_MPM] = f_MPM;
     distribution[DIR_MMM] = f_MMM;
+
+    macroscopicValues.rho = drho;
+    macroscopicValues.vx = vvx;
+    macroscopicValues.vy = vvy;
+    macroscopicValues.vz = vvz;
 }
 
 } // namespace vf::lbm

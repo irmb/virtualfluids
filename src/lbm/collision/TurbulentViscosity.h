@@ -71,7 +71,7 @@ inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real 
 }
 
 template <typename T>
-__host__ __device__ int max( T a, T b )
+__host__ __device__ T max( T a, T b )
 {
     return ( a > b ) ? a : b;
 }
@@ -85,6 +85,11 @@ inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real
     // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
     real R = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
     return C * max(R, c0o1) / Q;
+}
+
+inline __host__ __device__ real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
+{
+    return omega / (c1o1 + c3o1 * omega * turbulenceViscosity);
 }
 
 } // namespace vf::lbm
