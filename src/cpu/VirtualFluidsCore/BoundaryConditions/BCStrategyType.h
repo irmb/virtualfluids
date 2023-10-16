@@ -26,54 +26,41 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file HighViscosityNoSlipBCStrategy.cpp
+//! \file BCStrategy.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "HighViscosityNoSlipBCStrategy.h"
-#include "BoundaryConditions.h"
-#include "DistributionArray3D.h"
-#include "BCStrategyType.h"
 
-HighViscosityNoSlipBCStrategy::HighViscosityNoSlipBCStrategy()
-{
-    BCStrategy::type         = BCStrategyType::HighViscosityNoSlipBCStrategy;
-    BCStrategy::preCollision = true;
-}
-//////////////////////////////////////////////////////////////////////////
-HighViscosityNoSlipBCStrategy::~HighViscosityNoSlipBCStrategy() = default;
-//////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> HighViscosityNoSlipBCStrategy::clone()
-{
-    SPtr<BCStrategy> bc(new HighViscosityNoSlipBCStrategy());
-    return bc;
-}
-//////////////////////////////////////////////////////////////////////////
-void HighViscosityNoSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
-{
-    this->distributions = distributions;
-}
-//////////////////////////////////////////////////////////////////////////
-void HighViscosityNoSlipBCStrategy::applyBC()
-{
-    real f[D3Q27System::ENDF + 1];
-    real feq[D3Q27System::ENDF + 1];
-    distributions->getDistribution(f, x1, x2, x3);
-    real rho, vx1, vx2, vx3;
-    calcMacrosFct(f, rho, vx1, vx2, vx3);
-    calcFeqFct(feq, rho, vx1, vx2, vx3);
+#ifndef BCStrategyType_H
+#define BCStrategyType_H
 
-    for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++) {
-        if (bcPtr->hasNoSlipBoundaryFlag(fDir)) {
-            // quadratic bounce back
-            const int invDir = D3Q27System::INVDIR[fDir];
-            real q        = bcPtr->getQ(invDir);
-            real fReturn =
-                (f[invDir] + q * f[fDir] + q * collFactor * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) /
-                (vf::basics::constant::c1o1 + q);
-            distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
-                                                          x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
-                                                          invDir);
-        }
-    }
-}
+struct BCStrategyType
+{
+    static const char VelocityBCStrategy = 0;
+    static const char EqDensityBCStrategy = 1;
+    static const char NonEqDensityBCStrategy = 2;
+    static const char NoSlipBCStrategy = 3;
+    static const char SlipBCStrategy = 4;
+    static const char HighViscosityNoSlipBCStrategy = 5;
+    static const char ThinWallNoSlipBCStrategy = 6;
+    static const char VelocityWithDensityBCStrategy = 7;
+    static const char NonReflectingOutflowBCStrategy = 8;
+    static const char ThixotropyVelocityBCStrategy = 9;
+    static const char ThixotropyDensityBCStrategy = 10;
+    static const char ThixotropyNoSlipBCStrategy = 11;
+    static const char ThixotropyNonReflectingOutflowBCStrategy = 12;
+    static const char ThixotropyVelocityWithDensityBCStrategy = 13;
+    static const char RheologyBinghamModelNoSlipBCStrategy = 14;
+    static const char RheologyHerschelBulkleyModelNoSlipBCStrategy = 15;
+    static const char SimpleVelocityBCStrategy = 16;
+    static const char SimpleSlipBCStrategy = 17;
+    static const char RheologyPowellEyringModelNoSlipBCStrategy = 18;
+    static const char RheologyBinghamModelVelocityBCStrategy = 19;
+    static const char MultiphaseNoSlipBCStrategy = 20;
+    static const char MultiphaseVelocityBCStrategy = 21;
+    static const char NonReflectingInflowBCStrategy = 22;
+    static const char NonReflectingOutflowWithRelaxationBCStrategy = 23;
+    static const char MultiphasePressureBCStrategy = 24;
+};
+
+#endif

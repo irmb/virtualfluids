@@ -35,10 +35,11 @@
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
 #include "DistributionArray3D.h"
+#include "BCStrategyType.h"
 
 NonReflectingInflowBCStrategy::NonReflectingInflowBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::NonReflectingInflowBCStrategy;
+    BCStrategy::type         = BCStrategyType::NonReflectingInflowBCStrategy;
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////

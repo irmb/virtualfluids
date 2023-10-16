@@ -33,10 +33,11 @@
 #include "ThixotropyVelocityWithDensityBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BCArray3D.h"
+#include "BCStrategyType.h"
 
 ThixotropyVelocityWithDensityBCStrategy::ThixotropyVelocityWithDensityBCStrategy()
 {
-   BCStrategy::type = BCStrategy::ThixotropyVelocityWithDensityBCStrategy;
+   BCStrategy::type = BCStrategyType::ThixotropyVelocityWithDensityBCStrategy;
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

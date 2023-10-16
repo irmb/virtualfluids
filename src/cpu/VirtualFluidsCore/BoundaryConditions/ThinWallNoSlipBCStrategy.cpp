@@ -34,10 +34,11 @@
 
 #include "BoundaryConditions.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
+#include "BCStrategyType.h"
 
 ThinWallNoSlipBCStrategy::ThinWallNoSlipBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::ThinWallNoSlipBCStrategy;
+    BCStrategy::type         = BCStrategyType::ThinWallNoSlipBCStrategy;
     BCStrategy::preCollision = false;
     pass                      = 1;
 }

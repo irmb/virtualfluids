@@ -1,10 +1,11 @@
 #include "SlipBCStrategy.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
+#include "BCStrategyType.h"
 
 SlipBCStrategy::SlipBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::SlipBCStrategy;
+    BCStrategy::type         = BCStrategyType::SlipBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

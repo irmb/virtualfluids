@@ -44,6 +44,7 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "ILBMKernel.h"
+#include "BCStrategyType.h"
 
 #include "NonNewtonianFluids/BoundaryConditions/ThixotropyDensityBCStrategy.h"
 #include "NonNewtonianFluids/BoundaryConditions/ThixotropyVelocityBCStrategy.h"
@@ -105,19 +106,19 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
 
-                                if (alg == BCStrategy::ThixotropyVelocityBCStrategy)
+                                if (alg == BCStrategyType::ThixotropyVelocityBCStrategy)
                                     std::static_pointer_cast<ThixotropyVelocityBCStrategy>(bca)->addDistributionsH(
                                         kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyDensityBCStrategy)
+                                if (alg == BCStrategyType::ThixotropyDensityBCStrategy)
                                     std::static_pointer_cast<ThixotropyDensityBCStrategy>(bca)->addDistributionsH(
                                         kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyNoSlipBCStrategy)
+                                if (alg == BCStrategyType::ThixotropyNoSlipBCStrategy)
                                     std::static_pointer_cast<ThixotropyNoSlipBCStrategy>(bca)->addDistributionsH(
                                         kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyNonReflectingOutflowBCStrategy)
+                                if (alg == BCStrategyType::ThixotropyNonReflectingOutflowBCStrategy)
                                     std::static_pointer_cast<ThixotropyNonReflectingOutflowBCStrategy>(bca)
                                         ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategy::ThixotropyVelocityWithDensityBCStrategy)
+                                if (alg == BCStrategyType::ThixotropyVelocityWithDensityBCStrategy)
                                     std::static_pointer_cast<ThixotropyVelocityWithDensityBCStrategy>(bca)
                                         ->addDistributionsH(kernel->getDataSet()->getHdistributions());
 

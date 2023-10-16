@@ -35,10 +35,11 @@
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
 #include "Block3D.h"
+#include "BCStrategyType.h"
 
 VelocityBCStrategy::VelocityBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::VelocityBCStrategy;
+    BCStrategy::type         = BCStrategyType::VelocityBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

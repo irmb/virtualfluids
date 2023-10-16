@@ -34,10 +34,11 @@
 #include "MultiphaseSlipBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
+#include "BCStrategyType.h"
 
 MultiphaseSlipBCStrategy::MultiphaseSlipBCStrategy()
 {
-   BCStrategy::type = BCStrategy::SlipBCStrategy;
+   BCStrategy::type = BCStrategyType::SlipBCStrategy;
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

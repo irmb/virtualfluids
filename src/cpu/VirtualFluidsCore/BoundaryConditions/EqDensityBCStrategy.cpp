@@ -33,10 +33,11 @@
 #include "EqDensityBCStrategy.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
+#include "BCStrategyType.h"
 
 EqDensityBCStrategy::EqDensityBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::EqDensityBCStrategy;
+    BCStrategy::type         = BCStrategyType::EqDensityBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

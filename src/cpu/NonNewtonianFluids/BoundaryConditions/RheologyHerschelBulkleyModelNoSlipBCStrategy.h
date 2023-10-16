@@ -35,13 +35,14 @@
 
 #include "RheologyNoSlipBCStrategy.h"
 #include "cpu/NonNewtonianFluids/LBM/Rheology.h"
+#include "BCStrategyType.h"
 
 class RheologyHerschelBulkleyModelNoSlipBCStrategy : public RheologyNoSlipBCStrategy
 {
 public:
    RheologyHerschelBulkleyModelNoSlipBCStrategy() 
    {
-      BCStrategy::type = BCStrategy::RheologyHerschelBulkleyModelNoSlipBCStrategy;
+      BCStrategy::type = BCStrategyType::RheologyHerschelBulkleyModelNoSlipBCStrategy;
       BCStrategy::preCollision = true;
    }
    ~RheologyHerschelBulkleyModelNoSlipBCStrategy() {}

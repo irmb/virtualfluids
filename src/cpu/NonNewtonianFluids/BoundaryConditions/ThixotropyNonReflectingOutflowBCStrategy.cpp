@@ -33,10 +33,11 @@
 #include "ThixotropyNonReflectingOutflowBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
+#include "BCStrategyType.h"
 
 ThixotropyNonReflectingOutflowBCStrategy::ThixotropyNonReflectingOutflowBCStrategy()
 {
-	BCStrategy::type = BCStrategy::ThixotropyNonReflectingOutflowBCStrategy;
+	BCStrategy::type = BCStrategyType::ThixotropyNonReflectingOutflowBCStrategy;
 	BCStrategy::preCollision = true;
 	BCStrategy::thixotropy = true;
 }

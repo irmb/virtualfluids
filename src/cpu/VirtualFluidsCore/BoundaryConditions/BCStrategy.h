@@ -31,8 +31,8 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BOUNDARYCONDITIONS_H
-#define BOUNDARYCONDITIONS_H
+#ifndef BCStrategy_H
+#define BCStrategy_H
 
 #include <PointerDefinitions.h>
 
@@ -47,32 +47,32 @@ class Block3D;
 //! \details  BCStrategy provides interface for implementation of diferent boundary conditions
 class BCStrategy
 {
-public:
-    static const char VelocityBCStrategy                           = 0;
-    static const char EqDensityBCStrategy                          = 1;
-    static const char NonEqDensityBCStrategy                       = 2;
-    static const char NoSlipBCStrategy                             = 3;
-    static const char SlipBCStrategy                               = 4;
-    static const char HighViscosityNoSlipBCStrategy                = 5;
-    static const char ThinWallNoSlipBCStrategy                     = 6;
-    static const char VelocityWithDensityBCStrategy                = 7;
-    static const char NonReflectingOutflowBCStrategy               = 8;
-    static const char ThixotropyVelocityBCStrategy                 = 9;
-    static const char ThixotropyDensityBCStrategy                  = 10;
-    static const char ThixotropyNoSlipBCStrategy                   = 11;
-    static const char ThixotropyNonReflectingOutflowBCStrategy     = 12;
-    static const char ThixotropyVelocityWithDensityBCStrategy      = 13;
-    static const char RheologyBinghamModelNoSlipBCStrategy         = 14;
-    static const char RheologyHerschelBulkleyModelNoSlipBCStrategy = 15;
-    static const char SimpleVelocityBCStrategy                     = 16;
-    static const char SimpleSlipBCStrategy                         = 17;
-    static const char RheologyPowellEyringModelNoSlipBCStrategy    = 18;
-    static const char RheologyBinghamModelVelocityBCStrategy       = 19;
-    static const char MultiphaseNoSlipBCStrategy                   = 20;
-    static const char MultiphaseVelocityBCStrategy                 = 21;
-    static const char NonReflectingInflowBCStrategy                = 22;
-    static const char NonReflectingOutflowWithRelaxationBCStrategy = 23;
-    static const char MultiphasePressureBCStrategy                 = 24;
+//public:
+//    static const char VelocityBCStrategy                           = 0;
+//    static const char EqDensityBCStrategy                          = 1;
+//    static const char NonEqDensityBCStrategy                       = 2;
+//    static const char NoSlipBCStrategy                             = 3;
+//    static const char SlipBCStrategy                               = 4;
+//    static const char HighViscosityNoSlipBCStrategy                = 5;
+//    static const char ThinWallNoSlipBCStrategy                     = 6;
+//    static const char VelocityWithDensityBCStrategy                = 7;
+//    static const char NonReflectingOutflowBCStrategy               = 8;
+//    static const char ThixotropyVelocityBCStrategy                 = 9;
+//    static const char ThixotropyDensityBCStrategy                  = 10;
+//    static const char ThixotropyNoSlipBCStrategy                   = 11;
+//    static const char ThixotropyNonReflectingOutflowBCStrategy     = 12;
+//    static const char ThixotropyVelocityWithDensityBCStrategy      = 13;
+//    static const char RheologyBinghamModelNoSlipBCStrategy         = 14;
+//    static const char RheologyHerschelBulkleyModelNoSlipBCStrategy = 15;
+//    static const char SimpleVelocityBCStrategy                     = 16;
+//    static const char SimpleSlipBCStrategy                         = 17;
+//    static const char RheologyPowellEyringModelNoSlipBCStrategy    = 18;
+//    static const char RheologyBinghamModelVelocityBCStrategy       = 19;
+//    static const char MultiphaseNoSlipBCStrategy                   = 20;
+//    static const char MultiphaseVelocityBCStrategy                 = 21;
+//    static const char NonReflectingInflowBCStrategy                = 22;
+//    static const char NonReflectingOutflowWithRelaxationBCStrategy = 23;
+//    static const char MultiphasePressureBCStrategy                 = 24;
 
 public:
     BCStrategy() = default;

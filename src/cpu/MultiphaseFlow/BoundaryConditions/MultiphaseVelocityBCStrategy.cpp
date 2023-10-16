@@ -34,10 +34,11 @@
 #include "MultiphaseVelocityBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
+#include "BCStrategyType.h"
 
 MultiphaseVelocityBCStrategy::MultiphaseVelocityBCStrategy()
 {
-   BCStrategy::type = BCStrategy::MultiphaseVelocityBCStrategy;
+   BCStrategy::type = BCStrategyType::MultiphaseVelocityBCStrategy;
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

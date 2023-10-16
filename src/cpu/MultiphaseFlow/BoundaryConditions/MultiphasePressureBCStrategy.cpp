@@ -34,10 +34,12 @@
 #include "MultiphasePressureBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
+#include "BCStrategyType.h"
+
 
 MultiphasePressureBCStrategy::MultiphasePressureBCStrategy()
 {
-   BCStrategy::type = BCStrategy::MultiphasePressureBCStrategy;
+   BCStrategy::type = BCStrategyType::MultiphasePressureBCStrategy;
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
