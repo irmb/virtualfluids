@@ -34,9 +34,9 @@
 #ifndef MultiphaseVelocityBCStrategy_h__
 #define MultiphaseVelocityBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "MultiphaseBCStrategy.h"
 //! A class implements velocity boundary condition for multiphase simulations
-class MultiphaseVelocityBCStrategy : public BCStrategy
+class MultiphaseVelocityBCStrategy : public MultiphaseBCStrategy
 {
 public:
    MultiphaseVelocityBCStrategy();

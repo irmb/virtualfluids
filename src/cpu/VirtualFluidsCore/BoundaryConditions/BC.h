@@ -37,6 +37,7 @@
 
 #include "BCStrategy.h"
 #include "BoundaryConditions.h"
+#include "BCStrategyRegister.h"
 
 class D3Q27Interactor;
 
@@ -66,24 +67,27 @@ public:
                                      const real &worldX1, const real &worldX2, const real &worldX3,
                                      const real &q, const int &fdirection, const real &time = 0) = 0;
 
-    void setBCStrategy(SPtr<BCStrategy> alg)
+    void setBCStrategy(SPtr<BCStrategy> bcStrategy)
     {
-        strategyType = alg->getType();
-        strategy     = alg;
+        bcStrategyKey = keyCounter++; 
+        BCStrategyRegister::getInstance()->setBCStrategy(bcStrategyKey, bcStrategy);
     }
-    SPtr<BCStrategy> getBCStrategy() { return strategy; }
-    char getBCStrategyType() { return strategyType; }
+    //SPtr<BCStrategy> getBCStrategy() { return bcStrategy; }
+    //char getBCStrategyKey() { return bcStrategyKey; }
 
 protected:
     short secondaryBcOption{ 0 };
 
     char type{ 0 };
 
-    SPtr<BCStrategy> strategy;
-    char strategyType{ -1 };
+    char bcStrategyKey{ -1 };
 
     static const char TIMEDEPENDENT = 1 << 0; //'1';
     static const char TIMEPERIODIC  = 1 << 1; //'2';
+
+    static char keyCounter;
 };
+
+
 
 #endif // D3Q27BOUNDARYCONDITIONADAPTER_H

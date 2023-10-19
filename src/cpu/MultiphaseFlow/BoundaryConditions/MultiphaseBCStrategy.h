@@ -26,33 +26,31 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file RheologyPowellEyringModelNoSlipBCStrategy.h
-//! \ingroup BoundarConditions
+//! \file MultiphaseBCStrategy.h
+//! \ingroup BoundaryConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef RheologyPowellEyringModelNoSlipBCStrategy_h__
-#define RheologyPowellEyringModelNoSlipBCStrategy_h__
 
-#include "RheologyNoSlipBCStrategy.h"
-#include "cpu/NonNewtonianFluids/LBM/Rheology.h"
+#ifndef MultiphaseBCStrategy_H
+#define MultiphaseBCStrategy_H
 
-class RheologyPowellEyringModelNoSlipBCStrategy : public RheologyNoSlipBCStrategy
+#include "BCStrategy.h"
+
+class DistributionArray3D;
+
+class MultiphaseBCStrategy : public BCStrategy
 {
 public:
-   RheologyPowellEyringModelNoSlipBCStrategy() 
-   {
-       BCStrategy::preCollision = true;
-   }
-   ~RheologyPowellEyringModelNoSlipBCStrategy() {}
-   SPtr<BCStrategy> clone() override
-   {
-       SPtr<BCStrategy> bc(new RheologyPowellEyringModelNoSlipBCStrategy());
-       return bc;
-   }
+    MultiphaseBCStrategy() = default;
+    virtual ~MultiphaseBCStrategy() = default;
+
+    virtual void addDistributionsH(SPtr<DistributionArray3D> distributionsH) {}
+    virtual void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) {}
+
 protected:
-   real getRheologyCollFactor(real omegaInf, real shearRate, real drho) const override
-   {
-       return Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, drho);
-   }
+    SPtr<DistributionArray3D> distributionsH;
+    SPtr<DistributionArray3D> distributionsH2;
 };
-#endif // RheologyPowellEyringModelNoSlipBCStrategy_h__
+
+
+#endif

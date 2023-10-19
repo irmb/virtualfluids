@@ -33,14 +33,10 @@
 #include "ThixotropyNoSlipBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
-#include "BCStrategyType.h"
 
 ThixotropyNoSlipBCStrategy::ThixotropyNoSlipBCStrategy()
 {
-	BCStrategy::type = BCStrategyType::ThixotropyNoSlipBCStrategy;
 	BCStrategy::preCollision = false;
-	BCStrategy::thixotropy = true;
-	
 }
 //////////////////////////////////////////////////////////////////////////
 ThixotropyNoSlipBCStrategy::~ThixotropyNoSlipBCStrategy()

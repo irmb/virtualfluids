@@ -34,13 +34,10 @@
 #include "ThixotropyDensityBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
-#include "BCStrategyType.h"
 
 ThixotropyDensityBCStrategy::ThixotropyDensityBCStrategy()
 {
-	BCStrategy::type = BCStrategyType::ThixotropyDensityBCStrategy;
 	BCStrategy::preCollision = false;
-	BCStrategy::thixotropy = true;
 	lambdaBC = 0.0;
 }
 //////////////////////////////////////////////////////////////////////////

@@ -34,11 +34,9 @@
 #include "SimpleVelocityBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
-#include "BCStrategyType.h"
 
 SimpleVelocityBCStrategy::SimpleVelocityBCStrategy()
 {
-   BCStrategy::type = BCStrategyType::SimpleVelocityBCStrategy;
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

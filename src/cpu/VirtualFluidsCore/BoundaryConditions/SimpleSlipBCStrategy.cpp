@@ -33,11 +33,9 @@
 #include "SimpleSlipBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
-#include "BCStrategyType.h"
 
 SimpleSlipBCStrategy::SimpleSlipBCStrategy()
 {
-   BCStrategy::type = BCStrategyType::SimpleSlipBCStrategy;
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

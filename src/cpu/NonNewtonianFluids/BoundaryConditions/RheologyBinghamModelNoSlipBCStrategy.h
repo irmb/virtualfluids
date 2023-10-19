@@ -42,19 +42,18 @@ class RheologyBinghamModelNoSlipBCStrategy : public RheologyNoSlipBCStrategy
 public:
    RheologyBinghamModelNoSlipBCStrategy()
    {
-      BCStrategy::type = BCStrategy::RheologyBinghamModelNoSlipBCStrategy;
-      BCStrategy::preCollision = true;
+       BCStrategy::preCollision = true;
    }
    ~RheologyBinghamModelNoSlipBCStrategy() {}
    SPtr<BCStrategy> clone() override
    {
-      SPtr<BCStrategy> bc(new RheologyBinghamModelNoSlipBCStrategy());
-      return bc;
+       SPtr<BCStrategy> bc(new RheologyBinghamModelNoSlipBCStrategy());
+       return bc;
    }
 protected:
    real getRheologyCollFactor(real omegaInf, real shearRate, real drho) const override 
    { 
-      return Rheology::getBinghamCollFactor(omegaInf, shearRate, drho);
+       return Rheology::getBinghamCollFactor(omegaInf, shearRate, drho);
    }
 };
 #endif // BinghamModelNoSlipBCStrategy_h__

@@ -33,9 +33,9 @@
 #ifndef ThixotropyNoSlipBCStrategy_h__
 #define ThixotropyNoSlipBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "NonNewtonianBCStrategy.h"
 
-class ThixotropyNoSlipBCStrategy : public BCStrategy
+class ThixotropyNoSlipBCStrategy : public NonNewtonianBCStrategy
 {
 public:
 	ThixotropyNoSlipBCStrategy();

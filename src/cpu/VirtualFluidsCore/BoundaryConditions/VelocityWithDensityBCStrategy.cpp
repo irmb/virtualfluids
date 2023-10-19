@@ -33,11 +33,9 @@
 #include "VelocityWithDensityBCStrategy.h"
 #include "BCArray3D.h"
 #include "DistributionArray3D.h"
-#include "BCStrategyType.h"
 
 VelocityWithDensityBCStrategy::VelocityWithDensityBCStrategy()
 {
-    BCStrategy::type         = BCStrategyType::VelocityWithDensityBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

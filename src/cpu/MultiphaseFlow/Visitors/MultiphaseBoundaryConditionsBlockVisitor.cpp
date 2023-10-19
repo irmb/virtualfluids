@@ -44,6 +44,7 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "LBMKernel.h"
+#include "MultiphaseFlow/BoundaryConditions/MultiphaseBCStrategy.h"
 
 MultiphaseBoundaryConditionsBlockVisitor::MultiphaseBoundaryConditionsBlockVisitor() :
 Block3DVisitor(0, D3Q27System::MAXLEVEL)
@@ -77,13 +78,6 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
       SPtr<BCArray3D> bcArray = bcSet->getBCArray();
 
       bool compressible = kernel->getCompressible();
-      real collFactorL = kernel->getCollisionFactorL();
-	  real collFactorG = kernel->getCollisionFactorG();
-	  real collFactorPh = 1.0/kernel->getPhaseFieldRelaxation();
-	  real densityRatio = kernel->getDensityRatio();
-	  real phiL = kernel->getPhiL();
-	  real phiH = kernel->getPhiH();
-      //int level = block->getLevel();
 
       int minX1 = 0;
       int minX2 = 0;
@@ -109,19 +103,19 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
                {
                   if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL)
                   {
-                     char alg = bcPtr->getBCStrategyType();
-                     SPtr<BCStrategy> bca = bcMap[alg];
+                     char bcStrategy = bcPtr->getBCStrategyKey();
+                     SPtr<BCStrategy> bca = BCStrategyRegister::getInstance()->getBCStrategy(bcStrategy);
                      
                      if (bca)
                      {
                         bca = bca->clone();
                         bca->setNodeIndex(x1, x2, x3);
                         bca->setBcPointer(bcPtr);
-                        //bca->addDistributions(distributions, distributionsH);
 						bca->addDistributions(distributions);
-						bca->addDistributionsH(distributionsH);
+                        if (distributionsH)
+                            dynamicPointerCast<MultiphaseBCStrategy>(bca)->addDistributionsH(distributionsH);
                         if (distributionsH2)
-                            bca->addDistributionsH2(distributionsH2);
+                            dynamicPointerCast<MultiphaseBCStrategy>(bca)->addDistributionsH2(distributionsH2);
                         bca->setCompressible(compressible);
                         bca->setBcArray(bcArray);
                         bcSet->addBC(bca);
@@ -133,11 +127,7 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
       }
    }
 }
-//////////////////////////////////////////////////////////////////////////
-void MultiphaseBoundaryConditionsBlockVisitor::addBC(SPtr<BC> bc)
-{
-   bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getBCStrategy()));
-}
+
 
 
 

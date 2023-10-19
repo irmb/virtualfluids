@@ -36,14 +36,12 @@
 
 #include "RheologyVelocityBCStrategy.h"
 #include "cpu/NonNewtonianFluids/LBM/Rheology.h"
-#include "BCStrategyType.h"
 
 class RheologyBinghamModelVelocityBCStrategy : public RheologyVelocityBCStrategy
 {
 public:
    RheologyBinghamModelVelocityBCStrategy()
    {
-      BCStrategy::type = BCStrategyType::RheologyBinghamModelVelocityBCStrategy;
       BCStrategy::preCollision = true;
    }
    ~RheologyBinghamModelVelocityBCStrategy() {}

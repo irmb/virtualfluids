@@ -40,7 +40,8 @@
 #include "MultiphaseFlow/BoundaryConditions/MultiphaseVelocityBCStrategy.h"
 #include "MultiphaseFlow/BoundaryConditions/MultiphaseSlipBCStrategy.h"
 #include "MultiphaseFlow/BoundaryConditions/MultiphasePressureBCStrategy.h"
-          
+#include "MultiphaseFlow/BoundaryConditions/MultiphaseBCStrategy.h"
+
 #include "MultiphaseFlow/LBM/MultiphaseCumulantLBMKernel.h"
 #include "MultiphaseFlow/LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h"
 #include "MultiphaseFlow/LBM/MultiphasePressureFilterLBMKernel.h"

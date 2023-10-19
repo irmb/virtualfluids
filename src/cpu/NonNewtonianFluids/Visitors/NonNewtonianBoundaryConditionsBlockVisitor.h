@@ -26,33 +26,29 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file RheologyPowellEyringModelNoSlipBCStrategy.h
-//! \ingroup BoundarConditions
+//! \file NonNewtonianBoundaryConditionsBlockVisitor.h
+//! \ingroup Visitors
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef RheologyPowellEyringModelNoSlipBCStrategy_h__
-#define RheologyPowellEyringModelNoSlipBCStrategy_h__
 
-#include "RheologyNoSlipBCStrategy.h"
-#include "cpu/NonNewtonianFluids/LBM/Rheology.h"
+#ifndef NonNewtonianBoundaryConditionsBlockVisitor_h__
+#define NonNewtonianBoundaryConditionsBlockVisitor_h__
 
-class RheologyPowellEyringModelNoSlipBCStrategy : public RheologyNoSlipBCStrategy
+#include <PointerDefinitions.h>
+
+#include "Block3DVisitor.h"
+
+class Grid3D;
+class Block3D;
+
+//! \brief set boundary conditions
+class NonNewtonianBoundaryConditionsBlockVisitor : public Block3DVisitor
 {
 public:
-   RheologyPowellEyringModelNoSlipBCStrategy() 
-   {
-       BCStrategy::preCollision = true;
-   }
-   ~RheologyPowellEyringModelNoSlipBCStrategy() {}
-   SPtr<BCStrategy> clone() override
-   {
-       SPtr<BCStrategy> bc(new RheologyPowellEyringModelNoSlipBCStrategy());
-       return bc;
-   }
-protected:
-   real getRheologyCollFactor(real omegaInf, real shearRate, real drho) const override
-   {
-       return Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, drho);
-   }
+    NonNewtonianBoundaryConditionsBlockVisitor();
+    ~NonNewtonianBoundaryConditionsBlockVisitor() override;
+
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+
 };
-#endif // RheologyPowellEyringModelNoSlipBCStrategy_h__
+#endif // BoundaryConditionBlockVisitor_h__

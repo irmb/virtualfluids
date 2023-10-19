@@ -34,11 +34,9 @@
 
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
-#include "BCStrategyType.h"
 
 NonEqDensityBCStrategy::NonEqDensityBCStrategy()
 {
-    BCStrategy::type         = BCStrategyType::NonEqDensityBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

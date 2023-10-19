@@ -311,8 +311,8 @@ public:
         return (((flag >> (optionDigits * direction)) & maxOptionVal) != 0);
     }
 
-    void setBCStrategyType(char alg) { algorithmType = alg; }
-    char getBCStrategyType() { return algorithmType; }
+    void setBCStrategyKey(char key) { bcStrategyKey = key; }
+    char getBCStrategyKey() { return bcStrategyKey; }
 
 public:
     static const int optionDigits = 2;   //--> 2 bits for secondary Option --> maxOptionVal = 7
@@ -335,7 +335,7 @@ protected:
 
     float nx1{ vf::basics::constant::c0o1 }, nx2{ vf::basics::constant::c0o1 }, nx3{ vf::basics::constant::c0o1 };
 
-    char algorithmType { -1 };
+    char bcStrategyKey { -1 };
 
 private:
     friend class MPIIORestartSimulationObserver;

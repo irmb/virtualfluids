@@ -33,12 +33,12 @@
 #ifndef RheologyNoSlipBCStrategy_h__
 #define RheologyNoSlipBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "NonNewtonianBCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-class RheologyNoSlipBCStrategy : public BCStrategy
+class RheologyNoSlipBCStrategy : public NonNewtonianBCStrategy
 {
 public:
    RheologyNoSlipBCStrategy() = default;

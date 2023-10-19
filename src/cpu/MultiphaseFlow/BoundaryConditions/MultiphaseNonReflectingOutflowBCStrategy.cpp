@@ -35,11 +35,10 @@
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
 #include "DistributionArray3D.h"
-#include "BCStrategyType.h"
+#include "MultiphaseBCStrategyType.h"
 
 MultiphaseNonReflectingOutflowBCStrategy::MultiphaseNonReflectingOutflowBCStrategy()
 {
-    BCStrategy::type = BCStrategyType::NonReflectingOutflowBCStrategy;
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////

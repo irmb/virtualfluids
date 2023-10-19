@@ -280,7 +280,7 @@ void MultiphaseVelocityBC::adaptBCForDirection( const D3Q27Interactor& interacto
 void MultiphaseVelocityBC::adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const real& worldX1, const real& worldX2, const real& worldX3, const real& time ) 
 {
    this->setNodeVelocity(interactor,bc,worldX1,worldX2,worldX3,time);
-   bc->setBCStrategyType(strategyType);
+   bc->setBCStrategyKey(bcStrategyKey);
 }
 /*==========================================================*/
 void MultiphaseVelocityBC::setNodeVelocity( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const real& worldX1, const real& worldX2, const real& worldX3, const real& timestep) 

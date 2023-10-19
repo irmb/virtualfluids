@@ -33,11 +33,9 @@
 #include "HighViscosityNoSlipBCStrategy.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
-#include "BCStrategyType.h"
 
 HighViscosityNoSlipBCStrategy::HighViscosityNoSlipBCStrategy()
 {
-    BCStrategy::type         = BCStrategyType::HighViscosityNoSlipBCStrategy;
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////

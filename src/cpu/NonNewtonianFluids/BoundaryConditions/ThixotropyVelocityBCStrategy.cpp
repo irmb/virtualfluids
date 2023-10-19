@@ -33,13 +33,10 @@
 #include "ThixotropyVelocityBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
-#include "BCStrategyType.h"
 
 ThixotropyVelocityBCStrategy::ThixotropyVelocityBCStrategy()
 {
-	BCStrategy::type = BCStrategyType::ThixotropyVelocityBCStrategy;
 	BCStrategy::preCollision = false;
-	BCStrategy::thixotropy = true;
 	lambdaBC = vf::basics::constant::c0o1;
 }
 //////////////////////////////////////////////////////////////////////////

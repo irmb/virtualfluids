@@ -34,9 +34,9 @@
 #ifndef MultiphaseNonReflectingOutflowBCStrategy_h__
 #define MultiphaseNonReflectingOutflowBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "MultiphaseBCStrategy.h"
 //! A class implements non reflecting outflow boundary condition for multiphase simulations
-class MultiphaseNonReflectingOutflowBCStrategy : public BCStrategy
+class MultiphaseNonReflectingOutflowBCStrategy : public MultiphaseBCStrategy
 {
 public:
     MultiphaseNonReflectingOutflowBCStrategy();

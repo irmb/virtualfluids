@@ -34,14 +34,14 @@
 #ifndef ThixotropyVelocityWithDensityBCStrategy_h__
 #define ThixotropyVelocityWithDensityBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "NonNewtonianBCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
 //!  \brief Class implements Dirichlet boundary condition for velocity. Set density in system. It is used together with non reflecting outflow.  
 
-class ThixotropyVelocityWithDensityBCStrategy : public BCStrategy
+class ThixotropyVelocityWithDensityBCStrategy : public NonNewtonianBCStrategy
 {
 public:
    ThixotropyVelocityWithDensityBCStrategy();

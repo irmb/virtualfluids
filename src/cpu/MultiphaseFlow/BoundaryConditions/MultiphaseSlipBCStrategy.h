@@ -34,10 +34,10 @@
 #ifndef MultiphaseSlipBCStrategy_h__
 #define MultiphaseSlipBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "MultiphaseBCStrategy.h"
 
 //! A class implements slip boundary condition for multiphase simulation
-class MultiphaseSlipBCStrategy : public BCStrategy
+class MultiphaseSlipBCStrategy : public MultiphaseBCStrategy
 {
 public:
    MultiphaseSlipBCStrategy();

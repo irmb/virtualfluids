@@ -26,36 +26,31 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BoundaryConditionsBlockVisitor.h
-//! \ingroup Visitors
+//! \file NonNewtonianBCStrategy.h
+//! \ingroup BoundaryConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BoundaryConditionBlockVisitor_h__
-#define BoundaryConditionBlockVisitor_h__
+#ifndef NonNewtonianBCStrategy_H
+#define NonNewtonianBCStrategy_H
 
-#include <PointerDefinitions.h>
-#include <map>
+#include "BCStrategy.h"
 
-#include "Block3DVisitor.h"
+class DistributionArray3D;
 
-class Grid3D;
-class Block3D;
-class BCStrategy;
-class BC;
-
-//! \brief set boundary conditions
-class BoundaryConditionsBlockVisitor : public Block3DVisitor
+class NonNewtonianBCStrategy : public BCStrategy
 {
 public:
-    BoundaryConditionsBlockVisitor();
-    ~BoundaryConditionsBlockVisitor() override;
+    NonNewtonianBCStrategy() = default;
+    virtual ~NonNewtonianBCStrategy() = default;
 
-    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
-    void addBC(SPtr<BC> bc);
+    virtual void addDistributionsH(SPtr<DistributionArray3D> distributionsH) {}
+    virtual void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) {}
 
 protected:
-private:
-    std::map<char, SPtr<BCStrategy>> bcMap;
+    SPtr<DistributionArray3D> distributionsH;
+    SPtr<DistributionArray3D> distributionsH2;
 };
-#endif // BoundaryConditionBlockVisitor_h__
+
+
+#endif

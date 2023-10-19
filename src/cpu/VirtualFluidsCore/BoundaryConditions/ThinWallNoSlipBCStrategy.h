@@ -46,6 +46,7 @@ public:
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void setPass(int pass);
+    bool isThinWallNoSlipBCStrategy();
     void applyBC() override;
 
 protected:

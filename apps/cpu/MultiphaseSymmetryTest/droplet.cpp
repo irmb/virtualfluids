@@ -188,18 +188,22 @@ void run(string configname)
         kernel->setBCSet(bcProc);
 
         SPtr<BC> noSlipBC(new NoSlipBC());
-        noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
+
+        SPtr<BCStrategy> noSlipStrategy = std::make_shared<MultiphaseNoSlipBCStrategy>();
+        noSlipBC->setBCStrategy(noSlipStrategy);
 
         SPtr<BC> outflowBC(new DensityBC(rhoLB));
         outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
         //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
+        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new ThixotropyNonReflectingOutflowBCStrategy()));
         
 
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBC);
-        bcVisitor.addBC(outflowBC);
+        //NonNewtonianBoundaryConditionsBlockVisitor bcVisitor;
+        //bcVisitor.addBC(noSlipBC);
+        //bcVisitor.addBC(outflowBC);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
         grid->setDeltaX(dx);
@@ -261,7 +265,7 @@ void run(string configname)
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
             InteractorsHelper intHelper(grid, metisVisitor, true);
-            //intHelper.addInteractor(wallYminInt);
+            intHelper.addInteractor(wallYminInt);
             //intHelper.addInteractor(wallYmaxInt);
             intHelper.selectBlocks();
 

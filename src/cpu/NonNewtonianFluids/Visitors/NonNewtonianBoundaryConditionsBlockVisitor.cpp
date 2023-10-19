@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BoundaryConditionsBlockVisitor.cpp
+//! \file NonNewtonianBoundaryConditionsBlockVisitor.cpp
 //! \ingroup Visitors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "BoundaryConditionsBlockVisitor.h"
+#include "NonNewtonianBoundaryConditionsBlockVisitor.h"
 #include "BC.h"
 #include "BCArray3D.h"
 #include "BCSet.h"
@@ -44,22 +44,17 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "ILBMKernel.h"
-#include "BCStrategyType.h"
-
-#include "NonNewtonianFluids/BoundaryConditions/ThixotropyDensityBCStrategy.h"
-#include "NonNewtonianFluids/BoundaryConditions/ThixotropyVelocityBCStrategy.h"
-#include "NonNewtonianFluids/BoundaryConditions/ThixotropyNoSlipBCStrategy.h"
-#include "NonNewtonianFluids/BoundaryConditions/ThixotropyNonReflectingOutflowBCStrategy.h"
-#include "NonNewtonianFluids/BoundaryConditions/ThixotropyVelocityWithDensityBCStrategy.h"
 
 
-BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
+#include "NonNewtonianFluids/BoundaryConditions/NonNewtonianBCStrategy.h"
+
+NonNewtonianBoundaryConditionsBlockVisitor::NonNewtonianBoundaryConditionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 {
 }
 //////////////////////////////////////////////////////////////////////////
-BoundaryConditionsBlockVisitor::~BoundaryConditionsBlockVisitor() = default;
+NonNewtonianBoundaryConditionsBlockVisitor::~NonNewtonianBoundaryConditionsBlockVisitor() = default;
 //////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
+void NonNewtonianBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
     if (block->getRank() == grid->getRank()) {
         SPtr<ILBMKernel> kernel = block->getKernel();
@@ -90,14 +85,16 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
         bcSet->clearBC();
 
         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
+        SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
+        SPtr<DistributionArray3D> distributionsH2 = kernel->getDataSet()->getH2distributions();
 
         for (int x3 = minX3; x3 < maxX3; x3++) {
             for (int x2 = minX2; x2 < maxX2; x2++) {
                 for (int x1 = minX1; x1 < maxX1; x1++) {
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
                         if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL) {
-                            char alg              = bcPtr->getBCStrategyType();
-                            SPtr<BCStrategy> bca = bcMap[alg];
+                            char bcStrategy = bcPtr->getBCStrategyKey();
+                            SPtr<BCStrategy> bca = BCStrategyRegister::getInstance()->getBCStrategy(bcStrategy);
 
                             if (bca) {
                                 bca = bca->clone();
@@ -106,21 +103,10 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
 
-                                if (alg == BCStrategyType::ThixotropyVelocityBCStrategy)
-                                    std::static_pointer_cast<ThixotropyVelocityBCStrategy>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategyType::ThixotropyDensityBCStrategy)
-                                    std::static_pointer_cast<ThixotropyDensityBCStrategy>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategyType::ThixotropyNoSlipBCStrategy)
-                                    std::static_pointer_cast<ThixotropyNoSlipBCStrategy>(bca)->addDistributionsH(
-                                        kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategyType::ThixotropyNonReflectingOutflowBCStrategy)
-                                    std::static_pointer_cast<ThixotropyNonReflectingOutflowBCStrategy>(bca)
-                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-                                if (alg == BCStrategyType::ThixotropyVelocityWithDensityBCStrategy)
-                                    std::static_pointer_cast<ThixotropyVelocityWithDensityBCStrategy>(bca)
-                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
+                                if (distributionsH)
+                                    dynamicPointerCast<NonNewtonianBCStrategy>(bca)->addDistributionsH(distributionsH);
+                                if (distributionsH2)
+                                    dynamicPointerCast<NonNewtonianBCStrategy>(bca)->addDistributionsH2(distributionsH2);
 
                                 bca->setCollFactor(collFactor);
                                 bca->setCompressible(compressible);
@@ -133,9 +119,4 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
             }
         }
     }
-}
-//////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitor::addBC(SPtr<BC> bc)
-{
-    bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getBCStrategy()));
 }

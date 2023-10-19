@@ -34,11 +34,9 @@
 
 #include "BoundaryConditions.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
-#include "BCStrategyType.h"
 
 ThinWallNoSlipBCStrategy::ThinWallNoSlipBCStrategy()
 {
-    BCStrategy::type         = BCStrategyType::ThinWallNoSlipBCStrategy;
     BCStrategy::preCollision = false;
     pass                      = 1;
 }
@@ -91,4 +89,12 @@ void ThinWallNoSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distri
     this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThinWallNoSlipBCStrategy::setPass(int pass) { this->pass = pass; }
+void ThinWallNoSlipBCStrategy::setPass(int pass)
+{
+    this->pass = pass;
+}
+
+bool ThinWallNoSlipBCStrategy::isThinWallNoSlipBCStrategy()
+{
+    return true;
+}

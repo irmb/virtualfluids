@@ -26,41 +26,38 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BCStrategy.h
+//! \file BCStrategyRegister.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BCStrategyType_H
-#define BCStrategyType_H
+#ifndef BCStrategyRegister_H
+#define BCStrategyRegister_H
 
-struct BCStrategyType
+#include <memory>
+#include <map>
+#include <mutex>
+
+class BC;
+class BCStrategy;
+
+class BCStrategyRegister
 {
-    static const char VelocityBCStrategy = 0;
-    static const char EqDensityBCStrategy = 1;
-    static const char NonEqDensityBCStrategy = 2;
-    static const char NoSlipBCStrategy = 3;
-    static const char SlipBCStrategy = 4;
-    static const char HighViscosityNoSlipBCStrategy = 5;
-    static const char ThinWallNoSlipBCStrategy = 6;
-    static const char VelocityWithDensityBCStrategy = 7;
-    static const char NonReflectingOutflowBCStrategy = 8;
-    static const char ThixotropyVelocityBCStrategy = 9;
-    static const char ThixotropyDensityBCStrategy = 10;
-    static const char ThixotropyNoSlipBCStrategy = 11;
-    static const char ThixotropyNonReflectingOutflowBCStrategy = 12;
-    static const char ThixotropyVelocityWithDensityBCStrategy = 13;
-    static const char RheologyBinghamModelNoSlipBCStrategy = 14;
-    static const char RheologyHerschelBulkleyModelNoSlipBCStrategy = 15;
-    static const char SimpleVelocityBCStrategy = 16;
-    static const char SimpleSlipBCStrategy = 17;
-    static const char RheologyPowellEyringModelNoSlipBCStrategy = 18;
-    static const char RheologyBinghamModelVelocityBCStrategy = 19;
-    static const char MultiphaseNoSlipBCStrategy = 20;
-    static const char MultiphaseVelocityBCStrategy = 21;
-    static const char NonReflectingInflowBCStrategy = 22;
-    static const char NonReflectingOutflowWithRelaxationBCStrategy = 23;
-    static const char MultiphasePressureBCStrategy = 24;
-};
+public:
+    BCStrategyRegister(const BCStrategyRegister &) = delete;
+    BCStrategyRegister &operator=(const BCStrategyRegister &rhs) = delete;
+    static std::shared_ptr<BCStrategyRegister> getInstance();
 
+    virtual ~BCStrategyRegister() = default;
+
+    void setBCStrategy(char bcStrategyKey, std::shared_ptr<BCStrategy> bcStrategy);
+    std::shared_ptr<BCStrategy> getBCStrategy(char type);
+
+private:
+    BCStrategyRegister() = default;
+    static std::mutex instantiation_mutex;
+    static std::shared_ptr<BCStrategyRegister> instance;
+  
+    std::map<char, std::shared_ptr<BCStrategy>> bcMap;
+};
 #endif

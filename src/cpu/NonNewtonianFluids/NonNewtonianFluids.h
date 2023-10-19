@@ -56,4 +56,6 @@
 #include "NonNewtonianFluids/LBM/RheologyK17LBMKernel.h"
 #include "NonNewtonianFluids/LBM/RheologyPowellEyringModelLBMKernel.h"
 
+#include "NonNewtonianFluids/Visitors/NonNewtonianBoundaryConditionsBlockVisitor.h"
+
 #endif

@@ -33,10 +33,10 @@
 #ifndef ThixotropyNonReflectingOutflowBCStrategy_h__
 #define ThixotropyNonReflectingOutflowBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "NonNewtonianBCStrategy.h"
 
 
-class ThixotropyNonReflectingOutflowBCStrategy : public BCStrategy
+class ThixotropyNonReflectingOutflowBCStrategy : public NonNewtonianBCStrategy
 {
 public:
 	ThixotropyNonReflectingOutflowBCStrategy();

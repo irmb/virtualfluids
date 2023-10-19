@@ -786,7 +786,7 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
                     bouCond->nx3                    = bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
-                    bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
+                    bouCond->bcStrategyKey = bcArr->bcvector[bc]->getBCStrategyKey();
                 }
 
                 bcVector[ic].push_back(*bouCond);
@@ -1477,7 +1477,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
                     bc->nx3 = bcArray[ibc].nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bc->setQ(bcArray[ibc].q[iq], iq);
-                    bc->setBCStrategyType(bcArray[ibc].algorithmType);
+                    bc->setBCStrategyKey(bcArray[ibc].bcStrategyKey);
                 }
 
                 bcVector.push_back(bc);

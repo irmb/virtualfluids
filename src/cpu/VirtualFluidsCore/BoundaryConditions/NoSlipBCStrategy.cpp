@@ -34,11 +34,9 @@
 #include "NoSlipBCStrategy.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
-#include "BCStrategyType.h"
 
 NoSlipBCStrategy::NoSlipBCStrategy()
 {
-    BCStrategy::type         = BCStrategyType::NoSlipBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

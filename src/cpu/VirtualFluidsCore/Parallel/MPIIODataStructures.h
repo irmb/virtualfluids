@@ -124,7 +124,7 @@ struct BoundaryCondition {
     float nx1, nx2, nx3;    //  not double!!!
     float  q[26];           //  not double!!!
 
-    char algorithmType;
+    char bcStrategyKey;
 };
 
 //! \struct boundCondParam

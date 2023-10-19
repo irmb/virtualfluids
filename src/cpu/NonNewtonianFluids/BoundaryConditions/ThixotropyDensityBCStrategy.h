@@ -34,10 +34,10 @@
 #ifndef ThixotropyDensityBCStrategy_h__
 #define ThixotropyDensityBCStrategy_h__
 
-#include "BCStrategy.h"
+#include "NonNewtonianBCStrategy.h"
 
 
-class ThixotropyDensityBCStrategy : public BCStrategy
+class ThixotropyDensityBCStrategy : public NonNewtonianBCStrategy
 {
 public:
 	ThixotropyDensityBCStrategy();
