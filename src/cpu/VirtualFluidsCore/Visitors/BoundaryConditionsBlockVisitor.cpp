@@ -89,7 +89,7 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
                         if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL) {
                             char bcStrategyKey = bcPtr->getBCStrategyKey();
-                            SPtr<BCStrategy> bca = BCStrategyRegister::getInstance()->getBCStrategy(bcStrategyKey);
+                            SPtr<BCStrategy> bca = BCStrategyRegistry::getInstance()->getBCStrategy(bcStrategyKey);
 
                             if (bca) {
                                 bca = bca->clone();

@@ -94,7 +94,7 @@ void NonNewtonianBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<B
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
                         if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL) {
                             char bcStrategy = bcPtr->getBCStrategyKey();
-                            SPtr<BCStrategy> bca = BCStrategyRegister::getInstance()->getBCStrategy(bcStrategy);
+                            SPtr<BCStrategy> bca = BCStrategyRegistry::getInstance()->getBCStrategy(bcStrategy);
 
                             if (bca) {
                                 bca = bca->clone();

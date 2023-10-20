@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BCStrategyRegister.h
+//! \file BCStrategyRegistry.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BCStrategyRegister_H
-#define BCStrategyRegister_H
+#ifndef BCStrategyRegistry_H
+#define BCStrategyRegistry_H
 
 #include <memory>
 #include <map>
@@ -41,22 +41,22 @@
 class BC;
 class BCStrategy;
 
-class BCStrategyRegister
+class BCStrategyRegistry
 {
 public:
-    BCStrategyRegister(const BCStrategyRegister &) = delete;
-    BCStrategyRegister &operator=(const BCStrategyRegister &rhs) = delete;
-    static std::shared_ptr<BCStrategyRegister> getInstance();
+    BCStrategyRegistry(const BCStrategyRegistry &) = delete;
+    BCStrategyRegistry &operator=(const BCStrategyRegistry &rhs) = delete;
+    static std::shared_ptr<BCStrategyRegistry> getInstance();
 
-    virtual ~BCStrategyRegister() = default;
+    virtual ~BCStrategyRegistry() = default;
 
     void setBCStrategy(char bcStrategyKey, std::shared_ptr<BCStrategy> bcStrategy);
     std::shared_ptr<BCStrategy> getBCStrategy(char type);
 
 private:
-    BCStrategyRegister() = default;
+    BCStrategyRegistry() = default;
     static std::mutex instantiation_mutex;
-    static std::shared_ptr<BCStrategyRegister> instance;
+    static std::shared_ptr<BCStrategyRegistry> instance;
   
     std::map<char, std::shared_ptr<BCStrategy>> bcMap;
 };

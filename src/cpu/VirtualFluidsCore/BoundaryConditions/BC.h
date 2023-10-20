@@ -37,7 +37,7 @@
 
 #include "BCStrategy.h"
 #include "BoundaryConditions.h"
-#include "BCStrategyRegister.h"
+#include "BCStrategyRegistry.h"
 
 class D3Q27Interactor;
 
@@ -70,7 +70,7 @@ public:
     void setBCStrategy(SPtr<BCStrategy> bcStrategy)
     {
         bcStrategyKey = keyCounter++; 
-        BCStrategyRegister::getInstance()->setBCStrategy(bcStrategyKey, bcStrategy);
+        BCStrategyRegistry::getInstance()->setBCStrategy(bcStrategyKey, bcStrategy);
     }
     //SPtr<BCStrategy> getBCStrategy() { return bcStrategy; }
     //char getBCStrategyKey() { return bcStrategyKey; }
