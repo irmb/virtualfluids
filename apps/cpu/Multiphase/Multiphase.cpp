@@ -183,9 +183,7 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBC);
-        bcVisitor.addBC(denBC); //Ohne das BB?
-        bcVisitor.addBC(velBCF1);
+
 
         SPtr<D3Q27Interactor> inflowF1Int;
         SPtr<D3Q27Interactor> cylInt;

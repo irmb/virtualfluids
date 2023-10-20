@@ -108,9 +108,9 @@ void bflow(string configname)
       //thix->setOmegaMin(omegaMin);
 
       SPtr<BC> noSlipBC(new NoSlipBC());
-      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyHerschelBulkleyModelNoSlipBCStrategy()));
-      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelNoSlipBCStrategy()));
+      // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      // //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyHerschelBulkleyModelNoSlipBCStrategy()));
+      // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelNoSlipBCStrategy()));
 
       SPtr<BC> slipBC(new SlipBC());
       slipBC->setBCStrategy(SPtr<BCStrategy>(new SimpleSlipBCStrategy()));
@@ -162,10 +162,6 @@ void bflow(string configname)
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      //bcVisitor.addBC(noSlipBC);
-      bcVisitor.addBC(slipBC);
-      bcVisitor.addBC(velocityBC);
-      //bcVisitor.addBC(densityBC);
       
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());

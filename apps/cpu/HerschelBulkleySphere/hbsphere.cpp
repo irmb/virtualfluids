@@ -130,10 +130,6 @@ void bflow(string configname)
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBC);
-      bcVisitor.addBC(slipBC);
-      bcVisitor.addBC(velocityBC);
-      bcVisitor.addBC(densityBC);
       
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());

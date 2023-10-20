@@ -300,8 +300,8 @@ void run(string configname)
         SPtr<BC> denBC(new DensityBC(rhoLB));
         denBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
 
-        SPtr<BC> slipBC(new SlipBC());
-        slipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseSlipBCStrategy()));
+        // SPtr<BC> slipBC(new SlipBC());
+        // slipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseSlipBCStrategy()));
 
         mu::Parser fctPhi_F1;
         fctPhi_F1.SetExpr("phiH");
@@ -322,11 +322,6 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBC);
-        //bcVisitor.addBC(slipBC);
-        bcVisitor.addBC(denBC);
-        bcVisitor.addBC(velBCF1);
-        bcVisitor.addBC(velBCF2);
 
         // SPtr<D3Q27Interactor> inflowF1Int;
         // SPtr<D3Q27Interactor> cylInt;

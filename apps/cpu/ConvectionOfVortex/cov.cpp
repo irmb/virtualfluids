@@ -116,7 +116,6 @@ void run()
       outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(outflowBC);
 
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());

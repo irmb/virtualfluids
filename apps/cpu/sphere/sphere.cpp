@@ -64,10 +64,6 @@ void run(string configname)
       denBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBC);
-      bcVisitor.addBC(slipBC);
-      bcVisitor.addBC(velBC);
-      bcVisitor.addBC(denBC);
 
       real dx = 1;
 

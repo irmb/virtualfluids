@@ -93,9 +93,6 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBC);
-      bcVisitor.addBC(denBC);
-      //bcVisitor.addBC(velBC1);
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
@@ -268,7 +265,7 @@ void run(string configname)
 
          intHelper.setBC();
 
-         bcVisitor.addBC(velBC1);
+         //bcVisitor.addBC(velBC1);
          grid->accept(bcVisitor);
 
          //initialization of distributions

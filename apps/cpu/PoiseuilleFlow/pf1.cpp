@@ -73,7 +73,6 @@ void pf1()
 
    //boundary conditions visitor
    BoundaryConditionsBlockVisitor bcVisitor;
-   bcVisitor.addBC(noSlipBC);
    //////////////////////////////////////////////////////////////////////////////////
 
    //set boundary conditions for blocks and create process decomposition for MPI

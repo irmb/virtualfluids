@@ -516,10 +516,7 @@ int main(int argc, char *argv[])
         // BC visitor
         //BoundaryConditionsBlockVisitor bcVisitor;
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBC);
-        bcVisitor.addBC(inflowConcreteBC);
-        bcVisitor.addBC(inflowAirBC1);
-        bcVisitor.addBC(outflowBC);
+
 
         // SPtr<LBMKernel> kernel   = make_shared<IBcumulantK17LBMKernel>();
          //SPtr<LBMKernel> kernel   = make_shared<CumulantK17LBMKernel>();

@@ -94,9 +94,6 @@ void run(string configname)
       denBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
       
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipAdapter);
-      bcVisitor.addBC(velBC);
-      bcVisitor.addBC(denBC);
 
       //////////////////////////////////////////////////////////////////////////
       //restart

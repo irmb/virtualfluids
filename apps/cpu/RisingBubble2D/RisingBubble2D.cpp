@@ -182,8 +182,6 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-        bcVisitor.addBC(noSlipBC);
-        //bcVisitor.addBC(slipBC);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
         grid->setDeltaX(dx);
