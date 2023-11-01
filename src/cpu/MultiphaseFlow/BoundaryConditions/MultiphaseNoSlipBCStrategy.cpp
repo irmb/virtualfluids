@@ -34,7 +34,6 @@
 #include "MultiphaseNoSlipBCStrategy.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
-#include "MultiphaseBCStrategyType.h"
 
 MultiphaseNoSlipBCStrategy::MultiphaseNoSlipBCStrategy()
 {

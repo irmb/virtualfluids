@@ -23,3 +23,8 @@ std::shared_ptr<BCStrategy> BCStrategyRegistry::getBCStrategy(char strategyKey)
 {
     return bcMap[strategyKey];
 }
+
+void BCStrategyRegistry::clear()
+{
+    bcMap.clear();
+}

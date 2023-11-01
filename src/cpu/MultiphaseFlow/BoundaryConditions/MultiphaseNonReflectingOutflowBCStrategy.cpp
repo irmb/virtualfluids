@@ -35,7 +35,6 @@
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
 #include "DistributionArray3D.h"
-#include "MultiphaseBCStrategyType.h"
 
 MultiphaseNonReflectingOutflowBCStrategy::MultiphaseNonReflectingOutflowBCStrategy()
 {

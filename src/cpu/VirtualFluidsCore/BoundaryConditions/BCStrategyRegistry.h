@@ -51,10 +51,13 @@ public:
     virtual ~BCStrategyRegistry() = default;
 
     void setBCStrategy(char bcStrategyKey, std::shared_ptr<BCStrategy> bcStrategy);
-    std::shared_ptr<BCStrategy> getBCStrategy(char type);
+    std::shared_ptr<BCStrategy> getBCStrategy(char strategyKey);
+
+    void clear();
 
 private:
     BCStrategyRegistry() = default;
+
     static std::mutex instantiation_mutex;
     static std::shared_ptr<BCStrategyRegistry> instance;
   

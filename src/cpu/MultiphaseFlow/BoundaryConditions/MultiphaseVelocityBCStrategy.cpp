@@ -34,7 +34,6 @@
 #include "MultiphaseVelocityBCStrategy.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
-#include "MultiphaseBCStrategyType.h"
 
 MultiphaseVelocityBCStrategy::MultiphaseVelocityBCStrategy()
 {
