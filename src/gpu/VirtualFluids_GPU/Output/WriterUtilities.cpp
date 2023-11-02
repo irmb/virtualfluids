@@ -45,7 +45,7 @@ void WriterUtilities::getIndicesOfAllNodesInOct(std::array<uint, 8>& indices, ui
 void WriterUtilities::calculateRelativePositionInPart(std::array<uint, 8>& relativePositionInPart,
                                                       const std::array<uint, 8>& indicesOfOct, uint startPosition)
 {
-    for (size_t i = 1; i < relativePositionInPart.size(); i++) {
+    for (size_t i = 0; i < relativePositionInPart.size(); i++) {
         relativePositionInPart[i] = indicesOfOct[i] - startPosition;
     }
 }
@@ -53,11 +53,11 @@ void WriterUtilities::calculateRelativePositionInPart(std::array<uint, 8>& relat
 bool WriterUtilities::areAllNodesInOctValidForWriting(const std::array<uint, 8>& indicesOfOct,
                                                       const LBMSimulationParameter* parH, uint endPositionOfPart)
 {
-    bool neighborsAreFluid = std::all_of(indicesOfOct.begin() + 1, indicesOfOct.end(),
+    bool neighborsAreFluid = std::all_of(indicesOfOct.begin(), indicesOfOct.end(),
                                          [&](uint index) { return parH->typeOfGridNode[index] == GEO_FLUID; });
 
     bool neighborIsOutOfPart =
-        (std::any_of(indicesOfOct.begin() + 1, indicesOfOct.end(), [&](uint index) { return index > endPositionOfPart; }));
+        (std::any_of(indicesOfOct.begin(), indicesOfOct.end(), [&](uint index) { return index > endPositionOfPart; }));
 
     return neighborsAreFluid && !neighborIsOutOfPart;
 }
