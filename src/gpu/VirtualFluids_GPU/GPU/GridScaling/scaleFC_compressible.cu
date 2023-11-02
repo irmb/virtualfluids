@@ -60,7 +60,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     vf::gpu::ListIndices indices(indicesCoarse000[nodeIndex], neighborXcoarse, neighborYcoarse, neighborZcoarse);
 
     const real epsilonNew = c2o1; // ratio of grid resolutions
-    const real omegaCoarseNew = hasTurbulentViscosity ? vf::gpu::calculateOmega(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
+    const real omegaCoarseNew = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
     real fCoarse[27];
     vf::lbm::interpolateFC(fCoarse, epsilonNew, omegaCoarseNew, coefficients);
 

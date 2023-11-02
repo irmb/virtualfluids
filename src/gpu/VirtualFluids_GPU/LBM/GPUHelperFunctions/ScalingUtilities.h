@@ -41,6 +41,7 @@
 #include <basics/DataTypes.h>
 
 #include <lbm/interpolation/InterpolationCoefficients.h>
+#include <lbm/collision/TurbulentViscosity.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm;
@@ -97,7 +98,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = k_base_0MM;
     indices.k_MMM = k_base_MMM;
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     real f_fine[27];
 
@@ -123,7 +124,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = neighborZ[indices.k_0MM];
     indices.k_MMM = neighborZ[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
 
@@ -146,7 +147,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = indices.k_MMM;
     indices.k_MMM = neighborX[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
     if (forcesForAllNodesX)
@@ -168,7 +169,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0M0 = k_base_MM0;
     indices.k_MM0 = neighborX[k_base_MM0];
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
     if (forcesForAllNodesX)
@@ -201,7 +202,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = k_base_0MM;
     indices.k_MMM = k_base_MMM;
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
     if (forcesForAllNodesX)
@@ -223,7 +224,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = neighborZ[indices.k_0MM];
     indices.k_MMM = neighborZ[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
     if (forcesForAllNodesX)
@@ -245,7 +246,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = indices.k_MMM;
     indices.k_MMM = neighborX[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
     if (forcesForAllNodesX)
@@ -266,8 +267,8 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_M00 = neighborX[k_base_M00];
     indices.k_0M0 = k_base_MM0;
     indices.k_MM0 = neighborX[k_base_MM0];
-
-    omega_ = hasTurbulentViscosity ? calculateOmega(omega, turbulentViscosity[indices.k_000]) : omega;
+    
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     read(f_fine, distFine, indices);
     if (forcesForAllNodesX)

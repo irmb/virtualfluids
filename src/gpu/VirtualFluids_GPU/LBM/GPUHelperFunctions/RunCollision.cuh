@@ -58,9 +58,9 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
         para.forceZ = (collisionParameter.forces[2] + collisionParameter.bodyForceZ[k_000]) * c1o2 * collisionParameter.forceFactor;
 
         // Reset body force. To be used when not using round-off correction.
-        collisionParameter.bodyForceX[k_000] = 0.0f;
-        collisionParameter.bodyForceX[k_000] = 0.0f;
-        collisionParameter.bodyForceX[k_000] = 0.0f;
+        collisionParameter.bodyForceX[k_000] = c0o1;
+        collisionParameter.bodyForceY[k_000] = c0o1;
+        collisionParameter.bodyForceZ[k_000] = c0o1;
 
         ////////////////////////////////////////////////////////////////////////////////////
         //!> Round-off correction
@@ -97,7 +97,7 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     vf::lbm::MacroscopicValues macroscopicValues;
     collision(para, macroscopicValues, turbulentViscosity);
 
-    if (writeMacroscopicVariables) {
+    if (writeMacroscopicVariables || turbulenceModel == vf::lbm::TurbulenceModel::AMD) {
         collisionParameter.vx[k_000] = macroscopicValues.vx;
         collisionParameter.vy[k_000] = macroscopicValues.vy;
         collisionParameter.vz[k_000] = macroscopicValues.vz;
