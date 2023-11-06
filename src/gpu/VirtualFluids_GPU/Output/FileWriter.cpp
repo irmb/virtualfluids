@@ -237,50 +237,50 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startPosition; pos < endPosition; pos++) {
-            const LBMSimulationParameter* parH = para->getParHConst(level).get();
-            if (parH->typeOfGridNode[pos] == GEO_FLUID) {
+            const LBMSimulationParameter& parH = para->getParHConst(level);
+            if (parH.typeOfGridNode[pos] == GEO_FLUID) {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = parH->coordinateX[pos];
-                double x2 = parH->coordinateY[pos];
-                double x3 = parH->coordinateZ[pos];
+                double x1 = parH.coordinateX[pos];
+                double x2 = parH.coordinateY[pos];
+                double x3 = parH.coordinateZ[pos];
                 //////////////////////////////////////////////////////////////////////////
                 relPosInPart = pos - startPosition;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[relPosInPart] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodeData[0][relPosInPart] = (double)parH->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodeData[1][relPosInPart] = (double)parH->rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodeData[2][relPosInPart] = (double)parH->velocityX[pos] * (double)para->getVelocityRatio();
-                nodeData[3][relPosInPart] = (double)parH->velocityY[pos] * (double)para->getVelocityRatio();
-                nodeData[4][relPosInPart] = (double)parH->velocityZ[pos] * (double)para->getVelocityRatio();
-                nodeData[5][relPosInPart] = (double)parH->typeOfGridNode[pos];
+                nodeData[0][relPosInPart] = (double)parH.pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodeData[1][relPosInPart] = (double)parH.rho[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodeData[2][relPosInPart] = (double)parH.velocityX[pos] * (double)para->getVelocityRatio();
+                nodeData[3][relPosInPart] = (double)parH.velocityY[pos] * (double)para->getVelocityRatio();
+                nodeData[4][relPosInPart] = (double)parH.velocityZ[pos] * (double)para->getVelocityRatio();
+                nodeData[5][relPosInPart] = (double)parH.typeOfGridNode[pos];
 
                 if(para->getDiffOn())
-                    nodeData[firstConcNode][relPosInPart] = (double)parH->concentration[pos];
+                    nodeData[firstConcNode][relPosInPart] = (double)parH.concentration[pos];
 
                 if(para->getIsBodyForce())
                 {
-                    nodeData[firstBodyForceNode    ][relPosInPart] = (double)parH->forceX_SP[pos] * (double)para->getScaledForceRatio(level);
-                    nodeData[firstBodyForceNode + 1][relPosInPart] = (double)parH->forceY_SP[pos] * (double)para->getScaledForceRatio(level);
-                    nodeData[firstBodyForceNode + 2][relPosInPart] = (double)parH->forceZ_SP[pos] * (double)para->getScaledForceRatio(level);
+                    nodeData[firstBodyForceNode    ][relPosInPart] = (double)parH.forceX_SP[pos] * (double)para->getScaledForceRatio(level);
+                    nodeData[firstBodyForceNode + 1][relPosInPart] = (double)parH.forceY_SP[pos] * (double)para->getScaledForceRatio(level);
+                    nodeData[firstBodyForceNode + 2][relPosInPart] = (double)parH.forceZ_SP[pos] * (double)para->getScaledForceRatio(level);
                 }
 
                 if(para->getUseTurbulentViscosity())
                 {
-                    nodeData[firstNutNode][relPosInPart] = (double)parH->turbViscosity[pos] * (double)para->getScaledViscosityRatio(level);
+                    nodeData[firstNutNode][relPosInPart] = (double)parH.turbViscosity[pos] * (double)para->getScaledViscosityRatio(level);
                 }
 
                 if (para->getCalcTurbulenceIntensity()) {
-                    nodeData[firstTurbulenceNode    ][relPosInPart] = (double)parH->vxx[pos];
-                    nodeData[firstTurbulenceNode + 1][relPosInPart] = (double)parH->vyy[pos];
-                    nodeData[firstTurbulenceNode + 2][relPosInPart] = (double)parH->vzz[pos];
-                    nodeData[firstTurbulenceNode + 3][relPosInPart] = (double)parH->vxy[pos];
-                    nodeData[firstTurbulenceNode + 4][relPosInPart] = (double)parH->vxz[pos];
-                    nodeData[firstTurbulenceNode + 5][relPosInPart] = (double)parH->vyz[pos];
+                    nodeData[firstTurbulenceNode    ][relPosInPart] = (double)parH.vxx[pos];
+                    nodeData[firstTurbulenceNode + 1][relPosInPart] = (double)parH.vyy[pos];
+                    nodeData[firstTurbulenceNode + 2][relPosInPart] = (double)parH.vzz[pos];
+                    nodeData[firstTurbulenceNode + 3][relPosInPart] = (double)parH.vxy[pos];
+                    nodeData[firstTurbulenceNode + 4][relPosInPart] = (double)parH.vxz[pos];
+                    nodeData[firstTurbulenceNode + 5][relPosInPart] = (double)parH.vyz[pos];
                 }
 
                 //////////////////////////////////////////////////////////////////////////
 
-                WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, para->getParHConst(level).get());
+                WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, para->getParHConst(level));
 
                 if (WriterUtilities::isPeriodicCell(parH, indicesOfOct[0], indicesOfOct[6])) {
                     continue;
@@ -390,7 +390,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
                 dn7 = number7 - startPosition;
                 dn8 = number8 - startPosition;
                 //////////////////////////////////////////////////////////////////////////
-                if (WriterUtilities::isPeriodicCell(para->getParHConst(level).get(), number1, number7))
+                if (WriterUtilities::isPeriodicCell(para->getParHConst(level), number1, number7))
                     continue;
                 //////////////////////////////////////////////////////////////////////////
                 if (neighborsFluid == true) cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));

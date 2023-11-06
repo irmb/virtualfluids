@@ -1738,14 +1738,14 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
     return parH[level];
 }
 
-std::shared_ptr<const LBMSimulationParameter> Parameter::getParDConst(int level) const
+const LBMSimulationParameter& Parameter::getParDConst(int level) const
 {
-    return parD[level];
+    return *parD[level];
 }
 
-std::shared_ptr<const LBMSimulationParameter> Parameter::getParHConst(int level) const
+const LBMSimulationParameter& Parameter::getParHConst(int level) const
 {
-    return parH[level];
+    return *parH[level];
 }
 
 const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParHallLevels()
