@@ -51,6 +51,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
+#include "Output/DistributionDebugWriter.h"
 #include "Kernel/Utilities/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -330,6 +331,9 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
             cudaMemoryManager->cudaAllocFsForCheckPointAndRestart(lev);
         }
     }
+
+    // Allocate host memory for distribution debug writer
+    cudaMemoryManager->cudaAllocFsForAllLevelsOnHost();
 
     //////////////////////////////////////////////////////////////////////////
     // Restart
@@ -1013,6 +1017,11 @@ void Simulation::readAndWriteFiles(uint timestep)
     }
     ////////////////////////////////////////////////////////////////////////
     if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
+
+    // Write distributions (f's) for debugging purposes.
+    cudaMemoryManager->cudaCopyFsForAllLevelsToHost();
+    DistributionDebugWriter::writeDistributions(para.get(), timestep);
+
     ////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("... done");
     ////////////////////////////////////////////////////////////////////////

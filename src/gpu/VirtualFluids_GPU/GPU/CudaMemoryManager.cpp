@@ -2105,6 +2105,12 @@ void CudaMemoryManager::cudaAllocFsForCheckPointAndRestart(int lev)
 {
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->distributions.f[0] ),           (unsigned long long)parameter->getD3Qxx()*(unsigned long long)parameter->getParH(lev)->memSizeRealLBnodes));
 }
+void CudaMemoryManager::cudaAllocFsForAllLevelsOnHost()
+{
+    for (int level = 0; level <= parameter->getMaxLevel(); level++) {
+        cudaAllocFsForCheckPointAndRestart(level);
+    }
+}
 void CudaMemoryManager::cudaCopyFsForRestart(int lev)
 {
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->distributions.f[0],  parameter->getParH(lev)->distributions.f[0],     (unsigned long long)parameter->getD3Qxx()*(unsigned long long)parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
@@ -2112,6 +2118,11 @@ void CudaMemoryManager::cudaCopyFsForRestart(int lev)
 void CudaMemoryManager::cudaCopyFsForCheckPoint(int lev)
 {
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->distributions.f[0],  parameter->getParD(lev)->distributions.f[0],     (unsigned long long)parameter->getD3Qxx()*(unsigned long long)parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+}
+void CudaMemoryManager::cudaCopyFsForAllLevelsToHost()
+{
+    for (int level = 0; level <= parameter->getMaxLevel(); level++)
+        cudaCopyFsForCheckPoint(level);
 }
 void CudaMemoryManager::cudaFreeFsForCheckPointAndRestart(int lev)
 {

@@ -275,8 +275,12 @@ public:
     void cudaFreeMeasurePointsIndex(int lev);
 
     void cudaAllocFsForCheckPointAndRestart(int lev);
+    void cudaAllocFsForAllLevelsOnHost();
+    //! \brief copy distributions from host to device
     void cudaCopyFsForRestart(int lev);
+    //! \brief copy distributions from device to host
     void cudaCopyFsForCheckPoint(int lev);
+    void cudaCopyFsForAllLevelsToHost();
     void cudaFreeFsForCheckPointAndRestart(int lev);
 
     void cudaAllocDragLift(int lev, int numofelem);
