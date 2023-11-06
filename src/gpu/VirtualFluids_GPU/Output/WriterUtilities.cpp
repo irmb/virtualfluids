@@ -13,14 +13,14 @@ uint WriterUtilities::calculateNumberOfParts(const Parameter* parameter, uint le
     return (uint)parameter->getParHConst(level)->numberOfNodes / parameter->getLimitOfNodesForVTK() + 1;
 }
 
-bool WriterUtilities::isPeriodicCell(const Parameter* para, int level, unsigned int baseNodeOfCell,
+bool WriterUtilities::isPeriodicCell(const LBMSimulationParameter* parH, unsigned int baseNodeOfCell,
                                      unsigned int otherNodeInCell)
 {
     real distance = sqrt(
-        pow(para->getParHConst(level)->coordinateX[otherNodeInCell] - para->getParHConst(level)->coordinateX[baseNodeOfCell], 2.) +
-        pow(para->getParHConst(level)->coordinateY[otherNodeInCell] - para->getParHConst(level)->coordinateY[baseNodeOfCell], 2.) +
-        pow(para->getParHConst(level)->coordinateZ[otherNodeInCell] - para->getParHConst(level)->coordinateZ[baseNodeOfCell], 2.));
-    return distance > 1.01 * sqrt(3 * pow(para->getParHConst(level)->gridSpacing, 2.));
+        pow(parH->coordinateX[otherNodeInCell] - parH->coordinateX[baseNodeOfCell], 2.) +
+        pow(parH->coordinateY[otherNodeInCell] - parH->coordinateY[baseNodeOfCell], 2.) +
+        pow(parH->coordinateZ[otherNodeInCell] - parH->coordinateZ[baseNodeOfCell], 2.));
+    return distance > 1.01 * sqrt(3 * pow(parH->gridSpacing, 2.));
 }
 
 uint WriterUtilities::calculateNumberOfNodesInPart(const Parameter* para, uint level, uint part)

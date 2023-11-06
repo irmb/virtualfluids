@@ -10,6 +10,7 @@
 #include "Parameter/CudaStreamManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
+#include "GridGenerator/grid/Grid.h"
 
 #include <iostream>
 #include <algorithm>
