@@ -284,7 +284,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
                 WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, para->getParHConst(level).get());
 
-                if (WriterUtilities::isPeriodicCell(para.get(), level, indicesOfOct[0], indicesOfOct[6])){
+                if (WriterUtilities::isPeriodicCell(para.get(), level, indicesOfOct[0], indicesOfOct[6])) {
                     continue;
                 }
 
@@ -293,7 +293,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
                 //////////////////////////////////////////////////////////////////////////
                 if (allNodesValid) {
-                    WriterUtilities::calculateRelativePositionInPart(relativePosInPart, indicesOfOct, startPosition);
+                    WriterUtilities::calculateRelativeNodeIndexInPart(relativePosInPart, indicesOfOct, startPosition);
                     cells.push_back(makeUbTupleFromArray(relativePosInPart));
                 }
             }

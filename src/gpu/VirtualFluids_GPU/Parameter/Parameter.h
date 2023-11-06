@@ -488,7 +488,7 @@ public:
     void setAngularVelocity(real inAngVel);
     void setStepEnsight(unsigned int step);
     void setOutputCount(unsigned int outputCount);
-    void setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
+    void setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
     void setStartTurn(unsigned int inStartTurn);
     void setDiffOn(bool isDiff);
     void setCompOn(bool isComp);

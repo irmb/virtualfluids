@@ -13,40 +13,43 @@ uint WriterUtilities::calculateNumberOfParts(const Parameter* parameter, uint le
     return (uint)parameter->getParHConst(level)->numberOfNodes / parameter->getLimitOfNodesForVTK() + 1;
 }
 
-bool WriterUtilities::isPeriodicCell(const Parameter* para, int level, unsigned int number1, unsigned int number7)
+bool WriterUtilities::isPeriodicCell(const Parameter* para, int level, unsigned int baseNodeOfCell,
+                                     unsigned int otherNodeInCell)
 {
-    real distance =
-        sqrt(pow(para->getParHConst(level)->coordinateX[number7] - para->getParHConst(level)->coordinateX[number1], 2.) +
-             pow(para->getParHConst(level)->coordinateY[number7] - para->getParHConst(level)->coordinateY[number1], 2.) +
-             pow(para->getParHConst(level)->coordinateZ[number7] - para->getParHConst(level)->coordinateZ[number1], 2.));
-    return distance > 1.01 * sqrt(3 * para->getParHConst(level)->gridSpacing);
+    real distance = sqrt(
+        pow(para->getParHConst(level)->coordinateX[otherNodeInCell] - para->getParHConst(level)->coordinateX[baseNodeOfCell], 2.) +
+        pow(para->getParHConst(level)->coordinateY[otherNodeInCell] - para->getParHConst(level)->coordinateY[baseNodeOfCell], 2.) +
+        pow(para->getParHConst(level)->coordinateZ[otherNodeInCell] - para->getParHConst(level)->coordinateZ[baseNodeOfCell], 2.));
+    return distance > 1.01 * sqrt(3 * pow(para->getParHConst(level)->gridSpacing, 2.));
 }
 
 uint WriterUtilities::calculateNumberOfNodesInPart(const Parameter* para, uint level, uint part)
 {
+    if (part >= WriterUtilities::calculateNumberOfParts(para, level))
+        throw std::runtime_error("The number of nodes for a non-existing part can not be calculated");
     if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParHConst(level)->numberOfNodes)
         return (uint)para->getParHConst(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
     return para->getLimitOfNodesForVTK();
 }
 
-void WriterUtilities::getIndicesOfAllNodesInOct(std::array<uint, 8>& indices, uint baseNodeOfOct,
+void WriterUtilities::getIndicesOfAllNodesInOct(std::array<uint, 8>& nodeIndices, uint baseNodeOfOct,
                                                 const LBMSimulationParameter* parH)
 {
-    indices[0] = baseNodeOfOct;
-    indices[1] = parH->neighborX[indices[0]];
-    indices[2] = parH->neighborY[indices[1]];
-    indices[3] = parH->neighborY[indices[0]];
-    indices[4] = parH->neighborZ[indices[0]];
-    indices[5] = parH->neighborZ[indices[1]];
-    indices[6] = parH->neighborZ[indices[2]];
-    indices[7] = parH->neighborZ[indices[3]];
+    nodeIndices[0] = baseNodeOfOct;
+    nodeIndices[1] = parH->neighborX[nodeIndices[0]];
+    nodeIndices[2] = parH->neighborY[nodeIndices[1]];
+    nodeIndices[3] = parH->neighborY[nodeIndices[0]];
+    nodeIndices[4] = parH->neighborZ[nodeIndices[0]];
+    nodeIndices[5] = parH->neighborZ[nodeIndices[1]];
+    nodeIndices[6] = parH->neighborZ[nodeIndices[2]];
+    nodeIndices[7] = parH->neighborZ[nodeIndices[3]];
 }
 
-void WriterUtilities::calculateRelativePositionInPart(std::array<uint, 8>& relativePositionInPart,
-                                                      const std::array<uint, 8>& indicesOfOct, uint startPosition)
+void WriterUtilities::calculateRelativeNodeIndexInPart(std::array<uint, 8>& relativePositionInPart,
+                                                      const std::array<uint, 8>& indicesOfOct, uint startPositionOfPart)
 {
     for (size_t i = 0; i < relativePositionInPart.size(); i++) {
-        relativePositionInPart[i] = indicesOfOct[i] - startPosition;
+        relativePositionInPart[i] = indicesOfOct[i] - startPositionOfPart;
     }
 }
 

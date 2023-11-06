@@ -665,7 +665,7 @@ void Parameter::setOutputCount(unsigned int outputCount)
 {
     this->outputCount = outputCount;
 }
-void Parameter::setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
+void Parameter::setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
 {
     this->limitOfNodesForVTK = limitOfNodesForVTK;
 }
