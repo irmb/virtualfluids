@@ -16,7 +16,7 @@ uint WriterUtilities::calculateNumberOfParts(const Parameter* parameter, uint le
 bool WriterUtilities::isPeriodicCell(const LBMSimulationParameter* parH, unsigned int baseNodeOfCell,
                                      unsigned int otherNodeInCell)
 {
-    real distance = sqrt(
+    const real distance = sqrt(
         pow(parH->coordinateX[otherNodeInCell] - parH->coordinateX[baseNodeOfCell], 2.) +
         pow(parH->coordinateY[otherNodeInCell] - parH->coordinateY[baseNodeOfCell], 2.) +
         pow(parH->coordinateZ[otherNodeInCell] - parH->coordinateZ[baseNodeOfCell], 2.));
@@ -56,10 +56,10 @@ void WriterUtilities::calculateRelativeNodeIndexInPart(std::array<uint, 8>& rela
 bool WriterUtilities::areAllNodesInOctValidForWriting(const std::array<uint, 8>& indicesOfOct,
                                                       const LBMSimulationParameter* parH, uint endPositionOfPart)
 {
-    bool neighborsAreFluid = std::all_of(indicesOfOct.begin(), indicesOfOct.end(),
+    const bool neighborsAreFluid = std::all_of(indicesOfOct.begin(), indicesOfOct.end(),
                                          [&](uint index) { return parH->typeOfGridNode[index] == GEO_FLUID; });
 
-    bool neighborIsOutOfPart =
+    const bool neighborIsOutOfPart =
         (std::any_of(indicesOfOct.begin(), indicesOfOct.end(), [&](uint index) { return index > endPositionOfPart; }));
 
     return neighborsAreFluid && !neighborIsOutOfPart;
