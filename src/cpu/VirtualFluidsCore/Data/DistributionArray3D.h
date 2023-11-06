@@ -55,39 +55,39 @@ public:
     //! \param x1 coordinate x1
     //! \param x2 coordinate x2
     //! \param x3 coordinate x3
-    virtual void getDistribution(real *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void getPreCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! set distribution
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x2 coordinate x2
     //! \param x3 coordinate x3
-    virtual void setDistribution(const real *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! get distribution in inverse order
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x2 coordinate x2
     //! \param x3 coordinate x3
-    virtual void getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! set distribution in inverse order
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x1 coordinate x2
     //! \param x1 coordinate x3
-    virtual void setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3) = 0;
+    virtual void setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3) = 0;
     //! set distribution in inverse order
     //! \param f distribution
     //! \param x1 coordinate x1
     //! \param x1 coordinate x2
     //! \param x1 coordinate x3
-    virtual void setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+    virtual void setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                              unsigned long int direction)                               = 0;
-    virtual void setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) = 0;
+    virtual void setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) = 0;
     virtual real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)      = 0;
-    virtual void setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+    virtual void setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                 unsigned long int direction)                            = 0;
-    virtual void setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
+    virtual void setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                 unsigned long int direction)                            = 0;
-    virtual real getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)         = 0;
+    virtual real getPreCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)         = 0;
     virtual void swap()                                                                                 = 0;
 
 protected:

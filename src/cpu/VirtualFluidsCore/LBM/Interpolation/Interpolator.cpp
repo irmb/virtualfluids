@@ -18,49 +18,49 @@ struct Range
 //////////////////////////////////////////////////////////////////////////
 void Interpolator::readICell(SPtr<DistributionArray3D> f, D3Q27ICell &icell, int x1, int x2, int x3)
 {
-    f->getDistribution(icell.BSW, x1, x2, x3);
-    f->getDistribution(icell.BSE, x1 + 1, x2, x3);
-    f->getDistribution(icell.BNW, x1, x2 + 1, x3);
-    f->getDistribution(icell.BNE, x1 + 1, x2 + 1, x3);
-    f->getDistribution(icell.TSW, x1, x2, x3 + 1);
-    f->getDistribution(icell.TSE, x1 + 1, x2, x3 + 1);
-    f->getDistribution(icell.TNW, x1, x2 + 1, x3 + 1);
-    f->getDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
+    f->getPreCollisionDistribution(icell.BSW, x1, x2, x3);
+    f->getPreCollisionDistribution(icell.BSE, x1 + 1, x2, x3);
+    f->getPreCollisionDistribution(icell.BNW, x1, x2 + 1, x3);
+    f->getPreCollisionDistribution(icell.BNE, x1 + 1, x2 + 1, x3);
+    f->getPreCollisionDistribution(icell.TSW, x1, x2, x3 + 1);
+    f->getPreCollisionDistribution(icell.TSE, x1 + 1, x2, x3 + 1);
+    f->getPreCollisionDistribution(icell.TNW, x1, x2 + 1, x3 + 1);
+    f->getPreCollisionDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
 void Interpolator::writeICell(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3)
 {
-    f->setDistribution(icell.BSW, x1, x2, x3);
-    f->setDistribution(icell.BSE, x1 + 1, x2, x3);
-    f->setDistribution(icell.BNW, x1, x2 + 1, x3);
-    f->setDistribution(icell.BNE, x1 + 1, x2 + 1, x3);
-    f->setDistribution(icell.TSW, x1, x2, x3 + 1);
-    f->setDistribution(icell.TSE, x1 + 1, x2, x3 + 1);
-    f->setDistribution(icell.TNW, x1, x2 + 1, x3 + 1);
-    f->setDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
+    f->setPostCollisionDistribution(icell.BSW, x1, x2, x3);
+    f->setPostCollisionDistribution(icell.BSE, x1 + 1, x2, x3);
+    f->setPostCollisionDistribution(icell.BNW, x1, x2 + 1, x3);
+    f->setPostCollisionDistribution(icell.BNE, x1 + 1, x2 + 1, x3);
+    f->setPostCollisionDistribution(icell.TSW, x1, x2, x3 + 1);
+    f->setPostCollisionDistribution(icell.TSE, x1 + 1, x2, x3 + 1);
+    f->setPostCollisionDistribution(icell.TNW, x1, x2 + 1, x3 + 1);
+    f->setPostCollisionDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
 void Interpolator::writeICellInv(SPtr<DistributionArray3D> f, const D3Q27ICell &icell, int x1, int x2, int x3)
 {
-    f->setDistributionInv(icell.BSW, x1, x2, x3);
-    f->setDistributionInv(icell.BSE, x1 + 1, x2, x3);
-    f->setDistributionInv(icell.BNW, x1, x2 + 1, x3);
-    f->setDistributionInv(icell.BNE, x1 + 1, x2 + 1, x3);
-    f->setDistributionInv(icell.TSW, x1, x2, x3 + 1);
-    f->setDistributionInv(icell.TSE, x1 + 1, x2, x3 + 1);
-    f->setDistributionInv(icell.TNW, x1, x2 + 1, x3 + 1);
-    f->setDistributionInv(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
+    f->setPreCollisionDistribution(icell.BSW, x1, x2, x3);
+    f->setPreCollisionDistribution(icell.BSE, x1 + 1, x2, x3);
+    f->setPreCollisionDistribution(icell.BNW, x1, x2 + 1, x3);
+    f->setPreCollisionDistribution(icell.BNE, x1 + 1, x2 + 1, x3);
+    f->setPreCollisionDistribution(icell.TSW, x1, x2, x3 + 1);
+    f->setPreCollisionDistribution(icell.TSE, x1 + 1, x2, x3 + 1);
+    f->setPreCollisionDistribution(icell.TNW, x1, x2 + 1, x3 + 1);
+    f->setPreCollisionDistribution(icell.TNE, x1 + 1, x2 + 1, x3 + 1);
 }
 //////////////////////////////////////////////////////////////////////////
 void Interpolator::writeINode(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2, int x3)
 {
-    f->setDistribution(inode, x1, x2, x3);
+    f->setPostCollisionDistribution(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void Interpolator::writeINodeInv(SPtr<DistributionArray3D> f, const real *const inode, int x1, int x2,
                                            int x3)
 {
-    f->setDistributionInv(inode, x1, x2, x3);
+    f->setPreCollisionDistribution(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 bool Interpolator::iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3)

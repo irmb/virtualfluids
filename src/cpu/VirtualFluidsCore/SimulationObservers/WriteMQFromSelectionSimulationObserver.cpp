@@ -174,7 +174,7 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         nodes.emplace_back(float(worldCoordinates[0]), float(worldCoordinates[1]),
                                            float(worldCoordinates[2]));
 
-                        distributions->getDistribution(f, ix1, ix2, ix3);
+                        distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                         calcMacros(f, rho, vx1, vx2, vx3);
 
                         if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))

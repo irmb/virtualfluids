@@ -209,7 +209,7 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
                     nodes.push_back(UbTupleFloat3(real(worldCoordinates[0]), real(worldCoordinates[1]),
                                                   real(worldCoordinates[2])));
 
-                    distributions->getDistribution(f, ix1, ix2, ix3);
+                    distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
                     //double press = D3Q27System::getPressure(f); // D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
 

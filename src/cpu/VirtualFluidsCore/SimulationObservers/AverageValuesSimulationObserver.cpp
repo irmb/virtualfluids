@@ -376,7 +376,7 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
                                 //////////////////////////////////////////////////////////////////////////
                                 // read distribution
                                 ////////////////////////////////////////////////////////////////////////////
-                                distributions->getDistribution(f, ix1, ix2, ix3);
+                                distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute velocity
                                 //////////////////////////////////////////////////////////////////////////

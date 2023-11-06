@@ -86,7 +86,7 @@ __global__ void LBCalcMac27(
     vf::gpu::ListIndices listIndices(k, neighborX, neighborY, neighborZ);
 
     real distribution[27];
-    vf::gpu::read(distribution, dist, listIndices);
+    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
  
     rhoD[k] = vf::lbm::getDensity(distribution);
     vxD[k] = vf::lbm::getIncompressibleVelocityX1(distribution);
@@ -308,7 +308,7 @@ __global__ void LBCalcMacCompSP27(
     vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
 
     real distribution[27];
-    vf::gpu::read(distribution, dist, listIndices);
+    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
 
     rhoD[nodeIndex] = vf::lbm::getDensity(distribution);
     vxD[nodeIndex] = vf::lbm::getCompressibleVelocityX1(distribution, rhoD[nodeIndex]);

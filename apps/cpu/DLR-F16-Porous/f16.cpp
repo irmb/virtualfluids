@@ -33,8 +33,8 @@ void initPteBlock(SPtr<Grid3D> grid, SPtr<Block3D> block)
             for (int ix1=0; ix1<bcArray->getNX1(); ix1++)
             {
                D3Q27System::calcCompFeq(f, 0, 0, 0, 0);
-               distributions->setDistribution(f, ix1, ix2, ix3);
-               distributions->setDistributionInv(f, ix1, ix2, ix3);
+               distributions->setPostCollisionDistribution(f, ix1, ix2, ix3);
+               distributions->setPreCollisionDistribution(f, ix1, ix2, ix3);
             }
       block->setActive(true);
    }

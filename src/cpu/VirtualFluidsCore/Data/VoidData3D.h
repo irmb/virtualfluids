@@ -19,28 +19,28 @@ public:
     size_t getNX1() const override { return NX1; }
     size_t getNX2() const override { return NX2; }
     size_t getNX3() const override { return NX3; }
-    void getDistribution(real *const f, size_t x1, size_t x2, size_t x3) override {}
-    void setDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override {}
-    void getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3) override {}
-    void setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3) override {}
-    void setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+    void getPreCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3) override {}
+    void setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override {}
+    void getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3) override {}
+    void setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override {}
+    void setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                      unsigned long int direction) override
     {
     }
-    void setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override {}
+    void setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override {}
     real getDistributionInvForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/, int /*direction*/) override
     {
         return 0.0;
     }
-    void setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+    void setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override
     {
     }
-    void setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
+    void setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override
     {
     }
-    real getDistributionForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/, int /*direction*/) override
+    real getPreCollisionDistributionForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/, int /*direction*/) override
     {
         return 0.0;
     }

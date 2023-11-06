@@ -267,8 +267,8 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					f[DIR_MMM] = geq[DIR_MMM];
 					
 
-					distributionsF->setDistribution(f, ix1, ix2, ix3);
-					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
+					distributionsF->setPostCollisionDistribution(f, ix1, ix2, ix3);
+					distributionsF->setPreCollisionDistribution(f, ix1, ix2, ix3);
 
 					f[DIR_000] = phi * feq[DIR_000];// / rho;
 					f[DIR_P00] = phi * feq[DIR_P00];// / rho;
@@ -299,8 +299,8 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					f[DIR_MMM] = phi * feq[DIR_MMM];// / rho;
 					
 
-					distributionsH->setDistribution(f, ix1, ix2, ix3);
-					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
+					distributionsH->setPostCollisionDistribution(f, ix1, ix2, ix3);
+					distributionsH->setPreCollisionDistribution(f, ix1, ix2, ix3);
 
 					if (distributionsH2) {
 
@@ -333,8 +333,8 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 						f[DIR_MMM] = 0;//(1.-phi) * feq[DIR_MMM] ;// / rho;
 						
 
-                        distributionsH2->setDistribution(f, ix1, ix2, ix3);
-                        distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    
+                        distributionsH2->setPostCollisionDistribution(f, ix1, ix2, ix3);
+                        distributionsH2->setPreCollisionDistribution(f, ix1, ix2, ix3);                    
 					}
 				}
 	}

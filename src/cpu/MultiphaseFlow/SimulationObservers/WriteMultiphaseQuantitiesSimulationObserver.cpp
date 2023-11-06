@@ -229,14 +229,14 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
         for (int ix2 = minX2; ix2 < maxX2; ix2++) {
             for (int ix1 = minX1; ix1 < maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
-                    distributionsH->getDistribution(f, ix1, ix2, ix3);
+                    distributionsH->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     (*phaseField)(ix1, ix2, ix3) =
                         ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
                         ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
                             ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000];
                     if (distributionsH2) {
-                    distributionsH2->getDistribution(f, ix1, ix2, ix3);
+                    distributionsH2->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     (*phaseField2)(ix1, ix2, ix3) =
                         ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
@@ -355,7 +355,7 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
 
                     }
 
-                    distributionsF->getDistribution(f, ix1, ix2, ix3);
+                    distributionsF->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     //real dU = (*divU)(ix1, ix2, ix3);
 
                     real rhoH = 1.0;

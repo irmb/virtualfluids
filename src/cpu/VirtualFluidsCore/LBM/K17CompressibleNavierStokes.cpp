@@ -127,7 +127,7 @@ void K17CompressibleNavierStokes::calculate(int step)
                 }
 
                 vf::lbm::CollisionParameter parameter;
-                dataSet->getFdistributions()->getDistribution(parameter.distribution, x1, x2, x3);
+                dataSet->getFdistributions()->getPreCollisionDistribution(parameter.distribution, x1, x2, x3);
 
                 real forces[3] = { c0o1, c0o1, c0o1 };
                 if (withForcing) // TODO: add level factor?
@@ -156,7 +156,7 @@ void K17CompressibleNavierStokes::calculate(int step)
                 vf::lbm::MacroscopicValues mv;  // not used
                 vf::lbm::TurbulentViscosity tv; // not used
                 vf::lbm::runK17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>(parameter, mv, tv);
-                dataSet->getFdistributions()->setDistribution(parameter.distribution, x1, x2, x3);
+                dataSet->getFdistributions()->setPostCollisionDistribution(parameter.distribution, x1, x2, x3);
             }
         }
     }

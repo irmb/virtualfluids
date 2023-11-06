@@ -93,7 +93,7 @@ void PressureCoefficientSimulationObserver::calculateRho()
                     real cx2 = val<2>(org) - val<2>(nodeOffset) + x2 * dx;
                     real cx3 = val<3>(org) - val<3>(nodeOffset) + x3 * dx;
                     if (plane->isPointInGbObject3D(cx1, cx2, cx3)) {
-                        distributions->getDistribution(f, x1, x2, x3);
+                        distributions->getPreCollisionDistribution(f, x1, x2, x3);
                         calcMacros(f, rho, vx1, vx2, vx3);
                         values.push_back(cx1);
                         values.push_back(cx2);

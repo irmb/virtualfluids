@@ -200,7 +200,7 @@ void IntegrateValuesHelper::calculateMQ()
         SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
         for (UbTupleInt3 node : cn.nodes) {
-            distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));
+            distributions->getPreCollisionDistribution(f, val<1>(node), val<2>(node), val<3>(node));
             calcMacros(f, rho, vx1, vx2, vx3);
             sRho += rho * cellVolume;
             sVx1 += vx1 * cellVolume;

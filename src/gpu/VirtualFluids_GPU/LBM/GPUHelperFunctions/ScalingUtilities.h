@@ -99,7 +99,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     real f_fine[27];
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -135,7 +135,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePMP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -153,7 +153,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePMM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMPM(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -217,7 +217,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
 
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePPP(f_fine, omega_);
 
     //////////////////////////////////////////////////////////////////////////
@@ -235,7 +235,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     
     omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
-    read(f_fine, distFine, indices);
+    getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePPM(f_fine, omega_);
 }
 

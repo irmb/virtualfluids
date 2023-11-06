@@ -43,16 +43,6 @@
 // Geier, M., & Schönherr, M. (2017). Esoteric twist: an efficient in-place streaming algorithmus for the lattice
 // Boltzmann method on massively parallel hardware. Computation, 5(2), 19.
 
-class EsoTwistD3Q27UnrollArray
-{
-};
-class EsoTwistPlusD3Q27UnrollArray
-{
-};
-class EsoTwistPlusD3Q19UnrollArray
-{
-};
-
 class EsoTwist3D : public DistributionArray3D
 {
 public:
@@ -63,31 +53,31 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void swap() override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void getDistribution(real *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void getPreCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     ////////////////////////////////////////////////////////////////////////
-    void getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3) override = 0;
+    void setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+    void setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                      unsigned long int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override = 0;
+    void setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
     // virtual void getDistributionInvForDirection(real* const& f, const size_t& x1, const size_t& x2, const size_t&
     // x3, const unsigned long int& direction) = 0;
     //////////////////////////////////////////////////////////////////////////
     real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+    void setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    void setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
+    void setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
-    real getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
+    real getPreCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override = 0;
     //////////////////////////////////////////////////////////////////////////
     size_t getNX1() const override = 0;
     //////////////////////////////////////////////////////////////////////////

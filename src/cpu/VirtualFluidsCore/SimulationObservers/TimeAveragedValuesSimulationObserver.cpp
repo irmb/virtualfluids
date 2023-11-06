@@ -286,7 +286,7 @@ void TimeAveragedValuesSimulationObserver::addData(const SPtr<Block3D> block)
 
                     data[index++].push_back(level);
 
-                    distributions->getDistribution(f, ix1, ix2, ix3);
+                    distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
 
                     data[index++].push_back(rho);
@@ -516,7 +516,7 @@ void TimeAveragedValuesSimulationObserver::calculateSubtotal(real step)
                                         // read distribution
                                         ////////////////////////////////////////////////////////////////////////////
 
-                                        distributions->getDistribution(f, ix1, ix2, ix3);
+                                        distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                                         //////////////////////////////////////////////////////////////////////////
                                         // compute velocity
                                         //////////////////////////////////////////////////////////////////////////

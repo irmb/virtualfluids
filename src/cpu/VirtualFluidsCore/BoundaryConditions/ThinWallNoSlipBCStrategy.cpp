@@ -54,7 +54,7 @@ void ThinWallNoSlipBCStrategy::applyBC()
 {
     real f[D3Q27System::ENDF + 1];
     real feq[D3Q27System::ENDF + 1];
-    distributions->getDistributionInv(f, x1, x2, x3);
+    distributions->getPostCollisionDistribution(f, x1, x2, x3);
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     calcFeqFct(feq, rho, vx1, vx2, vx3);
@@ -69,7 +69,7 @@ void ThinWallNoSlipBCStrategy::applyBC()
                 fReturn   = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * vf::basics::constant::c1o2 *
                           (f[invDir] - f[fdir] +
                            (f[invDir] + f[fdir] - collFactor * (feq[fdir] + feq[invDir])) / (vf::basics::constant::c1o1 - collFactor));
-                // distributionsTemp->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 +
+                // distributionsTemp->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 +
                 // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
                 fTemp[fdir] = fReturn;
             } else {
@@ -77,7 +77,7 @@ void ThinWallNoSlipBCStrategy::applyBC()
                 // fReturn = distributionsTemp->getDistributionInvForDirection(x1 + D3Q27System::DX1[invDir], x2 +
                 // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
                 fReturn = fTemp[fdir];
-                distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
+                distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
                                                            x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
                                                            fdir);
             }

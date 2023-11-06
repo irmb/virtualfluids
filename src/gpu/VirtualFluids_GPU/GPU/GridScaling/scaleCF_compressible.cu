@@ -96,7 +96,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     real f[27];
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -153,7 +153,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -181,7 +181,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Position BNW = MPM: -0.25, 0.25, -0.25
@@ -220,7 +220,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Position TNW = MPP: -0.25, 0.25, 0.25
@@ -244,7 +244,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Position TNE = PPP: 0.25, 0.25, 0.25
@@ -268,7 +268,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //Position BNE = PPM: 0.25, 0.25, -0.25
@@ -292,7 +292,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 
     vf::lbm::interpolateCF(f, omegaF, epsilon_new, coefficients, x, y, z);
 
-    write(distFine, indices, f);
+    setPreCollisionDistribution(distFine, indices, f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -370,7 +370,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     real f_coarse[27];
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculateMMM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -388,7 +388,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculateMMP(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -406,7 +406,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculatePMP(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -424,7 +424,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculatePMM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -452,7 +452,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculateMPM(f_coarse, omegaC);
 
     //////////////////////////////////////////////////////////////////////////
@@ -470,7 +470,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculateMPP(f_coarse, omegaC);
     //////////////////////////////////////////////////////////////////////////
     // source node TNE = PPP
@@ -487,7 +487,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculatePPP(f_coarse, omegaC);
     //////////////////////////////////////////////////////////////////////////
     // source node BNE = PPM
@@ -504,7 +504,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCF_compressible(
 
     omegaC = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
 
-    read(f_coarse, distCoarse, indices);
+    getPreCollisionDistribution(f_coarse, distCoarse, indices);
     momentsSet.calculatePPM(f_coarse, omegaC);
     // should be extractel until this line
     // - ###################################################################
