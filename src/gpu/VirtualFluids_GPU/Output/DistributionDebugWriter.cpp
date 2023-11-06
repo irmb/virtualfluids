@@ -13,17 +13,17 @@ void DistributionDebugWriter::writeDistributions(const Parameter* para, uint tim
     }
 }
 
-void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, uint level, uint timestep)
+void createFileNames(std::vector<std::string>& fileNames, uint numberOfParts, uint level, uint timestep, const Parameter* para)
 {
-    const uint numberOfParts = WriterUtilities::calculateNumberOfParts(para, level);
-
-    std::vector<std::string> fileNames;
     for (uint i = 1; i <= numberOfParts; i++) {
         fileNames.push_back(para->getFName() + "_bin_distributions" +
                             WriterUtilities::makePartFileNameEnding(level, para->getMyProcessID(), i, timestep));
     }
+}
 
-    std::vector<std::string> nodeDataNames(NUMBER_Of_DIRECTIONS);
+void createNodeDataNames(std::vector<std::string>& nodeDataNames)
+{
+    nodeDataNames.resize(NUMBER_Of_DIRECTIONS);
 
     for (uint dir = STARTDIR; dir <= ENDDIR; dir++) {
         const size_t minLenghtOfNumberString = 2; // the number is padded with zeros to this length
@@ -32,18 +32,29 @@ void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, 
             "f_" + std::string(minLenghtOfNumberString - std::min(minLenghtOfNumberString, numberString.length()), '0') +
             numberString;
     }
+}
+
+void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, uint level, uint timestep)
+{
+    const uint numberOfParts = WriterUtilities::calculateNumberOfParts(para, level);
+
+    std::vector<std::string> fileNames;
+    createFileNames(fileNames, numberOfParts, level, timestep, para);
+
+    std::vector<std::string> nodeDataNames;
+    createNodeDataNames(nodeDataNames);
 
     uint sizeOfNodes;
     uint startPosition;
     uint endPosition;
     std::array<uint, 8> indicesOfOct;
     std::array<uint, 8> relativePosInPart;
-    uint relPosInPart;
+    uint relativePositionInPart;
 
     const LBMSimulationParameter* parH = para->getParHConst(level).get();
     Distributions27 distributions = parH->distributions;
 
-    for (unsigned int part = 0; part < (uint)fileNames.size(); part++) {
+    for (unsigned int part = 0; part < numberOfParts; part++) {
         sizeOfNodes = WriterUtilities::calculateNumberOfNodesInPart(para, level, part);
         startPosition = part * para->getLimitOfNodesForVTK();
         endPosition = startPosition + sizeOfNodes;
@@ -59,17 +70,13 @@ void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, 
             if (parH->typeOfGridNode[pos] != GEO_FLUID)
                 continue;
 
-            relPosInPart = pos - startPosition;
+            relativePositionInPart = pos - startPosition;
 
-            // node
-            double x1 = parH->coordinateX[pos];
-            double x2 = parH->coordinateY[pos];
-            double x3 = parH->coordinateZ[pos];
-            nodes[relPosInPart] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+            nodes[relativePositionInPart] =
+                makeUbTuple((float)parH->coordinateX[pos], (float)parH->coordinateY[pos], (float)parH->coordinateZ[pos]);
 
-            // node data
             for (uint dir = STARTDIR; dir <= ENDDIR; dir++) {
-                nodeData[dir][relPosInPart] = distributions.f[0][dir*parH->numberOfNodes + pos];
+                nodeData[dir][relativePositionInPart] = distributions.f[0][dir * parH->numberOfNodes + pos];
             }
 
             WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, parH);
