@@ -432,7 +432,7 @@ void Probe::write(Parameter* para, int level, int t)
 void Probe::writeParallelFile(Parameter* para, int t)
 {
     int t_write = this->fileNameLU ? t: t/this->tOut; 
-    std::string filename = this->outputPath + "/" + this->makeParallelFileName(para->getMyProcessID(), t_write);
+    std::string filename = this->outputPath + this->makeParallelFileName(para->getMyProcessID(), t_write);
 
     std::vector<std::string> nodedatanames = this->getVarNames();
     std::vector<std::string> cellNames;
@@ -444,7 +444,7 @@ void Probe::writeParallelFile(Parameter* para, int t)
 
 void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
 {
-    std::string fname = this->outputPath + "/" + this->makeGridFileName(level, para->getMyProcessID(), t, part);
+    std::string fname = this->outputPath + this->makeGridFileName(level, para->getMyProcessID(), t, part);
 
     std::vector< UbTupleFloat3 > nodes;
     std::vector< std::string > nodedatanames = this->getVarNames();
@@ -513,10 +513,10 @@ t0 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 */
     auto probeStruct = this->getProbeStruct(level);
-    std::string fname = this->outputPath + "/" + this->makeTimeseriesFileName(level, para->getMyProcessID());
+    std::string fname = this->outputPath + this->makeTimeseriesFileName(level, para->getMyProcessID());
     std::ofstream out(fname.c_str(), std::ios::out | std::ios::binary);
 
-    if(!out.is_open()) throw std::runtime_error("Could not open timeseries file!");
+    if(!out.is_open()) throw std::runtime_error("Could not open timeseries file " + fname + "!");
 
     out << "TimeseriesOutput \n";
     out << "Quantities: ";

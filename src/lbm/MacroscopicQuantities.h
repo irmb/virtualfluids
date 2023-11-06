@@ -22,13 +22,15 @@ namespace vf::lbm
 //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
 //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
 //!
-
 inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 {
-    return ((f[dir::DIR_PPP] + f[dir::DIR_MMM]) + (f[dir::DIR_PMP] + f[dir::DIR_MPM])) + ((f[dir::DIR_PMM] + f[dir::DIR_MPP]) + (f[dir::DIR_MMP] + f[dir::DIR_PPM])) +
-           (((f[dir::DIR_PP0] + f[dir::DIR_MM0]) + (f[dir::DIR_PM0] + f[dir::DIR_MP0])) + ((f[dir::DIR_P0P] + f[dir::DIR_M0M]) + (f[dir::DIR_P0M] + f[dir::DIR_M0P])) +
-            ((f[dir::DIR_0PM] + f[dir::DIR_0MP]) + (f[dir::DIR_0PP] + f[dir::DIR_0MM]))) +
-           ((f[dir::DIR_P00] + f[dir::DIR_M00]) + (f[dir::DIR_0P0] + f[dir::DIR_0M0]) + (f[dir::DIR_00P] + f[dir::DIR_00M])) + f[dir::DIR_000];
+    return ((((f[dir::DIR_PPP] + f[dir::DIR_MMM]) + (f[dir::DIR_MPM] + f[dir::DIR_PMP])) +
+             ((f[dir::DIR_MPP] + f[dir::DIR_PMM]) + (f[dir::DIR_MMP] + f[dir::DIR_PPM]))) +
+            (((f[dir::DIR_0MP] + f[dir::DIR_0PM]) + (f[dir::DIR_0MM] + f[dir::DIR_0PP])) +
+             ((f[dir::DIR_M0P] + f[dir::DIR_P0M]) + (f[dir::DIR_M0M] + f[dir::DIR_P0P])) +
+             ((f[dir::DIR_MP0] + f[dir::DIR_PM0]) + (f[dir::DIR_MM0] + f[dir::DIR_PP0]))) +
+            f[dir::DIR_000]) +
+           ((f[dir::DIR_M00] + f[dir::DIR_P00]) + (f[dir::DIR_0M0] + f[dir::DIR_0P0]) + (f[dir::DIR_00M] + f[dir::DIR_00P]));
 }
 
 /*
@@ -40,13 +42,11 @@ inline __host__ __device__ real getIncompressibleVelocityX1(const real *const &f
             (((f[dir::DIR_P0M] - f[dir::DIR_M0P]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M])) + ((f[dir::DIR_PM0] - f[dir::DIR_MP0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_P00] - f[dir::DIR_M00]));
 }
 
-
 inline __host__ __device__ real getIncompressibleVelocityX2(const real *const &f /*[27]*/)
 {
     return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_MPM] - f[dir::DIR_PMP])) + ((f[dir::DIR_MPP] - f[dir::DIR_PMM]) + (f[dir::DIR_PPM] - f[dir::DIR_MMP]))) +
             (((f[dir::DIR_0PM] - f[dir::DIR_0MP]) + (f[dir::DIR_0PP] - f[dir::DIR_0MM])) + ((f[dir::DIR_MP0] - f[dir::DIR_PM0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_0P0] - f[dir::DIR_0M0]));
 }
-
 
 inline __host__ __device__ real getIncompressibleVelocityX3(const real *const &f /*[27]*/)
 {

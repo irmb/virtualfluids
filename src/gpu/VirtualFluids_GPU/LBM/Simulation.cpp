@@ -699,7 +699,7 @@ void Simulation::calculateTimestep(uint timestep)
     // File IO
     ////////////////////////////////////////////////////////////////////////////////
     //communicator->startTimer();
-    if(para->getTimestepOut()>0 && timestep%para->getTimestepOut()==0 && timestep>para->getTimestepStartOut())
+    if(para->getTimestepOut()>0 && timestep%para->getTimestepOut()==0 && timestep>=para->getTimestepStartOut())
     {
         //////////////////////////////////////////////////////////////////////////////////
         //if (para->getParD(0)->evenOrOdd==true)  para->getParD(0)->evenOrOdd=false;
