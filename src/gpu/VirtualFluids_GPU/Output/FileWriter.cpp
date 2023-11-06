@@ -236,11 +236,9 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
             nodeData[i].resize(sizeOfNodes);
 
         //////////////////////////////////////////////////////////////////////////
-        for (unsigned int pos = startPosition; pos < endPosition; pos++)
-        {
-                const LBMSimulationParameter* parH = para->getParHConst(level).get();
-            if (parH->typeOfGridNode[pos] == GEO_FLUID)
-            {
+        for (unsigned int pos = startPosition; pos < endPosition; pos++) {
+            const LBMSimulationParameter* parH = para->getParHConst(level).get();
+            if (parH->typeOfGridNode[pos] == GEO_FLUID) {
                 //////////////////////////////////////////////////////////////////////////
                 double x1 = parH->coordinateX[pos];
                 double x2 = parH->coordinateY[pos];
@@ -284,7 +282,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
                 WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, para->getParHConst(level).get());
 
-                if (WriterUtilities::isPeriodicCell(para.get(), level, indicesOfOct[0], indicesOfOct[6])) {
+                if (WriterUtilities::isPeriodicCell(parH, indicesOfOct[0], indicesOfOct[6])) {
                     continue;
                 }
 
@@ -392,7 +390,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
                 dn7 = number7 - startPosition;
                 dn8 = number8 - startPosition;
                 //////////////////////////////////////////////////////////////////////////
-                if (WriterUtilities::isPeriodicCell(para.get(), level, number1, number7))
+                if (WriterUtilities::isPeriodicCell(para->getParHConst(level).get(), number1, number7))
                     continue;
                 //////////////////////////////////////////////////////////////////////////
                 if (neighborsFluid == true) cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));

@@ -40,8 +40,7 @@ TEST(WriterUtilitiesTest, calculateNumberOfNodesInPart)
 class WriterUtilitiesPeriodicCellTest : public testing::Test
 {
 protected:
-    SPtr<Parameter> parameter;
-    SPtr<LBMSimulationParameter> parH;
+    std::unique_ptr<LBMSimulationParameter> parH = std::make_unique<LBMSimulationParameter>();
     const uint level = 0;
     const uint baseNodeIndex = 0;
     const uint otherNodeIndex = 1;
@@ -51,8 +50,7 @@ protected:
     {
         // create a domain with only three layers of nodes
         // nodes are at the coordinates 0.0, 1.0 and 2.0
-        parameter = testingVF::createParameterForLevel(level);
-        parH = parameter->getParH(level);
+
         parH->gridSpacing = 1.0;
 
         parH->coordinateX = new real[2];
@@ -77,52 +75,52 @@ protected:
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsNotPeriodic)
 {
-    EXPECT_FALSE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_FALSE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_FALSE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_FALSE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInX)
 {
     parH->coordinateX[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInY)
 {
     parH->coordinateY[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInZ)
 {
     parH->coordinateZ[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInXY)
 {
     parH->coordinateX[1] = 2.0;
     parH->coordinateY[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInXZ)
 {
     parH->coordinateX[1] = 2.0;
     parH->coordinateZ[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInYZ)
 {
     parH->coordinateY[1] = 2.0;
     parH->coordinateZ[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInXYZ)
@@ -130,13 +128,12 @@ TEST_F(WriterUtilitiesPeriodicCellTest, cellIsPeriodicInXYZ)
     parH->coordinateX[1] = 2.0;
     parH->coordinateY[1] = 2.0;
     parH->coordinateZ[1] = 2.0;
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, baseNodeIndex, otherNodeIndex));
-    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parameter.get(), level, otherNodeIndex, baseNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), baseNodeIndex, otherNodeIndex));
+    EXPECT_TRUE(WriterUtilities::isPeriodicCell(parH.get(), otherNodeIndex, baseNodeIndex));
 }
 
 class WriterUtilitiesNeighborOctTest : public testing::Test
 {
-
     static void setUpNeighborsNeighborsForOct(LBMSimulationParameter* parH, const std::array<uint, 8>& nodeIndices)
     {
         // node indices: MMM, PMM, PPM, MPM,
