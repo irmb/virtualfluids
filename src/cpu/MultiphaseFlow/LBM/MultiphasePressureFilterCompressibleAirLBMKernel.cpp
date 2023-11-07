@@ -394,13 +394,13 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 
 
 
-					collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
+					collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[d000] - phiH) / (phiH - phiL);
 
 
-					real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
+					real mu = 2 * beta * phi[d000] * (phi[d000] - 1) * (2 * phi[d000] - 1) - kappa * nabla2_phi();
 
 					//----------- Calculating Macroscopic Values -------------
-					real rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH); //Incompressible
+					real rho = rhoH + rhoToPhi * (phi[d000] - phiH); //Incompressible
 					//LBMReal rho = rhoL + (rhoH - rhoL) * phi[REST] + (one - phi[REST]) * (*pressure)(x1, x2, x3) * three; //compressible
 
 					real m0, m1, m2;
@@ -468,7 +468,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 					}
 
 					//Viscosity increase by pressure gradient
-					real errPhi = (((1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale)- denom);
+					real errPhi = (((1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale)- denom);
 					//LBMReal limVis = 0.0000001*10;//0.01;
 					// collFactorM =collFactorM/(c1+limVis*(errPhi*errPhi)*collFactorM);
 					// collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
@@ -1344,11 +1344,11 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::calculate(int step)
 
 						// collision of 1st order moments
 						cx = cx * (c1o1 - omegaD) + omegaD * vvx * concentration +
-							normX1 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+							normX1 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[d000]) * (phi[d000]) * c1o3 * oneOverInterfaceScale;
 						cy = cy * (c1o1 - omegaD) + omegaD * vvy * concentration +
-							normX2 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+							normX2 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[d000]) * (phi[d000]) * c1o3 * oneOverInterfaceScale;
 						cz = cz * (c1o1 - omegaD) + omegaD * vvz * concentration +
-							normX3 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * c1o3 * oneOverInterfaceScale;
+							normX3 * (c1o1 - 0.5 * omegaD) * (1.0 - phi[d000]) * (phi[d000]) * c1o3 * oneOverInterfaceScale;
 
 						cx2 = cx * cx;
 						cy2 = cy * cy;
@@ -1490,7 +1490,7 @@ real MultiphasePressureFilterCompressibleAirLBMKernel::gradX1_phi()
 
 	return 3.0* ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) + (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) + (phi[DIR_PPM] - phi[DIR_MMP])))
 		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) + (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_PM0] - phi[DIR_MP0]) + (phi[DIR_PP0] - phi[DIR_MM0])))) +
-		+WEIGTH[DIR_0P0] * (phi[DIR_P00] - phi[DIR_M00]));
+		+WEIGTH[DIR_0P0] * (phi[dP00] - phi[dM00]));
 }
 
 real MultiphasePressureFilterCompressibleAirLBMKernel::gradX2_phi()
@@ -1520,7 +1520,7 @@ real MultiphasePressureFilterCompressibleAirLBMKernel::gradX1_phi2()
 
 	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) + (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) + (phi2[DIR_PPM] - phi2[DIR_MMP])))
 		+ WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) + (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_PM0] - phi2[DIR_MP0]) + (phi2[DIR_PP0] - phi2[DIR_MM0])))) +
-		+WEIGTH[DIR_0P0] * (phi2[DIR_P00] - phi2[DIR_M00]));
+		+WEIGTH[DIR_0P0] * (phi2[dP00] - phi2[dM00]));
 }
 
 real MultiphasePressureFilterCompressibleAirLBMKernel::gradX2_phi2()
@@ -1549,17 +1549,17 @@ real MultiphasePressureFilterCompressibleAirLBMKernel::nabla2_phi()
 	using namespace vf::lbm::dir;
 
 	real sum = 0.0;
-	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000])))
-		+ (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
+	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[d000]) + (phi[DIR_MMM] - phi[d000])) + ((phi[DIR_MMP] - phi[d000]) + (phi[DIR_PPM] - phi[d000])))
+		+ (((phi[DIR_MPP] - phi[d000]) + (phi[DIR_PMM] - phi[d000])) + ((phi[DIR_PMP] - phi[d000]) + (phi[DIR_MPM] - phi[d000]))));
 	sum += WEIGTH[DIR_0PP] * (
-		(((phi[DIR_0PP] - phi[DIR_000]) + (phi[DIR_0MM] - phi[DIR_000])) + ((phi[DIR_0MP] - phi[DIR_000]) + (phi[DIR_0PM] - phi[DIR_000])))
-		+	(((phi[DIR_P0P] - phi[DIR_000]) + (phi[DIR_M0M] - phi[DIR_000])) + ((phi[DIR_M0P] - phi[DIR_000]) + (phi[DIR_P0M] - phi[DIR_000])))
-		+	(((phi[DIR_PP0] - phi[DIR_000]) + (phi[DIR_MM0] - phi[DIR_000])) + ((phi[DIR_MP0] - phi[DIR_000]) + (phi[DIR_PM0] - phi[DIR_000])))
+		(((phi[DIR_0PP] - phi[d000]) + (phi[DIR_0MM] - phi[d000])) + ((phi[DIR_0MP] - phi[d000]) + (phi[DIR_0PM] - phi[d000])))
+		+	(((phi[DIR_P0P] - phi[d000]) + (phi[DIR_M0M] - phi[d000])) + ((phi[DIR_M0P] - phi[d000]) + (phi[DIR_P0M] - phi[d000])))
+		+	(((phi[DIR_PP0] - phi[d000]) + (phi[DIR_MM0] - phi[d000])) + ((phi[DIR_MP0] - phi[d000]) + (phi[DIR_PM0] - phi[d000])))
 		);
 	sum += WEIGTH[DIR_00P] * (
-		((phi[DIR_00P] - phi[DIR_000]) + (phi[DIR_00M] - phi[DIR_000]))
-		+	((phi[DIR_0P0] - phi[DIR_000]) + (phi[DIR_0M0] - phi[DIR_000]))
-		+	((phi[DIR_P00] - phi[DIR_000]) + (phi[DIR_M00] - phi[DIR_000]))
+		((phi[DIR_00P] - phi[d000]) + (phi[DIR_00M] - phi[d000]))
+		+	((phi[DIR_0P0] - phi[d000]) + (phi[DIR_0M0] - phi[d000]))
+		+	((phi[dP00] - phi[d000]) + (phi[dM00] - phi[d000]))
 		);
 
 	return 6.0 * sum;
@@ -1589,7 +1589,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::computePhasefield()
 					int x2p = x2 + 1;
 					int x3p = x3 + 1;
 
-					h[DIR_P00]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+					h[dP00]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
 					h[DIR_0P0]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
 					h[DIR_00P]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
 					h[DIR_PP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
@@ -1603,7 +1603,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::computePhasefield()
 					h[DIR_PMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
 					h[DIR_MMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-					h[DIR_M00]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+					h[dM00]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
 					h[DIR_0M0]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
 					h[DIR_00M]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
 					h[DIR_MM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
@@ -1617,7 +1617,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::computePhasefield()
 					h[DIR_MPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
 					h[DIR_PPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-					h[DIR_000] = (*this->zeroDistributionsH1)(x1, x2, x3);
+					h[d000] = (*this->zeroDistributionsH1)(x1, x2, x3);
 				}
 			}
 		}
@@ -1632,7 +1632,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::findNeighbors(CbArray3D<r
 
 	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
-	phi[DIR_000] = (*ph)(x1, x2, x3);
+	phi[d000] = (*ph)(x1, x2, x3);
 
 
 	for (int k = FSTARTDIR; k <= FENDDIR; k++) {
@@ -1653,7 +1653,7 @@ void MultiphasePressureFilterCompressibleAirLBMKernel::findNeighbors2(CbArray3D<
 
 	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
-	phi2[DIR_000] = (*ph)(x1, x2, x3);
+	phi2[d000] = (*ph)(x1, x2, x3);
 
 
 	for (int k = FSTARTDIR; k <= FENDDIR; k++) {

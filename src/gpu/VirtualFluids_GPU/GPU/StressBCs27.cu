@@ -194,8 +194,8 @@ __global__ void QStressDeviceComp27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -254,8 +254,8 @@ __global__ void QStressDeviceComp27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];     //post-coll f's
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];     //post-coll f's
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -285,7 +285,7 @@ __global__ void QStressDeviceComp27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -636,14 +636,14 @@ __global__ void QStressDeviceComp27(
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ))/(c1o1+q);
+         (D.f[dM00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ))/(c1o1+q);
          wallMomentumX += -(c6o1*c2o27*( VeloX     ))/(c1o1+q);
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
+         (D.f[dP00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
       }
 
@@ -906,8 +906,8 @@ __global__ void BBStressDevice27( real* DD,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -967,8 +967,8 @@ __global__ void BBStressDevice27( real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -998,7 +998,7 @@ __global__ void BBStressDevice27( real* DD,
       real vx1, vx2, vx3, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1266,14 +1266,14 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
+         (D.f[dM00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
          wallMomentumX += -(c6o1*c2o27*( VeloX     ));
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
+         (D.f[dP00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
          wallMomentumX -= - (c6o1*c2o27*(-VeloX     ));
       }
 
@@ -1536,8 +1536,8 @@ __global__ void BBStressPressureDevice27( real* DD,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -1597,8 +1597,8 @@ __global__ void BBStressPressureDevice27( real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -1628,7 +1628,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       real vx1, vx2, vx3, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1896,14 +1896,14 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
+         (D.f[dM00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
          wallMomentumX += -(c6o1*c2o27*( VeloX     ));
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
+         (D.f[dP00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
          wallMomentumX -= - (c6o1*c2o27*(-VeloX     ));
       }
 

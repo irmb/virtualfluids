@@ -75,12 +75,12 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
             real newCollFactor;
 
-            if (dir == DIR_P00) {
+            if (dir == dP00) {
                 int ibX1      = block->getX1();
                 int ibMax     = val<1>(ixMax) - val<1>(ixMin) + 1;
                 real index  = (real)(ibX1 - val<1>(ixMin) + 1);
                 newCollFactor = oldCollFactor - (oldCollFactor - c1o1) / (real)(ibMax)*index;
-            } else if (dir == DIR_M00) {
+            } else if (dir == dM00) {
                 int ibX1      = block->getX1();
                 int ibMax     = val<1>(ixMax) - val<1>(ixMin) + 1;
                 real index  = (real)(ibX1 - val<1>(ixMin) + 1);

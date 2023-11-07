@@ -82,9 +82,9 @@ struct MomentsOnSourceNode
 
     __host__ __device__ void calculate(const real *const f, const real omega)
     {
-        // const real f_000 = f[dir::DIR_000];
-        const real fP00 = f[dir::DIR_P00];
-        const real fM00 = f[dir::DIR_M00];
+        // const real f_000 = f[dir::d000];
+        const real fP00 = f[dir::dP00];
+        const real fM00 = f[dir::dM00];
         const real f0P0 = f[dir::DIR_0P0];
         const real f0M0 = f[dir::DIR_0M0];
         const real f00P = f[dir::DIR_00P];

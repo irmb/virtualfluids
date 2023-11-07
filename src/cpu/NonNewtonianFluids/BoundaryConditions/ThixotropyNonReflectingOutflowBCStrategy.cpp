@@ -82,8 +82,8 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
    int direction = -1;
 
    //flag points in direction of fluid
-   if (bcPtr->hasDensityBoundaryFlag(DIR_P00)) { nx1 += 1; direction = DIR_P00; }
-   else if (bcPtr->hasDensityBoundaryFlag(DIR_M00)) { nx1 -= 1; direction = DIR_M00; }
+   if (bcPtr->hasDensityBoundaryFlag(dP00)) { nx1 += 1; direction = dP00; }
+   else if (bcPtr->hasDensityBoundaryFlag(dM00)) { nx1 -= 1; direction = dM00; }
    else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) { nx2 += 1; direction = DIR_0P0; }
    else if (bcPtr->hasDensityBoundaryFlag(DIR_0M0)) { nx2 -= 1; direction = DIR_0M0; }
    else if (bcPtr->hasDensityBoundaryFlag(DIR_00P)) { nx3 += 1; direction = DIR_00P; }
@@ -98,8 +98,8 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
 
    switch (direction)
    {
-      case DIR_P00:
-      f[DIR_P00] = ftemp[DIR_P00] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_P00];
+      case dP00:
+      f[dP00] = ftemp[dP00] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dP00];
       f[DIR_PP0] = ftemp[DIR_PP0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PP0];
       f[DIR_PM0] = ftemp[DIR_PM0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PM0];
       f[DIR_P0P] = ftemp[DIR_P0P] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_P0P];
@@ -109,7 +109,7 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
       f[DIR_PPM] = ftemp[DIR_PPM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PPM];
       f[DIR_PMM] = ftemp[DIR_PMM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[DIR_PMM];
 
-      distributions->setPreCollisionDistributionForDirection(f[DIR_P00], x1 + DX1[DIR_M00], x2 + DX2[DIR_M00], x3 + DX3[DIR_M00], DIR_M00);
+      distributions->setPreCollisionDistributionForDirection(f[dP00], x1 + DX1[dM00], x2 + DX2[dM00], x3 + DX3[dM00], dM00);
       distributions->setPreCollisionDistributionForDirection(f[DIR_PP0], x1 + DX1[DIR_MM0], x2 + DX2[DIR_MM0], x3 + DX3[DIR_MM0], DIR_MM0);
       distributions->setPreCollisionDistributionForDirection(f[DIR_PM0], x1 + DX1[DIR_MP0], x2 + DX2[DIR_MP0], x3 + DX3[DIR_MP0], DIR_MP0);
       distributions->setPreCollisionDistributionForDirection(f[DIR_P0P], x1 + DX1[DIR_M0M], x2 + DX2[DIR_M0M], x3 + DX3[DIR_M0M], DIR_M0M);
@@ -119,8 +119,8 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
       distributions->setPreCollisionDistributionForDirection(f[DIR_PPM], x1 + DX1[DIR_MMP], x2 + DX2[DIR_MMP], x3 + DX3[DIR_MMP], DIR_MMP);
       distributions->setPreCollisionDistributionForDirection(f[DIR_PMM], x1 + DX1[DIR_MPP], x2 + DX2[DIR_MPP], x3 + DX3[DIR_MPP], DIR_MPP);
       break;
-   case DIR_M00:
-      f[DIR_M00] = ftemp[DIR_M00] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_M00];
+   case dM00:
+      f[dM00] = ftemp[dM00] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dM00];
       f[DIR_MP0] = ftemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MP0];
       f[DIR_MM0] = ftemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MM0];
       f[DIR_M0P] = ftemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_M0P];
@@ -130,7 +130,7 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
       f[DIR_MPM] = ftemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MPM];
       f[DIR_MMM] = ftemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[DIR_MMM];
 
-      distributions->setPreCollisionDistributionForDirection(f[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+      distributions->setPreCollisionDistributionForDirection(f[dM00], x1 + DX1[dP00], x2 + DX2[dP00], x3 + DX3[dP00], dP00);
       distributions->setPreCollisionDistributionForDirection(f[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
       distributions->setPreCollisionDistributionForDirection(f[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
       distributions->setPreCollisionDistributionForDirection(f[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);
@@ -242,8 +242,8 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
 
    switch (direction)
    {
-   case DIR_P00:
-      h[DIR_P00]  = htemp[DIR_P00] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[DIR_P00];
+   case dP00:
+      h[dP00]  = htemp[dP00] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[dP00];
       h[DIR_PP0] = htemp[DIR_PP0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[DIR_PP0];
       h[DIR_PM0] = htemp[DIR_PM0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[DIR_PM0];
       h[DIR_P0P] = htemp[DIR_P0P] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[DIR_P0P];
@@ -253,7 +253,7 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
       h[DIR_PPM] = htemp[DIR_PPM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[DIR_PPM];
       h[DIR_PMM] = htemp[DIR_PMM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * h[DIR_PMM];
 
-      distributionsH->setPreCollisionDistributionForDirection(h[DIR_P00], x1 + DX1[DIR_M00], x2 + DX2[DIR_M00], x3 + DX3[DIR_M00], DIR_M00);
+      distributionsH->setPreCollisionDistributionForDirection(h[dP00], x1 + DX1[dM00], x2 + DX2[dM00], x3 + DX3[dM00], dM00);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_PP0], x1 + DX1[DIR_MM0], x2 + DX2[DIR_MM0], x3 + DX3[DIR_MM0], DIR_MM0);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_PM0], x1 + DX1[DIR_MP0], x2 + DX2[DIR_MP0], x3 + DX3[DIR_MP0], DIR_MP0);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_P0P], x1 + DX1[DIR_M0M], x2 + DX2[DIR_M0M], x3 + DX3[DIR_M0M], DIR_M0M);
@@ -263,8 +263,8 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_PPM], x1 + DX1[DIR_MMP], x2 + DX2[DIR_MMP], x3 + DX3[DIR_MMP], DIR_MMP);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_PMM], x1 + DX1[DIR_MPP], x2 + DX2[DIR_MPP], x3 + DX3[DIR_MPP], DIR_MPP);
       break;
-   case DIR_M00:
-      h[DIR_M00] = htemp[DIR_M00] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[DIR_M00];
+   case dM00:
+      h[dM00] = htemp[dM00] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[dM00];
       h[DIR_MP0] = htemp[DIR_MP0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[DIR_MP0];
       h[DIR_MM0] = htemp[DIR_MM0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[DIR_MM0];
       h[DIR_M0P] = htemp[DIR_M0P] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[DIR_M0P];
@@ -274,7 +274,7 @@ void ThixotropyNonReflectingOutflowBCStrategy::applyBC()
       h[DIR_MPM] = htemp[DIR_MPM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[DIR_MPM];
       h[DIR_MMM] = htemp[DIR_MMM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * h[DIR_MMM];
 
-      distributionsH->setPreCollisionDistributionForDirection(h[DIR_M00], x1 + DX1[DIR_P00], x2 + DX2[DIR_P00], x3 + DX3[DIR_P00], DIR_P00);
+      distributionsH->setPreCollisionDistributionForDirection(h[dM00], x1 + DX1[dP00], x2 + DX2[dP00], x3 + DX3[dP00], dP00);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_MP0], x1 + DX1[DIR_PM0], x2 + DX2[DIR_PM0], x3 + DX3[DIR_PM0], DIR_PM0);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_MM0], x1 + DX1[DIR_PP0], x2 + DX2[DIR_PP0], x3 + DX3[DIR_PP0], DIR_PP0);
       distributionsH->setPreCollisionDistributionForDirection(h[DIR_M0P], x1 + DX1[DIR_P0M], x2 + DX2[DIR_P0M], x3 + DX3[DIR_P0M], DIR_P0M);

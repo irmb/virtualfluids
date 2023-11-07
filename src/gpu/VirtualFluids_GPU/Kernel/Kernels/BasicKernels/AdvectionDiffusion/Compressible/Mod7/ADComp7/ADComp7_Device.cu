@@ -39,8 +39,8 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dP00] = &DDStart[dP00 * size_Mat];
+				D.f[dM00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00P] = &DDStart[DIR_00P * size_Mat];
@@ -57,7 +57,7 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * size_Mat];
@@ -69,8 +69,8 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dM00] = &DDStart[dP00 * size_Mat];
+				D.f[dP00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00M] = &DDStart[DIR_00P * size_Mat];
@@ -87,7 +87,7 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * size_Mat];
@@ -130,8 +130,8 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			unsigned int kbs = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real fW = (D.f[DIR_P00])[k];//ke
-			real fE = (D.f[DIR_M00])[kw];
+			real fW = (D.f[dP00])[k];//ke
+			real fE = (D.f[dM00])[kw];
 			real fS = (D.f[DIR_0P0])[k];//kn
 			real fN = (D.f[DIR_0M0])[ks];
 			real fB = (D.f[DIR_00P])[k];//kt
@@ -148,7 +148,7 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			real fTN = (D.f[DIR_0MM])[kbs];
 			real fTS = (D.f[DIR_0PM])[kb];//kbn
 			real fBN = (D.f[DIR_0MP])[ks];//kts
-			real fZERO = (D.f[DIR_000])[k];//kzero
+			real fZERO = (D.f[d000])[k];//kzero
 			real fBSW = (D.f[DIR_PPP])[k];//ktne
 			real fBNE = (D.f[DIR_MMP])[ksw];//ktsw
 			real fBNW = (D.f[DIR_PMP])[ks];//ktse
@@ -157,8 +157,8 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			real fTNE = (D.f[DIR_MMM])[kbsw];
 			real fTNW = (D.f[DIR_PMM])[kbs];//kbse
 			real fTSE = (D.f[DIR_MPM])[kbw];//kbnw
-										   //real fE    =  (D.f[DIR_P00])[k  ];//ke
-										   //real fW    =  (D.f[DIR_M00])[kw ];
+										   //real fE    =  (D.f[dP00])[k  ];//ke
+										   //real fW    =  (D.f[dM00])[kw ];
 										   //real fN    =  (D.f[DIR_0P0])[k  ];//kn
 										   //real fS    =  (D.f[DIR_0M0])[ks ];
 										   //real fT    =  (D.f[DIR_00P])[k  ];//kt
@@ -175,7 +175,7 @@ __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 										   //real fBS   =  (D.f[DIR_0MM])[kbs];
 										   //real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
 										   //real fTS   =  (D.f[DIR_0MP])[ks ];//kts
-										   //real fZERO =  (D.f[DIR_000])[k  ];//kzero
+										   //real fZERO =  (D.f[d000])[k  ];//kzero
 										   //real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
 										   //real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
 										   //real fTSE   = (D.f[DIR_PMP])[ks ];//ktse

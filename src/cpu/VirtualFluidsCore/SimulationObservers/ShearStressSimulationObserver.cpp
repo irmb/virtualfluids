@@ -175,7 +175,7 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
                     // compute velocity
                     //////////////////////////////////////////////////////////////////////////
                     vx = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
-                          (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00]));
+                          (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[dP00] - f[dM00]));
 
                     vy = ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
                           (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_0P0] - f[DIR_0M0]));
@@ -197,11 +197,11 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
 
                     real dxxMyy = c3o1 / c2o1 * collFactor / (collFactor - c1o1) *
                                      (((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM])) +
-                                      ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_0P0] + f[DIR_0M0])) - vx * vx + vy * vy);
+                                      ((f[dP00] + f[dM00]) - (f[DIR_0P0] + f[DIR_0M0])) - vx * vx + vy * vy);
 
                     real dxxMzz = c3o1 / c2o1 * collFactor / (collFactor - c1o1) *
                                      ((((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) - ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                                      ((f[DIR_P00] + f[DIR_M00]) - (f[DIR_00P] + f[DIR_00M])) - vx * vx + vz * vz);
+                                      ((f[dP00] + f[dM00]) - (f[DIR_00P] + f[DIR_00M])) - vx * vx + vz * vz);
 
                     // LBMReal dyyMzz =3.0/2.0 *collFactor/(collFactor-1.0)*((((f[NE] + f[SW]) + (f[SE] +
                     // f[NW]))-((f[TE] + f[BW])+(f[BE]+ f[TW])))
@@ -573,8 +573,8 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                                                 "dx=" + UbSystem::toString(dx) +
                                                 "T=" + UbSystem::toString(bcPtr->getQ(DIR_00P)) +
                                                 "B=" + UbSystem::toString(bcPtr->getQ(DIR_00M)) +
-                                                "E=" + UbSystem::toString(bcPtr->getQ(DIR_P00)) +
-                                                "W=" + UbSystem::toString(bcPtr->getQ(DIR_M00)) +
+                                                "E=" + UbSystem::toString(bcPtr->getQ(dP00)) +
+                                                "W=" + UbSystem::toString(bcPtr->getQ(dM00)) +
                                                 "N=" + UbSystem::toString(bcPtr->getQ(DIR_0P0)) +
                                                 "S=" + UbSystem::toString(bcPtr->getQ(DIR_0M0)) +
                                                 "NE=" + UbSystem::toString(bcPtr->getQ(DIR_PP0)) +
@@ -617,7 +617,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                                 if (ii <= 2) {
                                     real q = bcPtrIn->getQ(fdir);
                                     if (q != 999.00000) {
-                                        if (fdir == DIR_P00) {
+                                        if (fdir == dP00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (i + q <= x + 1) {
                                                 if (ii == 0) {
@@ -643,7 +643,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                                                 }
                                             }
                                         }
-                                        if (fdir == DIR_M00) {
+                                        if (fdir == dM00) {
                                             // if(!bcArray->isSolid(i, j, k))continue;
                                             if (i - q >= x) {
                                                 if (ii == 0) {
@@ -799,8 +799,8 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                                    " Block3D::GlobalID=" + UbSystem::toString(block->getGlobalID()) + " dx=" +
                                    UbSystem::toString(dx) + " T=" + UbSystem::toString(bcPtr->getQ(DIR_00P)) +
                                    " B=" + UbSystem::toString(bcPtr->getQ(DIR_00M)) +
-                                   " E=" + UbSystem::toString(bcPtr->getQ(DIR_P00)) +
-                                   " W=" + UbSystem::toString(bcPtr->getQ(DIR_M00)) +
+                                   " E=" + UbSystem::toString(bcPtr->getQ(dP00)) +
+                                   " W=" + UbSystem::toString(bcPtr->getQ(dM00)) +
                                    " N=" + UbSystem::toString(bcPtr->getQ(DIR_0P0)) +
                                    " S=" + UbSystem::toString(bcPtr->getQ(DIR_0M0)) +
                                    " NE=" + UbSystem::toString(bcPtr->getQ(DIR_PP0)) +
@@ -894,10 +894,10 @@ void ShearStressSimulationObserver::initDistance()
                     if (bc->getQ(DIR_00M) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(DIR_P00) != 999.000) {
+                    if (bc->getQ(dP00) != 999.000) {
                         numberOfCorner++;
                     }
-                    if (bc->getQ(DIR_M00) != 999.000) {
+                    if (bc->getQ(dM00) != 999.000) {
                         numberOfCorner++;
                     }
                     if (bc->getQ(DIR_0P0) != 999.000) {

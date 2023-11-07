@@ -223,7 +223,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                         ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
                         ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                            ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000];
+                            ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000];
                 }
             }
         }
@@ -276,7 +276,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
 
                         vx1 =
                             ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
-                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00])) ;
+                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[dP00] - f[dM00])) ;
 
                         vx2 =
                             ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
@@ -291,7 +291,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                     pressure = (((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
                         ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                            ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000])*c1o3*rho;
+                            ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000])*c1o3*rho;
 
 					if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1))
                         UB_THROW(UbException(
@@ -338,7 +338,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                     data[index++].push_back(vx2);
                     data[index++].push_back(vx3);
                     //data[index++].push_back(p1);
-                    //data[index++].push_back(phi2[DIR_000]);
+                    //data[index++].push_back(phi2[d000]);
                     //data[index++].push_back(mp);
                     //data[index++].push_back(delmp);
                     data[index++].push_back(pressure);
@@ -410,7 +410,7 @@ real WriteSharpInterfaceQuantitiesSimulationObserver::nabla2_phi(const real *con
     using namespace vf::basics::constant;
     real sum = c0o1;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
-        sum += WEIGTH[k] * (h[k] - h[DIR_000]);
+        sum += WEIGTH[k] * (h[k] - h[d000]);
     }
     return 6.0 * sum;
 }

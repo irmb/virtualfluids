@@ -12,9 +12,9 @@ static constexpr size_t STARTDIR = 0;
 static constexpr size_t ENDDIR = 26;
 
 // used in the CPU and the GPU version
-static constexpr size_t DIR_000 = 0;
-static constexpr size_t DIR_P00 = 1;
-static constexpr size_t DIR_M00 = 2;
+static constexpr size_t d000 = 0;
+static constexpr size_t dP00 = 1;
+static constexpr size_t dM00 = 2;
 static constexpr size_t DIR_0P0 = 3;
 static constexpr size_t DIR_0M0 = 4;
 static constexpr size_t DIR_00P = 5;
@@ -40,8 +40,8 @@ static constexpr size_t DIR_MPM = 24;
 static constexpr size_t DIR_PMM = 25;
 static constexpr size_t DIR_MMM = 26;
 
-static constexpr size_t INV_P00 = DIR_M00;
-static constexpr size_t INV_M00 = DIR_P00;
+static constexpr size_t INV_P00 = dM00;
+static constexpr size_t INV_M00 = dP00;
 static constexpr size_t INV_0P0 = DIR_0M0;
 static constexpr size_t INV_0M0 = DIR_0P0;
 static constexpr size_t INV_00P = DIR_00M;
@@ -104,9 +104,9 @@ struct countersForPointerChasing
 
 const std::map<const size_t, const countersForPointerChasing> mapForPointerChasing = 
 {
-    {DIR_000, countersForPointerChasing{0, 0, 0, 0}},
-    {DIR_P00, countersForPointerChasing{0, 1, 0, 0}},
-    {DIR_M00, countersForPointerChasing{1, 0, 1, 1}},
+    {d000, countersForPointerChasing{0, 0, 0, 0}},
+    {dP00, countersForPointerChasing{0, 1, 0, 0}},
+    {dM00, countersForPointerChasing{1, 0, 1, 1}},
     {DIR_0P0, countersForPointerChasing{0, 0, 1, 0}},
     {DIR_0M0, countersForPointerChasing{1, 1, 0, 1}},
     {DIR_00P, countersForPointerChasing{0, 0, 0, 1}},
@@ -138,8 +138,8 @@ const std::map<const size_t, const countersForPointerChasing> mapForPointerChasi
 
 
 // used in the CPU version
-// static constexpr int INV_P00 = DIR_M00;
-// static constexpr int INV_M00 = DIR_P00;
+// static constexpr int INV_P00 = dM00;
+// static constexpr int INV_M00 = dP00;
 // static constexpr int INV_0P0 = DIR_0M0;
 // static constexpr int INV_0M0 = DIR_0P0;
 // static constexpr int INV_00P = DIR_00M;
@@ -194,9 +194,9 @@ const std::map<const size_t, const countersForPointerChasing> mapForPointerChasi
 
 
 // DEPRECATED
-static constexpr int ZZZ = DIR_000;
-static constexpr int PZZ = DIR_P00;
-static constexpr int MZZ = DIR_M00;
+static constexpr int ZZZ = d000;
+static constexpr int PZZ = dP00;
+static constexpr int MZZ = dM00;
 static constexpr int ZPZ = DIR_0P0;
 static constexpr int ZMZ = DIR_0M0;
 static constexpr int ZZP = DIR_00P;

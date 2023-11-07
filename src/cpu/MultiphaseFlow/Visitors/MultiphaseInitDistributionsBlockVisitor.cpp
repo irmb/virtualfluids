@@ -228,8 +228,8 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					}
 
 
-					f[DIR_P00]    =  geq[DIR_P00]    ;
-					f[DIR_M00]    =  geq[DIR_M00]    ;
+					f[dP00]    =  geq[dP00]    ;
+					f[dM00]    =  geq[dM00]    ;
 					f[DIR_0P0]    =  geq[DIR_0P0]    ;
 					f[DIR_0M0]    =  geq[DIR_0M0]    ;
 					f[DIR_00P]    =  geq[DIR_00P]    ;
@@ -254,13 +254,13 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					f[DIR_MPM]  =  geq[DIR_MPM]  ;
 					f[DIR_PMM]  =  geq[DIR_PMM]  ;
 					f[DIR_MMM]  =  geq[DIR_MMM]  ;
-					f[DIR_000] =  geq[DIR_000] ;
+					f[d000] =  geq[d000] ;
 
 					distributionsF->setPostCollisionDistribution(f, ix1, ix2, ix3);
 					distributionsF->setPreCollisionDistribution(f, ix1, ix2, ix3);
 
-					f[DIR_P00]    =  phi * feq[DIR_P00]    / rho;
-					f[DIR_M00]    =  phi * feq[DIR_M00]    / rho;
+					f[dP00]    =  phi * feq[dP00]    / rho;
+					f[dM00]    =  phi * feq[dM00]    / rho;
 					f[DIR_0P0]    =  phi * feq[DIR_0P0]    / rho;
 					f[DIR_0M0]    =  phi * feq[DIR_0M0]    / rho;
 					f[DIR_00P]    =  phi * feq[DIR_00P]    / rho;
@@ -285,15 +285,15 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					f[DIR_MPM]  =  phi * feq[DIR_MPM]  / rho;
 					f[DIR_PMM]  =  phi * feq[DIR_PMM]  / rho;
 					f[DIR_MMM]  =  phi * feq[DIR_MMM]  / rho;
-					f[DIR_000] =  phi * feq[DIR_000] / rho;
+					f[d000] =  phi * feq[d000] / rho;
 
 					distributionsH->setPostCollisionDistribution(f, ix1, ix2, ix3);
 					distributionsH->setPreCollisionDistribution(f, ix1, ix2, ix3);
 
 					if (distributionsH2) {
 
-						f[DIR_P00]    = (1.-phi) * feq[DIR_P00] / rho;
-						f[DIR_M00]    = (1.-phi) * feq[DIR_M00] / rho;
+						f[dP00]    = (1.-phi) * feq[dP00] / rho;
+						f[dM00]    = (1.-phi) * feq[dM00] / rho;
 						f[DIR_0P0]    = (1.-phi) * feq[DIR_0P0] / rho;
 						f[DIR_0M0]    = (1.-phi) * feq[DIR_0M0] / rho;
 						f[DIR_00P]    = (1.-phi) * feq[DIR_00P] / rho;
@@ -318,7 +318,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 						f[DIR_MPM]  = (1.-phi) * feq[DIR_MPM] / rho;
 						f[DIR_PMM]  = (1.-phi) * feq[DIR_PMM] / rho;
 						f[DIR_MMM]  = (1.-phi) * feq[DIR_MMM] / rho;
-						f[DIR_000] = (1.-phi) * feq[DIR_000] / rho;
+						f[d000] = (1.-phi) * feq[d000] / rho;
 
                         distributionsH2->setPostCollisionDistribution(f, ix1, ix2, ix3);
                         distributionsH2->setPreCollisionDistribution(f, ix1, ix2, ix3);                    

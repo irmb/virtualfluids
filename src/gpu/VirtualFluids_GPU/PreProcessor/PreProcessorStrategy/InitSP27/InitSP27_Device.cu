@@ -40,8 +40,8 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00   ] = &DD[DIR_P00   *size_Mat];
-            D.f[DIR_M00   ] = &DD[DIR_M00   *size_Mat];
+            D.f[dP00   ] = &DD[dP00   *size_Mat];
+            D.f[dM00   ] = &DD[dM00   *size_Mat];
             D.f[DIR_0P0   ] = &DD[DIR_0P0   *size_Mat];
             D.f[DIR_0M0   ] = &DD[DIR_0M0   *size_Mat];
             D.f[DIR_00P   ] = &DD[DIR_00P   *size_Mat];
@@ -58,7 +58,7 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
             D.f[DIR_0MM  ] = &DD[DIR_0MM  *size_Mat];
             D.f[DIR_0PM  ] = &DD[DIR_0PM  *size_Mat];
             D.f[DIR_0MP  ] = &DD[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DD[DIR_000*size_Mat];
+            D.f[d000] = &DD[d000*size_Mat];
             D.f[DIR_PPP ] = &DD[DIR_PPP *size_Mat];
             D.f[DIR_MMP ] = &DD[DIR_MMP *size_Mat];
             D.f[DIR_PMP ] = &DD[DIR_PMP *size_Mat];
@@ -70,8 +70,8 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
          }
          else
          {
-            D.f[DIR_M00   ] = &DD[DIR_P00   *size_Mat];
-            D.f[DIR_P00   ] = &DD[DIR_M00   *size_Mat];
+            D.f[dM00   ] = &DD[dP00   *size_Mat];
+            D.f[dP00   ] = &DD[dM00   *size_Mat];
             D.f[DIR_0M0   ] = &DD[DIR_0P0   *size_Mat];
             D.f[DIR_0P0   ] = &DD[DIR_0M0   *size_Mat];
             D.f[DIR_00M   ] = &DD[DIR_00P   *size_Mat];
@@ -88,7 +88,7 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
             D.f[DIR_0PP  ] = &DD[DIR_0MM  *size_Mat];
             D.f[DIR_0MP  ] = &DD[DIR_0PM  *size_Mat];
             D.f[DIR_0PM  ] = &DD[DIR_0MP  *size_Mat];
-            D.f[DIR_000] = &DD[DIR_000*size_Mat];
+            D.f[d000] = &DD[d000*size_Mat];
             D.f[DIR_MMM ] = &DD[DIR_PPP *size_Mat];
             D.f[DIR_PPM ] = &DD[DIR_MMP *size_Mat];
             D.f[DIR_MPM ] = &DD[DIR_PMP *size_Mat];
@@ -136,9 +136,9 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
          //////////////////////////////////////////////////////////////////////////
          real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-         (D.f[DIR_000])[kzero] =   c8o27* (drho-cu_sq);
-         (D.f[DIR_P00   ])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
-         (D.f[DIR_M00   ])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+         (D.f[d000])[kzero] =   c8o27* (drho-cu_sq);
+         (D.f[dP00   ])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+         (D.f[dM00   ])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
          (D.f[DIR_0P0   ])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
          (D.f[DIR_0M0   ])[ks   ] =   c2o27* (drho+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
          (D.f[DIR_00P   ])[kt   ] =   c2o27* (drho+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
@@ -168,9 +168,9 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
 	  {
 		  //////////////////////////////////////////////////////////////////////////
 		  Distributions27 D;
-		  D.f[DIR_000] = &DD[DIR_000*size_Mat];
+		  D.f[d000] = &DD[d000*size_Mat];
 		  //////////////////////////////////////////////////////////////////////////
-		  (D.f[DIR_000])[k] = c96o1;
+		  (D.f[d000])[k] = c96o1;
 		  //////////////////////////////////////////////////////////////////////////
 	  }
    }

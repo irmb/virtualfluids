@@ -62,7 +62,7 @@ void FullDirectConnector::exchangeData()
     using namespace vf::lbm::dir;
 
     // EAST
-    if (sendDir == DIR_P00) {
+    if (sendDir == dP00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 exchangeData(maxX1 - 1, x2, x3, 0, x2, x3);
@@ -70,7 +70,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // WEST
-    else if (sendDir == DIR_M00) {
+    else if (sendDir == dM00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 exchangeData(1, x2, x3, maxX1, x2, x3);

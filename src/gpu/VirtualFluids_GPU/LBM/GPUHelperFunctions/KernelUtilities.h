@@ -64,9 +64,9 @@ inline real getForceFactor(int level)
 __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
     if (isEvenTimestep) {
-        dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
-        dist.f[DIR_P00] = &distributionArray[DIR_P00 * numberOfLBnodes];
-        dist.f[DIR_M00] = &distributionArray[DIR_M00 * numberOfLBnodes];
+        dist.f[d000] = &distributionArray[d000 * numberOfLBnodes];
+        dist.f[dP00] = &distributionArray[dP00 * numberOfLBnodes];
+        dist.f[dM00] = &distributionArray[dM00 * numberOfLBnodes];
         dist.f[DIR_0P0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
         dist.f[DIR_0M0] = &distributionArray[DIR_0M0 * numberOfLBnodes];
         dist.f[DIR_00P] = &distributionArray[DIR_00P * numberOfLBnodes];
@@ -92,8 +92,8 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
         dist.f[DIR_PMM] = &distributionArray[DIR_PMM * numberOfLBnodes];
         dist.f[DIR_MPM] = &distributionArray[DIR_MPM * numberOfLBnodes];
     } else {
-        dist.f[DIR_M00] = &distributionArray[DIR_P00 * numberOfLBnodes];
-        dist.f[DIR_P00] = &distributionArray[DIR_M00 * numberOfLBnodes];
+        dist.f[dM00] = &distributionArray[dP00 * numberOfLBnodes];
+        dist.f[dP00] = &distributionArray[dM00 * numberOfLBnodes];
         dist.f[DIR_0M0] = &distributionArray[DIR_0P0 * numberOfLBnodes];
         dist.f[DIR_0P0] = &distributionArray[DIR_0M0 * numberOfLBnodes];
         dist.f[DIR_00M] = &distributionArray[DIR_00P * numberOfLBnodes];
@@ -110,7 +110,7 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
         dist.f[DIR_0PP] = &distributionArray[DIR_0MM * numberOfLBnodes];
         dist.f[DIR_0MP] = &distributionArray[DIR_0PM * numberOfLBnodes];
         dist.f[DIR_0PM] = &distributionArray[DIR_0MP * numberOfLBnodes];
-        dist.f[DIR_000] = &distributionArray[DIR_000 * numberOfLBnodes];
+        dist.f[d000] = &distributionArray[d000 * numberOfLBnodes];
         dist.f[DIR_PPP] = &distributionArray[DIR_MMM * numberOfLBnodes];
         dist.f[DIR_MMP] = &distributionArray[DIR_PPM * numberOfLBnodes];
         dist.f[DIR_PMP] = &distributionArray[DIR_MPM * numberOfLBnodes];
@@ -137,8 +137,8 @@ __inline__ __device__ __host__ DistributionReferences27 getDistributionReference
 
 __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances, const unsigned int numberOfSubgridIndices)
 {
-    subgridD.q[DIR_P00] = &subgridDistances[DIR_P00 * numberOfSubgridIndices];
-    subgridD.q[DIR_M00] = &subgridDistances[DIR_M00 * numberOfSubgridIndices];
+    subgridD.q[dP00] = &subgridDistances[dP00 * numberOfSubgridIndices];
+    subgridD.q[dM00] = &subgridDistances[dM00 * numberOfSubgridIndices];
     subgridD.q[DIR_0P0] = &subgridDistances[DIR_0P0 * numberOfSubgridIndices];
     subgridD.q[DIR_0M0] = &subgridDistances[DIR_0M0 * numberOfSubgridIndices];
     subgridD.q[DIR_00P] = &subgridDistances[DIR_00P * numberOfSubgridIndices];
@@ -155,7 +155,7 @@ __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& sub
     subgridD.q[DIR_0MM] = &subgridDistances[DIR_0MM * numberOfSubgridIndices];
     subgridD.q[DIR_0PM] = &subgridDistances[DIR_0PM * numberOfSubgridIndices];
     subgridD.q[DIR_0MP] = &subgridDistances[DIR_0MP * numberOfSubgridIndices];
-    subgridD.q[DIR_000] = &subgridDistances[DIR_000 * numberOfSubgridIndices];
+    subgridD.q[d000] = &subgridDistances[d000 * numberOfSubgridIndices];
     subgridD.q[DIR_PPP] = &subgridDistances[DIR_PPP * numberOfSubgridIndices];
     subgridD.q[DIR_MMP] = &subgridDistances[DIR_MMP * numberOfSubgridIndices];
     subgridD.q[DIR_PMP] = &subgridDistances[DIR_PMP * numberOfSubgridIndices];
@@ -261,9 +261,9 @@ struct ListIndices
 //! DOI:10.3390/computation5020019 ]</b></a>
 __device__ __inline__ void getPreCollisionDistribution(real* destination, const Distributions27& source, const ListIndices& indices)
 {
-    destination[DIR_000] = (source.f[DIR_000])[indices.k_000];
-    destination[DIR_P00] = (source.f[DIR_P00])[indices.k_000];
-    destination[DIR_M00] = (source.f[DIR_M00])[indices.k_M00];
+    destination[d000] = (source.f[d000])[indices.k_000];
+    destination[dP00] = (source.f[dP00])[indices.k_000];
+    destination[dM00] = (source.f[dM00])[indices.k_M00];
     destination[DIR_0P0] = (source.f[DIR_0P0])[indices.k_000];
     destination[DIR_0M0] = (source.f[DIR_0M0])[indices.k_0M0];
     destination[DIR_00P] = (source.f[DIR_00P])[indices.k_000];
@@ -292,9 +292,9 @@ __device__ __inline__ void getPreCollisionDistribution(real* destination, const 
 
 __device__ __inline__ void getPostCollisionDistribution(real* destination, const Distributions27& source, const ListIndices& indices)
 {
-    destination[DIR_000] = (source.f[DIR_000])[indices.k_000];
-    destination[DIR_P00] = (source.f[DIR_P00])[indices.k_000];
-    destination[DIR_M00] = (source.f[DIR_M00])[indices.k_M00];
+    destination[d000] = (source.f[d000])[indices.k_000];
+    destination[dP00] = (source.f[dP00])[indices.k_000];
+    destination[dM00] = (source.f[dM00])[indices.k_M00];
     destination[DIR_0P0] = (source.f[DIR_0P0])[indices.k_000];
     destination[DIR_0M0] = (source.f[DIR_0M0])[indices.k_0M0];
     destination[DIR_00P] = (source.f[DIR_00P])[indices.k_000];
@@ -328,9 +328,9 @@ __device__ __inline__ void getPostCollisionDistribution(real* destination, const
 //! DOI:10.3390/computation5020019 ]</b></a>
 __inline__ __device__ void setPreCollisionDistribution(Distributions27& destination, const ListIndices& indices, const real* source)
 {
-    (destination.f[DIR_000])[indices.k_000] = source[DIR_000];
-    (destination.f[DIR_P00])[indices.k_000] = source[DIR_P00];
-    (destination.f[DIR_M00])[indices.k_M00] = source[DIR_M00];
+    (destination.f[d000])[indices.k_000] = source[d000];
+    (destination.f[dP00])[indices.k_000] = source[dP00];
+    (destination.f[dM00])[indices.k_M00] = source[dM00];
     (destination.f[DIR_0P0])[indices.k_000] = source[DIR_0P0];
     (destination.f[DIR_0M0])[indices.k_0M0] = source[DIR_0M0];
     (destination.f[DIR_00P])[indices.k_000] = source[DIR_00P];
@@ -359,9 +359,9 @@ __inline__ __device__ void setPreCollisionDistribution(Distributions27& destinat
 
 __inline__ __device__ void setPostCollisionDistribution(Distributions27& destination, const ListIndices& indices, const real* source)
 {
-    (destination.f[DIR_000])[indices.k_000] = source[DIR_000];
-    (destination.f[DIR_P00])[indices.k_000] = source[DIR_M00];
-    (destination.f[DIR_M00])[indices.k_M00] = source[DIR_P00];
+    (destination.f[d000])[indices.k_000] = source[d000];
+    (destination.f[dP00])[indices.k_000] = source[dM00];
+    (destination.f[dM00])[indices.k_M00] = source[dP00];
     (destination.f[DIR_0P0])[indices.k_000] = source[DIR_0M0];
     (destination.f[DIR_0M0])[indices.k_0M0] = source[DIR_0P0];
     (destination.f[DIR_00P])[indices.k_000] = source[DIR_00M];

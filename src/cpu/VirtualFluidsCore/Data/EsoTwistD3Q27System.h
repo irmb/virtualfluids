@@ -47,9 +47,9 @@ struct EsoTwistD3Q27System {
  //   const static int STARTDIR = D3Q27System::STARTDIR;
     const static int ENDDIR   = D3Q27System::ENDDIR;
 
-    static const int REST = vf::lbm::dir::DIR_000; /*f0 */
-    static const int E    = vf::lbm::dir::DIR_P00;    /*f1 */
-    static const int W    = vf::lbm::dir::DIR_M00;    /*f2 */
+    static const int REST = vf::lbm::dir::d000; /*f0 */
+    static const int E    = vf::lbm::dir::dP00;    /*f1 */
+    static const int W    = vf::lbm::dir::dM00;    /*f2 */
     static const int N    = vf::lbm::dir::DIR_0P0;    /*f3 */
     static const int S    = vf::lbm::dir::DIR_0M0;    /*f4 */
     static const int T    = vf::lbm::dir::DIR_00P;    /*f5 */
@@ -75,8 +75,8 @@ struct EsoTwistD3Q27System {
     static const int BSE  = vf::lbm::dir::DIR_PMM;
     static const int BSW  = vf::lbm::dir::DIR_MMM;
 
-    static const int INV_E   = vf::lbm::dir::DIR_M00;
-    static const int INV_W   = vf::lbm::dir::DIR_P00;
+    static const int INV_E   = vf::lbm::dir::dM00;
+    static const int INV_W   = vf::lbm::dir::dP00;
     static const int INV_N   = vf::lbm::dir::DIR_0M0;
     static const int INV_S   = vf::lbm::dir::DIR_0P0;
     static const int INV_T   = vf::lbm::dir::DIR_00M;

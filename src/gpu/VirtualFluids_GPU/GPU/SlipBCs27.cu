@@ -73,8 +73,8 @@ __global__ void QSlipDevice27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -130,8 +130,8 @@ __global__ void QSlipDevice27(
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      real f_W    = (D.f[DIR_P00])[ke   ];
-      real f_E    = (D.f[DIR_M00])[kw   ];
+      real f_W    = (D.f[dP00])[ke   ];
+      real f_E    = (D.f[dM00])[kw   ];
       real f_S    = (D.f[DIR_0P0])[kn   ];
       real f_N    = (D.f[DIR_0M0])[ks   ];
       real f_B    = (D.f[DIR_00P])[kt   ];
@@ -160,7 +160,7 @@ __global__ void QSlipDevice27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -182,7 +182,7 @@ __global__ void QSlipDevice27(
       D = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes, !isEvenTimestep);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[DIR_000])[k]=c1o10;
+      //(D.f[d000])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real fac = c1o1;//c99o100;
 	  real VeloX = fac*vx1;
@@ -200,8 +200,8 @@ __global__ void QSlipDevice27(
 	     VeloZ = fac*vx3;
 		 x = true;
          feq=c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq); 
-         (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-feq*om1)/(c1o1-om1)+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);
-         //(D.f[DIR_M00])[kw]=zero;
+         (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-feq*om1)/(c1o1-om1)+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);
+         //(D.f[dM00])[kw]=zero;
       }
 
       q = q_dirW[k];
@@ -212,8 +212,8 @@ __global__ void QSlipDevice27(
 	     VeloZ = fac*vx3;
 		 x = true;
          feq=c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq); 
-         (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-feq*om1)/(c1o1-om1)+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);
-         //(D.f[DIR_P00])[ke]=zero;
+         (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-feq*om1)/(c1o1-om1)+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);
+         //(D.f[dP00])[ke]=zero;
       }
 
       q = q_dirN[k];
@@ -644,8 +644,8 @@ __global__ void QSlipDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -676,7 +676,7 @@ __global__ void QSlipDeviceComp27(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[d000])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -714,7 +714,7 @@ __global__ void QSlipDeviceComp27(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[nodeIndex];
+      q = (subgridD.q[dP00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -723,10 +723,10 @@ __global__ void QSlipDeviceComp27(
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, omega, velocityBC, c2o27);
+         (dist.f[dM00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[nodeIndex];
+      q = (subgridD.q[dM00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -735,7 +735,7 @@ __global__ void QSlipDeviceComp27(
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, omega, velocityBC, c2o27);
+         (dist.f[dP00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, omega, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[nodeIndex];
@@ -1173,8 +1173,8 @@ __global__ void BBSlipDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -1205,7 +1205,7 @@ __global__ void BBSlipDeviceComp27(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[d000])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1243,24 +1243,24 @@ __global__ void BBSlipDeviceComp27(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[nodeIndex];
+      q = (subgridD.q[dP00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
          x = true;
 
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getBounceBackDistributionForVeloBC(f_W, velocityBC, c2o27);
+         (dist.f[dM00])[kw] = getBounceBackDistributionForVeloBC(f_W, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[nodeIndex];
+      q = (subgridD.q[dM00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
          x = true;
 
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getBounceBackDistributionForVeloBC(f_E, velocityBC, c2o27);
+         (dist.f[dP00])[ke] = getBounceBackDistributionForVeloBC(f_E, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[nodeIndex];
@@ -1663,8 +1663,8 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -1695,7 +1695,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[d000])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1738,7 +1738,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[nodeIndex];
+      q = (subgridD.q[dP00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -1747,10 +1747,10 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, om_turb, velocityBC, c2o27);
+         (dist.f[dM00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, om_turb, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[nodeIndex];
+      q = (subgridD.q[dM00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -1759,7 +1759,7 @@ __global__ void QSlipDeviceComp27TurbViscosity(
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, om_turb, velocityBC, c2o27);
+         (dist.f[dP00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, om_turb, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[nodeIndex];
@@ -2203,8 +2203,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -2235,7 +2235,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[d000])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2278,7 +2278,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
       bool y = false;
       bool z = false;
 
-      q = (subgridD.q[DIR_P00])[nodeIndex];
+      q = (subgridD.q[dP00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)  // only update distribution for q between zero and one
       {
          VeloX = c0o1;
@@ -2287,10 +2287,10 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, om_turb, drho, velocityBC, c2o27);
+         (dist.f[dM00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, om_turb, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[nodeIndex];
+      q = (subgridD.q[dM00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          VeloX = c0o1;
@@ -2299,7 +2299,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, om_turb, drho, velocityBC, c2o27);
+         (dist.f[dP00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, om_turb, drho, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[nodeIndex];
@@ -2657,8 +2657,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //    Distributions27 D;
 //    if (isEvenTimestep==true)
 //    {
-//       D.f[DIR_P00] = &DD[DIR_P00 * size_Mat];
-//       D.f[DIR_M00] = &DD[DIR_M00 * size_Mat];
+//       D.f[dP00] = &DD[dP00 * size_Mat];
+//       D.f[dM00] = &DD[dM00 * size_Mat];
 //       D.f[DIR_0P0] = &DD[DIR_0P0 * size_Mat];
 //       D.f[DIR_0M0] = &DD[DIR_0M0 * size_Mat];
 //       D.f[DIR_00P] = &DD[DIR_00P * size_Mat];
@@ -2675,7 +2675,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       D.f[DIR_0MM] = &DD[DIR_0MM * size_Mat];
 //       D.f[DIR_0PM] = &DD[DIR_0PM * size_Mat];
 //       D.f[DIR_0MP] = &DD[DIR_0MP * size_Mat];
-//       D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+//       D.f[d000] = &DD[d000 * size_Mat];
 //       D.f[DIR_PPP] = &DD[DIR_PPP * size_Mat];
 //       D.f[DIR_MMP] = &DD[DIR_MMP * size_Mat];
 //       D.f[DIR_PMP] = &DD[DIR_PMP * size_Mat];
@@ -2687,8 +2687,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //    } 
 //    else
 //    {
-//       D.f[DIR_M00] = &DD[DIR_P00 * size_Mat];
-//       D.f[DIR_P00] = &DD[DIR_M00 * size_Mat];
+//       D.f[dM00] = &DD[dP00 * size_Mat];
+//       D.f[dP00] = &DD[dM00 * size_Mat];
 //       D.f[DIR_0M0] = &DD[DIR_0P0 * size_Mat];
 //       D.f[DIR_0P0] = &DD[DIR_0M0 * size_Mat];
 //       D.f[DIR_00M] = &DD[DIR_00P * size_Mat];
@@ -2705,7 +2705,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       D.f[DIR_0PP] = &DD[DIR_0MM * size_Mat];
 //       D.f[DIR_0MP] = &DD[DIR_0PM * size_Mat];
 //       D.f[DIR_0PM] = &DD[DIR_0MP * size_Mat];
-//       D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+//       D.f[d000] = &DD[d000 * size_Mat];
 //       D.f[DIR_PPP] = &DD[DIR_MMM * size_Mat];
 //       D.f[DIR_MMP] = &DD[DIR_PPM * size_Mat];
 //       D.f[DIR_PMP] = &DD[DIR_MPM * size_Mat];
@@ -2734,8 +2734,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 //             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 //             *q_dirBSE, *q_dirBNW; 
-//       q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-//       q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+//       q_dirE   = &QQ[dP00 * numberOfBCnodes];
+//       q_dirW   = &QQ[dM00 * numberOfBCnodes];
 //       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
 //       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
 //       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -2792,8 +2792,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       unsigned int kbsw = neighborZ[ksw];
       
 //       ////////////////////////////////////////////////////////////////////////////////
-//       real f_W    = (D.f[DIR_P00])[ke   ];
-//       real f_E    = (D.f[DIR_M00])[kw   ];
+//       real f_W    = (D.f[dP00])[ke   ];
+//       real f_E    = (D.f[dM00])[kw   ];
 //       real f_S    = (D.f[DIR_0P0])[kn   ];
 //       real f_N    = (D.f[DIR_0M0])[ks   ];
 //       real f_B    = (D.f[DIR_00P])[kt   ];
@@ -2822,7 +2822,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       real vx1, vx2, vx3, drho, feq, q;
 //       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 //                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-//                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+//                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
 //       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 //                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2842,8 +2842,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       //////////////////////////////////////////////////////////////////////////
 //       if (isEvenTimestep==false)
 //       {
-//          D.f[DIR_P00] = &DD[DIR_P00 * size_Mat];
-//          D.f[DIR_M00] = &DD[DIR_M00 * size_Mat];
+//          D.f[dP00] = &DD[dP00 * size_Mat];
+//          D.f[dM00] = &DD[dM00 * size_Mat];
 //          D.f[DIR_0P0] = &DD[DIR_0P0 * size_Mat];
 //          D.f[DIR_0M0] = &DD[DIR_0M0 * size_Mat];
 //          D.f[DIR_00P] = &DD[DIR_00P * size_Mat];
@@ -2860,7 +2860,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //          D.f[DIR_0MM] = &DD[DIR_0MM * size_Mat];
 //          D.f[DIR_0PM] = &DD[DIR_0PM * size_Mat];
 //          D.f[DIR_0MP] = &DD[DIR_0MP * size_Mat];
-//          D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+//          D.f[d000] = &DD[d000 * size_Mat];
 //          D.f[DIR_PPP] = &DD[DIR_PPP * size_Mat];
 //          D.f[DIR_MMP] = &DD[DIR_MMP * size_Mat];
 //          D.f[DIR_PMP] = &DD[DIR_PMP * size_Mat];
@@ -2872,8 +2872,8 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       } 
 //       else
 //       {
-//          D.f[DIR_M00] = &DD[DIR_P00 * size_Mat];
-//          D.f[DIR_P00] = &DD[DIR_M00 * size_Mat];
+//          D.f[dM00] = &DD[dP00 * size_Mat];
+//          D.f[dP00] = &DD[dM00 * size_Mat];
 //          D.f[DIR_0M0] = &DD[DIR_0P0 * size_Mat];
 //          D.f[DIR_0P0] = &DD[DIR_0M0 * size_Mat];
 //          D.f[DIR_00M] = &DD[DIR_00P * size_Mat];
@@ -2890,7 +2890,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //          D.f[DIR_0PP] = &DD[DIR_0MM * size_Mat];
 //          D.f[DIR_0MP] = &DD[DIR_0PM * size_Mat];
 //          D.f[DIR_0PM] = &DD[DIR_0MP * size_Mat];
-//          D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+//          D.f[d000] = &DD[d000 * size_Mat];
 //          D.f[DIR_PPP] = &DD[DIR_MMM * size_Mat];
 //          D.f[DIR_MMP] = &DD[DIR_PPM * size_Mat];
 //          D.f[DIR_PMP] = &DD[DIR_MPM * size_Mat];
@@ -2902,7 +2902,7 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 //       }
 //       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //       //Test
-//       //(D.f[DIR_000])[k]=c1o10;
+//       //(D.f[d000])[k]=c1o10;
 //       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 	  real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
      
@@ -2922,10 +2922,10 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 // 	     VeloZ = fac*vx3;
 // 		 x = true;
 //          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-//          (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
+//          (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
 //          //feq=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); 
-//          //(D.f[DIR_M00])[kw]=(one-q)/(one+q)*(f_E-feq*om1)/(one-om1)+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);
-//          //(D.f[DIR_M00])[kw]=zero;
+//          //(D.f[dM00])[kw]=(one-q)/(one+q)*(f_E-feq*om1)/(one-om1)+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);
+//          //(D.f[dM00])[kw]=zero;
 //       }
 
 //       q = q_dirW[k];
@@ -2936,10 +2936,10 @@ __global__ void QSlipPressureDeviceComp27TurbViscosity(
 // 	     VeloZ = fac*vx3;
 // 		 x = true;
 //          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-//          (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
+//          (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
 //          //feq=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
-//          //(D.f[DIR_P00])[ke]=(one-q)/(one+q)*(f_W-feq*om_turb)/(one-om_turb)+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);
-//          //(D.f[DIR_P00])[ke]=zero;
+//          //(D.f[dP00])[ke]=(one-q)/(one+q)*(f_W-feq*om_turb)/(one-om_turb)+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);
+//          //(D.f[dP00])[ke]=zero;
 //       }
 
 //       q = q_dirN[k];
@@ -3365,8 +3365,8 @@ __global__ void QSlipGeomDeviceComp27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3383,7 +3383,7 @@ __global__ void QSlipGeomDeviceComp27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3395,8 +3395,8 @@ __global__ void QSlipGeomDeviceComp27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3413,7 +3413,7 @@ __global__ void QSlipGeomDeviceComp27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3442,8 +3442,8 @@ __global__ void QSlipGeomDeviceComp27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -3474,8 +3474,8 @@ __global__ void QSlipGeomDeviceComp27(
               *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
               *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
               *nx_dirBSE, *nx_dirBNW; 
-      nx_dirE   = &NormalX[DIR_P00 * numberOfBCnodes];
-      nx_dirW   = &NormalX[DIR_M00 * numberOfBCnodes];
+      nx_dirE   = &NormalX[dP00 * numberOfBCnodes];
+      nx_dirW   = &NormalX[dM00 * numberOfBCnodes];
       nx_dirN   = &NormalX[DIR_0P0 * numberOfBCnodes];
       nx_dirS   = &NormalX[DIR_0M0 * numberOfBCnodes];
       nx_dirT   = &NormalX[DIR_00P * numberOfBCnodes];
@@ -3506,8 +3506,8 @@ __global__ void QSlipGeomDeviceComp27(
               *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
               *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
               *ny_dirBSE, *ny_dirBNW; 
-      ny_dirE   = &NormalY[DIR_P00 * numberOfBCnodes];
-      ny_dirW   = &NormalY[DIR_M00 * numberOfBCnodes];
+      ny_dirE   = &NormalY[dP00 * numberOfBCnodes];
+      ny_dirW   = &NormalY[dM00 * numberOfBCnodes];
       ny_dirN   = &NormalY[DIR_0P0 * numberOfBCnodes];
       ny_dirS   = &NormalY[DIR_0M0 * numberOfBCnodes];
       ny_dirT   = &NormalY[DIR_00P * numberOfBCnodes];
@@ -3538,8 +3538,8 @@ __global__ void QSlipGeomDeviceComp27(
               *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
               *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
               *nz_dirBSE, *nz_dirBNW; 
-      nz_dirE   = &NormalZ[DIR_P00 * numberOfBCnodes];
-      nz_dirW   = &NormalZ[DIR_M00 * numberOfBCnodes];
+      nz_dirE   = &NormalZ[dP00 * numberOfBCnodes];
+      nz_dirW   = &NormalZ[dM00 * numberOfBCnodes];
       nz_dirN   = &NormalZ[DIR_0P0 * numberOfBCnodes];
       nz_dirS   = &NormalZ[DIR_0M0 * numberOfBCnodes];
       nz_dirT   = &NormalZ[DIR_00P * numberOfBCnodes];
@@ -3595,8 +3595,8 @@ __global__ void QSlipGeomDeviceComp27(
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      real f_W    = (D.f[DIR_P00])[ke   ];
-      real f_E    = (D.f[DIR_M00])[kw   ];
+      real f_W    = (D.f[dP00])[ke   ];
+      real f_E    = (D.f[dM00])[kw   ];
       real f_S    = (D.f[DIR_0P0])[kn   ];
       real f_N    = (D.f[DIR_0M0])[ks   ];
       real f_B    = (D.f[DIR_00P])[kt   ];
@@ -3625,7 +3625,7 @@ __global__ void QSlipGeomDeviceComp27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -3645,8 +3645,8 @@ __global__ void QSlipGeomDeviceComp27(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3663,7 +3663,7 @@ __global__ void QSlipGeomDeviceComp27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3675,8 +3675,8 @@ __global__ void QSlipGeomDeviceComp27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3693,7 +3693,7 @@ __global__ void QSlipGeomDeviceComp27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3723,11 +3723,11 @@ __global__ void QSlipGeomDeviceComp27(
 
 	  //fac = fac * magS / (c1o3 * (one / om1 - c1o2));
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //real *facAst = &QQ[DIR_000 * numberOfBCnodes];
+	  //real *facAst = &QQ[d000 * numberOfBCnodes];
 
 	  //fac = fac * alpha + facAst[k] * (one - alpha);
 	  //facAst[k] = fac;
-	  //(&QQ[DIR_000 * numberOfBCnodes])[KQK] = fac;
+	  //(&QQ[d000 * numberOfBCnodes])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////real uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3783,7 +3783,7 @@ __global__ void QSlipGeomDeviceComp27(
 		 phi = fac / (q * fabs( nx_dirE[k]) + fac);
 		 VeloX *= phi;
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
+         (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirW[k];
@@ -3797,7 +3797,7 @@ __global__ void QSlipGeomDeviceComp27(
 		 phi = fac / (q * fabs(-nx_dirW[k]) + fac);
 		 VeloX *= phi;
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
+         (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirN[k];
@@ -4252,8 +4252,8 @@ __global__ void QSlipNormDeviceComp27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4270,7 +4270,7 @@ __global__ void QSlipNormDeviceComp27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4282,8 +4282,8 @@ __global__ void QSlipNormDeviceComp27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4300,7 +4300,7 @@ __global__ void QSlipNormDeviceComp27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -4329,8 +4329,8 @@ __global__ void QSlipNormDeviceComp27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -4361,8 +4361,8 @@ __global__ void QSlipNormDeviceComp27(
               *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
               *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
               *nx_dirBSE, *nx_dirBNW; 
-      nx_dirE   = &NormalX[DIR_P00 * numberOfBCnodes];
-      nx_dirW   = &NormalX[DIR_M00 * numberOfBCnodes];
+      nx_dirE   = &NormalX[dP00 * numberOfBCnodes];
+      nx_dirW   = &NormalX[dM00 * numberOfBCnodes];
       nx_dirN   = &NormalX[DIR_0P0 * numberOfBCnodes];
       nx_dirS   = &NormalX[DIR_0M0 * numberOfBCnodes];
       nx_dirT   = &NormalX[DIR_00P * numberOfBCnodes];
@@ -4393,8 +4393,8 @@ __global__ void QSlipNormDeviceComp27(
               *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
               *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
               *ny_dirBSE, *ny_dirBNW; 
-      ny_dirE   = &NormalY[DIR_P00 * numberOfBCnodes];
-      ny_dirW   = &NormalY[DIR_M00 * numberOfBCnodes];
+      ny_dirE   = &NormalY[dP00 * numberOfBCnodes];
+      ny_dirW   = &NormalY[dM00 * numberOfBCnodes];
       ny_dirN   = &NormalY[DIR_0P0 * numberOfBCnodes];
       ny_dirS   = &NormalY[DIR_0M0 * numberOfBCnodes];
       ny_dirT   = &NormalY[DIR_00P * numberOfBCnodes];
@@ -4425,8 +4425,8 @@ __global__ void QSlipNormDeviceComp27(
               *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
               *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
               *nz_dirBSE, *nz_dirBNW; 
-      nz_dirE   = &NormalZ[DIR_P00 * numberOfBCnodes];
-      nz_dirW   = &NormalZ[DIR_M00 * numberOfBCnodes];
+      nz_dirE   = &NormalZ[dP00 * numberOfBCnodes];
+      nz_dirW   = &NormalZ[dM00 * numberOfBCnodes];
       nz_dirN   = &NormalZ[DIR_0P0 * numberOfBCnodes];
       nz_dirS   = &NormalZ[DIR_0M0 * numberOfBCnodes];
       nz_dirT   = &NormalZ[DIR_00P * numberOfBCnodes];
@@ -4482,8 +4482,8 @@ __global__ void QSlipNormDeviceComp27(
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      real f_W    = (D.f[DIR_P00])[ke   ];
-      real f_E    = (D.f[DIR_M00])[kw   ];
+      real f_W    = (D.f[dP00])[ke   ];
+      real f_E    = (D.f[dM00])[kw   ];
       real f_S    = (D.f[DIR_0P0])[kn   ];
       real f_N    = (D.f[DIR_0M0])[ks   ];
       real f_B    = (D.f[DIR_00P])[kt   ];
@@ -4512,7 +4512,7 @@ __global__ void QSlipNormDeviceComp27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -4532,8 +4532,8 @@ __global__ void QSlipNormDeviceComp27(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4550,7 +4550,7 @@ __global__ void QSlipNormDeviceComp27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4562,8 +4562,8 @@ __global__ void QSlipNormDeviceComp27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4580,7 +4580,7 @@ __global__ void QSlipNormDeviceComp27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -4610,11 +4610,11 @@ __global__ void QSlipNormDeviceComp27(
 
 	  fac = fac * magS / (c1o3 * (c1o1 / om1 - c1o2));
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real *facAst = &QQ[DIR_000 * numberOfBCnodes];
+	  real *facAst = &QQ[d000 * numberOfBCnodes];
 
 	  fac = fac * alpha + facAst[k] * (c1o1 - alpha);
 	  facAst[k] = fac;
-	  //(&QQ[DIR_000 * numberOfBCnodes])[KQK] = fac;
+	  //(&QQ[d000 * numberOfBCnodes])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////real uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4676,7 +4676,7 @@ __global__ void QSlipNormDeviceComp27(
 		 //tangential = (tangential > one) ? one:tangential;
 		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W))/(c1o1+q) - c2o27 * drho;
+         (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirW[k];
@@ -4691,7 +4691,7 @@ __global__ void QSlipNormDeviceComp27(
 		 //tangential = (tangential > one) ? one:tangential;
 		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E))/(c1o1+q) - c2o27 * drho;
+         (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirN[k];

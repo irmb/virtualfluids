@@ -429,7 +429,7 @@ void InitThixotropyBlockVisitor::checkFunction(mu::Parser fct)
 //   double f_TNW = -eps_new * ((bz + cy) / (36. * o)) - f_TNE;
 //
 //
-//   f[DIR_P00] = f_E + feq[DIR_P00];
+//   f[dP00] = f_E + feq[dP00];
 //   f[W] = f_E + feq[W];
 //   f[N] = f_N + feq[N];
 //   f[S] = f_N + feq[S];

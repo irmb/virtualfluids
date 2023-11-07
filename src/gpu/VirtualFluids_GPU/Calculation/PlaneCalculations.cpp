@@ -23,7 +23,7 @@ void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
       for (unsigned int i=1; i<para->getParH(lev)->gridNX + 2 * STARTOFFX - 1; i++)
       {
          mm[0]= para->getParH(lev)->nx*(para->getParH(lev)->ny*k + j) + i;
-         mm[1]= mm[0]                                                                       -1; //DIR_M00
+         mm[1]= mm[0]                                                                       -1; //dM00
          mm[2]= mm[0]                                                -para->getParH(lev)->nx-1; //DIR_MM0
          mm[3]= mm[0]                                                -para->getParH(lev)->nx;   //DIR_0M0
          mm[4]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny);                          //DIR_00M

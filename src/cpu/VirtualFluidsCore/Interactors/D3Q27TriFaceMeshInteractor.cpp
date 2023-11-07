@@ -365,7 +365,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                 //            tmpSolidNodesFromOtherInteractors[block];
                 double q, distance;
 
-                double &nodeDx1 = nodeDeltaToNeigh[level][DIR_P00];
+                double &nodeDx1 = nodeDeltaToNeigh[level][dP00];
                 double &nodeDx2 = nodeDeltaToNeigh[level][DIR_0P0];
                 double &nodeDx3 = nodeDeltaToNeigh[level][DIR_00P];
 
@@ -881,7 +881,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                 std::set<std::vector<int>> &solidsFromOtherInteractors = tmpSolidNodesFromOtherInteractors[block];
                 double q, internX1, internX2, internX3, distance;
 
-                double &nodeDx1 = nodeDeltaToNeigh[level][DIR_P00];
+                double &nodeDx1 = nodeDeltaToNeigh[level][dP00];
                 double &nodeDx2 = nodeDeltaToNeigh[level][DIR_0P0];
                 double &nodeDx3 = nodeDeltaToNeigh[level][DIR_00P];
 
@@ -1181,7 +1181,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 
                 std::set<UbTupleInt3> &solidNodeIndices = this->solidNodeIndicesMap[block];
 
-                float nodeDeltaX1 = (float)nodeDeltaToNeigh[level][DIR_P00];
+                float nodeDeltaX1 = (float)nodeDeltaToNeigh[level][dP00];
                 float nodeDeltaX2 = (float)nodeDeltaToNeigh[level][DIR_0P0];
                 float nodeDeltaX3 = (float)nodeDeltaToNeigh[level][DIR_00P];
 

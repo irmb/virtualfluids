@@ -93,7 +93,7 @@ void D3Q27EsoTwist3DSoA::getPreCollisionDistribution(real *const f, size_t x1, s
     size_t x2p = x2 + 1;
     size_t x3p = x3 + 1;
 
-    f[DIR_P00]   = (*d.E)(x1, x2, x3);
+    f[dP00]   = (*d.E)(x1, x2, x3);
     f[DIR_0P0]   = (*d.N)(x1, x2, x3);
     f[DIR_00P]   = (*d.T)(x1, x2, x3);
     f[DIR_PP0]  = (*d.NE)(x1, x2, x3);
@@ -107,7 +107,7 @@ void D3Q27EsoTwist3DSoA::getPreCollisionDistribution(real *const f, size_t x1, s
     f[DIR_PMP] = (*d.TSE)(x1, x2p, x3);
     f[DIR_MMP] = (*d.TSW)(x1p, x2p, x3);
 
-    f[DIR_M00]   = (*d.W)(x1p, x2, x3);
+    f[dM00]   = (*d.W)(x1p, x2, x3);
     f[DIR_0M0]   = (*d.S)(x1, x2p, x3);
     f[DIR_00M]   = (*d.B)(x1, x2, x3p);
     f[DIR_MM0]  = (*d.SW)(x1p, x2p, x3);
@@ -121,7 +121,7 @@ void D3Q27EsoTwist3DSoA::getPreCollisionDistribution(real *const f, size_t x1, s
     f[DIR_MPM] = (*d.BNW)(x1p, x2, x3p);
     f[DIR_PPM] = (*d.BNE)(x1, x2, x3p);
 
-    f[DIR_000] = (*d.REST)(x1, x2, x3);
+    f[d000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
@@ -160,7 +160,7 @@ void D3Q27EsoTwist3DSoA::setPostCollisionDistribution(const real *const f, size_
     (*d.BNW)(x1p, x2, x3p)  = f[INV_MPM];
     (*d.BNE)(x1, x2, x3p)   = f[INV_PPM];
 
-    (*d.REST)(x1, x2, x3) = f[DIR_000];
+    (*d.REST)(x1, x2, x3) = f[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3)
@@ -195,12 +195,12 @@ void D3Q27EsoTwist3DSoA::getPostCollisionDistribution(real *const f, size_t x1, 
     f[INV_MPM] = (*d.BNW)(x1 + 1, x2, x3 + 1);
     f[INV_PPM] = (*d.BNE)(x1, x2, x3 + 1);
 
-    f[DIR_000] = (*d.REST)(x1, x2, x3);
+    f[d000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
-    //(*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::DIR_P00];
+    //(*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::dP00];
     //(*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::DIR_0P0];
     //(*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3) = f[D3Q27System::DIR_00P];
     //(*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3) = f[D3Q27System::DIR_PP0];
@@ -214,7 +214,7 @@ void D3Q27EsoTwist3DSoA::setPreCollisionDistribution(const real *const f, size_t
     //(*this->localDistributions)(D3Q27System::ET_TSE,x1,  x2+1,x3) = f[D3Q27System::DIR_PMP];
     //(*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::DIR_MMP];
 
-    //(*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::DIR_M00 ];
+    //(*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::dM00 ];
     //(*this->nonLocalDistributions)(D3Q27System::ET_S,x1,  x2+1,x3    ) = f[D3Q27System::DIR_0M0 ];
     //(*this->nonLocalDistributions)(D3Q27System::ET_B,x1,  x2,  x3+1  ) = f[D3Q27System::DIR_00M ];
     //(*this->nonLocalDistributions)(D3Q27System::ET_SW,x1+1,x2+1,x3   ) = f[D3Q27System::DIR_MM0];
@@ -236,9 +236,9 @@ void D3Q27EsoTwist3DSoA::setPostCollisionDistributionForDirection(const real *co
 {
     // bool directionFlag = false;
     // if ((direction & EsoTwistD3Q27System::etE) == EsoTwistD3Q27System::etE)
-    //   (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::DIR_P00]; directionFlag=true;
+    //   (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::dP00]; directionFlag=true;
     // if ((direction & EsoTwistD3Q27System::etW) == EsoTwistD3Q27System::etW)
-    //   (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::DIR_M00]; directionFlag=true;
+    //   (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::dM00]; directionFlag=true;
     // if ((direction & EsoTwistD3Q27System::etS) == EsoTwistD3Q27System::etS)
     //   (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::DIR_0M0]; directionFlag=true;
     // if ((direction & EsoTwistD3Q27System::etN) == EsoTwistD3Q27System::etN)
@@ -298,10 +298,10 @@ void D3Q27EsoTwist3DSoA::setPostCollisionDistributionForDirection(real f, size_t
 {
     // switch (direction)
     //{
-    // case D3Q27System::DIR_P00 :
+    // case D3Q27System::dP00 :
     //   (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f;
     //   break;
-    // case D3Q27System::DIR_M00 :
+    // case D3Q27System::dM00 :
     //   (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f;
     //   break;
     // case D3Q27System::DIR_0M0 :
@@ -389,9 +389,9 @@ void D3Q27EsoTwist3DSoA::setPreCollisionDistributionForDirection(const real *con
 {
     //   bool directionFlag = false;
     //   if ((direction & EsoTwistD3Q27System::etE) == EsoTwistD3Q27System::etE)
-    //      (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::DIR_P00]; directionFlag=true;
+    //      (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::dP00]; directionFlag=true;
     //   if ((direction & EsoTwistD3Q27System::etW) == EsoTwistD3Q27System::etW)
-    //      (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::DIR_M00]; directionFlag=true;
+    //      (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::dM00]; directionFlag=true;
     //   if ((direction & EsoTwistD3Q27System::etS) == EsoTwistD3Q27System::etS)
     //      (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,  x2+1,x3    ) = f[D3Q27System::DIR_0M0]; directionFlag=true;
     //   if ((direction & EsoTwistD3Q27System::etN) == EsoTwistD3Q27System::etN)
@@ -455,10 +455,10 @@ void D3Q27EsoTwist3DSoA::setPreCollisionDistributionForDirection(real f, size_t 
 {
     // switch (direction)
     //{
-    // case D3Q27System::DIR_P00 :
+    // case D3Q27System::dP00 :
     //   (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f;
     //   break;
-    // case D3Q27System::DIR_M00 :
+    // case D3Q27System::dM00 :
     //   (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f;
     //   break;
     // case D3Q27System::DIR_0M0 :
@@ -546,9 +546,9 @@ real D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t /*x1*/, size_t /*
 {
     // switch (direction)
     //{
-    // case D3Q27System::DIR_P00 :
+    // case D3Q27System::dP00 :
     //   return (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    );
-    // case D3Q27System::DIR_M00 :
+    // case D3Q27System::dM00 :
     //   return (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3);
     // case D3Q27System::DIR_0M0 :
     //   return (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3);

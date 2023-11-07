@@ -38,8 +38,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dP00] = &DDStart[dP00 * size_Mat];
+				D.f[dM00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00P] = &DDStart[DIR_00P * size_Mat];
@@ -56,7 +56,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * size_Mat];
@@ -68,8 +68,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dM00] = &DDStart[dP00 * size_Mat];
+				D.f[dP00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00M] = &DDStart[DIR_00P * size_Mat];
@@ -86,7 +86,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * size_Mat];
@@ -100,8 +100,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			Distributions27 D27;
 			if (EvenOrOdd == true)
 			{
-				D27.f[DIR_P00] = &DD27[DIR_P00 * size_Mat];
-				D27.f[DIR_M00] = &DD27[DIR_M00 * size_Mat];
+				D27.f[dP00] = &DD27[dP00 * size_Mat];
+				D27.f[dM00] = &DD27[dM00 * size_Mat];
 				D27.f[DIR_0P0] = &DD27[DIR_0P0 * size_Mat];
 				D27.f[DIR_0M0] = &DD27[DIR_0M0 * size_Mat];
 				D27.f[DIR_00P] = &DD27[DIR_00P * size_Mat];
@@ -118,7 +118,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D27.f[DIR_0MM] = &DD27[DIR_0MM * size_Mat];
 				D27.f[DIR_0PM] = &DD27[DIR_0PM * size_Mat];
 				D27.f[DIR_0MP] = &DD27[DIR_0MP * size_Mat];
-				D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+				D27.f[d000] = &DD27[d000 * size_Mat];
 				D27.f[DIR_PPP] = &DD27[DIR_PPP * size_Mat];
 				D27.f[DIR_MMP] = &DD27[DIR_MMP * size_Mat];
 				D27.f[DIR_PMP] = &DD27[DIR_PMP * size_Mat];
@@ -130,8 +130,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			}
 			else
 			{
-				D27.f[DIR_M00] = &DD27[DIR_P00 * size_Mat];
-				D27.f[DIR_P00] = &DD27[DIR_M00 * size_Mat];
+				D27.f[dM00] = &DD27[dP00 * size_Mat];
+				D27.f[dP00] = &DD27[dM00 * size_Mat];
 				D27.f[DIR_0M0] = &DD27[DIR_0P0 * size_Mat];
 				D27.f[DIR_0P0] = &DD27[DIR_0M0 * size_Mat];
 				D27.f[DIR_00M] = &DD27[DIR_00P * size_Mat];
@@ -148,7 +148,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				D27.f[DIR_0PP] = &DD27[DIR_0MM * size_Mat];
 				D27.f[DIR_0MP] = &DD27[DIR_0PM * size_Mat];
 				D27.f[DIR_0PM] = &DD27[DIR_0MP * size_Mat];
-				D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+				D27.f[d000] = &DD27[d000 * size_Mat];
 				D27.f[DIR_MMM] = &DD27[DIR_PPP * size_Mat];
 				D27.f[DIR_PPM] = &DD27[DIR_MMP * size_Mat];
 				D27.f[DIR_MPM] = &DD27[DIR_PMP * size_Mat];
@@ -169,8 +169,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			unsigned int kbs = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real fW = (D.f[DIR_P00])[k];//ke
-			real fE = (D.f[DIR_M00])[kw];
+			real fW = (D.f[dP00])[k];//ke
+			real fE = (D.f[dM00])[kw];
 			real fS = (D.f[DIR_0P0])[k];//kn
 			real fN = (D.f[DIR_0M0])[ks];
 			real fB = (D.f[DIR_00P])[k];//kt
@@ -187,7 +187,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			real fTN = (D.f[DIR_0MM])[kbs];
 			real fTS = (D.f[DIR_0PM])[kb];//kbn
 			real fBN = (D.f[DIR_0MP])[ks];//kts
-			real fZERO = (D.f[DIR_000])[k];//kzero
+			real fZERO = (D.f[d000])[k];//kzero
 			real fBSW = (D.f[DIR_PPP])[k];//ktne
 			real fBNE = (D.f[DIR_MMP])[ksw];//ktsw
 			real fBNW = (D.f[DIR_PMP])[ks];//ktse
@@ -197,8 +197,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			real fTNW = (D.f[DIR_PMM])[kbs];//kbse
 			real fTSE = (D.f[DIR_MPM])[kbw];//kbnw
 										   ////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D27.f[DIR_P00])[k];
-			real mfabb = (D27.f[DIR_M00])[kw];
+			real mfcbb = (D27.f[dP00])[k];
+			real mfabb = (D27.f[dM00])[kw];
 			real mfbcb = (D27.f[DIR_0P0])[k];
 			real mfbab = (D27.f[DIR_0M0])[ks];
 			real mfbbc = (D27.f[DIR_00P])[k];
@@ -215,7 +215,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			real mfbaa = (D27.f[DIR_0MM])[kbs];
 			real mfbca = (D27.f[DIR_0PM])[kb];
 			real mfbac = (D27.f[DIR_0MP])[ks];
-			real mfbbb = (D27.f[DIR_000])[k];
+			real mfbbb = (D27.f[d000])[k];
 			real mfccc = (D27.f[DIR_PPP])[k];
 			real mfaac = (D27.f[DIR_MMP])[ksw];
 			real mfcac = (D27.f[DIR_PMP])[ks];
@@ -773,8 +773,8 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D27.f[DIR_P00])[k] = mfabb;
-			(D27.f[DIR_M00])[kw] = mfcbb;
+			(D27.f[dP00])[k] = mfabb;
+			(D27.f[dM00])[kw] = mfcbb;
 			(D27.f[DIR_0P0])[k] = mfbab;
 			(D27.f[DIR_0M0])[ks] = mfbcb;
 			(D27.f[DIR_00P])[k] = mfbba;
@@ -791,7 +791,7 @@ __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 			(D27.f[DIR_0MM])[kbs] = mfbcc;
 			(D27.f[DIR_0PM])[kb] = mfbac;
 			(D27.f[DIR_0MP])[ks] = mfbca;
-			(D27.f[DIR_000])[k] = mfbbb;
+			(D27.f[d000])[k] = mfbbb;
 			(D27.f[DIR_PPP])[k] = mfaaa;
 			(D27.f[DIR_PMP])[ks] = mfaca;
 			(D27.f[DIR_PPM])[kb] = mfaac;

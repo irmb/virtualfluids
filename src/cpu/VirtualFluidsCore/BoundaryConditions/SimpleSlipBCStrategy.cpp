@@ -85,8 +85,8 @@ void SimpleSlipBCStrategy::applyBC()
          real velocity = vf::basics::constant::c0o1;
          switch (invDir)
          {
-         case DIR_P00: velocity = (vf::basics::constant::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
-         case DIR_M00: velocity = (vf::basics::constant::c4o9*(-vx1)); break;      //z.B. aus paper manfred MRT LB models in three dimensions (2002)   
+         case dP00: velocity = (vf::basics::constant::c4o9*(+vx1)); break;      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
+         case dM00: velocity = (vf::basics::constant::c4o9*(-vx1)); break;      //z.B. aus paper manfred MRT LB models in three dimensions (2002)   
          case DIR_0P0: velocity = (vf::basics::constant::c4o9*(+vx2)); break;
          case DIR_0M0: velocity = (vf::basics::constant::c4o9*(-vx2)); break;
          case DIR_00P: velocity = (vf::basics::constant::c4o9*(+vx3)); break;

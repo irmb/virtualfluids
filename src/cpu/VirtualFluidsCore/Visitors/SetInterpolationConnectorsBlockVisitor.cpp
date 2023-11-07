@@ -84,23 +84,23 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 		int fbx3 = block->getX3() << 1;
 		int level = block->getLevel() + 1;
 
-		if( block->hasInterpolationFlagCF(DIR_P00))
+		if( block->hasInterpolationFlagCF(dP00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_P00);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, dP00);
 		}
-		if( block->hasInterpolationFlagCF(DIR_M00))
+		if( block->hasInterpolationFlagCF(dM00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockNW = grid->getBlock(fbx1,fbx2,fbx3+1,level);
 			SPtr<Block3D> fblockNE = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
 
-			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_M00);
+			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, dM00);
 		}
 		if( block->hasInterpolationFlagCF(DIR_0P0))
 		{
@@ -140,7 +140,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 		}
 
 		//////NE-NW-SE-SW
-		if( block->hasInterpolationFlagCF(DIR_PP0)&&!block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(DIR_P00))
+		if( block->hasInterpolationFlagCF(DIR_PP0)&&!block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(dP00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2+1,fbx3+0,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
@@ -149,7 +149,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_PP0);
 		}
-		if( block->hasInterpolationFlagCF(DIR_MM0)&& !block->hasInterpolationFlagCF(DIR_M00) && !block->hasInterpolationFlagCF(DIR_0M0))
+		if( block->hasInterpolationFlagCF(DIR_MM0)&& !block->hasInterpolationFlagCF(dM00) && !block->hasInterpolationFlagCF(DIR_0M0))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2,fbx3+1,level);
@@ -158,7 +158,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_MM0);
 		}
-		if( block->hasInterpolationFlagCF(DIR_PM0)&& !block->hasInterpolationFlagCF(DIR_P00) && !block->hasInterpolationFlagCF(DIR_0M0))
+		if( block->hasInterpolationFlagCF(DIR_PM0)&& !block->hasInterpolationFlagCF(dP00) && !block->hasInterpolationFlagCF(DIR_0M0))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2,fbx3+0,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2,fbx3+1,level);
@@ -167,7 +167,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_PM0);
 		}
-		if( block->hasInterpolationFlagCF(DIR_MP0)&& !block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(DIR_M00))
+		if( block->hasInterpolationFlagCF(DIR_MP0)&& !block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(dM00))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+1,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
@@ -178,7 +178,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 		}
 
 		/////////TE-BW-BE-TW 1-0
-		if( block->hasInterpolationFlagCF(DIR_P0P)&& !block->hasInterpolationFlagCF(DIR_P00) && !block->hasInterpolationFlagCF(DIR_00P))
+		if( block->hasInterpolationFlagCF(DIR_P0P)&& !block->hasInterpolationFlagCF(dP00) && !block->hasInterpolationFlagCF(DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2+0,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3+1,level);
@@ -187,7 +187,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_P0P);
 		}
-		if( block->hasInterpolationFlagCF(DIR_M0M)&& !block->hasInterpolationFlagCF(DIR_M00) && !block->hasInterpolationFlagCF(DIR_00M))
+		if( block->hasInterpolationFlagCF(DIR_M0M)&& !block->hasInterpolationFlagCF(dM00) && !block->hasInterpolationFlagCF(DIR_00M))
 		{
 
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+0,fbx3,level);
@@ -197,7 +197,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_M0M);
 		}
-		if( block->hasInterpolationFlagCF(DIR_P0M)&& !block->hasInterpolationFlagCF(DIR_P00) && !block->hasInterpolationFlagCF(DIR_00M))
+		if( block->hasInterpolationFlagCF(DIR_P0M)&& !block->hasInterpolationFlagCF(dP00) && !block->hasInterpolationFlagCF(DIR_00M))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1,fbx2+0,fbx3,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1+1,fbx2+1,fbx3,level);
@@ -206,7 +206,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 			setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_P0M);
 		}
-		if( block->hasInterpolationFlagCF(DIR_M0P)&& !block->hasInterpolationFlagCF(DIR_M00) && !block->hasInterpolationFlagCF(DIR_00P))
+		if( block->hasInterpolationFlagCF(DIR_M0P)&& !block->hasInterpolationFlagCF(dM00) && !block->hasInterpolationFlagCF(DIR_00P))
 		{
 			SPtr<Block3D> fblockSW = grid->getBlock(fbx1,fbx2+0,fbx3+1,level);
 			SPtr<Block3D> fblockSE = grid->getBlock(fbx1,fbx2+1,fbx3+1,level);
@@ -258,7 +258,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
 
       //////corners
-      if (block->hasInterpolationFlagCF(DIR_PPP)&&!block->hasInterpolationFlagCF(DIR_P0P)&&!block->hasInterpolationFlagCF(DIR_0PP)&&!block->hasInterpolationFlagCF(DIR_PP0)&&!block->hasInterpolationFlagCF(DIR_00P)&&!block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(DIR_P00))
+      if (block->hasInterpolationFlagCF(DIR_PPP)&&!block->hasInterpolationFlagCF(DIR_P0P)&&!block->hasInterpolationFlagCF(DIR_0PP)&&!block->hasInterpolationFlagCF(DIR_PP0)&&!block->hasInterpolationFlagCF(DIR_00P)&&!block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(dP00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+0, level);
@@ -267,7 +267,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_PPP);
       }
-      if (block->hasInterpolationFlagCF(DIR_MMP)&&!block->hasInterpolationFlagCF(DIR_M0P)&&!block->hasInterpolationFlagCF(DIR_0MP)&& !block->hasInterpolationFlagCF(DIR_MM0)&& !block->hasInterpolationFlagCF(DIR_00P)&& !block->hasInterpolationFlagCF(DIR_M00) && !block->hasInterpolationFlagCF(DIR_0M0))
+      if (block->hasInterpolationFlagCF(DIR_MMP)&&!block->hasInterpolationFlagCF(DIR_M0P)&&!block->hasInterpolationFlagCF(DIR_0MP)&& !block->hasInterpolationFlagCF(DIR_MM0)&& !block->hasInterpolationFlagCF(DIR_00P)&& !block->hasInterpolationFlagCF(dM00) && !block->hasInterpolationFlagCF(DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2, fbx3, level);
@@ -276,7 +276,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_MMP);
       }
-      if (block->hasInterpolationFlagCF(DIR_PMP)&&!block->hasInterpolationFlagCF(DIR_P0P)&&!block->hasInterpolationFlagCF(DIR_0MP)&& !block->hasInterpolationFlagCF(DIR_PM0)&& !block->hasInterpolationFlagCF(DIR_00P)&& !block->hasInterpolationFlagCF(DIR_P00) && !block->hasInterpolationFlagCF(DIR_0M0))
+      if (block->hasInterpolationFlagCF(DIR_PMP)&&!block->hasInterpolationFlagCF(DIR_P0P)&&!block->hasInterpolationFlagCF(DIR_0MP)&& !block->hasInterpolationFlagCF(DIR_PM0)&& !block->hasInterpolationFlagCF(DIR_00P)&& !block->hasInterpolationFlagCF(dP00) && !block->hasInterpolationFlagCF(DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2, fbx3+0, level);
@@ -285,7 +285,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_PMP);
       }
-      if (block->hasInterpolationFlagCF(DIR_MPP)&&!block->hasInterpolationFlagCF(DIR_M0P)&&!block->hasInterpolationFlagCF(DIR_0PP)&& !block->hasInterpolationFlagCF(DIR_MP0)&& !block->hasInterpolationFlagCF(DIR_00P)&& !block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(DIR_M00))
+      if (block->hasInterpolationFlagCF(DIR_MPP)&&!block->hasInterpolationFlagCF(DIR_M0P)&&!block->hasInterpolationFlagCF(DIR_0PP)&& !block->hasInterpolationFlagCF(DIR_MP0)&& !block->hasInterpolationFlagCF(DIR_00P)&& !block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(dM00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2+1, fbx3+1, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2+1, fbx3, level);
@@ -294,7 +294,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_MPP);
       }
-      if (block->hasInterpolationFlagCF(DIR_PPM)&&!block->hasInterpolationFlagCF(DIR_P0M)&&!block->hasInterpolationFlagCF(DIR_0PM)&& !block->hasInterpolationFlagCF(DIR_PP0)&&!block->hasInterpolationFlagCF(DIR_00M)&&!block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(DIR_P00))
+      if (block->hasInterpolationFlagCF(DIR_PPM)&&!block->hasInterpolationFlagCF(DIR_P0M)&&!block->hasInterpolationFlagCF(DIR_0PM)&& !block->hasInterpolationFlagCF(DIR_PP0)&&!block->hasInterpolationFlagCF(DIR_00M)&&!block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(dP00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2+1, fbx3+0, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2+1, fbx3+0, level);
@@ -303,7 +303,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_PPM);
       }
-      if (block->hasInterpolationFlagCF(DIR_MMM)&& !block->hasInterpolationFlagCF(DIR_0MM)&& !block->hasInterpolationFlagCF(DIR_M0M)&& !block->hasInterpolationFlagCF(DIR_MM0)&& !block->hasInterpolationFlagCF(DIR_00M)&& !block->hasInterpolationFlagCF(DIR_M00) && !block->hasInterpolationFlagCF(DIR_0M0))
+      if (block->hasInterpolationFlagCF(DIR_MMM)&& !block->hasInterpolationFlagCF(DIR_0MM)&& !block->hasInterpolationFlagCF(DIR_M0M)&& !block->hasInterpolationFlagCF(DIR_MM0)&& !block->hasInterpolationFlagCF(DIR_00M)&& !block->hasInterpolationFlagCF(dM00) && !block->hasInterpolationFlagCF(DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2, fbx3+0, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2, fbx3, level);
@@ -312,7 +312,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_MMM);
       }
-      if (block->hasInterpolationFlagCF(DIR_PMM)&& !block->hasInterpolationFlagCF(DIR_0MM)&& !block->hasInterpolationFlagCF(DIR_P0M)&& !block->hasInterpolationFlagCF(DIR_PM0)&& !block->hasInterpolationFlagCF(DIR_00M)&& !block->hasInterpolationFlagCF(DIR_P00) && !block->hasInterpolationFlagCF(DIR_0M0))
+      if (block->hasInterpolationFlagCF(DIR_PMM)&& !block->hasInterpolationFlagCF(DIR_0MM)&& !block->hasInterpolationFlagCF(DIR_P0M)&& !block->hasInterpolationFlagCF(DIR_PM0)&& !block->hasInterpolationFlagCF(DIR_00M)&& !block->hasInterpolationFlagCF(dP00) && !block->hasInterpolationFlagCF(DIR_0M0))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1+1, fbx2, fbx3, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1+1, fbx2, fbx3+0, level);
@@ -321,7 +321,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Gri
 
          setInterpolationConnectors(fblockSW, fblockSE, fblockNW, fblockNE, block, DIR_PMM);
       }
-      if (block->hasInterpolationFlagCF(DIR_MPM)&& !block->hasInterpolationFlagCF(DIR_0PM)&& !block->hasInterpolationFlagCF(DIR_M0M)&& !block->hasInterpolationFlagCF(DIR_MP0)&& !block->hasInterpolationFlagCF(DIR_00M)&& !block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(DIR_M00))
+      if (block->hasInterpolationFlagCF(DIR_MPM)&& !block->hasInterpolationFlagCF(DIR_0PM)&& !block->hasInterpolationFlagCF(DIR_M0M)&& !block->hasInterpolationFlagCF(DIR_MP0)&& !block->hasInterpolationFlagCF(DIR_00M)&& !block->hasInterpolationFlagCF(DIR_0P0) && !block->hasInterpolationFlagCF(dM00))
       {
          SPtr<Block3D> fblockSW = grid->getBlock(fbx1, fbx2+1, fbx3+0, level);
          SPtr<Block3D> fblockSE;// = grid->getBlock(fbx1, fbx2+1, fbx3, level);

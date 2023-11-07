@@ -96,7 +96,7 @@ void ThreeDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
     int maxX3m3 = maxX3 - 3;
 
     // EAST
-    if (sendDir == DIR_P00) {
+    if (sendDir == dP00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 exchangeData(maxX1m3, x2, x3, minX1, x2, x3);
@@ -105,7 +105,7 @@ void ThreeDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // WEST
-    else if (sendDir == DIR_M00) {
+    else if (sendDir == dM00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 exchangeData(minX1p3, x2, x3, maxX1, x2, x3);

@@ -134,7 +134,7 @@ TEST_F(SideTestBC, setQs2D_whenSettingPX_setAllQsNormalToBC)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(11, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PP0] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     EXPECT_THAT(actualQs, testing::Eq(expectedQs));
@@ -151,7 +151,7 @@ TEST_F(SideTestBC, setQs2D_givenPYhasBeenSet_thenSetPX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(11, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     EXPECT_THAT(actualQs, testing::Eq(expectedQs));
 }
@@ -167,7 +167,7 @@ TEST_F(SideTestBC, setQs3D_givenMXhasBeenSet_thenSetPX_setAllQsNormalToPX)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PP0] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     expectedQs[DIR_P0P] = 0.5;
@@ -205,7 +205,7 @@ TEST_F(SideTestBC, setQs3D_whenSettingPX_setAllQsNormalToBC)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PP0] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     expectedQs[DIR_P0P] = 0.5;
@@ -227,7 +227,7 @@ TEST_F(SideTestBC, setQs3D_givenPYhasBeenSet_thenSetPX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     expectedQs[DIR_P0P] = 0.5;
     expectedQs[DIR_P0M] = 0.5;
@@ -246,7 +246,7 @@ TEST_F(SideTestBC, setQs3D_givenMYhasBeenSet_thenSetPX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PP0] = 0.5;
     expectedQs[DIR_P0P] = 0.5;
     expectedQs[DIR_P0M] = 0.5;
@@ -265,7 +265,7 @@ TEST_F(SideTestBC, setQs3D_givenPZhasBeenSet_thenSetPX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PP0] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     expectedQs[DIR_P0M] = 0.5;
@@ -284,7 +284,7 @@ TEST_F(SideTestBC, setQs3D_givenMZhasBeenSet_thenSetPX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_P00] = 0.5;
+    expectedQs[dP00] = 0.5;
     expectedQs[DIR_PP0] = 0.5;
     expectedQs[DIR_PM0] = 0.5;
     expectedQs[DIR_P0P] = 0.5;
@@ -304,7 +304,7 @@ TEST_F(SideTestBC, setQs3D_givenPYandMZhaveBeenSet_thenSetPX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_P00] = 0.5;
+    expectedQsForTwoPreviousBCs[dP00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PM0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_P0P] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PMP] = 0.5;
@@ -322,7 +322,7 @@ TEST_F(SideTestBC, setQs3D_givenPYandPZhaveBeenSet_thenSetPX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_P00] = 0.5;
+    expectedQsForTwoPreviousBCs[dP00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PM0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_P0M] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PMM] = 0.5;
@@ -340,7 +340,7 @@ TEST_F(SideTestBC, setQs3D_givenMYandPZhaveBeenSet_thenSetPX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_P00] = 0.5;
+    expectedQsForTwoPreviousBCs[dP00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PP0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_P0M] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PPM] = 0.5;
@@ -358,7 +358,7 @@ TEST_F(SideTestBC, setQs3D_givenMYandMZhaveBeenSet_thenSetPX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_P00] = 0.5;
+    expectedQsForTwoPreviousBCs[dP00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PP0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_P0P] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_PPP] = 0.5;
@@ -374,7 +374,7 @@ TEST_F(SideTestBC, setQs3D_whenSettingMX_setAllQsNormalToBC)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_M00] = 0.5;
+    expectedQs[dM00] = 0.5;
     expectedQs[DIR_MP0] = 0.5;
     expectedQs[DIR_MM0] = 0.5;
     expectedQs[DIR_M0P] = 0.5;
@@ -396,7 +396,7 @@ TEST_F(SideTestBC, setQs3D_givenPYhasBeenSet_thenSetMX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_M00] = 0.5;
+    expectedQs[dM00] = 0.5;
     expectedQs[DIR_MM0] = 0.5;
     expectedQs[DIR_M0P] = 0.5;
     expectedQs[DIR_M0M] = 0.5;
@@ -415,7 +415,7 @@ TEST_F(SideTestBC, setQs3D_givenMYhasBeenSet_thenSetMX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_M00] = 0.5;
+    expectedQs[dM00] = 0.5;
     expectedQs[DIR_MP0] = 0.5;
     expectedQs[DIR_M0P] = 0.5;
     expectedQs[DIR_M0M] = 0.5;
@@ -434,7 +434,7 @@ TEST_F(SideTestBC, setQs3D_givenPZhasBeenSet_thenSetMX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_M00] = 0.5;
+    expectedQs[dM00] = 0.5;
     expectedQs[DIR_MP0] = 0.5;
     expectedQs[DIR_MM0] = 0.5;
     expectedQs[DIR_M0M] = 0.5;
@@ -453,7 +453,7 @@ TEST_F(SideTestBC, setQs3D_givenMZhasBeenSet_thenSetMX_doNotSetSameQsAgain)
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQs(27, -1);
-    expectedQs[DIR_M00] = 0.5;
+    expectedQs[dM00] = 0.5;
     expectedQs[DIR_MP0] = 0.5;
     expectedQs[DIR_MM0] = 0.5;
     expectedQs[DIR_M0P] = 0.5;
@@ -473,7 +473,7 @@ TEST_F(SideTestBC, setQs3D_givenPYandMZhaveBeenSet_thenSetMX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_M00] = 0.5;
+    expectedQsForTwoPreviousBCs[dM00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MM0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_M0P] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MMP] = 0.5;
@@ -491,7 +491,7 @@ TEST_F(SideTestBC, setQs3D_givenPYandPZhaveBeenSet_thenSetMX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_M00] = 0.5;
+    expectedQsForTwoPreviousBCs[dM00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MM0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_M0M] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MMM] = 0.5;
@@ -509,7 +509,7 @@ TEST_F(SideTestBC, setQs3D_givenMYandPZhaveBeenSet_thenSetMX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_M00] = 0.5;
+    expectedQsForTwoPreviousBCs[dM00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MP0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_M0M] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MPM] = 0.5;
@@ -527,7 +527,7 @@ TEST_F(SideTestBC, setQs3D_givenMYandMZhaveBeenSet_thenSetMX_doNotSetSameQsAgain
     auto actualQs = bc->getQs()[0];
 
     std::vector<real> expectedQsForTwoPreviousBCs(27, -1);
-    expectedQsForTwoPreviousBCs[DIR_M00] = 0.5;
+    expectedQsForTwoPreviousBCs[dM00] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MP0] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_M0P] = 0.5;
     expectedQsForTwoPreviousBCs[DIR_MPP] = 0.5;

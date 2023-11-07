@@ -71,8 +71,8 @@ __global__ void PressSchlaff27(real* rhoBC,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -89,7 +89,7 @@ __global__ void PressSchlaff27(real* rhoBC,
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -101,8 +101,8 @@ __global__ void PressSchlaff27(real* rhoBC,
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -119,7 +119,7 @@ __global__ void PressSchlaff27(real* rhoBC,
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -132,8 +132,8 @@ __global__ void PressSchlaff27(real* rhoBC,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_E    = (D.f[DIR_P00])[ke   ];
-      f1_W    = (D.f[DIR_M00])[kw   ];
+      f1_E    = (D.f[dP00])[ke   ];
+      f1_W    = (D.f[dM00])[kw   ];
       f1_N    = (D.f[DIR_0P0])[kn   ];
       f1_S    = (D.f[DIR_0M0])[ks   ];
       f1_T    = (D.f[DIR_00P])[kt   ];
@@ -150,7 +150,7 @@ __global__ void PressSchlaff27(real* rhoBC,
       f1_BS   = (D.f[DIR_0MM])[kbs  ];
       f1_BN   = (D.f[DIR_0PM])[kbn  ];
       f1_TS   = (D.f[DIR_0MP])[kts  ];
-      f1_ZERO = (D.f[DIR_000])[kzero];
+      f1_ZERO = (D.f[d000])[kzero];
       f1_TNE  = (D.f[DIR_PPP])[ktne ];
       f1_TSW  = (D.f[DIR_MMP])[ktsw ];
       f1_TSE  = (D.f[DIR_PMP])[ktse ];
@@ -335,8 +335,8 @@ __global__ void VelSchlaff27(  int t,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -353,7 +353,7 @@ __global__ void VelSchlaff27(  int t,
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -365,8 +365,8 @@ __global__ void VelSchlaff27(  int t,
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -383,7 +383,7 @@ __global__ void VelSchlaff27(  int t,
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -397,8 +397,8 @@ __global__ void VelSchlaff27(  int t,
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_E    = (D.f[DIR_P00])[ke   ];
-      f1_W    = (D.f[DIR_M00])[kw   ];
+      f1_E    = (D.f[dP00])[ke   ];
+      f1_W    = (D.f[dM00])[kw   ];
       f1_N    = (D.f[DIR_0P0])[kn   ];
       f1_S    = (D.f[DIR_0M0])[ks   ];
       f1_T    = (D.f[DIR_00P])[kt   ];
@@ -415,7 +415,7 @@ __global__ void VelSchlaff27(  int t,
       f1_BS   = (D.f[DIR_0MM])[kbs  ];
       f1_BN   = (D.f[DIR_0PM])[kbn  ];
       f1_TS   = (D.f[DIR_0MP])[kts  ];
-      f1_ZERO = (D.f[DIR_000])[kzero];
+      f1_ZERO = (D.f[d000])[kzero];
       f1_TNE  = (D.f[DIR_PPP])[ktne ];
       f1_TSW  = (D.f[DIR_MMP])[ktsw ];
       f1_TSE  = (D.f[DIR_PMP])[ktse ];
@@ -424,8 +424,8 @@ __global__ void VelSchlaff27(  int t,
       f1_BSW  = (D.f[DIR_MMM])[kbsw ];
       f1_BSE  = (D.f[DIR_PMM])[kbse ];
       f1_BNW  = (D.f[DIR_MPM])[kbnw ];
-      //f1_W    = (D.f[DIR_P00])[ke   ];
-      //f1_E    = (D.f[DIR_M00])[kw   ];
+      //f1_W    = (D.f[dP00])[ke   ];
+      //f1_E    = (D.f[dM00])[kw   ];
       //f1_S    = (D.f[DIR_0P0])[kn   ];
       //f1_N    = (D.f[DIR_0M0])[ks   ];
       //f1_B    = (D.f[DIR_00P])[kt   ];
@@ -442,7 +442,7 @@ __global__ void VelSchlaff27(  int t,
       //f1_TN   = (D.f[DIR_0MM])[kbs  ];
       //f1_TS   = (D.f[DIR_0PM])[kbn  ];
       //f1_BN   = (D.f[DIR_0MP])[kts  ];
-      //f1_ZERO = (D.f[DIR_000])[kzero];
+      //f1_ZERO = (D.f[d000])[kzero];
       //f1_BSW  = (D.f[DIR_PPP])[ktne ];
       //f1_BNE  = (D.f[DIR_MMP])[ktsw ];
       //f1_BNW  = (D.f[DIR_PMP])[ktse ];
@@ -553,8 +553,8 @@ __global__ void VelSchlaff27(  int t,
       //(D.f[DIR_PMP])[ktse ] = f1_BNW;
       //(D.f[DIR_MPP])[ktnw ] = f1_BSE;
 
-      //(D.f[DIR_P00])[ke   ] = f1_W   -c2over27*drho1;
-      //(D.f[DIR_M00])[kw   ] = f1_E   -c2over27*drho1;
+      //(D.f[dP00])[ke   ] = f1_W   -c2over27*drho1;
+      //(D.f[dM00])[kw   ] = f1_E   -c2over27*drho1;
       //(D.f[DIR_0P0])[kn   ] = f1_S   -c2over27*drho1;
       //(D.f[DIR_0M0])[ks   ] = f1_N   -c2over27*drho1;
       //(D.f[DIR_00P])[kt   ] = f1_B   -c2over27*drho1;
@@ -571,7 +571,7 @@ __global__ void VelSchlaff27(  int t,
       //(D.f[DIR_0MM])[kbs  ] = f1_TN  -c1over54*drho1;
       //(D.f[DIR_0PM])[kbn  ] = f1_TS  -c1over54*drho1;
       //(D.f[DIR_0MP])[kts  ] = f1_BN  -c1over54*drho1;
-      //(D.f[DIR_000])[kzero] = f1_ZERO-c8over27*drho1;
+      //(D.f[d000])[kzero] = f1_ZERO-c8over27*drho1;
       //(D.f[DIR_PPP])[ktne ] = f1_BSW -c1over216*drho1;
       //(D.f[DIR_MMP])[ktsw ] = f1_BNE -c1over216*drho1;
       //(D.f[DIR_PMP])[ktse ] = f1_BNW -c1over216*drho1;

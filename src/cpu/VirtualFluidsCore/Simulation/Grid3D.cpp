@@ -1106,10 +1106,10 @@ void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, i
     using namespace vf::lbm::dir;
 
     switch (dir) {
-        case DIR_P00:
+        case dP00:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M00:
+        case dM00:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         case DIR_0P0:
@@ -1271,10 +1271,10 @@ void Grid3D::getNeighborBlocksForDirectionWithREST(int dir, int ix1, int ix2, in
     using namespace vf::lbm::dir;
 
     switch (dir) {
-        case DIR_P00:
+        case dP00:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M00:
+        case dM00:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         case DIR_0P0:
@@ -1349,7 +1349,7 @@ void Grid3D::getNeighborBlocksForDirectionWithREST(int dir, int ix1, int ix2, in
         case DIR_MMM:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_000:
+        case d000:
             this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:

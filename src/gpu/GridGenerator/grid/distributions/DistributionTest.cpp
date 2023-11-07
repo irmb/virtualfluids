@@ -10,12 +10,12 @@ TEST(DistributionTest, DistributionReturnsCorrectDirections)
 {
     Distribution dist = DistributionHelper::getDistribution27();
 
-    EXPECT_THAT(dist.directions[DIR_P00][0], testing::Eq(DIR_27_E_X));
-    EXPECT_THAT(dist.directions[DIR_P00][1], testing::Eq(DIR_27_E_Y));
-    EXPECT_THAT(dist.directions[DIR_P00][2], testing::Eq(DIR_27_E_Z));
-    EXPECT_THAT(dist.dirs[DIR_P00 * 3    ], testing::Eq(DIR_27_E_X));
-    EXPECT_THAT(dist.dirs[DIR_P00 * 3 + 1], testing::Eq(DIR_27_E_Y));
-    EXPECT_THAT(dist.dirs[DIR_P00 * 3 + 2], testing::Eq(DIR_27_E_Z));
+    EXPECT_THAT(dist.directions[dP00][0], testing::Eq(DIR_27_E_X));
+    EXPECT_THAT(dist.directions[dP00][1], testing::Eq(DIR_27_E_Y));
+    EXPECT_THAT(dist.directions[dP00][2], testing::Eq(DIR_27_E_Z));
+    EXPECT_THAT(dist.dirs[dP00 * 3    ], testing::Eq(DIR_27_E_X));
+    EXPECT_THAT(dist.dirs[dP00 * 3 + 1], testing::Eq(DIR_27_E_Y));
+    EXPECT_THAT(dist.dirs[dP00 * 3 + 2], testing::Eq(DIR_27_E_Z));
 
     EXPECT_THAT(dist.directions[DIR_00M][0], testing::Eq(DIR_27_B_X));
     EXPECT_THAT(dist.directions[DIR_00M][1], testing::Eq(DIR_27_B_Y));
@@ -24,12 +24,12 @@ TEST(DistributionTest, DistributionReturnsCorrectDirections)
     EXPECT_THAT(dist.dirs[DIR_00M * 3 + 1], testing::Eq(DIR_27_B_Y));
     EXPECT_THAT(dist.dirs[DIR_00M * 3 + 2], testing::Eq(DIR_27_B_Z));
     
-    EXPECT_THAT(dist.directions[DIR_000][0], testing::Eq(0));
-    EXPECT_THAT(dist.directions[DIR_000][1], testing::Eq(0));
-    EXPECT_THAT(dist.directions[DIR_000][2], testing::Eq(0));
-    EXPECT_THAT(dist.dirs[DIR_000 * 3    ], testing::Eq(0));
-    EXPECT_THAT(dist.dirs[DIR_000 * 3 + 1], testing::Eq(0));
-    EXPECT_THAT(dist.dirs[DIR_000 * 3 + 2], testing::Eq(0));
+    EXPECT_THAT(dist.directions[d000][0], testing::Eq(0));
+    EXPECT_THAT(dist.directions[d000][1], testing::Eq(0));
+    EXPECT_THAT(dist.directions[d000][2], testing::Eq(0));
+    EXPECT_THAT(dist.dirs[d000 * 3    ], testing::Eq(0));
+    EXPECT_THAT(dist.dirs[d000 * 3 + 1], testing::Eq(0));
+    EXPECT_THAT(dist.dirs[d000 * 3 + 2], testing::Eq(0));
 
     EXPECT_THAT(dist.directions[DIR_PP0][0], testing::Eq(DIR_27_NE_X));
     EXPECT_THAT(dist.directions[DIR_PP0][1], testing::Eq(DIR_27_NE_Y));

@@ -169,7 +169,7 @@ __global__ void LBCalcMacSP27(
         if(geoD[nodeIndex] == GEO_FLUID)
         {
             rhoD[nodeIndex] = 
-                (dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
+                (dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
                 (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
                 (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
@@ -178,14 +178,14 @@ __global__ void LBCalcMacSP27(
                 (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
                 (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
                 (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_000])[kzero]+ 
+                (dist.f[d000])[kzero]+ 
                 (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
                 (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
                 (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
                 (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw];
            
             vxD[nodeIndex] =
-                (dist.f[DIR_P00])[ke  ]- (dist.f[DIR_M00])[kw  ]+ 
+                (dist.f[dP00])[ke  ]- (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]+
                 (dist.f[DIR_PM0])[kse ]- (dist.f[DIR_MP0])[knw ]+
                 (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]+
@@ -218,7 +218,7 @@ __global__ void LBCalcMacSP27(
                 (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw];
            
             pressD[nodeIndex] =
-                ((dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
+                ((dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
                 (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
                 2.f*(
@@ -429,7 +429,7 @@ __global__ void LBCalcMedSP27(
         if(geoD[nodeIndex] == GEO_FLUID)
         {
             rhoD[nodeIndex] =
-                (dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
+                (dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
                 (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
                 (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
@@ -438,7 +438,7 @@ __global__ void LBCalcMedSP27(
                 (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
                 (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
                 (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_000])[kzero]+ 
+                (dist.f[d000])[kzero]+ 
                 (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
                 (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
                 (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
@@ -446,7 +446,7 @@ __global__ void LBCalcMedSP27(
                 RHO;
             
             vxD[nodeIndex] =
-                (dist.f[DIR_P00])[ke  ]- (dist.f[DIR_M00])[kw  ]+ 
+                (dist.f[dP00])[ke  ]- (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]+
                 (dist.f[DIR_PM0])[kse ]- (dist.f[DIR_MP0])[knw ]+
                 (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]+
@@ -482,7 +482,7 @@ __global__ void LBCalcMedSP27(
                 VZ;
             
             pressD[nodeIndex] =
-                ((dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
+                ((dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
                 (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
                 c2o1*(
@@ -601,8 +601,8 @@ __global__ void LBCalcMedCompSP27(
         
         if(geoD[nodeIndex] == GEO_FLUID)
         {
-            real mfcbb = (dist.f[DIR_P00])[nodeIndex];//[ke   ];
-            real mfabb = (dist.f[DIR_M00])[kw];//[kw   ];  
+            real mfcbb = (dist.f[dP00])[nodeIndex];//[ke   ];
+            real mfabb = (dist.f[dM00])[kw];//[kw   ];  
             real mfbcb = (dist.f[DIR_0P0])[nodeIndex];//[kn   ];
             real mfbab = (dist.f[DIR_0M0])[ks];//[ks   ];  
             real mfbbc = (dist.f[DIR_00P])[nodeIndex];//[kt   ];
@@ -619,7 +619,7 @@ __global__ void LBCalcMedCompSP27(
             real mfbaa = (dist.f[DIR_0MM])[kbs];//[kbs  ];
             real mfbca = (dist.f[DIR_0PM])[kb];//[kbn  ]; 
             real mfbac = (dist.f[DIR_0MP])[ks];//[kts  ]; 
-            real mfbbb = (dist.f[DIR_000])[nodeIndex];//[kzero];
+            real mfbbb = (dist.f[d000])[nodeIndex];//[kzero];
             real mfccc = (dist.f[DIR_PPP])[nodeIndex];//[ktne ]; 
             real mfaac = (dist.f[DIR_MMP])[ksw];//[ktsw ]; 
             real mfcac = (dist.f[DIR_PMP])[ks];//[ktse ];
@@ -652,7 +652,7 @@ __global__ void LBCalcMedCompSP27(
                 (mfbbc - mfbba)) / rho) + VZ;
 
             pressD[nodeIndex]  =
-                ((dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
+                ((dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
                 (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
                 (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
                 c2o1*(
@@ -776,8 +776,8 @@ __global__ void LBCalcMedCompAD27(
         
         if (geoD[nodeIndex] == GEO_FLUID)
         {
-            real mfcbb = (dist.f[DIR_P00])[nodeIndex];//[ke   ];
-            real mfabb = (dist.f[DIR_M00])[kw];//[kw   ];  
+            real mfcbb = (dist.f[dP00])[nodeIndex];//[ke   ];
+            real mfabb = (dist.f[dM00])[kw];//[kw   ];  
             real mfbcb = (dist.f[DIR_0P0])[nodeIndex];//[kn   ];
             real mfbab = (dist.f[DIR_0M0])[ks];//[ks   ];  
             real mfbbc = (dist.f[DIR_00P])[nodeIndex];//[kt   ];
@@ -794,7 +794,7 @@ __global__ void LBCalcMedCompAD27(
             real mfbaa = (dist.f[DIR_0MM])[kbs];//[kbs  ];
             real mfbca = (dist.f[DIR_0PM])[kb];//[kbn  ]; 
             real mfbac = (dist.f[DIR_0MP])[ks];//[kts  ]; 
-            real mfbbb = (dist.f[DIR_000])[nodeIndex];//[kzero];
+            real mfbbb = (dist.f[d000])[nodeIndex];//[kzero];
             real mfccc = (dist.f[DIR_PPP])[nodeIndex];//[ktne ]; 
             real mfaac = (dist.f[DIR_MMP])[ksw];//[ktsw ]; 
             real mfcac = (dist.f[DIR_PMP])[ks];//[ktse ];
@@ -829,7 +829,7 @@ __global__ void LBCalcMedCompAD27(
                     (mfbbc - mfbba)) / rho) + VZ;
             
             pressD[nodeIndex] = 
-                ((dist.f[DIR_P00])[ke] + (dist.f[DIR_M00])[kw] +
+                ((dist.f[dP00])[ke] + (dist.f[dM00])[kw] +
                  (dist.f[DIR_0P0])[kn] + (dist.f[DIR_0M0])[ks] +
                  (dist.f[DIR_00P])[kt] + (dist.f[DIR_00M])[kb] +
                  c2o1*(
@@ -848,8 +848,8 @@ __global__ void LBCalcMedCompAD27(
                  PRESS;
                  //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
             //////////////////////////////////////////////////////////////////////////
-            mfcbb = (distAD.f[DIR_P00])[nodeIndex   ];
-            mfabb = (distAD.f[DIR_M00])[kw  ];
+            mfcbb = (distAD.f[dP00])[nodeIndex   ];
+            mfabb = (distAD.f[dM00])[kw  ];
             mfbcb = (distAD.f[DIR_0P0])[nodeIndex   ];
             mfbab = (distAD.f[DIR_0M0])[ks  ];
             mfbbc = (distAD.f[DIR_00P])[nodeIndex   ];
@@ -866,7 +866,7 @@ __global__ void LBCalcMedCompAD27(
             mfbaa = (distAD.f[DIR_0MM])[kbs ];
             mfbca = (distAD.f[DIR_0PM])[kb  ];
             mfbac = (distAD.f[DIR_0MP])[ks  ];
-            mfbbb = (distAD.f[DIR_000])[nodeIndex   ];
+            mfbbb = (distAD.f[d000])[nodeIndex   ];
             mfccc = (distAD.f[DIR_PPP])[nodeIndex   ];
             mfaac = (distAD.f[DIR_MMP])[ksw ];
             mfcac = (distAD.f[DIR_PMP])[ks  ];
@@ -1140,7 +1140,7 @@ __global__ void LBCalcMeasurePoints(
         
         if(geoD[kzero] == GEO_FLUID)
         {
-            rhoMP[kMac]= (dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
+            rhoMP[kMac]= (dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
                          (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
                          (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
                          (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
@@ -1149,13 +1149,13 @@ __global__ void LBCalcMeasurePoints(
                          (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
                          (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
                          (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                         (dist.f[DIR_000])[kzero]+ 
+                         (dist.f[d000])[kzero]+ 
                          (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
                          (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
                          (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
                          (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw];
            
-            vxMP[kMac] = (dist.f[DIR_P00])[ke  ]- (dist.f[DIR_M00])[kw  ]+ 
+            vxMP[kMac] = (dist.f[dP00])[ke  ]- (dist.f[dM00])[kw  ]+ 
                          (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]+
                          (dist.f[DIR_PM0])[kse ]- (dist.f[DIR_MP0])[knw ]+
                          (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]+

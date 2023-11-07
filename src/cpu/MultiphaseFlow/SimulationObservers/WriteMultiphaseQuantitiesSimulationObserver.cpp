@@ -234,14 +234,14 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
                         ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                            ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000];
+                            ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000];
                     if (distributionsH2) {
                     distributionsH2->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     (*phaseField2)(ix1, ix2, ix3) =
                         ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
                         ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                            ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000];
+                            ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000];
                 }
                     else { (*phaseField2)(ix1, ix2, ix3) = 999.0; }
                     
@@ -279,8 +279,8 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                     nodes.push_back(UbTupleFloat3(float(worldCoordinates[0]), float(worldCoordinates[1]),
                                                   float(worldCoordinates[2])));
 
-                    phi[DIR_000] = (*phaseField)(ix1, ix2, ix3);
-                    phi2[DIR_000] = (*phaseField2)(ix1, ix2, ix3);
+                    phi[d000] = (*phaseField)(ix1, ix2, ix3);
+                    phi2[d000] = (*phaseField2)(ix1, ix2, ix3);
 
                     if ((ix1 == 0) || (ix2 == 0) || (ix3 == 0)) {
                         dX1_phi = 0.0;
@@ -291,10 +291,10 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         // vx2 = 0.0;
                         // vx3 = 0.0;
                     } else {
-                        phi[DIR_P00] = (*phaseField)(ix1 + DX1[DIR_P00], ix2 + DX2[DIR_P00], ix3 + DX3[DIR_P00]);
+                        phi[dP00] = (*phaseField)(ix1 + DX1[dP00], ix2 + DX2[dP00], ix3 + DX3[dP00]);
                         phi[DIR_0P0] = (*phaseField)(ix1 + DX1[DIR_0P0], ix2 + DX2[DIR_0P0], ix3 + DX3[DIR_0P0]);
                         phi[DIR_00P] = (*phaseField)(ix1 + DX1[DIR_00P], ix2 + DX2[DIR_00P], ix3 + DX3[DIR_00P]);
-                        phi[DIR_M00] = (*phaseField)(ix1 + DX1[DIR_M00], ix2 + DX2[DIR_M00], ix3 + DX3[DIR_M00]);
+                        phi[dM00] = (*phaseField)(ix1 + DX1[dM00], ix2 + DX2[dM00], ix3 + DX3[dM00]);
                         phi[DIR_0M0] = (*phaseField)(ix1 + DX1[DIR_0M0], ix2 + DX2[DIR_0M0], ix3 + DX3[DIR_0M0]);
                         phi[DIR_00M] = (*phaseField)(ix1 + DX1[DIR_00M], ix2 + DX2[DIR_00M], ix3 + DX3[DIR_00M]);
                         phi[DIR_PP0] = (*phaseField)(ix1 + DX1[DIR_PP0], ix2 + DX2[DIR_PP0], ix3 + DX3[DIR_PP0]);
@@ -320,9 +320,9 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         dX1_phi  = 0.0 * gradX1_phi(phi);
                         dX2_phi  = 0.0 * gradX2_phi(phi);
                         dX3_phi  = 0.0 * gradX3_phi(phi);
-                        mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi(phi);
+                        mu = 2 * beta * phi[d000] * (phi[d000] - 1) * (2 * phi[d000] - 1) - kappa * nabla2_phi(phi);
 
-                        //phi2[DIR_P00] = (*phaseField2)(ix1 + DX1[DIR_P00], ix2 + DX2[DIR_P00], ix3 + DX3[DIR_P00]);
+                        //phi2[dP00] = (*phaseField2)(ix1 + DX1[dP00], ix2 + DX2[dP00], ix3 + DX3[dP00]);
                         //phi2[N] = (*phaseField2)(ix1 + DX1[N], ix2 + DX2[N], ix3 + DX3[N]);
                         //phi2[T] = (*phaseField2)(ix1 + DX1[T], ix2 + DX2[T], ix3 + DX3[T]);
                         //phi2[W] = (*phaseField2)(ix1 + DX1[W], ix2 + DX2[W], ix3 + DX3[W]);
@@ -364,12 +364,12 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                     real rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
                     // rho = phi[ZERO] + (1.0 - phi[ZERO])*1.0/densityRatio;
-                    rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH);
+                    rho = rhoH + rhoToPhi * (phi[d000] - phiH);
 
                     if (pressure) {
                         vx1 =
                             ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
-                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00])) ;
+                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[dP00] - f[dM00])) ;
 
                         vx2 =
                             ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
@@ -383,7 +383,7 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                     else {
                         vx1 =
                             ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
-                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_P00] - f[DIR_M00])) /
+                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[dP00] - f[dM00])) /
                                 (rho * c1o3) +
                             mu * dX1_phi / (2 * rho);
 
@@ -404,7 +404,7 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                     p1 = (((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                           (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
                            ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                          ((f[DIR_P00] + f[DIR_M00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[DIR_000]) +
+                          ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000]) +
                          (vx1 * rhoToPhi * dX1_phi * c1o3 + vx2 * rhoToPhi * dX2_phi * c1o3 +
                           vx3 * rhoToPhi * dX3_phi * c1o3) /
                              2.0;
@@ -432,7 +432,7 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
 
-                    if (UbMath::isNaN(phi[DIR_000]) || UbMath::isInfinity(phi[DIR_000]))
+                    if (UbMath::isNaN(phi[d000]) || UbMath::isInfinity(phi[d000]))
                         UB_THROW(UbException(
                             UB_EXARGS, "phi is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
@@ -442,12 +442,12 @@ void WriteMultiphaseQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         UB_THROW( UbException(UB_EXARGS,"p1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                         ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
 
-                    data[index++].push_back(phi[DIR_000]);
+                    data[index++].push_back(phi[d000]);
                     data[index++].push_back(vx1);
                     data[index++].push_back(vx2);
                     data[index++].push_back(vx3);
                     data[index++].push_back(p1);
-                    data[index++].push_back(phi2[DIR_000]);
+                    data[index++].push_back(phi2[d000]);
                     if (pressure) data[index++].push_back((*pressure)(ix1, ix2, ix3));
                 }
             }
@@ -510,7 +510,7 @@ real WriteMultiphaseQuantitiesSimulationObserver::nabla2_phi(const real *const &
     using namespace D3Q27System;
     real sum = 0.0;
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
-        sum += WEIGTH[k] * (h[k] - h[DIR_000]);
+        sum += WEIGTH[k] * (h[k] - h[d000]);
     }
     return 6.0 * sum;
 }

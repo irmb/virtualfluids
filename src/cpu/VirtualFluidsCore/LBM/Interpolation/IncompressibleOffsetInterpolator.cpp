@@ -89,11 +89,11 @@ void IncompressibleOffsetInterpolator::calcMoments(const real* const f, real ome
    kxy   = -c3o1*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
    kyz   = -c3o1*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))-(vx2*vx3));
    kxz   = -c3o1*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))-(vx1*vx3));
-   kxxMyy = -c3o1/c2o1*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
-   kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
-   //kxxMzz = -c3o1/c2o1*omega*(((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[DIR_P00])-(f[B]+f[T])))-(vx1*vx1-vx3*vx3));
+   kxxMyy = -c3o1/c2o1*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[dM00]+f[dP00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
+   kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[dM00]+f[dP00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
+   //kxxMzz = -c3o1/c2o1*omega*(((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[dP00])-(f[B]+f[T])))-(vx1*vx1-vx3*vx3));
 
-   //UBLOG(logINFO, "t1 = "<<(((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[DIR_P00])-(f[B]+f[T])));
+   //UBLOG(logINFO, "t1 = "<<(((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[17]+f[BN])))+((f[W]+f[dP00])-(f[B]+f[T])));
    //UBLOG(logINFO, "kxxMzz = "<<kxxMzz);
 
    //UBLOG(logINFO,"f[BW]  = " << f[BW] << " BW  = " << BW);
@@ -551,8 +551,8 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNode(real* f, real  /*ome
    real feq[ENDF+1];
    D3Q27System::calcIncompFeq(feq,rho,vx1,vx2,vx3);
 
-   f[DIR_P00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[DIR_P00];
-   f[DIR_M00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[DIR_M00];
+   f[dP00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[dP00];
+   f[dM00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[dM00];
    f[DIR_0P0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[DIR_0P0];
    f[DIR_0M0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[DIR_0M0];
    f[DIR_00P]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[DIR_00P];
@@ -577,7 +577,7 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNode(real* f, real  /*ome
    f[DIR_MMM]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[DIR_MMM];
    f[DIR_PMM]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[DIR_PMM];
    f[DIR_MPM]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[DIR_MPM];
-   f[DIR_000] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[DIR_000];
+   f[d000] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
@@ -763,8 +763,8 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNodeFC(real* f, real omeg
    f_TSE = eps_new*((ay - az + bx + bz - cx + cy+kxyAverage-kxzAverage+kyzAverage)/(c72o1*o));
    f_TNW = eps_new*((ay + az + bx - bz + cx - cy+kxyAverage+kxzAverage-kyzAverage)/(c72o1*o));
 
-   f[DIR_P00]    = f_E    + feq[DIR_P00];
-   f[DIR_M00]    = f_E    + feq[DIR_M00];
+   f[dP00]    = f_E    + feq[dP00];
+   f[dM00]    = f_E    + feq[dM00];
    f[DIR_0P0]    = f_N    + feq[DIR_0P0];
    f[DIR_0M0]    = f_N    + feq[DIR_0M0];
    f[DIR_00P]    = f_T    + feq[DIR_00P];
@@ -789,7 +789,7 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNodeFC(real* f, real omeg
    f[DIR_MPM]  = f_TSE  + feq[DIR_MPM];
    f[DIR_PMM]  = f_TNW  + feq[DIR_PMM];
    f[DIR_MMM]  = f_TNE  + feq[DIR_MMM];
-   f[DIR_000] = f_ZERO + feq[DIR_000];
+   f[d000] = f_ZERO + feq[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolator::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)

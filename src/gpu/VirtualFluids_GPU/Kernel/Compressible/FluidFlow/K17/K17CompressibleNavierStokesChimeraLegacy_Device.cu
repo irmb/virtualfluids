@@ -89,8 +89,8 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
         //!
         Distributions27 dist;
         if (isEvenTimestep) {
-            dist.f[DIR_P00]    = &distributions[DIR_P00 * size_Mat];
-            dist.f[DIR_M00]    = &distributions[DIR_M00 * size_Mat];
+            dist.f[dP00]    = &distributions[dP00 * size_Mat];
+            dist.f[dM00]    = &distributions[dM00 * size_Mat];
             dist.f[DIR_0P0]    = &distributions[DIR_0P0 * size_Mat];
             dist.f[DIR_0M0]    = &distributions[DIR_0M0 * size_Mat];
             dist.f[DIR_00P]    = &distributions[DIR_00P * size_Mat];
@@ -107,7 +107,7 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
             dist.f[DIR_0MM]   = &distributions[DIR_0MM * size_Mat];
             dist.f[DIR_0PM]   = &distributions[DIR_0PM * size_Mat];
             dist.f[DIR_0MP]   = &distributions[DIR_0MP * size_Mat];
-            dist.f[DIR_000] = &distributions[DIR_000 * size_Mat];
+            dist.f[d000] = &distributions[d000 * size_Mat];
             dist.f[DIR_PPP]  = &distributions[DIR_PPP * size_Mat];
             dist.f[DIR_MMP]  = &distributions[DIR_MMP * size_Mat];
             dist.f[DIR_PMP]  = &distributions[DIR_PMP * size_Mat];
@@ -117,8 +117,8 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
             dist.f[DIR_PMM]  = &distributions[DIR_PMM * size_Mat];
             dist.f[DIR_MPM]  = &distributions[DIR_MPM * size_Mat];
         } else {
-            dist.f[DIR_M00]    = &distributions[DIR_P00 * size_Mat];
-            dist.f[DIR_P00]    = &distributions[DIR_M00 * size_Mat];
+            dist.f[dM00]    = &distributions[dP00 * size_Mat];
+            dist.f[dP00]    = &distributions[dM00 * size_Mat];
             dist.f[DIR_0M0]    = &distributions[DIR_0P0 * size_Mat];
             dist.f[DIR_0P0]    = &distributions[DIR_0M0 * size_Mat];
             dist.f[DIR_00M]    = &distributions[DIR_00P * size_Mat];
@@ -135,7 +135,7 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
             dist.f[DIR_0PP]   = &distributions[DIR_0MM * size_Mat];
             dist.f[DIR_0MP]   = &distributions[DIR_0PM * size_Mat];
             dist.f[DIR_0PM]   = &distributions[DIR_0MP * size_Mat];
-            dist.f[DIR_000] = &distributions[DIR_000 * size_Mat];
+            dist.f[d000] = &distributions[d000 * size_Mat];
             dist.f[DIR_MMM]  = &distributions[DIR_PPP * size_Mat];
             dist.f[DIR_PPM]  = &distributions[DIR_MMP * size_Mat];
             dist.f[DIR_MPM]  = &distributions[DIR_PMP * size_Mat];
@@ -157,8 +157,8 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Set local distributions
         //!
-        real mfcbb = (dist.f[DIR_P00])[k];
-        real mfabb = (dist.f[DIR_M00])[kw];
+        real mfcbb = (dist.f[dP00])[k];
+        real mfabb = (dist.f[dM00])[kw];
         real mfbcb = (dist.f[DIR_0P0])[k];
         real mfbab = (dist.f[DIR_0M0])[ks];
         real mfbbc = (dist.f[DIR_00P])[k];
@@ -175,7 +175,7 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
         real mfbaa = (dist.f[DIR_0MM])[kbs];
         real mfbca = (dist.f[DIR_0PM])[kb];
         real mfbac = (dist.f[DIR_0MP])[ks];
-        real mfbbb = (dist.f[DIR_000])[k];
+        real mfbbb = (dist.f[d000])[k];
         real mfccc = (dist.f[DIR_PPP])[k];
         real mfaac = (dist.f[DIR_MMP])[ksw];
         real mfcac = (dist.f[DIR_PMP])[ks];
@@ -624,8 +624,8 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
         //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
         //!
-        (dist.f[DIR_P00])[k]      = mfabb;
-        (dist.f[DIR_M00])[kw]     = mfcbb;
+        (dist.f[dP00])[k]      = mfabb;
+        (dist.f[dM00])[kw]     = mfcbb;
         (dist.f[DIR_0P0])[k]      = mfbab;
         (dist.f[DIR_0M0])[ks]     = mfbcb;
         (dist.f[DIR_00P])[k]      = mfbba;
@@ -642,7 +642,7 @@ __global__ void K17CompressibleNavierStokesChimeraLegacy_Device(
         (dist.f[DIR_0MM])[kbs]   = mfbcc;
         (dist.f[DIR_0PM])[kb]    = mfbac;
         (dist.f[DIR_0MP])[ks]    = mfbca;
-        (dist.f[DIR_000])[k]   = mfbbb;
+        (dist.f[d000])[k]   = mfbbb;
         (dist.f[DIR_PPP])[k]    = mfaaa;
         (dist.f[DIR_PMP])[ks]   = mfaca;
         (dist.f[DIR_PPM])[kb]   = mfaac;

@@ -273,9 +273,9 @@ inline __host__ __device__ void interpolateCF(real* const f, const real& omegaF,
     backwardInverseChimeraWithK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
     backwardInverseChimeraWithK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
 
-    f[DIR_000] = f000;
-    f[DIR_P00] = fP00;
-    f[DIR_M00] = fM00;
+    f[dir::d000] = f000;
+    f[dP00] = fP00;
+    f[dM00] = fM00;
     f[DIR_0P0] = f0P0;
     f[DIR_0M0] = f0M0;
     f[DIR_00P] = f00P;

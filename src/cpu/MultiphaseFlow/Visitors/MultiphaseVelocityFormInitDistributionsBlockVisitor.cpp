@@ -238,9 +238,9 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 						geq[dir] = p1 * WEIGTH[dir] / (vf::basics::constant::c1o3) + gamma ;
 					}
 
-					f[DIR_000] = geq[DIR_000];
-					f[DIR_P00] = geq[DIR_P00];
-					f[DIR_M00] = geq[DIR_M00];
+					f[d000] = geq[d000];
+					f[dP00] = geq[dP00];
+					f[dM00] = geq[dM00];
 					f[DIR_0P0] = geq[DIR_0P0];
 					f[DIR_0M0] = geq[DIR_0M0];
 					f[DIR_00P] = geq[DIR_00P];
@@ -270,9 +270,9 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 					distributionsF->setPostCollisionDistribution(f, ix1, ix2, ix3);
 					distributionsF->setPreCollisionDistribution(f, ix1, ix2, ix3);
 
-					f[DIR_000] = phi * feq[DIR_000];// / rho;
-					f[DIR_P00] = phi * feq[DIR_P00];// / rho;
-					f[DIR_M00] = phi * feq[DIR_M00];// / rho;
+					f[d000] = phi * feq[d000];// / rho;
+					f[dP00] = phi * feq[dP00];// / rho;
+					f[dM00] = phi * feq[dM00];// / rho;
 					f[DIR_0P0] = phi * feq[DIR_0P0];// / rho;
 					f[DIR_0M0] = phi * feq[DIR_0M0];// / rho;
 					f[DIR_00P] = phi * feq[DIR_00P];// / rho;
@@ -304,9 +304,9 @@ void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3
 
 					if (distributionsH2) {
 
-						f[DIR_000] = 0;//(1. - phi) * feq[DIR_000]; //  / rho;
-						f[DIR_P00] = 0;//(1.-phi) * feq[DIR_P00]   ;// / rho;
-						f[DIR_M00] = 0;//(1.-phi) * feq[DIR_M00]   ;// / rho;
+						f[d000] = 0;//(1. - phi) * feq[d000]; //  / rho;
+						f[dP00] = 0;//(1.-phi) * feq[dP00]   ;// / rho;
+						f[dM00] = 0;//(1.-phi) * feq[dM00]   ;// / rho;
 						f[DIR_0P0] = 0;//(1.-phi) * feq[DIR_0P0]   ;// / rho;
 						f[DIR_0M0] = 0;//(1.-phi) * feq[DIR_0M0]   ;// / rho;
 						f[DIR_00P] = 0;//(1.-phi) * feq[DIR_00P]   ;// / rho;

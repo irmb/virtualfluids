@@ -20,8 +20,8 @@ __global__ void CalcCP27(real* DD,
 	Distributions27 D;
 	if (isEvenTimestep==true)
 	{
-		D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -38,7 +38,7 @@ __global__ void CalcCP27(real* DD,
 		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -50,8 +50,8 @@ __global__ void CalcCP27(real* DD,
 	} 
 	else
 	{
-		D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -68,7 +68,7 @@ __global__ void CalcCP27(real* DD,
 		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -124,7 +124,7 @@ __global__ void CalcCP27(real* DD,
 		////////////////////////////////////////////////////////////////////////////////
 		double PressCP;
 
-		PressCP  =   (D.f[DIR_P00])[ke  ]+ (D.f[DIR_M00])[kw  ]+ 
+		PressCP  =   (D.f[dP00])[ke  ]+ (D.f[dM00])[kw  ]+ 
                      (D.f[DIR_0P0])[kn  ]+ (D.f[DIR_0M0])[ks  ]+
                      (D.f[DIR_00P])[kt  ]+ (D.f[DIR_00M])[kb  ]+
                      (D.f[DIR_PP0])[kne ]+ (D.f[DIR_MM0])[ksw ]+
@@ -133,7 +133,7 @@ __global__ void CalcCP27(real* DD,
                      (D.f[DIR_P0M])[kbe ]+ (D.f[DIR_M0P])[ktw ]+
                      (D.f[DIR_0PP])[ktn ]+ (D.f[DIR_0MM])[kbs ]+
                      (D.f[DIR_0PM])[kbn ]+ (D.f[DIR_0MP])[kts ]+
-                     (D.f[DIR_000])[kzero]+ 
+                     (D.f[d000])[kzero]+ 
                      (D.f[DIR_PPP])[ktne]+ (D.f[DIR_MMP])[ktsw]+ 
                      (D.f[DIR_PMP])[ktse]+ (D.f[DIR_MPP])[ktnw]+ 
                      (D.f[DIR_PPM])[kbne]+ (D.f[DIR_MMM])[kbsw]+ 

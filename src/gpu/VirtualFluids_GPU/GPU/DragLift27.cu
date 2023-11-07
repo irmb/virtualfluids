@@ -23,8 +23,8 @@ __global__ void DragLiftPost27(  real* DD,
 	Distributions27 D;
 	if (isEvenTimestep==true)
 	{
-		D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -41,7 +41,7 @@ __global__ void DragLiftPost27(  real* DD,
 		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -53,8 +53,8 @@ __global__ void DragLiftPost27(  real* DD,
 	} 
 	else
 	{
-		D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -71,7 +71,7 @@ __global__ void DragLiftPost27(  real* DD,
 		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -100,8 +100,8 @@ __global__ void DragLiftPost27(  real* DD,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-		q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+		q_dirE   = &QQ[dP00 * numberOfBCnodes];
+		q_dirW   = &QQ[dM00 * numberOfBCnodes];
 		q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
 		q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
 		q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -160,8 +160,8 @@ __global__ void DragLiftPost27(  real* DD,
 		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
                 f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-		f_W    = (D.f[DIR_P00])[ke   ];
-		f_E    = (D.f[DIR_M00])[kw   ];
+		f_W    = (D.f[dP00])[ke   ];
+		f_E    = (D.f[dM00])[kw   ];
 		f_S    = (D.f[DIR_0P0])[kn   ];
 		f_N    = (D.f[DIR_0M0])[ks   ];
 		f_B    = (D.f[DIR_00P])[kt   ];
@@ -288,8 +288,8 @@ __global__ void DragLiftPre27(   real* DD,
 	Distributions27 D;
 	if (isEvenTimestep==true)
 	{
-		D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -306,7 +306,7 @@ __global__ void DragLiftPre27(   real* DD,
 		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -318,8 +318,8 @@ __global__ void DragLiftPre27(   real* DD,
 	} 
 	else
 	{
-		D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -336,7 +336,7 @@ __global__ void DragLiftPre27(   real* DD,
 		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -365,8 +365,8 @@ __global__ void DragLiftPre27(   real* DD,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-		q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+		q_dirE   = &QQ[dP00 * numberOfBCnodes];
+		q_dirW   = &QQ[dM00 * numberOfBCnodes];
 		q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
 		q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
 		q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -425,8 +425,8 @@ __global__ void DragLiftPre27(   real* DD,
 		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
                 f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-		f_E   = (D.f[DIR_P00])[ke   ];
-		f_W   = (D.f[DIR_M00])[kw   ];
+		f_E   = (D.f[dP00])[ke   ];
+		f_W   = (D.f[dM00])[kw   ];
 		f_N   = (D.f[DIR_0P0])[kn   ];
 		f_S   = (D.f[DIR_0M0])[ks   ];
 		f_T   = (D.f[DIR_00P])[kt   ];

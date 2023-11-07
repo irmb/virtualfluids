@@ -27,7 +27,7 @@ TEST_F(FineToCoarseVectorConnectorTest, getLocalMinMax)
 {
     using namespace vf::lbm::dir;
 
-    int sendDir = DIR_P00;
+    int sendDir = dP00;
     block->setInterpolationFlagFC(sendDir);
     //FineToCoarseVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
                                 //int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);

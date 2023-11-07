@@ -40,8 +40,8 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dP00] = &DDStart[dP00 * size_Mat];
+				D.f[dM00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00P] = &DDStart[DIR_00P * size_Mat];
@@ -58,7 +58,7 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * size_Mat];
@@ -70,8 +70,8 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dM00] = &DDStart[dP00 * size_Mat];
+				D.f[dP00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00M] = &DDStart[DIR_00P * size_Mat];
@@ -88,7 +88,7 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * size_Mat];
@@ -129,8 +129,8 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[k];
-			real mfabb = (D.f[DIR_M00])[kw];
+			real mfcbb = (D.f[dP00])[k];
+			real mfabb = (D.f[dM00])[kw];
 			real mfbcb = (D.f[DIR_0P0])[k];
 			real mfbab = (D.f[DIR_0M0])[ks];
 			real mfbbc = (D.f[DIR_00P])[k];
@@ -147,7 +147,7 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 			real mfbaa = (D.f[DIR_0MM])[kbs];
 			real mfbca = (D.f[DIR_0PM])[kb];
 			real mfbac = (D.f[DIR_0MP])[ks];
-			real mfbbb = (D.f[DIR_000])[k];
+			real mfbbb = (D.f[d000])[k];
 			real mfccc = (D.f[DIR_PPP])[k];
 			real mfaac = (D.f[DIR_MMP])[ksw];
 			real mfcac = (D.f[DIR_PMP])[ks];
@@ -893,8 +893,8 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 			////////////////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[DIR_P00])[k] = mfabb;
-			(D.f[DIR_M00])[kw] = mfcbb;
+			(D.f[dP00])[k] = mfabb;
+			(D.f[dM00])[kw] = mfcbb;
 			(D.f[DIR_0P0])[k] = mfbab;
 			(D.f[DIR_0M0])[ks] = mfbcb;
 			(D.f[DIR_00P])[k] = mfbba;
@@ -911,7 +911,7 @@ __global__ void K15CompressibleNavierStokesSponge_Device(real omegaIn,
 			(D.f[DIR_0MM])[kbs] = mfbcc;
 			(D.f[DIR_0PM])[kb] = mfbac;
 			(D.f[DIR_0MP])[ks] = mfbca;
-			(D.f[DIR_000])[k] = mfbbb;
+			(D.f[d000])[k] = mfbbb;
 			(D.f[DIR_PPP])[k] = mfaaa;
 			(D.f[DIR_PMP])[ks] = mfaca;
 			(D.f[DIR_PPM])[kb] = mfaac;

@@ -23,8 +23,8 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -41,7 +41,7 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -53,8 +53,8 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -71,7 +71,7 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -125,8 +125,8 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
       real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-	  f_E    = (D.f[DIR_P00])[ke   ];
-	  f_W    = (D.f[DIR_M00])[kw   ];
+	  f_E    = (D.f[dP00])[ke   ];
+	  f_W    = (D.f[dM00])[kw   ];
 	  f_N    = (D.f[DIR_0P0])[kn   ];
 	  f_S    = (D.f[DIR_0M0])[ks   ];
 	  f_T    = (D.f[DIR_00P])[kt   ];
@@ -143,7 +143,7 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 	  f_BS   = (D.f[DIR_0MM])[kbs  ];
 	  f_BN   = (D.f[DIR_0PM])[kbn  ];
 	  f_TS   = (D.f[DIR_0MP])[kts  ];
-	  //f_ZERO = (D.f[DIR_000])[kzero];
+	  //f_ZERO = (D.f[d000])[kzero];
 	  f_TNE  = (D.f[DIR_PPP])[ktne ];
 	  f_TSW  = (D.f[DIR_MMP])[ktsw ];
 	  f_TSE  = (D.f[DIR_PMP])[ktse ];
@@ -168,8 +168,8 @@ __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 		  kxyFromfcNEQ[k]    = -c3o1 *(f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE-(vx1*vx2));
 		  kyzFromfcNEQ[k]    = -c3o1 *(f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW-(vx2*vx3));
 		  kxzFromfcNEQ[k]    = -c3o1 *(f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE-(vx1*vx3));
-		  kxxMyyFromfcNEQ[k] = -c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all DIR_P00+DIR_M00 minus all DIR_0P0+DIR_0M0 (no combinations of xy left)
-		  kxxMzzFromfcNEQ[k] = -c3o2 * (f_SW+f_W+f_NW-f_BS-f_TS-f_B-f_T-f_BN-f_TN+f_SE+f_E+f_NE-(vx1*vx1-vx3*vx3));		//all DIR_P00+DIR_M00 minus all DIR_00P+DIR_00M (no combinations of xz left)
+		  kxxMyyFromfcNEQ[k] = -c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all dP00+dM00 minus all DIR_0P0+DIR_0M0 (no combinations of xy left)
+		  kxxMzzFromfcNEQ[k] = -c3o2 * (f_SW+f_W+f_NW-f_BS-f_TS-f_B-f_T-f_BN-f_TN+f_SE+f_E+f_NE-(vx1*vx1-vx3*vx3));		//all dP00+dM00 minus all DIR_00P+DIR_00M (no combinations of xz left)
       }
    }
 }
@@ -222,8 +222,8 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -240,7 +240,7 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -252,8 +252,8 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -270,7 +270,7 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -325,8 +325,8 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       //////////////////////////////////////////////////////////////////////////
       real f_ZERO;
       real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-	  f_E    = (D.f[DIR_P00])[ke   ];
-	  f_W    = (D.f[DIR_M00])[kw   ];
+	  f_E    = (D.f[dP00])[ke   ];
+	  f_W    = (D.f[dM00])[kw   ];
 	  f_N    = (D.f[DIR_0P0])[kn   ];
 	  f_S    = (D.f[DIR_0M0])[ks   ];
 	  f_T    = (D.f[DIR_00P])[kt   ];
@@ -343,7 +343,7 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BS   = (D.f[DIR_0MM])[kbs  ];
 	  f_BN   = (D.f[DIR_0PM])[kbn  ];
 	  f_TS   = (D.f[DIR_0MP])[kts  ];
-	  f_ZERO = (D.f[DIR_000])[kzero];
+	  f_ZERO = (D.f[d000])[kzero];
 	  f_TNE  = (D.f[DIR_PPP])[ktne ];
 	  f_TSW  = (D.f[DIR_MMP])[ktsw ];
 	  f_TSE  = (D.f[DIR_PMP])[ktse ];
@@ -373,8 +373,8 @@ __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 		  kxyFromfcNEQ[k]    = -c3o1 *(f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE-(vx1*vx2));
 		  kyzFromfcNEQ[k]    = -c3o1 *(f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW-(vx2*vx3));
 		  kxzFromfcNEQ[k]    = -c3o1 *(f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE-(vx1*vx3));
-		  kxxMyyFromfcNEQ[k] = -c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all DIR_P00+DIR_M00 minus all DIR_0P0+DIR_0M0 (no combinations of xy left)
-		  kxxMzzFromfcNEQ[k] = -c3o2 * (f_SW+f_W+f_NW-f_BS-f_TS-f_B-f_T-f_BN-f_TN+f_SE+f_E+f_NE-(vx1*vx1-vx3*vx3));		//all DIR_P00+DIR_M00 minus all DIR_00P+DIR_00M (no combinations of xz left)
+		  kxxMyyFromfcNEQ[k] = -c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all dP00+dM00 minus all DIR_0P0+DIR_0M0 (no combinations of xy left)
+		  kxxMzzFromfcNEQ[k] = -c3o2 * (f_SW+f_W+f_NW-f_BS-f_TS-f_B-f_T-f_BN-f_TN+f_SE+f_E+f_NE-(vx1*vx1-vx3*vx3));		//all dP00+dM00 minus all DIR_00P+DIR_00M (no combinations of xz left)
       }
    }
 }
@@ -448,8 +448,8 @@ __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -466,7 +466,7 @@ __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -478,8 +478,8 @@ __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -496,7 +496,7 @@ __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -517,8 +517,8 @@ __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[k  ];
-			real mfabb = (D.f[DIR_M00])[kw ];
+			real mfcbb = (D.f[dP00])[k  ];
+			real mfabb = (D.f[dM00])[kw ];
 			real mfbcb = (D.f[DIR_0P0])[k  ];
 			real mfbab = (D.f[DIR_0M0])[ks ];
 			real mfbbc = (D.f[DIR_00P])[k  ];
@@ -535,7 +535,7 @@ __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			real mfbaa = (D.f[DIR_0MM])[kbs];
 			real mfbca = (D.f[DIR_0PM])[kb ];
 			real mfbac = (D.f[DIR_0MP])[ks ];
-			real mfbbb = (D.f[DIR_000])[k  ];
+			real mfbbb = (D.f[d000])[k  ];
 			real mfccc = (D.f[DIR_PPP])[k  ];
 			real mfaac = (D.f[DIR_MMP])[ksw];
 			real mfcac = (D.f[DIR_PMP])[ks ];
@@ -882,8 +882,8 @@ __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -900,7 +900,7 @@ __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -912,8 +912,8 @@ __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -930,7 +930,7 @@ __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -951,8 +951,8 @@ __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[k  ];
-			real mfabb = (D.f[DIR_M00])[kw ];
+			real mfcbb = (D.f[dP00])[k  ];
+			real mfabb = (D.f[dM00])[kw ];
 			real mfbcb = (D.f[DIR_0P0])[k  ];
 			real mfbab = (D.f[DIR_0M0])[ks ];
 			real mfbbc = (D.f[DIR_00P])[k  ];
@@ -969,7 +969,7 @@ __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			real mfbaa = (D.f[DIR_0MM])[kbs];
 			real mfbca = (D.f[DIR_0PM])[kb ];
 			real mfbac = (D.f[DIR_0MP])[ks ];
-			real mfbbb = (D.f[DIR_000])[k  ];
+			real mfbbb = (D.f[d000])[k  ];
 			real mfccc = (D.f[DIR_PPP])[k  ];
 			real mfaac = (D.f[DIR_MMP])[ksw];
 			real mfcac = (D.f[DIR_PMP])[ks ];
@@ -1323,8 +1323,8 @@ __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -1341,7 +1341,7 @@ __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -1353,8 +1353,8 @@ __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -1371,7 +1371,7 @@ __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -1392,8 +1392,8 @@ __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[k  ];
-			real mfabb = (D.f[DIR_M00])[kw ];
+			real mfcbb = (D.f[dP00])[k  ];
+			real mfabb = (D.f[dM00])[kw ];
 			real mfbcb = (D.f[DIR_0P0])[k  ];
 			real mfbab = (D.f[DIR_0M0])[ks ];
 			real mfbbc = (D.f[DIR_00P])[k  ];
@@ -1410,7 +1410,7 @@ __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			real mfbaa = (D.f[DIR_0MM])[kbs];
 			real mfbca = (D.f[DIR_0PM])[kb ];
 			real mfbac = (D.f[DIR_0MP])[ks ];
-			real mfbbb = (D.f[DIR_000])[k  ];
+			real mfbbb = (D.f[d000])[k  ];
 			real mfccc = (D.f[DIR_PPP])[k  ];
 			real mfaac = (D.f[DIR_MMP])[ksw];
 			real mfcac = (D.f[DIR_PMP])[ks ];
@@ -1777,8 +1777,8 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -1795,7 +1795,7 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -1807,8 +1807,8 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -1825,7 +1825,7 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -1846,8 +1846,8 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[k  ];
-			real mfabb = (D.f[DIR_M00])[kw ];
+			real mfcbb = (D.f[dP00])[k  ];
+			real mfabb = (D.f[dM00])[kw ];
 			real mfbcb = (D.f[DIR_0P0])[k  ];
 			real mfbab = (D.f[DIR_0M0])[ks ];
 			real mfbbc = (D.f[DIR_00P])[k  ];
@@ -1864,7 +1864,7 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			real mfbaa = (D.f[DIR_0MM])[kbs];
 			real mfbca = (D.f[DIR_0PM])[kb ];
 			real mfbac = (D.f[DIR_0MP])[ks ];
-			real mfbbb = (D.f[DIR_000])[k  ];
+			real mfbbb = (D.f[d000])[k  ];
 			real mfccc = (D.f[DIR_PPP])[k  ];
 			real mfaac = (D.f[DIR_MMP])[ksw];
 			real mfcac = (D.f[DIR_PMP])[ks ];

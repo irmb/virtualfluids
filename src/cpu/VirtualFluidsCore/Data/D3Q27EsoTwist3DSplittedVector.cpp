@@ -60,7 +60,7 @@ void D3Q27EsoTwist3DSplittedVector::getPreCollisionDistribution(real *const f, s
     const size_t x2p = x2 + 1;
     const size_t x3p = x3 + 1;
 
-    f[vf::lbm::dir::DIR_P00] = (*this->localDistributions)(D3Q27System::ET_P00, x1, x2, x3);
+    f[vf::lbm::dir::dP00] = (*this->localDistributions)(D3Q27System::ET_P00, x1, x2, x3);
     f[vf::lbm::dir::DIR_0P0] = (*this->localDistributions)(D3Q27System::ET_0P0, x1, x2, x3);
     f[vf::lbm::dir::DIR_00P] = (*this->localDistributions)(D3Q27System::ET_00P, x1, x2, x3);
     f[vf::lbm::dir::DIR_PP0] = (*this->localDistributions)(D3Q27System::ET_PP0, x1, x2, x3);
@@ -74,7 +74,7 @@ void D3Q27EsoTwist3DSplittedVector::getPreCollisionDistribution(real *const f, s
     f[vf::lbm::dir::DIR_PMP] = (*this->localDistributions)(D3Q27System::ET_PMP, x1, x2p, x3);
     f[vf::lbm::dir::DIR_MMP] = (*this->localDistributions)(D3Q27System::ET_MMP, x1p, x2p, x3);
 
-    f[vf::lbm::dir::DIR_M00] = (*this->nonLocalDistributions)(D3Q27System::ET_M00, x1p, x2, x3);
+    f[vf::lbm::dir::dM00] = (*this->nonLocalDistributions)(D3Q27System::ET_M00, x1p, x2, x3);
     f[vf::lbm::dir::DIR_0M0] = (*this->nonLocalDistributions)(D3Q27System::ET_0M0, x1, x2p, x3);
     f[vf::lbm::dir::DIR_00M] = (*this->nonLocalDistributions)(D3Q27System::ET_00M, x1, x2, x3p);
     f[vf::lbm::dir::DIR_MM0] = (*this->nonLocalDistributions)(D3Q27System::ET_MM0, x1p, x2p, x3);
@@ -88,7 +88,7 @@ void D3Q27EsoTwist3DSplittedVector::getPreCollisionDistribution(real *const f, s
     f[vf::lbm::dir::DIR_MPM] = (*this->nonLocalDistributions)(D3Q27System::ET_MPM, x1p, x2, x3p);
     f[vf::lbm::dir::DIR_PPM] = (*this->nonLocalDistributions)(D3Q27System::ET_PPM, x1, x2, x3p);
 
-    f[vf::lbm::dir::DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
+    f[vf::lbm::dir::d000] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
@@ -123,7 +123,7 @@ void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistribution(const real *con
     (*this->nonLocalDistributions)(D3Q27System::ET_MPM, x1 + 1, x2, x3 + 1) = f[INV_MPM];
     (*this->nonLocalDistributions)(D3Q27System::ET_PPM, x1, x2, x3 + 1) = f[INV_PPM];
 
-    (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
+    (*this->zeroDistributions)(x1, x2, x3) = f[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3)
@@ -158,14 +158,14 @@ void D3Q27EsoTwist3DSplittedVector::getPostCollisionDistribution(real *const f, 
     f[INV_MPM] = (*this->nonLocalDistributions)(D3Q27System::ET_MPM, x1 + 1, x2, x3 + 1);
     f[INV_PPM] = (*this->nonLocalDistributions)(D3Q27System::ET_PPM, x1, x2, x3 + 1);
 
-    f[DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
+    f[d000] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
-    (*this->localDistributions)(D3Q27System::ET_P00, x1, x2, x3) = f[DIR_P00];
+    (*this->localDistributions)(D3Q27System::ET_P00, x1, x2, x3) = f[dP00];
     (*this->localDistributions)(D3Q27System::ET_0P0, x1, x2, x3) = f[DIR_0P0];
     (*this->localDistributions)(D3Q27System::ET_00P, x1, x2, x3) = f[DIR_00P];
     (*this->localDistributions)(D3Q27System::ET_PP0, x1, x2, x3) = f[DIR_PP0];
@@ -179,7 +179,7 @@ void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistribution(const real *cons
     (*this->localDistributions)(D3Q27System::ET_PMP, x1, x2 + 1, x3) = f[DIR_PMP];
     (*this->localDistributions)(D3Q27System::ET_MMP, x1 + 1, x2 + 1, x3) = f[DIR_MMP];
 
-    (*this->nonLocalDistributions)(D3Q27System::ET_M00, x1 + 1, x2, x3) = f[DIR_M00];
+    (*this->nonLocalDistributions)(D3Q27System::ET_M00, x1 + 1, x2, x3) = f[dM00];
     (*this->nonLocalDistributions)(D3Q27System::ET_0M0, x1, x2 + 1, x3) = f[DIR_0M0];
     (*this->nonLocalDistributions)(D3Q27System::ET_00M, x1, x2, x3 + 1) = f[DIR_00M];
     (*this->nonLocalDistributions)(D3Q27System::ET_MM0, x1 + 1, x2 + 1, x3) = f[DIR_MM0];
@@ -193,7 +193,7 @@ void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistribution(const real *cons
     (*this->nonLocalDistributions)(D3Q27System::ET_MPM, x1 + 1, x2, x3 + 1) = f[DIR_MPM];
     (*this->nonLocalDistributions)(D3Q27System::ET_PPM, x1, x2, x3 + 1) = f[DIR_PPM];
 
-    (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
+    (*this->zeroDistributions)(x1, x2, x3) = f[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
@@ -202,9 +202,9 @@ void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(con
     using namespace vf::lbm::dir;
 
     if ((direction & EsoTwistD3Q27System::etE) == EsoTwistD3Q27System::etE)
-        (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f[DIR_P00];
+        (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f[dP00];
     if ((direction & EsoTwistD3Q27System::etW) == EsoTwistD3Q27System::etW)
-        (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = f[DIR_M00];
+        (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = f[dM00];
     if ((direction & EsoTwistD3Q27System::etS) == EsoTwistD3Q27System::etS)
         (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3) = f[DIR_0M0];
     if ((direction & EsoTwistD3Q27System::etN) == EsoTwistD3Q27System::etN)
@@ -254,7 +254,7 @@ void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(con
     if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
         (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = f[DIR_MMP];
     if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
-        (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
+        (*this->zeroDistributions)(x1, x2, x3) = f[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
@@ -263,10 +263,10 @@ void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(rea
     using namespace vf::lbm::dir;
  
     switch (direction) {
-        case DIR_P00:
+        case dP00:
             (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f;
             break;
-        case DIR_M00:
+        case dM00:
             (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = f;
             break;
         case DIR_0M0:
@@ -341,7 +341,7 @@ void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(rea
         case DIR_MMP:
             (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = f;
             break;
-        case DIR_000:
+        case d000:
             (*this->zeroDistributions)(x1, x2, x3) = f;
             break;
         default:
@@ -355,9 +355,9 @@ void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(cons
     using namespace vf::lbm::dir;
 
     if ((direction & EsoTwistD3Q27System::etE) == EsoTwistD3Q27System::etE)
-        (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = f[DIR_P00];
+        (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = f[dP00];
     if ((direction & EsoTwistD3Q27System::etW) == EsoTwistD3Q27System::etW)
-        (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f[DIR_M00];
+        (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f[dM00];
     if ((direction & EsoTwistD3Q27System::etS) == EsoTwistD3Q27System::etS)
         (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2 + 1, x3) = f[DIR_0M0];
     if ((direction & EsoTwistD3Q27System::etN) == EsoTwistD3Q27System::etN)
@@ -407,7 +407,7 @@ void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(cons
     if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
         (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = f[DIR_MMP];
     if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
-        (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
+        (*this->zeroDistributions)(x1, x2, x3) = f[d000];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
@@ -416,10 +416,10 @@ void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(real
     using namespace vf::lbm::dir;
 
     switch (direction) {
-        case DIR_P00:
+        case dP00:
             (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = f;
             break;
-        case DIR_M00:
+        case dM00:
             (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = f;
             break;
         case DIR_0M0:
@@ -494,7 +494,7 @@ void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(real
         case DIR_MMP:
             (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = f;
             break;
-        case DIR_000:
+        case d000:
             (*this->zeroDistributions)(x1, x2, x3) = f;
             break;
         default:
@@ -507,9 +507,9 @@ real D3Q27EsoTwist3DSplittedVector::getPreCollisionDistributionForDirection(size
     using namespace vf::lbm::dir;
 
     switch (direction) {
-        case DIR_M00:
+        case dM00:
             return (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3);
-        case DIR_P00:
+        case dP00:
             return (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
         case DIR_0P0:
             return (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
@@ -559,7 +559,7 @@ real D3Q27EsoTwist3DSplittedVector::getPreCollisionDistributionForDirection(size
             return (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
         case DIR_PPM:
             return (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
-        case DIR_000:
+        case d000:
             return (*this->zeroDistributions)(x1, x2, x3);
         default:
             UB_THROW(UbException(UB_EXARGS, "Direction didn't find"));
@@ -571,9 +571,9 @@ real D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1, si
     using namespace vf::lbm::dir;
 
     switch (direction) {
-        case DIR_P00:
+        case dP00:
             return (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3);
-        case DIR_M00:
+        case dM00:
             return (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
         case DIR_0M0:
             return (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
@@ -623,7 +623,7 @@ real D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1, si
             return (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
         case DIR_MMP:
             return (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
-        case DIR_000:
+        case d000:
             return (*this->zeroDistributions)(x1, x2, x3);
         default:
             UB_THROW(UbException(UB_EXARGS, "Direction didn't find"));

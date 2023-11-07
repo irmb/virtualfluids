@@ -251,8 +251,8 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                real f_TNW  = - eps_new *((bz + cy)/(c36o1*o)) - f_TNE;
 
 
-               f[DIR_P00]    = f_E    + feq[DIR_P00];
-               f[DIR_M00]    = f_E    + feq[DIR_M00];
+               f[dP00]    = f_E    + feq[dP00];
+               f[dM00]    = f_E    + feq[dM00];
                f[DIR_0P0]    = f_N    + feq[DIR_0P0];
                f[DIR_0M0]    = f_N    + feq[DIR_0M0];
                f[DIR_00P]    = f_T    + feq[DIR_00P];
@@ -277,7 +277,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                f[DIR_MPM]  = f_TSE  + feq[DIR_MPM];
                f[DIR_PMM]  = f_TNW  + feq[DIR_PMM];
                f[DIR_MMM]  = f_TNE  + feq[DIR_MMM];
-               f[DIR_000] = f_ZERO + feq[DIR_000];
+               f[d000] = f_ZERO + feq[d000];
 
                //calcFeqsFct(f,rho,vx1,vx2,vx3);
                distributions->setPostCollisionDistribution(f, ix1, ix2, ix3);

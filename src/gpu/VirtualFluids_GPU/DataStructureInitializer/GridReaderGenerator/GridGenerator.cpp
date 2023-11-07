@@ -1101,7 +1101,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////
             for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {
-                Q.q27[DIR_000][node_i] = 0.0f;
+                Q.q27[d000][node_i] = 0.0f;
             }
             //for(int test = 0; test < 3; test++)
             //{
@@ -1321,8 +1321,8 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
 }
 
 void GridGenerator::getPointersToBoundaryConditions(QforBoundaryConditions& boundaryConditionStruct, real* subgridDistances, const unsigned int numberOfBCnodes){
-    boundaryConditionStruct.q27[DIR_P00] = &subgridDistances[DIR_P00 * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_M00] = &subgridDistances[DIR_M00 * numberOfBCnodes];
+    boundaryConditionStruct.q27[dP00] = &subgridDistances[dP00 * numberOfBCnodes];
+    boundaryConditionStruct.q27[dM00] = &subgridDistances[dM00 * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_0P0] = &subgridDistances[DIR_0P0 * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_0M0] = &subgridDistances[DIR_0M0 * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_00P] = &subgridDistances[DIR_00P * numberOfBCnodes];
@@ -1339,7 +1339,7 @@ void GridGenerator::getPointersToBoundaryConditions(QforBoundaryConditions& boun
     boundaryConditionStruct.q27[DIR_0MM] = &subgridDistances[DIR_0MM * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_0PM] = &subgridDistances[DIR_0PM * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_0MP] = &subgridDistances[DIR_0MP * numberOfBCnodes];
-    boundaryConditionStruct.q27[DIR_000] = &subgridDistances[DIR_000 * numberOfBCnodes];
+    boundaryConditionStruct.q27[d000] = &subgridDistances[d000 * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_PPP] = &subgridDistances[DIR_PPP * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_MMP] = &subgridDistances[DIR_MMP * numberOfBCnodes];
     boundaryConditionStruct.q27[DIR_PMP] = &subgridDistances[DIR_PMP * numberOfBCnodes];

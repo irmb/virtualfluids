@@ -62,9 +62,9 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::init()
    int anz = 2*27+1;
    switch (sendDir)
    {
-   case DIR_000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
-   case DIR_P00:
-   case DIR_M00: sender->getData().resize(maxX2*maxX3*anz*2, c0o1);   break;
+   case d000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
+   case dP00:
+   case dM00: sender->getData().resize(maxX2*maxX3*anz*2, c0o1);   break;
    case DIR_0P0:
    case DIR_0M0: sender->getData().resize(maxX1*maxX3*anz*2, c0o1);   break;
    case DIR_00P:
@@ -142,7 +142,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
 
     int index = 0;
     // EAST
-    if (sendDir == DIR_P00) {
+    if (sendDir == dP00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 fillData(sdata, index, maxX1m3, x2, x3);
@@ -151,7 +151,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::fillData()
         }
     }
     // WEST
-    else if (sendDir == DIR_M00) {
+    else if (sendDir == dM00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 fillData(sdata, index, minX1p3, x2, x3);
@@ -406,7 +406,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
     int maxX3m2 = maxX3 - 2;
     //int maxX3m3 = maxX3 - 3;
 
-    if (sendDir == DIR_M00) {
+    if (sendDir == dM00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 distributeData(rdata, index, minX1, x2, x3);
@@ -414,7 +414,7 @@ void TwoDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
             }
         }
     }
-    else if (sendDir == DIR_P00) {
+    else if (sendDir == dP00) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
                 distributeData(rdata, index, maxX1, x2, x3);

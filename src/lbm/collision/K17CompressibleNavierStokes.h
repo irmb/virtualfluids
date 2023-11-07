@@ -84,9 +84,9 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
 {
     auto& distribution = parameter.distribution;
 
-    real f_000 = distribution[DIR_000];
-    real f_P00 = distribution[DIR_P00];
-    real f_M00 = distribution[DIR_M00];
+    real f_000 = distribution[d000];
+    real f_P00 = distribution[dP00];
+    real f_M00 = distribution[dM00];
     real f_0P0 = distribution[DIR_0P0];
     real f_0M0 = distribution[DIR_0M0];
     real f_00P = distribution[DIR_00P];
@@ -550,8 +550,8 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     backwardInverseChimeraWithK(m_210, m_211, m_212, vvz, vz2, c9o1, c1o9);
     backwardInverseChimeraWithK(m_220, m_221, m_222, vvz, vz2, c36o1, c1o36);
 
-    distribution[DIR_P00] = f_P00;
-    distribution[DIR_M00] = f_M00;
+    distribution[dP00] = f_P00;
+    distribution[dM00] = f_M00;
     distribution[DIR_0P0] = f_0P0;
     distribution[DIR_0M0] = f_0M0;
     distribution[DIR_00P] = f_00P;
@@ -568,7 +568,7 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     distribution[DIR_0MM] = f_0MM;
     distribution[DIR_0PM] = f_0PM;
     distribution[DIR_0MP] = f_0MP;
-    distribution[DIR_000] = f_000;
+    distribution[d000] = f_000;
     distribution[DIR_PPP] = f_PPP;
     distribution[DIR_PMP] = f_PMP;
     distribution[DIR_PPM] = f_PPM;

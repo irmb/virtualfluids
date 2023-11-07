@@ -22,8 +22,8 @@ __global__ void GetVeloforForcing27( real* DD,
 	Distributions27 D;
 	if (isEvenTimestep==false)
 	{
-		D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -40,7 +40,7 @@ __global__ void GetVeloforForcing27( real* DD,
 		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -52,8 +52,8 @@ __global__ void GetVeloforForcing27( real* DD,
 	} 
 	else
 	{
-		D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -70,7 +70,7 @@ __global__ void GetVeloforForcing27( real* DD,
 		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -123,8 +123,8 @@ __global__ void GetVeloforForcing27( real* DD,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
-		real mfcbb = (D.f[DIR_P00])[ke   ];
-		real mfabb = (D.f[DIR_M00])[kw   ];
+		real mfcbb = (D.f[dP00])[ke   ];
+		real mfabb = (D.f[dM00])[kw   ];
 		real mfbcb = (D.f[DIR_0P0])[kn   ];
 		real mfbab = (D.f[DIR_0M0])[ks   ];
 		real mfbbc = (D.f[DIR_00P])[kt   ];
@@ -141,7 +141,7 @@ __global__ void GetVeloforForcing27( real* DD,
 		real mfbaa = (D.f[DIR_0MM])[kbs  ];
 		real mfbca = (D.f[DIR_0PM])[kbn  ];
 		real mfbac = (D.f[DIR_0MP])[kts  ];
-		real mfbbb = (D.f[DIR_000])[kzero];
+		real mfbbb = (D.f[d000])[kzero];
 		real mfccc = (D.f[DIR_PPP])[ktne ];
 		real mfaac = (D.f[DIR_MMP])[ktsw ];
 		real mfcac = (D.f[DIR_PMP])[ktse ];

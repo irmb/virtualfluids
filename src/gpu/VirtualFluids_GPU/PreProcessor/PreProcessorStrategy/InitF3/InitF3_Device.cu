@@ -41,8 +41,8 @@ __global__ void LB_Init_F3(unsigned int* neighborX,
 			Distributions6 D;
 			if (EvenOrOdd == true)
 			{
-				D.g[DIR_P00] = &G6[DIR_P00   *size_Mat];
-				D.g[DIR_M00] = &G6[DIR_M00   *size_Mat];
+				D.g[dP00] = &G6[dP00   *size_Mat];
+				D.g[dM00] = &G6[dM00   *size_Mat];
 				D.g[DIR_0P0] = &G6[DIR_0P0   *size_Mat];
 				D.g[DIR_0M0] = &G6[DIR_0M0   *size_Mat];
 				D.g[DIR_00P] = &G6[DIR_00P   *size_Mat];
@@ -50,8 +50,8 @@ __global__ void LB_Init_F3(unsigned int* neighborX,
 			}
 			else
 			{
-				D.g[DIR_M00] = &G6[DIR_P00   *size_Mat];
-				D.g[DIR_P00] = &G6[DIR_M00   *size_Mat];
+				D.g[dM00] = &G6[dP00   *size_Mat];
+				D.g[dP00] = &G6[dM00   *size_Mat];
 				D.g[DIR_0M0] = &G6[DIR_0P0   *size_Mat];
 				D.g[DIR_0P0] = &G6[DIR_0M0   *size_Mat];
 				D.g[DIR_00M] = &G6[DIR_00P   *size_Mat];
@@ -69,8 +69,8 @@ __global__ void LB_Init_F3(unsigned int* neighborX,
 			unsigned int kb = neighborZ[k];
 			//////////////////////////////////////////////////////////////////////////
 
-			(D.g[DIR_P00])[ke] = 0.0f;
-			(D.g[DIR_M00])[kw] = 0.0f;
+			(D.g[dP00])[ke] = 0.0f;
+			(D.g[dM00])[kw] = 0.0f;
 			(D.g[DIR_0P0])[kn] = 0.0f;
 			(D.g[DIR_0M0])[ks] = 0.0f;
 			(D.g[DIR_00P])[kt] = 0.0f;

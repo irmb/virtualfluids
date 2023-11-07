@@ -196,10 +196,10 @@ public:
         using namespace vf::lbm::dir;
 
         switch (direction) {
-            case DIR_P00:
+            case dP00:
                 return (float)(vf::basics::constant::c4o9 *
                                (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
-            case DIR_M00:
+            case dM00:
                 return (float)(vf::basics::constant::c4o9 *
                                (-bcVelocityX1)); // z.B. aus paper manfred MRT LB models in three dimensions (2002)
             case DIR_0P0:

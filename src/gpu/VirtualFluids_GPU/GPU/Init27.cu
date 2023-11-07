@@ -24,8 +24,8 @@ __global__ void LBInit27( int myid,
                                      int maxlev)
 {
    Distributions27 D;
-   D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-   D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+   D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+   D.f[dM00] = &DD[dM00 * numberOfLBnodes];
    D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
    D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
    D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -42,7 +42,7 @@ __global__ void LBInit27( int myid,
    D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
    D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
    D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-   D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+   D.f[d000] = &DD[d000 * numberOfLBnodes];
    D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
    D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
    D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -141,9 +141,9 @@ __global__ void LBInit27( int myid,
 
    real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-   (D.f[DIR_000])[kzero] =   c8o27* (drho-cu_sq);
-   (D.f[DIR_P00])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
-   (D.f[DIR_M00])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+   (D.f[d000])[kzero] =   c8o27* (drho-cu_sq);
+   (D.f[dP00])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+   (D.f[dM00])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
    (D.f[DIR_0P0])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
    (D.f[DIR_0M0])[ks   ] =   c2o27* (drho+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
    (D.f[DIR_00P])[kt   ] =   c2o27* (drho+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
@@ -218,8 +218,8 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
             Distributions27 D;
             if (EvenOrOdd==true)
             {
-                D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-                D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+                D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+                D.f[dM00] = &DD[dM00 * numberOfLBnodes];
                 D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
                 D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
                 D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -236,7 +236,7 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
                 D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
                 D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
                 D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-                D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+                D.f[d000] = &DD[d000 * numberOfLBnodes];
                 D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
                 D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
                 D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -248,8 +248,8 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
             }
             else
             {
-                D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-                D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+                D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+                D.f[dP00] = &DD[dM00 * numberOfLBnodes];
                 D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
                 D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
                 D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -266,7 +266,7 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
                 D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
                 D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
                 D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-                D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+                D.f[d000] = &DD[d000 * numberOfLBnodes];
                 D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
                 D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
                 D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
@@ -396,9 +396,9 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
             //////////////////////////////////////////////////////////////////////////
             real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
             
-            (D.f[DIR_000])[kzero] =   c8o27* (drho-cu_sq);
-            (D.f[DIR_P00])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
-            (D.f[DIR_M00])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+            (D.f[d000])[kzero] =   c8o27* (drho-cu_sq);
+            (D.f[dP00])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+            (D.f[dM00])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
             (D.f[DIR_0P0])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
             (D.f[DIR_0M0])[ks   ] =   c2o27* (drho+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
             (D.f[DIR_00P])[kt   ] =   c2o27* (drho+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
@@ -426,9 +426,9 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
 
             //////////////////////////////////////////////////////////////////////////
 
-            (D.f[DIR_000])[kzero] += f_ZERO;
-            (D.f[DIR_P00])[ke   ] += f_E   ;
-            (D.f[DIR_M00])[kw   ] += f_E   ;
+            (D.f[d000])[kzero] += f_ZERO;
+            (D.f[dP00])[ke   ] += f_E   ;
+            (D.f[dM00])[kw   ] += f_E   ;
             (D.f[DIR_0P0])[kn   ] += f_N   ;
             (D.f[DIR_0M0])[ks   ] += f_N   ;
             (D.f[DIR_00P])[kt   ] += f_T   ;
@@ -460,9 +460,9 @@ __global__ void LBInitNonEqPartSP27( unsigned int* neighborX,
 	    {
 		    //////////////////////////////////////////////////////////////////////////
 		    Distributions27 D;
-		    D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		    D.f[d000] = &DD[d000 * numberOfLBnodes];
 		    //////////////////////////////////////////////////////////////////////////
-		    (D.f[DIR_000])[k] = c96o1;
+		    (D.f[d000])[k] = c96o1;
 		    //////////////////////////////////////////////////////////////////////////
 	    }
    }

@@ -147,7 +147,7 @@ FineToCoarseVectorConnector<VectorTransmitter>::FineToCoarseVectorConnector(SPtr
 {
     using namespace vf::lbm::dir;
 
-    if (!(sendDir == DIR_P00 || sendDir == DIR_M00 || sendDir == DIR_0P0 ||
+    if (!(sendDir == dP00 || sendDir == dM00 || sendDir == DIR_0P0 ||
           sendDir == DIR_0M0 || sendDir == DIR_00P || sendDir == DIR_00M ||
           sendDir == DIR_PP0 || sendDir == DIR_MM0 || sendDir == DIR_PM0 ||
           sendDir == DIR_MP0 || sendDir == DIR_P0P || sendDir == DIR_M0M ||
@@ -240,8 +240,8 @@ void FineToCoarseVectorConnector<VectorTransmitter>::init()
     int iCellSize       = 1; // size of interpolation cell
 
     switch (this->sendDir) {
-        case DIR_P00:
-        case DIR_M00:
+        case dP00:
+        case dM00:
             sendSize = (bMaxX2 - 1) / 2 * (bMaxX3 - 1) / 2 * sendDataPerNode * iCellSize;
             break;
         case DIR_0P0:
@@ -327,14 +327,14 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVectors()
     //////////////
 
     switch (sendDir) {
-        case DIR_P00:
+        case dP00:
             getLocalMinMax(lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3);
             getLocalMins(lMinX1, lMinX2, lMinX3, oMinX1, oMinX2, oMinX3);
             lMinX1 = maxX1 - 7;
             lMaxX1 = lMinX1 + 1;
             fillSendVector(fFrom, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
-        case DIR_M00:
+        case dM00:
             getLocalMinMax(lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3);
             getLocalMins(lMinX1, lMinX2, lMinX3, oMinX1, oMinX2, oMinX3);
             lMinX1 = 5;
@@ -878,14 +878,14 @@ void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVectors()
     lMaxX3 = maxX3 - 1;
 
     switch (sendDir) {
-        case DIR_P00:
+        case dP00:
             lMinX1 = maxX1 - 4;
             lMaxX1 = lMinX1 + 1;
             getLocalMinMaxCF(maxX2, lMinX2, lMaxX2);
             getLocalMinMaxCF(maxX3, lMinX3, lMaxX3);
             distributeReceiveVector(fTo, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
-        case DIR_M00:
+        case dM00:
             lMinX1 = 2;
             lMaxX1 = lMinX1 + 1;
             getLocalMinMaxCF(maxX2, lMinX2, lMaxX2);
@@ -1174,11 +1174,11 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
     int TmaxX2 = maxX2;
     int TmaxX3 = maxX3;
 
-    if (block.lock()->hasInterpolationFlagFC(DIR_P00)) {
+    if (block.lock()->hasInterpolationFlagFC(dP00)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_M00)) {
+    if (block.lock()->hasInterpolationFlagFC(dM00)) {
         if (minX1 == TminX1)
             minX1 += 4;
     }
@@ -1202,20 +1202,20 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
     ////////////
     /////E-W-N-S
     if (block.lock()->hasInterpolationFlagFC(DIR_PP0) && !block.lock()->hasInterpolationFlagFC(DIR_0P0) &&
-        !block.lock()->hasInterpolationFlagFC(DIR_P00)) {
+        !block.lock()->hasInterpolationFlagFC(dP00)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
         if (maxX2 == TmaxX2)
             maxX2 -= 3;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_MM0) && !block.lock()->hasInterpolationFlagFC(DIR_M00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_MM0) && !block.lock()->hasInterpolationFlagFC(dM00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_0M0)) {
         if (minX1 == TminX1)
             minX1 += 4;
         if (minX2 == TminX2)
             minX2 += 4;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_PM0) && !block.lock()->hasInterpolationFlagFC(DIR_P00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_PM0) && !block.lock()->hasInterpolationFlagFC(dP00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_0M0)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
@@ -1223,7 +1223,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
             minX2 += 4;
     }
     if (block.lock()->hasInterpolationFlagFC(DIR_MP0) && !block.lock()->hasInterpolationFlagFC(DIR_0P0) &&
-        !block.lock()->hasInterpolationFlagFC(DIR_M00)) {
+        !block.lock()->hasInterpolationFlagFC(dM00)) {
         if (minX1 == TminX1)
             minX1 += 4;
         if (maxX2 == TmaxX2)
@@ -1231,28 +1231,28 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
     }
 
     //////T-B-E-W
-    if (block.lock()->hasInterpolationFlagFC(DIR_P0P) && !block.lock()->hasInterpolationFlagFC(DIR_P00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_P0P) && !block.lock()->hasInterpolationFlagFC(dP00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00P)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
         if (maxX3 == TmaxX3)
             maxX3 -= 3;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_M0M) && !block.lock()->hasInterpolationFlagFC(DIR_M00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_M0M) && !block.lock()->hasInterpolationFlagFC(dM00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00M)) {
         if (minX1 == TminX1)
             minX1 += 4;
         if (minX3 == TminX3)
             minX3 += 4;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_P0M) && !block.lock()->hasInterpolationFlagFC(DIR_P00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_P0M) && !block.lock()->hasInterpolationFlagFC(dP00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00M)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
         if (minX3 == TminX3)
             minX3 += 4;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_M0P) && !block.lock()->hasInterpolationFlagFC(DIR_M00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_M0P) && !block.lock()->hasInterpolationFlagFC(dM00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00P)) {
         if (minX1 == TminX1)
             minX1 += 4;
@@ -1292,9 +1292,9 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
 
     // if
     // (block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_PPP)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_P0P)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_0PP)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_PP0)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_00P)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_0P0)
-    // && !block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_P00)) if
+    // && !block.lock()->hasInterpolationFlagFC(D3Q27System::dP00)) if
     // (!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_P0P)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_00P) &&
-    // !block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_P00))
+    // !block.lock()->hasInterpolationFlagFC(D3Q27System::dP00))
     //{
     //   if (maxX1==TmaxX1) maxX1 -= 3;
     //   if (maxX2==TmaxX2) maxX2 -= 3;
@@ -1317,11 +1317,11 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
     int TmaxX2 = maxX2;
     int TmaxX3 = maxX3;
 
-    if (block.lock()->hasInterpolationFlagFC(DIR_P00)) {
+    if (block.lock()->hasInterpolationFlagFC(dP00)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_M00)) {
+    if (block.lock()->hasInterpolationFlagFC(dM00)) {
         if (minX1 == TminX1)
             minX1 += 4;
     }
@@ -1345,20 +1345,20 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
     ////////////
     /////E-W-N-S
     if (block.lock()->hasInterpolationFlagFC(DIR_PP0) && !block.lock()->hasInterpolationFlagFC(DIR_0P0) &&
-        !block.lock()->hasInterpolationFlagFC(DIR_P00)) {
+        !block.lock()->hasInterpolationFlagFC(dP00)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
         if (maxX2 == TmaxX2)
             maxX2 -= 3;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_MM0) && !block.lock()->hasInterpolationFlagFC(DIR_M00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_MM0) && !block.lock()->hasInterpolationFlagFC(dM00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_0M0)) {
         if (minX1 == TminX1)
             minX1 += 4;
         if (minX2 == TminX2)
             minX2 += 4;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_PM0) && !block.lock()->hasInterpolationFlagFC(DIR_P00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_PM0) && !block.lock()->hasInterpolationFlagFC(dP00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_0M0)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
@@ -1366,7 +1366,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
             minX2 += 4;
     }
     if (block.lock()->hasInterpolationFlagFC(DIR_MP0) && !block.lock()->hasInterpolationFlagFC(DIR_0P0) &&
-        !block.lock()->hasInterpolationFlagFC(DIR_M00)) {
+        !block.lock()->hasInterpolationFlagFC(dM00)) {
         if (minX1 == TminX1)
             minX1 += 4;
         if (maxX2 == TmaxX2)
@@ -1374,28 +1374,28 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
     }
 
     //////T-B-E-W
-    if (block.lock()->hasInterpolationFlagFC(DIR_P0P) && !block.lock()->hasInterpolationFlagFC(DIR_P00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_P0P) && !block.lock()->hasInterpolationFlagFC(dP00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00P)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
         if (maxX3 == TmaxX3)
             maxX3 -= 3;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_M0M) && !block.lock()->hasInterpolationFlagFC(DIR_M00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_M0M) && !block.lock()->hasInterpolationFlagFC(dM00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00M)) {
         if (minX1 == TminX1)
             minX1 += 4;
         if (minX3 == TminX3)
             minX3 += 4;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_P0M) && !block.lock()->hasInterpolationFlagFC(DIR_P00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_P0M) && !block.lock()->hasInterpolationFlagFC(dP00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00M)) {
         if (maxX1 == TmaxX1)
             maxX1 -= 3;
         if (minX3 == TminX3)
             minX3 += 4;
     }
-    if (block.lock()->hasInterpolationFlagFC(DIR_M0P) && !block.lock()->hasInterpolationFlagFC(DIR_M00) &&
+    if (block.lock()->hasInterpolationFlagFC(DIR_M0P) && !block.lock()->hasInterpolationFlagFC(dM00) &&
         !block.lock()->hasInterpolationFlagFC(DIR_00P)) {
         if (minX1 == TminX1)
             minX1 += 4;
@@ -1435,7 +1435,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
 
     // if
     // (block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_PPP)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_P0P)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_0PP)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_PP0)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_00P)&&!block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_0P0)
-    // && !block.lock()->hasInterpolationFlagFC(D3Q27System::DIR_P00))
+    // && !block.lock()->hasInterpolationFlagFC(D3Q27System::dP00))
     //{
     //   if (maxX1==TmaxX1) maxX1 -= 3;
     //   if (maxX2==TmaxX2) maxX2 -= 3;
@@ -1462,8 +1462,8 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
     using namespace vf::lbm::dir;
 
     switch (sendDir) {
-        case DIR_P00:
-        case DIR_M00:
+        case dP00:
+        case dM00:
             if (connType == OddEvenSE)
                 minX2 += oMinX2;
             if (connType == OddOddNE) {

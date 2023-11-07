@@ -96,8 +96,8 @@ void ThixotropyDensityBCStrategy::applyBC()
 	int nx3 = x3;
 
 	//flag points in direction of fluid
-	if (bcPtr->hasDensityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(DIR_M00)) { nx1 += 1; }
+	if (bcPtr->hasDensityBoundaryFlag(dP00)) { nx1 -= 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(dM00)) { nx1 += 1; }
 	else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
 	else if (bcPtr->hasDensityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
 	else if (bcPtr->hasDensityBoundaryFlag(DIR_00P)) { nx3 -= 1; }

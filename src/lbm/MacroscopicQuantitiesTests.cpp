@@ -47,7 +47,7 @@ TEST_F(MacroscopicQuantitiesTest, whenFsAreEqual_velocityInEachDirectionShouldBe
 
 TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Eis2_velocityInX1ShouldBeOne)
 {
-    f[dir::DIR_P00] = 2.;
+    f[dir::dP00] = 2.;
 
     const double velocityX1 = getIncompressibleVelocityX1(f.data());
     const double velocityX2 = getIncompressibleVelocityX2(f.data());
@@ -85,7 +85,7 @@ TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Tis2_velocityInX3ShouldB
 
 TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_checkCompressibleValues)
 {
-    f[dir::DIR_P00] = 2.;
+    f[dir::dP00] = 2.;
 
     real rho{0}, vx1{0}, vx2{0}, vx3{0};
     getCompressibleMacroscopicValues(f.data(), rho, vx1, vx2, vx3);

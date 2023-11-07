@@ -33,8 +33,8 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -51,7 +51,7 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -63,8 +63,8 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -81,7 +81,7 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -114,8 +114,8 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -174,8 +174,8 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -204,7 +204,7 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -227,14 +227,14 @@ __global__ void QVelDeviceCompThinWallsPartOne27(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho + c9o2 * ( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq);
-		 (D.f[DIR_M00])[kw] = (c1o1 - q) / (c1o1 + q)*(f_E - f_W + (f_E + f_W - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_E + f_W) - c6o1*c2o27*(VeloX)) / (c1o1 + q);
+		 (D.f[dM00])[kw] = (c1o1 - q) / (c1o1 + q)*(f_E - f_W + (f_E + f_W - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_E + f_W) - c6o1*c2o27*(VeloX)) / (c1o1 + q);
 	  }
 
 	  q = q_dirW[k];
 	  if (q >= c0o1 && q <= c1o1)
 	  {
 		  feq = c2o27* (drho + c9o2 * (-vx1)*(-vx1) * (c1o1 + drho) - cu_sq);
-		  (D.f[DIR_P00])[ke] = (c1o1 - q) / (c1o1 + q)*(f_W - f_E + (f_W + f_E - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_W + f_E) - c6o1*c2o27*(-VeloX)) / (c1o1 + q);
+		  (D.f[dP00])[ke] = (c1o1 - q) / (c1o1 + q)*(f_W - f_E + (f_W + f_E - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_W + f_E) - c6o1*c2o27*(-VeloX)) / (c1o1 + q);
 	  }
 
 	  q = q_dirN[k];
@@ -462,8 +462,8 @@ __global__ void QDeviceCompThinWallsPartOne27(
 	Distributions27 D;
 	if (isEvenTimestep == true)
 	{
-		D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -480,7 +480,7 @@ __global__ void QDeviceCompThinWallsPartOne27(
 		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -492,8 +492,8 @@ __global__ void QDeviceCompThinWallsPartOne27(
 	}
 	else
 	{
-		D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -510,7 +510,7 @@ __global__ void QDeviceCompThinWallsPartOne27(
 		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -539,8 +539,8 @@ __global__ void QDeviceCompThinWallsPartOne27(
 			*q_dirBE, *q_dirTW, *q_dirTN, *q_dirBS, *q_dirBN, *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW;
-		q_dirE = &QQ[DIR_P00 * numberOfBCnodes];
-		q_dirW = &QQ[DIR_M00 * numberOfBCnodes];
+		q_dirE = &QQ[dP00 * numberOfBCnodes];
+		q_dirW = &QQ[dM00 * numberOfBCnodes];
 		q_dirN = &QQ[DIR_0P0 * numberOfBCnodes];
 		q_dirS = &QQ[DIR_0M0 * numberOfBCnodes];
 		q_dirT = &QQ[DIR_00P * numberOfBCnodes];
@@ -599,8 +599,8 @@ __global__ void QDeviceCompThinWallsPartOne27(
 		real f_E, f_W, f_N, f_S, f_T, f_B, f_NE, f_SW, f_SE, f_NW, f_TE, f_BW, f_BE,
 			f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-		f_W = (D.f[DIR_P00])[ke];
-		f_E = (D.f[DIR_M00])[kw];
+		f_W = (D.f[dP00])[ke];
+		f_E = (D.f[dM00])[kw];
 		f_S = (D.f[DIR_0P0])[kn];
 		f_N = (D.f[DIR_0M0])[ks];
 		f_B = (D.f[DIR_00P])[kt];
@@ -629,7 +629,7 @@ __global__ void QDeviceCompThinWallsPartOne27(
 		real vx1, vx2, vx3, drho, feq, q;
 		drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 			f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
 		vx1 = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 			((f_BE - f_TW) + (f_TE - f_BW)) + ((f_SE - f_NW) + (f_NE - f_SW)) +
@@ -652,14 +652,14 @@ __global__ void QDeviceCompThinWallsPartOne27(
 		if (q >= c0o1 && q <= c1o1)
 		{
 			feq = c2o27* (drho + c9o2*(vx1)*(vx1) * (c1o1 + drho) - cu_sq);
-			(D.f[DIR_M00])[kw] = (c1o1 - q) / (c1o1 + q)*(f_E - f_W + (f_E + f_W - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_E + f_W)) / (c1o1 + q);
+			(D.f[dM00])[kw] = (c1o1 - q) / (c1o1 + q)*(f_E - f_W + (f_E + f_W - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_E + f_W)) / (c1o1 + q);
 		}
 
 		q = q_dirW[k];
 		if (q >= c0o1 && q <= c1o1)
 		{
 			feq = c2o27* (drho + c9o2*(-vx1)*(-vx1) * (c1o1 + drho) - cu_sq);
-			(D.f[DIR_P00])[ke] = (c1o1 - q) / (c1o1 + q)*(f_W - f_E + (f_W + f_E - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_W + f_E)) / (c1o1 + q);
+			(D.f[dP00])[ke] = (c1o1 - q) / (c1o1 + q)*(f_W - f_E + (f_W + f_E - c2o1*feq*om1) / (c1o1 - om1))*c1o2 + (q*(f_W + f_E)) / (c1o1 + q);
 		}
 
 		q = q_dirN[k];
@@ -904,8 +904,8 @@ __global__ void QThinWallsPartTwo27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -980,8 +980,8 @@ __global__ void QThinWallsPartTwo27(
 	  Distributions27 D, DN;
 	  if (isEvenTimestep == true)
 	  {
-		  D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		  D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		  D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		  D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		  D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		  D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		  D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -998,7 +998,7 @@ __global__ void QThinWallsPartTwo27(
 		  D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		  D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		  D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		  D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		  D.f[d000] = &DD[d000 * numberOfLBnodes];
 		  D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		  D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		  D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1010,8 +1010,8 @@ __global__ void QThinWallsPartTwo27(
 	  }
 	  else
 	  {
-		  D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		  D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		  D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		  D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		  D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		  D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		  D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1028,7 +1028,7 @@ __global__ void QThinWallsPartTwo27(
 		  D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		  D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		  D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		  D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		  D.f[d000] = &DD[d000 * numberOfLBnodes];
 		  D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		  D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		  D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1040,8 +1040,8 @@ __global__ void QThinWallsPartTwo27(
 	  }
 	  if (isEvenTimestep==false)
       {
-         DN.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         DN.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         DN.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         DN.f[dM00] = &DD[dM00 * numberOfLBnodes];
          DN.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          DN.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          DN.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1058,7 +1058,7 @@ __global__ void QThinWallsPartTwo27(
          DN.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          DN.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          DN.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         DN.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         DN.f[d000] = &DD[d000 * numberOfLBnodes];
          DN.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          DN.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          DN.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1070,8 +1070,8 @@ __global__ void QThinWallsPartTwo27(
       } 
       else
       {
-         DN.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         DN.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         DN.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         DN.f[dP00] = &DD[dM00 * numberOfLBnodes];
          DN.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          DN.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          DN.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1088,7 +1088,7 @@ __global__ void QThinWallsPartTwo27(
          DN.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          DN.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          DN.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         DN.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         DN.f[d000] = &DD[d000 * numberOfLBnodes];
          DN.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          DN.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          DN.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1106,8 +1106,8 @@ __global__ void QThinWallsPartTwo27(
 	  //( 1  1  1) ( 1  0  0) ( 0  1  0) ( 0  0  1) ( 1  1  0) ( 1  0  1) ( 0  1  1) (-1 -1  1) (-1  1 -1) ( 1 -1 -1) (-1  1  0) (-1  0  1) ( 0 -1  1)
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real q, tmp;
-      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1){ if (geom[kw  ] < GEO_FLUID){tmp = (DN.f[DIR_M00])[kw  ]; (DN.f[DIR_M00])[kw  ]=(D.f[DIR_M00])[kw  ]; (D.f[DIR_M00])[kw  ]=tmp;}}
-	  q = q_dirW[k];   if (q>=c0o1 && q<=c1o1){                            {tmp = (DN.f[DIR_P00])[ke  ]; (DN.f[DIR_P00])[ke  ]=(D.f[DIR_P00])[ke  ]; (D.f[DIR_P00])[ke  ]=tmp;}}
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1){ if (geom[kw  ] < GEO_FLUID){tmp = (DN.f[dM00])[kw  ]; (DN.f[dM00])[kw  ]=(D.f[dM00])[kw  ]; (D.f[dM00])[kw  ]=tmp;}}
+	  q = q_dirW[k];   if (q>=c0o1 && q<=c1o1){                            {tmp = (DN.f[dP00])[ke  ]; (DN.f[dP00])[ke  ]=(D.f[dP00])[ke  ]; (D.f[dP00])[ke  ]=tmp;}}
       q = q_dirN[k];   if (q>=c0o1 && q<=c1o1){ if (geom[ks  ] < GEO_FLUID){tmp = (DN.f[DIR_0M0])[ks  ]; (DN.f[DIR_0M0])[ks  ]=(D.f[DIR_0M0])[ks  ]; (D.f[DIR_0M0])[ks  ]=tmp;}}
       q = q_dirS[k];   if (q>=c0o1 && q<=c1o1){                            {tmp = (DN.f[DIR_0P0])[kn  ]; (DN.f[DIR_0P0])[kn  ]=(D.f[DIR_0P0])[kn  ]; (D.f[DIR_0P0])[kn  ]=tmp;}}
       q = q_dirT[k];   if (q>=c0o1 && q<=c1o1){ if (geom[kb  ] < GEO_FLUID){tmp = (DN.f[DIR_00M])[kb  ]; (DN.f[DIR_00M])[kb  ]=(D.f[DIR_00M])[kb  ]; (D.f[DIR_00M])[kb  ]=tmp;}}

@@ -44,8 +44,8 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   *f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
 
 
-   fP00source = &DF[DIR_P00 * numberOfLBnodesFine];
-   fM00source = &DF[DIR_M00 * numberOfLBnodesFine];
+   fP00source = &DF[dP00 * numberOfLBnodesFine];
+   fM00source = &DF[dM00 * numberOfLBnodesFine];
    f0P0source = &DF[DIR_0P0 * numberOfLBnodesFine];
    f0M0source = &DF[DIR_0M0 * numberOfLBnodesFine];
    f00Psource = &DF[DIR_00P * numberOfLBnodesFine];
@@ -62,7 +62,7 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    f0MMsource = &DF[DIR_0MM * numberOfLBnodesFine];
    f0PMsource = &DF[DIR_0PM * numberOfLBnodesFine];
    f0MPsource = &DF[DIR_0MP * numberOfLBnodesFine];
-   f000source = &DF[DIR_000 * numberOfLBnodesFine];
+   f000source = &DF[d000 * numberOfLBnodesFine];
    fMMMsource = &DF[DIR_MMM * numberOfLBnodesFine];
    fMMPsource = &DF[DIR_MMP * numberOfLBnodesFine];
    fMPPsource = &DF[DIR_MPP * numberOfLBnodesFine];
@@ -79,8 +79,8 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 
    if (isEvenTimestep==true)
    {
-	   fP00dest = &DC[DIR_P00 * numberOfLBnodesCoarse];
-	   fM00dest = &DC[DIR_M00 * numberOfLBnodesCoarse];
+	   fP00dest = &DC[dP00 * numberOfLBnodesCoarse];
+	   fM00dest = &DC[dM00 * numberOfLBnodesCoarse];
 	   f0P0dest = &DC[DIR_0P0 * numberOfLBnodesCoarse];
 	   f0M0dest = &DC[DIR_0M0 * numberOfLBnodesCoarse];
 	   f00Pdest = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -97,7 +97,7 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   f0MMdest = &DC[DIR_0MM * numberOfLBnodesCoarse];
 	   f0PMdest = &DC[DIR_0PM * numberOfLBnodesCoarse];
 	   f0MPdest = &DC[DIR_0MP * numberOfLBnodesCoarse];
-	   f000dest = &DC[DIR_000 * numberOfLBnodesCoarse];
+	   f000dest = &DC[d000 * numberOfLBnodesCoarse];
 	   fMMMdest = &DC[DIR_MMM * numberOfLBnodesCoarse];
 	   fMMPdest = &DC[DIR_MMP * numberOfLBnodesCoarse];
 	   fMPPdest = &DC[DIR_MPP * numberOfLBnodesCoarse];
@@ -109,8 +109,8 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    } 
    else
    {
-	   fP00dest = &DC[DIR_M00 * numberOfLBnodesCoarse];
-	   fM00dest = &DC[DIR_P00 * numberOfLBnodesCoarse];
+	   fP00dest = &DC[dM00 * numberOfLBnodesCoarse];
+	   fM00dest = &DC[dP00 * numberOfLBnodesCoarse];
 	   f0P0dest = &DC[DIR_0M0 * numberOfLBnodesCoarse];
 	   f0M0dest = &DC[DIR_0P0 * numberOfLBnodesCoarse];
 	   f00Pdest = &DC[DIR_00M * numberOfLBnodesCoarse];
@@ -127,7 +127,7 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	   f0MMdest = &DC[DIR_0PP * numberOfLBnodesCoarse];
 	   f0PMdest = &DC[DIR_0MP * numberOfLBnodesCoarse];
 	   f0MPdest = &DC[DIR_0PM * numberOfLBnodesCoarse];
-	   f000dest = &DC[DIR_000 * numberOfLBnodesCoarse];
+	   f000dest = &DC[d000 * numberOfLBnodesCoarse];
 	   fMMMdest = &DC[DIR_PPP * numberOfLBnodesCoarse];
 	   fMMPdest = &DC[DIR_PPM * numberOfLBnodesCoarse];
 	   fMPPdest = &DC[DIR_PMM * numberOfLBnodesCoarse];
@@ -141,8 +141,8 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    Distributions6 G;
    if (isEvenTimestep == true)
    {
-	   G.g[DIR_P00] = &G6[DIR_P00 * numberOfLBnodesCoarse];
-	   G.g[DIR_M00] = &G6[DIR_M00 * numberOfLBnodesCoarse];
+	   G.g[dP00] = &G6[dP00 * numberOfLBnodesCoarse];
+	   G.g[dM00] = &G6[dM00 * numberOfLBnodesCoarse];
 	   G.g[DIR_0P0] = &G6[DIR_0P0 * numberOfLBnodesCoarse];
 	   G.g[DIR_0M0] = &G6[DIR_0M0 * numberOfLBnodesCoarse];
 	   G.g[DIR_00P] = &G6[DIR_00P * numberOfLBnodesCoarse];
@@ -150,8 +150,8 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    }
    else
    {
-	   G.g[DIR_M00] = &G6[DIR_P00 * numberOfLBnodesCoarse];
-	   G.g[DIR_P00] = &G6[DIR_M00 * numberOfLBnodesCoarse];
+	   G.g[dM00] = &G6[dP00 * numberOfLBnodesCoarse];
+	   G.g[dP00] = &G6[dM00 * numberOfLBnodesCoarse];
 	   G.g[DIR_0M0] = &G6[DIR_0P0 * numberOfLBnodesCoarse];
 	   G.g[DIR_0P0] = &G6[DIR_0M0 * numberOfLBnodesCoarse];
 	   G.g[DIR_00M] = &G6[DIR_00P * numberOfLBnodesCoarse];
@@ -1168,8 +1168,8 @@ __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[DIR_P00])[k000] = mgcbb;
-	  (G.g[DIR_M00])[kM00] = mgabb;
+	  (G.g[dP00])[k000] = mgcbb;
+	  (G.g[dM00])[kM00] = mgabb;
 	  (G.g[DIR_0P0])[k000] = mgbcb;
 	  (G.g[DIR_0M0])[k0M0] = mgbab;
 	  (G.g[DIR_00P])[k000] = mgbbc;
@@ -1291,8 +1291,8 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   *f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
 
 
-   fP00source = &DF[DIR_P00 * numberOfLBnodesFine];
-   fM00source = &DF[DIR_M00 * numberOfLBnodesFine];
+   fP00source = &DF[dP00 * numberOfLBnodesFine];
+   fM00source = &DF[dM00 * numberOfLBnodesFine];
    f0P0source = &DF[DIR_0P0 * numberOfLBnodesFine];
    f0M0source = &DF[DIR_0M0 * numberOfLBnodesFine];
    f00Psource = &DF[DIR_00P * numberOfLBnodesFine];
@@ -1309,7 +1309,7 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
    f0MMsource = &DF[DIR_0MM * numberOfLBnodesFine];
    f0PMsource = &DF[DIR_0PM * numberOfLBnodesFine];
    f0MPsource = &DF[DIR_0MP * numberOfLBnodesFine];
-   f000source = &DF[DIR_000 * numberOfLBnodesFine];
+   f000source = &DF[d000 * numberOfLBnodesFine];
    fMMMsource = &DF[DIR_MMM * numberOfLBnodesFine];
    fMMPsource = &DF[DIR_MMP * numberOfLBnodesFine];
    fMPPsource = &DF[DIR_MPP * numberOfLBnodesFine];
@@ -1326,8 +1326,8 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 
    if (isEvenTimestep==true)
    {
-	   fP00dest = &DC[DIR_P00 * numberOfLBnodesCoarse];
-	   fM00dest = &DC[DIR_M00 * numberOfLBnodesCoarse];
+	   fP00dest = &DC[dP00 * numberOfLBnodesCoarse];
+	   fM00dest = &DC[dM00 * numberOfLBnodesCoarse];
 	   f0P0dest = &DC[DIR_0P0 * numberOfLBnodesCoarse];
 	   f0M0dest = &DC[DIR_0M0 * numberOfLBnodesCoarse];
 	   f00Pdest = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -1344,7 +1344,7 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   f0MMdest = &DC[DIR_0MM * numberOfLBnodesCoarse];
 	   f0PMdest = &DC[DIR_0PM * numberOfLBnodesCoarse];
 	   f0MPdest = &DC[DIR_0MP * numberOfLBnodesCoarse];
-	   f000dest = &DC[DIR_000 * numberOfLBnodesCoarse];
+	   f000dest = &DC[d000 * numberOfLBnodesCoarse];
 	   fMMMdest = &DC[DIR_MMM * numberOfLBnodesCoarse];
 	   fMMPdest = &DC[DIR_MMP * numberOfLBnodesCoarse];
 	   fMPPdest = &DC[DIR_MPP * numberOfLBnodesCoarse];
@@ -1356,8 +1356,8 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
    } 
    else
    {
-	   fP00dest = &DC[DIR_M00 * numberOfLBnodesCoarse];
-	   fM00dest = &DC[DIR_P00 * numberOfLBnodesCoarse];
+	   fP00dest = &DC[dM00 * numberOfLBnodesCoarse];
+	   fM00dest = &DC[dP00 * numberOfLBnodesCoarse];
 	   f0P0dest = &DC[DIR_0M0 * numberOfLBnodesCoarse];
 	   f0M0dest = &DC[DIR_0P0 * numberOfLBnodesCoarse];
 	   f00Pdest = &DC[DIR_00M * numberOfLBnodesCoarse];
@@ -1374,7 +1374,7 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	   f0MMdest = &DC[DIR_0PP * numberOfLBnodesCoarse];
 	   f0PMdest = &DC[DIR_0MP * numberOfLBnodesCoarse];
 	   f0MPdest = &DC[DIR_0PM * numberOfLBnodesCoarse];
-	   f000dest = &DC[DIR_000 * numberOfLBnodesCoarse];
+	   f000dest = &DC[d000 * numberOfLBnodesCoarse];
 	   fMMMdest = &DC[DIR_PPP * numberOfLBnodesCoarse];
 	   fMMPdest = &DC[DIR_PPM * numberOfLBnodesCoarse];
 	   fMPPdest = &DC[DIR_PMM * numberOfLBnodesCoarse];
@@ -1388,8 +1388,8 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
    Distributions6 G;
    if (isEvenTimestep == true)
    {
-	   G.g[DIR_P00] = &G6[DIR_P00 * numberOfLBnodesCoarse];
-	   G.g[DIR_M00] = &G6[DIR_M00 * numberOfLBnodesCoarse];
+	   G.g[dP00] = &G6[dP00 * numberOfLBnodesCoarse];
+	   G.g[dM00] = &G6[dM00 * numberOfLBnodesCoarse];
 	   G.g[DIR_0P0] = &G6[DIR_0P0 * numberOfLBnodesCoarse];
 	   G.g[DIR_0M0] = &G6[DIR_0M0 * numberOfLBnodesCoarse];
 	   G.g[DIR_00P] = &G6[DIR_00P * numberOfLBnodesCoarse];
@@ -1397,8 +1397,8 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
    }
    else
    {
-	   G.g[DIR_M00] = &G6[DIR_P00 * numberOfLBnodesCoarse];
-	   G.g[DIR_P00] = &G6[DIR_M00 * numberOfLBnodesCoarse];
+	   G.g[dM00] = &G6[dP00 * numberOfLBnodesCoarse];
+	   G.g[dP00] = &G6[dM00 * numberOfLBnodesCoarse];
 	   G.g[DIR_0M0] = &G6[DIR_0P0 * numberOfLBnodesCoarse];
 	   G.g[DIR_0P0] = &G6[DIR_0M0 * numberOfLBnodesCoarse];
 	   G.g[DIR_00M] = &G6[DIR_00P * numberOfLBnodesCoarse];
@@ -2409,8 +2409,8 @@ __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////
-	  (G.g[DIR_P00])[k000] = mgcbb;
-	  (G.g[DIR_M00])[kM00] = mgabb;
+	  (G.g[dP00])[k000] = mgcbb;
+	  (G.g[dM00])[kM00] = mgabb;
 	  (G.g[DIR_0P0])[k000] = mgbcb;
 	  (G.g[DIR_0M0])[k0M0] = mgbab;
 	  (G.g[DIR_00P])[k000] = mgbbc;

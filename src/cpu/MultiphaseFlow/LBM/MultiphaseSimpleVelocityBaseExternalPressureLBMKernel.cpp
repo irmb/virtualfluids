@@ -476,20 +476,20 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 
 
-					collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[DIR_000] - phiH) / (phiH - phiL);
+					collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[d000] - phiH) / (phiH - phiL);
 
 
-					real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
+					real mu = 2 * beta * phi[d000] * (phi[d000] - 1) * (2 * phi[d000] - 1) - kappa * nabla2_phi();
 
 					//----------- Calculating Macroscopic Values -------------
-					real rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH); //Incompressible
+					real rho = rhoH + rhoToPhi * (phi[d000] - phiH); //Incompressible
 
 																		///scaled phase field
 					//LBMReal rho = rhoH + rhoToPhi * ((*phaseField)(x1, x2, x3) * (*phaseField)(x1, x2, x3) / ((*phaseField)(x1, x2, x3) * (*phaseField)(x1, x2, x3) + (c1 - (*phaseField)(x1, x2, x3)) * (c1 - (*phaseField)(x1, x2, x3))) - phiH);
 					///!scaled phase field
 					
-					//LBMReal rho = rhoH + rhoToPhi * (phi[DIR_000] - phiH)+(one-phi[DIR_000])* (*pressure)(x1, x2, x3)*three; //compressible
-					//LBMReal rho = rhoL + (rhoH - rhoL) * phi[DIR_000] + (one - phi[DIR_000]) * (*pressure)(x1, x2, x3) * three; //compressible
+					//LBMReal rho = rhoH + rhoToPhi * (phi[d000] - phiH)+(one-phi[d000])* (*pressure)(x1, x2, x3)*three; //compressible
+					//LBMReal rho = rhoL + (rhoH - rhoL) * phi[d000] + (one - phi[d000]) * (*pressure)(x1, x2, x3) * three; //compressible
 
 					real m0, m1, m2;
 					real rhoRef= c1o1;
@@ -633,7 +633,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//}
 
 					//Viscosity increase by phase field residuum
-					//LBMReal errPhi = (((1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale)- denom);
+					//LBMReal errPhi = (((1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale)- denom);
 					//LBMReal limVis = 0.01;// 0.0000001 * 10;//0.01;
 					// collFactorM =collFactorM/(c1+limVis*(errPhi*errPhi)*collFactorM);
 					// collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
@@ -656,34 +656,34 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//LBMReal pBefore = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
 					//	+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
 					//	+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb) * c1o3;
-					//pBefore = -c1o3 * (-1.0e-10)/((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) );
+					//pBefore = -c1o3 * (-1.0e-10)/((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) );
 					////if (vvx * vvx + vvy * vvy + vvz * vvz > 1.0e-100) {
-					//	mfabb -= pBefore * c2o9 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_P00] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbab -= pBefore * c2o9 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0P0] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbba -= pBefore * c2o9 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_00P] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfaab -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PP0] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcab -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MP0] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfaba -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_P0P] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcba -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_M0P] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbaa -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0PP] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbca -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0MP] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfaaa -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PPP] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcaa -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MPP] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfaca -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PMP] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcca -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MMP] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcbb -= pBefore * c2o9 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_M00] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbcb -= pBefore * c2o9 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0M0] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbbc -= pBefore * c2o9 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_00M] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfccb -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MM0] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfacb -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PM0] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcbc -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_M0M] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfabc -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_P0M] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbcc -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0MM] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfbac -= pBefore * c1o18 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0PM] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfccc -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MMM] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfacc -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PMM] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfcac -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MPM] * (rhoH - rhoL) / (phiH - phiL)));
-					//	mfaac -= pBefore * c1o72 * ((rhoL + phi[DIR_000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PPM] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfabb -= pBefore * c2o9 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[dP00] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbab -= pBefore * c2o9 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0P0] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbba -= pBefore * c2o9 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_00P] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfaab -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PP0] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcab -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MP0] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfaba -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_P0P] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcba -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_M0P] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbaa -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0PP] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbca -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0MP] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfaaa -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PPP] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcaa -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MPP] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfaca -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PMP] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcca -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MMP] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcbb -= pBefore * c2o9 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[dM00] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbcb -= pBefore * c2o9 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0M0] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbbc -= pBefore * c2o9 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_00M] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfccb -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MM0] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfacb -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PM0] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcbc -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_M0M] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfabc -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_P0M] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbcc -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0MM] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfbac -= pBefore * c1o18 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_0PM] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfccc -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MMM] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfacc -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PMM] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfcac -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_MPM] * (rhoH - rhoL) / (phiH - phiL)));
+					//	mfaac -= pBefore * c1o72 * ((rhoL + phi[d000] * (rhoH - rhoL) / (phiH - phiL)) / (rhoL + phi[DIR_PPM] * (rhoH - rhoL) / (phiH - phiL)));
 					//	mfbbb -= pBefore * 8.0 / 9.0;
 					//}
 
@@ -808,12 +808,12 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//	+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca)))) * c2
 					//	+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc)))) * c1o3 ;
 
-					//(*phaseFieldOld)(x1, x2, x3) = ((*phaseFieldOld)(x1, x2, x3) > 99.0) ? phi[DIR_000] : (*phaseFieldOld)(x1, x2, x3);
-					//LBMReal dtPhi = phi[DIR_000] - (*phaseFieldOld)(x1, x2, x3);
+					//(*phaseFieldOld)(x1, x2, x3) = ((*phaseFieldOld)(x1, x2, x3) > 99.0) ? phi[d000] : (*phaseFieldOld)(x1, x2, x3);
+					//LBMReal dtPhi = phi[d000] - (*phaseFieldOld)(x1, x2, x3);
 					//LBMReal deltaP = -pStar * (c1 - rho / (rho + c1o2 * rhoToPhi * dtPhi));// -pStar * pStar * pStar * 1.0e-4 * rho * rho * rho;
 					//LBMReal deltaP = pStar * (c1 - mfhbbb*rho) * c1o2;//Explicit
 					//LBMReal deltaP = pStar * (c1 - mfhbbb * rho) / (c1 + mfhbbb * rho);//Semi-Implicit
-					//(*phaseFieldOld)(x1, x2, x3) = phi[DIR_000];
+					//(*phaseFieldOld)(x1, x2, x3) = phi[d000];
 
 					//mfabb += c2o9 *deltaP;
 					//mfbab += c2o9 *deltaP;
@@ -849,32 +849,32 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 
 
-					//mfabb -= c1o2 * c2o9 *pStar*(phi[DIR_000]-phi[DIR_P00])*rhoToPhi/rho;
-					//mfbab -= c1o2 * c2o9 *pStar*(phi[DIR_000]-phi[DIR_0P0])*rhoToPhi/rho;
-					//mfbba -= c1o2 * c2o9 *pStar*(phi[DIR_000]-phi[DIR_00P])*rhoToPhi/rho;
-					//mfaab -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_PP0])*rhoToPhi/rho;
-					//mfcab -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_MP0])*rhoToPhi/rho;
-					//mfaba -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_P0P])*rhoToPhi/rho;
-					//mfcba -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_M0P])*rhoToPhi/rho;
-					//mfbaa -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_0PP])*rhoToPhi/rho;
-					//mfbca -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_0MP])*rhoToPhi/rho;
-					//mfaaa -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_PPP])*rhoToPhi/rho;
-					//mfcaa -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_MPP])*rhoToPhi/rho;
-					//mfaca -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_PMP])*rhoToPhi/rho;
-					//mfcca -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_MMP])*rhoToPhi/rho;
-					//mfcbb -= c1o2 * c2o9 *pStar*(phi[DIR_000]-phi[DIR_M00])*rhoToPhi/rho;
-					//mfbcb -= c1o2 * c2o9 *pStar*(phi[DIR_000]-phi[DIR_0M0])*rhoToPhi/rho;
-					//mfbbc -= c1o2 * c2o9 *pStar*(phi[DIR_000]-phi[DIR_00M])*rhoToPhi/rho;
-					//mfccb -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_MM0])*rhoToPhi/rho;
-					//mfacb -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_PM0])*rhoToPhi/rho;
-					//mfcbc -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_M0M])*rhoToPhi/rho;
-					//mfabc -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_P0M])*rhoToPhi/rho;
-					//mfbcc -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_0MM])*rhoToPhi/rho;
-					//mfbac -= c1o2 * c1o18*pStar*(phi[DIR_000]-phi[DIR_0PM])*rhoToPhi/rho;
-					//mfccc -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_MMM])*rhoToPhi/rho;
-					//mfacc -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_PMM])*rhoToPhi/rho;
-					//mfcac -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_MPM])*rhoToPhi/rho;
-					//mfaac -= c1o2 * c1o72*pStar*(phi[DIR_000]-phi[DIR_PPM])*rhoToPhi/rho;
+					//mfabb -= c1o2 * c2o9 *pStar*(phi[d000]-phi[dP00])*rhoToPhi/rho;
+					//mfbab -= c1o2 * c2o9 *pStar*(phi[d000]-phi[DIR_0P0])*rhoToPhi/rho;
+					//mfbba -= c1o2 * c2o9 *pStar*(phi[d000]-phi[DIR_00P])*rhoToPhi/rho;
+					//mfaab -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_PP0])*rhoToPhi/rho;
+					//mfcab -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_MP0])*rhoToPhi/rho;
+					//mfaba -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_P0P])*rhoToPhi/rho;
+					//mfcba -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_M0P])*rhoToPhi/rho;
+					//mfbaa -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_0PP])*rhoToPhi/rho;
+					//mfbca -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_0MP])*rhoToPhi/rho;
+					//mfaaa -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_PPP])*rhoToPhi/rho;
+					//mfcaa -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_MPP])*rhoToPhi/rho;
+					//mfaca -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_PMP])*rhoToPhi/rho;
+					//mfcca -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_MMP])*rhoToPhi/rho;
+					//mfcbb -= c1o2 * c2o9 *pStar*(phi[d000]-phi[dM00])*rhoToPhi/rho;
+					//mfbcb -= c1o2 * c2o9 *pStar*(phi[d000]-phi[DIR_0M0])*rhoToPhi/rho;
+					//mfbbc -= c1o2 * c2o9 *pStar*(phi[d000]-phi[DIR_00M])*rhoToPhi/rho;
+					//mfccb -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_MM0])*rhoToPhi/rho;
+					//mfacb -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_PM0])*rhoToPhi/rho;
+					//mfcbc -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_M0M])*rhoToPhi/rho;
+					//mfabc -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_P0M])*rhoToPhi/rho;
+					//mfbcc -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_0MM])*rhoToPhi/rho;
+					//mfbac -= c1o2 * c1o18*pStar*(phi[d000]-phi[DIR_0PM])*rhoToPhi/rho;
+					//mfccc -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_MMM])*rhoToPhi/rho;
+					//mfacc -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_PMM])*rhoToPhi/rho;
+					//mfcac -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_MPM])*rhoToPhi/rho;
+					//mfaac -= c1o2 * c1o72*pStar*(phi[d000]-phi[DIR_PPM])*rhoToPhi/rho;
 
 
 					//forcingX1 =/* muForcingX1.Eval() / rho*/ - pStar * dX1_phi * rhoToPhi / rho;
@@ -949,9 +949,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//forcingX1 = (-pStar * dX1_phi * rhoToPhi / rho + pStar * dX1_rhoInv * rho) *c1o2;
 					//forcingX2 = (-pStar * dX2_phi * rhoToPhi / rho + pStar * dX2_rhoInv * rho) *c1o2;
 					//forcingX3 = (-pStar * dX3_phi * rhoToPhi / rho + pStar * dX3_rhoInv * rho) *c1o2;
-					 //LBMReal FdX1_phi = normX1 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
-					 //LBMReal FdX2_phi = normX2 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
-					 //LBMReal FdX3_phi = normX3 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
+					 //LBMReal FdX1_phi = normX1 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale;
+					 //LBMReal FdX2_phi = normX2 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale;
+					 //LBMReal FdX3_phi = normX3 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale;
 
 
 					//forcingX1 = (-pStar * dX1_phi * rhoToPhi / rho ) ;
@@ -961,7 +961,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//forcingX1 = (pStar * dRhoInvX* rho *c3) ;
 					//forcingX2 = (pStar * dRhoInvY* rho *c3) ;
 					//forcingX3 = (pStar * dRhoInvZ* rho *c3) ;
-					//if (phi[DIR_000] > 0.1 && phi[DIR_000] < 0.9) std::cout << phi[DIR_000] << " " << dX1_phi * rhoToPhi / rho << " " << dRhoInvX * rho *3<< std::endl;
+					//if (phi[d000] > 0.1 && phi[d000] < 0.9) std::cout << phi[d000] << " " << dX1_phi * rhoToPhi / rho << " " << dRhoInvX * rho *3<< std::endl;
 					//LBMReal forcingX1ALTERNAT = ( pStar * dX1_rhoInv * rho) ;
 					//LBMReal forcingX2ALTERNAT = ( pStar * dX2_rhoInv * rho) ;
 					//LBMReal forcingX3ALTERNAT = ( pStar * dX3_rhoInv * rho) ;
@@ -970,22 +970,22 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					//forcingX2 = (fabs(vvy + c1o2 * forcingX2) < fabs(vvy + c1o2 * forcingX2ALTERNAT)) ? forcingX2 : forcingX2ALTERNAT;
 					//forcingX3 = (fabs(vvz + c1o2 * forcingX3) < fabs(vvz + c1o2 * forcingX3ALTERNAT)) ? forcingX3 : forcingX3ALTERNAT;
 
-					//	 forcingX1 = -pStar * rhoToPhi / rho * normX1 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
-					//	 forcingX2 = -pStar * rhoToPhi / rho * normX2 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
-					//	 forcingX3 = -pStar * rhoToPhi / rho * normX3 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale;
+					//	 forcingX1 = -pStar * rhoToPhi / rho * normX1 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale;
+					//	 forcingX2 = -pStar * rhoToPhi / rho * normX2 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale;
+					//	 forcingX3 = -pStar * rhoToPhi / rho * normX3 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale;
 
-					//forcingX1 = (-pStar * dX1_phi * rhoToPhi / rho *(c1- phi[DIR_000]) + pStar * dX1_rhoInv * rho*(phi[DIR_000]));
-					//forcingX2 = (-pStar * dX2_phi * rhoToPhi / rho *(c1- phi[DIR_000]) + pStar * dX2_rhoInv * rho*(phi[DIR_000]));
-					//forcingX3 = (-pStar * dX3_phi * rhoToPhi / rho *(c1- phi[DIR_000]) + pStar * dX3_rhoInv * rho*(phi[DIR_000]));
-						 //if (phi[DIR_000] > 0.3 && phi[DIR_000] < 0.7)
+					//forcingX1 = (-pStar * dX1_phi * rhoToPhi / rho *(c1- phi[d000]) + pStar * dX1_rhoInv * rho*(phi[d000]));
+					//forcingX2 = (-pStar * dX2_phi * rhoToPhi / rho *(c1- phi[d000]) + pStar * dX2_rhoInv * rho*(phi[d000]));
+					//forcingX3 = (-pStar * dX3_phi * rhoToPhi / rho *(c1- phi[d000]) + pStar * dX3_rhoInv * rho*(phi[d000]));
+						 //if (phi[d000] > 0.3 && phi[d000] < 0.7)
 						 //{
 							// int test = 1;
-							// std::cout << phi[DIR_000] <<" "<< dX1_phi <<" "<< normX1 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale<<" "<< normX1 * (1.0 - phi[DIR_000]) * (phi[DIR_000]) * oneOverInterfaceScale/ dX1_phi<< std::endl;
+							// std::cout << phi[d000] <<" "<< dX1_phi <<" "<< normX1 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale<<" "<< normX1 * (1.0 - phi[d000]) * (phi[d000]) * oneOverInterfaceScale/ dX1_phi<< std::endl;
 						 //}
 
 
 
-					 //LBMReal scaleGrad = c2 * phi[DIR_000] * (1.0 - phi[DIR_000]) / ((phi[DIR_000] * phi[DIR_000] + (1.0 - phi[DIR_000]) * (1.0 - phi[DIR_000])) * (phi[DIR_000] * phi[DIR_000] + (1.0 - phi[DIR_000]) * (1.0 - phi[DIR_000])));
+					 //LBMReal scaleGrad = c2 * phi[d000] * (1.0 - phi[d000]) / ((phi[d000] * phi[d000] + (1.0 - phi[d000]) * (1.0 - phi[d000])) * (phi[d000] * phi[d000] + (1.0 - phi[d000]) * (1.0 - phi[d000])));
 					 //dX1_phi *= scaleGrad;
 					 //dX2_phi *= scaleGrad;
 					 //dX3_phi *= scaleGrad;
@@ -1002,9 +1002,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 					forcingX3 += mu * dX3_phi/rho;
 
 					//LBMReal forcingBIAS = 0.5;
-					forcingX1 += muForcingX1.Eval() / rho;//*phi[DIR_000];
-					forcingX2 += muForcingX2.Eval() / rho;// * phi[DIR_000];
-					forcingX3 += muForcingX3.Eval() / rho;// * phi[DIR_000];
+					forcingX1 += muForcingX1.Eval() / rho;//*phi[d000];
+					forcingX2 += muForcingX2.Eval() / rho;// * phi[d000];
+					forcingX3 += muForcingX3.Eval() / rho;// * phi[d000];
 
 				//	//19.08.2022
 					//vvx += vvxh / rho * c1o2;
@@ -1235,7 +1235,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 															 ////////////////////////////////////////////////////////////////////////////////////
 					real wadjust;
-					real qudricLimit = 0.01 / (c1o1 + 1.0e4 * phi[DIR_000] * (c1o1 - phi[DIR_000])); //real qudricLimit = 0.01;
+					real qudricLimit = 0.01 / (c1o1 + 1.0e4 * phi[d000] * (c1o1 - phi[d000])); //real qudricLimit = 0.01;
 					////////////////////////////////////////////////////////////////////////////////////
 					//Hin
 					////////////////////////////////////////////////////////////////////////////////////
@@ -1726,9 +1726,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 					//////////////////////////////////////////////////////////////////////////////////////
 					//grad Rho
-					//LBMReal dX1_rho = (rhoToPhi - three * (*pressure)(x1, x2, x3)) * dX1_phi - phi[DIR_000] * three * gradPx;
-					//LBMReal dX2_rho = (rhoToPhi - three * (*pressure)(x1, x2, x3)) * dX2_phi - phi[DIR_000] * three * gradPy;
-					//LBMReal dX3_rho = (rhoToPhi - three * (*pressure)(x1, x2, x3)) * dX3_phi - phi[DIR_000] * three * gradPz;
+					//LBMReal dX1_rho = (rhoToPhi - three * (*pressure)(x1, x2, x3)) * dX1_phi - phi[d000] * three * gradPx;
+					//LBMReal dX2_rho = (rhoToPhi - three * (*pressure)(x1, x2, x3)) * dX2_phi - phi[d000] * three * gradPy;
+					//LBMReal dX3_rho = (rhoToPhi - three * (*pressure)(x1, x2, x3)) * dX3_phi - phi[d000] * three * gradPz;
 
 					//LBMReal dX2_rho = (rhoToPhi ) * dX2_phi ;
 					//LBMReal dX1_rho = (rhoToPhi ) * dX1_phi ;
@@ -2356,32 +2356,32 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::calculate(int step)
 
 
 					
-					//mfabb += c1o2 * c2o9 * pStar * (phi[DIR_000] - phi[DIR_M00]) * rhoToPhi / rho;
-					//mfbab += c1o2 * c2o9 * pStar * (phi[DIR_000] - phi[DIR_0M0]) * rhoToPhi / rho;
-					//mfbba += c1o2 * c2o9 * pStar * (phi[DIR_000] - phi[DIR_00M]) * rhoToPhi / rho;
-					//mfaab += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_MM0]) * rhoToPhi / rho;
-					//mfcab += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_PM0]) * rhoToPhi / rho;
-					//mfaba += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_M0M]) * rhoToPhi / rho;
-					//mfcba += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_P0M]) * rhoToPhi / rho;
-					//mfbaa += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_0MM]) * rhoToPhi / rho;
-					//mfbca += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_0PM]) * rhoToPhi / rho;
-					//mfaaa += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_MMM]) * rhoToPhi / rho;
-					//mfcaa += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_PMM]) * rhoToPhi / rho;
-					//mfaca += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_MPM]) * rhoToPhi / rho;
-					//mfcca += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_PPM]) * rhoToPhi / rho;
-					//mfcbb += c1o2 * c2o9 * pStar * (phi[DIR_000] - phi[DIR_P00]) * rhoToPhi / rho;
-					//mfbcb += c1o2 * c2o9 * pStar * (phi[DIR_000] - phi[DIR_0P0]) * rhoToPhi / rho;
-					//mfbbc += c1o2 * c2o9 * pStar * (phi[DIR_000] - phi[DIR_00P]) * rhoToPhi / rho;
-					//mfccb += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_PP0]) * rhoToPhi / rho;
-					//mfacb += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_MP0]) * rhoToPhi / rho;
-					//mfcbc += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_P0P]) * rhoToPhi / rho;
-					//mfabc += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_M0P]) * rhoToPhi / rho;
-					//mfbcc += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_0PP]) * rhoToPhi / rho;
-					//mfbac += c1o2 * c1o18 * pStar * (phi[DIR_000] - phi[DIR_0MP]) * rhoToPhi / rho;
-					//mfccc += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_PPP]) * rhoToPhi / rho;
-					//mfacc += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_MPP]) * rhoToPhi / rho;
-					//mfcac += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_PMP]) * rhoToPhi / rho;
-					//mfaac += c1o2 * c1o72 * pStar * (phi[DIR_000] - phi[DIR_MMP]) * rhoToPhi / rho;
+					//mfabb += c1o2 * c2o9 * pStar * (phi[d000] - phi[dM00]) * rhoToPhi / rho;
+					//mfbab += c1o2 * c2o9 * pStar * (phi[d000] - phi[DIR_0M0]) * rhoToPhi / rho;
+					//mfbba += c1o2 * c2o9 * pStar * (phi[d000] - phi[DIR_00M]) * rhoToPhi / rho;
+					//mfaab += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_MM0]) * rhoToPhi / rho;
+					//mfcab += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_PM0]) * rhoToPhi / rho;
+					//mfaba += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_M0M]) * rhoToPhi / rho;
+					//mfcba += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_P0M]) * rhoToPhi / rho;
+					//mfbaa += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_0MM]) * rhoToPhi / rho;
+					//mfbca += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_0PM]) * rhoToPhi / rho;
+					//mfaaa += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_MMM]) * rhoToPhi / rho;
+					//mfcaa += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_PMM]) * rhoToPhi / rho;
+					//mfaca += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_MPM]) * rhoToPhi / rho;
+					//mfcca += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_PPM]) * rhoToPhi / rho;
+					//mfcbb += c1o2 * c2o9 * pStar * (phi[d000] - phi[dP00]) * rhoToPhi / rho;
+					//mfbcb += c1o2 * c2o9 * pStar * (phi[d000] - phi[DIR_0P0]) * rhoToPhi / rho;
+					//mfbbc += c1o2 * c2o9 * pStar * (phi[d000] - phi[DIR_00P]) * rhoToPhi / rho;
+					//mfccb += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_PP0]) * rhoToPhi / rho;
+					//mfacb += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_MP0]) * rhoToPhi / rho;
+					//mfcbc += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_P0P]) * rhoToPhi / rho;
+					//mfabc += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_M0P]) * rhoToPhi / rho;
+					//mfbcc += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_0PP]) * rhoToPhi / rho;
+					//mfbac += c1o2 * c1o18 * pStar * (phi[d000] - phi[DIR_0MP]) * rhoToPhi / rho;
+					//mfccc += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_PPP]) * rhoToPhi / rho;
+					//mfacc += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_MPP]) * rhoToPhi / rho;
+					//mfcac += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_PMP]) * rhoToPhi / rho;
+					//mfaac += c1o2 * c1o72 * pStar * (phi[d000] - phi[DIR_MMP]) * rhoToPhi / rho;
 					
 					///////////////
 					//mfabb += (pBefore-pStar) * c2o9  ;
@@ -2810,7 +2810,7 @@ real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi()
 
 	return 3.0* ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) + (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) + (phi[DIR_PPM] - phi[DIR_MMP])))
 		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) + (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_PM0] - phi[DIR_MP0]) + (phi[DIR_PP0] - phi[DIR_MM0])))) +
-		+WEIGTH[DIR_0P0] * (phi[DIR_P00] - phi[DIR_M00]));
+		+WEIGTH[DIR_0P0] * (phi[dP00] - phi[dM00]));
 }
 
 real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi()
@@ -2840,7 +2840,7 @@ real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_rhoInv(real r
 
 	return 3.0 * ((WEIGTH[DIR_PPP] * (((1.0/(rhoL+rhoDIV*phi[DIR_PPP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PMM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPP]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PMP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PPM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMP]))))
 		+ WEIGTH[DIR_PP0] * (((1.0 / (rhoL + rhoDIV * phi[DIR_P0P]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0M])) + (1.0 / (rhoL + rhoDIV * phi[DIR_P0M]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0P]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PM0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MP0])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PP0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MM0]))))) +
-		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_P00]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M00])));
+		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[dP00]) - 1.0 / (rhoL + rhoDIV * phi[dM00])));
 }
 
 real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_rhoInv(real rhoL,real rhoDIV)
@@ -2870,7 +2870,7 @@ real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX1_phi2()
 
 	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) + (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) + (phi2[DIR_PPM] - phi2[DIR_MMP])))
 		+ WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) + (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_PM0] - phi2[DIR_MP0]) + (phi2[DIR_PP0] - phi2[DIR_MM0])))) +
-		+WEIGTH[DIR_0P0] * (phi2[DIR_P00] - phi2[DIR_M00]));
+		+WEIGTH[DIR_0P0] * (phi2[dP00] - phi2[dM00]));
 }
 
 real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::gradX2_phi2()
@@ -2899,17 +2899,17 @@ real MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::nabla2_phi()
 	using namespace vf::lbm::dir;
 
 	real sum = 0.0;
-	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000])))
-		+ (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
+	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[d000]) + (phi[DIR_MMM] - phi[d000])) + ((phi[DIR_MMP] - phi[d000]) + (phi[DIR_PPM] - phi[d000])))
+		+ (((phi[DIR_MPP] - phi[d000]) + (phi[DIR_PMM] - phi[d000])) + ((phi[DIR_PMP] - phi[d000]) + (phi[DIR_MPM] - phi[d000]))));
 	sum += WEIGTH[DIR_0PP] * (
-			(((phi[DIR_0PP] - phi[DIR_000]) + (phi[DIR_0MM] - phi[DIR_000])) + ((phi[DIR_0MP] - phi[DIR_000]) + (phi[DIR_0PM] - phi[DIR_000])))
-		+	(((phi[DIR_P0P] - phi[DIR_000]) + (phi[DIR_M0M] - phi[DIR_000])) + ((phi[DIR_M0P] - phi[DIR_000]) + (phi[DIR_P0M] - phi[DIR_000])))
-		+	(((phi[DIR_PP0] - phi[DIR_000]) + (phi[DIR_MM0] - phi[DIR_000])) + ((phi[DIR_MP0] - phi[DIR_000]) + (phi[DIR_PM0] - phi[DIR_000])))
+			(((phi[DIR_0PP] - phi[d000]) + (phi[DIR_0MM] - phi[d000])) + ((phi[DIR_0MP] - phi[d000]) + (phi[DIR_0PM] - phi[d000])))
+		+	(((phi[DIR_P0P] - phi[d000]) + (phi[DIR_M0M] - phi[d000])) + ((phi[DIR_M0P] - phi[d000]) + (phi[DIR_P0M] - phi[d000])))
+		+	(((phi[DIR_PP0] - phi[d000]) + (phi[DIR_MM0] - phi[d000])) + ((phi[DIR_MP0] - phi[d000]) + (phi[DIR_PM0] - phi[d000])))
 		);
 	sum += WEIGTH[DIR_00P] * (
-			((phi[DIR_00P] - phi[DIR_000]) + (phi[DIR_00M] - phi[DIR_000]))
-		+	((phi[DIR_0P0] - phi[DIR_000]) + (phi[DIR_0M0] - phi[DIR_000]))
-		+	((phi[DIR_P00] - phi[DIR_000]) + (phi[DIR_M00] - phi[DIR_000]))
+			((phi[DIR_00P] - phi[d000]) + (phi[DIR_00M] - phi[d000]))
+		+	((phi[DIR_0P0] - phi[d000]) + (phi[DIR_0M0] - phi[d000]))
+		+	((phi[dP00] - phi[d000]) + (phi[dM00] - phi[d000]))
 		);
 
 
@@ -2940,7 +2940,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::computePhasefield()
 					int x2p = x2 + 1;
 					int x3p = x3 + 1;
 
-					h[DIR_P00]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+					h[dP00]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
 					h[DIR_0P0]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
 					h[DIR_00P]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
 					h[DIR_PP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
@@ -2954,7 +2954,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::computePhasefield()
 					h[DIR_PMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
 					h[DIR_MMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-					h[DIR_M00]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+					h[dM00]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
 					h[DIR_0M0]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
 					h[DIR_00M]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
 					h[DIR_MM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
@@ -2968,7 +2968,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::computePhasefield()
 					h[DIR_MPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
 					h[DIR_PPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-					h[DIR_000] = (*this->zeroDistributionsH1)(x1, x2, x3);
+					h[d000] = (*this->zeroDistributionsH1)(x1, x2, x3);
 				}
 			}
 		}
@@ -2984,9 +2984,9 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors(CbArra
 
 	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
-	phi[DIR_000] = (*ph)(x1, x2, x3);
-    if (phi[DIR_000] < 0) {
-        phi[DIR_000] = c0o1;
+	phi[d000] = (*ph)(x1, x2, x3);
+    if (phi[d000] < 0) {
+        phi[d000] = c0o1;
     }
 
 
@@ -3009,7 +3009,7 @@ void MultiphaseSimpleVelocityBaseExternalPressureLBMKernel::findNeighbors2(CbArr
 
 	SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
-	phi2[DIR_000] = (*ph)(x1, x2, x3);
+	phi2[d000] = (*ph)(x1, x2, x3);
 
 
 	for (int k = FSTARTDIR; k <= FENDDIR; k++) {

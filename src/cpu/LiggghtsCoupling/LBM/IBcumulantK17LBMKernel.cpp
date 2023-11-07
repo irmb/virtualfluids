@@ -226,9 +226,9 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     LBMReal fEqSolid[D3Q27System::ENDF + 1];
                     LBMReal fPre[D3Q27System::ENDF + 1];
 
-                    f[vf::lbm::dir::DIR_000] = mfbbb;
+                    f[vf::lbm::dir::d000] = mfbbb;
 
-                    f[vf::lbm::dir::DIR_P00] = mfcbb;
+                    f[vf::lbm::dir::dP00] = mfcbb;
                     f[vf::lbm::dir::DIR_0P0] = mfbcb;
                     f[vf::lbm::dir::DIR_00P] = mfbbc;
                     f[vf::lbm::dir::DIR_PP0] = mfccb;
@@ -242,7 +242,7 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     f[vf::lbm::dir::DIR_PMP] = mfcac;
                     f[vf::lbm::dir::DIR_MMP] = mfaac;
 
-                    f[vf::lbm::dir::DIR_M00] = mfabb;
+                    f[vf::lbm::dir::dM00] = mfabb;
                     f[vf::lbm::dir::DIR_0M0] = mfbab;
                     f[vf::lbm::dir::DIR_00M] = mfbba;
                     f[vf::lbm::dir::DIR_MM0] = mfaab;
@@ -257,9 +257,9 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     f[vf::lbm::dir::DIR_PPM] = mfcca;
 
                     if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MIN) {
-                        fPre[vf::lbm::dir::DIR_000] = mfbbb;
+                        fPre[vf::lbm::dir::d000] = mfbbb;
 
-                        fPre[vf::lbm::dir::DIR_P00] = mfcbb;
+                        fPre[vf::lbm::dir::dP00] = mfcbb;
                         fPre[vf::lbm::dir::DIR_0P0] = mfbcb;
                         fPre[vf::lbm::dir::DIR_00P] = mfbbc;
                         fPre[vf::lbm::dir::DIR_PP0] = mfccb;
@@ -273,7 +273,7 @@ void IBcumulantK17LBMKernel::calculate(int step)
                         fPre[vf::lbm::dir::DIR_PMP] = mfcac;
                         fPre[vf::lbm::dir::DIR_MMP] = mfaac;
                           
-                        fPre[vf::lbm::dir::DIR_M00] = mfabb;
+                        fPre[vf::lbm::dir::dM00] = mfabb;
                         fPre[vf::lbm::dir::DIR_0M0] = mfbab;
                         fPre[vf::lbm::dir::DIR_00M] = mfbba;
                         fPre[vf::lbm::dir::DIR_MM0] = mfaab;
@@ -783,9 +783,9 @@ void IBcumulantK17LBMKernel::calculate(int step)
 
                     (*this->restDistributionsF)(x1, x2, x3) = mfbbb;
                     //////////////////////////////////////////////////////////////////////////
-                    f[vf::lbm::dir::DIR_000] = mfbbb;
+                    f[vf::lbm::dir::d000] = mfbbb;
                      
-                    f[vf::lbm::dir::DIR_P00]  = mfcbb;
+                    f[vf::lbm::dir::dP00]  = mfcbb;
                     f[vf::lbm::dir::DIR_0P0]  = mfbcb;
                     f[vf::lbm::dir::DIR_00P]  = mfbbc;
                     f[vf::lbm::dir::DIR_PP0]  = mfccb;
@@ -799,7 +799,7 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     f[vf::lbm::dir::DIR_PMP]  = mfcac;
                     f[vf::lbm::dir::DIR_MMP]  = mfaac;
                                      
-                    f[vf::lbm::dir::DIR_M00]  = mfabb;
+                    f[vf::lbm::dir::dM00]  = mfabb;
                     f[vf::lbm::dir::DIR_0M0]  = mfbab;
                     f[vf::lbm::dir::DIR_00M]  = mfbba;
                     f[vf::lbm::dir::DIR_MM0]  = mfaab;
@@ -829,8 +829,8 @@ void IBcumulantK17LBMKernel::calculate(int step)
                                         D3Q27System::calcCompFeq(fEqSolid, drho, uPart[0], uPart[1], uPart[2]);
                     
                                         if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MAX) {
-                                        double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-                                        f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + bb0;
+                                        double const bb0 = fEq[vf::lbm::dir::d000] - fEqSolid[vf::lbm::dir::d000];
+                                        f[vf::lbm::dir::d000] = fPre[vf::lbm::dir::d000] + bb0;
                                             for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
                                                 const int iOpp        = D3Q27System::INVDIR[iPop];
                                                 double const bb       = ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
@@ -853,8 +853,8 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     //#endif
                                             double const oneMinB = 1. - B;
                     
-                                            double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-                                            f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + oneMinB * (f[vf::lbm::dir::DIR_000] - fPre[vf::lbm::dir::DIR_000]) + B * bb0;
+                                            double const bb0 = fEq[vf::lbm::dir::d000] - fEqSolid[vf::lbm::dir::d000];
+                                            f[vf::lbm::dir::d000] = fPre[vf::lbm::dir::d000] + oneMinB * (f[vf::lbm::dir::d000] - fPre[vf::lbm::dir::d000]) + B * bb0;
                     
                                             for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
                                                 int const iOpp = D3Q27System::INVDIR[iPop];
@@ -870,9 +870,9 @@ void IBcumulantK17LBMKernel::calculate(int step)
                                             }
                                         } /* if solidFraction > SOLFRAC_MAX */
 
-                    (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::DIR_000];
+                    (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::d000];
 
-                    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::DIR_M00];
+                    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::dM00];
                     (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::DIR_0M0];
                     (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = f[vf::lbm::dir::DIR_00M];
                     (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = f[vf::lbm::dir::DIR_MM0];
@@ -886,7 +886,7 @@ void IBcumulantK17LBMKernel::calculate(int step)
                     (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MPM];
                     (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PPM];
 
-                    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::DIR_P00];
+                    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::dP00];
                     (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = f[vf::lbm::dir::DIR_0P0];
                     (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = f[vf::lbm::dir::DIR_00P];
                     (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PP0];

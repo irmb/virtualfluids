@@ -216,7 +216,7 @@ void TurbulenceIntensitySimulationObserver::calculateAverageValues(real timeStep
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute velocity
                                 //////////////////////////////////////////////////////////////////////////
-                                vx = f[DIR_P00] - f[DIR_M00] + f[DIR_PP0] - f[DIR_MM0] + f[DIR_PM0] - f[DIR_MP0] + f[DIR_P0P] - f[DIR_M0M] + f[DIR_P0M] - f[DIR_M0P] +
+                                vx = f[dP00] - f[dM00] + f[DIR_PP0] - f[DIR_MM0] + f[DIR_PM0] - f[DIR_MP0] + f[DIR_P0P] - f[DIR_M0M] + f[DIR_P0M] - f[DIR_M0P] +
                                      f[DIR_PPP] - f[DIR_MMP] + f[DIR_PMP] - f[DIR_MPP] + f[DIR_PPM] - f[DIR_MMM] + f[DIR_PMM] - f[DIR_MPM];
 
                                 vy = f[DIR_0P0] - f[DIR_0M0] + f[DIR_PP0] - f[DIR_MM0] - f[DIR_PM0] + f[DIR_MP0] + f[DIR_0PP] - f[DIR_0MM] + f[DIR_0PM] - f[DIR_0MP] +

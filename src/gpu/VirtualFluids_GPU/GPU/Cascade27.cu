@@ -40,8 +40,8 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			Distributions27 D;
 			if (EvenOrOdd==true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -58,7 +58,7 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -70,8 +70,8 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+				D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+				D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
 				D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -88,7 +88,7 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-				D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+				D.f[d000] = &DDStart[d000 * numberOfLBnodes];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -129,8 +129,8 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[k  ];//[ke   ];// +  c2over27 ;(D.f[DIR_P00])[k  ];//ke
-			real mfabb = (D.f[DIR_M00])[kw ];//[kw   ];// +  c2over27 ;(D.f[DIR_M00])[kw ];
+			real mfcbb = (D.f[dP00])[k  ];//[ke   ];// +  c2over27 ;(D.f[dP00])[k  ];//ke
+			real mfabb = (D.f[dM00])[kw ];//[kw   ];// +  c2over27 ;(D.f[dM00])[kw ];
 			real mfbcb = (D.f[DIR_0P0])[k  ];//[kn   ];// +  c2over27 ;(D.f[DIR_0P0])[k  ];//kn
 			real mfbab = (D.f[DIR_0M0])[ks ];//[ks   ];// +  c2over27 ;(D.f[DIR_0M0])[ks ];
 			real mfbbc = (D.f[DIR_00P])[k  ];//[kt   ];// +  c2over27 ;(D.f[DIR_00P])[k  ];//kt
@@ -147,7 +147,7 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			real mfbaa = (D.f[DIR_0MM])[kbs];//[kbs  ];// +  c1over54 ;(D.f[DIR_0MM])[kbs];
 			real mfbca = (D.f[DIR_0PM])[kb ];//[kbn  ];// +  c1over54 ;(D.f[DIR_0PM])[kb ];//kbn
 			real mfbac = (D.f[DIR_0MP])[ks ];//[kts  ];// +  c1over54 ;(D.f[DIR_0MP])[ks ];//kts
-			real mfbbb = (D.f[DIR_000])[k  ];//[kzero];// +  c8over27 ;(D.f[DIR_000])[k  ];//kzero
+			real mfbbb = (D.f[d000])[k  ];//[kzero];// +  c8over27 ;(D.f[d000])[k  ];//kzero
 			real mfccc = (D.f[DIR_PPP])[k  ];//[ktne ];// +  c1over216;(D.f[DIR_PPP])[k  ];//ktne
 			real mfaac = (D.f[DIR_MMP])[ksw];//[ktsw ];// +  c1over216;(D.f[DIR_MMP])[ksw];//ktsw
 			real mfcac = (D.f[DIR_PMP])[ks ];//[ktse ];// +  c1over216;(D.f[DIR_PMP])[ks ];//ktse
@@ -731,8 +731,8 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[ DIR_P00   ])[k   ] = mfabb;//(D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ DIR_P00   ])[k   ]                                                                     
-			(D.f[ DIR_M00   ])[kw  ] = mfcbb;//(D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ DIR_M00   ])[kw  ]                                                                   
+			(D.f[ dP00   ])[k   ] = mfabb;//(D.f[ dP00   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dP00   ])[k   ]                                                                     
+			(D.f[ dM00   ])[kw  ] = mfcbb;//(D.f[ dM00   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dM00   ])[kw  ]                                                                   
 			(D.f[ DIR_0P0   ])[k   ] = mfbab;//(D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ DIR_0P0   ])[k   ]
 			(D.f[ DIR_0M0   ])[ks  ] = mfbcb;//(D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ DIR_0M0   ])[ks  ]
 			(D.f[ DIR_00P   ])[k   ] = mfbba;//(D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ DIR_00P   ])[k   ]
@@ -749,7 +749,7 @@ __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			(D.f[ DIR_0MM  ])[kbs ] = mfbcc;//(D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ DIR_0MM  ])[kbs ]
 			(D.f[ DIR_0PM  ])[kb  ] = mfbac;//(D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ DIR_0PM  ])[kb  ]
 			(D.f[ DIR_0MP  ])[ks  ] = mfbca;//(D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ DIR_0MP  ])[ks  ]
-			(D.f[ DIR_000])[k   ] = mfbbb;//(D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ DIR_000])[k   ]
+			(D.f[ d000])[k   ] = mfbbb;//(D.f[ d000])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ d000])[k   ]
 			(D.f[ DIR_PPP ])[k   ] = mfaaa;//(D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ DIR_PPP ])[k   ]
 			(D.f[ DIR_PMP ])[ks  ] = mfaca;//(D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ DIR_PMP ])[ks  ]
 			(D.f[ DIR_PPM ])[kb  ] = mfaac;//(D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ DIR_PPM ])[kb  ]
@@ -867,8 +867,8 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -885,7 +885,7 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
             D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -897,8 +897,8 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          }
          else
          {
-            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -915,7 +915,7 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
             D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -956,8 +956,8 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real f_E     = (D.f[DIR_P00])[ke   ];// +  c2over27 ;
-         real f_W     = (D.f[DIR_M00])[kw   ];// +  c2over27 ;
+         real f_E     = (D.f[dP00])[ke   ];// +  c2over27 ;
+         real f_W     = (D.f[dM00])[kw   ];// +  c2over27 ;
          real f_N     = (D.f[DIR_0P0])[kn   ];// +  c2over27 ;
          real f_S     = (D.f[DIR_0M0])[ks   ];// +  c2over27 ;
          real f_F     = (D.f[DIR_00P])[kt   ];// +  c2over27 ;
@@ -974,7 +974,7 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          real f_Sb    = (D.f[DIR_0MM])[kbs  ];// +  c1over54 ;
          real f_Nb    = (D.f[DIR_0PM])[kbn  ];// +  c1over54 ;
          real f_Sf    = (D.f[DIR_0MP])[kts  ];// +  c1over54 ;
-         real f_R     = (D.f[DIR_000])[kzero];// +  c8over27 ;
+         real f_R     = (D.f[d000])[kzero];// +  c8over27 ;
          real f_Nef   = (D.f[DIR_PPP])[ktne ];// +  c1over216;
          real f_Swf   = (D.f[DIR_MMP])[ktsw ];// +  c1over216;
          real f_Sef   = (D.f[DIR_PMP])[ktse ];// +  c1over216;
@@ -1611,8 +1611,8 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		
 			   
 		 ////////////////////////////////////////////////////////////////////////////////////
-		 (D.f[ DIR_P00   ])[ke   ] = mfabb;// -  c2over27 ;//                                                                     
-		 (D.f[ DIR_M00   ])[kw   ] = mfcbb;// -  c2over27 ;                                                                     
+		 (D.f[ dP00   ])[ke   ] = mfabb;// -  c2over27 ;//                                                                     
+		 (D.f[ dM00   ])[kw   ] = mfcbb;// -  c2over27 ;                                                                     
 		 (D.f[ DIR_0P0   ])[kn   ] = mfbab;// -  c2over27 ;
 		 (D.f[ DIR_0M0   ])[ks   ] = mfbcb;// -  c2over27 ;
 		 (D.f[ DIR_00P   ])[kt   ] = mfbba;// -  c2over27 ;
@@ -1629,7 +1629,7 @@ __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 (D.f[ DIR_0MM  ])[kbs  ] = mfbcc;// -  c1over54 ;
 		 (D.f[ DIR_0PM  ])[kbn  ] = mfbac;// -  c1over54 ;
 		 (D.f[ DIR_0MP  ])[kts  ] = mfbca;// -  c1over54 ;
-		 (D.f[ DIR_000])[kzero] = mfbbb;// -  c8over27 ;
+		 (D.f[ d000])[kzero] = mfbbb;// -  c8over27 ;
 		 (D.f[ DIR_PPP ])[ktne ] = mfaaa;// -  c1over216;
 		 (D.f[ DIR_PMP ])[ktse ] = mfaca;// -  c1over216;
 		 (D.f[ DIR_PPM ])[kbne ] = mfaac;// -  c1over216;
@@ -1714,8 +1714,8 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -1732,7 +1732,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
             D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -1744,8 +1744,8 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          }
          else
          {
-            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -1762,7 +1762,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
             D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -1803,8 +1803,8 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real fE    =  (D.f[DIR_P00])[k  ];//ke
-         real fW    =  (D.f[DIR_M00])[kw ];
+         real fE    =  (D.f[dP00])[k  ];//ke
+         real fW    =  (D.f[dM00])[kw ];
          real fN    =  (D.f[DIR_0P0])[k  ];//kn
          real fS    =  (D.f[DIR_0M0])[ks ];
          real fT    =  (D.f[DIR_00P])[k  ];//kt
@@ -1821,7 +1821,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          real fBS   =  (D.f[DIR_0MM])[kbs];
          real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
          real fTS   =  (D.f[DIR_0MP])[ks ];//kts
-         real fZERO =  (D.f[DIR_000])[k  ];//kzero
+         real fZERO =  (D.f[d000])[k  ];//kzero
          real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
          real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
          real fTSE   = (D.f[DIR_PMP])[ks ];//ktse
@@ -2185,8 +2185,8 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
             c2o1*(/*vx2y*MzYZZ +*/  vx*MzXYYZZ + vz*MzXXYYZ /*+ vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY*/ + vy*MzXXYZZ/* + vy2z*MzXXZ*/);//+ 
             //four*(/*vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY +*/ vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
 
-         //(D.f[ DIR_P00   ])[k   ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102 - vx   );   //ke
-         //(D.f[ DIR_M00   ])[kw  ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102 + vx   );   
+         //(D.f[ dP00   ])[k   ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102 - vx   );   //ke
+         //(D.f[ dM00   ])[kw  ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102 + vx   );   
          //(D.f[ DIR_0P0   ])[k   ] =   c1o2*rho*( mu210  - mu220 + mu222 - mu212 +  mu020 - mu022 + mu012 - vy   );   //kn
          //(D.f[ DIR_0M0   ])[ks  ] =   c1o2*rho*(-mu210  - mu220 + mu222 + mu212 +  mu020 - mu022 - mu012 + vy   );   
          //(D.f[ DIR_00P   ])[k   ] =   c1o2*rho*(-mu221  + mu222 + mu201 - mu202 +  mu021 - mu022 + mu002 - vz   );   //kt
@@ -2203,7 +2203,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //(D.f[ DIR_0MM  ])[kbs ] =  c1o4*rho*(-mu221  - mu222 - mu211 - mu212 +  mu021 + mu022 + mu011 + mu012);   
          //(D.f[ DIR_0PM  ])[kb  ] =  c1o4*rho*(-mu221  - mu222 + mu211 + mu212 +  mu021 + mu022 - mu011 - mu012);   //kbn
          //(D.f[ DIR_0MP  ])[ks  ] =  c1o4*rho*( mu221  - mu222 + mu211 - mu212 -  mu021 + mu022 - mu011 + mu012);   //kts
-         //(D.f[ DIR_000])[k   ] =       rho*(-mu200  + mu220 - mu222 + mu202 -  mu020 + mu022 - mu002        )+rho0;   //kzero
+         //(D.f[ d000])[k   ] =       rho*(-mu200  + mu220 - mu222 + mu202 -  mu020 + mu022 - mu002        )+rho0;   //kzero
          //(D.f[ DIR_PPP ])[k   ] = c1o8*rho*(-mu221  + mu222 + mu211 - mu212 +  mu121 - mu122 - mu111 + mu112);   //ktne
          //(D.f[ DIR_PMP ])[ks  ] = c1o8*rho*(-mu221  + mu222 - mu211 + mu212 +  mu121 - mu122 + mu111 - mu112);   //ktse
          //(D.f[ DIR_PPM ])[kb  ] = c1o8*rho*( mu221  + mu222 - mu211 - mu212 -  mu121 - mu122 + mu111 + mu112);   //kbne
@@ -2212,8 +2212,8 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //(D.f[ DIR_MMP ])[ksw ] = c1o8*rho*(-mu221  + mu222 - mu211 + mu212 -  mu121 + mu122 - mu111 + mu112);   //ktsw
          //(D.f[ DIR_MPM ])[kbw ] = c1o8*rho*( mu221  + mu222 - mu211 - mu212 +  mu121 + mu122 - mu111 - mu112);   //kbnw
          //(D.f[ DIR_MMM ])[kbsw] = c1o8*rho*( mu221  + mu222 + mu211 + mu212 +  mu121 + mu122 + mu111 + mu112);   
-         (D.f[ DIR_P00   ])[k   ] =   c1o2*rho*(+ mu222 + (                          - mu220 - mu202        ) + (                         + mu200                ) + (                 - mu122) + (                                          + mu102 + mu120) + ( - vx            ) );   //ke
-         (D.f[ DIR_M00   ])[kw  ] =   c1o2*rho*(+ mu222 + (                          - mu220 - mu202        ) + (                         + mu200                ) + (                 + mu122) + (                                          - mu102 - mu120) + ( + vx            ) );   
+         (D.f[ dP00   ])[k   ] =   c1o2*rho*(+ mu222 + (                          - mu220 - mu202        ) + (                         + mu200                ) + (                 - mu122) + (                                          + mu102 + mu120) + ( - vx            ) );   //ke
+         (D.f[ dM00   ])[kw  ] =   c1o2*rho*(+ mu222 + (                          - mu220 - mu202        ) + (                         + mu200                ) + (                 + mu122) + (                                          - mu102 - mu120) + ( + vx            ) );   
          (D.f[ DIR_0P0   ])[k   ] =   c1o2*rho*(+ mu222 + (                          - mu220         - mu022) + (                                 + mu020        ) + (         - mu212        ) + (                          + mu012 + mu210                ) + (      - vy       ) );   //kn
          (D.f[ DIR_0M0   ])[ks  ] =   c1o2*rho*(+ mu222 + (                          - mu220         - mu022) + (                                 + mu020        ) + (         + mu212        ) + (                          - mu012 - mu210                ) + (      + vy       ) );   
          (D.f[ DIR_00P   ])[k   ] =   c1o2*rho*(+ mu222 + (                                  - mu202 - mu022) + (                                         + mu002) + ( - mu221                ) + (         + mu201 +  mu021                                ) + (           - vz  ) );   //kt
@@ -2230,7 +2230,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          (D.f[ DIR_0MM  ])[kbs ] =  c1o4*rho*(- mu222 + (- mu211                                   + mu022) + (                 + mu011                        ) + ( - mu221 - mu212        ) + (                 +  mu021 + mu012                        )                       );   
          (D.f[ DIR_0PM  ])[kb  ] =  c1o4*rho*(- mu222 + (+ mu211                                   + mu022) + (                 - mu011                        ) + ( - mu221 + mu212        ) + (                 +  mu021 - mu012                        )                       );   //kbn
          (D.f[ DIR_0MP  ])[ks  ] =  c1o4*rho*(- mu222 + (+ mu211                                   + mu022) + (                 - mu011                        ) + ( + mu221 - mu212        ) + (                 -  mu021 + mu012                        )                       );   //kts
-         (D.f[ DIR_000])[k   ] =       rho*(- mu222 + (                          + mu220 + mu202 + mu022) + (                         - mu200 - mu020 - mu002)                                                                                                                  )+rho0;   //kzero
+         (D.f[ d000])[k   ] =       rho*(- mu222 + (                          + mu220 + mu202 + mu022) + (                         - mu200 - mu020 - mu002)                                                                                                                  )+rho0;   //kzero
          (D.f[ DIR_PPP ])[k   ] = c1o8*rho*(+ mu222 + (+ mu211 +  mu121 + mu112                         )                                                      + ( - mu221 - mu212 - mu122) + ( - mu111                                                 )                       );   //ktne
          (D.f[ DIR_PMP ])[ks  ] = c1o8*rho*(+ mu222 + (- mu211 +  mu121 - mu112                         )                                                      + ( - mu221 + mu212 - mu122) + ( + mu111                                                 )                       );   //ktse
          (D.f[ DIR_PPM ])[kb  ] = c1o8*rho*(+ mu222 + (- mu211 -  mu121 + mu112                         )                                                      + ( + mu221 - mu212 - mu122) + ( + mu111                                                 )                       );   //kbne
@@ -2244,8 +2244,8 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //////////////////////////////////////////////////////////////////////////                                                                                                                                                                             
          //BGK                                                                                                 
          //////////////////////////////////////////////////////////////////////////                            
-         //(D.f[ DIR_P00   ])[k   ] = fW    ;                                                                     
-         //(D.f[ DIR_M00   ])[kw  ] = fE    ;                                                                     
+         //(D.f[ dP00   ])[k   ] = fW    ;                                                                     
+         //(D.f[ dM00   ])[kw  ] = fE    ;                                                                     
          //(D.f[ DIR_0P0   ])[k   ] = fS    ;
          //(D.f[ DIR_0M0   ])[ks  ] = fN    ;
          //(D.f[ DIR_00P   ])[k   ] = fB    ;
@@ -2262,7 +2262,7 @@ __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //(D.f[ DIR_0MM  ])[kbs ] = fTN   ;
          //(D.f[ DIR_0PM  ])[kb  ] = fTS   ;
          //(D.f[ DIR_0MP  ])[ks  ] = fBN   ;
-         //(D.f[ DIR_000])[k   ] = fZERO ;
+         //(D.f[ d000])[k   ] = fZERO ;
          //(D.f[ DIR_PPP ])[k   ] = fBSW  ;
          //(D.f[ DIR_PMP ])[ks  ] = fBNW  ;
          //(D.f[ DIR_PPM ])[kb  ] = fTSW  ;
@@ -2346,8 +2346,8 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -2364,7 +2364,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
             D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -2376,8 +2376,8 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          }
          else
          {
-            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -2394,7 +2394,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
             D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -2435,8 +2435,8 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real fE    =  (D.f[DIR_P00])[k  ];//ke
-         real fW    =  (D.f[DIR_M00])[kw ];
+         real fE    =  (D.f[dP00])[k  ];//ke
+         real fW    =  (D.f[dM00])[kw ];
          real fN    =  (D.f[DIR_0P0])[k  ];//kn
          real fS    =  (D.f[DIR_0M0])[ks ];
          real fT    =  (D.f[DIR_00P])[k  ];//kt
@@ -2453,7 +2453,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          real fBS   =  (D.f[DIR_0MM])[kbs];
          real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
          real fTS   =  (D.f[DIR_0MP])[ks ];//kts
-         real fZERO =  (D.f[DIR_000])[k  ];//kzero
+         real fZERO =  (D.f[d000])[k  ];//kzero
          real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
          real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
          real fTSE   = (D.f[DIR_PMP])[ks ];//ktse
@@ -2737,8 +2737,8 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
                   c2o1*(vx2y*MzYZZ +  vx*MzXYYZZ + vz*MzXXYYZ + vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY + vy*MzXXYZZ + vy2z*MzXXZ)+ 
                   c4o1*(vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY + vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
 
-         (D.f[ DIR_P00   ])[k   ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102 - vx   );   //ke
-         (D.f[ DIR_M00   ])[kw  ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102 + vx   );   
+         (D.f[ dP00   ])[k   ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102 - vx   );   //ke
+         (D.f[ dM00   ])[kw  ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102 + vx   );   
          (D.f[ DIR_0P0   ])[k   ] =   c1o2*rho*( mu210  - mu220 + mu222 - mu212 +  mu020 - mu022 + mu012 - vy   );   //kn
          (D.f[ DIR_0M0   ])[ks  ] =   c1o2*rho*(-mu210  - mu220 + mu222 + mu212 +  mu020 - mu022 - mu012 + vy   );   
          (D.f[ DIR_00P   ])[k   ] =   c1o2*rho*(-mu221  + mu222 + mu201 - mu202 +  mu021 - mu022 + mu002 - vz   );   //kt
@@ -2755,7 +2755,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          (D.f[ DIR_0MM  ])[kbs ] =  c1o4*rho*(-mu221  - mu222 - mu211 - mu212 +  mu021 + mu022 + mu011 + mu012);   
          (D.f[ DIR_0PM  ])[kb  ] =  c1o4*rho*(-mu221  - mu222 + mu211 + mu212 +  mu021 + mu022 - mu011 - mu012);   //kbn
          (D.f[ DIR_0MP  ])[ks  ] =  c1o4*rho*( mu221  - mu222 + mu211 - mu212 -  mu021 + mu022 - mu011 + mu012);   //kts
-         (D.f[ DIR_000])[k   ] =       rho*(-mu200  + mu220 - mu222 + mu202 -  mu020 + mu022 - mu002        )+rho0;   //kzero
+         (D.f[ d000])[k   ] =       rho*(-mu200  + mu220 - mu222 + mu202 -  mu020 + mu022 - mu002        )+rho0;   //kzero
          (D.f[ DIR_PPP ])[k   ] = c1o8*rho*(-mu221  + mu222 + mu211 - mu212 +  mu121 - mu122 - mu111 + mu112);   //ktne
          (D.f[ DIR_PMP ])[ks  ] = c1o8*rho*(-mu221  + mu222 - mu211 + mu212 +  mu121 - mu122 + mu111 - mu112);   //ktse
          (D.f[ DIR_PPM ])[kb  ] = c1o8*rho*( mu221  + mu222 - mu211 - mu212 -  mu121 - mu122 + mu111 + mu112);   //kbne
@@ -2769,8 +2769,8 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          //////////////////////////////////////////////////////////////////////////
          //BGK
          //////////////////////////////////////////////////////////////////////////
-         //(D.f[ DIR_P00   ])[k   ] = fW    ;
-         //(D.f[ DIR_M00   ])[kw  ] = fE    ;
+         //(D.f[ dP00   ])[k   ] = fW    ;
+         //(D.f[ dM00   ])[kw  ] = fE    ;
          //(D.f[ DIR_0P0   ])[k   ] = fS    ;
          //(D.f[ DIR_0M0   ])[ks  ] = fN    ;
          //(D.f[ DIR_00P   ])[k   ] = fB    ;
@@ -2787,7 +2787,7 @@ __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          //(D.f[ DIR_0MM  ])[kbs ] = fTN   ;
          //(D.f[ DIR_0PM  ])[kb  ] = fTS   ;
          //(D.f[ DIR_0MP  ])[ks  ] = fBN   ;
-         //(D.f[ DIR_000])[k   ] = fZERO ;
+         //(D.f[ d000])[k   ] = fZERO ;
          //(D.f[ DIR_PPP ])[k   ] = fBSW  ;
          //(D.f[ DIR_PMP ])[ks  ] = fBNW  ;
          //(D.f[ DIR_PPM ])[kb  ] = fTSW  ;
@@ -2871,8 +2871,8 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          Distributions27 D;
          if (EvenOrOdd==true)
          {
-            D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -2889,7 +2889,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
             D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -2901,8 +2901,8 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          }
          else
          {
-            D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-            D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+            D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+            D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
             D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
             D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
             D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -2919,7 +2919,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
             D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
             D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
             D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-            D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+            D.f[d000] = &DDStart[d000 * numberOfLBnodes];
             D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
             D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
             D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -2960,8 +2960,8 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         real fE    =  (D.f[DIR_P00])[k  ];//ke
-         real fW    =  (D.f[DIR_M00])[kw ];
+         real fE    =  (D.f[dP00])[k  ];//ke
+         real fW    =  (D.f[dM00])[kw ];
          real fN    =  (D.f[DIR_0P0])[k  ];//kn
          real fS    =  (D.f[DIR_0M0])[ks ];
          real fT    =  (D.f[DIR_00P])[k  ];//kt
@@ -2978,7 +2978,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          real fBS   =  (D.f[DIR_0MM])[kbs];
          real fBN   =  (D.f[DIR_0PM])[kb ];//kbn
          real fTS   =  (D.f[DIR_0MP])[ks ];//kts
-         real fZERO =  (D.f[DIR_000])[k  ];//kzero
+         real fZERO =  (D.f[d000])[k  ];//kzero
          real fTNE   = (D.f[DIR_PPP])[k  ];//ktne
          real fTSW   = (D.f[DIR_MMP])[ksw];//ktsw
          real fTSE   = (D.f[DIR_PMP])[ks ];//ktse
@@ -3259,8 +3259,8 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
             c2o1*(vx2y*MzYZZ +  vx*MzXYYZZ + vz*MzXXYYZ + vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY + vy*MzXXYZZ + vy2z*MzXXZ)+ 
             c4o1*(vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY + vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
 
-         (D.f[ DIR_P00   ])[k   ] = fW    -   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102        );   //ke
-         (D.f[ DIR_M00   ])[kw  ] = fE    -   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102        );   
+         (D.f[ dP00   ])[k   ] = fW    -   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102        );   //ke
+         (D.f[ dM00   ])[kw  ] = fE    -   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102        );   
          (D.f[ DIR_0P0   ])[k   ] = fS    -   c1o2*rho*( mu210  - mu220 + mu222 - mu212 +  mu020 - mu022 + mu012        );   //kn
          (D.f[ DIR_0M0   ])[ks  ] = fN    -   c1o2*rho*(-mu210  - mu220 + mu222 + mu212 +  mu020 - mu022 - mu012        );   
          (D.f[ DIR_00P   ])[k   ] = fB    -   c1o2*rho*(-mu221  + mu222 + mu201 - mu202 +  mu021 - mu022 + mu002        );   //kt
@@ -3277,7 +3277,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          (D.f[ DIR_0MM  ])[kbs ] = fTN   -  c1o4*rho*(-mu221  - mu222 - mu211 - mu212 +  mu021 + mu022 + mu011 + mu012);   
          (D.f[ DIR_0PM  ])[kb  ] = fTS   -  c1o4*rho*(-mu221  - mu222 + mu211 + mu212 +  mu021 + mu022 - mu011 - mu012);   //kbn
          (D.f[ DIR_0MP  ])[ks  ] = fBN   -  c1o4*rho*( mu221  - mu222 + mu211 - mu212 -  mu021 + mu022 - mu011 + mu012);   //kts
-         (D.f[ DIR_000])[k   ] = fZERO -       rho*(-mu200  + mu220 - mu222 + mu202 -  mu020 + mu022 - mu002        );   //kzero
+         (D.f[ d000])[k   ] = fZERO -       rho*(-mu200  + mu220 - mu222 + mu202 -  mu020 + mu022 - mu002        );   //kzero
          (D.f[ DIR_PPP ])[k   ] = fBSW  - c1o8*rho*(-mu221  + mu222 + mu211 - mu212 +  mu121 - mu122 - mu111 + mu112);   //ktne
          (D.f[ DIR_PMP ])[ks  ] = fBNW  - c1o8*rho*(-mu221  + mu222 - mu211 + mu212 +  mu121 - mu122 + mu111 - mu112);   //ktse
          (D.f[ DIR_PPM ])[kb  ] = fTSW  - c1o8*rho*( mu221  + mu222 - mu211 - mu212 -  mu121 - mu122 + mu111 + mu112);   //kbne
@@ -3291,8 +3291,8 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          //////////////////////////////////////////////////////////////////////////
          //BGK
          //////////////////////////////////////////////////////////////////////////
-         //(D.f[ DIR_P00   ])[k   ] = fW    ;
-         //(D.f[ DIR_M00   ])[kw  ] = fE    ;
+         //(D.f[ dP00   ])[k   ] = fW    ;
+         //(D.f[ dM00   ])[kw  ] = fE    ;
          //(D.f[ DIR_0P0   ])[k   ] = fS    ;
          //(D.f[ DIR_0M0   ])[ks  ] = fN    ;
          //(D.f[ DIR_00P   ])[k   ] = fB    ;
@@ -3309,7 +3309,7 @@ __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          //(D.f[ DIR_0MM  ])[kbs ] = fTN   ;
          //(D.f[ DIR_0PM  ])[kb  ] = fTS   ;
          //(D.f[ DIR_0MP  ])[ks  ] = fBN   ;
-         //(D.f[ DIR_000])[k   ] = fZERO ;
+         //(D.f[ d000])[k   ] = fZERO ;
          //(D.f[ DIR_PPP ])[k   ] = fBSW  ;
          //(D.f[ DIR_PMP ])[ks  ] = fBNW  ;
          //(D.f[ DIR_PPM ])[kb  ] = fTSW  ;
@@ -3393,8 +3393,8 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        Distributions27 D;
        if (EvenOrOdd==true)
        {
-          D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-          D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+          D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+          D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
           D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
           D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
           D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -3411,7 +3411,7 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
           D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
           D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
           D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-          D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+          D.f[d000] = &DDStart[d000 * numberOfLBnodes];
           D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
           D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
           D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -3423,8 +3423,8 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        }
        else
        {
-          D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-          D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+          D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+          D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
           D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
           D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
           D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -3441,7 +3441,7 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
           D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
           D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
           D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-          D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+          D.f[d000] = &DDStart[d000 * numberOfLBnodes];
           D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
           D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
           D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -3512,8 +3512,8 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       f_E    =  (D.f[DIR_P00])[ke]+c2o27;
-       f_W    =  (D.f[DIR_M00])[kw]+c2o27;
+       f_E    =  (D.f[dP00])[ke]+c2o27;
+       f_W    =  (D.f[dM00])[kw]+c2o27;
        f_N    =  (D.f[DIR_0P0])[kn]+c2o27;
        f_S    =  (D.f[DIR_0M0])[ks]+c2o27;
        f_T    =  (D.f[DIR_00P])[kt]+c2o27;
@@ -3530,7 +3530,7 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        f_BS   =  (D.f[DIR_0MM])[kbs]+c1o54;
        f_BN   =  (D.f[DIR_0PM])[kbn]+c1o54;
        f_TS   =  (D.f[DIR_0MP])[kts]+c1o54;
-       f_ZERO =  (D.f[DIR_000])[kzero]+c8o27;
+       f_ZERO =  (D.f[d000])[kzero]+c8o27;
        f_TNE   = (D.f[DIR_PPP])[ktne]+c1o216;
        f_TSW   = (D.f[DIR_MMP])[ktsw]+c1o216;
        f_TSE   = (D.f[DIR_PMP])[ktse]+c1o216;
@@ -3977,8 +3977,8 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
           }
         }
 
-       (D.f[ DIR_P00  ])[ke ] = f_W-c2o27;
-       (D.f[ DIR_M00  ])[kw ] = f_E-c2o27;
+       (D.f[ dP00  ])[ke ] = f_W-c2o27;
+       (D.f[ dM00  ])[kw ] = f_E-c2o27;
 
        (D.f[ DIR_0P0  ])[kn ] = f_S-c2o27;
        (D.f[ DIR_0M0  ])[ks ] = f_N-c2o27;
@@ -3999,7 +3999,7 @@ __global__ void LB_Kernel_Casc_SP_27(  real omega,
        (D.f[ DIR_0PM ])[kbn] = f_TS-c1o54;
        (D.f[ DIR_0MP ])[kts] = f_BN-c1o54;
 
-       (D.f[ DIR_000])[k] = f_ZERO-c8o27;
+       (D.f[ d000])[k] = f_ZERO-c8o27;
 
        (D.f[ DIR_PPP ])[ktne] = f_BSW-c1o216;
        (D.f[ DIR_PMP ])[ktse] = f_BNW-c1o216;
@@ -4089,8 +4089,8 @@ __global__ void LB_Kernel_Casc27(real omega,
       Distributions27 D;
       if (EvenOrOdd==true)
       {
-         D.f[DIR_P00] = &DDStart[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DDStart[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DDStart[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DDStart[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DDStart[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DDStart[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -4107,7 +4107,7 @@ __global__ void LB_Kernel_Casc27(real omega,
          D.f[DIR_0MM] = &DDStart[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DDStart[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DDStart[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DDStart[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DDStart[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DDStart[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -4119,8 +4119,8 @@ __global__ void LB_Kernel_Casc27(real omega,
       }
       else
       {
-         D.f[DIR_M00] = &DDStart[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DDStart[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DDStart[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DDStart[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DDStart[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DDStart[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DDStart[DIR_00P * numberOfLBnodes];
@@ -4137,7 +4137,7 @@ __global__ void LB_Kernel_Casc27(real omega,
          D.f[DIR_0PP] = &DDStart[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DDStart[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DDStart[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DDStart[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DDStart[d000 * numberOfLBnodes];
          D.f[DIR_MMM] = &DDStart[DIR_PPP * numberOfLBnodes];
          D.f[DIR_PPM] = &DDStart[DIR_MMP * numberOfLBnodes];
          D.f[DIR_MPM] = &DDStart[DIR_PMP * numberOfLBnodes];
@@ -4208,8 +4208,8 @@ __global__ void LB_Kernel_Casc27(real omega,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      f_E    =  (D.f[DIR_P00])[ke]+c2o27;
-      f_W    =  (D.f[DIR_M00])[kw]+c2o27;
+      f_E    =  (D.f[dP00])[ke]+c2o27;
+      f_W    =  (D.f[dM00])[kw]+c2o27;
       f_N    =  (D.f[DIR_0P0])[kn]+c2o27;
       f_S    =  (D.f[DIR_0M0])[ks]+c2o27;
       f_T    =  (D.f[DIR_00P])[kt]+c2o27;
@@ -4226,7 +4226,7 @@ __global__ void LB_Kernel_Casc27(real omega,
       f_BS   =  (D.f[DIR_0MM])[kbs]+c1o54;
       f_BN   =  (D.f[DIR_0PM])[kbn]+c1o54;
       f_TS   =  (D.f[DIR_0MP])[kts]+c1o54;
-      f_ZERO =  (D.f[DIR_000])[kzero]+c8o27;
+      f_ZERO =  (D.f[d000])[kzero]+c8o27;
       f_TNE   = (D.f[DIR_PPP])[ktne]+c1o216;
       f_TSW   = (D.f[DIR_MMP])[ktsw]+c1o216;
       f_TSE   = (D.f[DIR_PMP])[ktse]+c1o216;
@@ -4673,8 +4673,8 @@ __global__ void LB_Kernel_Casc27(real omega,
          }
       }
 
-      (D.f[ DIR_P00  ])[ke ] = f_W-c2o27;
-      (D.f[ DIR_M00  ])[kw ] = f_E-c2o27;
+      (D.f[ dP00  ])[ke ] = f_W-c2o27;
+      (D.f[ dM00  ])[kw ] = f_E-c2o27;
 
       (D.f[ DIR_0P0  ])[kn ] = f_S-c2o27;
       (D.f[ DIR_0M0  ])[ks ] = f_N-c2o27;
@@ -4695,7 +4695,7 @@ __global__ void LB_Kernel_Casc27(real omega,
       (D.f[ DIR_0PM ])[kbn] = f_TS-c1o54;
       (D.f[ DIR_0MP ])[kts] = f_BN-c1o54;
 
-      (D.f[ DIR_000])[k] = f_ZERO-c8o27;
+      (D.f[ d000])[k] = f_ZERO-c8o27;
 
       (D.f[ DIR_PPP ])[ktne] = f_BSW-c1o216;
       (D.f[ DIR_PMP ])[ktse] = f_BNW-c1o216;

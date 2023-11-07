@@ -26,8 +26,8 @@ __global__ void WallFunction27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -44,7 +44,7 @@ __global__ void WallFunction27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -56,8 +56,8 @@ __global__ void WallFunction27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -74,7 +74,7 @@ __global__ void WallFunction27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -107,8 +107,8 @@ __global__ void WallFunction27(
       //      *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
       //      *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
       //      *q_dirBSE, *q_dirBNW; 
-      //q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      //q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      //q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      //q_dirW   = &QQ[dM00 * numberOfBCnodes];
       //q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       //q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       //q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -167,8 +167,8 @@ __global__ void WallFunction27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -198,7 +198,7 @@ __global__ void WallFunction27(
       real vx1, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
        vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                  ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -234,8 +234,8 @@ __global__ void WallFunction27(
    //   //////////////////////////////////////////////////////////////////////////
    //   if (isEvenTimestep==false)
    //   {
-   //      D.f[DIR_P00] = &DD[DIR_P00 * size_Mat];
-   //      D.f[DIR_M00] = &DD[DIR_M00 * size_Mat];
+   //      D.f[dP00] = &DD[dP00 * size_Mat];
+   //      D.f[dM00] = &DD[dM00 * size_Mat];
    //      D.f[DIR_0P0] = &DD[DIR_0P0 * size_Mat];
    //      D.f[DIR_0M0] = &DD[DIR_0M0 * size_Mat];
    //      D.f[DIR_00P] = &DD[DIR_00P * size_Mat];
@@ -252,7 +252,7 @@ __global__ void WallFunction27(
    //      D.f[DIR_0MM] = &DD[DIR_0MM * size_Mat];
    //      D.f[DIR_0PM] = &DD[DIR_0PM * size_Mat];
    //      D.f[DIR_0MP] = &DD[DIR_0MP * size_Mat];
-   //      D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+   //      D.f[d000] = &DD[d000 * size_Mat];
    //      D.f[DIR_PPP] = &DD[DIR_PPP * size_Mat];
    //      D.f[DIR_MMP] = &DD[DIR_MMP * size_Mat];
    //      D.f[DIR_PMP] = &DD[DIR_PMP * size_Mat];
@@ -264,8 +264,8 @@ __global__ void WallFunction27(
    //   } 
    //   else
    //   {
-   //      D.f[DIR_M00] = &DD[DIR_P00 * size_Mat];
-   //      D.f[DIR_P00] = &DD[DIR_M00 * size_Mat];
+   //      D.f[dM00] = &DD[dP00 * size_Mat];
+   //      D.f[dP00] = &DD[dM00 * size_Mat];
    //      D.f[DIR_0M0] = &DD[DIR_0P0 * size_Mat];
    //      D.f[DIR_0P0] = &DD[DIR_0M0 * size_Mat];
    //      D.f[DIR_00M] = &DD[DIR_00P * size_Mat];
@@ -282,7 +282,7 @@ __global__ void WallFunction27(
    //      D.f[DIR_0PP] = &DD[DIR_0MM * size_Mat];
    //      D.f[DIR_0MP] = &DD[DIR_0PM * size_Mat];
    //      D.f[DIR_0PM] = &DD[DIR_0MP * size_Mat];
-   //      D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+   //      D.f[d000] = &DD[d000 * size_Mat];
    //      D.f[DIR_PPP] = &DD[DIR_MMM * size_Mat];
    //      D.f[DIR_MMP] = &DD[DIR_PPM * size_Mat];
    //      D.f[DIR_PMP] = &DD[DIR_MPM * size_Mat];
@@ -294,7 +294,7 @@ __global__ void WallFunction27(
    //   }
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //   //Test
-   //   //(D.f[DIR_000])[k]=c1o10;
+   //   //(D.f[d000])[k]=c1o10;
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////ToDo anders Klammern
@@ -303,16 +303,16 @@ __global__ void WallFunction27(
    //   if (q>=zero && q<=one)
    //   {
    //      feq=c2over27* (drho/*+three*( vx1        )*/+c9over2*( vx1        )*( vx1        ) * (one + drho)-cu_sq); 
-   //      (D.f[DIR_M00])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);// - c2over27 * drho;
-   //      //(D.f[DIR_M00])[kw]=zero;
+   //      (D.f[dM00])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);// - c2over27 * drho;
+   //      //(D.f[dM00])[kw]=zero;
    //   }
 
    //   q = q_dirW[k];
    //   if (q>=zero && q<=one)
    //   {
    //      feq=c2over27* (drho/*+three*(-vx1        )*/+c9over2*(-vx1        )*(-vx1        ) * (one + drho)-cu_sq); 
-   //      (D.f[DIR_P00])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);// - c2over27 * drho;
-   //      //(D.f[DIR_P00])[ke]=zero;
+   //      (D.f[dP00])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);// - c2over27 * drho;
+   //      //(D.f[dP00])[ke]=zero;
    //   }
 
    //   q = q_dirN[k];

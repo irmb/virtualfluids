@@ -21,11 +21,11 @@ void OneDistributionFullVectorConnector::init()
 
     int anz = 27;
     switch (sendDir) {
-        case DIR_000:
+        case d000:
             UB_THROW(UbException(UB_EXARGS, "ZERO not allowed"));
             break;
-        case DIR_P00:
-        case DIR_M00:
+        case dP00:
+        case dM00:
             sender->getData().resize(maxX2 * maxX3 * anz, c0o1);
             break;
         case DIR_0P0:

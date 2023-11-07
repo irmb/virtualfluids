@@ -49,8 +49,8 @@ Distribution DistributionHelper::getDistribution27()
     d27.dirs.resize((ENDDIR + 1) * DIMENSION);
 
     d27.directions.resize(ENDDIR + 1);
-    d27.directions[DIR_P00] = Direction(DIR_27_E_X, DIR_27_E_Y, DIR_27_E_Z);
-    d27.directions[DIR_M00] = Direction(DIR_27_W_X, DIR_27_W_Y, DIR_27_W_Z);
+    d27.directions[dP00] = Direction(DIR_27_E_X, DIR_27_E_Y, DIR_27_E_Z);
+    d27.directions[dM00] = Direction(DIR_27_W_X, DIR_27_W_Y, DIR_27_W_Z);
     d27.directions[DIR_0P0] = Direction(DIR_27_N_X, DIR_27_N_Y, DIR_27_N_Z);
     d27.directions[DIR_0M0] = Direction(DIR_27_S_X, DIR_27_S_Y, DIR_27_S_Z);
     d27.directions[DIR_00P] = Direction(DIR_27_T_X, DIR_27_T_Y, DIR_27_T_Z);
@@ -71,7 +71,7 @@ Distribution DistributionHelper::getDistribution27()
     d27.directions[DIR_0PM] = Direction(DIR_27_BN_X, DIR_27_BN_Y, DIR_27_BN_Z);
     d27.directions[DIR_0MP] = Direction(DIR_27_TS_X, DIR_27_TS_Y, DIR_27_TS_Z);
 
-    d27.directions[DIR_000] = Direction(DIR_27_REST_X, DIR_27_REST_Y, DIR_27_REST_Z);
+    d27.directions[d000] = Direction(DIR_27_REST_X, DIR_27_REST_Y, DIR_27_REST_Z);
 
     d27.directions[DIR_PPP] = Direction(DIR_27_TNE_X, DIR_27_TNE_Y, DIR_27_TNE_Z);
     d27.directions[DIR_MPP] = Direction(DIR_27_TNW_X, DIR_27_TNW_Y, DIR_27_TNW_Z);
@@ -84,13 +84,13 @@ Distribution DistributionHelper::getDistribution27()
     d27.directions[DIR_MMM] = Direction(DIR_27_BSW_X, DIR_27_BSW_Y, DIR_27_BSW_Z);
 
 
-    d27.dirs[DIR_P00 * 3    ] = DIR_27_E_X;
-    d27.dirs[DIR_P00 * 3 + 1] = DIR_27_E_Y;
-    d27.dirs[DIR_P00 * 3 + 2] = DIR_27_E_Z;
+    d27.dirs[dP00 * 3    ] = DIR_27_E_X;
+    d27.dirs[dP00 * 3 + 1] = DIR_27_E_Y;
+    d27.dirs[dP00 * 3 + 2] = DIR_27_E_Z;
 
-    d27.dirs[DIR_M00 * 3    ] = DIR_27_W_X;
-    d27.dirs[DIR_M00 * 3 + 1] = DIR_27_W_Y;
-    d27.dirs[DIR_M00 * 3 + 2] = DIR_27_W_Z;
+    d27.dirs[dM00 * 3    ] = DIR_27_W_X;
+    d27.dirs[dM00 * 3 + 1] = DIR_27_W_Y;
+    d27.dirs[dM00 * 3 + 2] = DIR_27_W_Z;
     
     d27.dirs[DIR_0P0 * 3    ] = DIR_27_N_X;
     d27.dirs[DIR_0P0 * 3 + 1] = DIR_27_N_Y;
@@ -156,9 +156,9 @@ Distribution DistributionHelper::getDistribution27()
     d27.dirs[DIR_0MP * 3 + 1] = DIR_27_TS_Y;
     d27.dirs[DIR_0MP * 3 + 2] = DIR_27_TS_Z;
 
-    d27.dirs[DIR_000 * 3    ] = DIR_27_REST_X;   //
-    d27.dirs[DIR_000 * 3 + 1] = DIR_27_REST_Y;   //  ZERO ELEMENT
-    d27.dirs[DIR_000 * 3 + 2] = DIR_27_REST_Z;   //
+    d27.dirs[d000 * 3    ] = DIR_27_REST_X;   //
+    d27.dirs[d000 * 3 + 1] = DIR_27_REST_Y;   //  ZERO ELEMENT
+    d27.dirs[d000 * 3 + 2] = DIR_27_REST_Z;   //
 
     d27.dirs[DIR_PPP * 3    ] = DIR_27_TNE_X;
     d27.dirs[DIR_PPP * 3 + 1] = DIR_27_TNE_Y;

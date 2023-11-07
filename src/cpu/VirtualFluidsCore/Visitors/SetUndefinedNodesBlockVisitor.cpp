@@ -42,7 +42,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     // int offset = 2;
     int offset = 3;
 
-    if (block->hasInterpolationFlag(DIR_P00)) {
+    if (block->hasInterpolationFlag(dP00)) {
         int startix1 = maxX1;
         int endix1   = maxX1;
         if (block->hasInterpolationFlagCF())
@@ -53,7 +53,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlag(DIR_M00)) {
+    if (block->hasInterpolationFlag(dM00)) {
         int startix1 = minX1;
         int endix1   = minX1;
         if (block->hasInterpolationFlagCF())
@@ -397,7 +397,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     maxX2 = static_cast<int>(bcMatrix->getNX2()) - 1 - ll;
     maxX3 = static_cast<int>(bcMatrix->getNX3()) - 1 - ll;
 
-    if (block->hasInterpolationFlagFC(DIR_P00)) {
+    if (block->hasInterpolationFlagFC(dP00)) {
         int startix1 = maxX1 - offset2;
         int endix1   = maxX1;
         int startix2 = minX2;
@@ -406,7 +406,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
         int endix3   = maxX3;
         this->setNodesUndefined(startix1, endix1, startix2, endix2, startix3, endix3, bcMatrix);
     }
-    if (block->hasInterpolationFlagFC(DIR_M00)) {
+    if (block->hasInterpolationFlagFC(dM00)) {
         int startix1 = minX1;
         int endix1   = minX1 + offset2;
         int startix2 = minX2;
@@ -635,10 +635,10 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
     // invert scaleCF blocks
     if (block->hasInterpolationFlagCF()) {
         if (block->hasInterpolationFlagFC() && twoTypeOfConnectorsCheck) {
-            for (int i = (int)DIR_P00; i <= (int)DIR_MMM; i++) {
+            for (int i = (int)dP00; i <= (int)DIR_MMM; i++) {
                 UBLOG(logINFO, "FC in dir=" << i << " " << block->hasInterpolationFlagFC(i));
             }
-            for (int i = (int)DIR_P00; i <= (int)DIR_MMM; i++) {
+            for (int i = (int)dP00; i <= (int)DIR_MMM; i++) {
                 UBLOG(logINFO, "CF in dir=" << i << " " << block->hasInterpolationFlagCF(i));
             }
             throw UbException(UB_EXARGS, "block " + block->toString() + " has CF and FC");

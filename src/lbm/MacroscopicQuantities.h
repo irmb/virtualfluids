@@ -28,8 +28,8 @@ inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
             (((f[dir::DIR_0MP] + f[dir::DIR_0PM]) + (f[dir::DIR_0MM] + f[dir::DIR_0PP])) +
              ((f[dir::DIR_M0P] + f[dir::DIR_P0M]) + (f[dir::DIR_M0M] + f[dir::DIR_P0P])) +
              ((f[dir::DIR_MP0] + f[dir::DIR_PM0]) + (f[dir::DIR_MM0] + f[dir::DIR_PP0]))) +
-            f[dir::DIR_000]) +
-           ((f[dir::DIR_M00] + f[dir::DIR_P00]) + (f[dir::DIR_0M0] + f[dir::DIR_0P0]) + (f[dir::DIR_00M] + f[dir::DIR_00P]));
+            f[dir::d000]) +
+           ((f[dir::dM00] + f[dir::dP00]) + (f[dir::DIR_0M0] + f[dir::DIR_0P0]) + (f[dir::DIR_00M] + f[dir::DIR_00P]));
 }
 
 /*
@@ -38,7 +38,7 @@ inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 inline __host__ __device__ real getIncompressibleVelocityX1(const real *const &f /*[27]*/)
 {
     return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_PMP] - f[dir::DIR_MPM])) + ((f[dir::DIR_PMM] - f[dir::DIR_MPP]) + (f[dir::DIR_PPM] - f[dir::DIR_MMP]))) +
-            (((f[dir::DIR_P0M] - f[dir::DIR_M0P]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M])) + ((f[dir::DIR_PM0] - f[dir::DIR_MP0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_P00] - f[dir::DIR_M00]));
+            (((f[dir::DIR_P0M] - f[dir::DIR_M0P]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M])) + ((f[dir::DIR_PM0] - f[dir::DIR_MP0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::dP00] - f[dir::dM00]));
 }
 
 inline __host__ __device__ real getIncompressibleVelocityX2(const real *const &f /*[27]*/)
@@ -107,7 +107,7 @@ inline __host__ __device__ void getCompressibleMacroscopicValues(const real *con
 */
 inline __host__ __device__ real getPressure(const real *const &f27, const real& rho, const real& vx, const real& vy, const real& vz)
 {
-    return (f27[dir::DIR_P00] + f27[dir::DIR_M00] + f27[dir::DIR_0P0] + f27[dir::DIR_0M0] + f27[dir::DIR_00P] + f27[dir::DIR_00M] + 
+    return (f27[dir::dP00] + f27[dir::dM00] + f27[dir::DIR_0P0] + f27[dir::DIR_0M0] + f27[dir::DIR_00P] + f27[dir::DIR_00M] + 
     basics::constant::c2o1 * (f27[dir::DIR_PP0] + f27[dir::DIR_MM0] + f27[dir::DIR_PM0] + f27[dir::DIR_MP0] + f27[dir::DIR_P0P] + 
                       f27[dir::DIR_M0M] + f27[dir::DIR_P0M] + f27[dir::DIR_M0P] + f27[dir::DIR_0PP] + f27[dir::DIR_0MM] + 
                       f27[dir::DIR_0PM] + f27[dir::DIR_0MP]) + 

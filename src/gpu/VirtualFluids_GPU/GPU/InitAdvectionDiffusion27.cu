@@ -77,8 +77,8 @@ __global__ void InitAD27(
 		Distributions27 distAD;
 		if (isEvenTimestep)
 		{
-			distAD.f[DIR_P00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
-			distAD.f[DIR_M00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+			distAD.f[dP00] = &distributionsAD[dP00 * numberOfLBnodes];
+			distAD.f[dM00] = &distributionsAD[dM00 * numberOfLBnodes];
 			distAD.f[DIR_0P0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
 			distAD.f[DIR_0M0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
 			distAD.f[DIR_00P] = &distributionsAD[DIR_00P * numberOfLBnodes];
@@ -95,7 +95,7 @@ __global__ void InitAD27(
 			distAD.f[DIR_0MM] = &distributionsAD[DIR_0MM * numberOfLBnodes];
 			distAD.f[DIR_0PM] = &distributionsAD[DIR_0PM * numberOfLBnodes];
 			distAD.f[DIR_0MP] = &distributionsAD[DIR_0MP * numberOfLBnodes];
-			distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+			distAD.f[d000] = &distributionsAD[d000 * numberOfLBnodes];
 			distAD.f[DIR_PPP] = &distributionsAD[DIR_PPP * numberOfLBnodes];
 			distAD.f[DIR_MMP] = &distributionsAD[DIR_MMP * numberOfLBnodes];
 			distAD.f[DIR_PMP] = &distributionsAD[DIR_PMP * numberOfLBnodes];
@@ -107,8 +107,8 @@ __global__ void InitAD27(
 		}
 		else
 		{
-			distAD.f[DIR_M00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
-			distAD.f[DIR_P00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+			distAD.f[dM00] = &distributionsAD[dP00 * numberOfLBnodes];
+			distAD.f[dP00] = &distributionsAD[dM00 * numberOfLBnodes];
 			distAD.f[DIR_0M0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
 			distAD.f[DIR_0P0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
 			distAD.f[DIR_00M] = &distributionsAD[DIR_00P * numberOfLBnodes];
@@ -125,7 +125,7 @@ __global__ void InitAD27(
 			distAD.f[DIR_0PP] = &distributionsAD[DIR_0MM * numberOfLBnodes];
 			distAD.f[DIR_0MP] = &distributionsAD[DIR_0PM * numberOfLBnodes];
 			distAD.f[DIR_0PM] = &distributionsAD[DIR_0MP * numberOfLBnodes];
-			distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+			distAD.f[d000] = &distributionsAD[d000 * numberOfLBnodes];
 			distAD.f[DIR_MMM] = &distributionsAD[DIR_PPP * numberOfLBnodes];
 			distAD.f[DIR_PPM] = &distributionsAD[DIR_MMP * numberOfLBnodes];
 			distAD.f[DIR_MPM] = &distributionsAD[DIR_PMP * numberOfLBnodes];
@@ -177,9 +177,9 @@ __global__ void InitAD27(
 		//!
 		real cu_sq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
 
-		(distAD.f[DIR_000])[kzero] = c8o27  * conc * (c1o1 - cu_sq);
-		(distAD.f[DIR_P00])[ke   ] = c2o27  * conc * (c1o1 + c3o1 * ( vx1            ) + c9o2 * ( vx1            ) * ( vx1            ) - cu_sq);
-		(distAD.f[DIR_M00])[kw   ] = c2o27  * conc * (c1o1 + c3o1 * (-vx1            ) + c9o2 * (-vx1            ) * (-vx1            ) - cu_sq);
+		(distAD.f[d000])[kzero] = c8o27  * conc * (c1o1 - cu_sq);
+		(distAD.f[dP00])[ke   ] = c2o27  * conc * (c1o1 + c3o1 * ( vx1            ) + c9o2 * ( vx1            ) * ( vx1            ) - cu_sq);
+		(distAD.f[dM00])[kw   ] = c2o27  * conc * (c1o1 + c3o1 * (-vx1            ) + c9o2 * (-vx1            ) * (-vx1            ) - cu_sq);
 		(distAD.f[DIR_0P0])[kn   ] = c2o27  * conc * (c1o1 + c3o1 * (       vx2      ) + c9o2 * (       vx2      ) * (       vx2      ) - cu_sq);
 		(distAD.f[DIR_0M0])[ks   ] = c2o27  * conc * (c1o1 + c3o1 * (     - vx2      ) + c9o2 * (     - vx2      ) * (     - vx2      ) - cu_sq);
 		(distAD.f[DIR_00P])[kt   ] = c2o27  * conc * (c1o1 + c3o1 * (             vx3) + c9o2 * (             vx3) * (             vx3) - cu_sq);
@@ -263,8 +263,8 @@ __global__ void InitAD27(
 //          Distributions27 D27;
 //          if (EvenOrOdd==true)
 //          {
-//             D27.f[DIR_P00] = &DD27[DIR_P00 * size_Mat];
-//             D27.f[DIR_M00] = &DD27[DIR_M00 * size_Mat];
+//             D27.f[dP00] = &DD27[dP00 * size_Mat];
+//             D27.f[dM00] = &DD27[dM00 * size_Mat];
 //             D27.f[DIR_0P0] = &DD27[DIR_0P0 * size_Mat];
 //             D27.f[DIR_0M0] = &DD27[DIR_0M0 * size_Mat];
 //             D27.f[DIR_00P] = &DD27[DIR_00P * size_Mat];
@@ -281,7 +281,7 @@ __global__ void InitAD27(
 //             D27.f[DIR_0MM] = &DD27[DIR_0MM * size_Mat];
 //             D27.f[DIR_0PM] = &DD27[DIR_0PM * size_Mat];
 //             D27.f[DIR_0MP] = &DD27[DIR_0MP * size_Mat];
-//             D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+//             D27.f[d000] = &DD27[d000 * size_Mat];
 //             D27.f[DIR_PPP] = &DD27[DIR_PPP * size_Mat];
 //             D27.f[DIR_MMP] = &DD27[DIR_MMP * size_Mat];
 //             D27.f[DIR_PMP] = &DD27[DIR_PMP * size_Mat];
@@ -293,8 +293,8 @@ __global__ void InitAD27(
 //          }
 //          else
 //          {
-//             D27.f[DIR_M00] = &DD27[DIR_P00 * size_Mat];
-//             D27.f[DIR_P00] = &DD27[DIR_M00 * size_Mat];
+//             D27.f[dM00] = &DD27[dP00 * size_Mat];
+//             D27.f[dP00] = &DD27[dM00 * size_Mat];
 //             D27.f[DIR_0M0] = &DD27[DIR_0P0 * size_Mat];
 //             D27.f[DIR_0P0] = &DD27[DIR_0M0 * size_Mat];
 //             D27.f[DIR_00M] = &DD27[DIR_00P * size_Mat];
@@ -311,7 +311,7 @@ __global__ void InitAD27(
 //             D27.f[DIR_0PP] = &DD27[DIR_0MM * size_Mat];
 //             D27.f[DIR_0MP] = &DD27[DIR_0PM * size_Mat];
 //             D27.f[DIR_0PM] = &DD27[DIR_0MP * size_Mat];
-//             D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+//             D27.f[d000] = &DD27[d000 * size_Mat];
 //             D27.f[DIR_MMM] = &DD27[DIR_PPP * size_Mat];
 //             D27.f[DIR_PPM] = &DD27[DIR_MMP * size_Mat];
 //             D27.f[DIR_MPM] = &DD27[DIR_PMP * size_Mat];
@@ -390,9 +390,9 @@ __global__ void InitAD27(
 //          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //          real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-//          (D27.f[DIR_000])[kzero] =   c8o27* ConcD*(c1o1-cu_sq);
-//          (D27.f[DIR_P00])[ke   ] =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
-//          (D27.f[DIR_M00])[kw   ] =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+//          (D27.f[d000])[kzero] =   c8o27* ConcD*(c1o1-cu_sq);
+//          (D27.f[dP00])[ke   ] =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+//          (D27.f[dM00])[kw   ] =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
 //          (D27.f[DIR_0P0])[kn   ] =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
 //          (D27.f[DIR_0M0])[ks   ] =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
 //          (D27.f[DIR_00P])[kt   ] =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);

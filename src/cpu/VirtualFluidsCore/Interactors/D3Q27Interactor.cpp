@@ -93,11 +93,11 @@ void D3Q27Interactor::initRayVectors()
     int fdir;
     real c1oS2 = vf::basics::constant::one_over_sqrt2;
     real c1oS3 = vf::basics::constant::one_over_sqrt3;
-    fdir         = DIR_P00;
+    fdir         = dP00;
     rayX1[fdir]  = c1o1;
     rayX2[fdir]  = c0o1;
     rayX3[fdir]  = c0o1;
-    fdir         = DIR_M00;
+    fdir         = dM00;
     rayX1[fdir]  = -c1o1;
     rayX2[fdir]  = c0o1;
     rayX3[fdir]  = c0o1;
@@ -333,7 +333,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
         vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::basics::constant::sqrt2 * deltaX1);
-        distNeigh[DIR_P00] = distNeigh[DIR_M00] = distNeigh[DIR_0P0] = deltaX1;
+        distNeigh[dP00] = distNeigh[dM00] = distNeigh[DIR_0P0] = deltaX1;
         distNeigh[DIR_0M0] = distNeigh[DIR_00P] = distNeigh[DIR_00M] = deltaX1;
         distNeigh[DIR_PP0] = distNeigh[DIR_MP0] = distNeigh[DIR_MM0] =
             distNeigh[DIR_PM0]             = vf::basics::constant::sqrt2 * deltaX1;
@@ -621,7 +621,7 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
                     if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
                         real x1b, x2b, x3b, q = bc->getQ(dir);
                         switch (dir) {
-                            case DIR_P00:
+                            case dP00:
                                 x1b = x1a + q * dx;
                                 x2b = x2a;
                                 x3b = x3a;
@@ -631,7 +631,7 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
                                 x2b = x2a + q * dx;
                                 x3b = x3a;
                                 break;
-                            case DIR_M00:
+                            case dM00:
                                 x1b = x1a - q * dx;
                                 x2b = x2a;
                                 x3b = x3a;
@@ -794,7 +794,7 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
         if (block) {
             if (!block->getConnector(DIR_0P0))
                 include_N_Face = true;
-            if (!block->getConnector(DIR_P00))
+            if (!block->getConnector(dP00))
                 include_E_Face = true;
             if (!block->getConnector(DIR_00P))
                 include_T_Face = true;
@@ -844,7 +844,7 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
                         if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
                             real x1b, x2b, x3b, q = bc->getQ(dir);
                             switch (dir) {
-                                case DIR_P00:
+                                case dP00:
                                     x1b = x1a + q * dx;
                                     x2b = x2a;
                                     x3b = x3a;
@@ -854,7 +854,7 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
                                     x2b = x2a + q * dx;
                                     x3b = x3a;
                                     break;
-                                case DIR_M00:
+                                case dM00:
                                     x1b = x1a - q * dx;
                                     x2b = x2a;
                                     x3b = x3a;

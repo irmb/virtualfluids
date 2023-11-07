@@ -90,8 +90,8 @@ void CompressibleOffsetSquarePressureInterpolator::calcMoments(const real* const
    kxy   = -c3o1*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))/(c1o1 + drho)-(vx1*vx2));// might not be optimal MG 25.2.13
    kyz   = -c3o1*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))/(c1o1 + drho)-(vx2*vx3));
    kxz   = -c3o1*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))/(c1o1 + drho)-(vx1*vx3));
-   kxxMyy = -c3o1/c2o1*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_0M0]+f[DIR_0P0]))/(c1o1 + drho)-(vx1*vx1-vx2*vx2));
-   kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[DIR_M00]+f[DIR_P00])-(f[DIR_00M]+f[DIR_00P]))/(c1o1 + drho)-(vx1*vx1-vx3*vx3));
+   kxxMyy = -c3o1/c2o1*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[dM00]+f[dP00])-(f[DIR_0M0]+f[DIR_0P0]))/(c1o1 + drho)-(vx1*vx1-vx2*vx2));
+   kxxMzz = -c3o1/c2o1*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[dM00]+f[dP00])-(f[DIR_00M]+f[DIR_00P]))/(c1o1 + drho)-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedCoefficiets(const D3Q27ICell& icell, real omega, real eps_new)
@@ -783,8 +783,8 @@ void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeCF(real* 
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[DIR_P00]    = mfcbb;
-   f[DIR_M00]    = mfabb;
+   f[dP00]    = mfcbb;
+   f[dM00]    = mfabb;
    f[DIR_0P0]    = mfbcb;
    f[DIR_0M0]    = mfbab;
    f[DIR_00P]    = mfbbc;
@@ -801,7 +801,7 @@ void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeCF(real* 
    f[DIR_0MM]   = mfbaa;
    f[DIR_0PM]   = mfbca;
    f[DIR_0MP]   = mfbac;
-   f[DIR_000] = mfbbb;
+   f[d000] = mfbbb;
    f[DIR_PPP]  = mfccc;
    f[DIR_PMP]  = mfcac;
    f[DIR_PPM]  = mfcca;
@@ -1237,8 +1237,8 @@ void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeFC(real* 
    mfccc = m2;
    ////////////////////////////////////////////////////////////////////////////////////
 
-   f[DIR_P00]    = mfcbb;
-   f[DIR_M00]    = mfabb;
+   f[dP00]    = mfcbb;
+   f[dM00]    = mfabb;
    f[DIR_0P0]    = mfbcb;
    f[DIR_0M0]    = mfbab;
    f[DIR_00P]    = mfbbc;
@@ -1255,7 +1255,7 @@ void CompressibleOffsetSquarePressureInterpolator::calcInterpolatedNodeFC(real* 
    f[DIR_0MM]   = mfbaa;
    f[DIR_0PM]   = mfbca;
    f[DIR_0MP]   = mfbac;
-   f[DIR_000] = mfbbb;
+   f[d000] = mfbbb;
    f[DIR_PPP]  = mfccc;
    f[DIR_PMP]  = mfcac;
    f[DIR_PPM]  = mfcca;

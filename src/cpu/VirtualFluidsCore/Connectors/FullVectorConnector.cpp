@@ -65,7 +65,7 @@ void FullVectorConnector::fillData()
 
     int index = 0;
     // EAST
-    if (sendDir == DIR_P00) {
+    if (sendDir == dP00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 fillData(sdata, index, maxX1 - 1, x2, x3);
@@ -73,7 +73,7 @@ void FullVectorConnector::fillData()
         }
     }
     // WEST
-    else if (sendDir == DIR_M00) {
+    else if (sendDir == dM00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 fillData(sdata, index, 1, x2, x3);
@@ -261,13 +261,13 @@ void FullVectorConnector::distributeData()
 
     int index = 0;
 
-    if (sendDir == DIR_M00) {
+    if (sendDir == dM00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 distributeData(rdata, index, 0, x2, x3);
             }
         }
-    } else if (sendDir == DIR_P00) {
+    } else if (sendDir == dP00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 distributeData(rdata, index, maxX1, x2, x3);

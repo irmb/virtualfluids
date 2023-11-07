@@ -35,42 +35,42 @@ void SetInterpolationDirsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bl
                 bool flagDir;
                 switch (dir) {
                     case DIR_PP0:
-                        checkFlagDir(grid, DIR_P00, DIR_0P0, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_0P0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_MM0:
-                        checkFlagDir(grid, DIR_M00, DIR_0M0, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_0M0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_PM0:
-                        checkFlagDir(grid, DIR_P00, DIR_0M0, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_0M0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_MP0:
-                        checkFlagDir(grid, DIR_M00, DIR_0P0, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_0P0, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_P0P:
-                        checkFlagDir(grid, DIR_P00, DIR_00P, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_M0M:
-                        checkFlagDir(grid, DIR_M00, DIR_00M, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_P0M:
-                        checkFlagDir(grid, DIR_P00, DIR_00M, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_M0P:
-                        checkFlagDir(grid, DIR_M00, DIR_00P, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
@@ -95,42 +95,42 @@ void SetInterpolationDirsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bl
                             continue;
                         break;
                     case DIR_PPP:
-                        checkFlagDir(grid, DIR_P00, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_MMP:
-                        checkFlagDir(grid, DIR_M00, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_PMP:
-                        checkFlagDir(grid, DIR_P00, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_0M0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_MPP:
-                        checkFlagDir(grid, DIR_M00, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_0P0, DIR_00P, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_PPM:
-                        checkFlagDir(grid, DIR_P00, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_MMM:
-                        checkFlagDir(grid, DIR_M00, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_PMM:
-                        checkFlagDir(grid, DIR_P00, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dP00, DIR_0M0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;
                     case DIR_MPM:
-                        checkFlagDir(grid, DIR_M00, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
+                        checkFlagDir(grid, dM00, DIR_0P0, DIR_00M, flagDir, ix1, ix2, ix3, level);
                         if (!flagDir)
                             continue;
                         break;

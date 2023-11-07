@@ -138,10 +138,10 @@ protected:
 inline bool MultiphaseScaleDistributionLBMKernel::isGas(real phiLim, real* phi, real* phi2)
 {
     using namespace vf::lbm::dir;
-    return (phi2[DIR_000] <= phiLim) || ((phi[DIR_000] <= phiLim) &&
+    return (phi2[d000] <= phiLim) || ((phi[d000] <= phiLim) &&
                         (
-						(phi[DIR_P00] > phiLim) ||
-						(phi[DIR_M00] > phiLim) ||
+						(phi[dP00] > phiLim) ||
+						(phi[dM00] > phiLim) ||
 						(phi[DIR_00P] > phiLim) ||
 						(phi[DIR_00M] > phiLim) ||
 						(phi[DIR_0M0] > phiLim) ||

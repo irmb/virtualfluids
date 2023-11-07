@@ -50,7 +50,7 @@ const int EsoTwistD3Q27System::etINVDIR[EsoTwistD3Q27System::ENDF + 1] = {
     vf::lbm::dir::INV_P0P,  vf::lbm::dir::INV_M0M,  vf::lbm::dir::INV_P0M,  vf::lbm::dir::INV_M0P,  vf::lbm::dir::INV_0PP,
     vf::lbm::dir::INV_0MM,  vf::lbm::dir::INV_0PM,  vf::lbm::dir::INV_0MP,  vf::lbm::dir::INV_PPP, vf::lbm::dir::INV_MPP,
     vf::lbm::dir::INV_PMP, vf::lbm::dir::INV_MMP, vf::lbm::dir::INV_PPM, vf::lbm::dir::INV_MPM, vf::lbm::dir::INV_PMM,
-    vf::lbm::dir::INV_MMM, vf::lbm::dir::DIR_000
+    vf::lbm::dir::INV_MMM, vf::lbm::dir::d000
 };
 
 const unsigned long int EsoTwistD3Q27System::etDIR[EsoTwistD3Q27System::ENDF + 1] = {

@@ -648,9 +648,9 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 {
 	QforBoundaryConditions Q;
 	real* QQ = para->getParH(level)->geometryBC.q27[0];
-	Q.q27[vf::lbm::dir::DIR_000] = &QQ[vf::lbm::dir::DIR_000 * para->getParH(level)->geometryBC.numberOfBCnodes];
+	Q.q27[vf::lbm::dir::d000] = &QQ[vf::lbm::dir::d000 * para->getParH(level)->geometryBC.numberOfBCnodes];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
-		Q.q27[vf::lbm::dir::DIR_000][i] = 0.0f;
+		Q.q27[vf::lbm::dir::d000][i] = 0.0f;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -721,8 +721,8 @@ void GridReader::initalGridInformations()
 
 void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
-	Q.q27[DIR_P00] = &QQ[DIR_P00   *sizeQ];
-	Q.q27[DIR_M00] = &QQ[DIR_M00   *sizeQ];
+	Q.q27[dP00] = &QQ[dP00   *sizeQ];
+	Q.q27[dM00] = &QQ[dM00   *sizeQ];
 	Q.q27[DIR_0P0] = &QQ[DIR_0P0   *sizeQ];
 	Q.q27[DIR_0M0] = &QQ[DIR_0M0   *sizeQ];
 	Q.q27[DIR_00P] = &QQ[DIR_00P   *sizeQ];
@@ -739,7 +739,7 @@ void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int si
 	Q.q27[DIR_0MM] = &QQ[DIR_0MM  *sizeQ];
 	Q.q27[DIR_0PM] = &QQ[DIR_0PM  *sizeQ];
 	Q.q27[DIR_0MP] = &QQ[DIR_0MP  *sizeQ];
-	Q.q27[DIR_000] = &QQ[DIR_000*sizeQ];
+	Q.q27[d000] = &QQ[d000*sizeQ];
 	Q.q27[DIR_PPP] = &QQ[DIR_PPP *sizeQ];
 	Q.q27[DIR_MMP] = &QQ[DIR_MMP *sizeQ];
 	Q.q27[DIR_PMP] = &QQ[DIR_PMP *sizeQ];

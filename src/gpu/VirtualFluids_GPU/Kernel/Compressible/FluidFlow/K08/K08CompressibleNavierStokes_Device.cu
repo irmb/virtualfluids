@@ -37,8 +37,8 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[DIR_P00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_M00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dP00] = &DDStart[dP00 * size_Mat];
+				D.f[dM00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00P] = &DDStart[DIR_00P * size_Mat];
@@ -55,7 +55,7 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 				D.f[DIR_0MM] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_PPP] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_MMP] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_PMP] = &DDStart[DIR_PMP * size_Mat];
@@ -67,8 +67,8 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 			}
 			else
 			{
-				D.f[DIR_M00] = &DDStart[DIR_P00 * size_Mat];
-				D.f[DIR_P00] = &DDStart[DIR_M00 * size_Mat];
+				D.f[dM00] = &DDStart[dP00 * size_Mat];
+				D.f[dP00] = &DDStart[dM00 * size_Mat];
 				D.f[DIR_0M0] = &DDStart[DIR_0P0 * size_Mat];
 				D.f[DIR_0P0] = &DDStart[DIR_0M0 * size_Mat];
 				D.f[DIR_00M] = &DDStart[DIR_00P * size_Mat];
@@ -85,7 +85,7 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 				D.f[DIR_0PP] = &DDStart[DIR_0MM * size_Mat];
 				D.f[DIR_0MP] = &DDStart[DIR_0PM * size_Mat];
 				D.f[DIR_0PM] = &DDStart[DIR_0MP * size_Mat];
-				D.f[DIR_000] = &DDStart[DIR_000 * size_Mat];
+				D.f[d000] = &DDStart[d000 * size_Mat];
 				D.f[DIR_MMM] = &DDStart[DIR_PPP * size_Mat];
 				D.f[DIR_PPM] = &DDStart[DIR_MMP * size_Mat];
 				D.f[DIR_MPM] = &DDStart[DIR_PMP * size_Mat];
@@ -126,8 +126,8 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 			unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real f_E = (D.f[DIR_P00])[ke];// +  c2over27 ;
-			real f_W = (D.f[DIR_M00])[kw];// +  c2over27 ;
+			real f_E = (D.f[dP00])[ke];// +  c2over27 ;
+			real f_W = (D.f[dM00])[kw];// +  c2over27 ;
 			real f_N = (D.f[DIR_0P0])[kn];// +  c2over27 ;
 			real f_S = (D.f[DIR_0M0])[ks];// +  c2over27 ;
 			real f_T = (D.f[DIR_00P])[kt];// +  c2over27 ;
@@ -144,7 +144,7 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 			real f_BS = (D.f[DIR_0MM])[kbs];// +  c1over54 ;
 			real f_BN = (D.f[DIR_0PM])[kbn];// +  c1over54 ;
 			real f_TS = (D.f[DIR_0MP])[kts];// +  c1over54 ;
-			real f_R = (D.f[DIR_000])[kzero];// +  c8over27 ;
+			real f_R = (D.f[d000])[kzero];// +  c8over27 ;
 			real f_TNE = (D.f[DIR_PPP])[ktne];// +  c1over216;
 			real f_TSW = (D.f[DIR_MMP])[ktsw];// +  c1over216;
 			real f_TSE = (D.f[DIR_PMP])[ktse];// +  c1over216;
@@ -874,8 +874,8 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[DIR_P00])[ke] = mfabb;// -  c2over27 ;//                                                                     
-			(D.f[DIR_M00])[kw] = mfcbb;// -  c2over27 ;                                                                     
+			(D.f[dP00])[ke] = mfabb;// -  c2over27 ;//                                                                     
+			(D.f[dM00])[kw] = mfcbb;// -  c2over27 ;                                                                     
 			(D.f[DIR_0P0])[kn] = mfbab;// -  c2over27 ;
 			(D.f[DIR_0M0])[ks] = mfbcb;// -  c2over27 ;
 			(D.f[DIR_00P])[kt] = mfbba;// -  c2over27 ;
@@ -892,7 +892,7 @@ __global__ void K08CompressibleNavierStokes_Device(real omega,
 			(D.f[DIR_0MM])[kbs] = mfbcc;// -  c1over54 ;
 			(D.f[DIR_0PM])[kbn] = mfbac;// -  c1over54 ;
 			(D.f[DIR_0MP])[kts] = mfbca;// -  c1over54 ;
-			(D.f[DIR_000])[kzero] = mfbbb;// -  c8over27 ;
+			(D.f[d000])[kzero] = mfbbb;// -  c8over27 ;
 			(D.f[DIR_PPP])[ktne] = mfaaa;// -  c1over216;
 			(D.f[DIR_PMP])[ktse] = mfaca;// -  c1over216;
 			(D.f[DIR_PPM])[kbne] = mfaac;// -  c1over216;

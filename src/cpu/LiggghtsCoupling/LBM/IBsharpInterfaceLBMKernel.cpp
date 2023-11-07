@@ -305,8 +305,8 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                     ////////////////////////////////Momentum conservation experiment 06.03.2023
                     // surfacetension
 
-                    if ((((*phaseField)(x1, x2, x3) <= c1o2) || phi[DIR_000] <= c1o2) &&
-                        ((phi[DIR_P00] > c1o2) || (phi[DIR_M00] > c1o2) || (phi[DIR_00P] > c1o2) || (phi[DIR_00M] > c1o2) || (phi[DIR_0M0] > c1o2) || (phi[DIR_0P0] > c1o2) || (phi[DIR_PP0] > c1o2) || (phi[DIR_PM0] > c1o2) || (phi[DIR_P0P] > c1o2) || (phi[DIR_P0M] > c1o2) || (phi[DIR_MP0] > c1o2) ||
+                    if ((((*phaseField)(x1, x2, x3) <= c1o2) || phi[d000] <= c1o2) &&
+                        ((phi[dP00] > c1o2) || (phi[dM00] > c1o2) || (phi[DIR_00P] > c1o2) || (phi[DIR_00M] > c1o2) || (phi[DIR_0M0] > c1o2) || (phi[DIR_0P0] > c1o2) || (phi[DIR_PP0] > c1o2) || (phi[DIR_PM0] > c1o2) || (phi[DIR_P0P] > c1o2) || (phi[DIR_P0M] > c1o2) || (phi[DIR_MP0] > c1o2) ||
                          (phi[DIR_MM0] > c1o2) || (phi[DIR_M0P] > c1o2) || (phi[DIR_M0M] > c1o2) || (phi[DIR_0PM] > c1o2) || (phi[DIR_0MM] > c1o2) || (phi[DIR_0PP] > c1o2) || (phi[DIR_0MP] > c1o2) || (phi[DIR_PPP] > c1o2) || (phi[DIR_PMP] > c1o2) || (phi[DIR_MPP] > c1o2) || (phi[DIR_MMP] > c1o2) ||
                          (phi[DIR_PPM] > c1o2) || (phi[DIR_PMM] > c1o2) || (phi[DIR_MPM] > c1o2) || (phi[DIR_MMM] > c1o2))) {
                         real vx = (*vxNode)(x1, x2, x3);
@@ -315,14 +315,14 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         findNeighbors(phaseField, x1, x2, x3);
                         real laplacePressure = c12o1 * sigma * computeCurvature_phi();
                         //                  if (step > 5000)
-                        //                       UBLOG(logINFO, x1 << ","<< x2 << ","<< x3 << " "<< "3*dP=" << laplacePressure << " dP=" << laplacePressure / 3.0<< " phi=" << phi[DIR_000]<< "\n");
+                        //                       UBLOG(logINFO, x1 << ","<< x2 << ","<< x3 << " "<< "3*dP=" << laplacePressure << " dP=" << laplacePressure / 3.0<< " phi=" << phi[d000]<< "\n");
                         findNeighbors(phaseFieldOld, x1, x2, x3);
 
                         // 16.03.23 c: BB gas side with updated boundary velocity
 
                         distribution->getDistributionInv(ff, x1, x2, x3);
                         real rhoG;
-                        if (phi[DIR_000] > c1o2) { // initialization necessary
+                        if (phi[d000] > c1o2) { // initialization necessary
                             real sumRho = 0;
                             real sumWeight = 1.e-100;
                             for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
@@ -366,12 +366,12 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                                     }
                                 }
                             }
-                            // distribution->setPostCollisionDistributionForDirection(D3Q27System::getIncompFeqForDirection(DIR_000, rhoG, vx, vy, vz), x1, x2, x3, DIR_000);
+                            // distribution->setPostCollisionDistributionForDirection(D3Q27System::getIncompFeqForDirection(d000, rhoG, vx, vy, vz), x1, x2, x3, d000);
                             {
-                                real fL = distribution->getDistributionInvForDirection(x1, x2, x3, DIR_000);
-                                real feqOLD = D3Q27System::getIncompFeqForDirection(DIR_000, (*rhoNode)(x1, x2, x3), vx, vy, vz);
-                                real feqNew = D3Q27System::getIncompFeqForDirection(DIR_000, rhoG, vx, vy, vz);
-                                distribution->setPostCollisionDistributionForDirection(fL - feqOLD + feqNew, x1, x2, x3, DIR_000);
+                                real fL = distribution->getDistributionInvForDirection(x1, x2, x3, d000);
+                                real feqOLD = D3Q27System::getIncompFeqForDirection(d000, (*rhoNode)(x1, x2, x3), vx, vy, vz);
+                                real feqNew = D3Q27System::getIncompFeqForDirection(d000, rhoG, vx, vy, vz);
+                                distribution->setPostCollisionDistributionForDirection(fL - feqOLD + feqNew, x1, x2, x3, d000);
                             }
 
                         } else { // no refill of gas required
@@ -611,26 +611,26 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                                 // for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
                                 //	sumRho2 += ff[fdir];// -D3Q27System::getIncompFeqForDirection(fdir, 0, sumVx, sumVy, sumVz);
                                 // }
-                                // ff[DIR_000] = rhoL - sumRho2;
+                                // ff[d000] = rhoL - sumRho2;
                                 // rhoL = 27.0 / 18.0 * sumRho2;
                                 // std::cout << "rhoL=" << rhoL <<" sumRho="<< 27.0 / 18.0 * sumRho2 << " vx=" << vx << " vy=" << vy << "\n";
                                 D3Q27System::calcIncompMacroscopicValues(ff, rhoL, vx, vy, vz);
-                                // std::cout << "RecalCrhoL=" << rhoL << " sumRho=" << 27.0 / 18.0 * sumRho2 << " vx=" << vx << " vy=" << vy << "ffRest="<<ff[DIR_000]<<"\n";
-                                // distribution->setPostCollisionDistributionForDirection(ff[DIR_000], x1, x2, x3, DIR_000);
+                                // std::cout << "RecalCrhoL=" << rhoL << " sumRho=" << 27.0 / 18.0 * sumRho2 << " vx=" << vx << " vy=" << vy << "ffRest="<<ff[d000]<<"\n";
+                                // distribution->setPostCollisionDistributionForDirection(ff[d000], x1, x2, x3, d000);
                                 {
-                                    real fG = distribution->getDistributionInvForDirection(x1, x2, x3, DIR_000);
-                                    real feqOLD = D3Q27System::getIncompFeqForDirection(DIR_000, (*rhoNode)(x1, x2, x3), vx, vy, vz);
-                                    real feqNew = D3Q27System::getIncompFeqForDirection(DIR_000, rhoL, vx, vy, vz);
-                                    distribution->setPostCollisionDistributionForDirection(fG - feqOLD + feqNew, x1, x2, x3, DIR_000);
+                                    real fG = distribution->getDistributionInvForDirection(x1, x2, x3, d000);
+                                    real feqOLD = D3Q27System::getIncompFeqForDirection(d000, (*rhoNode)(x1, x2, x3), vx, vy, vz);
+                                    real feqNew = D3Q27System::getIncompFeqForDirection(d000, rhoL, vx, vy, vz);
+                                    distribution->setPostCollisionDistributionForDirection(fG - feqOLD + feqNew, x1, x2, x3, d000);
                                 }
                                 // for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
                                 //	ff[D3Q27System::INVDIR[fdir]]=distribution->getDistributionInvForDirection(x1 + D3Q27System::DX1[fdir], x2 + D3Q27System::DX2[fdir], x3 + D3Q27System::DX3[fdir], D3Q27System::INVDIR[fdir]);
                                 // }
                                 // D3Q27System::calcIncompMacroscopicValues(ff, rhoL, vx, vy, vz);
-                                // std::cout << "AfterRead rhoL=" << rhoL << " rhoGToL=" << rhoG/densityRatio << " vx=" << vx << " vy=" << vy << "ffRest=" << ff[DIR_000] <<" x="<<x1<<" y="<<x2<<" z="<<x3<< "\n";
+                                // std::cout << "AfterRead rhoL=" << rhoL << " rhoGToL=" << rhoG/densityRatio << " vx=" << vx << " vy=" << vy << "ffRest=" << ff[d000] <<" x="<<x1<<" y="<<x2<<" z="<<x3<< "\n";
 
-                                // real feqL = D3Q27System::getIncompFeqForDirection(DIR_000, rhoL, vx, vy, vz);
-                                // distribution->setPostCollisionDistributionForDirection(feqL, x1, x2, x3, DIR_000);
+                                // real feqL = D3Q27System::getIncompFeqForDirection(d000, rhoL, vx, vy, vz);
+                                // distribution->setPostCollisionDistributionForDirection(feqL, x1, x2, x3, d000);
                             }
                         }
 
@@ -687,9 +687,9 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                     real fEqSolid[D3Q27System::ENDF + 1];
                     real fPre[D3Q27System::ENDF + 1];
 
-                    f[vf::lbm::dir::DIR_000] = mfbbb;
+                    f[vf::lbm::dir::d000] = mfbbb;
 
-                    f[vf::lbm::dir::DIR_P00] = mfcbb;
+                    f[vf::lbm::dir::dP00] = mfcbb;
                     f[vf::lbm::dir::DIR_0P0] = mfbcb;
                     f[vf::lbm::dir::DIR_00P] = mfbbc;
                     f[vf::lbm::dir::DIR_PP0] = mfccb;
@@ -703,7 +703,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                     f[vf::lbm::dir::DIR_PMP] = mfcac;
                     f[vf::lbm::dir::DIR_MMP] = mfaac;
 
-                    f[vf::lbm::dir::DIR_M00] = mfabb;
+                    f[vf::lbm::dir::dM00] = mfabb;
                     f[vf::lbm::dir::DIR_0M0] = mfbab;
                     f[vf::lbm::dir::DIR_00M] = mfbba;
                     f[vf::lbm::dir::DIR_MM0] = mfaab;
@@ -718,9 +718,9 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                     f[vf::lbm::dir::DIR_PPM] = mfcca;
 
                     if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MIN) {
-                        fPre[vf::lbm::dir::DIR_000] = mfbbb;
+                        fPre[vf::lbm::dir::d000] = mfbbb;
 
-                        fPre[vf::lbm::dir::DIR_P00] = mfcbb;
+                        fPre[vf::lbm::dir::dP00] = mfcbb;
                         fPre[vf::lbm::dir::DIR_0P0] = mfbcb;
                         fPre[vf::lbm::dir::DIR_00P] = mfbbc;
                         fPre[vf::lbm::dir::DIR_PP0] = mfccb;
@@ -734,7 +734,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         fPre[vf::lbm::dir::DIR_PMP] = mfcac;
                         fPre[vf::lbm::dir::DIR_MMP] = mfaac;
 
-                        fPre[vf::lbm::dir::DIR_M00] = mfabb;
+                        fPre[vf::lbm::dir::dM00] = mfabb;
                         fPre[vf::lbm::dir::DIR_0M0] = mfbab;
                         fPre[vf::lbm::dir::DIR_00M] = mfbba;
                         fPre[vf::lbm::dir::DIR_MM0] = mfaab;
@@ -768,13 +768,13 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         real normX2 = dX2_phi / denom;
                         real normX3 = dX3_phi / denom;
 
-                        collFactorM = phi[DIR_000] > c1o2 ? collFactorL : collFactorG;
-                        // real collFactorMInv = phi[DIR_000] > c1o2 ? collFactorG : collFactorL;
+                        collFactorM = phi[d000] > c1o2 ? collFactorL : collFactorG;
+                        // real collFactorMInv = phi[d000] > c1o2 ? collFactorG : collFactorL;
 
-                        // real mu = 2 * beta * phi[DIR_000] * (phi[DIR_000] - 1) * (2 * phi[DIR_000] - 1) - kappa * nabla2_phi();
+                        // real mu = 2 * beta * phi[d000] * (phi[d000] - 1) * (2 * phi[d000] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        real rho = phi[DIR_000] > c1o2 ? rhoH : rhoL;
+                        real rho = phi[d000] > c1o2 ? rhoH : rhoL;
 
                         real m0, m1, m2;
                         real rhoRef = c1o1;
@@ -790,7 +790,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                         if (withForcing) {
                             muRho = rho;
-                            muPhi = phi[DIR_000];
+                            muPhi = phi[d000];
                             forcingX1 += muForcingX1.Eval();
                             forcingX2 += muForcingX2.Eval();
                             forcingX3 += muForcingX3.Eval();
@@ -838,8 +838,8 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                         ////////////////////////////////////////////////////////////////////////////////////
                         real wadjust;
-                        //					real qudricLimit = 0.01 / (c1o1 + 1.0e4 * phi[DIR_000] * (c1o1 - phi[DIR_000]));
-                        // real qudricLimit = 0.01 / (c1o1 + (((*phaseField)(x1, x2, x3) > c1o2) ? 1.0e6 * phi[DIR_000] * (c1o1 - phi[DIR_000]):c0o1));
+                        //					real qudricLimit = 0.01 / (c1o1 + 1.0e4 * phi[d000] * (c1o1 - phi[d000]));
+                        // real qudricLimit = 0.01 / (c1o1 + (((*phaseField)(x1, x2, x3) > c1o2) ? 1.0e6 * phi[d000] * (c1o1 - phi[d000]):c0o1));
                         real qudricLimit = 0.01;
 
                         ////////////////////////////////////////////////////////////////////////////////////
@@ -955,7 +955,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         real Dxz = -c3o1 * collFactorM * mfbab;
                         real Dyz = -c3o1 * collFactorM * mfabb;
 
-                        if (phi[DIR_000] > c1o2) {
+                        if (phi[d000] > c1o2) {
                             /// QR eddyviscosity:
                             real eddyR = -(Dxy * Dxy + Dxz * Dxz + c1o3 * dxux * dxux) * (dxux) - (Dxy * Dxy + Dyz * Dyz + c1o3 * dyuy * dyuy) * dyuy - (Dxz * Dxz + Dyz * Dyz + c1o3 * dzuz * dzuz) * dzuz - c2o1 * Dxy * Dxz * Dyz;
                             real eddyQ = Dxy * Dxz + Dxy * Dyz + Dxz * Dyz + c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz);
@@ -975,7 +975,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         // non Newtonian fluid collision factor
-                        if (phi[DIR_000] > c1o2) {
+                        if (phi[d000] > c1o2) {
                             real shearRate = sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
                             collFactorM = Rheology::getBinghamCollFactor(collFactorM, shearRate, c1o1);
                             collFactorM = (collFactorM < c1o1) ? c1o1 : collFactorM;
@@ -1141,7 +1141,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         //////////////////////////////////////////////////////////////////////////
                         // write distribution
                         //////////////////////////////////////////////////////////////////////////
-                        //	if (phi[DIR_000] < c1o2) {
+                        //	if (phi[d000] < c1o2) {
                         (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = mfabb;         //* rho * c1o3;
                         (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = mfbab;         //* rho * c1o3;
                         (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = mfbba;         //* rho * c1o3;
@@ -1171,9 +1171,9 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                         (*this->restDistributionsF)(x1, x2, x3) = mfbbb; // *rho* c1o3;
 
-                        f[vf::lbm::dir::DIR_000] = mfbbb;
+                        f[vf::lbm::dir::d000] = mfbbb;
 
-                        f[vf::lbm::dir::DIR_P00] = mfcbb;
+                        f[vf::lbm::dir::dP00] = mfcbb;
                         f[vf::lbm::dir::DIR_0P0] = mfbcb;
                         f[vf::lbm::dir::DIR_00P] = mfbbc;
                         f[vf::lbm::dir::DIR_PP0] = mfccb;
@@ -1187,7 +1187,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         f[vf::lbm::dir::DIR_PMP] = mfcac;
                         f[vf::lbm::dir::DIR_MMP] = mfaac;
 
-                        f[vf::lbm::dir::DIR_M00] = mfabb;
+                        f[vf::lbm::dir::dM00] = mfabb;
                         f[vf::lbm::dir::DIR_0M0] = mfbab;
                         f[vf::lbm::dir::DIR_00M] = mfbba;
                         f[vf::lbm::dir::DIR_MM0] = mfaab;
@@ -1212,10 +1212,10 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         uPart[2] = (*particleData)(x1, x2, x3)->uPart[2];
 
                         D3Q27System::calcIncompFeq(fEqSolid, drho, uPart[0], uPart[1], uPart[2]);
-                        real rhoPhaseField = (phi[DIR_000] > c1o2) ? c1o1 : c1o1 / densityRatio;
+                        real rhoPhaseField = (phi[d000] > c1o2) ? c1o1 : c1o1 / densityRatio;
                         if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MAX) {
-                            double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-                            f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + bb0;
+                            double const bb0 = fEq[vf::lbm::dir::d000] - fEqSolid[vf::lbm::dir::d000];
+                            f[vf::lbm::dir::d000] = fPre[vf::lbm::dir::d000] + bb0;
                             for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
                                 const int iOpp = D3Q27System::INVDIR[iPop];
                                 double const bb = ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
@@ -1237,8 +1237,8 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                             // #endif
                             double const oneMinB = 1. - B;
 
-                            double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-                            f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + oneMinB * (f[vf::lbm::dir::DIR_000] - fPre[vf::lbm::dir::DIR_000]) + B * bb0;
+                            double const bb0 = fEq[vf::lbm::dir::d000] - fEqSolid[vf::lbm::dir::d000];
+                            f[vf::lbm::dir::d000] = fPre[vf::lbm::dir::d000] + oneMinB * (f[vf::lbm::dir::d000] - fPre[vf::lbm::dir::d000]) + B * bb0;
 
                             for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
                                 int const iOpp = D3Q27System::INVDIR[iPop];
@@ -1254,9 +1254,9 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                             }
                         } /* if solidFraction > SOLFRAC_MAX */
 
-                        (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::DIR_000];
+                        (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::d000];
 
-                        (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::DIR_M00];
+                        (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::dM00];
                         (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::DIR_0M0];
                         (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = f[vf::lbm::dir::DIR_00M];
                         (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = f[vf::lbm::dir::DIR_MM0];
@@ -1270,7 +1270,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
                         (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MPM];
                         (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PPM];
 
-                        (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::DIR_P00];
+                        (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::dP00];
                         (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = f[vf::lbm::dir::DIR_0P0];
                         (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = f[vf::lbm::dir::DIR_00P];
                         (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PP0];
@@ -1544,7 +1544,7 @@ real IBsharpInterfaceLBMKernel::gradX1_phi()
     using namespace D3Q27System;
     return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) + (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) + (phi[DIR_PPM] - phi[DIR_MMP]))) +
                    WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) + (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_PM0] - phi[DIR_MP0]) + (phi[DIR_PP0] - phi[DIR_MM0])))) +
-                  +WEIGTH[DIR_0P0] * (phi[DIR_P00] - phi[DIR_M00]));
+                  +WEIGTH[DIR_0P0] * (phi[dP00] - phi[dM00]));
 }
 
 real IBsharpInterfaceLBMKernel::gradX2_phi()
@@ -1570,7 +1570,7 @@ real IBsharpInterfaceLBMKernel::gradX1_rhoInv(real rhoL, real rhoDIV)
                                       ((1.0 / (rhoL + rhoDIV * phi[DIR_PMP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PPM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMP])))) +
                    WEIGTH[DIR_PP0] * (((1.0 / (rhoL + rhoDIV * phi[DIR_P0P]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0M])) + (1.0 / (rhoL + rhoDIV * phi[DIR_P0M]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0P]))) +
                                       ((1.0 / (rhoL + rhoDIV * phi[DIR_PM0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MP0])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PP0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MM0]))))) +
-                  +WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_P00]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M00])));
+                  +WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[dP00]) - 1.0 / (rhoL + rhoDIV * phi[dM00])));
 }
 
 real IBsharpInterfaceLBMKernel::gradX2_rhoInv(real rhoL, real rhoDIV)
@@ -1598,7 +1598,7 @@ real IBsharpInterfaceLBMKernel::gradX1_phi2()
     using namespace D3Q27System;
     return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) + (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) + (phi2[DIR_PPM] - phi2[DIR_MMP]))) +
                    WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) + (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_PM0] - phi2[DIR_MP0]) + (phi2[DIR_PP0] - phi2[DIR_MM0])))) +
-                  +WEIGTH[DIR_0P0] * (phi2[DIR_P00] - phi2[DIR_M00]));
+                  +WEIGTH[DIR_0P0] * (phi2[dP00] - phi2[dM00]));
 }
 
 real IBsharpInterfaceLBMKernel::gradX2_phi2()
@@ -1621,10 +1621,10 @@ real IBsharpInterfaceLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
     real sum = 0.0;
-    sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[DIR_000]) + (phi[DIR_MMM] - phi[DIR_000])) + ((phi[DIR_MMP] - phi[DIR_000]) + (phi[DIR_PPM] - phi[DIR_000]))) + (((phi[DIR_MPP] - phi[DIR_000]) + (phi[DIR_PMM] - phi[DIR_000])) + ((phi[DIR_PMP] - phi[DIR_000]) + (phi[DIR_MPM] - phi[DIR_000]))));
-    sum += WEIGTH[DIR_0PP] * ((((phi[DIR_0PP] - phi[DIR_000]) + (phi[DIR_0MM] - phi[DIR_000])) + ((phi[DIR_0MP] - phi[DIR_000]) + (phi[DIR_0PM] - phi[DIR_000]))) + (((phi[DIR_P0P] - phi[DIR_000]) + (phi[DIR_M0M] - phi[DIR_000])) + ((phi[DIR_M0P] - phi[DIR_000]) + (phi[DIR_P0M] - phi[DIR_000]))) +
-                              (((phi[DIR_PP0] - phi[DIR_000]) + (phi[DIR_MM0] - phi[DIR_000])) + ((phi[DIR_MP0] - phi[DIR_000]) + (phi[DIR_PM0] - phi[DIR_000]))));
-    sum += WEIGTH[DIR_00P] * (((phi[DIR_00P] - phi[DIR_000]) + (phi[DIR_00M] - phi[DIR_000])) + ((phi[DIR_0P0] - phi[DIR_000]) + (phi[DIR_0M0] - phi[DIR_000])) + ((phi[DIR_P00] - phi[DIR_000]) + (phi[DIR_M00] - phi[DIR_000])));
+    sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[d000]) + (phi[DIR_MMM] - phi[d000])) + ((phi[DIR_MMP] - phi[d000]) + (phi[DIR_PPM] - phi[d000]))) + (((phi[DIR_MPP] - phi[d000]) + (phi[DIR_PMM] - phi[d000])) + ((phi[DIR_PMP] - phi[d000]) + (phi[DIR_MPM] - phi[d000]))));
+    sum += WEIGTH[DIR_0PP] * ((((phi[DIR_0PP] - phi[d000]) + (phi[DIR_0MM] - phi[d000])) + ((phi[DIR_0MP] - phi[d000]) + (phi[DIR_0PM] - phi[d000]))) + (((phi[DIR_P0P] - phi[d000]) + (phi[DIR_M0M] - phi[d000])) + ((phi[DIR_M0P] - phi[d000]) + (phi[DIR_P0M] - phi[d000]))) +
+                              (((phi[DIR_PP0] - phi[d000]) + (phi[DIR_MM0] - phi[d000])) + ((phi[DIR_MP0] - phi[d000]) + (phi[DIR_PM0] - phi[d000]))));
+    sum += WEIGTH[DIR_00P] * (((phi[DIR_00P] - phi[d000]) + (phi[DIR_00M] - phi[d000])) + ((phi[DIR_0P0] - phi[d000]) + (phi[DIR_0M0] - phi[d000])) + ((phi[dP00] - phi[d000]) + (phi[dM00] - phi[d000])));
 
     return 6.0 * sum;
 }
@@ -1638,26 +1638,26 @@ real IBsharpInterfaceLBMKernel::computeCurvature_phi()
     real phiY = gradX2_phi();
     real phiZ = gradX3_phi();
     real phiXX =
-        c4o9 * (phi[DIR_P00] - c2o1 * phi[DIR_000] + phi[DIR_M00]) + (c1o9 * (((phi[DIR_PP0] - c2o1 * phi[DIR_0P0] + phi[DIR_MP0]) + (phi[DIR_PM0] - c2o1 * phi[DIR_0M0] + phi[DIR_MM0])) + ((phi[DIR_P0P] - c2o1 * phi[DIR_00P] + phi[DIR_M0P]) + (phi[DIR_P0M] - c2o1 * phi[DIR_00M] + phi[DIR_M0M]))) +
+        c4o9 * (phi[dP00] - c2o1 * phi[d000] + phi[dM00]) + (c1o9 * (((phi[DIR_PP0] - c2o1 * phi[DIR_0P0] + phi[DIR_MP0]) + (phi[DIR_PM0] - c2o1 * phi[DIR_0M0] + phi[DIR_MM0])) + ((phi[DIR_P0P] - c2o1 * phi[DIR_00P] + phi[DIR_M0P]) + (phi[DIR_P0M] - c2o1 * phi[DIR_00M] + phi[DIR_M0M]))) +
                                                                       c1o36 * (((phi[DIR_PPP] - c2o1 * phi[DIR_0PP] + phi[DIR_MPP]) + (phi[DIR_PMP] - c2o1 * phi[DIR_0MP] + phi[DIR_MMP])) + ((phi[DIR_PPM] - c2o1 * phi[DIR_0PM] + phi[DIR_MPM]) + (phi[DIR_PMM] - c2o1 * phi[DIR_0MM] + phi[DIR_MMM]))));
     real phiYY =
-        c4o9 * (phi[DIR_0P0] - c2o1 * phi[DIR_000] + phi[DIR_0M0]) + (c1o9 * (((phi[DIR_PP0] - c2o1 * phi[DIR_P00] + phi[DIR_PM0]) + (phi[DIR_MP0] - c2o1 * phi[DIR_M00] + phi[DIR_MM0])) + ((phi[DIR_0PP] - c2o1 * phi[DIR_00P] + phi[DIR_0MP]) + (phi[DIR_0PM] - c2o1 * phi[DIR_00M] + phi[DIR_0MM]))) +
+        c4o9 * (phi[DIR_0P0] - c2o1 * phi[d000] + phi[DIR_0M0]) + (c1o9 * (((phi[DIR_PP0] - c2o1 * phi[dP00] + phi[DIR_PM0]) + (phi[DIR_MP0] - c2o1 * phi[dM00] + phi[DIR_MM0])) + ((phi[DIR_0PP] - c2o1 * phi[DIR_00P] + phi[DIR_0MP]) + (phi[DIR_0PM] - c2o1 * phi[DIR_00M] + phi[DIR_0MM]))) +
                                                                       c1o36 * (((phi[DIR_PPP] - c2o1 * phi[DIR_P0P] + phi[DIR_PMP]) + (phi[DIR_MPM] - c2o1 * phi[DIR_M0M] + phi[DIR_MMM])) + ((phi[DIR_MPP] - c2o1 * phi[DIR_M0P] + phi[DIR_MMP]) + (phi[DIR_PPM] - c2o1 * phi[DIR_P0M] + phi[DIR_PMM]))));
     real phiZZ =
-        c4o9 * (phi[DIR_00P] - c2o1 * phi[DIR_000] + phi[DIR_00M]) + (c1o9 * (((phi[DIR_M0P] - c2o1 * phi[DIR_M00] + phi[DIR_M0M]) + (phi[DIR_P0P] - c2o1 * phi[DIR_P00] + phi[DIR_P0M])) + ((phi[DIR_0MP] - c2o1 * phi[DIR_0M0] + phi[DIR_0MM]) + (phi[DIR_0PP] - c2o1 * phi[DIR_0P0] + phi[DIR_0PM]))) +
+        c4o9 * (phi[DIR_00P] - c2o1 * phi[d000] + phi[DIR_00M]) + (c1o9 * (((phi[DIR_M0P] - c2o1 * phi[dM00] + phi[DIR_M0M]) + (phi[DIR_P0P] - c2o1 * phi[dP00] + phi[DIR_P0M])) + ((phi[DIR_0MP] - c2o1 * phi[DIR_0M0] + phi[DIR_0MM]) + (phi[DIR_0PP] - c2o1 * phi[DIR_0P0] + phi[DIR_0PM]))) +
                                                                       c1o36 * (((phi[DIR_MPP] - c2o1 * phi[DIR_MP0] + phi[DIR_MPM]) + (phi[DIR_PMP] - c2o1 * phi[DIR_PM0] + phi[DIR_PMM])) + ((phi[DIR_MMP] - c2o1 * phi[DIR_MM0] + phi[DIR_MMM]) + (phi[DIR_PPP] - c2o1 * phi[DIR_PP0] + phi[DIR_PPM]))));
     real phiXY = c1o4 * (c2o3 * (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0]) + c1o6 * ((phi[DIR_MMP] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_MPP]) + (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PPM] - phi[DIR_MPM])));
     real phiXZ = c1o4 * (c2o3 * (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P]) + c1o6 * ((phi[DIR_MPM] - phi[DIR_PPM] + phi[DIR_PPP] - phi[DIR_MPP]) + (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PMP] - phi[DIR_MMP])));
     real phiYZ = c1o4 * (c2o3 * (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM]) + c1o6 * ((phi[DIR_MMM] - phi[DIR_MMP] + phi[DIR_MPP] - phi[DIR_MPM]) + (phi[DIR_PMM] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_PPM])));
 
     // non isotropic FD (to be improved):
-    // real phiX = (phi[DIR_P00] - phi[DIR_M00]) * c1o2; //gradX1_phi();
+    // real phiX = (phi[dP00] - phi[dM00]) * c1o2; //gradX1_phi();
     // real phiY = (phi[DIR_0P0] - phi[DIR_0M0]) * c1o2; //gradX2_phi();
     // real phiZ = (phi[DIR_00P] - phi[DIR_00M]) * c1o2; //gradX3_phi();
 
-    // real phiXX = phi[DIR_P00] - c2o1 * phi[DIR_000] + phi[DIR_M00];
-    // real phiYY = phi[DIR_0P0] - c2o1 * phi[DIR_000] + phi[DIR_0M0];
-    // real phiZZ =( phi[DIR_00P] - c2o1 * phi[DIR_000] + phi[DIR_00M]);
+    // real phiXX = phi[dP00] - c2o1 * phi[d000] + phi[dM00];
+    // real phiYY = phi[DIR_0P0] - c2o1 * phi[d000] + phi[DIR_0M0];
+    // real phiZZ =( phi[DIR_00P] - c2o1 * phi[d000] + phi[DIR_00M]);
     // real phiXY = c1o4 * (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0]);
     // real phiXZ = c1o4 * (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P]);
     // real phiYZ = c1o4 * (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM]);
@@ -1687,7 +1687,7 @@ void IBsharpInterfaceLBMKernel::computePhasefield()
                     int x2p = x2 + 1;
                     int x3p = x3 + 1;
 
-                    h[DIR_P00] = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+                    h[dP00] = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
                     h[DIR_0P0] = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
                     h[DIR_00P] = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
                     h[DIR_PP0] = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
@@ -1701,7 +1701,7 @@ void IBsharpInterfaceLBMKernel::computePhasefield()
                     h[DIR_PMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
                     h[DIR_MMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    h[DIR_M00] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+                    h[dM00] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
                     h[DIR_0M0] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
                     h[DIR_00M] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
                     h[DIR_MM0] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
@@ -1715,7 +1715,7 @@ void IBsharpInterfaceLBMKernel::computePhasefield()
                     h[DIR_MPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
                     h[DIR_PPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[DIR_000] = (*this->restDistributionsH1)(x1, x2, x3);
+                    h[d000] = (*this->restDistributionsH1)(x1, x2, x3);
                 }
             }
         }
@@ -1728,7 +1728,7 @@ void IBsharpInterfaceLBMKernel::findNeighbors(CbArray3D<real, IndexerX3X2X1>::Cb
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
-    phi[DIR_000] = (*ph)(x1, x2, x3);
+    phi[d000] = (*ph)(x1, x2, x3);
 
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
 
@@ -1747,7 +1747,7 @@ void IBsharpInterfaceLBMKernel::findNeighbors2(CbArray3D<real, IndexerX3X2X1>::C
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
-    phi2[DIR_000] = (*ph)(x1, x2, x3);
+    phi2[d000] = (*ph)(x1, x2, x3);
 
     for (int k = FSTARTDIR; k <= FENDDIR; k++) {
 

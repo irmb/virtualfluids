@@ -76,8 +76,8 @@ __global__ void CalcConc27(
       Distributions27 distAD;
       if (isEvenTimestep)
       {
-         distAD.f[DIR_P00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
-         distAD.f[DIR_M00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+         distAD.f[dP00] = &distributionsAD[dP00 * numberOfLBnodes];
+         distAD.f[dM00] = &distributionsAD[dM00 * numberOfLBnodes];
          distAD.f[DIR_0P0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
          distAD.f[DIR_0M0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
          distAD.f[DIR_00P] = &distributionsAD[DIR_00P * numberOfLBnodes];
@@ -94,7 +94,7 @@ __global__ void CalcConc27(
          distAD.f[DIR_0MM] = &distributionsAD[DIR_0MM * numberOfLBnodes];
          distAD.f[DIR_0PM] = &distributionsAD[DIR_0PM * numberOfLBnodes];
          distAD.f[DIR_0MP] = &distributionsAD[DIR_0MP * numberOfLBnodes];
-         distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+         distAD.f[d000] = &distributionsAD[d000 * numberOfLBnodes];
          distAD.f[DIR_PPP] = &distributionsAD[DIR_PPP * numberOfLBnodes];
          distAD.f[DIR_MMP] = &distributionsAD[DIR_MMP * numberOfLBnodes];
          distAD.f[DIR_PMP] = &distributionsAD[DIR_PMP * numberOfLBnodes];
@@ -106,8 +106,8 @@ __global__ void CalcConc27(
       }
       else
       {
-         distAD.f[DIR_M00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
-         distAD.f[DIR_P00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+         distAD.f[dM00] = &distributionsAD[dP00 * numberOfLBnodes];
+         distAD.f[dP00] = &distributionsAD[dM00 * numberOfLBnodes];
          distAD.f[DIR_0M0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
          distAD.f[DIR_0P0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
          distAD.f[DIR_00M] = &distributionsAD[DIR_00P * numberOfLBnodes];
@@ -124,7 +124,7 @@ __global__ void CalcConc27(
          distAD.f[DIR_0PP] = &distributionsAD[DIR_0MM * numberOfLBnodes];
          distAD.f[DIR_0MP] = &distributionsAD[DIR_0PM * numberOfLBnodes];
          distAD.f[DIR_0PM] = &distributionsAD[DIR_0MP * numberOfLBnodes];
-         distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+         distAD.f[d000] = &distributionsAD[d000 * numberOfLBnodes];
          distAD.f[DIR_PPP] = &distributionsAD[DIR_MMM * numberOfLBnodes];
          distAD.f[DIR_MMP] = &distributionsAD[DIR_PPM * numberOfLBnodes];
          distAD.f[DIR_PMP] = &distributionsAD[DIR_MPM * numberOfLBnodes];
@@ -166,8 +166,8 @@ __global__ void CalcConc27(
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //! - Set local distributions
 	  //!
-	  real mfcbb = (distAD.f[DIR_P00])[ke  ];
-	  real mfabb = (distAD.f[DIR_M00])[kw  ];
+	  real mfcbb = (distAD.f[dP00])[ke  ];
+	  real mfabb = (distAD.f[dM00])[kw  ];
 	  real mfbcb = (distAD.f[DIR_0P0])[kn  ];
 	  real mfbab = (distAD.f[DIR_0M0])[ks  ];
 	  real mfbbc = (distAD.f[DIR_00P])[kt  ];
@@ -184,7 +184,7 @@ __global__ void CalcConc27(
 	  real mfbaa = (distAD.f[DIR_0MM])[kbs ];
 	  real mfbca = (distAD.f[DIR_0PM])[kbn ];
 	  real mfbac = (distAD.f[DIR_0MP])[kts ];
-	  real mfbbb = (distAD.f[DIR_000])[k   ];
+	  real mfbbb = (distAD.f[d000])[k   ];
 	  real mfccc = (distAD.f[DIR_PPP])[ktne];
 	  real mfaac = (distAD.f[DIR_MMP])[ktsw];
 	  real mfcac = (distAD.f[DIR_PMP])[ktse];
@@ -327,8 +327,8 @@ __global__ void CalcConc7( real* Conc,
 //    Distributions27 D27;
 //    if (isEvenTimestep==true)
 //    {
-//       D27.f[DIR_P00] = &DD27[DIR_P00 * size_Mat];
-//       D27.f[DIR_M00] = &DD27[DIR_M00 * size_Mat];
+//       D27.f[dP00] = &DD27[dP00 * size_Mat];
+//       D27.f[dM00] = &DD27[dM00 * size_Mat];
 //       D27.f[DIR_0P0] = &DD27[DIR_0P0 * size_Mat];
 //       D27.f[DIR_0M0] = &DD27[DIR_0M0 * size_Mat];
 //       D27.f[DIR_00P] = &DD27[DIR_00P * size_Mat];
@@ -345,7 +345,7 @@ __global__ void CalcConc7( real* Conc,
 //       D27.f[DIR_0MM] = &DD27[DIR_0MM * size_Mat];
 //       D27.f[DIR_0PM] = &DD27[DIR_0PM * size_Mat];
 //       D27.f[DIR_0MP] = &DD27[DIR_0MP * size_Mat];
-//       D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+//       D27.f[d000] = &DD27[d000 * size_Mat];
 //       D27.f[DIR_PPP] = &DD27[DIR_PPP * size_Mat];
 //       D27.f[DIR_MMP] = &DD27[DIR_MMP * size_Mat];
 //       D27.f[DIR_PMP] = &DD27[DIR_PMP * size_Mat];
@@ -357,8 +357,8 @@ __global__ void CalcConc7( real* Conc,
 //    }
 //    else
 //    {
-//       D27.f[DIR_M00] = &DD27[DIR_P00 * size_Mat];
-//       D27.f[DIR_P00] = &DD27[DIR_M00 * size_Mat];
+//       D27.f[dM00] = &DD27[dP00 * size_Mat];
+//       D27.f[dP00] = &DD27[dM00 * size_Mat];
 //       D27.f[DIR_0M0] = &DD27[DIR_0P0 * size_Mat];
 //       D27.f[DIR_0P0] = &DD27[DIR_0M0 * size_Mat];
 //       D27.f[DIR_00M] = &DD27[DIR_00P * size_Mat];
@@ -375,7 +375,7 @@ __global__ void CalcConc7( real* Conc,
 //       D27.f[DIR_0PP] = &DD27[DIR_0MM * size_Mat];
 //       D27.f[DIR_0MP] = &DD27[DIR_0PM * size_Mat];
 //       D27.f[DIR_0PM] = &DD27[DIR_0MP * size_Mat];
-//       D27.f[DIR_000] = &DD27[DIR_000 * size_Mat];
+//       D27.f[d000] = &DD27[d000 * size_Mat];
 //       D27.f[DIR_MMM] = &DD27[DIR_PPP * size_Mat];
 //       D27.f[DIR_PPM] = &DD27[DIR_MMP * size_Mat];
 //       D27.f[DIR_MPM] = &DD27[DIR_PMP * size_Mat];
@@ -432,7 +432,7 @@ __global__ void CalcConc7( real* Conc,
 
 //       if(geoD[k] == GEO_FLUID)
 //       {
-//          Conc[k]    =   (D27.f[DIR_P00])[ke  ]+ (D27.f[DIR_M00])[kw  ]+ 
+//          Conc[k]    =   (D27.f[dP00])[ke  ]+ (D27.f[dM00])[kw  ]+ 
 //                         (D27.f[DIR_0P0])[kn  ]+ (D27.f[DIR_0M0])[ks  ]+
 //                         (D27.f[DIR_00P])[kt  ]+ (D27.f[DIR_00M])[kb  ]+
 //                         (D27.f[DIR_PP0])[kne ]+ (D27.f[DIR_MM0])[ksw ]+
@@ -441,7 +441,7 @@ __global__ void CalcConc7( real* Conc,
 //                         (D27.f[DIR_P0M])[kbe ]+ (D27.f[DIR_M0P])[ktw ]+
 //                         (D27.f[DIR_0PP])[ktn ]+ (D27.f[DIR_0MM])[kbs ]+
 //                         (D27.f[DIR_0PM])[kbn ]+ (D27.f[DIR_0MP])[kts ]+
-//                         (D27.f[DIR_000])[kzero]+ 
+//                         (D27.f[d000])[kzero]+ 
 //                         (D27.f[DIR_PPP])[ktne]+ (D27.f[DIR_MMP])[ktsw]+
 //                         (D27.f[DIR_PMP])[ktse]+ (D27.f[DIR_MPP])[ktnw]+
 //                         (D27.f[DIR_PPM])[kbne]+ (D27.f[DIR_MMM])[kbsw]+
@@ -588,8 +588,8 @@ __global__ void GetPlaneConc27(real* Conc,
    Distributions27 D27;
    if (isEvenTimestep==true)
    {
-      D27.f[DIR_P00] = &DD27[DIR_P00 * numberOfLBnodes];
-      D27.f[DIR_M00] = &DD27[DIR_M00 * numberOfLBnodes];
+      D27.f[dP00] = &DD27[dP00 * numberOfLBnodes];
+      D27.f[dM00] = &DD27[dM00 * numberOfLBnodes];
       D27.f[DIR_0P0] = &DD27[DIR_0P0 * numberOfLBnodes];
       D27.f[DIR_0M0] = &DD27[DIR_0M0 * numberOfLBnodes];
       D27.f[DIR_00P] = &DD27[DIR_00P * numberOfLBnodes];
@@ -606,7 +606,7 @@ __global__ void GetPlaneConc27(real* Conc,
       D27.f[DIR_0MM] = &DD27[DIR_0MM * numberOfLBnodes];
       D27.f[DIR_0PM] = &DD27[DIR_0PM * numberOfLBnodes];
       D27.f[DIR_0MP] = &DD27[DIR_0MP * numberOfLBnodes];
-      D27.f[DIR_000] = &DD27[DIR_000 * numberOfLBnodes];
+      D27.f[d000] = &DD27[d000 * numberOfLBnodes];
       D27.f[DIR_PPP] = &DD27[DIR_PPP * numberOfLBnodes];
       D27.f[DIR_MMP] = &DD27[DIR_MMP * numberOfLBnodes];
       D27.f[DIR_PMP] = &DD27[DIR_PMP * numberOfLBnodes];
@@ -618,8 +618,8 @@ __global__ void GetPlaneConc27(real* Conc,
    }
    else
    {
-      D27.f[DIR_M00] = &DD27[DIR_P00 * numberOfLBnodes];
-      D27.f[DIR_P00] = &DD27[DIR_M00 * numberOfLBnodes];
+      D27.f[dM00] = &DD27[dP00 * numberOfLBnodes];
+      D27.f[dP00] = &DD27[dM00 * numberOfLBnodes];
       D27.f[DIR_0M0] = &DD27[DIR_0P0 * numberOfLBnodes];
       D27.f[DIR_0P0] = &DD27[DIR_0M0 * numberOfLBnodes];
       D27.f[DIR_00M] = &DD27[DIR_00P * numberOfLBnodes];
@@ -636,7 +636,7 @@ __global__ void GetPlaneConc27(real* Conc,
       D27.f[DIR_0PP] = &DD27[DIR_0MM * numberOfLBnodes];
       D27.f[DIR_0MP] = &DD27[DIR_0PM * numberOfLBnodes];
       D27.f[DIR_0PM] = &DD27[DIR_0MP * numberOfLBnodes];
-      D27.f[DIR_000] = &DD27[DIR_000 * numberOfLBnodes];
+      D27.f[d000] = &DD27[d000 * numberOfLBnodes];
       D27.f[DIR_MMM] = &DD27[DIR_PPP * numberOfLBnodes];
       D27.f[DIR_PPM] = &DD27[DIR_MMP * numberOfLBnodes];
       D27.f[DIR_MPM] = &DD27[DIR_PMP * numberOfLBnodes];
@@ -693,7 +693,7 @@ __global__ void GetPlaneConc27(real* Conc,
 
       if(geoD[k] == GEO_FLUID)
       {
-         Conc[k]    =   (D27.f[DIR_P00])[ke  ]+ (D27.f[DIR_M00])[kw  ]+ 
+         Conc[k]    =   (D27.f[dP00])[ke  ]+ (D27.f[dM00])[kw  ]+ 
                         (D27.f[DIR_0P0])[kn  ]+ (D27.f[DIR_0M0])[ks  ]+
                         (D27.f[DIR_00P])[kt  ]+ (D27.f[DIR_00M])[kb  ]+
                         (D27.f[DIR_PP0])[kne ]+ (D27.f[DIR_MM0])[ksw ]+
@@ -702,7 +702,7 @@ __global__ void GetPlaneConc27(real* Conc,
                         (D27.f[DIR_P0M])[kbe ]+ (D27.f[DIR_M0P])[ktw ]+
                         (D27.f[DIR_0PP])[ktn ]+ (D27.f[DIR_0MM])[kbs ]+
                         (D27.f[DIR_0PM])[kbn ]+ (D27.f[DIR_0MP])[kts ]+
-                        (D27.f[DIR_000])[kzero]+ 
+                        (D27.f[d000])[kzero]+ 
                         (D27.f[DIR_PPP])[ktne]+ (D27.f[DIR_MMP])[ktsw]+
                         (D27.f[DIR_PMP])[ktse]+ (D27.f[DIR_MPP])[ktnw]+
                         (D27.f[DIR_PPM])[kbne]+ (D27.f[DIR_MMM])[kbsw]+

@@ -65,9 +65,9 @@ void NonEqDensityBCStrategy::applyBC()
     int nx3 = x3;
 
     // flag points in direction of fluid
-    if (bcPtr->hasDensityBoundaryFlag(DIR_P00)) {
+    if (bcPtr->hasDensityBoundaryFlag(dP00)) {
         nx1 -= 1;
-    } else if (bcPtr->hasDensityBoundaryFlag(DIR_M00)) {
+    } else if (bcPtr->hasDensityBoundaryFlag(dM00)) {
         nx1 += 1;
     } else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) {
         nx2 -= 1;

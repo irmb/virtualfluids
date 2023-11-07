@@ -131,8 +131,8 @@ __global__ void QInflowScaleByPressDevice27(
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -149,7 +149,7 @@ __global__ void QInflowScaleByPressDevice27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -161,8 +161,8 @@ __global__ void QInflowScaleByPressDevice27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -179,7 +179,7 @@ __global__ void QInflowScaleByPressDevice27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -190,8 +190,8 @@ __global__ void QInflowScaleByPressDevice27(
          D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real f1_E    = (D.f[DIR_P00])[k1e   ];
-      real f1_W    = (D.f[DIR_M00])[k1w   ];
+      real f1_E    = (D.f[dP00])[k1e   ];
+      real f1_W    = (D.f[dM00])[k1w   ];
       real f1_N    = (D.f[DIR_0P0])[k1n   ];
       real f1_S    = (D.f[DIR_0M0])[k1s   ];
       real f1_T    = (D.f[DIR_00P])[k1t   ];
@@ -208,7 +208,7 @@ __global__ void QInflowScaleByPressDevice27(
       real f1_BS   = (D.f[DIR_0MM])[k1bs  ];
       real f1_BN   = (D.f[DIR_0PM])[k1bn  ];
       real f1_TS   = (D.f[DIR_0MP])[k1ts  ];
-      //real f1_ZERO = (D.f[DIR_000])[k1zero];
+      //real f1_ZERO = (D.f[d000])[k1zero];
       real f1_TNE  = (D.f[DIR_PPP])[k1tne ];
       real f1_TSW  = (D.f[DIR_MMP])[k1tsw ];
       real f1_TSE  = (D.f[DIR_PMP])[k1tse ];
@@ -218,8 +218,8 @@ __global__ void QInflowScaleByPressDevice27(
       real f1_BSE  = (D.f[DIR_PMM])[k1bse ];
       real f1_BNW  = (D.f[DIR_MPM])[k1bnw ];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real f_E    = (D.f[DIR_P00])[ke   ];
-      real f_W    = (D.f[DIR_M00])[kw   ];
+      real f_E    = (D.f[dP00])[ke   ];
+      real f_W    = (D.f[dM00])[kw   ];
       real f_N    = (D.f[DIR_0P0])[kn   ];
       real f_S    = (D.f[DIR_0M0])[ks   ];
       real f_T    = (D.f[DIR_00P])[kt   ];
@@ -236,7 +236,7 @@ __global__ void QInflowScaleByPressDevice27(
       real f_BS   = (D.f[DIR_0MM])[kbs  ];
       real f_BN   = (D.f[DIR_0PM])[kbn  ];
       real f_TS   = (D.f[DIR_0MP])[kts  ];
-      //real f_ZERO = (D.f[DIR_000])[kzero];
+      //real f_ZERO = (D.f[d000])[kzero];
       real f_TNE  = (D.f[DIR_PPP])[ktne ];
       real f_TSW  = (D.f[DIR_MMP])[ktsw ];
       real f_TSE  = (D.f[DIR_PMP])[ktse ];
@@ -252,10 +252,10 @@ __global__ void QInflowScaleByPressDevice27(
      //Dichte
       drho1  =  f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
                 f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW +
-                f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[DIR_000])[k1zero]);
+                f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((D.f[d000])[k1zero]);
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
       //////////////////////////////////////////////////////////////////////////
      //Schallgeschwindigkeit
      real cs = c1o1 / sqrtf(c3o1);
@@ -355,8 +355,8 @@ __global__ void QInflowScaleByPressDevice27(
      //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -373,7 +373,7 @@ __global__ void QInflowScaleByPressDevice27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -385,8 +385,8 @@ __global__ void QInflowScaleByPressDevice27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -403,7 +403,7 @@ __global__ void QInflowScaleByPressDevice27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -416,7 +416,7 @@ __global__ void QInflowScaleByPressDevice27(
       //////////////////////////////////////////////////////////////////////////
       //__syncthreads();
      // -X
-     //(D.f[DIR_P00])[ke   ] = f_E   ;
+     //(D.f[dP00])[ke   ] = f_E   ;
      //(D.f[DIR_PM0])[kse  ] = f_SE  ;
      //(D.f[DIR_PP0])[kne  ] = f_NE  ;
      //(D.f[DIR_P0M])[kbe  ] = f_BE  ;
@@ -426,7 +426,7 @@ __global__ void QInflowScaleByPressDevice27(
      //(D.f[DIR_PMM])[kbse ] = f_BSE ;
      //(D.f[DIR_PPM])[kbne ] = f_BNE ;
      // X
-     (D.f[DIR_M00])[kw   ] = f_W   ;
+     (D.f[dM00])[kw   ] = f_W   ;
      (D.f[DIR_MM0])[ksw  ] = f_SW  ;
      (D.f[DIR_MP0])[knw  ] = f_NW  ;
      (D.f[DIR_M0M])[kbw  ] = f_BW  ;
@@ -589,8 +589,8 @@ __global__ void QPressDeviceIncompNEQ27(
       Distributions27 D;
       if (isEvenTimestep==true) //// ACHTUNG PREColl !!!!!!!!!!!!!!
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -607,7 +607,7 @@ __global__ void QPressDeviceIncompNEQ27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -619,8 +619,8 @@ __global__ void QPressDeviceIncompNEQ27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -637,7 +637,7 @@ __global__ void QPressDeviceIncompNEQ27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -651,8 +651,8 @@ __global__ void QPressDeviceIncompNEQ27(
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_W    = (D.f[DIR_P00])[k1e   ];
-      f1_E    = (D.f[DIR_M00])[k1w   ];
+      f1_W    = (D.f[dP00])[k1e   ];
+      f1_E    = (D.f[dM00])[k1w   ];
       f1_S    = (D.f[DIR_0P0])[k1n   ];
       f1_N    = (D.f[DIR_0M0])[k1s   ];
       f1_B    = (D.f[DIR_00P])[k1t   ];
@@ -669,7 +669,7 @@ __global__ void QPressDeviceIncompNEQ27(
       f1_TN   = (D.f[DIR_0MM])[k1bs  ];
       f1_TS   = (D.f[DIR_0PM])[k1bn  ];
       f1_BN   = (D.f[DIR_0MP])[k1ts  ];
-      f1_ZERO = (D.f[DIR_000])[k1zero];
+      f1_ZERO = (D.f[d000])[k1zero];
       f1_BSW  = (D.f[DIR_PPP])[k1tne ];
       f1_BNE  = (D.f[DIR_MMP])[k1tsw ];
       f1_BNW  = (D.f[DIR_PMP])[k1tse ];
@@ -769,8 +769,8 @@ __global__ void QPressDeviceIncompNEQ27(
 
       __syncthreads();
 
-      (D.f[DIR_P00])[ke   ] = f1_W   ;
-      (D.f[DIR_M00])[kw   ] = f1_E   ;
+      (D.f[dP00])[ke   ] = f1_W   ;
+      (D.f[dM00])[kw   ] = f1_E   ;
       (D.f[DIR_0P0])[kn   ] = f1_S   ;
       (D.f[DIR_0M0])[ks   ] = f1_N   ;
       (D.f[DIR_00P])[kt   ] = f1_B   ;
@@ -787,7 +787,7 @@ __global__ void QPressDeviceIncompNEQ27(
       (D.f[DIR_0MM])[kbs  ] = f1_TN  ;
       (D.f[DIR_0PM])[kbn  ] = f1_TS  ;
       (D.f[DIR_0MP])[kts  ] = f1_BN  ;
-      (D.f[DIR_000])[kzero] = f1_ZERO;
+      (D.f[d000])[kzero] = f1_ZERO;
       (D.f[DIR_PPP])[ktne ] = f1_BSW ;
       (D.f[DIR_MMP])[ktsw ] = f1_BNE ;
       (D.f[DIR_PMP])[ktse ] = f1_BNW ;
@@ -944,8 +944,8 @@ __global__ void QPressDeviceNEQ27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions for neighboring node
       //!
-      real f1_W    = (dist.f[DIR_P00])[k1e   ];
-      real f1_E    = (dist.f[DIR_M00])[k1w   ];
+      real f1_W    = (dist.f[dP00])[k1e   ];
+      real f1_E    = (dist.f[dM00])[k1w   ];
       real f1_S    = (dist.f[DIR_0P0])[k1n   ];
       real f1_N    = (dist.f[DIR_0M0])[k1s   ];
       real f1_B    = (dist.f[DIR_00P])[k1t   ];
@@ -962,7 +962,7 @@ __global__ void QPressDeviceNEQ27(
       real f1_TN   = (dist.f[DIR_0MM])[k1bs  ];
       real f1_TS   = (dist.f[DIR_0PM])[k1bn  ];
       real f1_BN   = (dist.f[DIR_0MP])[k1ts  ];
-      real f1_ZERO = (dist.f[DIR_000])[k1zero];
+      real f1_ZERO = (dist.f[d000])[k1zero];
       real f1_BSW  = (dist.f[DIR_PPP])[k1tne ];
       real f1_BNE  = (dist.f[DIR_MMP])[k1tsw ];
       real f1_BNW  = (dist.f[DIR_PMP])[k1tse ];
@@ -977,7 +977,7 @@ __global__ void QPressDeviceNEQ27(
       //!
       real drho1 = f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
                    f1_BN + f1_TS + f1_TN + f1_BS + f1_BE + f1_TW + f1_TE + f1_BW + f1_SE + f1_NW + f1_NE + f1_SW +
-                   f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((dist.f[DIR_000])[kzero]);
+                   f1_T + f1_B + f1_N + f1_S + f1_E + f1_W + ((dist.f[d000])[kzero]);
 
       real vx1  = (((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
                    ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
@@ -1067,8 +1067,8 @@ __global__ void QPressDeviceNEQ27(
       ////////////////////////////////////////////////////////////////////////////////
       //! write the new distributions to the bc nodes
       //!
-      (dist.f[DIR_P00])[ke   ] = f1_W   ;
-      (dist.f[DIR_M00])[kw   ] = f1_E   ;
+      (dist.f[dP00])[ke   ] = f1_W   ;
+      (dist.f[dM00])[kw   ] = f1_E   ;
       (dist.f[DIR_0P0])[kn   ] = f1_S   ;
       (dist.f[DIR_0M0])[ks   ] = f1_N   ;
       (dist.f[DIR_00P])[kt   ] = f1_B   ;
@@ -1085,7 +1085,7 @@ __global__ void QPressDeviceNEQ27(
       (dist.f[DIR_0MM])[kbs  ] = f1_TN  ;
       (dist.f[DIR_0PM])[kbn  ] = f1_TS  ;
       (dist.f[DIR_0MP])[kts  ] = f1_BN  ;
-      (dist.f[DIR_000])[kzero] = f1_ZERO;
+      (dist.f[d000])[kzero] = f1_ZERO;
       (dist.f[DIR_PPP])[ktne ] = f1_BSW ;
       (dist.f[DIR_MMP])[ktsw ] = f1_BNE ;
       (dist.f[DIR_PMP])[ktse ] = f1_BNW ;
@@ -1168,8 +1168,8 @@ __global__ void LB_BC_Press_East27(
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1186,7 +1186,7 @@ __global__ void LB_BC_Press_East27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1198,8 +1198,8 @@ __global__ void LB_BC_Press_East27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1216,7 +1216,7 @@ __global__ void LB_BC_Press_East27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1343,8 +1343,8 @@ __global__ void LB_BC_Press_East27(
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                    f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_W    = (D.f[DIR_P00])[k1e   ];
-      f1_E    = (D.f[DIR_M00])[k1w   ];
+      f1_W    = (D.f[dP00])[k1e   ];
+      f1_E    = (D.f[dM00])[k1w   ];
       f1_S    = (D.f[DIR_0P0])[k1n   ];
       f1_N    = (D.f[DIR_0M0])[k1s   ];
       f1_B    = (D.f[DIR_00P])[k1t   ];
@@ -1361,7 +1361,7 @@ __global__ void LB_BC_Press_East27(
       f1_TN   = (D.f[DIR_0MM])[k1bs  ];
       f1_TS   = (D.f[DIR_0PM])[k1bn  ];
       f1_BN   = (D.f[DIR_0MP])[k1ts  ];
-      f1_ZERO = (D.f[DIR_000])[k1zero];
+      f1_ZERO = (D.f[d000])[k1zero];
       f1_BSW  = (D.f[DIR_PPP])[k1tne ];
       f1_BNE  = (D.f[DIR_MMP])[k1tsw ];
       f1_BNW  = (D.f[DIR_PMP])[k1tse ];
@@ -1376,8 +1376,8 @@ __global__ void LB_BC_Press_East27(
 
       __syncthreads();
 
-      (D.f[DIR_P00])[ke   ] = f1_W   -c2o27*drho1;
-      (D.f[DIR_M00])[kw   ] = f1_E   -c2o27*drho1;
+      (D.f[dP00])[ke   ] = f1_W   -c2o27*drho1;
+      (D.f[dM00])[kw   ] = f1_E   -c2o27*drho1;
       (D.f[DIR_0P0])[kn   ] = f1_S   -c2o27*drho1;
       (D.f[DIR_0M0])[ks   ] = f1_N   -c2o27*drho1;
       (D.f[DIR_00P])[kt   ] = f1_B   -c2o27*drho1;
@@ -1394,7 +1394,7 @@ __global__ void LB_BC_Press_East27(
       (D.f[DIR_0MM])[kbs  ] = f1_TN  -c1o54*drho1;
       (D.f[DIR_0PM])[kbn  ] = f1_TS  -c1o54*drho1;
       (D.f[DIR_0MP])[kts  ] = f1_BN  -c1o54*drho1;
-      (D.f[DIR_000])[kzero] = f1_ZERO-c8o27*drho1;
+      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;
       (D.f[DIR_PPP])[ktne ] = f1_BSW -c1o216*drho1;
       (D.f[DIR_MMP])[ktsw ] = f1_BNE -c1o216*drho1;
       (D.f[DIR_PMP])[ktse ] = f1_BNW -c1o216*drho1;
@@ -1463,8 +1463,8 @@ __global__ void QPressDevice27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1481,7 +1481,7 @@ __global__ void QPressDevice27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1493,8 +1493,8 @@ __global__ void QPressDevice27(
    }
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1511,7 +1511,7 @@ __global__ void QPressDevice27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1539,8 +1539,8 @@ __global__ void QPressDevice27(
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -1599,8 +1599,8 @@ __global__ void QPressDevice27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -1648,8 +1648,8 @@ __global__ void QPressDevice27(
       ////////////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1666,7 +1666,7 @@ __global__ void QPressDevice27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1678,8 +1678,8 @@ __global__ void QPressDevice27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1696,7 +1696,7 @@ __global__ void QPressDevice27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1710,15 +1710,15 @@ __global__ void QPressDevice27(
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw]=c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
-         //(D.f[DIR_P00])[ke]=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+         (D.f[dM00])[kw]=c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+         //(D.f[dP00])[ke]=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke]=c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
-         //(D.f[DIR_M00])[kw]=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+         (D.f[dP00])[ke]=c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+         //(D.f[dM00])[kw]=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
       }
 
       q = q_dirN[k];
@@ -1950,8 +1950,8 @@ __global__ void QPressDeviceAntiBB27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1968,7 +1968,7 @@ __global__ void QPressDeviceAntiBB27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1980,8 +1980,8 @@ __global__ void QPressDeviceAntiBB27(
    }
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1998,7 +1998,7 @@ __global__ void QPressDeviceAntiBB27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -2026,8 +2026,8 @@ __global__ void QPressDeviceAntiBB27(
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -2086,8 +2086,8 @@ __global__ void QPressDeviceAntiBB27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW, f_ZERO;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -2112,7 +2112,7 @@ __global__ void QPressDeviceAntiBB27(
       f_TNE  = (D.f[DIR_MMM])[kbsw ];
       f_TNW  = (D.f[DIR_PMM])[kbse ];
       f_TSE  = (D.f[DIR_MPM])[kbnw ];
-      f_ZERO = (D.f[DIR_000])[kzero];
+      f_ZERO = (D.f[d000])[kzero];
       ////////////////////////////////////////////////////////////////////////////////
       //real vx1, vx2, vx3, drho;
       //vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
@@ -2140,8 +2140,8 @@ __global__ void QPressDeviceAntiBB27(
       ////////////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -2158,7 +2158,7 @@ __global__ void QPressDeviceAntiBB27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -2170,8 +2170,8 @@ __global__ void QPressDeviceAntiBB27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -2188,7 +2188,7 @@ __global__ void QPressDeviceAntiBB27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -2202,13 +2202,13 @@ __global__ void QPressDeviceAntiBB27(
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw]=f_W-c2o27*drho;
+         (D.f[dM00])[kw]=f_W-c2o27*drho;
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke]=f_E-c2o27*drho;
+         (D.f[dP00])[ke]=f_E-c2o27*drho;
       }
 
       q = q_dirN[k];
@@ -2460,8 +2460,8 @@ __global__ void QPressDeviceFixBackflow27(
       Distributions27 D;
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -2478,7 +2478,7 @@ __global__ void QPressDeviceFixBackflow27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -2490,8 +2490,8 @@ __global__ void QPressDeviceFixBackflow27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -2508,7 +2508,7 @@ __global__ void QPressDeviceFixBackflow27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -2519,8 +2519,8 @@ __global__ void QPressDeviceFixBackflow27(
          D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         (D.f[DIR_M00])[kw]       = c2o27  * deltaRho;
-         (D.f[DIR_P00])[ke]       = c2o27  * deltaRho;
+         (D.f[dM00])[kw]       = c2o27  * deltaRho;
+         (D.f[dP00])[ke]       = c2o27  * deltaRho;
          (D.f[DIR_0M0])[ks]       = c2o27  * deltaRho;
          (D.f[DIR_0P0])[kn]       = c2o27  * deltaRho;
          (D.f[DIR_00M])[kb]       = c2o27  * deltaRho;
@@ -2545,7 +2545,7 @@ __global__ void QPressDeviceFixBackflow27(
          (D.f[DIR_PMP])[ktse]   = c1o216 * deltaRho;
          (D.f[DIR_MPP])[ktnw]   = c1o216 * deltaRho;
          (D.f[DIR_PMM])[kbse]   = c1o216 * deltaRho;
-         (D.f[DIR_000])[kzero] = c8o27  * deltaRho;
+         (D.f[d000])[kzero] = c8o27  * deltaRho;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2652,8 +2652,8 @@ __global__ void QPressDeviceDirDepBot27(
       Distributions27 D;
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -2670,7 +2670,7 @@ __global__ void QPressDeviceDirDepBot27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -2682,8 +2682,8 @@ __global__ void QPressDeviceDirDepBot27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -2700,7 +2700,7 @@ __global__ void QPressDeviceDirDepBot27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -2714,8 +2714,8 @@ __global__ void QPressDeviceDirDepBot27(
       real f_E,f_W,f_N,f_S,f_T,f_NE,f_SW,f_SE,f_NW,f_TE,f_TW,f_TN,f_TS,f_ZERO,f_TNE,f_TSW,f_TSE,f_TNW;//,
             //f_B,f_BW,f_BE,f_BS,f_BN,f_BSW,f_BNE,f_BNW,f_BSE;
 
-      f_E    = (D.f[DIR_P00])[ke   ];
-      f_W    = (D.f[DIR_M00])[kw   ];
+      f_E    = (D.f[dP00])[ke   ];
+      f_W    = (D.f[dM00])[kw   ];
       f_N    = (D.f[DIR_0P0])[kn   ];
       f_S    = (D.f[DIR_0M0])[ks   ];
       f_T    = (D.f[DIR_00P])[kt   ];
@@ -2727,7 +2727,7 @@ __global__ void QPressDeviceDirDepBot27(
       f_TW   = (D.f[DIR_M0P])[ktw  ];
       f_TN   = (D.f[DIR_0PP])[ktn  ];
       f_TS   = (D.f[DIR_0MP])[kts  ];
-      f_ZERO = (D.f[DIR_000])[kzero];
+      f_ZERO = (D.f[d000])[kzero];
       f_TNE  = (D.f[DIR_PPP])[ktne ];
       f_TSW  = (D.f[DIR_MMP])[ktsw ];
       f_TSE  = (D.f[DIR_PMP])[ktse ];
@@ -2751,9 +2751,9 @@ __global__ void QPressDeviceDirDepBot27(
 
       //real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      //(D.f[DIR_000])[kzero] = c8over27*  (drho-cusq);
-      //(D.f[DIR_P00])[ke]    = c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
-      //(D.f[DIR_M00])[kw]    = c2over27*  (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq);
+      //(D.f[d000])[kzero] = c8over27*  (drho-cusq);
+      //(D.f[dP00])[ke]    = c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
+      //(D.f[dM00])[kw]    = c2over27*  (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq);
       //(D.f[DIR_0P0])[kn]     = c2over27*  (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq);
       //(D.f[DIR_0M0])[ks]    = c2over27*  (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq);
       //(D.f[DIR_00P])[kt]    = c2over27*  (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq);
@@ -2922,8 +2922,8 @@ __global__ void QPressNoRhoDevice27(
    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
    real f[27], f1[27];
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   f1[DIR_P00] = (dist.f[DIR_P00])[k1e   ];
-   f1[DIR_M00] = (dist.f[DIR_M00])[k1w   ];
+   f1[dP00] = (dist.f[dP00])[k1e   ];
+   f1[dM00] = (dist.f[dM00])[k1w   ];
    f1[DIR_0P0] = (dist.f[DIR_0P0])[k1n   ];
    f1[DIR_0M0] = (dist.f[DIR_0M0])[k1s   ];
    f1[DIR_00P] = (dist.f[DIR_00P])[k1t   ];
@@ -2940,7 +2940,7 @@ __global__ void QPressNoRhoDevice27(
    f1[DIR_0MM] = (dist.f[DIR_0MM])[k1bs  ];
    f1[DIR_0PM] = (dist.f[DIR_0PM])[k1bn  ];
    f1[DIR_0MP] = (dist.f[DIR_0MP])[k1ts  ];
-   // f1[DIR_000] = (dist.f[DIR_000])[k1zero];
+   // f1[d000] = (dist.f[d000])[k1zero];
    f1[DIR_PPP] = (dist.f[DIR_PPP])[k1tne ];
    f1[DIR_MMP] = (dist.f[DIR_MMP])[k1tsw ];
    f1[DIR_PMP] = (dist.f[DIR_PMP])[k1tse ];
@@ -2950,8 +2950,8 @@ __global__ void QPressNoRhoDevice27(
    f1[DIR_PMM] = (dist.f[DIR_PMM])[k1bse ];
    f1[DIR_MPM] = (dist.f[DIR_MPM])[k1bnw ];
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   f[DIR_P00] = (dist.f[DIR_P00])[ke   ];
-   f[DIR_M00] = (dist.f[DIR_M00])[kw   ];
+   f[dP00] = (dist.f[dP00])[ke   ];
+   f[dM00] = (dist.f[dM00])[kw   ];
    f[DIR_0P0] = (dist.f[DIR_0P0])[kn   ];
    f[DIR_0M0] = (dist.f[DIR_0M0])[ks   ];
    f[DIR_00P] = (dist.f[DIR_00P])[kt   ];
@@ -2968,7 +2968,7 @@ __global__ void QPressNoRhoDevice27(
    f[DIR_0MM] = (dist.f[DIR_0MM])[kbs  ];
    f[DIR_0PM] = (dist.f[DIR_0PM])[kbn  ];
    f[DIR_0MP] = (dist.f[DIR_0MP])[kts  ];
-   // f[DIR_000] = (dist.f[DIR_000])[kzero];
+   // f[d000] = (dist.f[d000])[kzero];
    f[DIR_PPP] = (dist.f[DIR_PPP])[ktne ];
    f[DIR_MMP] = (dist.f[DIR_MMP])[ktsw ];
    f[DIR_PMP] = (dist.f[DIR_PMP])[ktse ];
@@ -2987,7 +2987,7 @@ __global__ void QPressNoRhoDevice27(
    switch(direction)
    {
       case MZZ:
-         (dist.f[DIR_P00])[ke   ] = computeOutflowDistribution(f, f1, DIR_P00, cs);
+         (dist.f[dP00])[ke   ] = computeOutflowDistribution(f, f1, dP00, cs);
          (dist.f[DIR_PM0])[kse  ] = computeOutflowDistribution(f, f1, DIR_PM0, cs);
          (dist.f[DIR_PP0])[kne  ] = computeOutflowDistribution(f, f1, DIR_PP0, cs);
          (dist.f[DIR_P0M])[kbe  ] = computeOutflowDistribution(f, f1, DIR_P0M, cs);
@@ -2999,7 +2999,7 @@ __global__ void QPressNoRhoDevice27(
          break;
 
       case PZZ:
-         (dist.f[DIR_M00])[kw   ] = computeOutflowDistribution(f, f1, DIR_M00, cs);
+         (dist.f[dM00])[kw   ] = computeOutflowDistribution(f, f1, dM00, cs);
          (dist.f[DIR_MM0])[ksw  ] = computeOutflowDistribution(f, f1, DIR_MM0, cs);
          (dist.f[DIR_MP0])[knw  ] = computeOutflowDistribution(f, f1, DIR_MP0, cs);
          (dist.f[DIR_M0M])[kbw  ] = computeOutflowDistribution(f, f1, DIR_M0M, cs);
@@ -3154,9 +3154,9 @@ __global__ void QPressZeroRhoOutflowDevice27(
    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
    real f[27], fN[27];
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   f[DIR_000] = (dist.f[DIR_000])[k_000];
-   f[DIR_P00] = (dist.f[DIR_P00])[k_000];
-   f[DIR_M00] = (dist.f[DIR_M00])[k_M00];
+   f[d000] = (dist.f[d000])[k_000];
+   f[dP00] = (dist.f[dP00])[k_000];
+   f[dM00] = (dist.f[dM00])[k_M00];
    f[DIR_0P0] = (dist.f[DIR_0P0])[k_000];
    f[DIR_0M0] = (dist.f[DIR_0M0])[k_0M0];
    f[DIR_00P] = (dist.f[DIR_00P])[k_000];
@@ -3182,9 +3182,9 @@ __global__ void QPressZeroRhoOutflowDevice27(
    f[DIR_PMM] = (dist.f[DIR_PMM])[k_0MM];
    f[DIR_MMM] = (dist.f[DIR_MMM])[k_MMM];
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   fN[DIR_000] = (dist.f[DIR_000])[kN_000];
-   fN[DIR_P00] = (dist.f[DIR_P00])[kN_000];
-   fN[DIR_M00] = (dist.f[DIR_M00])[kN_M00];
+   fN[d000] = (dist.f[d000])[kN_000];
+   fN[dP00] = (dist.f[dP00])[kN_000];
+   fN[dM00] = (dist.f[dM00])[kN_M00];
    fN[DIR_0P0] = (dist.f[DIR_0P0])[kN_000];
    fN[DIR_0M0] = (dist.f[DIR_0M0])[kN_0M0];
    fN[DIR_00P] = (dist.f[DIR_00P])[kN_000];
@@ -3221,7 +3221,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
    switch(direction)
    {
       case MZZ:
-         (dist.f[DIR_P00])[k_000] = computeOutflowDistribution(f, fN, DIR_P00  , rhoCorrection, cs, c2o27);
+         (dist.f[dP00])[k_000] = computeOutflowDistribution(f, fN, dP00  , rhoCorrection, cs, c2o27);
          (dist.f[DIR_PM0])[k_0M0] = computeOutflowDistribution(f, fN, DIR_PM0, rhoCorrection, cs, c1o54);
          (dist.f[DIR_PP0])[k_000] = computeOutflowDistribution(f, fN, DIR_PP0, rhoCorrection, cs, c1o54);
          (dist.f[DIR_P0M])[k_00M] = computeOutflowDistribution(f, fN, DIR_P0M, rhoCorrection, cs, c1o54);
@@ -3233,7 +3233,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
          break;
 
       case PZZ:
-         (dist.f[DIR_M00])[k_M00] = computeOutflowDistribution(f, fN, DIR_M00, rhoCorrection, cs, c2o27);
+         (dist.f[dM00])[k_M00] = computeOutflowDistribution(f, fN, dM00, rhoCorrection, cs, c2o27);
          (dist.f[DIR_MM0])[k_MM0] = computeOutflowDistribution(f, fN, DIR_MM0, rhoCorrection, cs, c1o54);
          (dist.f[DIR_MP0])[k_M00] = computeOutflowDistribution(f, fN, DIR_MP0, rhoCorrection, cs, c1o54);
          (dist.f[DIR_M0M])[k_M0M] = computeOutflowDistribution(f, fN, DIR_M0M, rhoCorrection, cs, c1o54);
@@ -3417,8 +3417,8 @@ __global__ void QPressDeviceOld27(
       Distributions27 D;
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3435,7 +3435,7 @@ __global__ void QPressDeviceOld27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3447,8 +3447,8 @@ __global__ void QPressDeviceOld27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3465,7 +3465,7 @@ __global__ void QPressDeviceOld27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3479,8 +3479,8 @@ __global__ void QPressDeviceOld27(
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_W    = (D.f[DIR_P00])[k1e   ];
-      f1_E    = (D.f[DIR_M00])[k1w   ];
+      f1_W    = (D.f[dP00])[k1e   ];
+      f1_E    = (D.f[dM00])[k1w   ];
       f1_S    = (D.f[DIR_0P0])[k1n   ];
       f1_N    = (D.f[DIR_0M0])[k1s   ];
       f1_B    = (D.f[DIR_00P])[k1t   ];
@@ -3497,7 +3497,7 @@ __global__ void QPressDeviceOld27(
       f1_TN   = (D.f[DIR_0MM])[k1bs  ];
       f1_TS   = (D.f[DIR_0PM])[k1bn  ];
       f1_BN   = (D.f[DIR_0MP])[k1ts  ];
-      f1_ZERO = (D.f[DIR_000])[k1zero];
+      f1_ZERO = (D.f[d000])[k1zero];
       f1_BSW  = (D.f[DIR_PPP])[k1tne ];
       f1_BNE  = (D.f[DIR_MMP])[k1tsw ];
       f1_BNW  = (D.f[DIR_PMP])[k1tse ];
@@ -3517,8 +3517,8 @@ __global__ void QPressDeviceOld27(
 
       __syncthreads();
 
-      (D.f[DIR_P00])[ke   ] = f1_W   -c2o27*drho1;   //  c1o100;  // zero;  //
-      (D.f[DIR_M00])[kw   ] = f1_E   -c2o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dP00])[ke   ] = f1_W   -c2o27*drho1;   //  c1o100;  // zero;  //
+      (D.f[dM00])[kw   ] = f1_E   -c2o27*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_0P0])[kn   ] = f1_S   -c2o27*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_0M0])[ks   ] = f1_N   -c2o27*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_00P])[kt   ] = f1_B   -c2o27*drho1;	//  c1o100;  // zero;  //
@@ -3535,7 +3535,7 @@ __global__ void QPressDeviceOld27(
       (D.f[DIR_0MM])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_0PM])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_0MP])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[DIR_000])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_PPP])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_MMP])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_PMP])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
@@ -3678,8 +3678,8 @@ __global__ void QPressDeviceEQZ27(
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3696,7 +3696,7 @@ __global__ void QPressDeviceEQZ27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3708,8 +3708,8 @@ __global__ void QPressDeviceEQZ27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3726,7 +3726,7 @@ __global__ void QPressDeviceEQZ27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3738,8 +3738,8 @@ __global__ void QPressDeviceEQZ27(
       }
       ////////////////////////////////////////////////////////////////////////////////
     //   Distributions27 kDistTest;
-    //      kDistTest.f[DIR_P00] = &kTestRE[DIR_P00 * numberOfBCnodes];
-    //      kDistTest.f[DIR_M00] = &kTestRE[DIR_M00 * numberOfBCnodes];
+    //      kDistTest.f[dP00] = &kTestRE[dP00 * numberOfBCnodes];
+    //      kDistTest.f[dM00] = &kTestRE[dM00 * numberOfBCnodes];
     //      kDistTest.f[DIR_0P0] = &kTestRE[DIR_0P0 * numberOfBCnodes];
     //      kDistTest.f[DIR_0M0] = &kTestRE[DIR_0M0 * numberOfBCnodes];
     //      kDistTest.f[DIR_00P] = &kTestRE[DIR_00P * numberOfBCnodes];
@@ -3756,7 +3756,7 @@ __global__ void QPressDeviceEQZ27(
     //      kDistTest.f[DIR_0MM] = &kTestRE[DIR_0MM * numberOfBCnodes];
     //      kDistTest.f[DIR_0PM] = &kTestRE[DIR_0PM * numberOfBCnodes];
     //      kDistTest.f[DIR_0MP] = &kTestRE[DIR_0MP * numberOfBCnodes];
-    //      kDistTest.f[DIR_000] = &kTestRE[DIR_000 * numberOfBCnodes];
+    //      kDistTest.f[d000] = &kTestRE[d000 * numberOfBCnodes];
     //      kDistTest.f[DIR_PPP] = &kTestRE[DIR_PPP * numberOfBCnodes];
     //      kDistTest.f[DIR_MMP] = &kTestRE[DIR_MMP * numberOfBCnodes];
     //      kDistTest.f[DIR_PMP] = &kTestRE[DIR_PMP * numberOfBCnodes];
@@ -3767,8 +3767,8 @@ __global__ void QPressDeviceEQZ27(
     //      kDistTest.f[DIR_MPM] = &kTestRE[DIR_MPM * numberOfBCnodes];
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //   //real f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
-   //   //f1_W    = (D.f[DIR_P00])[k1e   ];
-   //   //f1_E    = (D.f[DIR_M00])[k1w   ];
+   //   //f1_W    = (D.f[dP00])[k1e   ];
+   //   //f1_E    = (D.f[dM00])[k1w   ];
    //   //f1_S    = (D.f[DIR_0P0])[k1n   ];
    //   //f1_N    = (D.f[DIR_0M0])[k1s   ];
    //   //f1_B    = (D.f[DIR_00P])[k1t   ];
@@ -3785,7 +3785,7 @@ __global__ void QPressDeviceEQZ27(
    //   //f1_TN   = (D.f[DIR_0MM])[k1bs  ];
    //   //f1_TS   = (D.f[DIR_0PM])[k1bn  ];
    //   //f1_BN   = (D.f[DIR_0MP])[k1ts  ];
-   //   //f1_ZERO = (D.f[DIR_000])[k1zero];
+   //   //f1_ZERO = (D.f[d000])[k1zero];
    //   //f1_BSW  = (D.f[DIR_PPP])[k1tne ];
    //   //f1_BNE  = (D.f[DIR_MMP])[k1tsw ];
    //   //f1_BNW  = (D.f[DIR_PMP])[k1tse ];
@@ -3798,8 +3798,8 @@ __global__ void QPressDeviceEQZ27(
 
    //   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //   real f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
-   //   f1_E    = (D.f[DIR_P00])[k1e   ];
-   //   f1_W    = (D.f[DIR_M00])[k1w   ];
+   //   f1_E    = (D.f[dP00])[k1e   ];
+   //   f1_W    = (D.f[dM00])[k1w   ];
    //   f1_N    = (D.f[DIR_0P0])[k1n   ];
    //   f1_S    = (D.f[DIR_0M0])[k1s   ];
    //   f1_T    = (D.f[DIR_00P])[k1t   ];
@@ -3816,7 +3816,7 @@ __global__ void QPressDeviceEQZ27(
    //   f1_BS   = (D.f[DIR_0MM])[k1bs  ];
    //   f1_BN   = (D.f[DIR_0PM])[k1bn  ];
    //   f1_TS   = (D.f[DIR_0MP])[k1ts  ];
-   //   f1_ZERO = (D.f[DIR_000])[k1zero];
+   //   f1_ZERO = (D.f[d000])[k1zero];
    //   f1_TNE  = (D.f[DIR_PPP])[k1tne ];
    //   f1_TSW  = (D.f[DIR_MMP])[k1tsw ];
    //   f1_TSE  = (D.f[DIR_PMP])[k1tse ];
@@ -3929,8 +3929,8 @@ __global__ void QPressDeviceEQZ27(
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // based on BGK Plus Comp
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         //double mfabb = (D.f[DIR_P00])[k1e   ];
-         //double mfcbb = (D.f[DIR_M00])[k1w   ];
+         //double mfabb = (D.f[dP00])[k1e   ];
+         //double mfcbb = (D.f[dM00])[k1w   ];
          //double mfbab = (D.f[DIR_0P0])[k1n   ];
          //double mfbcb = (D.f[DIR_0M0])[k1s   ];
          //double mfbba = (D.f[DIR_00P])[k1t   ];
@@ -3947,7 +3947,7 @@ __global__ void QPressDeviceEQZ27(
          //double mfbcc = (D.f[DIR_0MM])[k1bs  ];
          //double mfbac = (D.f[DIR_0PM])[k1bn  ];
          //double mfbca = (D.f[DIR_0MP])[k1ts  ];
-         //double mfbbb = (D.f[DIR_000])[k1zero];
+         //double mfbbb = (D.f[d000])[k1zero];
          //double mfaaa = (D.f[DIR_PPP])[k1tne ];
          //double mfcca = (D.f[DIR_MMP])[k1tsw ];
          //double mfaca = (D.f[DIR_PMP])[k1tse ];
@@ -3956,8 +3956,8 @@ __global__ void QPressDeviceEQZ27(
          //double mfccc = (D.f[DIR_MMM])[k1bsw ];
          //double mfacc = (D.f[DIR_PMM])[k1bse ];
          //double mfcac = (D.f[DIR_MPM])[k1bnw ];
-         real mfabb = (D.f[DIR_P00])[k1e   ];
-         real mfcbb = (D.f[DIR_M00])[k1w   ];
+         real mfabb = (D.f[dP00])[k1e   ];
+         real mfcbb = (D.f[dM00])[k1w   ];
          real mfbab = (D.f[DIR_0P0])[k1n   ];
          real mfbcb = (D.f[DIR_0M0])[k1s   ];
          real mfbba = (D.f[DIR_00P])[k1t   ];
@@ -3974,7 +3974,7 @@ __global__ void QPressDeviceEQZ27(
          real mfbcc = (D.f[DIR_0MM])[k1bs  ];
          real mfbac = (D.f[DIR_0PM])[k1bn  ];
          real mfbca = (D.f[DIR_0MP])[k1ts  ];
-         real mfbbb = (D.f[DIR_000])[k1zero];
+         real mfbbb = (D.f[d000])[k1zero];
          real mfaaa = (D.f[DIR_PPP])[k1tne ];
          real mfcca = (D.f[DIR_MMP])[k1tsw ];
          real mfaca = (D.f[DIR_PMP])[k1tse ];
@@ -3984,8 +3984,8 @@ __global__ void QPressDeviceEQZ27(
          real mfacc = (D.f[DIR_PMM])[k1bse ];
          real mfcac = (D.f[DIR_MPM])[k1bnw ];
 
-         //real mfcbb = (D.f[DIR_P00])[ke   ];
-         //real mfabb = (D.f[DIR_M00])[kw   ];
+         //real mfcbb = (D.f[dP00])[ke   ];
+         //real mfabb = (D.f[dM00])[kw   ];
          //real mfbcb = (D.f[DIR_0P0])[kn   ];
          //real mfbab = (D.f[DIR_0M0])[ks   ];
          //real mfbbc = (D.f[DIR_00P])[kt   ];
@@ -4002,7 +4002,7 @@ __global__ void QPressDeviceEQZ27(
          //real mfbaa = (D.f[DIR_0MM])[kbs  ];
          //real mfbca = (D.f[DIR_0PM])[kbn  ];
          //real mfbac = (D.f[DIR_0MP])[kts  ];
-         //real mfbbb = (D.f[DIR_000])[kzero];
+         //real mfbbb = (D.f[d000])[kzero];
          //real mfccc = (D.f[DIR_PPP])[ktne ];
          //real mfaac = (D.f[DIR_MMP])[ktsw ];
          //real mfcac = (D.f[DIR_PMP])[ktse ];
@@ -4037,8 +4037,8 @@ __global__ void QPressDeviceEQZ27(
          ////////////////////////////////////////////////////////////////////////////////////////
          ////round off error test
          //if(vvx!=zero){
-         //	(kDistTest.f[DIR_P00])[k] = mfabb;
-         //	(kDistTest.f[DIR_M00])[k] = mfcbb;
+         //	(kDistTest.f[dP00])[k] = mfabb;
+         //	(kDistTest.f[dM00])[k] = mfcbb;
          //	(kDistTest.f[DIR_0P0])[k] = mfbab;
          //	(kDistTest.f[DIR_0M0])[k] = mfbcb;
          //	(kDistTest.f[DIR_00P])[k] = mfbba;
@@ -4055,7 +4055,7 @@ __global__ void QPressDeviceEQZ27(
          //	(kDistTest.f[DIR_0MM])[k] = mfbcc;
          //	(kDistTest.f[DIR_0PM])[k] = mfbac;
          //	(kDistTest.f[DIR_0MP])[k] = mfbca;
-         //	(kDistTest.f[DIR_000])[k] = KQK;
+         //	(kDistTest.f[d000])[k] = KQK;
          //	(kDistTest.f[DIR_PPP])[k] = mfaaa;
          //	(kDistTest.f[DIR_MMP])[k] = mfcca;
          //	(kDistTest.f[DIR_PMP])[k] = mfaca;
@@ -4065,8 +4065,8 @@ __global__ void QPressDeviceEQZ27(
          //	(kDistTest.f[DIR_PMM])[k] = mfacc;
          //	(kDistTest.f[DIR_MPM])[k] = mfcac;
          //}else{
-         //	(kDistTest.f[DIR_P00])[k] = zero;
-         //	(kDistTest.f[DIR_M00])[k] = zero;
+         //	(kDistTest.f[dP00])[k] = zero;
+         //	(kDistTest.f[dM00])[k] = zero;
          //	(kDistTest.f[DIR_0P0])[k] = zero;
          //	(kDistTest.f[DIR_0M0])[k] = zero;
          //	(kDistTest.f[DIR_00P])[k] = zero;
@@ -4083,7 +4083,7 @@ __global__ void QPressDeviceEQZ27(
          //	(kDistTest.f[DIR_0MM])[k] = zero;
          //	(kDistTest.f[DIR_0PM])[k] = zero;
          //	(kDistTest.f[DIR_0MP])[k] = zero;
-         //	(kDistTest.f[DIR_000])[k] = zero;
+         //	(kDistTest.f[d000])[k] = zero;
          //	(kDistTest.f[DIR_PPP])[k] = zero;
          //	(kDistTest.f[DIR_MMP])[k] = zero;
          //	(kDistTest.f[DIR_PMP])[k] = zero;
@@ -4183,8 +4183,8 @@ __global__ void QPressDeviceEQZ27(
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //if (isEvenTimestep==true)
       //{
-      //   D.f[DIR_P00] = &DD[DIR_P00 * size_Mat];
-      //   D.f[DIR_M00] = &DD[DIR_M00 * size_Mat];
+      //   D.f[dP00] = &DD[dP00 * size_Mat];
+      //   D.f[dM00] = &DD[dM00 * size_Mat];
       //   D.f[DIR_0P0] = &DD[DIR_0P0 * size_Mat];
       //   D.f[DIR_0M0] = &DD[DIR_0M0 * size_Mat];
       //   D.f[DIR_00P] = &DD[DIR_00P * size_Mat];
@@ -4201,7 +4201,7 @@ __global__ void QPressDeviceEQZ27(
       //   D.f[DIR_0MM] = &DD[DIR_0MM * size_Mat];
       //   D.f[DIR_0PM] = &DD[DIR_0PM * size_Mat];
       //   D.f[DIR_0MP] = &DD[DIR_0MP * size_Mat];
-      //   D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+      //   D.f[d000] = &DD[d000 * size_Mat];
       //   D.f[DIR_PPP] = &DD[DIR_PPP * size_Mat];
       //   D.f[DIR_MMP] = &DD[DIR_MMP * size_Mat];
       //   D.f[DIR_PMP] = &DD[DIR_PMP * size_Mat];
@@ -4213,8 +4213,8 @@ __global__ void QPressDeviceEQZ27(
       //}
       //else
       //{
-      //   D.f[DIR_M00] = &DD[DIR_P00 * size_Mat];
-      //   D.f[DIR_P00] = &DD[DIR_M00 * size_Mat];
+      //   D.f[dM00] = &DD[dP00 * size_Mat];
+      //   D.f[dP00] = &DD[dM00 * size_Mat];
       //   D.f[DIR_0M0] = &DD[DIR_0P0 * size_Mat];
       //   D.f[DIR_0P0] = &DD[DIR_0M0 * size_Mat];
       //   D.f[DIR_00M] = &DD[DIR_00P * size_Mat];
@@ -4231,7 +4231,7 @@ __global__ void QPressDeviceEQZ27(
       //   D.f[DIR_0PP] = &DD[DIR_0MM * size_Mat];
       //   D.f[DIR_0MP] = &DD[DIR_0PM * size_Mat];
       //   D.f[DIR_0PM] = &DD[DIR_0MP * size_Mat];
-      //   D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+      //   D.f[d000] = &DD[d000 * size_Mat];
       //   D.f[DIR_PPP] = &DD[DIR_MMM * size_Mat];
       //   D.f[DIR_MMP] = &DD[DIR_PPM * size_Mat];
       //   D.f[DIR_PMP] = &DD[DIR_MPM * size_Mat];
@@ -4244,8 +4244,8 @@ __global__ void QPressDeviceEQZ27(
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //__syncthreads();
 
-         (D.f[DIR_P00])[ke   ] = mfabb;//mfcbb;
-         (D.f[DIR_M00])[kw   ] = mfcbb;//mfabb;
+         (D.f[dP00])[ke   ] = mfabb;//mfcbb;
+         (D.f[dM00])[kw   ] = mfcbb;//mfabb;
          (D.f[DIR_0P0])[kn   ] = mfbab;//mfbcb;
          (D.f[DIR_0M0])[ks   ] = mfbcb;//mfbab;
          (D.f[DIR_00P])[kt   ] = mfbba;//mfbbc;
@@ -4262,7 +4262,7 @@ __global__ void QPressDeviceEQZ27(
          (D.f[DIR_0MM])[kbs  ] = mfbcc;//mfbaa;
          (D.f[DIR_0PM])[kbn  ] = mfbac;//mfbca;
          (D.f[DIR_0MP])[kts  ] = mfbca;//mfbac;
-         (D.f[DIR_000])[kzero] = mfbbb;//mfbbb;
+         (D.f[d000])[kzero] = mfbbb;//mfbbb;
          (D.f[DIR_PPP])[ktne ] = mfaaa;//mfccc;
          (D.f[DIR_MMP])[ktsw ] = mfcca;//mfaac;
          (D.f[DIR_PMP])[ktse ] = mfaca;//mfcac;
@@ -4271,8 +4271,8 @@ __global__ void QPressDeviceEQZ27(
          (D.f[DIR_MMM])[kbsw ] = mfccc;//mfaaa;
          (D.f[DIR_PMM])[kbse ] = mfacc;//mfcaa;
          (D.f[DIR_MPM])[kbnw ] = mfcac;//mfaca;
-         //(D.f[DIR_P00])[ke   ] = mfcbb;
-         //(D.f[DIR_M00])[kw   ] = mfabb;
+         //(D.f[dP00])[ke   ] = mfcbb;
+         //(D.f[dM00])[kw   ] = mfabb;
          //(D.f[DIR_0P0])[kn   ] = mfbcb;
          //(D.f[DIR_0M0])[ks   ] = mfbab;
          //(D.f[DIR_00P])[kt   ] = mfbbc;
@@ -4289,7 +4289,7 @@ __global__ void QPressDeviceEQZ27(
          //(D.f[DIR_0MM])[kbs  ] = mfbaa;
          //(D.f[DIR_0PM])[kbn  ] = mfbca;
          //(D.f[DIR_0MP])[kts  ] = mfbac;
-         //(D.f[DIR_000])[kzero] = mfbbb;
+         //(D.f[d000])[kzero] = mfbbb;
          //(D.f[DIR_PPP])[ktne ] = mfccc;
          //(D.f[DIR_MMP])[ktsw ] = mfaac;
          //(D.f[DIR_PMP])[ktse ] = mfcac;
@@ -4299,8 +4299,8 @@ __global__ void QPressDeviceEQZ27(
          //(D.f[DIR_PMM])[kbse ] = mfcaa;
          //(D.f[DIR_MPM])[kbnw ] = mfaca;
 
-      //(D.f[DIR_P00])[ke   ] = fE ;  //f1_E ;   //fW;    //fE ;
-      //(D.f[DIR_M00])[kw   ] = fW ;  //f1_W ;   //fE;    //fW ;
+      //(D.f[dP00])[ke   ] = fE ;  //f1_E ;   //fW;    //fE ;
+      //(D.f[dM00])[kw   ] = fW ;  //f1_W ;   //fE;    //fW ;
       //(D.f[DIR_0P0])[kn   ] = fN ;  //f1_N ;   //fS;    //fN ;
       //(D.f[DIR_0M0])[ks   ] = fS ;  //f1_S ;   //fN;    //fS ;
       //(D.f[DIR_00P])[kt   ] = fT ;  //f1_T ;   //fB;    //fT ;
@@ -4317,7 +4317,7 @@ __global__ void QPressDeviceEQZ27(
       //(D.f[DIR_0MM])[kbs  ] = fBS;  //f1_BS;   //fTN;   //fBS;
       //(D.f[DIR_0PM])[kbn  ] = fBN;  //f1_BN;   //fTS;   //fBN;
       //(D.f[DIR_0MP])[kts  ] = fTS;  //f1_TS;   //fBN;   //fTS;
-      //(D.f[DIR_000])[kzero] = fZERO;//f1_ZERO; //fZERO; //fZERO;
+      //(D.f[d000])[kzero] = fZERO;//f1_ZERO; //fZERO; //fZERO;
       //(D.f[DIR_PPP])[ktne ] = fTNE; //f1_TNE;  //fBSW;  //fTNE;
       //(D.f[DIR_MMM])[kbsw ] = fBSW; //f1_BSW;  //fTNE;  //fBSW;
       //(D.f[DIR_PPM])[kbne ] = fBNE; //f1_BNE;  //fTSW;  //fBNE;
@@ -4426,8 +4426,8 @@ __global__ void QPressDeviceZero27(
       Distributions27 D;
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4444,7 +4444,7 @@ __global__ void QPressDeviceZero27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4456,8 +4456,8 @@ __global__ void QPressDeviceZero27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4474,7 +4474,7 @@ __global__ void QPressDeviceZero27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -4487,8 +4487,8 @@ __global__ void QPressDeviceZero27(
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //__syncthreads();
      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      (D.f[DIR_P00])[ke   ] =c0o1;
-      (D.f[DIR_M00])[kw   ] =c0o1;
+      (D.f[dP00])[ke   ] =c0o1;
+      (D.f[dM00])[kw   ] =c0o1;
       (D.f[DIR_0P0])[kn   ] =c0o1;
       (D.f[DIR_0M0])[ks   ] =c0o1;
       (D.f[DIR_00P])[kt   ] =c0o1;
@@ -4505,7 +4505,7 @@ __global__ void QPressDeviceZero27(
       (D.f[DIR_0MM])[kbs  ] =c0o1;
       (D.f[DIR_0PM])[kbn  ] =c0o1;
       (D.f[DIR_0MP])[kts  ] =c0o1;
-      (D.f[DIR_000])[kzero] =c0o1;
+      (D.f[d000])[kzero] =c0o1;
       (D.f[DIR_PPP])[ktne ] =c0o1;
       (D.f[DIR_MMP])[ktsw ] =c0o1;
       (D.f[DIR_PMP])[ktse ] =c0o1;
@@ -4647,8 +4647,8 @@ __global__ void QPressDeviceFake27(
       Distributions27 D;
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4665,7 +4665,7 @@ __global__ void QPressDeviceFake27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4677,8 +4677,8 @@ __global__ void QPressDeviceFake27(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4695,7 +4695,7 @@ __global__ void QPressDeviceFake27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -4709,8 +4709,8 @@ __global__ void QPressDeviceFake27(
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
          f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_W    = (D.f[DIR_P00])[k1e   ];
-      f1_E    = (D.f[DIR_M00])[k1w   ];
+      f1_W    = (D.f[dP00])[k1e   ];
+      f1_E    = (D.f[dM00])[k1w   ];
       f1_S    = (D.f[DIR_0P0])[k1n   ];
       f1_N    = (D.f[DIR_0M0])[k1s   ];
       f1_B    = (D.f[DIR_00P])[k1t   ];
@@ -4727,7 +4727,7 @@ __global__ void QPressDeviceFake27(
       f1_TN   = (D.f[DIR_0MM])[k1bs  ];
       f1_TS   = (D.f[DIR_0PM])[k1bn  ];
       f1_BN   = (D.f[DIR_0MP])[k1ts  ];
-      f1_ZERO = (D.f[DIR_000])[k1zero];
+      f1_ZERO = (D.f[d000])[k1zero];
       f1_BSW  = (D.f[DIR_PPP])[k1tne ];
       f1_BNE  = (D.f[DIR_MMP])[k1tsw ];
       f1_BNW  = (D.f[DIR_PMP])[k1tse ];
@@ -4762,8 +4762,8 @@ __global__ void QPressDeviceFake27(
 
       __syncthreads();
 
-      (D.f[DIR_P00])[ke   ] = c2o27* (rhoBC[k]+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
-      (D.f[DIR_M00])[kw   ] = c2o27* (rhoBC[k]+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      (D.f[dP00])[ke   ] = c2o27* (rhoBC[k]+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      (D.f[dM00])[kw   ] = c2o27* (rhoBC[k]+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
       (D.f[DIR_0P0])[kn   ] = c2o27* (rhoBC[k]+c3o1*(    -vx2    )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
       (D.f[DIR_0M0])[ks   ] = c2o27* (rhoBC[k]+c3o1*(     vx2    )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
       (D.f[DIR_00P])[kt   ] = c2o27* (rhoBC[k]+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
@@ -4780,7 +4780,7 @@ __global__ void QPressDeviceFake27(
       (D.f[DIR_0MM])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_0PM])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_0MP])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[DIR_000])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_PPP])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_MMP])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
       (D.f[DIR_PMP])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
@@ -4848,8 +4848,8 @@ __global__ void QPressDevice27_IntBB(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4866,7 +4866,7 @@ __global__ void QPressDevice27_IntBB(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4878,8 +4878,8 @@ __global__ void QPressDevice27_IntBB(
    }
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4896,7 +4896,7 @@ __global__ void QPressDevice27_IntBB(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -4929,8 +4929,8 @@ __global__ void QPressDevice27_IntBB(
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -4989,8 +4989,8 @@ __global__ void QPressDevice27_IntBB(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -5019,7 +5019,7 @@ __global__ void QPressDevice27_IntBB(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
          f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-         f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+         f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
          ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -5039,8 +5039,8 @@ __global__ void QPressDevice27_IntBB(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -5057,7 +5057,7 @@ __global__ void QPressDevice27_IntBB(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -5069,8 +5069,8 @@ __global__ void QPressDevice27_IntBB(
       }
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -5087,7 +5087,7 @@ __global__ void QPressDevice27_IntBB(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -5099,7 +5099,7 @@ __global__ void QPressDevice27_IntBB(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[DIR_000])[k]=c1o10;
+      //(D.f[d000])[k]=c1o10;
       real rhoDiff = drho - rho[k];
       real VeloX = vx1;
       real VeloY = vx2;
@@ -5110,14 +5110,14 @@ __global__ void QPressDevice27_IntBB(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho+c9o2*( vx1        )*( vx1        )-cu_sq);
-         (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c2o27*(rhoDiff + c6o1*( VeloX     )))/(c1o1+q);
+         (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c2o27*(rhoDiff + c6o1*( VeloX     )))/(c1o1+q);
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho+c9o2*(-vx1        )*(-vx1        )-cu_sq);
-         (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c2o27*(rhoDiff + c6o1*(-VeloX     )))/(c1o1+q);
+         (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c2o27*(rhoDiff + c6o1*(-VeloX     )))/(c1o1+q);
       }
 
       q = q_dirN[k];

@@ -129,7 +129,7 @@ __global__ void fillArrayDistributions( uint numberOfPrecursorNodes,
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Get local distributions in PX directions
     //!
-    precursorData[linearIdx(PrecP00, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P00])[k_000];
+    precursorData[linearIdx(PrecP00, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dP00])[k_000];
     precursorData[linearIdx(PrecPP0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PP0])[k_000];
     precursorData[linearIdx(PrecPM0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PM0])[k_0M0];
     precursorData[linearIdx(PrecP0P, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P0P])[k_000];

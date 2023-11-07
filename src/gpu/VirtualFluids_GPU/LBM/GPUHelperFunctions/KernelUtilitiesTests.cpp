@@ -18,8 +18,8 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBe
 
     Distributions27 distribution_out = vf::gpu::getDistributionReferences27(distributions_in, size_Mat, isEvenTimeStep);
 
-    EXPECT_THAT(*distribution_out.f[DIR_P00], RealEq(distributions_in[DIR_P00]));
-    EXPECT_THAT(*distribution_out.f[DIR_M00], RealEq(distributions_in[DIR_M00]));
+    EXPECT_THAT(*distribution_out.f[dP00], RealEq(distributions_in[dP00]));
+    EXPECT_THAT(*distribution_out.f[dM00], RealEq(distributions_in[dM00]));
     EXPECT_THAT(*distribution_out.f[DIR_0P0], RealEq(distributions_in[DIR_0P0]));
     EXPECT_THAT(*distribution_out.f[DIR_0M0], RealEq(distributions_in[DIR_0M0]));
     EXPECT_THAT(*distribution_out.f[DIR_00P], RealEq(distributions_in[DIR_00P]));
@@ -36,7 +36,7 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBe
     EXPECT_THAT(*distribution_out.f[DIR_0MM], RealEq(distributions_in[DIR_0MM]));
     EXPECT_THAT(*distribution_out.f[DIR_0PM], RealEq(distributions_in[DIR_0PM]));
     EXPECT_THAT(*distribution_out.f[DIR_0MP], RealEq(distributions_in[DIR_0MP]));
-    EXPECT_THAT(*distribution_out.f[DIR_000], RealEq(distributions_in[DIR_000]));
+    EXPECT_THAT(*distribution_out.f[d000], RealEq(distributions_in[d000]));
     EXPECT_THAT(*distribution_out.f[DIR_PPP], RealEq(distributions_in[DIR_PPP]));
     EXPECT_THAT(*distribution_out.f[DIR_MMP], RealEq(distributions_in[DIR_MMP]));
     EXPECT_THAT(*distribution_out.f[DIR_PMP], RealEq(distributions_in[DIR_PMP]));
@@ -57,8 +57,8 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenOddTimeStep_ShouldBeS
 
     Distributions27 distribution_out = vf::gpu::getDistributionReferences27(distributions_in, size_Mat, isEvenTimeStep);
 
-    EXPECT_THAT(*distribution_out.f[DIR_M00], RealEq(distributions_in[DIR_P00]));
-    EXPECT_THAT(*distribution_out.f[DIR_P00], RealEq(distributions_in[DIR_M00]));
+    EXPECT_THAT(*distribution_out.f[dM00], RealEq(distributions_in[dP00]));
+    EXPECT_THAT(*distribution_out.f[dP00], RealEq(distributions_in[dM00]));
     EXPECT_THAT(*distribution_out.f[DIR_0M0], RealEq(distributions_in[DIR_0P0]));
     EXPECT_THAT(*distribution_out.f[DIR_0P0], RealEq(distributions_in[DIR_0M0]));
     EXPECT_THAT(*distribution_out.f[DIR_00M], RealEq(distributions_in[DIR_00P]));
@@ -75,7 +75,7 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenOddTimeStep_ShouldBeS
     EXPECT_THAT(*distribution_out.f[DIR_0PP], RealEq(distributions_in[DIR_0MM]));
     EXPECT_THAT(*distribution_out.f[DIR_0MP], RealEq(distributions_in[DIR_0PM]));
     EXPECT_THAT(*distribution_out.f[DIR_0PM], RealEq(distributions_in[DIR_0MP]));
-    EXPECT_THAT(*distribution_out.f[DIR_000], RealEq(distributions_in[DIR_000]));
+    EXPECT_THAT(*distribution_out.f[d000], RealEq(distributions_in[d000]));
     EXPECT_THAT(*distribution_out.f[DIR_MMM], RealEq(distributions_in[DIR_PPP]));
     EXPECT_THAT(*distribution_out.f[DIR_PPM], RealEq(distributions_in[DIR_MMP]));
     EXPECT_THAT(*distribution_out.f[DIR_MPM], RealEq(distributions_in[DIR_PMP]));

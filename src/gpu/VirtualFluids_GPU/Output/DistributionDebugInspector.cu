@@ -94,9 +94,9 @@ __global__ void printFs(
             ////////////////////////////////////////////////////////////////////////////////////
             //! - Set local distributions
             //!
-            real f_000 = (dist.f[DIR_000])[k_000];
-            real f_P00 = (dist.f[DIR_P00])[k_000];
-            real f_M00 = (dist.f[DIR_M00])[k_M00];
+            real f_000 = (dist.f[d000])[k_000];
+            real f_P00 = (dist.f[dP00])[k_000];
+            real f_M00 = (dist.f[dM00])[k_M00];
             real f_0P0 = (dist.f[DIR_0P0])[k_000];
             real f_0M0 = (dist.f[DIR_0M0])[k_0M0];
             real f_00P = (dist.f[DIR_00P])[k_000];

@@ -109,8 +109,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		Distributions27 dist;
 		if (isEvenTimestep)
 		{
-			dist.f[DIR_P00] = &distributions[DIR_P00 * numberOfLBnodes];
-			dist.f[DIR_M00] = &distributions[DIR_M00 * numberOfLBnodes];
+			dist.f[dP00] = &distributions[dP00 * numberOfLBnodes];
+			dist.f[dM00] = &distributions[dM00 * numberOfLBnodes];
 			dist.f[DIR_0P0] = &distributions[DIR_0P0 * numberOfLBnodes];
 			dist.f[DIR_0M0] = &distributions[DIR_0M0 * numberOfLBnodes];
 			dist.f[DIR_00P] = &distributions[DIR_00P * numberOfLBnodes];
@@ -127,7 +127,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 			dist.f[DIR_0MM] = &distributions[DIR_0MM * numberOfLBnodes];
 			dist.f[DIR_0PM] = &distributions[DIR_0PM * numberOfLBnodes];
 			dist.f[DIR_0MP] = &distributions[DIR_0MP * numberOfLBnodes];
-			dist.f[DIR_000] = &distributions[DIR_000 * numberOfLBnodes];
+			dist.f[d000] = &distributions[d000 * numberOfLBnodes];
 			dist.f[DIR_PPP] = &distributions[DIR_PPP * numberOfLBnodes];
 			dist.f[DIR_MMP] = &distributions[DIR_MMP * numberOfLBnodes];
 			dist.f[DIR_PMP] = &distributions[DIR_PMP * numberOfLBnodes];
@@ -139,8 +139,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		}
 		else
 		{
-			dist.f[DIR_M00] = &distributions[DIR_P00 * numberOfLBnodes];
-			dist.f[DIR_P00] = &distributions[DIR_M00 * numberOfLBnodes];
+			dist.f[dM00] = &distributions[dP00 * numberOfLBnodes];
+			dist.f[dP00] = &distributions[dM00 * numberOfLBnodes];
 			dist.f[DIR_0M0] = &distributions[DIR_0P0 * numberOfLBnodes];
 			dist.f[DIR_0P0] = &distributions[DIR_0M0 * numberOfLBnodes];
 			dist.f[DIR_00M] = &distributions[DIR_00P * numberOfLBnodes];
@@ -157,7 +157,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 			dist.f[DIR_0PP] = &distributions[DIR_0MM * numberOfLBnodes];
 			dist.f[DIR_0MP] = &distributions[DIR_0PM * numberOfLBnodes];
 			dist.f[DIR_0PM] = &distributions[DIR_0MP * numberOfLBnodes];
-			dist.f[DIR_000] = &distributions[DIR_000 * numberOfLBnodes];
+			dist.f[d000] = &distributions[d000 * numberOfLBnodes];
 			dist.f[DIR_MMM] = &distributions[DIR_PPP * numberOfLBnodes];
 			dist.f[DIR_PPM] = &distributions[DIR_MMP * numberOfLBnodes];
 			dist.f[DIR_MPM] = &distributions[DIR_PMP * numberOfLBnodes];
@@ -171,8 +171,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		Distributions27 distAD;
 		if (isEvenTimestep)
 		{
-			distAD.f[DIR_P00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
-			distAD.f[DIR_M00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+			distAD.f[dP00] = &distributionsAD[dP00 * numberOfLBnodes];
+			distAD.f[dM00] = &distributionsAD[dM00 * numberOfLBnodes];
 			distAD.f[DIR_0P0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
 			distAD.f[DIR_0M0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
 			distAD.f[DIR_00P] = &distributionsAD[DIR_00P * numberOfLBnodes];
@@ -189,7 +189,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 			distAD.f[DIR_0MM] = &distributionsAD[DIR_0MM * numberOfLBnodes];
 			distAD.f[DIR_0PM] = &distributionsAD[DIR_0PM * numberOfLBnodes];
 			distAD.f[DIR_0MP] = &distributionsAD[DIR_0MP * numberOfLBnodes];
-			distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+			distAD.f[d000] = &distributionsAD[d000 * numberOfLBnodes];
 			distAD.f[DIR_PPP] = &distributionsAD[DIR_PPP * numberOfLBnodes];
 			distAD.f[DIR_MMP] = &distributionsAD[DIR_MMP * numberOfLBnodes];
 			distAD.f[DIR_PMP] = &distributionsAD[DIR_PMP * numberOfLBnodes];
@@ -201,8 +201,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		}
 		else
 		{
-			distAD.f[DIR_M00] = &distributionsAD[DIR_P00 * numberOfLBnodes];
-			distAD.f[DIR_P00] = &distributionsAD[DIR_M00 * numberOfLBnodes];
+			distAD.f[dM00] = &distributionsAD[dP00 * numberOfLBnodes];
+			distAD.f[dP00] = &distributionsAD[dM00 * numberOfLBnodes];
 			distAD.f[DIR_0M0] = &distributionsAD[DIR_0P0 * numberOfLBnodes];
 			distAD.f[DIR_0P0] = &distributionsAD[DIR_0M0 * numberOfLBnodes];
 			distAD.f[DIR_00M] = &distributionsAD[DIR_00P * numberOfLBnodes];
@@ -219,7 +219,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 			distAD.f[DIR_0PP] = &distributionsAD[DIR_0MM * numberOfLBnodes];
 			distAD.f[DIR_0MP] = &distributionsAD[DIR_0PM * numberOfLBnodes];
 			distAD.f[DIR_0PM] = &distributionsAD[DIR_0MP * numberOfLBnodes];
-			distAD.f[DIR_000] = &distributionsAD[DIR_000 * numberOfLBnodes];
+			distAD.f[d000] = &distributionsAD[d000 * numberOfLBnodes];
 			distAD.f[DIR_MMM] = &distributionsAD[DIR_PPP * numberOfLBnodes];
 			distAD.f[DIR_PPM] = &distributionsAD[DIR_MMP * numberOfLBnodes];
 			distAD.f[DIR_MPM] = &distributionsAD[DIR_PMP * numberOfLBnodes];
@@ -241,8 +241,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		////////////////////////////////////////////////////////////////////////////////////
 		//! - Set local distributions Fluid
 		//!
-		real fcbb = (dist.f[DIR_P00])[k];
-		real fabb = (dist.f[DIR_M00])[kw];
+		real fcbb = (dist.f[dP00])[k];
+		real fabb = (dist.f[dM00])[kw];
 		real fbcb = (dist.f[DIR_0P0])[k];
 		real fbab = (dist.f[DIR_0M0])[ks];
 		real fbbc = (dist.f[DIR_00P])[k];
@@ -259,7 +259,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		real fbaa = (dist.f[DIR_0MM])[kbs];
 		real fbca = (dist.f[DIR_0PM])[kb];
 		real fbac = (dist.f[DIR_0MP])[ks];
-		real fbbb = (dist.f[DIR_000])[k];
+		real fbbb = (dist.f[d000])[k];
 		real fccc = (dist.f[DIR_PPP])[k];
 		real faac = (dist.f[DIR_MMP])[ksw];
 		real fcac = (dist.f[DIR_PMP])[ks];
@@ -271,8 +271,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		////////////////////////////////////////////////////////////////////////////////////
 		//! - Set local distributions Advection Diffusion
 		//!
-		real mfcbb = (distAD.f[DIR_P00])[k];
-		real mfabb = (distAD.f[DIR_M00])[kw];
+		real mfcbb = (distAD.f[dP00])[k];
+		real mfabb = (distAD.f[dM00])[kw];
 		real mfbcb = (distAD.f[DIR_0P0])[k];
 		real mfbab = (distAD.f[DIR_0M0])[ks];
 		real mfbbc = (distAD.f[DIR_00P])[k];
@@ -289,7 +289,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		real mfbaa = (distAD.f[DIR_0MM])[kbs];
 		real mfbca = (distAD.f[DIR_0PM])[kb];
 		real mfbac = (distAD.f[DIR_0MP])[ks];
-		real mfbbb = (distAD.f[DIR_000])[k];
+		real mfbbb = (distAD.f[d000])[k];
 		real mfccc = (distAD.f[DIR_PPP])[k];
 		real mfaac = (distAD.f[DIR_MMP])[ksw];
 		real mfcac = (distAD.f[DIR_PMP])[ks];
@@ -503,8 +503,8 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		//! stored arrays dependent on timestep is based on the esoteric twist algorithm
 		//! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
 		//!
-		(distAD.f[DIR_P00])[k   ] = mfabb;
-		(distAD.f[DIR_M00])[kw  ] = mfcbb;
+		(distAD.f[dP00])[k   ] = mfabb;
+		(distAD.f[dM00])[kw  ] = mfcbb;
 		(distAD.f[DIR_0P0])[k   ] = mfbab;
 		(distAD.f[DIR_0M0])[ks  ] = mfbcb;
 		(distAD.f[DIR_00P])[k   ] = mfbba;
@@ -521,7 +521,7 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 		(distAD.f[DIR_0MM])[kbs ] = mfbcc;
 		(distAD.f[DIR_0PM])[kb  ] = mfbac;
 		(distAD.f[DIR_0MP])[ks  ] = mfbca;
-		(distAD.f[DIR_000])[k   ] = mfbbb;
+		(distAD.f[d000])[k   ] = mfbbb;
 		(distAD.f[DIR_PPP])[k   ] = mfaaa;
 		(distAD.f[DIR_PMP])[ks  ] = mfaca;
 		(distAD.f[DIR_PPM])[kb  ] = mfaac;

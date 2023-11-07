@@ -58,8 +58,8 @@ __global__ void QVelDeviceCompPlusSlip27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -76,7 +76,7 @@ __global__ void QVelDeviceCompPlusSlip27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -88,8 +88,8 @@ __global__ void QVelDeviceCompPlusSlip27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -106,7 +106,7 @@ __global__ void QVelDeviceCompPlusSlip27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -139,8 +139,8 @@ __global__ void QVelDeviceCompPlusSlip27(
 		   *q_dirBE, *q_dirTW, *q_dirTN, *q_dirBS, *q_dirBN, *q_dirTS,
 		   *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 		   *q_dirBSE, *q_dirBNW;
-	   q_dirE = &QQ[DIR_P00 * numberOfBCnodes];
-	   q_dirW = &QQ[DIR_M00 * numberOfBCnodes];
+	   q_dirE = &QQ[dP00 * numberOfBCnodes];
+	   q_dirW = &QQ[dM00 * numberOfBCnodes];
 	   q_dirN = &QQ[DIR_0P0 * numberOfBCnodes];
 	   q_dirS = &QQ[DIR_0M0 * numberOfBCnodes];
 	   q_dirT = &QQ[DIR_00P * numberOfBCnodes];
@@ -199,8 +199,8 @@ __global__ void QVelDeviceCompPlusSlip27(
 	   real f_E, f_W, f_N, f_S, f_T, f_B, f_NE, f_SW, f_SE, f_NW, f_TE, f_BW, f_BE,
 		   f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-	   f_W = (D.f[DIR_P00])[ke];
-	   f_E = (D.f[DIR_M00])[kw];
+	   f_W = (D.f[dP00])[ke];
+	   f_E = (D.f[dM00])[kw];
 	   f_S = (D.f[DIR_0P0])[kn];
 	   f_N = (D.f[DIR_0M0])[ks];
 	   f_B = (D.f[DIR_00P])[kt];
@@ -229,7 +229,7 @@ __global__ void QVelDeviceCompPlusSlip27(
 	   real vx1, vx2, vx3, drho, feq, q;
 	   drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 		   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-		   f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+		   f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
 	   vx1 = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 		   ((f_BE - f_TW) + (f_TE - f_BW)) + ((f_SE - f_NW) + (f_NE - f_SW)) +
@@ -249,8 +249,8 @@ __global__ void QVelDeviceCompPlusSlip27(
 	   //////////////////////////////////////////////////////////////////////////
 	   if (isEvenTimestep == false)
 	   {
-		   D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		   D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		   D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		   D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		   D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		   D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		   D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -267,7 +267,7 @@ __global__ void QVelDeviceCompPlusSlip27(
 		   D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		   D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		   D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		   D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		   D.f[d000] = &DD[d000 * numberOfLBnodes];
 		   D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		   D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		   D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -279,8 +279,8 @@ __global__ void QVelDeviceCompPlusSlip27(
 	   }
 	   else
 	   {
-		   D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		   D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		   D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		   D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		   D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		   D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		   D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -297,7 +297,7 @@ __global__ void QVelDeviceCompPlusSlip27(
 		   D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		   D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		   D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		   D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		   D.f[d000] = &DD[d000 * numberOfLBnodes];
 		   D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		   D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		   D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -309,7 +309,7 @@ __global__ void QVelDeviceCompPlusSlip27(
 	   }
 	   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	   //Test
-	   //(D.f[DIR_000])[k]=c1o10;
+	   //(D.f[d000])[k]=c1o10;
 	   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	   //ToDo anders Klammern
@@ -331,16 +331,16 @@ __global__ void QVelDeviceCompPlusSlip27(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);// - c2over27 * drho;
-         //(D.f[DIR_M00])[kw]=zero;
+         (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);// - c2over27 * drho;
+         //(D.f[dM00])[kw]=zero;
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);// - c2over27 * drho;
-         //(D.f[DIR_P00])[ke]=zero;
+         (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);// - c2over27 * drho;
+         //(D.f[dP00])[ke]=zero;
       }
 
       q = q_dirN[k];
@@ -638,8 +638,8 @@ __global__ void QVeloDeviceEQ27(
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -656,7 +656,7 @@ __global__ void QVeloDeviceEQ27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -668,8 +668,8 @@ __global__ void QVeloDeviceEQ27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -686,7 +686,7 @@ __global__ void QVeloDeviceEQ27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -700,8 +700,8 @@ __global__ void QVeloDeviceEQ27(
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // based on BGK Plus Comp
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[DIR_P00])[ke   ];
-			real mfabb = (D.f[DIR_M00])[kw   ];
+			real mfcbb = (D.f[dP00])[ke   ];
+			real mfabb = (D.f[dM00])[kw   ];
 			real mfbcb = (D.f[DIR_0P0])[kn   ];
 			real mfbab = (D.f[DIR_0M0])[ks   ];
 			real mfbbc = (D.f[DIR_00P])[kt   ];
@@ -718,7 +718,7 @@ __global__ void QVeloDeviceEQ27(
 			real mfbaa = (D.f[DIR_0MM])[kbs  ];
 			real mfbca = (D.f[DIR_0PM])[kbn  ];
 			real mfbac = (D.f[DIR_0MP])[kts  ];
-			real mfbbb = (D.f[DIR_000])[kzero];
+			real mfbbb = (D.f[d000])[kzero];
 			real mfccc = (D.f[DIR_PPP])[ktne ];
 			real mfaac = (D.f[DIR_MMP])[ktsw ];
 			real mfcac = (D.f[DIR_PMP])[ktse ];
@@ -788,8 +788,8 @@ __global__ void QVeloDeviceEQ27(
 			mfcaa = -rho * XXc * YYa * ZZa - c1o216;
 			mfaca = -rho * XXa * YYc * ZZa - c1o216;
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			(D.f[DIR_P00])[ke   ] = mfabb;//mfcbb;
-			(D.f[DIR_M00])[kw   ] = mfcbb;//mfabb;
+			(D.f[dP00])[ke   ] = mfabb;//mfcbb;
+			(D.f[dM00])[kw   ] = mfcbb;//mfabb;
 			(D.f[DIR_0P0])[kn   ] = mfbab;//mfbcb;
 			(D.f[DIR_0M0])[ks   ] = mfbcb;//mfbab;
 			(D.f[DIR_00P])[kt   ] = mfbba;//mfbbc;
@@ -806,7 +806,7 @@ __global__ void QVeloDeviceEQ27(
 			(D.f[DIR_0MM])[kbs  ] = mfbcc;//mfbaa;
 			(D.f[DIR_0PM])[kbn  ] = mfbac;//mfbca;
 			(D.f[DIR_0MP])[kts  ] = mfbca;//mfbac;
-			(D.f[DIR_000])[kzero] = mfbbb;//mfbbb;
+			(D.f[d000])[kzero] = mfbbb;//mfbbb;
 			(D.f[DIR_PPP])[ktne ] = mfaaa;//mfccc;
 			(D.f[DIR_MMP])[ktsw ] = mfcca;//mfaac;
 			(D.f[DIR_PMP])[ktse ] = mfaca;//mfcac;
@@ -914,8 +914,8 @@ __global__ void QVelDeviceIncompHighNu27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -932,7 +932,7 @@ __global__ void QVelDeviceIncompHighNu27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -944,8 +944,8 @@ __global__ void QVelDeviceIncompHighNu27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -962,7 +962,7 @@ __global__ void QVelDeviceIncompHighNu27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -995,8 +995,8 @@ __global__ void QVelDeviceIncompHighNu27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -1055,8 +1055,8 @@ __global__ void QVelDeviceIncompHighNu27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_E   = (D.f[DIR_P00])[ke   ];
-      f_W   = (D.f[DIR_M00])[kw   ];
+      f_E   = (D.f[dP00])[ke   ];
+      f_W   = (D.f[dM00])[kw   ];
       f_N   = (D.f[DIR_0P0])[kn   ];
       f_S   = (D.f[DIR_0M0])[ks   ];
       f_T   = (D.f[DIR_00P])[kt   ];
@@ -1085,7 +1085,7 @@ __global__ void QVelDeviceIncompHighNu27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1105,8 +1105,8 @@ __global__ void QVelDeviceIncompHighNu27(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1123,7 +1123,7 @@ __global__ void QVelDeviceIncompHighNu27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1135,8 +1135,8 @@ __global__ void QVelDeviceIncompHighNu27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1153,7 +1153,7 @@ __global__ void QVelDeviceIncompHighNu27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1165,7 +1165,7 @@ __global__ void QVelDeviceIncompHighNu27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[DIR_000])[k]=c1o10;
+      //(D.f[d000])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //ToDo anders Klammern
@@ -1174,14 +1174,14 @@ __global__ void QVelDeviceIncompHighNu27(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) /** (one + drho)*/-cu_sq); 
-         (D.f[DIR_M00])[kw]=((c1o1 - q) * f_E + q * ((f_E + f_W) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*( VeloX     )) / (q + c1o1) ;
+         (D.f[dM00])[kw]=((c1o1 - q) * f_E + q * ((f_E + f_W) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*( VeloX     )) / (q + c1o1) ;
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) /** (one + drho)*/-cu_sq); 
-         (D.f[DIR_P00])[ke]=((c1o1 - q) * f_W + q * ((f_W + f_E) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*(-VeloX     )) / (q + c1o1) ;
+         (D.f[dP00])[ke]=((c1o1 - q) * f_W + q * ((f_W + f_E) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*(-VeloX     )) / (q + c1o1) ;
       }
 
       q = q_dirN[k];
@@ -1412,8 +1412,8 @@ __global__ void QVelDeviceCompHighNu27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1430,7 +1430,7 @@ __global__ void QVelDeviceCompHighNu27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1442,8 +1442,8 @@ __global__ void QVelDeviceCompHighNu27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1460,7 +1460,7 @@ __global__ void QVelDeviceCompHighNu27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1493,8 +1493,8 @@ __global__ void QVelDeviceCompHighNu27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -1553,8 +1553,8 @@ __global__ void QVelDeviceCompHighNu27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_E   = (D.f[DIR_P00])[ke   ];
-      f_W   = (D.f[DIR_M00])[kw   ];
+      f_E   = (D.f[dP00])[ke   ];
+      f_W   = (D.f[dM00])[kw   ];
       f_N   = (D.f[DIR_0P0])[kn   ];
       f_S   = (D.f[DIR_0M0])[ks   ];
       f_T   = (D.f[DIR_00P])[kt   ];
@@ -1579,8 +1579,8 @@ __global__ void QVelDeviceCompHighNu27(
       f_BSW = (D.f[DIR_MMM])[kbsw ];
       f_BSE = (D.f[DIR_PMM])[kbse ];
       f_BNW = (D.f[DIR_MPM])[kbnw ];
-      //f_W    = (D.f[DIR_P00])[ke   ];
-      //f_E    = (D.f[DIR_M00])[kw   ];
+      //f_W    = (D.f[dP00])[ke   ];
+      //f_E    = (D.f[dM00])[kw   ];
       //f_S    = (D.f[DIR_0P0])[kn   ];
       //f_N    = (D.f[DIR_0M0])[ks   ];
       //f_B    = (D.f[DIR_00P])[kt   ];
@@ -1609,7 +1609,7 @@ __global__ void QVelDeviceCompHighNu27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1629,8 +1629,8 @@ __global__ void QVelDeviceCompHighNu27(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -1647,7 +1647,7 @@ __global__ void QVelDeviceCompHighNu27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -1659,8 +1659,8 @@ __global__ void QVelDeviceCompHighNu27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -1677,7 +1677,7 @@ __global__ void QVelDeviceCompHighNu27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -1689,7 +1689,7 @@ __global__ void QVelDeviceCompHighNu27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[DIR_000])[k]=c1o10;
+      //(D.f[d000])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //ToDo anders Klammern
@@ -1698,18 +1698,18 @@ __global__ void QVelDeviceCompHighNu27(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_M00])[kw]=((c1o1 - q) * f_E + q * ((f_E + f_W) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*( VeloX     )) / (q + c1o1) ;
-         //(D.f[DIR_M00])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q) - c2over27 * drho;
-         //(D.f[DIR_M00])[kw]=zero;
+         (D.f[dM00])[kw]=((c1o1 - q) * f_E + q * ((f_E + f_W) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*( VeloX     )) / (q + c1o1) ;
+         //(D.f[dM00])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q) - c2over27 * drho;
+         //(D.f[dM00])[kw]=zero;
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_P00])[ke]=((c1o1 - q) * f_W + q * ((f_W + f_E) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*(-VeloX     )) / (q + c1o1) ;
-         //(D.f[DIR_P00])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q) - c2over27 * drho;
-         //(D.f[DIR_P00])[ke]=zero;
+         (D.f[dP00])[ke]=((c1o1 - q) * f_W + q * ((f_W + f_E) * (c1o1 - om1) + om1 * c2o1 * feq) - c6o1*c2o27*(-VeloX     )) / (q + c1o1) ;
+         //(D.f[dP00])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q) - c2over27 * drho;
+         //(D.f[dP00])[ke]=zero;
       }
 
       q = q_dirN[k];
@@ -2055,8 +2055,8 @@ __global__ void QVelDeviceCompZeroPress27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -2087,7 +2087,7 @@ __global__ void QVelDeviceCompZeroPress27(
       //!
       real drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                      f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                     f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+                     f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[d000])[kzero]); 
 
       real vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                       ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2112,22 +2112,22 @@ __global__ void QVelDeviceCompZeroPress27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Update distributions with subgrid distance (q) between zero and one
       real feq, q, velocityLB, velocityBC;
-      q = (subgridD.q[DIR_P00])[nodeIndex];
+      q = (subgridD.q[dP00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
       {
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, omega, drho, velocityBC, c2o27);
+         (dist.f[dM00])[kw] = getInterpolatedDistributionForVeloWithPressureBC(q, f_E, f_W, feq, omega, drho, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[nodeIndex];
+      q = (subgridD.q[dM00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, omega, drho, velocityBC, c2o27);
+         (dist.f[dP00])[ke] = getInterpolatedDistributionForVeloWithPressureBC(q, f_W, f_E, feq, omega, drho, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[nodeIndex];
@@ -2414,8 +2414,8 @@ __global__ void QVelDeviceCompZeroPress1h27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -2432,7 +2432,7 @@ __global__ void QVelDeviceCompZeroPress1h27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -2444,8 +2444,8 @@ __global__ void QVelDeviceCompZeroPress1h27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -2462,7 +2462,7 @@ __global__ void QVelDeviceCompZeroPress1h27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -2509,8 +2509,8 @@ __global__ void QVelDeviceCompZeroPress1h27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -2568,8 +2568,8 @@ __global__ void QVelDeviceCompZeroPress1h27(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -2586,7 +2586,7 @@ __global__ void QVelDeviceCompZeroPress1h27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -2598,8 +2598,8 @@ __global__ void QVelDeviceCompZeroPress1h27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -2616,7 +2616,7 @@ __global__ void QVelDeviceCompZeroPress1h27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -2641,14 +2641,14 @@ __global__ void QVelDeviceCompZeroPress1h27(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho+c3o1*( VeloXpur        )+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_M00])[kw]= feq - c2o27 * drho;
+         (D.f[dM00])[kw]= feq - c2o27 * drho;
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho+c3o1*(-VeloXpur        )+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         (D.f[DIR_P00])[ke]= feq - c2o27 * drho;
+         (D.f[dP00])[ke]= feq - c2o27 * drho;
       }
 
       q = q_dirN[k];
@@ -2897,8 +2897,8 @@ __global__ void LB_BC_Vel_West_27(
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -2915,7 +2915,7 @@ __global__ void LB_BC_Vel_West_27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -2927,8 +2927,8 @@ __global__ void LB_BC_Vel_West_27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -2945,7 +2945,7 @@ __global__ void LB_BC_Vel_West_27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3072,8 +3072,8 @@ __global__ void LB_BC_Vel_West_27(
       real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
          f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
-      f1_W    = (D.f[DIR_P00])[k1e   ];
-      f1_E    = (D.f[DIR_M00])[k1w   ];
+      f1_W    = (D.f[dP00])[k1e   ];
+      f1_E    = (D.f[dM00])[k1w   ];
       f1_S    = (D.f[DIR_0P0])[k1n   ];
       f1_N    = (D.f[DIR_0M0])[k1s   ];
       f1_B    = (D.f[DIR_00P])[k1t   ];
@@ -3090,7 +3090,7 @@ __global__ void LB_BC_Vel_West_27(
       f1_TN   = (D.f[DIR_0MM])[k1bs  ];
       f1_TS   = (D.f[DIR_0PM])[k1bn  ];
       f1_BN   = (D.f[DIR_0MP])[k1ts  ];
-      f1_ZERO = (D.f[DIR_000])[k1zero];
+      f1_ZERO = (D.f[d000])[k1zero];
       f1_BSW  = (D.f[DIR_PPP])[k1tne ];
       f1_BNE  = (D.f[DIR_MMP])[k1tsw ];
       f1_BNW  = (D.f[DIR_PMP])[k1tse ];
@@ -3114,9 +3114,9 @@ __global__ void LB_BC_Vel_West_27(
 
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      (D.f[DIR_000])[kzero] =   c8o27* (drho-cu_sq);
-      (D.f[DIR_P00])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
-      (D.f[DIR_M00])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      (D.f[d000])[kzero] =   c8o27* (drho-cu_sq);
+      (D.f[dP00])[ke   ] =   c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      (D.f[dM00])[kw   ] =   c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
       (D.f[DIR_0P0])[kn   ] =   c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
       (D.f[DIR_0M0])[ks   ] =   c2o27* (drho+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
       (D.f[DIR_00P])[kt   ] =   c2o27* (drho+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
@@ -3265,8 +3265,8 @@ __global__ void QVelDevPlainBB27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -3300,8 +3300,8 @@ __global__ void QVelDevPlainBB27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - rewrite distributions if there is a sub-grid distance (q) in same direction
       real q;
-      q = (subgridD.q[DIR_P00])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_M00])[kw  ]=f_E   + c4o9  * (-VeloX);
-      q = (subgridD.q[DIR_M00])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_P00])[ke  ]=f_W   + c4o9  * ( VeloX);
+      q = (subgridD.q[dP00])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[dM00])[kw  ]=f_E   + c4o9  * (-VeloX);
+      q = (subgridD.q[dM00])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[dP00])[ke  ]=f_W   + c4o9  * ( VeloX);
       q = (subgridD.q[DIR_0P0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0M0])[ks  ]=f_N   + c4o9  * (-VeloY);
       q = (subgridD.q[DIR_0M0])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_0P0])[kn  ]=f_S   + c4o9  * ( VeloY);
       q = (subgridD.q[DIR_00P])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[DIR_00M])[kb  ]=f_T   + c4o9  * (-VeloZ);
@@ -3387,8 +3387,8 @@ __global__ void QVelDevCouette27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3405,7 +3405,7 @@ __global__ void QVelDevCouette27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3417,8 +3417,8 @@ __global__ void QVelDevCouette27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3435,7 +3435,7 @@ __global__ void QVelDevCouette27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3468,8 +3468,8 @@ __global__ void QVelDevCouette27(
 			 *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			 *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			 *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -3527,8 +3527,8 @@ __global__ void QVelDevCouette27(
       ////////////////////////////////////////////////////////////////////////////////
      
       ////////////////////////////////////////////////////////////////////////////////
-      real f_W    = (D.f[DIR_P00])[ke   ];
-      real f_E    = (D.f[DIR_M00])[kw   ];
+      real f_W    = (D.f[dP00])[ke   ];
+      real f_E    = (D.f[dM00])[kw   ];
       real f_S    = (D.f[DIR_0P0])[kn   ];
       real f_N    = (D.f[DIR_0M0])[ks   ];
       real f_B    = (D.f[DIR_00P])[kt   ];
@@ -3558,8 +3558,8 @@ __global__ void QVelDevCouette27(
 	  ////////////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3576,7 +3576,7 @@ __global__ void QVelDevCouette27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3588,8 +3588,8 @@ __global__ void QVelDevCouette27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3606,7 +3606,7 @@ __global__ void QVelDevCouette27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3629,13 +3629,13 @@ __global__ void QVelDevCouette27(
 	  real ms=-c6o1;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //2nd order moment
-	  real kxxMyyFromfcNEQ = c0o1;//-c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all DIR_P00+DIR_M00 minus all DIR_0P0+DIR_0M0 (no combinations of xy left)
+	  real kxxMyyFromfcNEQ = c0o1;//-c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all dP00+dM00 minus all DIR_0P0+DIR_0M0 (no combinations of xy left)
 
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set distributions
       real q;
-      q = q_dirE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_M00])[kw  ]=f_E   + ms*c2o27  * VeloX;	
-      q = q_dirW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_P00])[ke  ]=f_W   - ms*c2o27  * VeloX;	
+      q = q_dirE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dM00])[kw  ]=f_E   + ms*c2o27  * VeloX;	
+      q = q_dirW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dP00])[ke  ]=f_W   - ms*c2o27  * VeloX;	
       q = q_dirN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_0M0])[ks  ]=f_N   + ms*c2o27  * VeloY;	
       q = q_dirS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_0P0])[kn  ]=f_S   - ms*c2o27  * VeloY;	
 	  q = q_dirT[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_00M])[kb  ]=f_T   + ms*c2o27  * VeloZ - c3o2*c2o27*((c2o1*VeloY-vx2)*(c2o1*VeloY-vx2)-vx2*vx2)*on;
@@ -3660,8 +3660,8 @@ __global__ void QVelDevCouette27(
       q = q_dirBNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_PMP])[ktse]=f_BNW - ms*c1o216 * VeloX + ms*c1o216 * VeloY - ms*c1o216 * VeloZ;
       q = q_dirBSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_MPP])[ktnw]=f_BSE + ms*c1o216 * VeloX - ms*c1o216 * VeloY - ms*c1o216 * VeloZ;
       q = q_dirTNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[DIR_PMM])[kbse]=f_TNW - ms*c1o216 * VeloX + ms*c1o216 * VeloY + ms*c1o216 * VeloZ + c3o1*c1o216*((c2o1*VeloY-vx2)*(c2o1*VeloY-vx2)-vx2*vx2)*on;
-      //q = q_dirE[k];	if (q>=zero && q<=one)	(D.f[DIR_M00])[kw  ]=f_E   + ms*c2over27  * VeloX;	
-   //   q = q_dirW[k];	if (q>=zero && q<=one)	(D.f[DIR_P00])[ke  ]=f_W   - ms*c2over27  * VeloX;	
+      //q = q_dirE[k];	if (q>=zero && q<=one)	(D.f[dM00])[kw  ]=f_E   + ms*c2over27  * VeloX;	
+   //   q = q_dirW[k];	if (q>=zero && q<=one)	(D.f[dP00])[ke  ]=f_W   - ms*c2over27  * VeloX;	
    //   q = q_dirN[k];	if (q>=zero && q<=one)	(D.f[DIR_0M0])[ks  ]=f_N   + ms*c2over27  * VeloY;	
    //   q = q_dirS[k];	if (q>=zero && q<=one)	(D.f[DIR_0P0])[kn  ]=f_S   - ms*c2over27  * VeloY;	
 	  //q = q_dirT[k];	if (q>=zero && q<=one)	(D.f[DIR_00M])[kb  ]=f_T   + ms*c2over27  * VeloZ - c1o9*((two*VeloY-vx2)*(two*VeloY-vx2)-vx2*vx2)*on;
@@ -3755,8 +3755,8 @@ __global__ void QVelDev1h27(
 	Distributions27 D;
 	if (isEvenTimestep==true)
 	{
-		D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -3773,7 +3773,7 @@ __global__ void QVelDev1h27(
 		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -3785,8 +3785,8 @@ __global__ void QVelDev1h27(
 	} 
 	else
 	{
-		D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-		D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -3803,7 +3803,7 @@ __global__ void QVelDev1h27(
 		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-		D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+		D.f[d000] = &DD[d000 * numberOfLBnodes];
 		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -3846,8 +3846,8 @@ __global__ void QVelDev1h27(
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
 			*q_dirBSE, *q_dirBNW; 
-		q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-		q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+		q_dirE   = &QQ[dP00 * numberOfBCnodes];
+		q_dirW   = &QQ[dM00 * numberOfBCnodes];
 		q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
 		q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
 		q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -3934,8 +3934,8 @@ __global__ void QVelDev1h27(
 		//real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
 		//	f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-		//f_W    = (D.f[DIR_P00])[ke   ];
-		//f_E    = (D.f[DIR_M00])[kw   ];
+		//f_W    = (D.f[dP00])[ke   ];
+		//f_E    = (D.f[dM00])[kw   ];
 		//f_S    = (D.f[DIR_0P0])[kn   ];
 		//f_N    = (D.f[DIR_0M0])[ks   ];
 		//f_B    = (D.f[DIR_00P])[kt   ];
@@ -3964,7 +3964,7 @@ __global__ void QVelDev1h27(
 		real /*vx1, vx2,*/ vx3, drho, feq, q, cu_sq;
 		//drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 		//	f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-		//	f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+		//	f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
 		//vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 		//	((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -3984,8 +3984,8 @@ __global__ void QVelDev1h27(
 		//////////////////////////////////////////////////////////////////////////
 		if (isEvenTimestep==false)
 		{
-			D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-			D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+			D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+			D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 			D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 			D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 			D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4002,7 +4002,7 @@ __global__ void QVelDev1h27(
 			D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 			D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 			D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-			D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+			D.f[d000] = &DD[d000 * numberOfLBnodes];
 			D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 			D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 			D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4014,8 +4014,8 @@ __global__ void QVelDev1h27(
 		} 
 		else
 		{
-			D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-			D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+			D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+			D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 			D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 			D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 			D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4032,7 +4032,7 @@ __global__ void QVelDev1h27(
 			D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 			D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 			D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-			D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+			D.f[d000] = &DD[d000 * numberOfLBnodes];
 			D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
 			D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
 			D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -4044,7 +4044,7 @@ __global__ void QVelDev1h27(
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//Test
-		//(D.f[DIR_000])[k]=c1o10;
+		//(D.f[d000])[k]=c1o10;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		//ToDo anders Klammern
@@ -4053,16 +4053,16 @@ __global__ void QVelDev1h27(
 		//if (q>=zero && q<=one)
 		//{
 		//	feq=c2over27* (drho/*+three*( vx1        )*/+c9over2*( vx1        )*( vx1        )-cu_sq); 
-		//	(D.f[DIR_M00])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);
-		//	//(D.f[DIR_M00])[kw]=zero;
+		//	(D.f[dM00])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);
+		//	//(D.f[dM00])[kw]=zero;
 		//}
 
 		//q = q_dirW[k];
 		//if (q>=zero && q<=one)
 		//{
 		//	feq=c2over27* (drho/*+three*(-vx1        )*/+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
-		//	(D.f[DIR_P00])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);
-		//	//(D.f[DIR_P00])[ke]=zero;
+		//	(D.f[dP00])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);
+		//	//(D.f[dP00])[ke]=zero;
 		//}
 
 		//q = q_dirN[k];
@@ -4267,16 +4267,16 @@ __global__ void QVelDev1h27(
 		if (q>=c0o1 && q<=c1o1)
 		{
 			feq=c2o27* (drho+c3o1*( VeloXpur        )+c9o2*( VeloX        )*( VeloX        )-cu_sq); 
-			(D.f[DIR_M00])[kw]=feq;
-			//(D.f[DIR_M00])[kw]=zero;
+			(D.f[dM00])[kw]=feq;
+			//(D.f[dM00])[kw]=zero;
 		}
 
 		q = q_dirW[k];
 		if (q>=c0o1 && q<=c1o1)
 		{
 			feq=c2o27* (drho+c3o1*(-VeloXpur        )+c9o2*(-VeloX        )*(-VeloX        )-cu_sq); 
-			(D.f[DIR_P00])[ke]=feq;
-			//(D.f[DIR_P00])[ke]=zero;
+			(D.f[dP00])[ke]=feq;
+			//(D.f[dP00])[ke]=zero;
 		}
 
 		q = q_dirN[k];
@@ -4597,8 +4597,8 @@ __global__ void QVelDeviceComp27(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set local distributions
       //!
-      real f_W    = (dist.f[DIR_P00])[ke   ];
-      real f_E    = (dist.f[DIR_M00])[kw   ];
+      real f_W    = (dist.f[dP00])[ke   ];
+      real f_E    = (dist.f[dM00])[kw   ];
       real f_S    = (dist.f[DIR_0P0])[kn   ];
       real f_N    = (dist.f[DIR_0M0])[ks   ];
       real f_B    = (dist.f[DIR_00P])[kt   ];
@@ -4629,7 +4629,7 @@ __global__ void QVelDeviceComp27(
       //!
       real drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[DIR_000])[kzero]); 
+                  f_T + f_B + f_N + f_S + f_E + f_W + ((dist.f[d000])[kzero]); 
 
       real vx1  = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                    ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -4654,22 +4654,22 @@ __global__ void QVelDeviceComp27(
       //! - Update distributions with subgrid distance (q) between zero and one
       //!
       real feq, q, velocityLB, velocityBC;
-      q = (subgridD.q[DIR_P00])[nodeIndex];
+      q = (subgridD.q[dP00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
       {
          velocityLB = vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = VeloX;
-         (dist.f[DIR_M00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, omega, velocityBC, c2o27);
+         (dist.f[dM00])[kw] = getInterpolatedDistributionForVeloBC(q, f_E, f_W, feq, omega, velocityBC, c2o27);
       }
 
-      q = (subgridD.q[DIR_M00])[nodeIndex];
+      q = (subgridD.q[dM00])[nodeIndex];
       if (q>=c0o1 && q<=c1o1)
       {
          velocityLB = -vx1;
          feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
          velocityBC = -VeloX;
-         (dist.f[DIR_P00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, omega, velocityBC, c2o27);
+         (dist.f[dP00])[ke] = getInterpolatedDistributionForVeloBC(q, f_W, f_E, feq, omega, velocityBC, c2o27);
       }
 
       q = (subgridD.q[DIR_0P0])[nodeIndex];
@@ -4950,8 +4950,8 @@ __global__ void QVelDevice27(
    Distributions27 D;
    if (isEvenTimestep==true)
    {
-      D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -4968,7 +4968,7 @@ __global__ void QVelDevice27(
       D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -4980,8 +4980,8 @@ __global__ void QVelDevice27(
    } 
    else
    {
-      D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-      D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+      D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+      D.f[dP00] = &DD[dM00 * numberOfLBnodes];
       D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
       D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
       D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -4998,7 +4998,7 @@ __global__ void QVelDevice27(
       D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
       D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
       D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-      D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+      D.f[d000] = &DD[d000 * numberOfLBnodes];
       D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
       D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
       D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -5031,8 +5031,8 @@ __global__ void QVelDevice27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW; 
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
       q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
       q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
       q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -5119,8 +5119,8 @@ __global__ void QVelDevice27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
       f_S    = (D.f[DIR_0P0])[kn   ];
       f_N    = (D.f[DIR_0M0])[ks   ];
       f_B    = (D.f[DIR_00P])[kt   ];
@@ -5149,7 +5149,7 @@ __global__ void QVelDevice27(
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -5169,8 +5169,8 @@ __global__ void QVelDevice27(
       //////////////////////////////////////////////////////////////////////////
       if (isEvenTimestep==false)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -5187,7 +5187,7 @@ __global__ void QVelDevice27(
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -5199,8 +5199,8 @@ __global__ void QVelDevice27(
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -5217,7 +5217,7 @@ __global__ void QVelDevice27(
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -5229,7 +5229,7 @@ __global__ void QVelDevice27(
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Test
-      //(D.f[DIR_000])[k]=c1o10;
+      //(D.f[d000])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //ToDo anders Klammern
@@ -5238,16 +5238,16 @@ __global__ void QVelDevice27(
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        )-cu_sq); 
-         (D.f[DIR_M00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);
-         //(D.f[DIR_M00])[kw]=zero;
+         (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);
+         //(D.f[dM00])[kw]=zero;
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        )-cu_sq); 
-         (D.f[DIR_P00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);
-         //(D.f[DIR_P00])[ke]=zero;
+         (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);
+         //(D.f[dP00])[ke]=zero;
       }
 
       q = q_dirN[k];
@@ -5516,8 +5516,8 @@ __global__ void PropellerBC(
         Distributions27 D;
         if (EvenOrOdd==true)
         {
-			D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-			D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+			D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+			D.f[dM00] = &DD[dM00 * numberOfLBnodes];
 			D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
 			D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
 			D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -5534,7 +5534,7 @@ __global__ void PropellerBC(
 			D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
 			D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
 			D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-			D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+			D.f[d000] = &DD[d000 * numberOfLBnodes];
 			D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
 			D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
 			D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -5546,8 +5546,8 @@ __global__ void PropellerBC(
         }
         else
         {
-			D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-			D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+			D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+			D.f[dP00] = &DD[dM00 * numberOfLBnodes];
 			D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
 			D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
 			D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -5564,7 +5564,7 @@ __global__ void PropellerBC(
 			D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
 			D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
 			D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-			D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+			D.f[d000] = &DD[d000 * numberOfLBnodes];
 			D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
 			D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
 			D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
@@ -5620,9 +5620,9 @@ __global__ void PropellerBC(
 		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
 		f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW, f_ZERO;
 
-		f_ZERO= (D.f[DIR_000])[kzero];
-		f_E   = (D.f[DIR_P00])[ke   ];
-		f_W   = (D.f[DIR_M00])[kw   ];
+		f_ZERO= (D.f[d000])[kzero];
+		f_E   = (D.f[dP00])[ke   ];
+		f_W   = (D.f[dM00])[kw   ];
 		f_N   = (D.f[DIR_0P0])[kn   ];
 		f_S   = (D.f[DIR_0M0])[ks   ];
 		f_T   = (D.f[DIR_00P])[kt   ];
@@ -5647,8 +5647,8 @@ __global__ void PropellerBC(
 		f_BNW = (D.f[DIR_MPM])[kbnw ];
 		f_BSE = (D.f[DIR_PMM])[kbse ];
 		f_TNW = (D.f[DIR_MPP])[ktnw ];
-		//f_W    = (D.f[DIR_P00])[ke   ];
-		//f_E    = (D.f[DIR_M00])[kw   ];
+		//f_W    = (D.f[dP00])[ke   ];
+		//f_E    = (D.f[dM00])[kw   ];
 		//f_S    = (D.f[DIR_0P0])[kn   ];
 		//f_N    = (D.f[DIR_0M0])[ks   ];
 		//f_B    = (D.f[DIR_00P])[kt   ];
@@ -5753,9 +5753,9 @@ __global__ void PropellerBC(
          f_BSE  = f_BSE  + ((c1o1+drho) * (-  c1o216*(c3o1*( vxo1-vxo2-vxo3)+c9o2*( vxo1-vxo2-vxo3)*( vxo1-vxo2-vxo3)-cusq) +   c1o216*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq2)));
          f_TNW  = f_TNW  + ((c1o1+drho) * (-  c1o216*(c3o1*(-vxo1+vxo2+vxo3)+c9o2*(-vxo1+vxo2+vxo3)*(-vxo1+vxo2+vxo3)-cusq) +   c1o216*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq2)));
 
-		(D.f[DIR_000])[kzero] =  f_ZERO;
-        (D.f[DIR_P00])[ke   ] =  f_E   ;	// f_W   ;//    	
-        (D.f[DIR_M00])[kw   ] =  f_W   ;	// f_E   ;//    	
+		(D.f[d000])[kzero] =  f_ZERO;
+        (D.f[dP00])[ke   ] =  f_E   ;	// f_W   ;//    	
+        (D.f[dM00])[kw   ] =  f_W   ;	// f_E   ;//    	
         (D.f[DIR_0P0])[kn   ] =  f_N   ;	// f_S   ;//    	
         (D.f[DIR_0M0])[ks   ] =  f_S   ;	// f_N   ;//    	
         (D.f[DIR_00P])[kt   ] =  f_T   ;	// f_B   ;//    	
@@ -5782,9 +5782,9 @@ __global__ void PropellerBC(
         (D.f[DIR_MPP])[ktnw ] =  f_TNW ;	// f_TSE ;//    	
 
 		//////////////////////////////////////////////////////////////////////////
-        ////(D.f[DIR_000])[kzero] =   c8over27* (drho-cu_sq);
-        //(D.f[DIR_P00])[ke   ] =   three*c2over27* ( vx1        );		//six
-        //(D.f[DIR_M00])[kw   ] =   three*c2over27* (-vx1        );		//six
+        ////(D.f[d000])[kzero] =   c8over27* (drho-cu_sq);
+        //(D.f[dP00])[ke   ] =   three*c2over27* ( vx1        );		//six
+        //(D.f[dM00])[kw   ] =   three*c2over27* (-vx1        );		//six
         //(D.f[DIR_0P0])[kn   ] =   three*c2over27* (     vx2    );		//six
         //(D.f[DIR_0M0])[ks   ] =   three*c2over27* (    -vx2    );		//six
         //(D.f[DIR_00P])[kt   ] =   three*c2over27* (         vx3);		//six
@@ -5809,9 +5809,9 @@ __global__ void PropellerBC(
         //(D.f[DIR_MPM])[kbnw ] =   three*c1over216*(-vx1+vx2-vx3);		//six
         //(D.f[DIR_PMM])[kbse ] =   three*c1over216*( vx1-vx2-vx3);		//six
         //(D.f[DIR_MPP])[ktnw ] =   three*c1over216*(-vx1+vx2+vx3);		//six
-        //(D.f[DIR_000])[kzero] =   c8over27* (drho-cu_sq);
-        //(D.f[DIR_P00])[ke   ] =   c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-        //(D.f[DIR_M00])[kw   ] =   c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+        //(D.f[d000])[kzero] =   c8over27* (drho-cu_sq);
+        //(D.f[dP00])[ke   ] =   c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+        //(D.f[dM00])[kw   ] =   c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
         //(D.f[DIR_0P0])[kn   ] =   c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
         //(D.f[DIR_0M0])[ks   ] =   c2over27* (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
         //(D.f[DIR_00P])[kt   ] =   c2over27* (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);

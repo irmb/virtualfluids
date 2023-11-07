@@ -65,8 +65,8 @@ __global__ void getSendFsPost27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -83,7 +83,7 @@ __global__ void getSendFsPost27(real* DD,
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -95,8 +95,8 @@ __global__ void getSendFsPost27(real* DD,
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -113,7 +113,7 @@ __global__ void getSendFsPost27(real* DD,
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -126,8 +126,8 @@ __global__ void getSendFsPost27(real* DD,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[DIR_P00] = &bufferFs[DIR_P00 * buffmax];
-      Dbuff.f[DIR_M00] = &bufferFs[DIR_M00 * buffmax];
+      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
+      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
       Dbuff.f[DIR_0P0] = &bufferFs[DIR_0P0 * buffmax];
       Dbuff.f[DIR_0M0] = &bufferFs[DIR_0M0 * buffmax];
       Dbuff.f[DIR_00P] = &bufferFs[DIR_00P * buffmax];
@@ -144,7 +144,7 @@ __global__ void getSendFsPost27(real* DD,
       Dbuff.f[DIR_0MM] = &bufferFs[DIR_0MM * buffmax];
       Dbuff.f[DIR_0PM] = &bufferFs[DIR_0PM * buffmax];
       Dbuff.f[DIR_0MP] = &bufferFs[DIR_0MP * buffmax];
-      Dbuff.f[DIR_000] = &bufferFs[DIR_000 * buffmax];
+      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
       Dbuff.f[DIR_PPP] = &bufferFs[DIR_PPP * buffmax];
       Dbuff.f[DIR_MMP] = &bufferFs[DIR_MMP * buffmax];
       Dbuff.f[DIR_PMP] = &bufferFs[DIR_PMP * buffmax];
@@ -155,8 +155,8 @@ __global__ void getSendFsPost27(real* DD,
       Dbuff.f[DIR_MPM] = &bufferFs[DIR_MPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy to buffer
-      //(Dbuff.f[DIR_P00])[k] = (D.f[DIR_P00])[ke   ];
-      //(Dbuff.f[DIR_M00])[k] = (D.f[DIR_M00])[kw   ];
+      //(Dbuff.f[dP00])[k] = (D.f[dP00])[ke   ];
+      //(Dbuff.f[dM00])[k] = (D.f[dM00])[kw   ];
       //(Dbuff.f[DIR_0P0])[k] = (D.f[DIR_0P0])[kn   ];
       //(Dbuff.f[DIR_0M0])[k] = (D.f[DIR_0M0])[ks   ];
       //(Dbuff.f[DIR_00P])[k] = (D.f[DIR_00P])[kt   ];
@@ -173,7 +173,7 @@ __global__ void getSendFsPost27(real* DD,
       //(Dbuff.f[DIR_0MM])[k] = (D.f[DIR_0MM])[kbs  ];
       //(Dbuff.f[DIR_0PM])[k] = (D.f[DIR_0PM])[kbn  ];
       //(Dbuff.f[DIR_0MP])[k] = (D.f[DIR_0MP])[kts  ];
-      //(Dbuff.f[DIR_000])[k] = (D.f[DIR_000])[kzero];
+      //(Dbuff.f[d000])[k] = (D.f[d000])[kzero];
       //(Dbuff.f[DIR_PPP])[k] = (D.f[DIR_PPP])[ktne ];
       //(Dbuff.f[DIR_MMP])[k] = (D.f[DIR_MMP])[ktsw ];
       //(Dbuff.f[DIR_PMP])[k] = (D.f[DIR_PMP])[ktse ];
@@ -182,8 +182,8 @@ __global__ void getSendFsPost27(real* DD,
       //(Dbuff.f[DIR_MMM])[k] = (D.f[DIR_MMM])[kbsw ];
       //(Dbuff.f[DIR_PMM])[k] = (D.f[DIR_PMM])[kbse ];
       //(Dbuff.f[DIR_MPM])[k] = (D.f[DIR_MPM])[kbnw ];
-      (Dbuff.f[DIR_P00])[k] = (D.f[DIR_M00])[kw   ];
-      (Dbuff.f[DIR_M00])[k] = (D.f[DIR_P00])[ke   ];
+      (Dbuff.f[dP00])[k] = (D.f[dM00])[kw   ];
+      (Dbuff.f[dM00])[k] = (D.f[dP00])[ke   ];
       (Dbuff.f[DIR_0P0])[k] = (D.f[DIR_0M0])[ks   ];
       (Dbuff.f[DIR_0M0])[k] = (D.f[DIR_0P0])[kn   ];
       (Dbuff.f[DIR_00P])[k] = (D.f[DIR_00M])[kb   ];
@@ -200,7 +200,7 @@ __global__ void getSendFsPost27(real* DD,
       (Dbuff.f[DIR_0MM])[k] = (D.f[DIR_0PP])[ktn  ];
       (Dbuff.f[DIR_0PM])[k] = (D.f[DIR_0MP])[kts  ];
       (Dbuff.f[DIR_0MP])[k] = (D.f[DIR_0PM])[kbn  ];
-      (Dbuff.f[DIR_000])[k] = (D.f[DIR_000])[kzero];
+      (Dbuff.f[d000])[k] = (D.f[d000])[kzero];
       (Dbuff.f[DIR_PPP])[k] = (D.f[DIR_MMM])[kbsw ];
       (Dbuff.f[DIR_MMP])[k] = (D.f[DIR_PPM])[kbne ];
       (Dbuff.f[DIR_PMP])[k] = (D.f[DIR_MPM])[kbnw ];
@@ -301,8 +301,8 @@ __global__ void setRecvFsPost27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -319,7 +319,7 @@ __global__ void setRecvFsPost27(real* DD,
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -331,8 +331,8 @@ __global__ void setRecvFsPost27(real* DD,
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -349,7 +349,7 @@ __global__ void setRecvFsPost27(real* DD,
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -362,8 +362,8 @@ __global__ void setRecvFsPost27(real* DD,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[DIR_P00] = &bufferFs[DIR_P00 * buffmax];
-      Dbuff.f[DIR_M00] = &bufferFs[DIR_M00 * buffmax];
+      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
+      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
       Dbuff.f[DIR_0P0] = &bufferFs[DIR_0P0 * buffmax];
       Dbuff.f[DIR_0M0] = &bufferFs[DIR_0M0 * buffmax];
       Dbuff.f[DIR_00P] = &bufferFs[DIR_00P * buffmax];
@@ -380,7 +380,7 @@ __global__ void setRecvFsPost27(real* DD,
       Dbuff.f[DIR_0MM] = &bufferFs[DIR_0MM * buffmax];
       Dbuff.f[DIR_0PM] = &bufferFs[DIR_0PM * buffmax];
       Dbuff.f[DIR_0MP] = &bufferFs[DIR_0MP * buffmax];
-      Dbuff.f[DIR_000] = &bufferFs[DIR_000 * buffmax];
+      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
       Dbuff.f[DIR_PPP] = &bufferFs[DIR_PPP * buffmax];
       Dbuff.f[DIR_MMP] = &bufferFs[DIR_MMP * buffmax];
       Dbuff.f[DIR_PMP] = &bufferFs[DIR_PMP * buffmax];
@@ -391,8 +391,8 @@ __global__ void setRecvFsPost27(real* DD,
       Dbuff.f[DIR_MPM] = &bufferFs[DIR_MPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy from buffer
-      //(D.f[DIR_P00])[ke   ] = (Dbuff.f[DIR_P00])[k];
-      //(D.f[DIR_M00])[kw   ] = (Dbuff.f[DIR_M00])[k];
+      //(D.f[dP00])[ke   ] = (Dbuff.f[dP00])[k];
+      //(D.f[dM00])[kw   ] = (Dbuff.f[dM00])[k];
       //(D.f[DIR_0P0])[kn   ] = (Dbuff.f[DIR_0P0])[k];
       //(D.f[DIR_0M0])[ks   ] = (Dbuff.f[DIR_0M0])[k];
       //(D.f[DIR_00P])[kt   ] = (Dbuff.f[DIR_00P])[k];
@@ -409,7 +409,7 @@ __global__ void setRecvFsPost27(real* DD,
       //(D.f[DIR_0MM])[kbs  ] = (Dbuff.f[DIR_0MM])[k];
       //(D.f[DIR_0PM])[kbn  ] = (Dbuff.f[DIR_0PM])[k];
       //(D.f[DIR_0MP])[kts  ] = (Dbuff.f[DIR_0MP])[k];
-      //(D.f[DIR_000])[kzero] = (Dbuff.f[DIR_000])[k];
+      //(D.f[d000])[kzero] = (Dbuff.f[d000])[k];
       //(D.f[DIR_PPP])[ktne ] = (Dbuff.f[DIR_PPP])[k];
       //(D.f[DIR_MMP])[ktsw ] = (Dbuff.f[DIR_MMP])[k];
       //(D.f[DIR_PMP])[ktse ] = (Dbuff.f[DIR_PMP])[k];
@@ -418,8 +418,8 @@ __global__ void setRecvFsPost27(real* DD,
       //(D.f[DIR_MMM])[kbsw ] = (Dbuff.f[DIR_MMM])[k];
       //(D.f[DIR_PMM])[kbse ] = (Dbuff.f[DIR_PMM])[k];
       //(D.f[DIR_MPM])[kbnw ] = (Dbuff.f[DIR_MPM])[k];
-      (D.f[DIR_M00])[kw   ] = (Dbuff.f[DIR_P00])[k];
-      (D.f[DIR_P00])[ke   ] = (Dbuff.f[DIR_M00])[k];
+      (D.f[dM00])[kw   ] = (Dbuff.f[dP00])[k];
+      (D.f[dP00])[ke   ] = (Dbuff.f[dM00])[k];
       (D.f[DIR_0M0])[ks   ] = (Dbuff.f[DIR_0P0])[k];
       (D.f[DIR_0P0])[kn   ] = (Dbuff.f[DIR_0M0])[k];
       (D.f[DIR_00M])[kb   ] = (Dbuff.f[DIR_00P])[k];
@@ -436,7 +436,7 @@ __global__ void setRecvFsPost27(real* DD,
       (D.f[DIR_0PP])[ktn  ] = (Dbuff.f[DIR_0MM])[k];
       (D.f[DIR_0MP])[kts  ] = (Dbuff.f[DIR_0PM])[k];
       (D.f[DIR_0PM])[kbn  ] = (Dbuff.f[DIR_0MP])[k];
-      (D.f[DIR_000])[kzero] = (Dbuff.f[DIR_000])[k];
+      (D.f[d000])[kzero] = (Dbuff.f[d000])[k];
       (D.f[DIR_MMM])[kbsw ] = (Dbuff.f[DIR_PPP])[k];
       (D.f[DIR_PPM])[kbne ] = (Dbuff.f[DIR_MMP])[k];
       (D.f[DIR_MPM])[kbnw ] = (Dbuff.f[DIR_PMP])[k];
@@ -536,8 +536,8 @@ __global__ void getSendFsPre27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -554,7 +554,7 @@ __global__ void getSendFsPre27(real* DD,
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -566,8 +566,8 @@ __global__ void getSendFsPre27(real* DD,
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -584,7 +584,7 @@ __global__ void getSendFsPre27(real* DD,
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -597,8 +597,8 @@ __global__ void getSendFsPre27(real* DD,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[DIR_P00] = &bufferFs[DIR_P00 * buffmax];
-      Dbuff.f[DIR_M00] = &bufferFs[DIR_M00 * buffmax];
+      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
+      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
       Dbuff.f[DIR_0P0] = &bufferFs[DIR_0P0 * buffmax];
       Dbuff.f[DIR_0M0] = &bufferFs[DIR_0M0 * buffmax];
       Dbuff.f[DIR_00P] = &bufferFs[DIR_00P * buffmax];
@@ -615,7 +615,7 @@ __global__ void getSendFsPre27(real* DD,
       Dbuff.f[DIR_0MM] = &bufferFs[DIR_0MM * buffmax];
       Dbuff.f[DIR_0PM] = &bufferFs[DIR_0PM * buffmax];
       Dbuff.f[DIR_0MP] = &bufferFs[DIR_0MP * buffmax];
-      Dbuff.f[DIR_000] = &bufferFs[DIR_000 * buffmax];
+      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
       Dbuff.f[DIR_PPP] = &bufferFs[DIR_PPP * buffmax];
       Dbuff.f[DIR_MMP] = &bufferFs[DIR_MMP * buffmax];
       Dbuff.f[DIR_PMP] = &bufferFs[DIR_PMP * buffmax];
@@ -626,8 +626,8 @@ __global__ void getSendFsPre27(real* DD,
       Dbuff.f[DIR_MPM] = &bufferFs[DIR_MPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy to buffer
-      (Dbuff.f[DIR_P00])[k] = (D.f[DIR_P00])[ke   ];
-      (Dbuff.f[DIR_M00])[k] = (D.f[DIR_M00])[kw   ];
+      (Dbuff.f[dP00])[k] = (D.f[dP00])[ke   ];
+      (Dbuff.f[dM00])[k] = (D.f[dM00])[kw   ];
       (Dbuff.f[DIR_0P0])[k] = (D.f[DIR_0P0])[kn   ];
       (Dbuff.f[DIR_0M0])[k] = (D.f[DIR_0M0])[ks   ];
       (Dbuff.f[DIR_00P])[k] = (D.f[DIR_00P])[kt   ];
@@ -644,7 +644,7 @@ __global__ void getSendFsPre27(real* DD,
       (Dbuff.f[DIR_0MM])[k] = (D.f[DIR_0MM])[kbs  ];
       (Dbuff.f[DIR_0PM])[k] = (D.f[DIR_0PM])[kbn  ];
       (Dbuff.f[DIR_0MP])[k] = (D.f[DIR_0MP])[kts  ];
-      (Dbuff.f[DIR_000])[k] = (D.f[DIR_000])[kzero];
+      (Dbuff.f[d000])[k] = (D.f[d000])[kzero];
       (Dbuff.f[DIR_PPP])[k] = (D.f[DIR_PPP])[ktne ];
       (Dbuff.f[DIR_MMP])[k] = (D.f[DIR_MMP])[ktsw ];
       (Dbuff.f[DIR_PMP])[k] = (D.f[DIR_PMP])[ktse ];
@@ -745,8 +745,8 @@ __global__ void setRecvFsPre27(real* DD,
       Distributions27 D;
       if (isEvenTimestep==true)
       {
-         D.f[DIR_P00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_M00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
@@ -763,7 +763,7 @@ __global__ void setRecvFsPre27(real* DD,
          D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
@@ -775,8 +775,8 @@ __global__ void setRecvFsPre27(real* DD,
       } 
       else
       {
-         D.f[DIR_M00] = &DD[DIR_P00 * numberOfLBnodes];
-         D.f[DIR_P00] = &DD[DIR_M00 * numberOfLBnodes];
+         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
          D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
          D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
          D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
@@ -793,7 +793,7 @@ __global__ void setRecvFsPre27(real* DD,
          D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
          D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
          D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
-         D.f[DIR_000] = &DD[DIR_000 * numberOfLBnodes];
+         D.f[d000] = &DD[d000 * numberOfLBnodes];
          D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
          D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
          D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
@@ -806,8 +806,8 @@ __global__ void setRecvFsPre27(real* DD,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set Pointer for Buffer Fs
       Distributions27 Dbuff;
-      Dbuff.f[DIR_P00] = &bufferFs[DIR_P00 * buffmax];
-      Dbuff.f[DIR_M00] = &bufferFs[DIR_M00 * buffmax];
+      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
+      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
       Dbuff.f[DIR_0P0] = &bufferFs[DIR_0P0 * buffmax];
       Dbuff.f[DIR_0M0] = &bufferFs[DIR_0M0 * buffmax];
       Dbuff.f[DIR_00P] = &bufferFs[DIR_00P * buffmax];
@@ -824,7 +824,7 @@ __global__ void setRecvFsPre27(real* DD,
       Dbuff.f[DIR_0MM] = &bufferFs[DIR_0MM * buffmax];
       Dbuff.f[DIR_0PM] = &bufferFs[DIR_0PM * buffmax];
       Dbuff.f[DIR_0MP] = &bufferFs[DIR_0MP * buffmax];
-      Dbuff.f[DIR_000] = &bufferFs[DIR_000 * buffmax];
+      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
       Dbuff.f[DIR_PPP] = &bufferFs[DIR_PPP * buffmax];
       Dbuff.f[DIR_MMP] = &bufferFs[DIR_MMP * buffmax];
       Dbuff.f[DIR_PMP] = &bufferFs[DIR_PMP * buffmax];
@@ -835,8 +835,8 @@ __global__ void setRecvFsPre27(real* DD,
       Dbuff.f[DIR_MPM] = &bufferFs[DIR_MPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //copy from buffer
-      (D.f[DIR_P00])[ke   ] = (Dbuff.f[DIR_P00])[k];
-      (D.f[DIR_M00])[kw   ] = (Dbuff.f[DIR_M00])[k];
+      (D.f[dP00])[ke   ] = (Dbuff.f[dP00])[k];
+      (D.f[dM00])[kw   ] = (Dbuff.f[dM00])[k];
       (D.f[DIR_0P0])[kn   ] = (Dbuff.f[DIR_0P0])[k];
       (D.f[DIR_0M0])[ks   ] = (Dbuff.f[DIR_0M0])[k];
       (D.f[DIR_00P])[kt   ] = (Dbuff.f[DIR_00P])[k];
@@ -853,7 +853,7 @@ __global__ void setRecvFsPre27(real* DD,
       (D.f[DIR_0MM])[kbs  ] = (Dbuff.f[DIR_0MM])[k];
       (D.f[DIR_0PM])[kbn  ] = (Dbuff.f[DIR_0PM])[k];
       (D.f[DIR_0MP])[kts  ] = (Dbuff.f[DIR_0MP])[k];
-      (D.f[DIR_000])[kzero] = (Dbuff.f[DIR_000])[k];
+      (D.f[d000])[kzero] = (Dbuff.f[d000])[k];
       (D.f[DIR_PPP])[ktne ] = (Dbuff.f[DIR_PPP])[k];
       (D.f[DIR_MMP])[ktsw ] = (Dbuff.f[DIR_MMP])[k];
       (D.f[DIR_PMP])[ktse ] = (Dbuff.f[DIR_PMP])[k];
@@ -931,8 +931,8 @@ __global__ void getSendGsF3(
 		Distributions6 G;
 		if (isEvenTimestep)
 		{
-			G.g[DIR_P00] = &G6[DIR_P00 * numberOfLBnodes];
-			G.g[DIR_M00] = &G6[DIR_M00 * numberOfLBnodes];
+			G.g[dP00] = &G6[dP00 * numberOfLBnodes];
+			G.g[dM00] = &G6[dM00 * numberOfLBnodes];
 			G.g[DIR_0P0] = &G6[DIR_0P0 * numberOfLBnodes];
 			G.g[DIR_0M0] = &G6[DIR_0M0 * numberOfLBnodes];
 			G.g[DIR_00P] = &G6[DIR_00P * numberOfLBnodes];
@@ -940,8 +940,8 @@ __global__ void getSendGsF3(
 		}
 		else
 		{
-			G.g[DIR_M00] = &G6[DIR_P00 * numberOfLBnodes];
-			G.g[DIR_P00] = &G6[DIR_M00 * numberOfLBnodes];
+			G.g[dM00] = &G6[dP00 * numberOfLBnodes];
+			G.g[dP00] = &G6[dM00 * numberOfLBnodes];
 			G.g[DIR_0M0] = &G6[DIR_0P0 * numberOfLBnodes];
 			G.g[DIR_0P0] = &G6[DIR_0M0 * numberOfLBnodes];
 			G.g[DIR_00M] = &G6[DIR_00P * numberOfLBnodes];
@@ -950,16 +950,16 @@ __global__ void getSendGsF3(
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Buffer Gs
 		Distributions6 Dbuff;
-		Dbuff.g[DIR_P00] = &bufferGs[DIR_P00 * buffmax];
-		Dbuff.g[DIR_M00] = &bufferGs[DIR_M00 * buffmax];
+		Dbuff.g[dP00] = &bufferGs[dP00 * buffmax];
+		Dbuff.g[dM00] = &bufferGs[dM00 * buffmax];
 		Dbuff.g[DIR_0P0] = &bufferGs[DIR_0P0 * buffmax];
 		Dbuff.g[DIR_0M0] = &bufferGs[DIR_0M0 * buffmax];
 		Dbuff.g[DIR_00P] = &bufferGs[DIR_00P * buffmax];
 		Dbuff.g[DIR_00M] = &bufferGs[DIR_00M * buffmax];
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//write Gs to buffer
-		(Dbuff.g[DIR_P00])[k] = (G.g[DIR_M00])[kw];
-		(Dbuff.g[DIR_M00])[k] = (G.g[DIR_P00])[kr];
+		(Dbuff.g[dP00])[k] = (G.g[dM00])[kw];
+		(Dbuff.g[dM00])[k] = (G.g[dP00])[kr];
 		(Dbuff.g[DIR_0P0])[k] = (G.g[DIR_0M0])[ks];
 		(Dbuff.g[DIR_0M0])[k] = (G.g[DIR_0P0])[kr];
 		(Dbuff.g[DIR_00P])[k] = (G.g[DIR_00M])[kb];
@@ -1034,8 +1034,8 @@ __global__ void setRecvGsF3(
 		Distributions6 G;
 		if (isEvenTimestep)
 		{
-			G.g[DIR_P00] = &G6[DIR_P00 * numberOfLBnodes];
-			G.g[DIR_M00] = &G6[DIR_M00 * numberOfLBnodes];
+			G.g[dP00] = &G6[dP00 * numberOfLBnodes];
+			G.g[dM00] = &G6[dM00 * numberOfLBnodes];
 			G.g[DIR_0P0] = &G6[DIR_0P0 * numberOfLBnodes];
 			G.g[DIR_0M0] = &G6[DIR_0M0 * numberOfLBnodes];
 			G.g[DIR_00P] = &G6[DIR_00P * numberOfLBnodes];
@@ -1043,8 +1043,8 @@ __global__ void setRecvGsF3(
 		}
 		else
 		{
-			G.g[DIR_M00] = &G6[DIR_P00 * numberOfLBnodes];
-			G.g[DIR_P00] = &G6[DIR_M00 * numberOfLBnodes];
+			G.g[dM00] = &G6[dP00 * numberOfLBnodes];
+			G.g[dP00] = &G6[dM00 * numberOfLBnodes];
 			G.g[DIR_0M0] = &G6[DIR_0P0 * numberOfLBnodes];
 			G.g[DIR_0P0] = &G6[DIR_0M0 * numberOfLBnodes];
 			G.g[DIR_00M] = &G6[DIR_00P * numberOfLBnodes];
@@ -1053,16 +1053,16 @@ __global__ void setRecvGsF3(
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//set Pointer for Buffer Gs
 		Distributions6 Dbuff;
-		Dbuff.g[DIR_P00] = &bufferGs[DIR_P00 * buffmax];
-		Dbuff.g[DIR_M00] = &bufferGs[DIR_M00 * buffmax];
+		Dbuff.g[dP00] = &bufferGs[dP00 * buffmax];
+		Dbuff.g[dM00] = &bufferGs[dM00 * buffmax];
 		Dbuff.g[DIR_0P0] = &bufferGs[DIR_0P0 * buffmax];
 		Dbuff.g[DIR_0M0] = &bufferGs[DIR_0M0 * buffmax];
 		Dbuff.g[DIR_00P] = &bufferGs[DIR_00P * buffmax];
 		Dbuff.g[DIR_00M] = &bufferGs[DIR_00M * buffmax];
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//write buffer to Gs
-		(G.g[DIR_M00])[kw] = (Dbuff.g[DIR_P00])[k];
-		(G.g[DIR_P00])[kr] = (Dbuff.g[DIR_M00])[k];
+		(G.g[dM00])[kw] = (Dbuff.g[dP00])[k];
+		(G.g[dP00])[kr] = (Dbuff.g[dM00])[k];
 		(G.g[DIR_0M0])[ks] = (Dbuff.g[DIR_0P0])[k];
 		(G.g[DIR_0P0])[kr] = (Dbuff.g[DIR_0M0])[k];
 		(G.g[DIR_00M])[kb] = (Dbuff.g[DIR_00P])[k];

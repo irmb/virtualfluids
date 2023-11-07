@@ -43,8 +43,8 @@ __global__ void scaleFC_0817_comp_27( real* DC,
 	   *f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
 
 
-   fP00source = &DF[DIR_P00 * numberOfLBnodesFine];
-   fM00source = &DF[DIR_M00 * numberOfLBnodesFine];
+   fP00source = &DF[dP00 * numberOfLBnodesFine];
+   fM00source = &DF[dM00 * numberOfLBnodesFine];
    f0P0source = &DF[DIR_0P0 * numberOfLBnodesFine];
    f0M0source = &DF[DIR_0M0 * numberOfLBnodesFine];
    f00Psource = &DF[DIR_00P * numberOfLBnodesFine];
@@ -61,7 +61,7 @@ __global__ void scaleFC_0817_comp_27( real* DC,
    f0MMsource = &DF[DIR_0MM * numberOfLBnodesFine];
    f0PMsource = &DF[DIR_0PM * numberOfLBnodesFine];
    f0MPsource = &DF[DIR_0MP * numberOfLBnodesFine];
-   f000source = &DF[DIR_000 * numberOfLBnodesFine];
+   f000source = &DF[d000 * numberOfLBnodesFine];
    fMMMsource = &DF[DIR_MMM * numberOfLBnodesFine];
    fMMPsource = &DF[DIR_MMP * numberOfLBnodesFine];
    fMPPsource = &DF[DIR_MPP * numberOfLBnodesFine];
@@ -78,8 +78,8 @@ __global__ void scaleFC_0817_comp_27( real* DC,
 
    if (isEvenTimestep==true)
    {
-	   fP00dest = &DC[DIR_P00 * numberOfLBnodesCoarse];
-	   fM00dest = &DC[DIR_M00 * numberOfLBnodesCoarse];
+	   fP00dest = &DC[dP00 * numberOfLBnodesCoarse];
+	   fM00dest = &DC[dM00 * numberOfLBnodesCoarse];
 	   f0P0dest = &DC[DIR_0P0 * numberOfLBnodesCoarse];
 	   f0M0dest = &DC[DIR_0M0 * numberOfLBnodesCoarse];
 	   f00Pdest = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -96,7 +96,7 @@ __global__ void scaleFC_0817_comp_27( real* DC,
 	   f0MMdest = &DC[DIR_0MM * numberOfLBnodesCoarse];
 	   f0PMdest = &DC[DIR_0PM * numberOfLBnodesCoarse];
 	   f0MPdest = &DC[DIR_0MP * numberOfLBnodesCoarse];
-	   f000dest = &DC[DIR_000 * numberOfLBnodesCoarse];
+	   f000dest = &DC[d000 * numberOfLBnodesCoarse];
 	   fMMMdest = &DC[DIR_MMM * numberOfLBnodesCoarse];
 	   fMMPdest = &DC[DIR_MMP * numberOfLBnodesCoarse];
 	   fMPPdest = &DC[DIR_MPP * numberOfLBnodesCoarse];
@@ -108,8 +108,8 @@ __global__ void scaleFC_0817_comp_27( real* DC,
    } 
    else
    {
-	   fP00dest = &DC[DIR_M00 * numberOfLBnodesCoarse];
-	   fM00dest = &DC[DIR_P00 * numberOfLBnodesCoarse];
+	   fP00dest = &DC[dM00 * numberOfLBnodesCoarse];
+	   fM00dest = &DC[dP00 * numberOfLBnodesCoarse];
 	   f0P0dest = &DC[DIR_0M0 * numberOfLBnodesCoarse];
 	   f0M0dest = &DC[DIR_0P0 * numberOfLBnodesCoarse];
 	   f00Pdest = &DC[DIR_00M * numberOfLBnodesCoarse];
@@ -126,7 +126,7 @@ __global__ void scaleFC_0817_comp_27( real* DC,
 	   f0MMdest = &DC[DIR_0PP * numberOfLBnodesCoarse];
 	   f0PMdest = &DC[DIR_0MP * numberOfLBnodesCoarse];
 	   f0MPdest = &DC[DIR_0PM * numberOfLBnodesCoarse];
-	   f000dest = &DC[DIR_000 * numberOfLBnodesCoarse];
+	   f000dest = &DC[d000 * numberOfLBnodesCoarse];
 	   fMMMdest = &DC[DIR_PPP * numberOfLBnodesCoarse];
 	   fMMPdest = &DC[DIR_PPM * numberOfLBnodesCoarse];
 	   fMPPdest = &DC[DIR_PMM * numberOfLBnodesCoarse];
@@ -1236,8 +1236,8 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -1254,7 +1254,7 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -1269,8 +1269,8 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -1287,7 +1287,7 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -1299,8 +1299,8 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -1317,7 +1317,7 @@ __global__ void scaleFC_AA2016_comp_27(real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -5425,8 +5425,8 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -5443,7 +5443,7 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -5458,8 +5458,8 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -5476,7 +5476,7 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -5488,8 +5488,8 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -5506,7 +5506,7 @@ __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -9614,8 +9614,8 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
     real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF,
         *fbnF, *ftsF, *fzeroF, *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-    feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-    fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+    feF    = &DF[dP00 * numberOfLBnodesFine];
+    fwF    = &DF[dM00 * numberOfLBnodesFine];
     fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
     fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
     ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -9632,7 +9632,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
     fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
     fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
     ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-    fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+    fzeroF = &DF[d000 * numberOfLBnodesFine];
     ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
     ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
     ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -9646,8 +9646,8 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
         *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
     if (isEvenTimestep == true) {
-        feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-        fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+        feC    = &DC[dP00 * numberOfLBnodesCoarse];
+        fwC    = &DC[dM00 * numberOfLBnodesCoarse];
         fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
         fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
         ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -9664,7 +9664,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
         fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
         fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
         ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-        fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+        fzeroC = &DC[d000 * numberOfLBnodesCoarse];
         ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
         ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
         ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -9674,8 +9674,8 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
         fbseC  = &DC[DIR_PMM * numberOfLBnodesCoarse];
         fbnwC  = &DC[DIR_MPM * numberOfLBnodesCoarse];
     } else {
-        fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-        feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+        fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+        feC    = &DC[dM00 * numberOfLBnodesCoarse];
         fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
         fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
         fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -9692,7 +9692,7 @@ __device__ void scaleFC_RhoSq_comp_27_Calculation(
         ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
         ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
         fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-        fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+        fzeroC = &DC[d000 * numberOfLBnodesCoarse];
         fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
         fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
         fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -11192,8 +11192,8 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -11210,7 +11210,7 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -11225,8 +11225,8 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -11243,7 +11243,7 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -11255,8 +11255,8 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -11273,7 +11273,7 @@ __global__ void scaleFC_staggered_time_comp_27(   real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -12492,8 +12492,8 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -12510,7 +12510,7 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -12525,8 +12525,8 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -12543,7 +12543,7 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -12555,8 +12555,8 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -12573,7 +12573,7 @@ __global__ void scaleFC_Fix_comp_27(  real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -14352,8 +14352,8 @@ __global__ void scaleFC_NSPress_27(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -14370,7 +14370,7 @@ __global__ void scaleFC_NSPress_27(   real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -14385,8 +14385,8 @@ __global__ void scaleFC_NSPress_27(   real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -14403,7 +14403,7 @@ __global__ void scaleFC_NSPress_27(   real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -14415,8 +14415,8 @@ __global__ void scaleFC_NSPress_27(   real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -14433,7 +14433,7 @@ __global__ void scaleFC_NSPress_27(   real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -15558,8 +15558,8 @@ __global__ void scaleFC_Fix_27(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -15576,7 +15576,7 @@ __global__ void scaleFC_Fix_27(   real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -15591,8 +15591,8 @@ __global__ void scaleFC_Fix_27(   real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -15609,7 +15609,7 @@ __global__ void scaleFC_Fix_27(   real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -15621,8 +15621,8 @@ __global__ void scaleFC_Fix_27(   real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -15639,7 +15639,7 @@ __global__ void scaleFC_Fix_27(   real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -16918,8 +16918,8 @@ __global__ void scaleFCpress27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -16936,7 +16936,7 @@ __global__ void scaleFCpress27(real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -16951,8 +16951,8 @@ __global__ void scaleFCpress27(real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -16969,7 +16969,7 @@ __global__ void scaleFCpress27(real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -16981,8 +16981,8 @@ __global__ void scaleFCpress27(real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -16999,7 +16999,7 @@ __global__ void scaleFCpress27(real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -17843,8 +17843,8 @@ __global__ void scaleFCLast27( real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -17861,7 +17861,7 @@ __global__ void scaleFCLast27( real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -17876,8 +17876,8 @@ __global__ void scaleFCLast27( real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -17894,7 +17894,7 @@ __global__ void scaleFCLast27( real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -17906,8 +17906,8 @@ __global__ void scaleFCLast27( real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -17924,7 +17924,7 @@ __global__ void scaleFCLast27( real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -19236,8 +19236,8 @@ __global__ void scaleFCThSMG7(    real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -19268,8 +19268,8 @@ __global__ void scaleFCThSMG7(    real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -19297,8 +19297,8 @@ __global__ void scaleFCThSMG7(    real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -20105,8 +20105,8 @@ __global__ void scaleFCThS7(   real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -20137,8 +20137,8 @@ __global__ void scaleFCThS7(   real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -20166,8 +20166,8 @@ __global__ void scaleFCThS7(   real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -20894,8 +20894,8 @@ __global__ void scaleFCThS27(     real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -20926,8 +20926,8 @@ __global__ void scaleFCThS27(     real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -20955,8 +20955,8 @@ __global__ void scaleFCThS27(     real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -20984,8 +20984,8 @@ __global__ void scaleFCThS27(     real* DC,
    }
 
    Distributions27 D27F;
-   D27F.f[DIR_P00] = &DD27F[DIR_P00 * numberOfLBnodesFine];
-   D27F.f[DIR_M00] = &DD27F[DIR_M00 * numberOfLBnodesFine];
+   D27F.f[dP00] = &DD27F[dP00 * numberOfLBnodesFine];
+   D27F.f[dM00] = &DD27F[dM00 * numberOfLBnodesFine];
    D27F.f[DIR_0P0] = &DD27F[DIR_0P0 * numberOfLBnodesFine];
    D27F.f[DIR_0M0] = &DD27F[DIR_0M0 * numberOfLBnodesFine];
    D27F.f[DIR_00P] = &DD27F[DIR_00P * numberOfLBnodesFine];
@@ -21002,7 +21002,7 @@ __global__ void scaleFCThS27(     real* DC,
    D27F.f[DIR_0MM] = &DD27F[DIR_0MM * numberOfLBnodesFine];
    D27F.f[DIR_0PM] = &DD27F[DIR_0PM * numberOfLBnodesFine];
    D27F.f[DIR_0MP] = &DD27F[DIR_0MP * numberOfLBnodesFine];
-   D27F.f[DIR_000] = &DD27F[DIR_000 * numberOfLBnodesFine];
+   D27F.f[d000] = &DD27F[d000 * numberOfLBnodesFine];
    D27F.f[DIR_PPP] = &DD27F[DIR_PPP * numberOfLBnodesFine];
    D27F.f[DIR_MMP] = &DD27F[DIR_MMP * numberOfLBnodesFine];
    D27F.f[DIR_PMP] = &DD27F[DIR_PMP * numberOfLBnodesFine];
@@ -21015,8 +21015,8 @@ __global__ void scaleFCThS27(     real* DC,
    Distributions27 D27C;
    if (isEvenTimestep==true)
    {
-      D27C.f[DIR_P00] = &DD27C[DIR_P00 * numberOfLBnodesCoarse];
-      D27C.f[DIR_M00] = &DD27C[DIR_M00 * numberOfLBnodesCoarse];
+      D27C.f[dP00] = &DD27C[dP00 * numberOfLBnodesCoarse];
+      D27C.f[dM00] = &DD27C[dM00 * numberOfLBnodesCoarse];
       D27C.f[DIR_0P0] = &DD27C[DIR_0P0 * numberOfLBnodesCoarse];
       D27C.f[DIR_0M0] = &DD27C[DIR_0M0 * numberOfLBnodesCoarse];
       D27C.f[DIR_00P] = &DD27C[DIR_00P * numberOfLBnodesCoarse];
@@ -21033,7 +21033,7 @@ __global__ void scaleFCThS27(     real* DC,
       D27C.f[DIR_0MM] = &DD27C[DIR_0MM * numberOfLBnodesCoarse];
       D27C.f[DIR_0PM] = &DD27C[DIR_0PM * numberOfLBnodesCoarse];
       D27C.f[DIR_0MP] = &DD27C[DIR_0MP * numberOfLBnodesCoarse];
-      D27C.f[DIR_000] = &DD27C[DIR_000 * numberOfLBnodesCoarse];
+      D27C.f[d000] = &DD27C[d000 * numberOfLBnodesCoarse];
       D27C.f[DIR_PPP] = &DD27C[DIR_PPP * numberOfLBnodesCoarse];
       D27C.f[DIR_MMP] = &DD27C[DIR_MMP * numberOfLBnodesCoarse];
       D27C.f[DIR_PMP] = &DD27C[DIR_PMP * numberOfLBnodesCoarse];
@@ -21045,8 +21045,8 @@ __global__ void scaleFCThS27(     real* DC,
    }
    else
    {
-      D27C.f[DIR_M00] = &DD27C[DIR_P00 * numberOfLBnodesCoarse];
-      D27C.f[DIR_P00] = &DD27C[DIR_M00 * numberOfLBnodesCoarse];
+      D27C.f[dM00] = &DD27C[dP00 * numberOfLBnodesCoarse];
+      D27C.f[dP00] = &DD27C[dM00 * numberOfLBnodesCoarse];
       D27C.f[DIR_0M0] = &DD27C[DIR_0P0 * numberOfLBnodesCoarse];
       D27C.f[DIR_0P0] = &DD27C[DIR_0M0 * numberOfLBnodesCoarse];
       D27C.f[DIR_00M] = &DD27C[DIR_00P * numberOfLBnodesCoarse];
@@ -21063,7 +21063,7 @@ __global__ void scaleFCThS27(     real* DC,
       D27C.f[DIR_0PP] = &DD27C[DIR_0MM * numberOfLBnodesCoarse];
       D27C.f[DIR_0MP] = &DD27C[DIR_0PM * numberOfLBnodesCoarse];
       D27C.f[DIR_0PM] = &DD27C[DIR_0MP * numberOfLBnodesCoarse];
-      D27C.f[DIR_000] = &DD27C[DIR_000 * numberOfLBnodesCoarse];
+      D27C.f[d000] = &DD27C[d000 * numberOfLBnodesCoarse];
       D27C.f[DIR_MMM] = &DD27C[DIR_PPP * numberOfLBnodesCoarse];
       D27C.f[DIR_PPM] = &DD27C[DIR_MMP * numberOfLBnodesCoarse];
       D27C.f[DIR_MPM] = &DD27C[DIR_PMP * numberOfLBnodesCoarse];
@@ -21167,8 +21167,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21185,7 +21185,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21254,8 +21254,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21272,7 +21272,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21341,8 +21341,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21359,7 +21359,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21428,8 +21428,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21446,7 +21446,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21525,8 +21525,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21543,7 +21543,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21612,8 +21612,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21630,7 +21630,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21699,8 +21699,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21717,7 +21717,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21786,8 +21786,8 @@ __global__ void scaleFCThS27(     real* DC,
       f_BSE  = fbseF[kbs];
       f_BNW  = fbnwF[kbw];
       //////////////////////////////////////////////////////////////////////////////////
-      f27E    =  (D27F.f[DIR_P00])[kzero];//ke
-      f27W    =  (D27F.f[DIR_M00])[kw   ];
+      f27E    =  (D27F.f[dP00])[kzero];//ke
+      f27W    =  (D27F.f[dM00])[kw   ];
       f27N    =  (D27F.f[DIR_0P0])[kzero];//kn
       f27S    =  (D27F.f[DIR_0M0])[ks   ];
       f27T    =  (D27F.f[DIR_00P])[kzero];//kt
@@ -21804,7 +21804,7 @@ __global__ void scaleFCThS27(     real* DC,
       f27BS   =  (D27F.f[DIR_0MM])[kbs  ];
       f27BN   =  (D27F.f[DIR_0PM])[kb   ];//kbn
       f27TS   =  (D27F.f[DIR_0MP])[ks   ];//kts
-      f27ZERO =  (D27F.f[DIR_000])[kzero];//kzero
+      f27ZERO =  (D27F.f[d000])[kzero];//kzero
       f27TNE   = (D27F.f[DIR_PPP])[kzero];//ktne
       f27TSW   = (D27F.f[DIR_MMP])[ksw  ];//ktsw
       f27TSE   = (D27F.f[DIR_PMP])[ks   ];//ktse
@@ -21925,9 +21925,9 @@ __global__ void scaleFCThS27(     real* DC,
 
       cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      (D27C.f[DIR_000])[kzero] =   c8o27* Conc_C*(c1o1-cu_sq);
-      (D27C.f[DIR_P00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_C*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
-      (D27C.f[DIR_M00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_C*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
+      (D27C.f[d000])[kzero] =   c8o27* Conc_C*(c1o1-cu_sq);
+      (D27C.f[dP00])[kzero] =   c2o27* (c3o1*( Mx        )+Conc_C*(c1o1+c9o2*( vx1        )*( vx1        )-cu_sq));
+      (D27C.f[dM00])[kw   ] =   c2o27* (c3o1*(-Mx        )+Conc_C*(c1o1+c9o2*(-vx1        )*(-vx1        )-cu_sq));
       (D27C.f[DIR_0P0])[kzero] =   c2o27* (c3o1*(     My    )+Conc_C*(c1o1+c9o2*(     vx2    )*(     vx2    )-cu_sq));
       (D27C.f[DIR_0M0])[ks   ] =   c2o27* (c3o1*(    -My    )+Conc_C*(c1o1+c9o2*(    -vx2    )*(    -vx2    )-cu_sq));
       (D27C.f[DIR_00P])[kzero] =   c2o27* (c3o1*(         Mz)+Conc_C*(c1o1+c9o2*(         vx3)*(         vx3)-cu_sq));
@@ -22017,8 +22017,8 @@ __global__ void scaleFCEff27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -22035,7 +22035,7 @@ __global__ void scaleFCEff27(real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -22050,8 +22050,8 @@ __global__ void scaleFCEff27(real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -22068,7 +22068,7 @@ __global__ void scaleFCEff27(real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -22080,8 +22080,8 @@ __global__ void scaleFCEff27(real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -22098,7 +22098,7 @@ __global__ void scaleFCEff27(real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -22995,8 +22995,8 @@ __global__ void scaleFC27(real* DC,
    real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
          *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
-   feF    = &DF[DIR_P00 * numberOfLBnodesFine];
-   fwF    = &DF[DIR_M00 * numberOfLBnodesFine];
+   feF    = &DF[dP00 * numberOfLBnodesFine];
+   fwF    = &DF[dM00 * numberOfLBnodesFine];
    fnF    = &DF[DIR_0P0 * numberOfLBnodesFine];
    fsF    = &DF[DIR_0M0 * numberOfLBnodesFine];
    ftF    = &DF[DIR_00P * numberOfLBnodesFine];
@@ -23013,7 +23013,7 @@ __global__ void scaleFC27(real* DC,
    fbsF   = &DF[DIR_0MM * numberOfLBnodesFine];
    fbnF   = &DF[DIR_0PM * numberOfLBnodesFine];
    ftsF   = &DF[DIR_0MP * numberOfLBnodesFine];
-   fzeroF = &DF[DIR_000 * numberOfLBnodesFine];
+   fzeroF = &DF[d000 * numberOfLBnodesFine];
    ftneF  = &DF[DIR_PPP * numberOfLBnodesFine];
    ftswF  = &DF[DIR_MMP * numberOfLBnodesFine];
    ftseF  = &DF[DIR_PMP * numberOfLBnodesFine];
@@ -23028,8 +23028,8 @@ __global__ void scaleFC27(real* DC,
 
    if (isEvenTimestep==true)
    {
-      feC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      fwC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      feC    = &DC[dP00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dM00 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       ftC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -23046,7 +23046,7 @@ __global__ void scaleFC27(real* DC,
       fbsC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       ftneC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       ftswC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       ftseC  = &DC[DIR_PMP * numberOfLBnodesCoarse];
@@ -23058,8 +23058,8 @@ __global__ void scaleFC27(real* DC,
    } 
    else
    {
-      fwC    = &DC[DIR_P00 * numberOfLBnodesCoarse];
-      feC    = &DC[DIR_M00 * numberOfLBnodesCoarse];
+      fwC    = &DC[dP00 * numberOfLBnodesCoarse];
+      feC    = &DC[dM00 * numberOfLBnodesCoarse];
       fsC    = &DC[DIR_0P0 * numberOfLBnodesCoarse];
       fnC    = &DC[DIR_0M0 * numberOfLBnodesCoarse];
       fbC    = &DC[DIR_00P * numberOfLBnodesCoarse];
@@ -23076,7 +23076,7 @@ __global__ void scaleFC27(real* DC,
       ftnC   = &DC[DIR_0MM * numberOfLBnodesCoarse];
       ftsC   = &DC[DIR_0PM * numberOfLBnodesCoarse];
       fbnC   = &DC[DIR_0MP * numberOfLBnodesCoarse];
-      fzeroC = &DC[DIR_000 * numberOfLBnodesCoarse];
+      fzeroC = &DC[d000 * numberOfLBnodesCoarse];
       fbswC  = &DC[DIR_PPP * numberOfLBnodesCoarse];
       fbneC  = &DC[DIR_MMP * numberOfLBnodesCoarse];
       fbnwC  = &DC[DIR_PMP * numberOfLBnodesCoarse];

@@ -25,7 +25,7 @@ const real WEIGTH[] = { c8o27,
                           c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,
                           c1o216, c1o216, c1o216, c1o216, c1o216, c1o216, c1o216, c1o216 };
 
-const int INVDIR[] = { DIR_000, INV_P00, INV_M00, INV_0P0, INV_0M0, INV_00P, INV_00M, 
+const int INVDIR[] = { d000, INV_P00, INV_M00, INV_0P0, INV_0M0, INV_00P, INV_00M, 
                                 INV_PP0, INV_MM0, INV_PM0, INV_MP0, INV_P0P, INV_M0M, INV_P0M, INV_M0P, INV_0PP, INV_0MM, INV_0PM, INV_0MP,
                                 INV_PPP, INV_MPP, INV_PMP, INV_MMP, INV_PPM, INV_MPM, INV_PMM, INV_MMM };
 

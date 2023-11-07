@@ -17,10 +17,10 @@
 //        uPart[2] = (*particleData)(x1, x2, x3)->uPart[2];
 //
 //        D3Q27System::calcIncompFeq(fEqSolid, drho, uPart[0], uPart[1], uPart[2]);
-//        real rhoPhaseField = (phi[DIR_000] > c1o2) ? c1o1 : c1o1 / densityRatio;
+//        real rhoPhaseField = (phi[d000] > c1o2) ? c1o1 : c1o1 / densityRatio;
 //        if ((*particleData)(x1, x2, x3)->solidFraction > SOLFRAC_MAX) {
-//            double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-//            f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + bb0;
+//            double const bb0 = fEq[vf::lbm::dir::d000] - fEqSolid[vf::lbm::dir::d000];
+//            f[vf::lbm::dir::d000] = fPre[vf::lbm::dir::d000] + bb0;
 //            for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
 //                const int iOpp = D3Q27System::INVDIR[iPop];
 //                double const bb = ((fPre[iOpp] - fEq[iOpp]) - (fPre[iPop] - fEqSolid[iPop]));
@@ -42,8 +42,8 @@
 //            // #endif
 //            double const oneMinB = 1. - B;
 //
-//            double const bb0 = fEq[vf::lbm::dir::DIR_000] - fEqSolid[vf::lbm::dir::DIR_000];
-//            f[vf::lbm::dir::DIR_000] = fPre[vf::lbm::dir::DIR_000] + oneMinB * (f[vf::lbm::dir::DIR_000] - fPre[vf::lbm::dir::DIR_000]) + B * bb0;
+//            double const bb0 = fEq[vf::lbm::dir::d000] - fEqSolid[vf::lbm::dir::d000];
+//            f[vf::lbm::dir::d000] = fPre[vf::lbm::dir::d000] + oneMinB * (f[vf::lbm::dir::d000] - fPre[vf::lbm::dir::d000]) + B * bb0;
 //
 //            for (int iPop = D3Q27System::FSTARTDIR; iPop <= D3Q27System::FENDDIR; iPop++) {
 //                int const iOpp = D3Q27System::INVDIR[iPop];
@@ -59,9 +59,9 @@
 //            }
 //        } /* if solidFraction > SOLFRAC_MAX */
 //
-//    //    (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::DIR_000];
+//    //    (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::d000];
 //
-//    //    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::DIR_M00];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::dM00];
 //    //    (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::DIR_0M0];
 //    //    (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = f[vf::lbm::dir::DIR_00M];
 //    //    (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = f[vf::lbm::dir::DIR_MM0];
@@ -75,7 +75,7 @@
 //    //    (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MPM];
 //    //    (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PPM];
 //
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::DIR_P00];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::dP00];
 //    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = f[vf::lbm::dir::DIR_0P0];
 //    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = f[vf::lbm::dir::DIR_00P];
 //    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PP0];

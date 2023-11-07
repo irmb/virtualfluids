@@ -248,8 +248,8 @@ __global__ void MoveParticles( real* coordX,
 		{
 		   if (isEvenTimestep==true)
 		   {
-			  feC    = &DD[DIR_P00 * numberOfLBnodes];
-			  fwC    = &DD[DIR_M00 * numberOfLBnodes];
+			  feC    = &DD[dP00 * numberOfLBnodes];
+			  fwC    = &DD[dM00 * numberOfLBnodes];
 			  fnC    = &DD[DIR_0P0 * numberOfLBnodes];
 			  fsC    = &DD[DIR_0M0 * numberOfLBnodes];
 			  ftC    = &DD[DIR_00P * numberOfLBnodes];
@@ -266,7 +266,7 @@ __global__ void MoveParticles( real* coordX,
 			  fbsC   = &DD[DIR_0MM * numberOfLBnodes];
 			  fbnC   = &DD[DIR_0PM * numberOfLBnodes];
 			  ftsC   = &DD[DIR_0MP * numberOfLBnodes];
-			  fzeroC = &DD[DIR_000 * numberOfLBnodes];
+			  fzeroC = &DD[d000 * numberOfLBnodes];
 			  ftneC  = &DD[DIR_PPP * numberOfLBnodes];
 			  ftswC  = &DD[DIR_MMP * numberOfLBnodes];
 			  ftseC  = &DD[DIR_PMP * numberOfLBnodes];
@@ -278,8 +278,8 @@ __global__ void MoveParticles( real* coordX,
 		   } 			 
 		   else			 
 		   {			 
-			  fwC    = &DD[DIR_P00 * numberOfLBnodes];
-			  feC    = &DD[DIR_M00 * numberOfLBnodes];
+			  fwC    = &DD[dP00 * numberOfLBnodes];
+			  feC    = &DD[dM00 * numberOfLBnodes];
 			  fsC    = &DD[DIR_0P0 * numberOfLBnodes];
 			  fnC    = &DD[DIR_0M0 * numberOfLBnodes];
 			  fbC    = &DD[DIR_00P * numberOfLBnodes];
@@ -296,7 +296,7 @@ __global__ void MoveParticles( real* coordX,
 			  ftnC   = &DD[DIR_0MM * numberOfLBnodes];
 			  ftsC   = &DD[DIR_0PM * numberOfLBnodes];
 			  fbnC   = &DD[DIR_0MP * numberOfLBnodes];
-			  fzeroC = &DD[DIR_000 * numberOfLBnodes];
+			  fzeroC = &DD[d000 * numberOfLBnodes];
 			  fbswC  = &DD[DIR_PPP * numberOfLBnodes];
 			  fbneC  = &DD[DIR_MMP * numberOfLBnodes];
 			  fbnwC  = &DD[DIR_PMP * numberOfLBnodes];
@@ -1114,8 +1114,8 @@ __global__ void MoveParticlesWithoutBCs(   real* coordX,
 		{
 		   if (isEvenTimestep==true)
 		   {
-			  feC    = &DD[DIR_P00 * numberOfLBnodes];
-			  fwC    = &DD[DIR_M00 * numberOfLBnodes];
+			  feC    = &DD[dP00 * numberOfLBnodes];
+			  fwC    = &DD[dM00 * numberOfLBnodes];
 			  fnC    = &DD[DIR_0P0 * numberOfLBnodes];
 			  fsC    = &DD[DIR_0M0 * numberOfLBnodes];
 			  ftC    = &DD[DIR_00P * numberOfLBnodes];
@@ -1132,7 +1132,7 @@ __global__ void MoveParticlesWithoutBCs(   real* coordX,
 			  fbsC   = &DD[DIR_0MM * numberOfLBnodes];
 			  fbnC   = &DD[DIR_0PM * numberOfLBnodes];
 			  ftsC   = &DD[DIR_0MP * numberOfLBnodes];
-			  fzeroC = &DD[DIR_000 * numberOfLBnodes];
+			  fzeroC = &DD[d000 * numberOfLBnodes];
 			  ftneC  = &DD[DIR_PPP * numberOfLBnodes];
 			  ftswC  = &DD[DIR_MMP * numberOfLBnodes];
 			  ftseC  = &DD[DIR_PMP * numberOfLBnodes];
@@ -1144,8 +1144,8 @@ __global__ void MoveParticlesWithoutBCs(   real* coordX,
 		   } 			 
 		   else			 
 		   {			 
-			  fwC    = &DD[DIR_P00 * numberOfLBnodes];
-			  feC    = &DD[DIR_M00 * numberOfLBnodes];
+			  fwC    = &DD[dP00 * numberOfLBnodes];
+			  feC    = &DD[dM00 * numberOfLBnodes];
 			  fsC    = &DD[DIR_0P0 * numberOfLBnodes];
 			  fnC    = &DD[DIR_0M0 * numberOfLBnodes];
 			  fbC    = &DD[DIR_00P * numberOfLBnodes];
@@ -1162,7 +1162,7 @@ __global__ void MoveParticlesWithoutBCs(   real* coordX,
 			  ftnC   = &DD[DIR_0MM * numberOfLBnodes];
 			  ftsC   = &DD[DIR_0PM * numberOfLBnodes];
 			  fbnC   = &DD[DIR_0MP * numberOfLBnodes];
-			  fzeroC = &DD[DIR_000 * numberOfLBnodes];
+			  fzeroC = &DD[d000 * numberOfLBnodes];
 			  fbswC  = &DD[DIR_PPP * numberOfLBnodes];
 			  fbneC  = &DD[DIR_MMP * numberOfLBnodes];
 			  fbnwC  = &DD[DIR_PMP * numberOfLBnodes];
@@ -1937,8 +1937,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //Distributions27 D;
    //if (isEvenTimestep==true)
    //{
-   //   D.f[DIR_P00] = &DD[DIR_P00 * size_Mat];
-   //   D.f[DIR_M00] = &DD[DIR_M00 * size_Mat];
+   //   D.f[dP00] = &DD[dP00 * size_Mat];
+   //   D.f[dM00] = &DD[dM00 * size_Mat];
    //   D.f[DIR_0P0] = &DD[DIR_0P0 * size_Mat];
    //   D.f[DIR_0M0] = &DD[DIR_0M0 * size_Mat];
    //   D.f[DIR_00P] = &DD[DIR_00P * size_Mat];
@@ -1955,7 +1955,7 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   D.f[DIR_0MM] = &DD[DIR_0MM * size_Mat];
    //   D.f[DIR_0PM] = &DD[DIR_0PM * size_Mat];
    //   D.f[DIR_0MP] = &DD[DIR_0MP * size_Mat];
-   //   D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+   //   D.f[d000] = &DD[d000 * size_Mat];
    //   D.f[DIR_PPP] = &DD[DIR_PPP * size_Mat];
    //   D.f[DIR_MMP] = &DD[DIR_MMP * size_Mat];
    //   D.f[DIR_PMP] = &DD[DIR_PMP * size_Mat];
@@ -1967,8 +1967,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //} 
    //else
    //{
-   //   D.f[DIR_M00] = &DD[DIR_P00 * size_Mat];
-   //   D.f[DIR_P00] = &DD[DIR_M00 * size_Mat];
+   //   D.f[dM00] = &DD[dP00 * size_Mat];
+   //   D.f[dP00] = &DD[dM00 * size_Mat];
    //   D.f[DIR_0M0] = &DD[DIR_0P0 * size_Mat];
    //   D.f[DIR_0P0] = &DD[DIR_0M0 * size_Mat];
    //   D.f[DIR_00M] = &DD[DIR_00P * size_Mat];
@@ -1985,7 +1985,7 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   D.f[DIR_0PP] = &DD[DIR_0MM * size_Mat];
    //   D.f[DIR_0MP] = &DD[DIR_0PM * size_Mat];
    //   D.f[DIR_0PM] = &DD[DIR_0MP * size_Mat];
-   //   D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+   //   D.f[d000] = &DD[d000 * size_Mat];
    //   D.f[DIR_PPP] = &DD[DIR_MMM * size_Mat];
    //   D.f[DIR_MMP] = &DD[DIR_PPM * size_Mat];
    //   D.f[DIR_PMP] = &DD[DIR_MPM * size_Mat];
@@ -2015,8 +2015,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    // //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
    // //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
    // //         *q_dirBSE, *q_dirBNW; 
-   // //   q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-   //    q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
+   // //   q_dirE   = &QQ[dP00 * numberOfBCnodes];
+   //    q_dirW   = &QQ[dM00 * numberOfBCnodes];
    // //   q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
    //    q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
    // //   q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
@@ -2047,8 +2047,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    // //           *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
    // //           *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
    // //           *nx_dirBSE, *nx_dirBNW; 
-   // //   nx_dirE   = &NormalX[DIR_P00 * numberOfBCnodes];
-   // //   nx_dirW   = &NormalX[DIR_M00 * numberOfBCnodes];
+   // //   nx_dirE   = &NormalX[dP00 * numberOfBCnodes];
+   // //   nx_dirW   = &NormalX[dM00 * numberOfBCnodes];
    // //   nx_dirN   = &NormalX[DIR_0P0 * numberOfBCnodes];
    // //   nx_dirS   = &NormalX[DIR_0M0 * numberOfBCnodes];
    // //   nx_dirT   = &NormalX[DIR_00P * numberOfBCnodes];
@@ -2079,8 +2079,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    // //           *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
    // //           *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
    // //           *ny_dirBSE, *ny_dirBNW; 
-   // //   ny_dirE   = &NormalY[DIR_P00 * numberOfBCnodes];
-   // //   ny_dirW   = &NormalY[DIR_M00 * numberOfBCnodes];
+   // //   ny_dirE   = &NormalY[dP00 * numberOfBCnodes];
+   // //   ny_dirW   = &NormalY[dM00 * numberOfBCnodes];
    // //   ny_dirN   = &NormalY[DIR_0P0 * numberOfBCnodes];
    // //   ny_dirS   = &NormalY[DIR_0M0 * numberOfBCnodes];
    // //   ny_dirT   = &NormalY[DIR_00P * numberOfBCnodes];
@@ -2111,8 +2111,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    // //           *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
    // //           *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
    // //           *nz_dirBSE, *nz_dirBNW; 
-   // //   nz_dirE   = &NormalZ[DIR_P00 * numberOfBCnodes];
-   // //   nz_dirW   = &NormalZ[DIR_M00 * numberOfBCnodes];
+   // //   nz_dirE   = &NormalZ[dP00 * numberOfBCnodes];
+   // //   nz_dirW   = &NormalZ[dM00 * numberOfBCnodes];
    // //   nz_dirN   = &NormalZ[DIR_0P0 * numberOfBCnodes];
    // //   nz_dirS   = &NormalZ[DIR_0M0 * numberOfBCnodes];
    // //   nz_dirT   = &NormalZ[DIR_00P * numberOfBCnodes];
@@ -2190,8 +2190,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   unsigned int ktne = KQK;
    //   unsigned int kbsw = neighborZ[ksw];
    //   ////////////////////////////////////////////////////////////////////////////////
-   //   real f_W    = (D.f[DIR_P00])[ke   ];
-   //   real f_E    = (D.f[DIR_M00])[kw   ];
+   //   real f_W    = (D.f[dP00])[ke   ];
+   //   real f_E    = (D.f[dM00])[kw   ];
    //   real f_S    = (D.f[DIR_0P0])[kn   ];
    //   real f_N    = (D.f[DIR_0M0])[ks   ];
    //   real f_B    = (D.f[DIR_00P])[kt   ];
@@ -2221,7 +2221,7 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   real vx1, vx2, vx3, drho;
    //   drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
    //             f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]); 
+   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
    //   vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
    //             ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -2241,8 +2241,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   //////////////////////////////////////////////////////////////////////////
    //   if (isEvenTimestep==false)
    //   {
-   //      D.f[DIR_P00] = &DD[DIR_P00 * size_Mat];
-   //      D.f[DIR_M00] = &DD[DIR_M00 * size_Mat];
+   //      D.f[dP00] = &DD[dP00 * size_Mat];
+   //      D.f[dM00] = &DD[dM00 * size_Mat];
    //      D.f[DIR_0P0] = &DD[DIR_0P0 * size_Mat];
    //      D.f[DIR_0M0] = &DD[DIR_0M0 * size_Mat];
    //      D.f[DIR_00P] = &DD[DIR_00P * size_Mat];
@@ -2259,7 +2259,7 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //      D.f[DIR_0MM] = &DD[DIR_0MM * size_Mat];
    //      D.f[DIR_0PM] = &DD[DIR_0PM * size_Mat];
    //      D.f[DIR_0MP] = &DD[DIR_0MP * size_Mat];
-   //      D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+   //      D.f[d000] = &DD[d000 * size_Mat];
    //      D.f[DIR_PPP] = &DD[DIR_PPP * size_Mat];
    //      D.f[DIR_MMP] = &DD[DIR_MMP * size_Mat];
    //      D.f[DIR_PMP] = &DD[DIR_PMP * size_Mat];
@@ -2271,8 +2271,8 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //   } 
    //   else
    //   {
-   //      D.f[DIR_M00] = &DD[DIR_P00 * size_Mat];
-   //      D.f[DIR_P00] = &DD[DIR_M00 * size_Mat];
+   //      D.f[dM00] = &DD[dP00 * size_Mat];
+   //      D.f[dP00] = &DD[dM00 * size_Mat];
    //      D.f[DIR_0M0] = &DD[DIR_0P0 * size_Mat];
    //      D.f[DIR_0P0] = &DD[DIR_0M0 * size_Mat];
    //      D.f[DIR_00M] = &DD[DIR_00P * size_Mat];
@@ -2289,7 +2289,7 @@ __global__ void ParticleNoSlipDeviceComp27(real* coordX,
    //      D.f[DIR_0PP] = &DD[DIR_0MM * size_Mat];
    //      D.f[DIR_0MP] = &DD[DIR_0PM * size_Mat];
    //      D.f[DIR_0PM] = &DD[DIR_0MP * size_Mat];
-   //      D.f[DIR_000] = &DD[DIR_000 * size_Mat];
+   //      D.f[d000] = &DD[d000 * size_Mat];
    //      D.f[DIR_PPP] = &DD[DIR_MMM * size_Mat];
    //      D.f[DIR_MMP] = &DD[DIR_PPM * size_Mat];
    //      D.f[DIR_PMP] = &DD[DIR_MPM * size_Mat];
