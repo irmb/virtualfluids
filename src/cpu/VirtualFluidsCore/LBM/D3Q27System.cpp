@@ -25,9 +25,9 @@ const real WEIGTH[] = { c8o27,
                           c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,  c1o54,
                           c1o216, c1o216, c1o216, c1o216, c1o216, c1o216, c1o216, c1o216 };
 
-const int INVDIR[] = { d000, iP00, INV_M00, INV_0P0, INV_0M0, INV_00P, INV_00M, 
-                                INV_PP0, INV_MM0, INV_PM0, INV_MP0, INV_P0P, INV_M0M, INV_P0M, INV_M0P, INV_0PP, INV_0MM, INV_0PM, INV_0MP,
-                                INV_PPP, INV_MPP, INV_PMP, INV_MMP, INV_PPM, INV_MPM, INV_PMM, INV_MMM };
+const int INVDIR[] = { d000, iP00, iM00, i0P0, i0M0, i00P, i00M, 
+                                iPP0, iMM0, iPM0, iMP0, iP0P, iM0M, iP0M, iM0P, i0PP, i0MM, i0PM, i0MP,
+                                iPPP, iMPP, iPMP, iMMP, iPPM, iMPM, iPMM, iMMM };
 
 // index             0   1   2   3   4   5  6   7   8    9  10  11  12  13  14  15  16  17  18
 // direction:        E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE
