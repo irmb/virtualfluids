@@ -63,5 +63,5 @@ static constexpr size_t iMPM = dPMP;
 static constexpr size_t iPMM = dMPP;
 static constexpr size_t iMMM = dPPP;
 
-}
+} // namespace vf::lbm::dir
 #endif
