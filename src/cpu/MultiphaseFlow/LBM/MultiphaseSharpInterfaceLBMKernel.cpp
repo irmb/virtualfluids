@@ -299,30 +299,30 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 					if ((((*phaseField)(x1, x2, x3) <= c1o2) || phi[d000]<=c1o2)&& (
 						(phi[dP00] > c1o2) ||
 						(phi[dM00] > c1o2) ||
-						(phi[DIR_00P] > c1o2) ||
-						(phi[DIR_00M] > c1o2) ||
-						(phi[DIR_0M0] > c1o2) ||
-						(phi[DIR_0P0] > c1o2) ||
-						(phi[DIR_PP0] > c1o2) ||
-						(phi[DIR_PM0] > c1o2) ||
-						(phi[DIR_P0P] > c1o2) ||
-						(phi[DIR_P0M] > c1o2) ||
-						(phi[DIR_MP0] > c1o2) ||
-						(phi[DIR_MM0] > c1o2) ||
-						(phi[DIR_M0P] > c1o2) ||
-						(phi[DIR_M0M] > c1o2) ||
-						(phi[DIR_0PM] > c1o2) ||
-						(phi[DIR_0MM] > c1o2) ||
-						(phi[DIR_0PP] > c1o2) ||
-						(phi[DIR_0MP] > c1o2) ||
-						(phi[DIR_PPP] > c1o2) ||
-						(phi[DIR_PMP] > c1o2) ||
-						(phi[DIR_MPP] > c1o2) ||
-						(phi[DIR_MMP] > c1o2) ||
-						(phi[DIR_PPM] > c1o2) ||
-						(phi[DIR_PMM] > c1o2) ||
-						(phi[DIR_MPM] > c1o2) ||
-						(phi[DIR_MMM] > c1o2)
+						(phi[d00P] > c1o2) ||
+						(phi[d00M] > c1o2) ||
+						(phi[d0M0] > c1o2) ||
+						(phi[d0P0] > c1o2) ||
+						(phi[dPP0] > c1o2) ||
+						(phi[dPM0] > c1o2) ||
+						(phi[dP0P] > c1o2) ||
+						(phi[dP0M] > c1o2) ||
+						(phi[dMP0] > c1o2) ||
+						(phi[dMM0] > c1o2) ||
+						(phi[dM0P] > c1o2) ||
+						(phi[dM0M] > c1o2) ||
+						(phi[d0PM] > c1o2) ||
+						(phi[d0MM] > c1o2) ||
+						(phi[d0PP] > c1o2) ||
+						(phi[d0MP] > c1o2) ||
+						(phi[dPPP] > c1o2) ||
+						(phi[dPMP] > c1o2) ||
+						(phi[dMPP] > c1o2) ||
+						(phi[dMMP] > c1o2) ||
+						(phi[dPPM] > c1o2) ||
+						(phi[dPMM] > c1o2) ||
+						(phi[dMPM] > c1o2) ||
+						(phi[dMMM] > c1o2)
 						)) {
 						real vx = (*vxNode)(x1, x2, x3);
 						real vy = (*vyNode)(x1, x2, x3);
@@ -1460,89 +1460,89 @@ void MultiphaseSharpInterfaceLBMKernel::calculate(int step)
 real MultiphaseSharpInterfaceLBMKernel::gradX1_phi()
 {
 	using namespace D3Q27System;
-	return 3.0* ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) + (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) + (phi[DIR_PPM] - phi[DIR_MMP])))
-		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) + (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_PM0] - phi[DIR_MP0]) + (phi[DIR_PP0] - phi[DIR_MM0])))) +
-		+WEIGTH[DIR_0P0] * (phi[dP00] - phi[dM00]));
+	return 3.0* ((WEIGTH[dPPP] * (((phi[dPPP] - phi[dMMM]) + (phi[dPMM] - phi[dMPP])) + ((phi[dPMP] - phi[dMPM]) + (phi[dPPM] - phi[dMMP])))
+		+ WEIGTH[dPP0] * (((phi[dP0P] - phi[dM0M]) + (phi[dP0M] - phi[dM0P])) + ((phi[dPM0] - phi[dMP0]) + (phi[dPP0] - phi[dMM0])))) +
+		+WEIGTH[d0P0] * (phi[dP00] - phi[dM00]));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX2_phi()
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) - (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PPM] - phi[DIR_MMP])- (phi[DIR_PMP] - phi[DIR_MPM])))
-		+ WEIGTH[DIR_PP0] * (((phi[DIR_0PP] - phi[DIR_0MM]) + (phi[DIR_0PM] - phi[DIR_0MP])) + ((phi[DIR_PP0] - phi[DIR_MM0])- (phi[DIR_PM0] - phi[DIR_MP0])))) +
-		+WEIGTH[DIR_0P0] * (phi[DIR_0P0] - phi[DIR_0M0]));
+	return 3.0 * ((WEIGTH[dPPP] * (((phi[dPPP] - phi[dMMM]) - (phi[dPMM] - phi[dMPP])) + ((phi[dPPM] - phi[dMMP])- (phi[dPMP] - phi[dMPM])))
+		+ WEIGTH[dPP0] * (((phi[d0PP] - phi[d0MM]) + (phi[d0PM] - phi[d0MP])) + ((phi[dPP0] - phi[dMM0])- (phi[dPM0] - phi[dMP0])))) +
+		+WEIGTH[d0P0] * (phi[d0P0] - phi[d0M0]));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX3_phi()
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi[DIR_PPP] - phi[DIR_MMM]) - (phi[DIR_PMM] - phi[DIR_MPP])) + ((phi[DIR_PMP] - phi[DIR_MPM]) - (phi[DIR_PPM] - phi[DIR_MMP])))
-		+ WEIGTH[DIR_PP0] * (((phi[DIR_P0P] - phi[DIR_M0M]) - (phi[DIR_P0M] - phi[DIR_M0P])) + ((phi[DIR_0MP] - phi[DIR_0PM]) + (phi[DIR_0PP] - phi[DIR_0MM])))) +
-		+WEIGTH[DIR_0P0] * (phi[DIR_00P] - phi[DIR_00M]));
+	return 3.0 * ((WEIGTH[dPPP] * (((phi[dPPP] - phi[dMMM]) - (phi[dPMM] - phi[dMPP])) + ((phi[dPMP] - phi[dMPM]) - (phi[dPPM] - phi[dMMP])))
+		+ WEIGTH[dPP0] * (((phi[dP0P] - phi[dM0M]) - (phi[dP0M] - phi[dM0P])) + ((phi[d0MP] - phi[d0PM]) + (phi[d0PP] - phi[d0MM])))) +
+		+WEIGTH[d0P0] * (phi[d00P] - phi[d00M]));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX1_rhoInv(real rhoL,real rhoDIV)
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((1.0/(rhoL+rhoDIV*phi[DIR_PPP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PMM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPP]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PMP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PPM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMP]))))
-		+ WEIGTH[DIR_PP0] * (((1.0 / (rhoL + rhoDIV * phi[DIR_P0P]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0M])) + (1.0 / (rhoL + rhoDIV * phi[DIR_P0M]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0P]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PM0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MP0])) + (1.0 / (rhoL + rhoDIV * phi[DIR_PP0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MM0]))))) +
-		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[dP00]) - 1.0 / (rhoL + rhoDIV * phi[dM00])));
+	return 3.0 * ((WEIGTH[dPPP] * (((1.0/(rhoL+rhoDIV*phi[dPPP]) - 1.0 / (rhoL + rhoDIV * phi[dMMM])) + (1.0 / (rhoL + rhoDIV * phi[dPMM]) - 1.0 / (rhoL + rhoDIV * phi[dMPP]))) + ((1.0 / (rhoL + rhoDIV * phi[dPMP]) - 1.0 / (rhoL + rhoDIV * phi[dMPM])) + (1.0 / (rhoL + rhoDIV * phi[dPPM]) - 1.0 / (rhoL + rhoDIV * phi[dMMP]))))
+		+ WEIGTH[dPP0] * (((1.0 / (rhoL + rhoDIV * phi[dP0P]) - 1.0 / (rhoL + rhoDIV * phi[dM0M])) + (1.0 / (rhoL + rhoDIV * phi[dP0M]) - 1.0 / (rhoL + rhoDIV * phi[dM0P]))) + ((1.0 / (rhoL + rhoDIV * phi[dPM0]) - 1.0 / (rhoL + rhoDIV * phi[dMP0])) + (1.0 / (rhoL + rhoDIV * phi[dPP0]) - 1.0 / (rhoL + rhoDIV * phi[dMM0]))))) +
+		+WEIGTH[d0P0] * (1.0 / (rhoL + rhoDIV * phi[dP00]) - 1.0 / (rhoL + rhoDIV * phi[dM00])));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX2_rhoInv(real rhoL,real rhoDIV)
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((1.0 / (rhoL + rhoDIV * phi[DIR_PPP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMM])) - (1.0 / (rhoL + rhoDIV * phi[DIR_PMM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPP]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PPM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMP])) - (1.0 / (rhoL + rhoDIV * phi[DIR_PMP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPM]))))
-		+ WEIGTH[DIR_PP0] * (((1.0 / (rhoL + rhoDIV * phi[DIR_0PP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_0MM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_0PM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_0MP]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PP0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MM0])) - (1.0 / (rhoL + rhoDIV * phi[DIR_PM0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MP0]))))) +
-		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_0P0]) - 1.0 / (rhoL + rhoDIV * phi[DIR_0M0])));
+	return 3.0 * ((WEIGTH[dPPP] * (((1.0 / (rhoL + rhoDIV * phi[dPPP]) - 1.0 / (rhoL + rhoDIV * phi[dMMM])) - (1.0 / (rhoL + rhoDIV * phi[dPMM]) - 1.0 / (rhoL + rhoDIV * phi[dMPP]))) + ((1.0 / (rhoL + rhoDIV * phi[dPPM]) - 1.0 / (rhoL + rhoDIV * phi[dMMP])) - (1.0 / (rhoL + rhoDIV * phi[dPMP]) - 1.0 / (rhoL + rhoDIV * phi[dMPM]))))
+		+ WEIGTH[dPP0] * (((1.0 / (rhoL + rhoDIV * phi[d0PP]) - 1.0 / (rhoL + rhoDIV * phi[d0MM])) + (1.0 / (rhoL + rhoDIV * phi[d0PM]) - 1.0 / (rhoL + rhoDIV * phi[d0MP]))) + ((1.0 / (rhoL + rhoDIV * phi[dPP0]) - 1.0 / (rhoL + rhoDIV * phi[dMM0])) - (1.0 / (rhoL + rhoDIV * phi[dPM0]) - 1.0 / (rhoL + rhoDIV * phi[dMP0]))))) +
+		+WEIGTH[d0P0] * (1.0 / (rhoL + rhoDIV * phi[d0P0]) - 1.0 / (rhoL + rhoDIV * phi[d0M0])));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX3_rhoInv(real rhoL, real rhoDIV)
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((1.0 / (rhoL + rhoDIV * phi[DIR_PPP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMM])) - (1.0 / (rhoL + rhoDIV * phi[DIR_PMM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPP]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_PMP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MPM])) - (1.0 / (rhoL + rhoDIV * phi[DIR_PPM]) - 1.0 / (rhoL + rhoDIV * phi[DIR_MMP]))))
-		+ WEIGTH[DIR_PP0] * (((1.0 / (rhoL + rhoDIV * phi[DIR_P0P]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0M])) - (1.0 / (rhoL + rhoDIV * phi[DIR_P0M]) - 1.0 / (rhoL + rhoDIV * phi[DIR_M0P]))) + ((1.0 / (rhoL + rhoDIV * phi[DIR_0MP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_0PM])) + (1.0 / (rhoL + rhoDIV * phi[DIR_0PP]) - 1.0 / (rhoL + rhoDIV * phi[DIR_0MM]))))) +
-		+WEIGTH[DIR_0P0] * (1.0 / (rhoL + rhoDIV * phi[DIR_00P]) - 1.0 / (rhoL + rhoDIV * phi[DIR_00M])));
+	return 3.0 * ((WEIGTH[dPPP] * (((1.0 / (rhoL + rhoDIV * phi[dPPP]) - 1.0 / (rhoL + rhoDIV * phi[dMMM])) - (1.0 / (rhoL + rhoDIV * phi[dPMM]) - 1.0 / (rhoL + rhoDIV * phi[dMPP]))) + ((1.0 / (rhoL + rhoDIV * phi[dPMP]) - 1.0 / (rhoL + rhoDIV * phi[dMPM])) - (1.0 / (rhoL + rhoDIV * phi[dPPM]) - 1.0 / (rhoL + rhoDIV * phi[dMMP]))))
+		+ WEIGTH[dPP0] * (((1.0 / (rhoL + rhoDIV * phi[dP0P]) - 1.0 / (rhoL + rhoDIV * phi[dM0M])) - (1.0 / (rhoL + rhoDIV * phi[dP0M]) - 1.0 / (rhoL + rhoDIV * phi[dM0P]))) + ((1.0 / (rhoL + rhoDIV * phi[d0MP]) - 1.0 / (rhoL + rhoDIV * phi[d0PM])) + (1.0 / (rhoL + rhoDIV * phi[d0PP]) - 1.0 / (rhoL + rhoDIV * phi[d0MM]))))) +
+		+WEIGTH[d0P0] * (1.0 / (rhoL + rhoDIV * phi[d00P]) - 1.0 / (rhoL + rhoDIV * phi[d00M])));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX1_phi2()
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) + (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) + (phi2[DIR_PPM] - phi2[DIR_MMP])))
-		+ WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) + (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_PM0] - phi2[DIR_MP0]) + (phi2[DIR_PP0] - phi2[DIR_MM0])))) +
-		+WEIGTH[DIR_0P0] * (phi2[dP00] - phi2[dM00]));
+	return 3.0 * ((WEIGTH[dPPP] * (((phi2[dPPP] - phi2[dMMM]) + (phi2[dPMM] - phi2[dMPP])) + ((phi2[dPMP] - phi2[dMPM]) + (phi2[dPPM] - phi2[dMMP])))
+		+ WEIGTH[dPP0] * (((phi2[dP0P] - phi2[dM0M]) + (phi2[dP0M] - phi2[dM0P])) + ((phi2[dPM0] - phi2[dMP0]) + (phi2[dPP0] - phi2[dMM0])))) +
+		+WEIGTH[d0P0] * (phi2[dP00] - phi2[dM00]));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX2_phi2()
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) - (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PPM] - phi2[DIR_MMP]) - (phi2[DIR_PMP] - phi2[DIR_MPM])))
-		+ WEIGTH[DIR_PP0] * (((phi2[DIR_0PP] - phi2[DIR_0MM]) + (phi2[DIR_0PM] - phi2[DIR_0MP])) + ((phi2[DIR_PP0] - phi2[DIR_MM0]) - (phi2[DIR_PM0] - phi2[DIR_MP0])))) +
-		+WEIGTH[DIR_0P0] * (phi2[DIR_0P0] - phi2[DIR_0M0]));
+	return 3.0 * ((WEIGTH[dPPP] * (((phi2[dPPP] - phi2[dMMM]) - (phi2[dPMM] - phi2[dMPP])) + ((phi2[dPPM] - phi2[dMMP]) - (phi2[dPMP] - phi2[dMPM])))
+		+ WEIGTH[dPP0] * (((phi2[d0PP] - phi2[d0MM]) + (phi2[d0PM] - phi2[d0MP])) + ((phi2[dPP0] - phi2[dMM0]) - (phi2[dPM0] - phi2[dMP0])))) +
+		+WEIGTH[d0P0] * (phi2[d0P0] - phi2[d0M0]));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::gradX3_phi2()
 {
 	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[DIR_PPP] * (((phi2[DIR_PPP] - phi2[DIR_MMM]) - (phi2[DIR_PMM] - phi2[DIR_MPP])) + ((phi2[DIR_PMP] - phi2[DIR_MPM]) - (phi2[DIR_PPM] - phi2[DIR_MMP])))
-		+ WEIGTH[DIR_PP0] * (((phi2[DIR_P0P] - phi2[DIR_M0M]) - (phi2[DIR_P0M] - phi2[DIR_M0P])) + ((phi2[DIR_0MP] - phi2[DIR_0PM]) + (phi2[DIR_0PP] - phi2[DIR_0MM])))) +
-		+WEIGTH[DIR_0P0] * (phi2[DIR_00P] - phi2[DIR_00M]));
+	return 3.0 * ((WEIGTH[dPPP] * (((phi2[dPPP] - phi2[dMMM]) - (phi2[dPMM] - phi2[dMPP])) + ((phi2[dPMP] - phi2[dMPM]) - (phi2[dPPM] - phi2[dMMP])))
+		+ WEIGTH[dPP0] * (((phi2[dP0P] - phi2[dM0M]) - (phi2[dP0M] - phi2[dM0P])) + ((phi2[d0MP] - phi2[d0PM]) + (phi2[d0PP] - phi2[d0MM])))) +
+		+WEIGTH[d0P0] * (phi2[d00P] - phi2[d00M]));
 }
 
 real MultiphaseSharpInterfaceLBMKernel::nabla2_phi()
 {
 	using namespace D3Q27System;
 	real sum = 0.0;
-	sum += WEIGTH[DIR_PPP] * ((((phi[DIR_PPP] - phi[d000]) + (phi[DIR_MMM] - phi[d000])) + ((phi[DIR_MMP] - phi[d000]) + (phi[DIR_PPM] - phi[d000])))
-		+ (((phi[DIR_MPP] - phi[d000]) + (phi[DIR_PMM] - phi[d000])) + ((phi[DIR_PMP] - phi[d000]) + (phi[DIR_MPM] - phi[d000]))));
-	sum += WEIGTH[DIR_0PP] * (
-		(((phi[DIR_0PP] - phi[d000]) + (phi[DIR_0MM] - phi[d000])) + ((phi[DIR_0MP] - phi[d000]) + (phi[DIR_0PM] - phi[d000])))
-		+	(((phi[DIR_P0P] - phi[d000]) + (phi[DIR_M0M] - phi[d000])) + ((phi[DIR_M0P] - phi[d000]) + (phi[DIR_P0M] - phi[d000])))
-		+	(((phi[DIR_PP0] - phi[d000]) + (phi[DIR_MM0] - phi[d000])) + ((phi[DIR_MP0] - phi[d000]) + (phi[DIR_PM0] - phi[d000])))
+	sum += WEIGTH[dPPP] * ((((phi[dPPP] - phi[d000]) + (phi[dMMM] - phi[d000])) + ((phi[dMMP] - phi[d000]) + (phi[dPPM] - phi[d000])))
+		+ (((phi[dMPP] - phi[d000]) + (phi[dPMM] - phi[d000])) + ((phi[dPMP] - phi[d000]) + (phi[dMPM] - phi[d000]))));
+	sum += WEIGTH[d0PP] * (
+		(((phi[d0PP] - phi[d000]) + (phi[d0MM] - phi[d000])) + ((phi[d0MP] - phi[d000]) + (phi[d0PM] - phi[d000])))
+		+	(((phi[dP0P] - phi[d000]) + (phi[dM0M] - phi[d000])) + ((phi[dM0P] - phi[d000]) + (phi[dP0M] - phi[d000])))
+		+	(((phi[dPP0] - phi[d000]) + (phi[dMM0] - phi[d000])) + ((phi[dMP0] - phi[d000]) + (phi[dPM0] - phi[d000])))
 		);
-	sum += WEIGTH[DIR_00P] * (
-		((phi[DIR_00P] - phi[d000]) + (phi[DIR_00M] - phi[d000]))
-		+	((phi[DIR_0P0] - phi[d000]) + (phi[DIR_0M0] - phi[d000]))
+	sum += WEIGTH[d00P] * (
+		((phi[d00P] - phi[d000]) + (phi[d00M] - phi[d000]))
+		+	((phi[d0P0] - phi[d000]) + (phi[d0M0] - phi[d000]))
 		+	((phi[dP00] - phi[d000]) + (phi[dM00] - phi[d000]))
 		);
 
@@ -1558,29 +1558,29 @@ real MultiphaseSharpInterfaceLBMKernel::computeCurvature_phi()
 	real phiY = gradX2_phi();
 	real phiZ = gradX3_phi();
 	real phiXX = c4o9*(phi[dP00] - c2o1 * phi[d000] + phi[dM00])
-					+(c1o9*(((phi[DIR_PP0] - c2o1 * phi[DIR_0P0] + phi[DIR_MP0])+ (phi[DIR_PM0] - c2o1 * phi[DIR_0M0] + phi[DIR_MM0]))+ ((phi[DIR_P0P] - c2o1 * phi[DIR_00P] + phi[DIR_M0P]) + (phi[DIR_P0M] - c2o1 * phi[DIR_00M] + phi[DIR_M0M])))
-					+c1o36* (((phi[DIR_PPP] - c2o1 * phi[DIR_0PP] + phi[DIR_MPP]) + (phi[DIR_PMP] - c2o1 * phi[DIR_0MP] + phi[DIR_MMP])) + ((phi[DIR_PPM] - c2o1 * phi[DIR_0PM] + phi[DIR_MPM]) + (phi[DIR_PMM] - c2o1 * phi[DIR_0MM] + phi[DIR_MMM]))));
-	real phiYY = c4o9*(phi[DIR_0P0] - c2o1 * phi[d000] + phi[DIR_0M0])
-					+(c1o9*(((phi[DIR_PP0] - c2o1 * phi[dP00] + phi[DIR_PM0])+ (phi[DIR_MP0] - c2o1 * phi[dM00] + phi[DIR_MM0]))+ ((phi[DIR_0PP] - c2o1 * phi[DIR_00P] + phi[DIR_0MP]) + (phi[DIR_0PM] - c2o1 * phi[DIR_00M] + phi[DIR_0MM])))
-					+c1o36* (((phi[DIR_PPP] - c2o1 * phi[DIR_P0P] + phi[DIR_PMP]) + (phi[DIR_MPM] - c2o1 * phi[DIR_M0M] + phi[DIR_MMM])) + ((phi[DIR_MPP] - c2o1 * phi[DIR_M0P] + phi[DIR_MMP]) + (phi[DIR_PPM] - c2o1 * phi[DIR_P0M] + phi[DIR_PMM]))));
-	real phiZZ = c4o9*(phi[DIR_00P] - c2o1 * phi[d000] + phi[DIR_00M])
-					+(c1o9*(((phi[DIR_M0P] - c2o1 * phi[dM00] + phi[DIR_M0M])+ (phi[DIR_P0P] - c2o1 * phi[dP00] + phi[DIR_P0M]))+ ((phi[DIR_0MP] - c2o1 * phi[DIR_0M0] + phi[DIR_0MM]) + (phi[DIR_0PP] - c2o1 * phi[DIR_0P0] + phi[DIR_0PM])))
-					+c1o36* (((phi[DIR_MPP] - c2o1 * phi[DIR_MP0] + phi[DIR_MPM]) + (phi[DIR_PMP] - c2o1 * phi[DIR_PM0] + phi[DIR_PMM])) + ((phi[DIR_MMP] - c2o1 * phi[DIR_MM0] + phi[DIR_MMM]) + (phi[DIR_PPP] - c2o1 * phi[DIR_PP0] + phi[DIR_PPM]))));
-	real phiXY = c1o4 *(c2o3* (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0])+c1o6*((phi[DIR_MMP] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_MPP])+ (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PPM] - phi[DIR_MPM])));
-	real phiXZ = c1o4 *(c2o3* (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P])+c1o6*((phi[DIR_MPM] - phi[DIR_PPM] + phi[DIR_PPP] - phi[DIR_MPP])+ (phi[DIR_MMM] - phi[DIR_PMM] + phi[DIR_PMP] - phi[DIR_MMP])));
-	real phiYZ = c1o4 *(c2o3* (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM])+c1o6*((phi[DIR_MMM] - phi[DIR_MMP] + phi[DIR_MPP] - phi[DIR_MPM])+ (phi[DIR_PMM] - phi[DIR_PMP] + phi[DIR_PPP] - phi[DIR_PPM])));
+					+(c1o9*(((phi[dPP0] - c2o1 * phi[d0P0] + phi[dMP0])+ (phi[dPM0] - c2o1 * phi[d0M0] + phi[dMM0]))+ ((phi[dP0P] - c2o1 * phi[d00P] + phi[dM0P]) + (phi[dP0M] - c2o1 * phi[d00M] + phi[dM0M])))
+					+c1o36* (((phi[dPPP] - c2o1 * phi[d0PP] + phi[dMPP]) + (phi[dPMP] - c2o1 * phi[d0MP] + phi[dMMP])) + ((phi[dPPM] - c2o1 * phi[d0PM] + phi[dMPM]) + (phi[dPMM] - c2o1 * phi[d0MM] + phi[dMMM]))));
+	real phiYY = c4o9*(phi[d0P0] - c2o1 * phi[d000] + phi[d0M0])
+					+(c1o9*(((phi[dPP0] - c2o1 * phi[dP00] + phi[dPM0])+ (phi[dMP0] - c2o1 * phi[dM00] + phi[dMM0]))+ ((phi[d0PP] - c2o1 * phi[d00P] + phi[d0MP]) + (phi[d0PM] - c2o1 * phi[d00M] + phi[d0MM])))
+					+c1o36* (((phi[dPPP] - c2o1 * phi[dP0P] + phi[dPMP]) + (phi[dMPM] - c2o1 * phi[dM0M] + phi[dMMM])) + ((phi[dMPP] - c2o1 * phi[dM0P] + phi[dMMP]) + (phi[dPPM] - c2o1 * phi[dP0M] + phi[dPMM]))));
+	real phiZZ = c4o9*(phi[d00P] - c2o1 * phi[d000] + phi[d00M])
+					+(c1o9*(((phi[dM0P] - c2o1 * phi[dM00] + phi[dM0M])+ (phi[dP0P] - c2o1 * phi[dP00] + phi[dP0M]))+ ((phi[d0MP] - c2o1 * phi[d0M0] + phi[d0MM]) + (phi[d0PP] - c2o1 * phi[d0P0] + phi[d0PM])))
+					+c1o36* (((phi[dMPP] - c2o1 * phi[dMP0] + phi[dMPM]) + (phi[dPMP] - c2o1 * phi[dPM0] + phi[dPMM])) + ((phi[dMMP] - c2o1 * phi[dMM0] + phi[dMMM]) + (phi[dPPP] - c2o1 * phi[dPP0] + phi[dPPM]))));
+	real phiXY = c1o4 *(c2o3* (phi[dMM0] - phi[dPM0] + phi[dPP0] - phi[dMP0])+c1o6*((phi[dMMP] - phi[dPMP] + phi[dPPP] - phi[dMPP])+ (phi[dMMM] - phi[dPMM] + phi[dPPM] - phi[dMPM])));
+	real phiXZ = c1o4 *(c2o3* (phi[dM0M] - phi[dP0M] + phi[dP0P] - phi[dM0P])+c1o6*((phi[dMPM] - phi[dPPM] + phi[dPPP] - phi[dMPP])+ (phi[dMMM] - phi[dPMM] + phi[dPMP] - phi[dMMP])));
+	real phiYZ = c1o4 *(c2o3* (phi[d0MM] - phi[d0MP] + phi[d0PP] - phi[d0PM])+c1o6*((phi[dMMM] - phi[dMMP] + phi[dMPP] - phi[dMPM])+ (phi[dPMM] - phi[dPMP] + phi[dPPP] - phi[dPPM])));
 
 	//non isotropic FD (to be improved):
 	//real phiX = (phi[dP00] - phi[dM00]) * c1o2; //gradX1_phi();
-	//real phiY = (phi[DIR_0P0] - phi[DIR_0M0]) * c1o2; //gradX2_phi();
-	//real phiZ = (phi[DIR_00P] - phi[DIR_00M]) * c1o2; //gradX3_phi();
+	//real phiY = (phi[d0P0] - phi[d0M0]) * c1o2; //gradX2_phi();
+	//real phiZ = (phi[d00P] - phi[d00M]) * c1o2; //gradX3_phi();
 
 	//real phiXX = phi[dP00] - c2o1 * phi[d000] + phi[dM00];
-	//real phiYY = phi[DIR_0P0] - c2o1 * phi[d000] + phi[DIR_0M0];
-	//real phiZZ =( phi[DIR_00P] - c2o1 * phi[d000] + phi[DIR_00M]);
-	//real phiXY = c1o4 * (phi[DIR_MM0] - phi[DIR_PM0] + phi[DIR_PP0] - phi[DIR_MP0]);
-	//real phiXZ = c1o4 * (phi[DIR_M0M] - phi[DIR_P0M] + phi[DIR_P0P] - phi[DIR_M0P]);
-	//real phiYZ = c1o4 * (phi[DIR_0MM] - phi[DIR_0MP] + phi[DIR_0PP] - phi[DIR_0PM]);
+	//real phiYY = phi[d0P0] - c2o1 * phi[d000] + phi[d0M0];
+	//real phiZZ =( phi[d00P] - c2o1 * phi[d000] + phi[d00M]);
+	//real phiXY = c1o4 * (phi[dMM0] - phi[dPM0] + phi[dPP0] - phi[dMP0]);
+	//real phiXZ = c1o4 * (phi[dM0M] - phi[dP0M] + phi[dP0P] - phi[dM0P]);
+	//real phiYZ = c1o4 * (phi[d0MM] - phi[d0MP] + phi[d0PP] - phi[d0PM]);
 	//real back= (c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ) - phiXX * (phiY * phiY + phiZ * phiZ) - phiYY * (phiX * phiX + phiZ * phiZ) - phiZZ * (phiX * phiX + phiY * phiY)) / (c2o1 * pow(phiX * phiX + phiY * phiY + phiZ * phiZ, c3o2));
 	return (c2o1 * (phiX * phiY * phiXY + phiX * phiZ * phiXZ + phiY * phiZ * phiYZ) - phiXX * (phiY * phiY + phiZ * phiZ) - phiYY * (phiX * phiX + phiZ * phiZ) - phiZZ * (phiX * phiX + phiY * phiY)) / (c2o1*pow(phiX*phiX+phiY*phiY+phiZ*phiZ,c3o2));
 	
@@ -1609,32 +1609,32 @@ void MultiphaseSharpInterfaceLBMKernel::computePhasefield()
 					int x3p = x3 + 1;
 
 					h[dP00]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
-					h[DIR_0P0]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
-					h[DIR_00P]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
-					h[DIR_PP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
-					h[DIR_MP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
-					h[DIR_P0P]  = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
-					h[DIR_M0P]  = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
-					h[DIR_0PP]  = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
-					h[DIR_0MP]  = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
-					h[DIR_PPP] = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
-					h[DIR_MPP] = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
-					h[DIR_PMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
-					h[DIR_MMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+					h[d0P0]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+					h[d00P]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+					h[dPP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+					h[dMP0]  = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+					h[dP0P]  = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+					h[dM0P]  = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+					h[d0PP]  = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+					h[d0MP]  = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+					h[dPPP] = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+					h[dMPP] = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+					h[dPMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+					h[dMMP] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
 					h[dM00]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
-					h[DIR_0M0]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
-					h[DIR_00M]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
-					h[DIR_MM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
-					h[DIR_PM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
-					h[DIR_M0M]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
-					h[DIR_P0M]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
-					h[DIR_0MM]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
-					h[DIR_0PM]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
-					h[DIR_MMM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-					h[DIR_PMM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
-					h[DIR_MPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
-					h[DIR_PPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
+					h[d0M0]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+					h[d00M]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+					h[dMM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+					h[dPM0]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+					h[dM0M]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+					h[dP0M]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+					h[d0MM]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+					h[d0PM]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+					h[dMMM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+					h[dPMM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+					h[dMPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+					h[dPPM] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
 					h[d000] = (*this->zeroDistributionsH1)(x1, x2, x3);
 				}

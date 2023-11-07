@@ -81,7 +81,7 @@ void FullVectorConnector::fillData()
         }
     }
     // NORTH
-    else if (sendDir == DIR_0P0) {
+    else if (sendDir == d0P0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, maxX2 - 1, x3);
@@ -89,7 +89,7 @@ void FullVectorConnector::fillData()
         }
     }
     // SOUTH
-    else if (sendDir == DIR_0M0) {
+    else if (sendDir == d0M0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, 1, x3);
@@ -97,7 +97,7 @@ void FullVectorConnector::fillData()
         }
     }
     // TOP
-    else if (sendDir == DIR_00P) {
+    else if (sendDir == d00P) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, x2, maxX3 - 1);
@@ -105,7 +105,7 @@ void FullVectorConnector::fillData()
         }
     }
     // BOTTOM
-    else if (sendDir == DIR_00M) {
+    else if (sendDir == d00M) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 fillData(sdata, index, x1, x2, 1);
@@ -113,24 +113,24 @@ void FullVectorConnector::fillData()
         }
     }
     // NE NW SW SE
-    else if (sendDir == DIR_PP0 || sendDir == DIR_MP0 || sendDir == DIR_MM0 ||
-             sendDir == DIR_PM0) {
+    else if (sendDir == dPP0 || sendDir == dMP0 || sendDir == dMM0 ||
+             sendDir == dPM0) {
         int x1 = 0;
         int x2 = 0;
         switch (sendDir) {
-            case DIR_PP0:
+            case dPP0:
                 x1 = maxX1 - 1;
                 x2 = maxX2 - 1;
                 break;
-            case DIR_MP0:
+            case dMP0:
                 x1 = 1;
                 x2 = maxX2 - 1;
                 break;
-            case DIR_MM0:
+            case dMM0:
                 x1 = 1;
                 x2 = 1;
                 break;
-            case DIR_PM0:
+            case dPM0:
                 x1 = maxX1 - 1;
                 x2 = 1;
                 break;
@@ -140,24 +140,24 @@ void FullVectorConnector::fillData()
         }
     }
     // TE TW BW BE
-    else if (sendDir == DIR_P0P || sendDir == DIR_M0P || sendDir == DIR_M0M ||
-             sendDir == DIR_P0M) {
+    else if (sendDir == dP0P || sendDir == dM0P || sendDir == dM0M ||
+             sendDir == dP0M) {
         int x1 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case DIR_P0P:
+            case dP0P:
                 x1 = maxX1 - 1;
                 x3 = maxX3 - 1;
                 break;
-            case DIR_M0P:
+            case dM0P:
                 x1 = 1;
                 x3 = maxX3 - 1;
                 break;
-            case DIR_M0M:
+            case dM0M:
                 x1 = 1;
                 x3 = 1;
                 break;
-            case DIR_P0M:
+            case dP0M:
                 x1 = maxX1 - 1;
                 x3 = 1;
                 break;
@@ -167,24 +167,24 @@ void FullVectorConnector::fillData()
         }
     }
     // TN BN BS TS
-    else if (sendDir == DIR_0PP || sendDir == DIR_0PM || sendDir == DIR_0MM ||
-             sendDir == DIR_0MP) {
+    else if (sendDir == d0PP || sendDir == d0PM || sendDir == d0MM ||
+             sendDir == d0MP) {
         int x2 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case DIR_0PP:
+            case d0PP:
                 x3 = maxX3 - 1;
                 x2 = maxX2 - 1;
                 break;
-            case DIR_0PM:
+            case d0PM:
                 x3 = 1;
                 x2 = maxX2 - 1;
                 break;
-            case DIR_0MM:
+            case d0MM:
                 x3 = 1;
                 x2 = 1;
                 break;
-            case DIR_0MP:
+            case d0MP:
                 x3 = maxX3 - 1;
                 x2 = 1;
                 break;
@@ -194,49 +194,49 @@ void FullVectorConnector::fillData()
         }
     }
     // TNE TNW TSW TSE BNE BNW BSW BSE
-    else if (sendDir == DIR_PPP || sendDir == DIR_MPP || sendDir == DIR_MMP ||
-             sendDir == DIR_PMP || sendDir == DIR_PPM || sendDir == DIR_MPM ||
-             sendDir == DIR_MMM || sendDir == DIR_PMM) {
+    else if (sendDir == dPPP || sendDir == dMPP || sendDir == dMMP ||
+             sendDir == dPMP || sendDir == dPPM || sendDir == dMPM ||
+             sendDir == dMMM || sendDir == dPMM) {
         int x1 = 0;
         int x2 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case DIR_PPP:
+            case dPPP:
                 x1 = maxX1 - 1;
                 x2 = maxX2 - 1;
                 x3 = maxX3 - 1;
                 break;
-            case DIR_MPP:
+            case dMPP:
                 x1 = 1;
                 x2 = maxX2 - 1;
                 x3 = maxX3 - 1;
                 break;
-            case DIR_MMP:
+            case dMMP:
                 x1 = 1;
                 x2 = 1;
                 x3 = maxX3 - 1;
                 break;
-            case DIR_PMP:
+            case dPMP:
                 x1 = maxX1 - 1;
                 x2 = 1;
                 x3 = maxX3 - 1;
                 break;
-            case DIR_PPM:
+            case dPPM:
                 x1 = maxX1 - 1;
                 x2 = maxX2 - 1;
                 x3 = 1;
                 break;
-            case DIR_MPM:
+            case dMPM:
                 x1 = 1;
                 x2 = maxX2 - 1;
                 x3 = 1;
                 break;
-            case DIR_MMM:
+            case dMMM:
                 x1 = 1;
                 x2 = 1;
                 x3 = 1;
                 break;
-            case DIR_PMM:
+            case dPMM:
                 x1 = maxX1 - 1;
                 x2 = 1;
                 x3 = 1;
@@ -273,25 +273,25 @@ void FullVectorConnector::distributeData()
                 distributeData(rdata, index, maxX1, x2, x3);
             }
         }
-    } else if (sendDir == DIR_0M0) {
+    } else if (sendDir == d0M0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, 0, x3);
             }
         }
-    } else if (sendDir == DIR_0P0) {
+    } else if (sendDir == d0P0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, maxX2, x3);
             }
         }
-    } else if (sendDir == DIR_00M) {
+    } else if (sendDir == d00M) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, x2, 0);
             }
         }
-    } else if (sendDir == DIR_00P) {
+    } else if (sendDir == d00P) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 distributeData(rdata, index, x1, x2, maxX3);
@@ -299,25 +299,25 @@ void FullVectorConnector::distributeData()
         }
     }
     // NE NW SW SE
-    else if (sendDir == DIR_PP0 || sendDir == DIR_MP0 || sendDir == DIR_MM0 ||
-             sendDir == DIR_PM0) {
+    else if (sendDir == dPP0 || sendDir == dMP0 || sendDir == dMM0 ||
+             sendDir == dPM0) {
         int x1 = 0;
         int x2 = 0;
         switch (sendDir) // wenn sendir NE dann kommen werte von SW
         {
-            case DIR_PP0:
+            case dPP0:
                 x1 = maxX1;
                 x2 = maxX2;
                 break;
-            case DIR_MP0:
+            case dMP0:
                 x1 = 0;
                 x2 = maxX2;
                 break;
-            case DIR_MM0:
+            case dMM0:
                 x1 = 0;
                 x2 = 0;
                 break;
-            case DIR_PM0:
+            case dPM0:
                 x1 = maxX1;
                 x2 = 0;
                 break;
@@ -328,27 +328,27 @@ void FullVectorConnector::distributeData()
 
     }
     // TE TW BW BE
-    else if (sendDir == DIR_P0P || sendDir == DIR_M0P || sendDir == DIR_M0M ||
-             sendDir == DIR_P0M)
+    else if (sendDir == dP0P || sendDir == dM0P || sendDir == dM0M ||
+             sendDir == dP0M)
 
     {
         int x1 = 0;
         int x3 = 0;
         switch (sendDir) // wenn sendir NE dann kommen werte von SW
         {
-            case DIR_P0P:
+            case dP0P:
                 x1 = maxX1;
                 x3 = maxX3;
                 break;
-            case DIR_M0P:
+            case dM0P:
                 x1 = 0;
                 x3 = maxX3;
                 break;
-            case DIR_M0M:
+            case dM0M:
                 x1 = 0;
                 x3 = 0;
                 break;
-            case DIR_P0M:
+            case dP0M:
                 x1 = maxX1;
                 x3 = 0;
                 break;
@@ -358,24 +358,24 @@ void FullVectorConnector::distributeData()
         }
     }
     // TN BN BS TS
-    else if (sendDir == DIR_0PP || sendDir == DIR_0PM || sendDir == DIR_0MM ||
-             sendDir == DIR_0MP) {
+    else if (sendDir == d0PP || sendDir == d0PM || sendDir == d0MM ||
+             sendDir == d0MP) {
         int x2 = 0;
         int x3 = 0;
         switch (sendDir) {
-            case DIR_0PP:
+            case d0PP:
                 x3 = maxX3;
                 x2 = maxX2;
                 break;
-            case DIR_0PM:
+            case d0PM:
                 x3 = 0;
                 x2 = maxX2;
                 break;
-            case DIR_0MM:
+            case d0MM:
                 x3 = 0;
                 x2 = 0;
                 break;
-            case DIR_0MP:
+            case d0MP:
                 x3 = maxX3;
                 x2 = 0;
                 break;
@@ -385,50 +385,50 @@ void FullVectorConnector::distributeData()
         }
     }
     // TNE TNW TSW TSE BNE BNW BSW BSE
-    else if (sendDir == DIR_PPP || sendDir == DIR_MPP || sendDir == DIR_MMP ||
-             sendDir == DIR_PMP || sendDir == DIR_PPM || sendDir == DIR_MPM ||
-             sendDir == DIR_MMM || sendDir == DIR_PMM) {
+    else if (sendDir == dPPP || sendDir == dMPP || sendDir == dMMP ||
+             sendDir == dPMP || sendDir == dPPM || sendDir == dMPM ||
+             sendDir == dMMM || sendDir == dPMM) {
         int x1 = 0;
         int x2 = 0;
         int x3 = 0;
 
         switch (sendDir) {
-            case DIR_PPP:
+            case dPPP:
                 x1 = maxX1;
                 x2 = maxX2;
                 x3 = maxX3;
                 break;
-            case DIR_MPP:
+            case dMPP:
                 x1 = 0;
                 x2 = maxX2;
                 x3 = maxX3;
                 break;
-            case DIR_MMP:
+            case dMMP:
                 x1 = 0;
                 x2 = 0;
                 x3 = maxX3;
                 break;
-            case DIR_PMP:
+            case dPMP:
                 x1 = maxX1;
                 x2 = 0;
                 x3 = maxX3;
                 break;
-            case DIR_PPM:
+            case dPPM:
                 x1 = maxX1;
                 x2 = maxX2;
                 x3 = 0;
                 break;
-            case DIR_MPM:
+            case dMPM:
                 x1 = 0;
                 x2 = maxX2;
                 x3 = 0;
                 break;
-            case DIR_MMM:
+            case dMMM:
                 x1 = 0;
                 x2 = 0;
                 x3 = 0;
                 break;
-            case DIR_PMM:
+            case dPMM:
                 x1 = maxX1;
                 x2 = 0;
                 x3 = 0;

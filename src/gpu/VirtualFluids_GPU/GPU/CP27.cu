@@ -22,61 +22,61 @@ __global__ void CalcCP27(real* DD,
 	{
 		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
 		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
-		D.f[DIR_0P0] = &DD[DIR_0P0 * numberOfLBnodes];
-		D.f[DIR_0M0] = &DD[DIR_0M0 * numberOfLBnodes];
-		D.f[DIR_00P] = &DD[DIR_00P * numberOfLBnodes];
-		D.f[DIR_00M] = &DD[DIR_00M * numberOfLBnodes];
-		D.f[DIR_PP0] = &DD[DIR_PP0 * numberOfLBnodes];
-		D.f[DIR_MM0] = &DD[DIR_MM0 * numberOfLBnodes];
-		D.f[DIR_PM0] = &DD[DIR_PM0 * numberOfLBnodes];
-		D.f[DIR_MP0] = &DD[DIR_MP0 * numberOfLBnodes];
-		D.f[DIR_P0P] = &DD[DIR_P0P * numberOfLBnodes];
-		D.f[DIR_M0M] = &DD[DIR_M0M * numberOfLBnodes];
-		D.f[DIR_P0M] = &DD[DIR_P0M * numberOfLBnodes];
-		D.f[DIR_M0P] = &DD[DIR_M0P * numberOfLBnodes];
-		D.f[DIR_0PP] = &DD[DIR_0PP * numberOfLBnodes];
-		D.f[DIR_0MM] = &DD[DIR_0MM * numberOfLBnodes];
-		D.f[DIR_0PM] = &DD[DIR_0PM * numberOfLBnodes];
-		D.f[DIR_0MP] = &DD[DIR_0MP * numberOfLBnodes];
+		D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
+		D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
+		D.f[d00P] = &DD[d00P * numberOfLBnodes];
+		D.f[d00M] = &DD[d00M * numberOfLBnodes];
+		D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
+		D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
+		D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
+		D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
+		D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
+		D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
+		D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
+		D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
+		D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
+		D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
+		D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
+		D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
 		D.f[d000] = &DD[d000 * numberOfLBnodes];
-		D.f[DIR_PPP] = &DD[DIR_PPP * numberOfLBnodes];
-		D.f[DIR_MMP] = &DD[DIR_MMP * numberOfLBnodes];
-		D.f[DIR_PMP] = &DD[DIR_PMP * numberOfLBnodes];
-		D.f[DIR_MPP] = &DD[DIR_MPP * numberOfLBnodes];
-		D.f[DIR_PPM] = &DD[DIR_PPM * numberOfLBnodes];
-		D.f[DIR_MMM] = &DD[DIR_MMM * numberOfLBnodes];
-		D.f[DIR_PMM] = &DD[DIR_PMM * numberOfLBnodes];
-		D.f[DIR_MPM] = &DD[DIR_MPM * numberOfLBnodes];
+		D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
+		D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
+		D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
+		D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
+		D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
+		D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
+		D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
+		D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
 	} 
 	else
 	{
 		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
 		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
-		D.f[DIR_0M0] = &DD[DIR_0P0 * numberOfLBnodes];
-		D.f[DIR_0P0] = &DD[DIR_0M0 * numberOfLBnodes];
-		D.f[DIR_00M] = &DD[DIR_00P * numberOfLBnodes];
-		D.f[DIR_00P] = &DD[DIR_00M * numberOfLBnodes];
-		D.f[DIR_MM0] = &DD[DIR_PP0 * numberOfLBnodes];
-		D.f[DIR_PP0] = &DD[DIR_MM0 * numberOfLBnodes];
-		D.f[DIR_MP0] = &DD[DIR_PM0 * numberOfLBnodes];
-		D.f[DIR_PM0] = &DD[DIR_MP0 * numberOfLBnodes];
-		D.f[DIR_M0M] = &DD[DIR_P0P * numberOfLBnodes];
-		D.f[DIR_P0P] = &DD[DIR_M0M * numberOfLBnodes];
-		D.f[DIR_M0P] = &DD[DIR_P0M * numberOfLBnodes];
-		D.f[DIR_P0M] = &DD[DIR_M0P * numberOfLBnodes];
-		D.f[DIR_0MM] = &DD[DIR_0PP * numberOfLBnodes];
-		D.f[DIR_0PP] = &DD[DIR_0MM * numberOfLBnodes];
-		D.f[DIR_0MP] = &DD[DIR_0PM * numberOfLBnodes];
-		D.f[DIR_0PM] = &DD[DIR_0MP * numberOfLBnodes];
+		D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
+		D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
+		D.f[d00M] = &DD[d00P * numberOfLBnodes];
+		D.f[d00P] = &DD[d00M * numberOfLBnodes];
+		D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
+		D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
+		D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
+		D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
+		D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
+		D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
+		D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
+		D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
+		D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
+		D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
+		D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
+		D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
 		D.f[d000] = &DD[d000 * numberOfLBnodes];
-		D.f[DIR_PPP] = &DD[DIR_MMM * numberOfLBnodes];
-		D.f[DIR_MMP] = &DD[DIR_PPM * numberOfLBnodes];
-		D.f[DIR_PMP] = &DD[DIR_MPM * numberOfLBnodes];
-		D.f[DIR_MPP] = &DD[DIR_PMM * numberOfLBnodes];
-		D.f[DIR_PPM] = &DD[DIR_MMP * numberOfLBnodes];
-		D.f[DIR_MMM] = &DD[DIR_PPP * numberOfLBnodes];
-		D.f[DIR_PMM] = &DD[DIR_MPP * numberOfLBnodes];
-		D.f[DIR_MPM] = &DD[DIR_PMP * numberOfLBnodes];
+		D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
+		D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
+		D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
+		D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
+		D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
+		D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
+		D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
+		D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -125,19 +125,19 @@ __global__ void CalcCP27(real* DD,
 		double PressCP;
 
 		PressCP  =   (D.f[dP00])[ke  ]+ (D.f[dM00])[kw  ]+ 
-                     (D.f[DIR_0P0])[kn  ]+ (D.f[DIR_0M0])[ks  ]+
-                     (D.f[DIR_00P])[kt  ]+ (D.f[DIR_00M])[kb  ]+
-                     (D.f[DIR_PP0])[kne ]+ (D.f[DIR_MM0])[ksw ]+
-                     (D.f[DIR_PM0])[kse ]+ (D.f[DIR_MP0])[knw ]+
-                     (D.f[DIR_P0P])[kte ]+ (D.f[DIR_M0M])[kbw ]+
-                     (D.f[DIR_P0M])[kbe ]+ (D.f[DIR_M0P])[ktw ]+
-                     (D.f[DIR_0PP])[ktn ]+ (D.f[DIR_0MM])[kbs ]+
-                     (D.f[DIR_0PM])[kbn ]+ (D.f[DIR_0MP])[kts ]+
+                     (D.f[d0P0])[kn  ]+ (D.f[d0M0])[ks  ]+
+                     (D.f[d00P])[kt  ]+ (D.f[d00M])[kb  ]+
+                     (D.f[dPP0])[kne ]+ (D.f[dMM0])[ksw ]+
+                     (D.f[dPM0])[kse ]+ (D.f[dMP0])[knw ]+
+                     (D.f[dP0P])[kte ]+ (D.f[dM0M])[kbw ]+
+                     (D.f[dP0M])[kbe ]+ (D.f[dM0P])[ktw ]+
+                     (D.f[d0PP])[ktn ]+ (D.f[d0MM])[kbs ]+
+                     (D.f[d0PM])[kbn ]+ (D.f[d0MP])[kts ]+
                      (D.f[d000])[kzero]+ 
-                     (D.f[DIR_PPP])[ktne]+ (D.f[DIR_MMP])[ktsw]+ 
-                     (D.f[DIR_PMP])[ktse]+ (D.f[DIR_MPP])[ktnw]+ 
-                     (D.f[DIR_PPM])[kbne]+ (D.f[DIR_MMM])[kbsw]+ 
-                     (D.f[DIR_PMM])[kbse]+ (D.f[DIR_MPM])[kbnw];
+                     (D.f[dPPP])[ktne]+ (D.f[dMMP])[ktsw]+ 
+                     (D.f[dPMP])[ktse]+ (D.f[dMPP])[ktnw]+ 
+                     (D.f[dPPM])[kbne]+ (D.f[dMMM])[kbsw]+ 
+                     (D.f[dPMM])[kbse]+ (D.f[dMPM])[kbnw];
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		cpPress[k] = PressCP;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

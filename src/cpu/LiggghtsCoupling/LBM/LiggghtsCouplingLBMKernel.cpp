@@ -62,31 +62,31 @@
 //    //    (*this->restDistributionsF)(x1, x2, x3) = f[vf::lbm::dir::d000];
 //
 //    //    (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = f[vf::lbm::dir::dM00];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::DIR_0M0];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = f[vf::lbm::dir::DIR_00M];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = f[vf::lbm::dir::DIR_MM0];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = f[vf::lbm::dir::DIR_PM0];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = f[vf::lbm::dir::DIR_M0M];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = f[vf::lbm::dir::DIR_P0M];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = f[vf::lbm::dir::DIR_0MM];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = f[vf::lbm::dir::DIR_0PM];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = f[vf::lbm::dir::DIR_MMM];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = f[vf::lbm::dir::DIR_PMM];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MPM];
-//    //    (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PPM];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = f[vf::lbm::dir::d0M0];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = f[vf::lbm::dir::d00M];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = f[vf::lbm::dir::dMM0];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = f[vf::lbm::dir::dPM0];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = f[vf::lbm::dir::dM0M];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = f[vf::lbm::dir::dP0M];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = f[vf::lbm::dir::d0MM];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = f[vf::lbm::dir::d0PM];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = f[vf::lbm::dir::dMMM];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = f[vf::lbm::dir::dPMM];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = f[vf::lbm::dir::dMPM];
+//    //    (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[vf::lbm::dir::dPPM];
 //
 //    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = f[vf::lbm::dir::dP00];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = f[vf::lbm::dir::DIR_0P0];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = f[vf::lbm::dir::DIR_00P];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = f[vf::lbm::dir::DIR_PP0];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = f[vf::lbm::dir::DIR_MP0];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = f[vf::lbm::dir::DIR_P0P];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = f[vf::lbm::dir::DIR_M0P];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = f[vf::lbm::dir::DIR_0PP];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = f[vf::lbm::dir::DIR_0MP];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[vf::lbm::dir::DIR_PPP];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = f[vf::lbm::dir::DIR_MPP];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = f[vf::lbm::dir::DIR_PMP];
-//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = f[vf::lbm::dir::DIR_MMP];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = f[vf::lbm::dir::d0P0];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = f[vf::lbm::dir::d00P];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = f[vf::lbm::dir::dPP0];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = f[vf::lbm::dir::dMP0];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = f[vf::lbm::dir::dP0P];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = f[vf::lbm::dir::dM0P];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = f[vf::lbm::dir::d0PP];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = f[vf::lbm::dir::d0MP];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[vf::lbm::dir::dPPP];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = f[vf::lbm::dir::dMPP];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = f[vf::lbm::dir::dPMP];
+//    //    (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = f[vf::lbm::dir::dMMP];
 //    //}
 //}

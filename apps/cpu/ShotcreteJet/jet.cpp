@@ -604,7 +604,7 @@ int main(int argc, char *argv[])
         // /////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////
         
-        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::DIR_MMM, MetisPartitioner::KWAY));
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, vf::lbm::dir::dMMM, MetisPartitioner::KWAY));
 
         //////////////////////////////////////////////////////////////////////////
         // restart

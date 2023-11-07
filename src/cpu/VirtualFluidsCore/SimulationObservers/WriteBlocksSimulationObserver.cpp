@@ -123,7 +123,7 @@ void WriteBlocksSimulationObserver::collectData(real step)
                 // for (std::size_t i = 0; i<connectors.size(); i++)
                 //   if (connectors[i])
                 //   {
-                //      if (connectors[i]->getSendDir() == D3Q27System::DIR_0MM)
+                //      if (connectors[i]->getSendDir() == D3Q27System::d0MM)
                 //      {
 
                 //         flag = true;
@@ -146,7 +146,7 @@ void WriteBlocksSimulationObserver::collectData(real step)
                 // for (std::size_t i = 0; i<connectors.size(); i++)
                 //   if (connectors[i])
                 //   {
-                //      if (connectors[i]->getSendDir() == D3Q27System::DIR_0MM)
+                //      if (connectors[i]->getSendDir() == D3Q27System::d0MM)
                 //      {
 
                 //         flag = true;

@@ -98,10 +98,10 @@ void ThixotropyDensityBCStrategy::applyBC()
 	//flag points in direction of fluid
 	if (bcPtr->hasDensityBoundaryFlag(dP00)) { nx1 -= 1; }
 	else if (bcPtr->hasDensityBoundaryFlag(dM00)) { nx1 += 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
-	else if (bcPtr->hasDensityBoundaryFlag(DIR_00M)) { nx3 += 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(d0P0)) { nx2 -= 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(d0M0)) { nx2 += 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(d00P)) { nx3 -= 1; }
+	else if (bcPtr->hasDensityBoundaryFlag(d00M)) { nx3 += 1; }
 	else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
 	real rhoBC = bcPtr->getBoundaryDensity();

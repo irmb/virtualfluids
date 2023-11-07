@@ -262,11 +262,11 @@ int MetisPartitioningGridVisitor::getEdgeWeight(int dir)
     using namespace D3Q27System;
     using namespace vf::lbm::dir;
 
-    if (dir <= (int)DIR_00M) {
+    if (dir <= (int)d00M) {
         return 100;
-    } else if (dir >= (int)DIR_PP0 && dir <= (int)DIR_0MP) {
+    } else if (dir >= (int)dPP0 && dir <= (int)d0MP) {
         return 10;
-    } else if (dir >= (int)DIR_PPP) {
+    } else if (dir >= (int)dPPP) {
         return 1;
     }
 

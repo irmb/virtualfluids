@@ -220,10 +220,10 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
                     distributionsH->getPostCollisionDistribution(f, ix1, ix2, ix3);
                     (*phaseField)(ix1, ix2, ix3) =
-                        ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
-                        (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
-                        ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                            ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000];
+                        ((f[dPPP] + f[dMMM]) + (f[dPMP] + f[dMPM])) + ((f[dPMM] + f[dMPP]) + (f[dMMP] + f[dPPM])) +
+                        (((f[dPP0] + f[dMM0]) + (f[dPM0] + f[dMP0])) + ((f[dP0P] + f[dM0M]) + (f[dP0M] + f[dM0P])) +
+                        ((f[d0PM] + f[d0MP]) + (f[d0PP] + f[d0MM]))) +
+                            ((f[dP00] + f[dM00]) + (f[d0P0] + f[d0M0]) + (f[d00P] + f[d00M])) + f[d000];
                 }
             }
         }
@@ -275,23 +275,23 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                     rho = (phi>c1o2) ? rhoH : rhoL; // rhoH + rhoToPhi * (phi - phiH);
 
                         vx1 =
-                            ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_PMM] - f[DIR_MPP]) + (f[DIR_PPM] - f[DIR_MMP]))) +
-                            (((f[DIR_P0M] - f[DIR_M0P]) + (f[DIR_P0P] - f[DIR_M0M])) + ((f[DIR_PM0] - f[DIR_MP0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[dP00] - f[dM00])) ;
+                            ((((f[dPPP] - f[dMMM]) + (f[dPMP] - f[dMPM])) + ((f[dPMM] - f[dMPP]) + (f[dPPM] - f[dMMP]))) +
+                            (((f[dP0M] - f[dM0P]) + (f[dP0P] - f[dM0M])) + ((f[dPM0] - f[dMP0]) + (f[dPP0] - f[dMM0]))) + (f[dP00] - f[dM00])) ;
 
                         vx2 =
-                            ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_MPM] - f[DIR_PMP])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_PPM] - f[DIR_MMP]))) +
-                            (((f[DIR_0PM] - f[DIR_0MP]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_MP0] - f[DIR_PM0]) + (f[DIR_PP0] - f[DIR_MM0]))) + (f[DIR_0P0] - f[DIR_0M0])) ;
+                            ((((f[dPPP] - f[dMMM]) + (f[dMPM] - f[dPMP])) + ((f[dMPP] - f[dPMM]) + (f[dPPM] - f[dMMP]))) +
+                            (((f[d0PM] - f[d0MP]) + (f[d0PP] - f[d0MM])) + ((f[dMP0] - f[dPM0]) + (f[dPP0] - f[dMM0]))) + (f[d0P0] - f[d0M0])) ;
 
                         vx3 =
-                            ((((f[DIR_PPP] - f[DIR_MMM]) + (f[DIR_PMP] - f[DIR_MPM])) + ((f[DIR_MPP] - f[DIR_PMM]) + (f[DIR_MMP] - f[DIR_PPM]))) +
-                            (((f[DIR_0MP] - f[DIR_0PM]) + (f[DIR_0PP] - f[DIR_0MM])) + ((f[DIR_M0P] - f[DIR_P0M]) + (f[DIR_P0P] - f[DIR_M0M]))) + (f[DIR_00P] - f[DIR_00M]));
+                            ((((f[dPPP] - f[dMMM]) + (f[dPMP] - f[dMPM])) + ((f[dMPP] - f[dPMM]) + (f[dMMP] - f[dPPM]))) +
+                            (((f[d0MP] - f[d0PM]) + (f[d0PP] - f[d0MM])) + ((f[dM0P] - f[dP0M]) + (f[dP0P] - f[dM0M]))) + (f[d00P] - f[d00M]));
 
 
 
-                    pressure = (((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
-                        (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
-                        ((f[DIR_0PM] + f[DIR_0MP]) + (f[DIR_0PP] + f[DIR_0MM]))) +
-                            ((f[dP00] + f[dM00]) + (f[DIR_0P0] + f[DIR_0M0]) + (f[DIR_00P] + f[DIR_00M])) + f[d000])*c1o3*rho;
+                    pressure = (((f[dPPP] + f[dMMM]) + (f[dPMP] + f[dMPM])) + ((f[dPMM] + f[dMPP]) + (f[dMMP] + f[dPPM])) +
+                        (((f[dPP0] + f[dMM0]) + (f[dPM0] + f[dMP0])) + ((f[dP0P] + f[dM0M]) + (f[dP0M] + f[dM0P])) +
+                        ((f[d0PM] + f[d0MP]) + (f[d0PP] + f[d0MM]))) +
+                            ((f[dP00] + f[dM00]) + (f[d0P0] + f[d0M0]) + (f[d00P] + f[d00M])) + f[d000])*c1o3*rho;
 
 					if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1))
                         UB_THROW(UbException(

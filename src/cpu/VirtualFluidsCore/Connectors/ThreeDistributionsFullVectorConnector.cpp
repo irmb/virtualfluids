@@ -65,34 +65,34 @@ void ThreeDistributionsFullVectorConnector::init()
    case d000: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
    case dP00:
    case dM00: sender->getData().resize(maxX2*maxX3*anz, c0o1);   break;
-   case DIR_0P0:
-   case DIR_0M0: sender->getData().resize(maxX1*maxX3*anz, c0o1);   break;
-   case DIR_00P:
-   case DIR_00M: sender->getData().resize(maxX1*maxX2*anz, c0o1);   break;
+   case d0P0:
+   case d0M0: sender->getData().resize(maxX1*maxX3*anz, c0o1);   break;
+   case d00P:
+   case d00M: sender->getData().resize(maxX1*maxX2*anz, c0o1);   break;
 
-   case DIR_PP0:
-   case DIR_MM0:
-   case DIR_PM0:
-   case DIR_MP0:  sender->getData().resize(maxX3*anz, c0o1);   break;
+   case dPP0:
+   case dMM0:
+   case dPM0:
+   case dMP0:  sender->getData().resize(maxX3*anz, c0o1);   break;
 
-   case DIR_P0P:
-   case DIR_M0M:
-   case DIR_P0M:
-   case DIR_M0P:  sender->getData().resize(maxX2*anz, c0o1);   break;
+   case dP0P:
+   case dM0M:
+   case dP0M:
+   case dM0P:  sender->getData().resize(maxX2*anz, c0o1);   break;
 
-   case DIR_0PP:
-   case DIR_0MM:
-   case DIR_0PM:
-   case DIR_0MP:  sender->getData().resize(maxX1*anz, c0o1);   break;
+   case d0PP:
+   case d0MM:
+   case d0PM:
+   case d0MP:  sender->getData().resize(maxX1*anz, c0o1);   break;
 
-   case DIR_PPP:
-   case DIR_MMM:
-   case DIR_PPM:
-   case DIR_MMP:
-   case DIR_PMP:
-   case DIR_MPM:
-   case DIR_PMM:
-   case DIR_MPP:  sender->getData().resize(anz, c0o1);   break;
+   case dPPP:
+   case dMMM:
+   case dPPM:
+   case dMMP:
+   case dPMP:
+   case dMPM:
+   case dPMM:
+   case dMPP:  sender->getData().resize(anz, c0o1);   break;
 
    default: UB_THROW(UbException(UB_EXARGS, "unknown sendDir"));
    }

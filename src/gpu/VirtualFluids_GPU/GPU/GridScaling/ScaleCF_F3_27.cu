@@ -46,31 +46,31 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 
 	fP00dest = &DF[dP00 * numberOfLBnodesFine];
 	fM00dest = &DF[dM00 * numberOfLBnodesFine];
-	f0P0dest = &DF[DIR_0P0 * numberOfLBnodesFine];
-	f0M0dest = &DF[DIR_0M0 * numberOfLBnodesFine];
-	f00Pdest = &DF[DIR_00P * numberOfLBnodesFine];
-	f00Mdest = &DF[DIR_00M * numberOfLBnodesFine];
-	fPP0dest = &DF[DIR_PP0 * numberOfLBnodesFine];
-	fMM0dest = &DF[DIR_MM0 * numberOfLBnodesFine];
-	fPM0dest = &DF[DIR_PM0 * numberOfLBnodesFine];
-	fMP0dest = &DF[DIR_MP0 * numberOfLBnodesFine];
-	fP0Pdest = &DF[DIR_P0P * numberOfLBnodesFine];
-	fM0Mdest = &DF[DIR_M0M * numberOfLBnodesFine];
-	fP0Mdest = &DF[DIR_P0M * numberOfLBnodesFine];
-	fM0Pdest = &DF[DIR_M0P * numberOfLBnodesFine];
-	f0PPdest = &DF[DIR_0PP * numberOfLBnodesFine];
-	f0MMdest = &DF[DIR_0MM * numberOfLBnodesFine];
-	f0PMdest = &DF[DIR_0PM * numberOfLBnodesFine];
-	f0MPdest = &DF[DIR_0MP * numberOfLBnodesFine];
+	f0P0dest = &DF[d0P0 * numberOfLBnodesFine];
+	f0M0dest = &DF[d0M0 * numberOfLBnodesFine];
+	f00Pdest = &DF[d00P * numberOfLBnodesFine];
+	f00Mdest = &DF[d00M * numberOfLBnodesFine];
+	fPP0dest = &DF[dPP0 * numberOfLBnodesFine];
+	fMM0dest = &DF[dMM0 * numberOfLBnodesFine];
+	fPM0dest = &DF[dPM0 * numberOfLBnodesFine];
+	fMP0dest = &DF[dMP0 * numberOfLBnodesFine];
+	fP0Pdest = &DF[dP0P * numberOfLBnodesFine];
+	fM0Mdest = &DF[dM0M * numberOfLBnodesFine];
+	fP0Mdest = &DF[dP0M * numberOfLBnodesFine];
+	fM0Pdest = &DF[dM0P * numberOfLBnodesFine];
+	f0PPdest = &DF[d0PP * numberOfLBnodesFine];
+	f0MMdest = &DF[d0MM * numberOfLBnodesFine];
+	f0PMdest = &DF[d0PM * numberOfLBnodesFine];
+	f0MPdest = &DF[d0MP * numberOfLBnodesFine];
 	f000dest = &DF[d000 * numberOfLBnodesFine];
-	fMMMdest = &DF[DIR_MMM * numberOfLBnodesFine];
-	fMMPdest = &DF[DIR_MMP * numberOfLBnodesFine];
-	fMPPdest = &DF[DIR_MPP * numberOfLBnodesFine];
-	fMPMdest = &DF[DIR_MPM * numberOfLBnodesFine];
-	fPPMdest = &DF[DIR_PPM * numberOfLBnodesFine];
-	fPPPdest = &DF[DIR_PPP * numberOfLBnodesFine];
-	fPMPdest = &DF[DIR_PMP * numberOfLBnodesFine];
-	fPMMdest = &DF[DIR_PMM * numberOfLBnodesFine];
+	fMMMdest = &DF[dMMM * numberOfLBnodesFine];
+	fMMPdest = &DF[dMMP * numberOfLBnodesFine];
+	fMPPdest = &DF[dMPP * numberOfLBnodesFine];
+	fMPMdest = &DF[dMPM * numberOfLBnodesFine];
+	fPPMdest = &DF[dPPM * numberOfLBnodesFine];
+	fPPPdest = &DF[dPPP * numberOfLBnodesFine];
+	fPMPdest = &DF[dPMP * numberOfLBnodesFine];
+	fPMMdest = &DF[dPMM * numberOfLBnodesFine];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -81,70 +81,70 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	{
 		fP00source = &DC[dP00 * numberOfLBnodesCoarse];
 		fM00source = &DC[dM00 * numberOfLBnodesCoarse];
-		f0P0source = &DC[DIR_0P0 * numberOfLBnodesCoarse];
-		f0M0source = &DC[DIR_0M0 * numberOfLBnodesCoarse];
-		f00Psource = &DC[DIR_00P * numberOfLBnodesCoarse];
-		f00Msource = &DC[DIR_00M * numberOfLBnodesCoarse];
-		fPP0source = &DC[DIR_PP0 * numberOfLBnodesCoarse];
-		fMM0source = &DC[DIR_MM0 * numberOfLBnodesCoarse];
-		fPM0source = &DC[DIR_PM0 * numberOfLBnodesCoarse];
-		fMP0source = &DC[DIR_MP0 * numberOfLBnodesCoarse];
-		fP0Psource = &DC[DIR_P0P * numberOfLBnodesCoarse];
-		fM0Msource = &DC[DIR_M0M * numberOfLBnodesCoarse];
-		fP0Msource = &DC[DIR_P0M * numberOfLBnodesCoarse];
-		fM0Psource = &DC[DIR_M0P * numberOfLBnodesCoarse];
-		f0PPsource = &DC[DIR_0PP * numberOfLBnodesCoarse];
-		f0MMsource = &DC[DIR_0MM * numberOfLBnodesCoarse];
-		f0PMsource = &DC[DIR_0PM * numberOfLBnodesCoarse];
-		f0MPsource = &DC[DIR_0MP * numberOfLBnodesCoarse];
+		f0P0source = &DC[d0P0 * numberOfLBnodesCoarse];
+		f0M0source = &DC[d0M0 * numberOfLBnodesCoarse];
+		f00Psource = &DC[d00P * numberOfLBnodesCoarse];
+		f00Msource = &DC[d00M * numberOfLBnodesCoarse];
+		fPP0source = &DC[dPP0 * numberOfLBnodesCoarse];
+		fMM0source = &DC[dMM0 * numberOfLBnodesCoarse];
+		fPM0source = &DC[dPM0 * numberOfLBnodesCoarse];
+		fMP0source = &DC[dMP0 * numberOfLBnodesCoarse];
+		fP0Psource = &DC[dP0P * numberOfLBnodesCoarse];
+		fM0Msource = &DC[dM0M * numberOfLBnodesCoarse];
+		fP0Msource = &DC[dP0M * numberOfLBnodesCoarse];
+		fM0Psource = &DC[dM0P * numberOfLBnodesCoarse];
+		f0PPsource = &DC[d0PP * numberOfLBnodesCoarse];
+		f0MMsource = &DC[d0MM * numberOfLBnodesCoarse];
+		f0PMsource = &DC[d0PM * numberOfLBnodesCoarse];
+		f0MPsource = &DC[d0MP * numberOfLBnodesCoarse];
 		f000source = &DC[d000 * numberOfLBnodesCoarse];
-		fMMMsource = &DC[DIR_MMM * numberOfLBnodesCoarse];
-		fMMPsource = &DC[DIR_MMP * numberOfLBnodesCoarse];
-		fMPPsource = &DC[DIR_MPP * numberOfLBnodesCoarse];
-		fMPMsource = &DC[DIR_MPM * numberOfLBnodesCoarse];
-		fPPMsource = &DC[DIR_PPM * numberOfLBnodesCoarse];
-		fPPPsource = &DC[DIR_PPP * numberOfLBnodesCoarse];
-		fPMPsource = &DC[DIR_PMP * numberOfLBnodesCoarse];
-		fPMMsource = &DC[DIR_PMM * numberOfLBnodesCoarse];
+		fMMMsource = &DC[dMMM * numberOfLBnodesCoarse];
+		fMMPsource = &DC[dMMP * numberOfLBnodesCoarse];
+		fMPPsource = &DC[dMPP * numberOfLBnodesCoarse];
+		fMPMsource = &DC[dMPM * numberOfLBnodesCoarse];
+		fPPMsource = &DC[dPPM * numberOfLBnodesCoarse];
+		fPPPsource = &DC[dPPP * numberOfLBnodesCoarse];
+		fPMPsource = &DC[dPMP * numberOfLBnodesCoarse];
+		fPMMsource = &DC[dPMM * numberOfLBnodesCoarse];
 	}
 	else
 	{
 		fP00source = &DC[dM00 * numberOfLBnodesCoarse];
 		fM00source = &DC[dP00 * numberOfLBnodesCoarse];
-		f0P0source = &DC[DIR_0M0 * numberOfLBnodesCoarse];
-		f0M0source = &DC[DIR_0P0 * numberOfLBnodesCoarse];
-		f00Psource = &DC[DIR_00M * numberOfLBnodesCoarse];
-		f00Msource = &DC[DIR_00P * numberOfLBnodesCoarse];
-		fPP0source = &DC[DIR_MM0 * numberOfLBnodesCoarse];
-		fMM0source = &DC[DIR_PP0 * numberOfLBnodesCoarse];
-		fPM0source = &DC[DIR_MP0 * numberOfLBnodesCoarse];
-		fMP0source = &DC[DIR_PM0 * numberOfLBnodesCoarse];
-		fP0Psource = &DC[DIR_M0M * numberOfLBnodesCoarse];
-		fM0Msource = &DC[DIR_P0P * numberOfLBnodesCoarse];
-		fP0Msource = &DC[DIR_M0P * numberOfLBnodesCoarse];
-		fM0Psource = &DC[DIR_P0M * numberOfLBnodesCoarse];
-		f0PPsource = &DC[DIR_0MM * numberOfLBnodesCoarse];
-		f0MMsource = &DC[DIR_0PP * numberOfLBnodesCoarse];
-		f0PMsource = &DC[DIR_0MP * numberOfLBnodesCoarse];
-		f0MPsource = &DC[DIR_0PM * numberOfLBnodesCoarse];
+		f0P0source = &DC[d0M0 * numberOfLBnodesCoarse];
+		f0M0source = &DC[d0P0 * numberOfLBnodesCoarse];
+		f00Psource = &DC[d00M * numberOfLBnodesCoarse];
+		f00Msource = &DC[d00P * numberOfLBnodesCoarse];
+		fPP0source = &DC[dMM0 * numberOfLBnodesCoarse];
+		fMM0source = &DC[dPP0 * numberOfLBnodesCoarse];
+		fPM0source = &DC[dMP0 * numberOfLBnodesCoarse];
+		fMP0source = &DC[dPM0 * numberOfLBnodesCoarse];
+		fP0Psource = &DC[dM0M * numberOfLBnodesCoarse];
+		fM0Msource = &DC[dP0P * numberOfLBnodesCoarse];
+		fP0Msource = &DC[dM0P * numberOfLBnodesCoarse];
+		fM0Psource = &DC[dP0M * numberOfLBnodesCoarse];
+		f0PPsource = &DC[d0MM * numberOfLBnodesCoarse];
+		f0MMsource = &DC[d0PP * numberOfLBnodesCoarse];
+		f0PMsource = &DC[d0MP * numberOfLBnodesCoarse];
+		f0MPsource = &DC[d0PM * numberOfLBnodesCoarse];
 		f000source = &DC[d000 * numberOfLBnodesCoarse];
-		fMMMsource = &DC[DIR_PPP * numberOfLBnodesCoarse];
-		fMMPsource = &DC[DIR_PPM * numberOfLBnodesCoarse];
-		fMPPsource = &DC[DIR_PMM * numberOfLBnodesCoarse];
-		fMPMsource = &DC[DIR_PMP * numberOfLBnodesCoarse];
-		fPPMsource = &DC[DIR_MMP * numberOfLBnodesCoarse];
-		fPPPsource = &DC[DIR_MMM * numberOfLBnodesCoarse];
-		fPMPsource = &DC[DIR_MPM * numberOfLBnodesCoarse];
-		fPMMsource = &DC[DIR_MPP * numberOfLBnodesCoarse];
+		fMMMsource = &DC[dPPP * numberOfLBnodesCoarse];
+		fMMPsource = &DC[dPPM * numberOfLBnodesCoarse];
+		fMPPsource = &DC[dPMM * numberOfLBnodesCoarse];
+		fMPMsource = &DC[dPMP * numberOfLBnodesCoarse];
+		fPPMsource = &DC[dMMP * numberOfLBnodesCoarse];
+		fPPPsource = &DC[dMMM * numberOfLBnodesCoarse];
+		fPMPsource = &DC[dMPM * numberOfLBnodesCoarse];
+		fPMMsource = &DC[dMPP * numberOfLBnodesCoarse];
 	}
 
 	Distributions6 G;
 	G.g[dP00] = &G6[dP00 * numberOfLBnodesFine];
 	G.g[dM00] = &G6[dM00 * numberOfLBnodesFine];
-	G.g[DIR_0P0] = &G6[DIR_0P0 * numberOfLBnodesFine];
-	G.g[DIR_0M0] = &G6[DIR_0M0 * numberOfLBnodesFine];
-	G.g[DIR_00P] = &G6[DIR_00P * numberOfLBnodesFine];
-	G.g[DIR_00M] = &G6[DIR_00M * numberOfLBnodesFine];
+	G.g[d0P0] = &G6[d0P0 * numberOfLBnodesFine];
+	G.g[d0M0] = &G6[d0M0 * numberOfLBnodesFine];
+	G.g[d00P] = &G6[d00P * numberOfLBnodesFine];
+	G.g[d00M] = &G6[d00M * numberOfLBnodesFine];
 
 	////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -1189,10 +1189,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -1625,10 +1625,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -2064,10 +2064,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -2503,10 +2503,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -2952,10 +2952,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -3391,10 +3391,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -3830,10 +3830,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -4269,10 +4269,10 @@ __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -4393,31 +4393,31 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 
 	fP00dest = &DF[dP00 * numberOfLBnodesFine];
 	fM00dest = &DF[dM00 * numberOfLBnodesFine];
-	f0P0dest = &DF[DIR_0P0 * numberOfLBnodesFine];
-	f0M0dest = &DF[DIR_0M0 * numberOfLBnodesFine];
-	f00Pdest = &DF[DIR_00P * numberOfLBnodesFine];
-	f00Mdest = &DF[DIR_00M * numberOfLBnodesFine];
-	fPP0dest = &DF[DIR_PP0 * numberOfLBnodesFine];
-	fMM0dest = &DF[DIR_MM0 * numberOfLBnodesFine];
-	fPM0dest = &DF[DIR_PM0 * numberOfLBnodesFine];
-	fMP0dest = &DF[DIR_MP0 * numberOfLBnodesFine];
-	fP0Pdest = &DF[DIR_P0P * numberOfLBnodesFine];
-	fM0Mdest = &DF[DIR_M0M * numberOfLBnodesFine];
-	fP0Mdest = &DF[DIR_P0M * numberOfLBnodesFine];
-	fM0Pdest = &DF[DIR_M0P * numberOfLBnodesFine];
-	f0PPdest = &DF[DIR_0PP * numberOfLBnodesFine];
-	f0MMdest = &DF[DIR_0MM * numberOfLBnodesFine];
-	f0PMdest = &DF[DIR_0PM * numberOfLBnodesFine];
-	f0MPdest = &DF[DIR_0MP * numberOfLBnodesFine];
+	f0P0dest = &DF[d0P0 * numberOfLBnodesFine];
+	f0M0dest = &DF[d0M0 * numberOfLBnodesFine];
+	f00Pdest = &DF[d00P * numberOfLBnodesFine];
+	f00Mdest = &DF[d00M * numberOfLBnodesFine];
+	fPP0dest = &DF[dPP0 * numberOfLBnodesFine];
+	fMM0dest = &DF[dMM0 * numberOfLBnodesFine];
+	fPM0dest = &DF[dPM0 * numberOfLBnodesFine];
+	fMP0dest = &DF[dMP0 * numberOfLBnodesFine];
+	fP0Pdest = &DF[dP0P * numberOfLBnodesFine];
+	fM0Mdest = &DF[dM0M * numberOfLBnodesFine];
+	fP0Mdest = &DF[dP0M * numberOfLBnodesFine];
+	fM0Pdest = &DF[dM0P * numberOfLBnodesFine];
+	f0PPdest = &DF[d0PP * numberOfLBnodesFine];
+	f0MMdest = &DF[d0MM * numberOfLBnodesFine];
+	f0PMdest = &DF[d0PM * numberOfLBnodesFine];
+	f0MPdest = &DF[d0MP * numberOfLBnodesFine];
 	f000dest = &DF[d000 * numberOfLBnodesFine];
-	fMMMdest = &DF[DIR_MMM * numberOfLBnodesFine];
-	fMMPdest = &DF[DIR_MMP * numberOfLBnodesFine];
-	fMPPdest = &DF[DIR_MPP * numberOfLBnodesFine];
-	fMPMdest = &DF[DIR_MPM * numberOfLBnodesFine];
-	fPPMdest = &DF[DIR_PPM * numberOfLBnodesFine];
-	fPPPdest = &DF[DIR_PPP * numberOfLBnodesFine];
-	fPMPdest = &DF[DIR_PMP * numberOfLBnodesFine];
-	fPMMdest = &DF[DIR_PMM * numberOfLBnodesFine];
+	fMMMdest = &DF[dMMM * numberOfLBnodesFine];
+	fMMPdest = &DF[dMMP * numberOfLBnodesFine];
+	fMPPdest = &DF[dMPP * numberOfLBnodesFine];
+	fMPMdest = &DF[dMPM * numberOfLBnodesFine];
+	fPPMdest = &DF[dPPM * numberOfLBnodesFine];
+	fPPPdest = &DF[dPPP * numberOfLBnodesFine];
+	fPMPdest = &DF[dPMP * numberOfLBnodesFine];
+	fPMMdest = &DF[dPMM * numberOfLBnodesFine];
 
 	real
 		*fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
@@ -4428,70 +4428,70 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	{
 		fP00source = &DC[dP00 * numberOfLBnodesCoarse];
 		fM00source = &DC[dM00 * numberOfLBnodesCoarse];
-		f0P0source = &DC[DIR_0P0 * numberOfLBnodesCoarse];
-		f0M0source = &DC[DIR_0M0 * numberOfLBnodesCoarse];
-		f00Psource = &DC[DIR_00P * numberOfLBnodesCoarse];
-		f00Msource = &DC[DIR_00M * numberOfLBnodesCoarse];
-		fPP0source = &DC[DIR_PP0 * numberOfLBnodesCoarse];
-		fMM0source = &DC[DIR_MM0 * numberOfLBnodesCoarse];
-		fPM0source = &DC[DIR_PM0 * numberOfLBnodesCoarse];
-		fMP0source = &DC[DIR_MP0 * numberOfLBnodesCoarse];
-		fP0Psource = &DC[DIR_P0P * numberOfLBnodesCoarse];
-		fM0Msource = &DC[DIR_M0M * numberOfLBnodesCoarse];
-		fP0Msource = &DC[DIR_P0M * numberOfLBnodesCoarse];
-		fM0Psource = &DC[DIR_M0P * numberOfLBnodesCoarse];
-		f0PPsource = &DC[DIR_0PP * numberOfLBnodesCoarse];
-		f0MMsource = &DC[DIR_0MM * numberOfLBnodesCoarse];
-		f0PMsource = &DC[DIR_0PM * numberOfLBnodesCoarse];
-		f0MPsource = &DC[DIR_0MP * numberOfLBnodesCoarse];
+		f0P0source = &DC[d0P0 * numberOfLBnodesCoarse];
+		f0M0source = &DC[d0M0 * numberOfLBnodesCoarse];
+		f00Psource = &DC[d00P * numberOfLBnodesCoarse];
+		f00Msource = &DC[d00M * numberOfLBnodesCoarse];
+		fPP0source = &DC[dPP0 * numberOfLBnodesCoarse];
+		fMM0source = &DC[dMM0 * numberOfLBnodesCoarse];
+		fPM0source = &DC[dPM0 * numberOfLBnodesCoarse];
+		fMP0source = &DC[dMP0 * numberOfLBnodesCoarse];
+		fP0Psource = &DC[dP0P * numberOfLBnodesCoarse];
+		fM0Msource = &DC[dM0M * numberOfLBnodesCoarse];
+		fP0Msource = &DC[dP0M * numberOfLBnodesCoarse];
+		fM0Psource = &DC[dM0P * numberOfLBnodesCoarse];
+		f0PPsource = &DC[d0PP * numberOfLBnodesCoarse];
+		f0MMsource = &DC[d0MM * numberOfLBnodesCoarse];
+		f0PMsource = &DC[d0PM * numberOfLBnodesCoarse];
+		f0MPsource = &DC[d0MP * numberOfLBnodesCoarse];
 		f000source = &DC[d000 * numberOfLBnodesCoarse];
-		fMMMsource = &DC[DIR_MMM * numberOfLBnodesCoarse];
-		fMMPsource = &DC[DIR_MMP * numberOfLBnodesCoarse];
-		fMPPsource = &DC[DIR_MPP * numberOfLBnodesCoarse];
-		fMPMsource = &DC[DIR_MPM * numberOfLBnodesCoarse];
-		fPPMsource = &DC[DIR_PPM * numberOfLBnodesCoarse];
-		fPPPsource = &DC[DIR_PPP * numberOfLBnodesCoarse];
-		fPMPsource = &DC[DIR_PMP * numberOfLBnodesCoarse];
-		fPMMsource = &DC[DIR_PMM * numberOfLBnodesCoarse];
+		fMMMsource = &DC[dMMM * numberOfLBnodesCoarse];
+		fMMPsource = &DC[dMMP * numberOfLBnodesCoarse];
+		fMPPsource = &DC[dMPP * numberOfLBnodesCoarse];
+		fMPMsource = &DC[dMPM * numberOfLBnodesCoarse];
+		fPPMsource = &DC[dPPM * numberOfLBnodesCoarse];
+		fPPPsource = &DC[dPPP * numberOfLBnodesCoarse];
+		fPMPsource = &DC[dPMP * numberOfLBnodesCoarse];
+		fPMMsource = &DC[dPMM * numberOfLBnodesCoarse];
 	}
 	else
 	{
 		fP00source = &DC[dM00 * numberOfLBnodesCoarse];
 		fM00source = &DC[dP00 * numberOfLBnodesCoarse];
-		f0P0source = &DC[DIR_0M0 * numberOfLBnodesCoarse];
-		f0M0source = &DC[DIR_0P0 * numberOfLBnodesCoarse];
-		f00Psource = &DC[DIR_00M * numberOfLBnodesCoarse];
-		f00Msource = &DC[DIR_00P * numberOfLBnodesCoarse];
-		fPP0source = &DC[DIR_MM0 * numberOfLBnodesCoarse];
-		fMM0source = &DC[DIR_PP0 * numberOfLBnodesCoarse];
-		fPM0source = &DC[DIR_MP0 * numberOfLBnodesCoarse];
-		fMP0source = &DC[DIR_PM0 * numberOfLBnodesCoarse];
-		fP0Psource = &DC[DIR_M0M * numberOfLBnodesCoarse];
-		fM0Msource = &DC[DIR_P0P * numberOfLBnodesCoarse];
-		fP0Msource = &DC[DIR_M0P * numberOfLBnodesCoarse];
-		fM0Psource = &DC[DIR_P0M * numberOfLBnodesCoarse];
-		f0PPsource = &DC[DIR_0MM * numberOfLBnodesCoarse];
-		f0MMsource = &DC[DIR_0PP * numberOfLBnodesCoarse];
-		f0PMsource = &DC[DIR_0MP * numberOfLBnodesCoarse];
-		f0MPsource = &DC[DIR_0PM * numberOfLBnodesCoarse];
+		f0P0source = &DC[d0M0 * numberOfLBnodesCoarse];
+		f0M0source = &DC[d0P0 * numberOfLBnodesCoarse];
+		f00Psource = &DC[d00M * numberOfLBnodesCoarse];
+		f00Msource = &DC[d00P * numberOfLBnodesCoarse];
+		fPP0source = &DC[dMM0 * numberOfLBnodesCoarse];
+		fMM0source = &DC[dPP0 * numberOfLBnodesCoarse];
+		fPM0source = &DC[dMP0 * numberOfLBnodesCoarse];
+		fMP0source = &DC[dPM0 * numberOfLBnodesCoarse];
+		fP0Psource = &DC[dM0M * numberOfLBnodesCoarse];
+		fM0Msource = &DC[dP0P * numberOfLBnodesCoarse];
+		fP0Msource = &DC[dM0P * numberOfLBnodesCoarse];
+		fM0Psource = &DC[dP0M * numberOfLBnodesCoarse];
+		f0PPsource = &DC[d0MM * numberOfLBnodesCoarse];
+		f0MMsource = &DC[d0PP * numberOfLBnodesCoarse];
+		f0PMsource = &DC[d0MP * numberOfLBnodesCoarse];
+		f0MPsource = &DC[d0PM * numberOfLBnodesCoarse];
 		f000source = &DC[d000 * numberOfLBnodesCoarse];
-		fMMMsource = &DC[DIR_PPP * numberOfLBnodesCoarse];
-		fMMPsource = &DC[DIR_PPM * numberOfLBnodesCoarse];
-		fMPPsource = &DC[DIR_PMM * numberOfLBnodesCoarse];
-		fMPMsource = &DC[DIR_PMP * numberOfLBnodesCoarse];
-		fPPMsource = &DC[DIR_MMP * numberOfLBnodesCoarse];
-		fPPPsource = &DC[DIR_MMM * numberOfLBnodesCoarse];
-		fPMPsource = &DC[DIR_MPM * numberOfLBnodesCoarse];
-		fPMMsource = &DC[DIR_MPP * numberOfLBnodesCoarse];
+		fMMMsource = &DC[dPPP * numberOfLBnodesCoarse];
+		fMMPsource = &DC[dPPM * numberOfLBnodesCoarse];
+		fMPPsource = &DC[dPMM * numberOfLBnodesCoarse];
+		fMPMsource = &DC[dPMP * numberOfLBnodesCoarse];
+		fPPMsource = &DC[dMMP * numberOfLBnodesCoarse];
+		fPPPsource = &DC[dMMM * numberOfLBnodesCoarse];
+		fPMPsource = &DC[dMPM * numberOfLBnodesCoarse];
+		fPMMsource = &DC[dMPP * numberOfLBnodesCoarse];
 	}
 
 	Distributions6 G;
 	G.g[dP00] = &G6[dP00 * numberOfLBnodesFine];
 	G.g[dM00] = &G6[dM00 * numberOfLBnodesFine];
-	G.g[DIR_0P0] = &G6[DIR_0P0 * numberOfLBnodesFine];
-	G.g[DIR_0M0] = &G6[DIR_0M0 * numberOfLBnodesFine];
-	G.g[DIR_00P] = &G6[DIR_00P * numberOfLBnodesFine];
-	G.g[DIR_00M] = &G6[DIR_00M * numberOfLBnodesFine];
+	G.g[d0P0] = &G6[d0P0 * numberOfLBnodesFine];
+	G.g[d0M0] = &G6[d0M0 * numberOfLBnodesFine];
+	G.g[d00P] = &G6[d00P * numberOfLBnodesFine];
+	G.g[d00M] = &G6[d00M * numberOfLBnodesFine];
 
 	////////////////////////////////////////////////////////////////////////////////
    const unsigned  ix = threadIdx.x;  // Globaler x-Index 
@@ -5524,10 +5524,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -5951,10 +5951,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -6381,10 +6381,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -6811,10 +6811,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -7251,10 +7251,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -7681,10 +7681,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -8111,10 +8111,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;
@@ -8541,10 +8541,10 @@ __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  (G.g[dP00])[k000] = mgcbb;
 	  (G.g[dM00])[kM00] = mgabb;
-	  (G.g[DIR_0P0])[k000] = mgbcb;
-	  (G.g[DIR_0M0])[k0M0] = mgbab;
-	  (G.g[DIR_00P])[k000] = mgbbc;
-	  (G.g[DIR_00M])[k00M] = mgbba;
+	  (G.g[d0P0])[k000] = mgbcb;
+	  (G.g[d0M0])[k0M0] = mgbab;
+	  (G.g[d00P])[k000] = mgbbc;
+	  (G.g[d00M])[k00M] = mgbba;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  fP00dest[k000] = mfcbb;
 	  fM00dest[kM00] = mfabb;

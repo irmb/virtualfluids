@@ -45,7 +45,7 @@ const int EsoTwistD3Q27System::ETX3[EsoTwistD3Q27System::ENDF + 1] = { 0, 0, 0, 
 
 const int EsoTwistD3Q27System::etINVDIR[EsoTwistD3Q27System::ENDF + 1] = {
 
-    vf::lbm::dir::INV_P00,   vf::lbm::dir::INV_M00,   vf::lbm::dir::INV_0P0,   vf::lbm::dir::INV_0M0,   vf::lbm::dir::INV_00P,
+    vf::lbm::dir::iP00,   vf::lbm::dir::INV_M00,   vf::lbm::dir::INV_0P0,   vf::lbm::dir::INV_0M0,   vf::lbm::dir::INV_00P,
     vf::lbm::dir::INV_00M,   vf::lbm::dir::INV_PP0,  vf::lbm::dir::INV_MM0,  vf::lbm::dir::INV_PM0,  vf::lbm::dir::INV_MP0,
     vf::lbm::dir::INV_P0P,  vf::lbm::dir::INV_M0M,  vf::lbm::dir::INV_P0M,  vf::lbm::dir::INV_M0P,  vf::lbm::dir::INV_0PP,
     vf::lbm::dir::INV_0MM,  vf::lbm::dir::INV_0PM,  vf::lbm::dir::INV_0MP,  vf::lbm::dir::INV_PPP, vf::lbm::dir::INV_MPP,

@@ -24,12 +24,12 @@ void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
       {
          mm[0]= para->getParH(lev)->nx*(para->getParH(lev)->ny*k + j) + i;
          mm[1]= mm[0]                                                                       -1; //dM00
-         mm[2]= mm[0]                                                -para->getParH(lev)->nx-1; //DIR_MM0
-         mm[3]= mm[0]                                                -para->getParH(lev)->nx;   //DIR_0M0
-         mm[4]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny);                          //DIR_00M
-         mm[5]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)                       -1; //DIR_M0M
-         mm[6]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx;   //DIR_0MM
-         mm[7]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx-1; //DIR_MMM
+         mm[2]= mm[0]                                                -para->getParH(lev)->nx-1; //dMM0
+         mm[3]= mm[0]                                                -para->getParH(lev)->nx;   //d0M0
+         mm[4]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny);                          //d00M
+         mm[5]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)                       -1; //dM0M
+         mm[6]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx;   //d0MM
+         mm[7]= mm[0]-(para->getParH(lev)->nx*para->getParH(lev)->ny)-para->getParH(lev)->nx-1; //dMMM
 
          if ( para->getParH(lev)->geo[mm[0]] != GEO_VOID ||
               para->getParH(lev)->geo[mm[1]] != GEO_VOID ||

@@ -64,7 +64,7 @@ TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Eis2_velocityInX1ShouldB
 
 TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Nis2_velocityInX2ShouldBeOne)
 {
-    f[dir::DIR_0P0] = 2.;
+    f[dir::d0P0] = 2.;
 
     const double velocity = getIncompressibleVelocityX2(f.data());
 
@@ -75,7 +75,7 @@ TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Nis2_velocityInX2ShouldB
 
 TEST_F(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Tis2_velocityInX3ShouldBeOne)
 {
-    f[dir::DIR_00P] = 2.;
+    f[dir::d00P] = 2.;
 
     const double velocity = getIncompressibleVelocityX3(f.data());
 

@@ -83,25 +83,25 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, r
                   spongeFactor = (sizeSP - (muX1 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
                else spongeFactor = c1o1;
                break;
-            case DIR_0P0:
+            case d0P0:
                muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX2 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
                else spongeFactor = c1o1;
                break;
-            case DIR_0M0:
+            case d0M0:
                muX2 = (real)(x2 + ix2 * maxX2);
                if (muX2 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX2 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
                else spongeFactor = c1o1;
                break;
-            case DIR_00P:
+            case d00P:
                muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 >= (sizeX - sizeSP) / deltaT)
                   spongeFactor = (sizeX - (muX3 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;
                else spongeFactor = c1o1;
                break;
-            case DIR_00M:
+            case d00M:
                muX3 = (real)(x3 + ix3 * maxX3);
                if (muX3 <= sizeSP / deltaT)
                   spongeFactor = (sizeSP - (muX3 * deltaT + c1o1)) / sizeSP / c2o1 + c1o2;

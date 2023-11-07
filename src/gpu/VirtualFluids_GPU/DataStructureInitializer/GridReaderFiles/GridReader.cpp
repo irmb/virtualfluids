@@ -723,31 +723,31 @@ void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int si
 {
 	Q.q27[dP00] = &QQ[dP00   *sizeQ];
 	Q.q27[dM00] = &QQ[dM00   *sizeQ];
-	Q.q27[DIR_0P0] = &QQ[DIR_0P0   *sizeQ];
-	Q.q27[DIR_0M0] = &QQ[DIR_0M0   *sizeQ];
-	Q.q27[DIR_00P] = &QQ[DIR_00P   *sizeQ];
-	Q.q27[DIR_00M] = &QQ[DIR_00M   *sizeQ];
-	Q.q27[DIR_PP0] = &QQ[DIR_PP0  *sizeQ];
-	Q.q27[DIR_MM0] = &QQ[DIR_MM0  *sizeQ];
-	Q.q27[DIR_PM0] = &QQ[DIR_PM0  *sizeQ];
-	Q.q27[DIR_MP0] = &QQ[DIR_MP0  *sizeQ];
-	Q.q27[DIR_P0P] = &QQ[DIR_P0P  *sizeQ];
-	Q.q27[DIR_M0M] = &QQ[DIR_M0M  *sizeQ];
-	Q.q27[DIR_P0M] = &QQ[DIR_P0M  *sizeQ];
-	Q.q27[DIR_M0P] = &QQ[DIR_M0P  *sizeQ];
-	Q.q27[DIR_0PP] = &QQ[DIR_0PP  *sizeQ];
-	Q.q27[DIR_0MM] = &QQ[DIR_0MM  *sizeQ];
-	Q.q27[DIR_0PM] = &QQ[DIR_0PM  *sizeQ];
-	Q.q27[DIR_0MP] = &QQ[DIR_0MP  *sizeQ];
+	Q.q27[d0P0] = &QQ[d0P0   *sizeQ];
+	Q.q27[d0M0] = &QQ[d0M0   *sizeQ];
+	Q.q27[d00P] = &QQ[d00P   *sizeQ];
+	Q.q27[d00M] = &QQ[d00M   *sizeQ];
+	Q.q27[dPP0] = &QQ[dPP0  *sizeQ];
+	Q.q27[dMM0] = &QQ[dMM0  *sizeQ];
+	Q.q27[dPM0] = &QQ[dPM0  *sizeQ];
+	Q.q27[dMP0] = &QQ[dMP0  *sizeQ];
+	Q.q27[dP0P] = &QQ[dP0P  *sizeQ];
+	Q.q27[dM0M] = &QQ[dM0M  *sizeQ];
+	Q.q27[dP0M] = &QQ[dP0M  *sizeQ];
+	Q.q27[dM0P] = &QQ[dM0P  *sizeQ];
+	Q.q27[d0PP] = &QQ[d0PP  *sizeQ];
+	Q.q27[d0MM] = &QQ[d0MM  *sizeQ];
+	Q.q27[d0PM] = &QQ[d0PM  *sizeQ];
+	Q.q27[d0MP] = &QQ[d0MP  *sizeQ];
 	Q.q27[d000] = &QQ[d000*sizeQ];
-	Q.q27[DIR_PPP] = &QQ[DIR_PPP *sizeQ];
-	Q.q27[DIR_MMP] = &QQ[DIR_MMP *sizeQ];
-	Q.q27[DIR_PMP] = &QQ[DIR_PMP *sizeQ];
-	Q.q27[DIR_MPP] = &QQ[DIR_MPP *sizeQ];
-	Q.q27[DIR_PPM] = &QQ[DIR_PPM *sizeQ];
-	Q.q27[DIR_MMM] = &QQ[DIR_MMM *sizeQ];
-	Q.q27[DIR_PMM] = &QQ[DIR_PMM *sizeQ];
-	Q.q27[DIR_MPM] = &QQ[DIR_MPM *sizeQ];
+	Q.q27[dPPP] = &QQ[dPPP *sizeQ];
+	Q.q27[dMMP] = &QQ[dMMP *sizeQ];
+	Q.q27[dPMP] = &QQ[dPMP *sizeQ];
+	Q.q27[dMPP] = &QQ[dMPP *sizeQ];
+	Q.q27[dPPM] = &QQ[dPPM *sizeQ];
+	Q.q27[dMMM] = &QQ[dMMM *sizeQ];
+	Q.q27[dPMM] = &QQ[dPMM *sizeQ];
+	Q.q27[dMPM] = &QQ[dMPM *sizeQ];
 }
 
 void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const

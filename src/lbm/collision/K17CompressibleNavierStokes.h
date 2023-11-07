@@ -87,30 +87,30 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     real f_000 = distribution[d000];
     real f_P00 = distribution[dP00];
     real f_M00 = distribution[dM00];
-    real f_0P0 = distribution[DIR_0P0];
-    real f_0M0 = distribution[DIR_0M0];
-    real f_00P = distribution[DIR_00P];
-    real f_00M = distribution[DIR_00M];
-    real f_PP0 = distribution[DIR_PP0];
-    real f_MM0 = distribution[DIR_MM0];
-    real f_PM0 = distribution[DIR_PM0];
-    real f_MP0 = distribution[DIR_MP0];
-    real f_P0P = distribution[DIR_P0P];
-    real f_M0M = distribution[DIR_M0M];
-    real f_P0M = distribution[DIR_P0M];
-    real f_M0P = distribution[DIR_M0P];
-    real f_0PP = distribution[DIR_0PP];
-    real f_0MM = distribution[DIR_0MM];
-    real f_0PM = distribution[DIR_0PM];
-    real f_0MP = distribution[DIR_0MP];
-    real f_PPP = distribution[DIR_PPP];
-    real f_MPP = distribution[DIR_MPP];
-    real f_PMP = distribution[DIR_PMP];
-    real f_MMP = distribution[DIR_MMP];
-    real f_PPM = distribution[DIR_PPM];
-    real f_MPM = distribution[DIR_MPM];
-    real f_PMM = distribution[DIR_PMM];
-    real f_MMM = distribution[DIR_MMM];
+    real f_0P0 = distribution[d0P0];
+    real f_0M0 = distribution[d0M0];
+    real f_00P = distribution[d00P];
+    real f_00M = distribution[d00M];
+    real f_PP0 = distribution[dPP0];
+    real f_MM0 = distribution[dMM0];
+    real f_PM0 = distribution[dPM0];
+    real f_MP0 = distribution[dMP0];
+    real f_P0P = distribution[dP0P];
+    real f_M0M = distribution[dM0M];
+    real f_P0M = distribution[dP0M];
+    real f_M0P = distribution[dM0P];
+    real f_0PP = distribution[d0PP];
+    real f_0MM = distribution[d0MM];
+    real f_0PM = distribution[d0PM];
+    real f_0MP = distribution[d0MP];
+    real f_PPP = distribution[dPPP];
+    real f_MPP = distribution[dMPP];
+    real f_PMP = distribution[dPMP];
+    real f_MMP = distribution[dMMP];
+    real f_PPM = distribution[dPPM];
+    real f_MPM = distribution[dMPM];
+    real f_PMM = distribution[dPMM];
+    real f_MMM = distribution[dMMM];
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Define aliases to use the same variable for the moments (m's):
@@ -259,7 +259,7 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     real O6 = c1o1;
 
     ////////////////////////////////////////////////////////////////////////////////////
-    //! - A and DIR_00M: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
+    //! - A and d00M: parameters for fourth order convergence of the diffusion term according to Eq. (115) and (116)
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),
     //! DOI:10.1016/j.jcp.2017.05.040 ]</b></a> with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for
     //! different bulk viscosity).
@@ -552,31 +552,31 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
 
     distribution[dP00] = f_P00;
     distribution[dM00] = f_M00;
-    distribution[DIR_0P0] = f_0P0;
-    distribution[DIR_0M0] = f_0M0;
-    distribution[DIR_00P] = f_00P;
-    distribution[DIR_00M] = f_00M;
-    distribution[DIR_PP0] = f_PP0;
-    distribution[DIR_MM0] = f_MM0;
-    distribution[DIR_PM0] = f_PM0;
-    distribution[DIR_MP0] = f_MP0;
-    distribution[DIR_P0P] = f_P0P;
-    distribution[DIR_M0M] = f_M0M;
-    distribution[DIR_P0M] = f_P0M;
-    distribution[DIR_M0P] = f_M0P;
-    distribution[DIR_0PP] = f_0PP;
-    distribution[DIR_0MM] = f_0MM;
-    distribution[DIR_0PM] = f_0PM;
-    distribution[DIR_0MP] = f_0MP;
+    distribution[d0P0] = f_0P0;
+    distribution[d0M0] = f_0M0;
+    distribution[d00P] = f_00P;
+    distribution[d00M] = f_00M;
+    distribution[dPP0] = f_PP0;
+    distribution[dMM0] = f_MM0;
+    distribution[dPM0] = f_PM0;
+    distribution[dMP0] = f_MP0;
+    distribution[dP0P] = f_P0P;
+    distribution[dM0M] = f_M0M;
+    distribution[dP0M] = f_P0M;
+    distribution[dM0P] = f_M0P;
+    distribution[d0PP] = f_0PP;
+    distribution[d0MM] = f_0MM;
+    distribution[d0PM] = f_0PM;
+    distribution[d0MP] = f_0MP;
     distribution[d000] = f_000;
-    distribution[DIR_PPP] = f_PPP;
-    distribution[DIR_PMP] = f_PMP;
-    distribution[DIR_PPM] = f_PPM;
-    distribution[DIR_PMM] = f_PMM;
-    distribution[DIR_MPP] = f_MPP;
-    distribution[DIR_MMP] = f_MMP;
-    distribution[DIR_MPM] = f_MPM;
-    distribution[DIR_MMM] = f_MMM;
+    distribution[dPPP] = f_PPP;
+    distribution[dPMP] = f_PMP;
+    distribution[dPPM] = f_PPM;
+    distribution[dPMM] = f_PMM;
+    distribution[dMPP] = f_MPP;
+    distribution[dMMP] = f_MMP;
+    distribution[dMPM] = f_MPM;
+    distribution[dMMM] = f_MMM;
 
     macroscopicValues.rho = drho;
     macroscopicValues.vx = vvx;

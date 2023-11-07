@@ -15,84 +15,57 @@ static constexpr size_t ENDDIR = 26;
 static constexpr size_t d000 = 0;
 static constexpr size_t dP00 = 1;
 static constexpr size_t dM00 = 2;
-static constexpr size_t DIR_0P0 = 3;
-static constexpr size_t DIR_0M0 = 4;
-static constexpr size_t DIR_00P = 5;
-static constexpr size_t DIR_00M = 6;
-static constexpr size_t DIR_PP0 = 7;
-static constexpr size_t DIR_MM0 = 8;
-static constexpr size_t DIR_PM0 = 9;
-static constexpr size_t DIR_MP0 = 10;
-static constexpr size_t DIR_P0P = 11;
-static constexpr size_t DIR_M0M = 12;
-static constexpr size_t DIR_P0M = 13;
-static constexpr size_t DIR_M0P = 14;
-static constexpr size_t DIR_0PP = 15;
-static constexpr size_t DIR_0MM = 16;
-static constexpr size_t DIR_0PM = 17;
-static constexpr size_t DIR_0MP = 18;
-static constexpr size_t DIR_PPP = 19;
-static constexpr size_t DIR_MPP = 20;
-static constexpr size_t DIR_PMP = 21;
-static constexpr size_t DIR_MMP = 22;
-static constexpr size_t DIR_PPM = 23;
-static constexpr size_t DIR_MPM = 24;
-static constexpr size_t DIR_PMM = 25;
-static constexpr size_t DIR_MMM = 26;
+static constexpr size_t d0P0 = 3;
+static constexpr size_t d0M0 = 4;
+static constexpr size_t d00P = 5;
+static constexpr size_t d00M = 6;
+static constexpr size_t dPP0 = 7;
+static constexpr size_t dMM0 = 8;
+static constexpr size_t dPM0 = 9;
+static constexpr size_t dMP0 = 10;
+static constexpr size_t dP0P = 11;
+static constexpr size_t dM0M = 12;
+static constexpr size_t dP0M = 13;
+static constexpr size_t dM0P = 14;
+static constexpr size_t d0PP = 15;
+static constexpr size_t d0MM = 16;
+static constexpr size_t d0PM = 17;
+static constexpr size_t d0MP = 18;
+static constexpr size_t dPPP = 19;
+static constexpr size_t dMPP = 20;
+static constexpr size_t dPMP = 21;
+static constexpr size_t dMMP = 22;
+static constexpr size_t dPPM = 23;
+static constexpr size_t dMPM = 24;
+static constexpr size_t dPMM = 25;
+static constexpr size_t dMMM = 26;
 
-static constexpr size_t INV_P00 = dM00;
+static constexpr size_t iP00 = dM00;
 static constexpr size_t INV_M00 = dP00;
-static constexpr size_t INV_0P0 = DIR_0M0;
-static constexpr size_t INV_0M0 = DIR_0P0;
-static constexpr size_t INV_00P = DIR_00M;
-static constexpr size_t INV_00M = DIR_00P;
-static constexpr size_t INV_PP0 = DIR_MM0;
-static constexpr size_t INV_MM0 = DIR_PP0;
-static constexpr size_t INV_PM0 = DIR_MP0;
-static constexpr size_t INV_MP0 = DIR_PM0;
-static constexpr size_t INV_P0P = DIR_M0M;
-static constexpr size_t INV_M0M = DIR_P0P;
-static constexpr size_t INV_P0M = DIR_M0P;
-static constexpr size_t INV_M0P = DIR_P0M;
-static constexpr size_t INV_0PP = DIR_0MM;
-static constexpr size_t INV_0MM = DIR_0PP;
-static constexpr size_t INV_0PM = DIR_0MP;
-static constexpr size_t INV_0MP = DIR_0PM;
-static constexpr size_t INV_PPP = DIR_MMM;
-static constexpr size_t INV_MPP = DIR_PMM;
-static constexpr size_t INV_PMP = DIR_MPM;
-static constexpr size_t INV_MMP = DIR_PPM;
-static constexpr size_t INV_PPM = DIR_MMP;
-static constexpr size_t INV_MPM = DIR_PMP;
-static constexpr size_t INV_PMM = DIR_MPP;
-static constexpr size_t INV_MMM = DIR_PPP;
-
-static constexpr size_t SGD_P00 = 0;
-static constexpr size_t SGD_M00 = 1;
-static constexpr size_t SGD_0P0 = 2;
-static constexpr size_t SGD_0M0 = 3;
-static constexpr size_t SGD_00P = 4;
-static constexpr size_t SGD_00M = 5;
-static constexpr size_t SGD_PP0 = 6;
-static constexpr size_t SGD_MM0 = 7;
-static constexpr size_t SGD_PM0 = 8;
-static constexpr size_t SGD_MP0 = 9;
-static constexpr size_t SGD_P0P = 10;
-static constexpr size_t SGD_M0M = 11;
-static constexpr size_t SGD_P0M = 12;
-static constexpr size_t SGD_M0P = 13;
-static constexpr size_t SGD_0PP = 14;
-static constexpr size_t SGD_0MM = 15;
-static constexpr size_t SGD_0PM = 16;
-static constexpr size_t SGD_0MP = 17;
-static constexpr size_t SGD_PPP = 18;
-static constexpr size_t SGD_MPP = 19;
-static constexpr size_t SGD_PMP = 20;
-static constexpr size_t SGD_MMP = 21;
-static constexpr size_t SGD_PPM = 22;
-static constexpr size_t SGD_MPM = 23;
-static constexpr size_t SGD_PMM = 24;
-static constexpr size_t SGD_MMM = 25;
+static constexpr size_t INV_0P0 = d0M0;
+static constexpr size_t INV_0M0 = d0P0;
+static constexpr size_t INV_00P = d00M;
+static constexpr size_t INV_00M = d00P;
+static constexpr size_t INV_PP0 = dMM0;
+static constexpr size_t INV_MM0 = dPP0;
+static constexpr size_t INV_PM0 = dMP0;
+static constexpr size_t INV_MP0 = dPM0;
+static constexpr size_t INV_P0P = dM0M;
+static constexpr size_t INV_M0M = dP0P;
+static constexpr size_t INV_P0M = dM0P;
+static constexpr size_t INV_M0P = dP0M;
+static constexpr size_t INV_0PP = d0MM;
+static constexpr size_t INV_0MM = d0PP;
+static constexpr size_t INV_0PM = d0MP;
+static constexpr size_t INV_0MP = d0PM;
+static constexpr size_t INV_PPP = dMMM;
+static constexpr size_t INV_MPP = dPMM;
+static constexpr size_t INV_PMP = dMPM;
+static constexpr size_t INV_MMP = dPPM;
+static constexpr size_t INV_PPM = dMMP;
+static constexpr size_t INV_MPM = dPMP;
+static constexpr size_t INV_PMM = dMPP;
+static constexpr size_t INV_MMM = dPPP;
 
 struct countersForPointerChasing
 {
@@ -107,119 +80,33 @@ const std::map<const size_t, const countersForPointerChasing> mapForPointerChasi
     {d000, countersForPointerChasing{0, 0, 0, 0}},
     {dP00, countersForPointerChasing{0, 1, 0, 0}},
     {dM00, countersForPointerChasing{1, 0, 1, 1}},
-    {DIR_0P0, countersForPointerChasing{0, 0, 1, 0}},
-    {DIR_0M0, countersForPointerChasing{1, 1, 0, 1}},
-    {DIR_00P, countersForPointerChasing{0, 0, 0, 1}},
-    {DIR_00M, countersForPointerChasing{1, 1, 1, 0}},
+    {d0P0, countersForPointerChasing{0, 0, 1, 0}},
+    {d0M0, countersForPointerChasing{1, 1, 0, 1}},
+    {d00P, countersForPointerChasing{0, 0, 0, 1}},
+    {d00M, countersForPointerChasing{1, 1, 1, 0}},
 
-    {DIR_PP0, countersForPointerChasing{0, 1, 1, 0}},
-    {DIR_MM0, countersForPointerChasing{1, 0, 0, 1}},
-    {DIR_PM0, countersForPointerChasing{1, 2, 0, 1}},
-    {DIR_MP0, countersForPointerChasing{1, 0, 2, 1}},
-    {DIR_P0P, countersForPointerChasing{0, 1, 0, 1}},
-    {DIR_M0M, countersForPointerChasing{1, 0, 1, 0}},
-    {DIR_P0M, countersForPointerChasing{1, 2, 1, 0}},
-    {DIR_M0P, countersForPointerChasing{1, 0, 1, 2}},
-    {DIR_0PP, countersForPointerChasing{0, 0, 1, 1}},
-    {DIR_0MM, countersForPointerChasing{1, 1, 0, 0}},
-    {DIR_0PM, countersForPointerChasing{1, 1, 2, 0}},
-    {DIR_0MP, countersForPointerChasing{1, 1, 0, 2}},
+    {dPP0, countersForPointerChasing{0, 1, 1, 0}},
+    {dMM0, countersForPointerChasing{1, 0, 0, 1}},
+    {dPM0, countersForPointerChasing{1, 2, 0, 1}},
+    {dMP0, countersForPointerChasing{1, 0, 2, 1}},
+    {dP0P, countersForPointerChasing{0, 1, 0, 1}},
+    {dM0M, countersForPointerChasing{1, 0, 1, 0}},
+    {dP0M, countersForPointerChasing{1, 2, 1, 0}},
+    {dM0P, countersForPointerChasing{1, 0, 1, 2}},
+    {d0PP, countersForPointerChasing{0, 0, 1, 1}},
+    {d0MM, countersForPointerChasing{1, 1, 0, 0}},
+    {d0PM, countersForPointerChasing{1, 1, 2, 0}},
+    {d0MP, countersForPointerChasing{1, 1, 0, 2}},
 
-    {DIR_PPP, countersForPointerChasing{0, 1, 1, 1}},
-    {DIR_MPP, countersForPointerChasing{1, 0, 2, 2}},
-    {DIR_PMP, countersForPointerChasing{1, 2, 0, 2}},
-    {DIR_MMP, countersForPointerChasing{1, 0, 0, 2}},
-    {DIR_PPM, countersForPointerChasing{1, 2, 2, 0}},
-    {DIR_MPM, countersForPointerChasing{1, 0, 2, 0}},
-    {DIR_PMM, countersForPointerChasing{1, 2, 0, 0}},
-    {DIR_MMM, countersForPointerChasing{1, 0, 0, 0}}
+    {dPPP, countersForPointerChasing{0, 1, 1, 1}},
+    {dMPP, countersForPointerChasing{1, 0, 2, 2}},
+    {dPMP, countersForPointerChasing{1, 2, 0, 2}},
+    {dMMP, countersForPointerChasing{1, 0, 0, 2}},
+    {dPPM, countersForPointerChasing{1, 2, 2, 0}},
+    {dMPM, countersForPointerChasing{1, 0, 2, 0}},
+    {dPMM, countersForPointerChasing{1, 2, 0, 0}},
+    {dMMM, countersForPointerChasing{1, 0, 0, 0}}
 };
 
-
-
-// used in the CPU version
-// static constexpr int INV_P00 = dM00;
-// static constexpr int INV_M00 = dP00;
-// static constexpr int INV_0P0 = DIR_0M0;
-// static constexpr int INV_0M0 = DIR_0P0;
-// static constexpr int INV_00P = DIR_00M;
-// static constexpr int INV_00M = DIR_00P;
-// static constexpr int INV_PP0 = DIR_MM0;
-// static constexpr int INV_MM0 = DIR_PP0;
-// static constexpr int INV_PM0 = DIR_MP0;
-// static constexpr int INV_MP0 = DIR_PM0;
-// static constexpr int INV_P0P = DIR_M0M;
-// static constexpr int INV_M0M = DIR_P0P;
-// static constexpr int INV_P0M = DIR_M0P;
-// static constexpr int INV_M0P = DIR_P0M;
-// static constexpr int INV_0PP = DIR_0MM;
-// static constexpr int INV_0MM = DIR_0PP;
-// static constexpr int INV_0PM = DIR_0MP;
-// static constexpr int INV_0MP = DIR_0PM;
-// static constexpr int INV_PPP = DIR_MMM;
-// static constexpr int INV_MPP = DIR_PMM;
-// static constexpr int INV_PMP = DIR_MPM;
-// static constexpr int INV_MMP = DIR_PPM;
-// static constexpr int INV_PPM = DIR_MMP;
-// static constexpr int INV_MPM = DIR_PMP;
-// static constexpr int INV_PMM = DIR_MPP;
-// static constexpr int INV_MMM = DIR_PPP;
-
-// static constexpr int SGD_P00 = 0;
-// static constexpr int SGD_M00 = 1;
-// static constexpr int SGD_0P0 = 2;
-// static constexpr int SGD_0M0 = 3;
-// static constexpr int SGD_00P = 4;
-// static constexpr int SGD_00M = 5;
-// static constexpr int SGD_PP0 = 6;
-// static constexpr int SGD_MM0 = 7;
-// static constexpr int SGD_PM0 = 8;
-// static constexpr int SGD_MP0 = 9;
-// static constexpr int SGD_P0P = 10;
-// static constexpr int SGD_M0M = 11;
-// static constexpr int SGD_P0M = 12;
-// static constexpr int SGD_M0P = 13;
-// static constexpr int SGD_0PP = 14;
-// static constexpr int SGD_0MM = 15;
-// static constexpr int SGD_0PM = 16;
-// static constexpr int SGD_0MP = 17;
-// static constexpr int SGD_PPP = 18;
-// static constexpr int SGD_MPP = 19;
-// static constexpr int SGD_PMP = 20;
-// static constexpr int SGD_MMP = 21;
-// static constexpr int SGD_PPM = 22;
-// static constexpr int SGD_MPM = 23;
-// static constexpr int SGD_PMM = 24;
-// static constexpr int SGD_MMM = 25;
-
-
-// DEPRECATED
-static constexpr int ZZZ = d000;
-static constexpr int PZZ = dP00;
-static constexpr int MZZ = dM00;
-static constexpr int ZPZ = DIR_0P0;
-static constexpr int ZMZ = DIR_0M0;
-static constexpr int ZZP = DIR_00P;
-static constexpr int ZZM = DIR_00M;
-static constexpr int PPZ = DIR_PP0;
-static constexpr int MMZ = DIR_MM0;
-static constexpr int PMZ = DIR_PM0;
-static constexpr int MPZ = DIR_MP0;
-static constexpr int PZP = DIR_P0P;
-static constexpr int MZM = DIR_M0M;
-static constexpr int PZM = DIR_P0M;
-static constexpr int MZP = DIR_M0P;
-static constexpr int ZPP = DIR_0PP;
-static constexpr int ZMM = DIR_0MM;
-static constexpr int ZPM = DIR_0PM;
-static constexpr int ZMP = DIR_0MP;
-static constexpr int PPP = DIR_PPP;
-static constexpr int MPP = DIR_MPP;
-static constexpr int PMP = DIR_PMP;
-static constexpr int MMP = DIR_MMP;
-static constexpr int PPM = DIR_PPM;
-static constexpr int MPM = DIR_MPM;
-static constexpr int PMM = DIR_PMM;
-static constexpr int MMM = DIR_MMM;
 }
 #endif

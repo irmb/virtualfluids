@@ -251,7 +251,7 @@ void run(string configname)
          grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
-        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, dMMM, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
         // restart

@@ -117,11 +117,11 @@ void RheologyInterpolator::calcMoments(const real* const f, real omegaInf, real&
 
    press = rho; //interpolate rho!
 
-   kxy   = -3.*omega*((((f[DIR_MMP]+f[DIR_PPM])-(f[DIR_MPP]+f[DIR_PMM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_MPM]+f[DIR_PMP])))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_MP0]+f[DIR_PM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
-   kyz   = -3.*omega*((((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMP]+f[DIR_MPM]))+((f[DIR_PMM]+f[DIR_MPP])-(f[DIR_MMP]+f[DIR_PPM])))+((f[DIR_0MM]+f[DIR_0PP])-(f[DIR_0MP]+f[DIR_0PM]))-(vx2*vx3));
-   kxz   = -3.*omega*((((f[DIR_MPM]+f[DIR_PMP])-(f[DIR_MMP]+f[DIR_PPM]))+((f[DIR_MMM]+f[DIR_PPP])-(f[DIR_PMM]+f[DIR_MPP])))+((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_M0P]+f[DIR_P0M]))-(vx1*vx3));
-   kxxMyy = -3./2.*omega*((((f[DIR_M0M]+f[DIR_P0P])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_M0P]+f[DIR_P0M])-(f[DIR_0MP]+f[DIR_0PM])))+((f[dM00]+f[dP00])-(f[DIR_0M0]+f[DIR_0P0]))-(vx1*vx1-vx2*vx2));
-   kxxMzz = -3./2.*omega*((((f[DIR_MP0]+f[DIR_PM0])-(f[DIR_0MM]+f[DIR_0PP]))+((f[DIR_MM0]+f[DIR_PP0])-(f[DIR_0MP]+f[DIR_0PM])))+((f[dM00]+f[dP00])-(f[DIR_00M]+f[DIR_00P]))-(vx1*vx1-vx3*vx3));
+   kxy   = -3.*omega*((((f[dMMP]+f[dPPM])-(f[dMPP]+f[dPMM]))+((f[dMMM]+f[dPPP])-(f[dMPM]+f[dPMP])))+((f[dMM0]+f[dPP0])-(f[dMP0]+f[dPM0]))-(vx1*vx2));// might not be optimal MG 25.2.13
+   kyz   = -3.*omega*((((f[dMMM]+f[dPPP])-(f[dPMP]+f[dMPM]))+((f[dPMM]+f[dMPP])-(f[dMMP]+f[dPPM])))+((f[d0MM]+f[d0PP])-(f[d0MP]+f[d0PM]))-(vx2*vx3));
+   kxz   = -3.*omega*((((f[dMPM]+f[dPMP])-(f[dMMP]+f[dPPM]))+((f[dMMM]+f[dPPP])-(f[dPMM]+f[dMPP])))+((f[dM0M]+f[dP0P])-(f[dM0P]+f[dP0M]))-(vx1*vx3));
+   kxxMyy = -3./2.*omega*((((f[dM0M]+f[dP0P])-(f[d0MM]+f[d0PP]))+((f[dM0P]+f[dP0M])-(f[d0MP]+f[d0PM])))+((f[dM00]+f[dP00])-(f[d0M0]+f[d0P0]))-(vx1*vx1-vx2*vx2));
+   kxxMzz = -3./2.*omega*((((f[dMP0]+f[dPM0])-(f[d0MM]+f[d0PP]))+((f[dMM0]+f[dPP0])-(f[d0MP]+f[d0PM])))+((f[dM00]+f[dP00])-(f[d00M]+f[d00P]))-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
 void RheologyInterpolator::calcInterpolatedCoefficiets_intern(const D3Q27ICell& icell,
@@ -442,30 +442,30 @@ void RheologyInterpolator::calcInterpolatedNode(real* f, /*real omega,*/ real x,
 
    f[dP00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[dP00];
    f[dM00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[dM00];
-   f[DIR_0P0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[DIR_0P0];
-   f[DIR_0M0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[DIR_0M0];
-   f[DIR_00P]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[DIR_00P];
-   f[DIR_00M]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[DIR_00M];
-   f[DIR_PP0]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[DIR_PP0];
-   f[DIR_MM0]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[DIR_MM0];
-   f[DIR_PM0]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[DIR_PM0];
-   f[DIR_MP0]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[DIR_MP0];
-   f[DIR_P0P]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[DIR_P0P];
-   f[DIR_M0M]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[DIR_M0M];
-   f[DIR_P0M]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[DIR_P0M];
-   f[DIR_M0P]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[DIR_M0P];
-   f[DIR_0PP]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[DIR_0PP];
-   f[DIR_0MM]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[DIR_0MM];
-   f[DIR_0PM]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[DIR_0PM];
-   f[DIR_0MP]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[DIR_0MP];
-   f[DIR_PPP]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[DIR_PPP];
-   f[DIR_MMP]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[DIR_MMP];
-   f[DIR_PMP]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[DIR_PMP];
-   f[DIR_MPP]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[DIR_MPP];
-   f[DIR_PPM]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[DIR_PPM];
-   f[DIR_MMM]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[DIR_MMM];
-   f[DIR_PMM]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[DIR_PMM];
-   f[DIR_MPM]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[DIR_MPM];
+   f[d0P0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[d0P0];
+   f[d0M0]    = f_N    + xs*x_N    + ys*y_N    + zs*z_N    + xs*ys*xy_N    + xs*zs*xz_N    + ys*zs*yz_N    + feq[d0M0];
+   f[d00P]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[d00P];
+   f[d00M]    = f_T    + xs*x_T    + ys*y_T    + zs*z_T    + xs*ys*xy_T    + xs*zs*xz_T    + ys*zs*yz_T    + feq[d00M];
+   f[dPP0]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[dPP0];
+   f[dMM0]   = f_NE   + xs*x_NE   + ys*y_NE   + zs*z_NE   + xs*ys*xy_NE   + xs*zs*xz_NE   + ys*zs*yz_NE   + feq[dMM0];
+   f[dPM0]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[dPM0];
+   f[dMP0]   = f_SE   + xs*x_SE   + ys*y_SE   + zs*z_SE   + xs*ys*xy_SE   + xs*zs*xz_SE   + ys*zs*yz_SE   + feq[dMP0];
+   f[dP0P]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[dP0P];
+   f[dM0M]   = f_TE   + xs*x_TE   + ys*y_TE   + zs*z_TE   + xs*ys*xy_TE   + xs*zs*xz_TE   + ys*zs*yz_TE   + feq[dM0M];
+   f[dP0M]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[dP0M];
+   f[dM0P]   = f_BE   + xs*x_BE   + ys*y_BE   + zs*z_BE   + xs*ys*xy_BE   + xs*zs*xz_BE   + ys*zs*yz_BE   + feq[dM0P];
+   f[d0PP]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[d0PP];
+   f[d0MM]   = f_TN   + xs*x_TN   + ys*y_TN   + zs*z_TN   + xs*ys*xy_TN   + xs*zs*xz_TN   + ys*zs*yz_TN   + feq[d0MM];
+   f[d0PM]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[d0PM];
+   f[d0MP]   = f_BN   + xs*x_BN   + ys*y_BN   + zs*z_BN   + xs*ys*xy_BN   + xs*zs*xz_BN   + ys*zs*yz_BN   + feq[d0MP];
+   f[dPPP]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[dPPP];
+   f[dMMP]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[dMMP];
+   f[dPMP]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[dPMP];
+   f[dMPP]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[dMPP];
+   f[dPPM]  = f_TSW  + xs*x_TSW  + ys*y_TSW  + zs*z_TSW  + xs*ys*xy_TSW  + xs*zs*xz_TSW  + ys*zs*yz_TSW  + feq[dPPM];
+   f[dMMM]  = f_TNE  + xs*x_TNE  + ys*y_TNE  + zs*z_TNE  + xs*ys*xy_TNE  + xs*zs*xz_TNE  + ys*zs*yz_TNE  + feq[dMMM];
+   f[dPMM]  = f_TNW  + xs*x_TNW  + ys*y_TNW  + zs*z_TNW  + xs*ys*xy_TNW  + xs*zs*xz_TNW  + ys*zs*yz_TNW  + feq[dPMM];
+   f[dMPM]  = f_TSE  + xs*x_TSE  + ys*y_TSE  + zs*z_TSE  + xs*ys*xy_TSE  + xs*zs*xz_TSE  + ys*zs*yz_TSE  + feq[dMPM];
    f[d000] = f_ZERO + xs*x_ZERO + ys*y_ZERO + zs*z_ZERO                                                 + feq[d000];
 }
 //////////////////////////////////////////////////////////////////////////
@@ -632,30 +632,30 @@ void RheologyInterpolator::calcInterpolatedNodeFC(real* f, real omega)
 
    f[dP00]    = f_E    + feq[dP00];
    f[dM00]    = f_E    + feq[dM00];
-   f[DIR_0P0]    = f_N    + feq[DIR_0P0];
-   f[DIR_0M0]    = f_N    + feq[DIR_0M0];
-   f[DIR_00P]    = f_T    + feq[DIR_00P];
-   f[DIR_00M]    = f_T    + feq[DIR_00M];
-   f[DIR_PP0]   = f_NE   + feq[DIR_PP0];
-   f[DIR_MM0]   = f_NE   + feq[DIR_MM0];
-   f[DIR_PM0]   = f_SE   + feq[DIR_PM0];
-   f[DIR_MP0]   = f_SE   + feq[DIR_MP0];
-   f[DIR_P0P]   = f_TE   + feq[DIR_P0P];
-   f[DIR_M0M]   = f_TE   + feq[DIR_M0M];
-   f[DIR_P0M]   = f_BE   + feq[DIR_P0M];
-   f[DIR_M0P]   = f_BE   + feq[DIR_M0P];
-   f[DIR_0PP]   = f_TN   + feq[DIR_0PP];
-   f[DIR_0MM]   = f_TN   + feq[DIR_0MM];
-   f[DIR_0PM]   = f_BN   + feq[DIR_0PM];
-   f[DIR_0MP]   = f_BN   + feq[DIR_0MP];
-   f[DIR_PPP]  = f_TNE  + feq[DIR_PPP];
-   f[DIR_MPP]  = f_TNW  + feq[DIR_MPP];
-   f[DIR_PMP]  = f_TSE  + feq[DIR_PMP];
-   f[DIR_MMP]  = f_TSW  + feq[DIR_MMP];
-   f[DIR_PPM]  = f_TSW  + feq[DIR_PPM];
-   f[DIR_MPM]  = f_TSE  + feq[DIR_MPM];
-   f[DIR_PMM]  = f_TNW  + feq[DIR_PMM];
-   f[DIR_MMM]  = f_TNE  + feq[DIR_MMM];
+   f[d0P0]    = f_N    + feq[d0P0];
+   f[d0M0]    = f_N    + feq[d0M0];
+   f[d00P]    = f_T    + feq[d00P];
+   f[d00M]    = f_T    + feq[d00M];
+   f[dPP0]   = f_NE   + feq[dPP0];
+   f[dMM0]   = f_NE   + feq[dMM0];
+   f[dPM0]   = f_SE   + feq[dPM0];
+   f[dMP0]   = f_SE   + feq[dMP0];
+   f[dP0P]   = f_TE   + feq[dP0P];
+   f[dM0M]   = f_TE   + feq[dM0M];
+   f[dP0M]   = f_BE   + feq[dP0M];
+   f[dM0P]   = f_BE   + feq[dM0P];
+   f[d0PP]   = f_TN   + feq[d0PP];
+   f[d0MM]   = f_TN   + feq[d0MM];
+   f[d0PM]   = f_BN   + feq[d0PM];
+   f[d0MP]   = f_BN   + feq[d0MP];
+   f[dPPP]  = f_TNE  + feq[dPPP];
+   f[dMPP]  = f_TNW  + feq[dMPP];
+   f[dPMP]  = f_TSE  + feq[dPMP];
+   f[dMMP]  = f_TSW  + feq[dMMP];
+   f[dPPM]  = f_TSW  + feq[dPPM];
+   f[dMPM]  = f_TSE  + feq[dMPM];
+   f[dPMM]  = f_TNW  + feq[dPMM];
+   f[dMMM]  = f_TNE  + feq[dMMM];
    f[d000] = f_ZERO + feq[d000];
 }
 //////////////////////////////////////////////////////////////////////////

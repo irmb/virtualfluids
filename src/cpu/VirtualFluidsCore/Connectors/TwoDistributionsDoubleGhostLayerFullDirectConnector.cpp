@@ -112,7 +112,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // NORTH
-    else if (sendDir == DIR_0P0) {
+    else if (sendDir == d0P0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 exchangeData(x1, maxX2m3, x3, x1, minX2, x3);
@@ -121,7 +121,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // SOUTH
-    else if (sendDir == DIR_0M0) {
+    else if (sendDir == d0M0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 exchangeData(x1, minX2p3, x3, x1, maxX2, x3);
@@ -131,7 +131,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
     }
 
     // TOP
-    else if (sendDir == DIR_00P) {
+    else if (sendDir == d00P) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 exchangeData(x1, x2, maxX3m3, x1, x2, minX3);
@@ -140,7 +140,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // BOTTOM
-    else if (sendDir == DIR_00M) {
+    else if (sendDir == d00M) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
                 exchangeData(x1, x2, minX3p3, x1, x2, maxX3);
@@ -149,7 +149,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // NORTHEAST
-    else if (sendDir == DIR_PP0) {
+    else if (sendDir == dPP0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(maxX1m3, maxX2m3, x3, minX1, minX2, x3);
             exchangeData(maxX1m2, maxX2m2, x3, minX1p1, minX2p1, x3);
@@ -158,7 +158,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // NORTHWEST
-    else if (sendDir == DIR_MP0) {
+    else if (sendDir == dMP0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(minX1p3, maxX2m3, x3, maxX1, minX2, x3);
             exchangeData(minX1p2, maxX2m2, x3, maxX1m1, minX2p1, x3);
@@ -167,7 +167,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // SOUTHWEST
-    else if (sendDir == DIR_MM0) {
+    else if (sendDir == dMM0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(minX1p3, minX2p3, x3, maxX1, maxX2, x3);
             exchangeData(minX1p2, minX2p2, x3, maxX1m1, maxX2m1, x3);
@@ -176,70 +176,70 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         }
     }
     // SOUTHEAST
-    else if (sendDir == DIR_PM0) {
+    else if (sendDir == dPM0) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(maxX1m3, minX2p3, x3, minX1, maxX2, x3);
             exchangeData(maxX1m2, minX2p2, x3, minX1p1, maxX2m1, x3);
             exchangeData(maxX1m3, minX2p2, x3, minX1, maxX2m1, x3);
             exchangeData(maxX1m2, minX2p3, x3, minX1p1, maxX2, x3);
         }
-    } else if (sendDir == DIR_P0P)
+    } else if (sendDir == dP0P)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(maxX1m3, x2, maxX3m3, minX1, x2, minX3);
             exchangeData(maxX1m2, x2, maxX3m2, minX1p1, x2, minX3p1);
             exchangeData(maxX1m3, x2, maxX3m2, minX1, x2, minX3p1);
             exchangeData(maxX1m2, x2, maxX3m3, minX1p1, x2, minX3);
         }
-    else if (sendDir == DIR_M0M)
+    else if (sendDir == dM0M)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(minX1p3, x2, minX3p3, maxX1, x2, maxX3);
             exchangeData(minX1p2, x2, minX3p2, maxX1m1, x2, maxX3m1);
             exchangeData(minX1p3, x2, minX3p2, maxX1, x2, maxX3m1);
             exchangeData(minX1p2, x2, minX3p3, maxX1m1, x2, maxX3);
         }
-    else if (sendDir == DIR_P0M)
+    else if (sendDir == dP0M)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(maxX1m3, x2, minX3p3, minX1, x2, maxX3);
             exchangeData(maxX1m2, x2, minX3p2, minX1p1, x2, maxX3m1);
             exchangeData(maxX1m3, x2, minX3p2, minX1, x2, maxX3m1);
             exchangeData(maxX1m2, x2, minX3p3, minX1p1, x2, maxX3);
         }
-    else if (sendDir == DIR_M0P)
+    else if (sendDir == dM0P)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(minX1p3, x2, maxX3m3, maxX1, x2, minX3);
             exchangeData(minX1p2, x2, maxX3m2, maxX1m1, x2, minX3p1);
             exchangeData(minX1p3, x2, maxX3m2, maxX1, x2, minX3p1);
             exchangeData(minX1p2, x2, maxX3m3, maxX1m1, x2, minX3);
         }
-    else if (sendDir == DIR_0PP)
+    else if (sendDir == d0PP)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, maxX2m3, maxX3m3, x1, minX2, minX3);
             exchangeData(x1, maxX2m2, maxX3m2, x1, minX2p1, minX3p1);
             exchangeData(x1, maxX2m3, maxX3m2, x1, minX2, minX3p1);
             exchangeData(x1, maxX2m2, maxX3m3, x1, minX2p1, minX3);
         }
-    else if (sendDir == DIR_0MM)
+    else if (sendDir == d0MM)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, minX2p3, minX3p3, x1, maxX2, maxX3);
             exchangeData(x1, minX2p2, minX3p2, x1, maxX2m1, maxX3m1);
             exchangeData(x1, minX2p3, minX3p2, x1, maxX2, maxX3m1);
             exchangeData(x1, minX2p2, minX3p3, x1, maxX2m1, maxX3);
         }
-    else if (sendDir == DIR_0PM)
+    else if (sendDir == d0PM)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, maxX2m3, minX3p3, x1, minX2, maxX3);
             exchangeData(x1, maxX2m2, minX3p2, x1, minX2p1, maxX3m1);
             exchangeData(x1, maxX2m3, minX3p2, x1, minX2, maxX3m1);
             exchangeData(x1, maxX2m2, minX3p3, x1, minX2p1, maxX3);
         }
-    else if (sendDir == DIR_0MP)
+    else if (sendDir == d0MP)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, minX2p3, maxX3m3, x1, maxX2, minX3);
             exchangeData(x1, minX2p2, maxX3m2, x1, maxX2m1, minX3p1);
             exchangeData(x1, minX2p3, maxX3m2, x1, maxX2, minX3p1);
             exchangeData(x1, minX2p2, maxX3m3, x1, maxX2m1, minX3);
         }
-    else if (sendDir == DIR_MMP) {
+    else if (sendDir == dMMP) {
         exchangeData(minX1p3, minX2p3, maxX3m3, maxX1, maxX2, minX3);
         exchangeData(minX1p2, minX2p2, maxX3m2, maxX1m1, maxX2m1, minX3p1);
         exchangeData(minX1p3, minX2p2, maxX3m2, maxX1, maxX2m1, minX3p1);
@@ -248,7 +248,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(minX1p3, minX2p3, maxX3m2, maxX1, maxX2, minX3p1);
         exchangeData(minX1p3, minX2p2, maxX3m3, maxX1, maxX2m1, minX3);
         exchangeData(minX1p2, minX2p3, maxX3m3, maxX1m1, maxX2, minX3);
-    } else if (sendDir == DIR_PMP) {
+    } else if (sendDir == dPMP) {
         exchangeData(maxX1m3, minX1p3, maxX3m3, minX1, maxX2, minX3);
         exchangeData(maxX1m2, minX1p2, maxX3m2, minX1p1, maxX2m1, minX3p1);
         exchangeData(maxX1m3, minX1p2, maxX3m2, minX1, maxX2m1, minX3p1);
@@ -257,7 +257,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(maxX1m3, minX1p3, maxX3m2, minX1, maxX2, minX3p1);
         exchangeData(maxX1m3, minX1p2, maxX3m3, minX1, maxX2m1, minX3);
         exchangeData(maxX1m2, minX1p3, maxX3m3, minX1p1, maxX2, minX3);
-    } else if (sendDir == DIR_MPP) {
+    } else if (sendDir == dMPP) {
         exchangeData(minX1p3, maxX2m3, maxX3m3, maxX1, minX2, minX3);
         exchangeData(minX1p2, maxX2m2, maxX3m2, maxX1m1, minX2p1, minX3p1);
         exchangeData(minX1p3, maxX2m2, maxX3m2, maxX1, minX2p1, minX3p1);
@@ -266,7 +266,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(minX1p3, maxX2m3, maxX3m2, maxX1, minX2, minX3p1);
         exchangeData(minX1p3, maxX2m2, maxX3m3, maxX1, minX2p1, minX3);
         exchangeData(minX1p2, maxX2m3, maxX3m3, maxX1m1, minX2, minX3);
-    } else if (sendDir == DIR_PPP) {
+    } else if (sendDir == dPPP) {
         exchangeData(maxX1m3, maxX2m3, maxX3m3, minX1, minX2, minX3);
         exchangeData(maxX1m2, maxX2m2, maxX3m2, minX1p1, minX2p1, minX3p1);
         exchangeData(maxX1m3, maxX2m2, maxX3m2, minX1, minX2p1, minX3p1);
@@ -275,7 +275,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(maxX1m3, maxX2m3, maxX3m2, minX1, minX2, minX3p1);
         exchangeData(maxX1m3, maxX2m2, maxX3m3, minX1, minX2p1, minX3);
         exchangeData(maxX1m2, maxX2m3, maxX3m3, minX1p1, minX2, minX3);
-    } else if (sendDir == DIR_MMM) {
+    } else if (sendDir == dMMM) {
         exchangeData(minX1p3, minX2p3, minX3p3, maxX1, maxX2, maxX3);
         exchangeData(minX1p2, minX2p2, minX3p2, maxX1m1, maxX2m1, maxX3m1);
         exchangeData(minX1p3, minX2p2, minX3p2, maxX1, maxX2m1, maxX3m1);
@@ -284,7 +284,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(minX1p3, minX2p3, minX3p2, maxX1, maxX2, maxX3m1);
         exchangeData(minX1p3, minX2p2, minX3p3, maxX1, maxX2m1, maxX3);
         exchangeData(minX1p2, minX2p3, minX3p3, maxX1m1, maxX2, maxX3);
-    } else if (sendDir == DIR_PMM) {
+    } else if (sendDir == dPMM) {
         exchangeData(maxX1m3, minX2p3, minX3p3, minX1, maxX2, maxX3);
         exchangeData(maxX1m2, minX2p2, minX3p2, minX1p1, maxX2m1, maxX3m1);
         exchangeData(maxX1m3, minX2p2, minX3p2, minX1, maxX2m1, maxX3m1);
@@ -293,7 +293,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(maxX1m3, minX2p3, minX3p2, minX1, maxX2, maxX3m1);
         exchangeData(maxX1m3, minX2p2, minX3p3, minX1, maxX2m1, maxX3);
         exchangeData(maxX1m2, minX2p3, minX3p3, minX1p1, maxX2, maxX3);
-    } else if (sendDir == DIR_MPM) {
+    } else if (sendDir == dMPM) {
         exchangeData(minX1p3, maxX2m3, minX3p3, maxX1, minX2, maxX3);
         exchangeData(minX1p2, maxX2m2, minX3p2, maxX1m1, minX2p1, maxX3m1);
         exchangeData(minX1p3, maxX2m2, minX3p2, maxX1, minX2p1, maxX3m1);
@@ -302,7 +302,7 @@ void TwoDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
         exchangeData(minX1p3, maxX2m3, minX3p2, maxX1, minX2, maxX3m1);
         exchangeData(minX1p3, maxX2m2, minX3p3, maxX1, minX2p1, maxX3);
         exchangeData(minX1p2, maxX2m3, minX3p3, maxX1m1, minX2, maxX3);
-    } else if (sendDir == DIR_PPM) {
+    } else if (sendDir == dPPM) {
         exchangeData(maxX1m3, maxX2m3, minX3p3, minX1, minX2, maxX3);
         exchangeData(maxX1m2, maxX2m2, minX3p2, minX1p1, minX2p1, maxX3m1);
         exchangeData(maxX1m3, maxX2m2, minX3p2, minX1, minX2p1, maxX3m1);
