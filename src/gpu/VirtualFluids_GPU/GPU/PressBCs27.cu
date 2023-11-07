@@ -2986,7 +2986,7 @@ __global__ void QPressNoRhoDevice27(
    getPointersToDistributions(dist, distributions, numberOfLBnodes, !isEvenTimestep);
    switch(direction)
    {
-      case MZZ:
+      case dM00:
          (dist.f[dP00])[ke   ] = computeOutflowDistribution(f, f1, dP00, cs);
          (dist.f[dPM0])[kse  ] = computeOutflowDistribution(f, f1, dPM0, cs);
          (dist.f[dPP0])[kne  ] = computeOutflowDistribution(f, f1, dPP0, cs);
@@ -2998,7 +2998,7 @@ __global__ void QPressNoRhoDevice27(
          (dist.f[dPPM])[kbne ] = computeOutflowDistribution(f, f1, dPPM, cs);
          break;
 
-      case PZZ:
+      case dP00:
          (dist.f[dM00])[kw   ] = computeOutflowDistribution(f, f1, dM00, cs);
          (dist.f[dMM0])[ksw  ] = computeOutflowDistribution(f, f1, dMM0, cs);
          (dist.f[dMP0])[knw  ] = computeOutflowDistribution(f, f1, dMP0, cs);
@@ -3010,7 +3010,7 @@ __global__ void QPressNoRhoDevice27(
          (dist.f[dMPM])[kbnw ] = computeOutflowDistribution(f, f1, dMPM, cs);
          break;
 
-      case ZMZ:
+      case d0M0:
          (dist.f[d0P0])[kn   ] = computeOutflowDistribution(f, f1, d0P0, cs);
          (dist.f[dPP0])[kne  ] = computeOutflowDistribution(f, f1, dPP0, cs);
          (dist.f[dMP0])[knw  ] = computeOutflowDistribution(f, f1, dMP0, cs);
@@ -3022,7 +3022,7 @@ __global__ void QPressNoRhoDevice27(
          (dist.f[dMPM])[kbnw ] = computeOutflowDistribution(f, f1, dMPM, cs);
          break;
 
-      case ZPZ:
+      case d0P0:
          (dist.f[d0M0])[ks   ] = computeOutflowDistribution(f, f1, d0M0, cs);
          (dist.f[dPM0])[kse  ] = computeOutflowDistribution(f, f1, dPM0, cs);
          (dist.f[dMM0])[ksw  ] = computeOutflowDistribution(f, f1, dMM0, cs);
@@ -3034,7 +3034,7 @@ __global__ void QPressNoRhoDevice27(
          (dist.f[dMMM])[kbsw ] = computeOutflowDistribution(f, f1, dMMM, cs);
          break;
 
-      case ZZM:
+      case d00M:
          (dist.f[d00P])[kt   ] = computeOutflowDistribution(f, f1, d00P, cs);
          (dist.f[dP0P])[kte  ] = computeOutflowDistribution(f, f1, dP0P, cs);
          (dist.f[dM0P])[ktw  ] = computeOutflowDistribution(f, f1, dM0P, cs);
@@ -3046,7 +3046,7 @@ __global__ void QPressNoRhoDevice27(
          (dist.f[dMMP])[ktsw ] = computeOutflowDistribution(f, f1, dMMP, cs);
          break;
 
-      case ZZP:
+      case d00P:
          (dist.f[d00M])[kb   ] = computeOutflowDistribution(f, f1, d00M, cs);
          (dist.f[dP0M])[kbe  ] = computeOutflowDistribution(f, f1, dP0M, cs);
          (dist.f[dM0M])[kbw  ] = computeOutflowDistribution(f, f1, dM0M, cs);
@@ -3220,7 +3220,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
 
    switch(direction)
    {
-      case MZZ:
+      case dM00:
          (dist.f[dP00])[k_000] = computeOutflowDistribution(f, fN, dP00  , rhoCorrection, cs, c2o27);
          (dist.f[dPM0])[k_0M0] = computeOutflowDistribution(f, fN, dPM0, rhoCorrection, cs, c1o54);
          (dist.f[dPP0])[k_000] = computeOutflowDistribution(f, fN, dPP0, rhoCorrection, cs, c1o54);
@@ -3232,7 +3232,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
          (dist.f[dPPM])[k_00M] = computeOutflowDistribution(f, fN, dPPM, rhoCorrection, cs, c1o216);
          break;
 
-      case PZZ:
+      case dP00:
          (dist.f[dM00])[k_M00] = computeOutflowDistribution(f, fN, dM00, rhoCorrection, cs, c2o27);
          (dist.f[dMM0])[k_MM0] = computeOutflowDistribution(f, fN, dMM0, rhoCorrection, cs, c1o54);
          (dist.f[dMP0])[k_M00] = computeOutflowDistribution(f, fN, dMP0, rhoCorrection, cs, c1o54);
@@ -3244,7 +3244,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
          (dist.f[dMPM])[k_M0M] = computeOutflowDistribution(f, fN, dMPM, rhoCorrection, cs, c1o216);
          break;
 
-      case ZMZ:
+      case d0M0:
          (dist.f[d0P0])[k_000] = computeOutflowDistribution(f, fN, d0P0, rhoCorrection, cs, c2o27);
          (dist.f[dPP0])[k_000] = computeOutflowDistribution(f, fN, dPP0, rhoCorrection, cs, c1o54);
          (dist.f[dMP0])[k_M00] = computeOutflowDistribution(f, fN, dMP0, rhoCorrection, cs, c1o54);
@@ -3256,7 +3256,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
          (dist.f[dMPM])[k_M0M] = computeOutflowDistribution(f, fN, dMPM, rhoCorrection, cs, c1o216);
          break;
 
-      case ZPZ:
+      case d0P0:
          (dist.f[d0M0])[k_0M0] =computeOutflowDistribution(f, fN, d0M0, rhoCorrection, cs, c2o27);
          (dist.f[dPM0])[k_0M0] =computeOutflowDistribution(f, fN, dPM0, rhoCorrection, cs, c1o54);
          (dist.f[dMM0])[k_MM0] =computeOutflowDistribution(f, fN, dMM0, rhoCorrection, cs, c1o54);
@@ -3268,7 +3268,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
          (dist.f[dMMM])[k_MMM] =computeOutflowDistribution(f, fN, dMMM, rhoCorrection, cs, c1o216);
          break;
 
-      case ZZM:
+      case d00M:
          (dist.f[d00P])[k_000] = computeOutflowDistribution(f, fN, d00P, rhoCorrection, cs, c2o27);
          (dist.f[dP0P])[k_000] = computeOutflowDistribution(f, fN, dP0P, rhoCorrection, cs, c1o54);
          (dist.f[dM0P])[k_M00] = computeOutflowDistribution(f, fN, dM0P, rhoCorrection, cs, c1o54);
@@ -3280,7 +3280,7 @@ __global__ void QPressZeroRhoOutflowDevice27(
          (dist.f[dMMP])[k_MM0] = computeOutflowDistribution(f, fN, dMMP, rhoCorrection, cs, c1o216);
          break;
 
-      case ZZP:
+      case d00P:
          (dist.f[d00M])[k_00M] = computeOutflowDistribution(f, fN, d00M, rhoCorrection, cs, c2o27);
          (dist.f[dP0M])[k_00M] = computeOutflowDistribution(f, fN, dP0M, rhoCorrection, cs, c1o54);
          (dist.f[dM0M])[k_M0M] = computeOutflowDistribution(f, fN, dM0M, rhoCorrection, cs, c1o54);
