@@ -29,16 +29,17 @@
 //! \file CumlantK17_Device.cu
 //! \author Anna Wellmann, Martin Schönherr, Henry Korb, Henrik Asmuth
 //! \date 05/12/2022
-//! \brief Kernel for CumulantK17 including different turbulence models and options for local body forces and writing macroscopic variables
+//! \brief Kernel for CumulantK17 including different turbulence models and options for local body forces and writing
+//! macroscopic variables
 //!
-//! CumulantK17 kernel using chimera transformations and quartic limiters as present in Geier et al. (2017). Additional options are three different
-//! eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template parameter turbulenceModel (with default
-//! TurbulenceModel::None).
-//! The kernel is executed separately for each subset of fluid node indices with a different tag CollisionTemplate. For each subset, only the locally
-//! required options are switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The default
-//! refers to the plain cumlant kernel (CollisionTemplate::Default).
-//! Nodes are added to subsets (taggedFluidNodes) in Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets
-//! are provided by the utilized PostCollisionInteractiors depending on they specific requirements (e.g. writeMacroscopicVariables for probes).
+//! CumulantK17 kernel using chimera transformations and quartic limiters as present in Geier et al. (2017). Additional
+//! options are three different eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template
+//! parameter turbulenceModel (with default TurbulenceModel::None). The kernel is executed separately for each subset of
+//! fluid node indices with a different tag CollisionTemplate. For each subset, only the locally required options are
+//! switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The
+//! default refers to the plain cumlant kernel (CollisionTemplate::Default). Nodes are added to subsets (taggedFluidNodes) in
+//! Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets are provided by the
+//! utilized PostCollisionInteractiors depending on they specific requirements (e.g. writeMacroscopicVariables for probes).
 
 //=======================================================================================
 #include <basics/constants/NumericConstants.h>
@@ -84,33 +85,33 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
 {
     auto& distribution = parameter.distribution;
 
-    real f000 = distribution[d000];
-    real fP00 = distribution[dP00];
-    real fM00 = distribution[dM00];
-    real f0P0 = distribution[d0P0];
-    real f0M0 = distribution[d0M0];
-    real f00P = distribution[d00P];
-    real f00M = distribution[d00M];
-    real fPP0 = distribution[dPP0];
-    real fMM0 = distribution[dMM0];
-    real fPM0 = distribution[dPM0];
-    real fMP0 = distribution[dMP0];
-    real fP0P = distribution[dP0P];
-    real fM0M = distribution[dM0M];
-    real fP0M = distribution[dP0M];
-    real fM0P = distribution[dM0P];
-    real f0PP = distribution[d0PP];
-    real f0MM = distribution[d0MM];
-    real f0PM = distribution[d0PM];
-    real f0MP = distribution[d0MP];
-    real fPPP = distribution[dPPP];
-    real fMPP = distribution[dMPP];
-    real fPMP = distribution[dPMP];
-    real fMMP = distribution[dMMP];
-    real fPPM = distribution[dPPM];
-    real fMPM = distribution[dMPM];
-    real fPMM = distribution[dPMM];
-    real fMMM = distribution[dMMM];
+    real& f000 = distribution[d000];
+    real& fP00 = distribution[dP00];
+    real& fM00 = distribution[dM00];
+    real& f0P0 = distribution[d0P0];
+    real& f0M0 = distribution[d0M0];
+    real& f00P = distribution[d00P];
+    real& f00M = distribution[d00M];
+    real& fPP0 = distribution[dPP0];
+    real& fMM0 = distribution[dMM0];
+    real& fPM0 = distribution[dPM0];
+    real& fMP0 = distribution[dMP0];
+    real& fP0P = distribution[dP0P];
+    real& fM0M = distribution[dM0M];
+    real& fP0M = distribution[dP0M];
+    real& fM0P = distribution[dM0P];
+    real& f0PP = distribution[d0PP];
+    real& f0MM = distribution[d0MM];
+    real& f0PM = distribution[d0PM];
+    real& f0MP = distribution[d0MP];
+    real& fPPP = distribution[dPPP];
+    real& fMPP = distribution[dMPP];
+    real& fPMP = distribution[dPMP];
+    real& fMMP = distribution[dMMP];
+    real& fPPM = distribution[dPPM];
+    real& fMPM = distribution[dMPM];
+    real& fPMM = distribution[dPMM];
+    real& fMMM = distribution[dMMM];
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Define aliases to use the same variable for the moments (m's):
