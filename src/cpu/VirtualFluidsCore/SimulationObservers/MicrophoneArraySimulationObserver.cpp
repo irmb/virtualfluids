@@ -93,7 +93,7 @@ void MicrophoneArraySimulationObserver::collectData(real step)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
         real f[D3Q27System::ENDF + 1];
-        microphones[i]->distridution->getDistribution(f, val<1>(microphones[i]->nodeIndexes),
+        microphones[i]->distridution->getPreCollisionDistribution(f, val<1>(microphones[i]->nodeIndexes),
                                                       val<2>(microphones[i]->nodeIndexes),
                                                       val<3>(microphones[i]->nodeIndexes));
         real vx1, vx2, vx3, rho;

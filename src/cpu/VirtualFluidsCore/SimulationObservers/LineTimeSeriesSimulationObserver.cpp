@@ -124,7 +124,7 @@ void LineTimeSeriesSimulationObserver::collectData()
                     } else if (dir == X3) {
                         ix3 = ix;
                     }
-                    distributions->getDistribution(f, ix1, ix2, ix3);
+                    distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
                     v1[x + (ix - 1)] = vx1;
                     v2[x + (ix - 1)] = vx2;

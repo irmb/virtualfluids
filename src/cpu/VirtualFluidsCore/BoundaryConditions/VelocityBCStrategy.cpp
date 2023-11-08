@@ -57,7 +57,7 @@ void VelocityBCStrategy::applyBC()
 {
     real f[D3Q27System::ENDF + 1];
     real feq[D3Q27System::ENDF + 1];
-    distributions->getDistributionInv(f, x1, x2, x3);
+    distributions->getPostCollisionDistribution(f, x1, x2, x3);
     real rho, vx1, vx2, vx3, drho;
     calcMacrosFct(f, drho, vx1, vx2, vx3);
     calcFeqFct(feq, drho, vx1, vx2, vx3);
@@ -74,7 +74,7 @@ void VelocityBCStrategy::applyBC()
             real velocity = bcPtr->getBoundaryVelocity(invDir);
             real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) +
                               ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::basics::constant::c1o1 + q));
-            distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
+            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
                                                        x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
                                                        fdir);
         }

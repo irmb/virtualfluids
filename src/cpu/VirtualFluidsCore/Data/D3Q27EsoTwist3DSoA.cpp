@@ -85,7 +85,7 @@ void D3Q27EsoTwist3DSoA::swap()
     std::swap(d.TSW, d.BNE);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::getDistribution(real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::getPreCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -124,7 +124,7 @@ void D3Q27EsoTwist3DSoA::getDistribution(real *const f, size_t x1, size_t x2, si
     f[DIR_000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -163,7 +163,7 @@ void D3Q27EsoTwist3DSoA::setDistribution(const real *const f, size_t x1, size_t 
     (*d.REST)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -198,7 +198,7 @@ void D3Q27EsoTwist3DSoA::getDistributionInv(real *const f, size_t x1, size_t x2,
     f[DIR_000] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSoA::setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     //(*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::DIR_P00];
     //(*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::DIR_0P0];
@@ -231,7 +231,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInv(const real *const f, size_t x1, size
     //(*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSoA::setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                      unsigned long int direction)
 {
     // bool directionFlag = false;
@@ -294,7 +294,7 @@ void D3Q27EsoTwist3DSoA::setDistributionForDirection(const real *const f, size_t
     //#endif //DEBUG
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction)
+void D3Q27EsoTwist3DSoA::setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction)
 {
     // switch (direction)
     //{
@@ -384,7 +384,7 @@ void D3Q27EsoTwist3DSoA::setDistributionForDirection(real f, size_t x1, size_t x
     //}
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSoA::setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                         unsigned long int direction)
 {
     //   bool directionFlag = false;
@@ -450,7 +450,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(const real *const f, siz
     //#endif //DEBUG
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSoA::setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                         unsigned long int direction)
 {
     // switch (direction)

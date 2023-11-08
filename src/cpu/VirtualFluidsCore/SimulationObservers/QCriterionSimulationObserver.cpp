@@ -297,12 +297,12 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
             // std::max(ix3+offz,1)); distributionsW->getDistribution(f0, std::max(ix1    ,1), std::max(ix2    ,1),
             // std::max(ix3    ,1)); distributions->getDistribution(fE, std::max(ix1+offx    ,1), std::max(ix2+offy ,1),
             // std::max(ix3+offz    ,1)); //E:= plus 1
-            distributionsW->getDistribution(fW2, std::max(ix1 + 2 * offx, 0), std::max(ix2 + 2 * offy, 0),
+            distributionsW->getPreCollisionDistribution(fW2, std::max(ix1 + 2 * offx, 0), std::max(ix2 + 2 * offy, 0),
                                             std::max(ix3 + 2 * offz, 0));
-            distributionsW->getDistribution(fW, std::max(ix1 + offx, 0), std::max(ix2 + offy, 0),
+            distributionsW->getPreCollisionDistribution(fW, std::max(ix1 + offx, 0), std::max(ix2 + offy, 0),
                                             std::max(ix3 + offz, 0));
-            distributionsW->getDistribution(f0, std::max(ix1, 0), std::max(ix2, 0), std::max(ix3, 0));
-            distributions->getDistribution(fE, std::max(ix1 + offx, 0), std::max(ix2 + offy, 0),
+            distributionsW->getPreCollisionDistribution(f0, std::max(ix1, 0), std::max(ix2, 0), std::max(ix3, 0));
+            distributions->getPreCollisionDistribution(fE, std::max(ix1 + offx, 0), std::max(ix2 + offy, 0),
                                            std::max(ix3 + offz, 0)); // E:= plus 1
 
             computeVelocity(fE, vE, compressible);
@@ -321,13 +321,13 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
             real fW[27];
 
             if (offx == 1) {
-                distributionsW->getDistribution(fW, (distributions->getNX1()) - 1, ix2,
+                distributionsW->getPreCollisionDistribution(fW, (distributions->getNX1()) - 1, ix2,
                                                 ix3); // moved one block backward, now get last entry
             } else if (offy == 1) {
-                distributionsW->getDistribution(fW, ix1, (distributions->getNX2()) - 1, ix3);
+                distributionsW->getPreCollisionDistribution(fW, ix1, (distributions->getNX2()) - 1, ix3);
 
             } else if (offz == 1) {
-                distributionsW->getDistribution(fW, ix1, ix2, distributions->getNX3() - 1);
+                distributionsW->getPreCollisionDistribution(fW, ix1, ix2, distributions->getNX3() - 1);
             }
             computeVelocity(fW, vW, compressible);
         }
@@ -335,13 +335,13 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
     } else {
         // data available in current block:
         real fW[27];
-        distributions->getDistribution(fW, ix1 - offx, ix2 - offy, ix3 - offz);
+        distributions->getPreCollisionDistribution(fW, ix1 - offx, ix2 - offy, ix3 - offz);
         computeVelocity(fW, vW, compressible);
     }
     if (checkInterpolation) {
         // in plus-direction data is available in current block because of ghost layers
         real fE[27];
-        distributions->getDistribution(fE, ix1 + offx, ix2 + offy, ix3 + offz); // E:= plus 1
+        distributions->getPreCollisionDistribution(fE, ix1 + offx, ix2 + offy, ix3 + offz); // E:= plus 1
         computeVelocity(fE, vE, compressible);
     }
 }

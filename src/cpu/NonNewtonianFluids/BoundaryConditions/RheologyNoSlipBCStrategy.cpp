@@ -44,7 +44,7 @@ void RheologyNoSlipBCStrategy::applyBC()
 {
    real f[D3Q27System::ENDF + 1];
    real feq[D3Q27System::ENDF + 1];
-   distributions->getDistribution(f, x1, x2, x3);
+   distributions->getPreCollisionDistribution(f, x1, x2, x3);
    real rho, vx1, vx2, vx3;
    calcMacrosFct(f, rho, vx1, vx2, vx3);
    calcFeqFct(feq, rho, vx1, vx2, vx3);
@@ -60,7 +60,7 @@ void RheologyNoSlipBCStrategy::applyBC()
          const int invDir = D3Q27System::INVDIR[fDir];
          real q = bcPtr->getQ(invDir);
          real fReturn =(f[invDir] + q * f[fDir] + q * collFactorF * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) / (vf::basics::constant::c1o1 + q);
-         distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], invDir);
+         distributions->setPreCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], invDir);
       }
    }
 }

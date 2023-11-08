@@ -54,7 +54,7 @@ __global__ void CalcTurbulenceIntensity(
     vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
 
     real distribution[27];
-    vf::gpu::read(distribution, dist, listIndices);
+    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
 
     // analogue to LBCalcMacCompSP27
     real rho = vf::lbm::getDensity(distribution);

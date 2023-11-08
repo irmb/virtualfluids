@@ -281,15 +281,15 @@ void InitThixotropyBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
                //initialize(h, x1, x2, x3, f1, f2, f3, conc, coords, dx, oDiffusion, false);
 
 
-               //distributionsf->setDistribution(f, ix1, ix2, ix3);
-               //distributionsf->setDistributionInv(f, ix1, ix2, ix3);
+               //distributionsf->setPostCollisionDistribution(f, ix1, ix2, ix3);
+               //distributionsf->setPreCollisionDistribution(f, ix1, ix2, ix3);
 
                real lambda = muLambda.Eval();
                
                calcFeqsFct(h,lambda,c0o1,c0o1,c0o1);
                
-               distributions->setDistribution(h, ix1, ix2, ix3);
-               distributions->setDistributionInv(h, ix1, ix2, ix3);
+               distributions->setPostCollisionDistribution(h, ix1, ix2, ix3);
+               distributions->setPreCollisionDistribution(h, ix1, ix2, ix3);
 
 
             }

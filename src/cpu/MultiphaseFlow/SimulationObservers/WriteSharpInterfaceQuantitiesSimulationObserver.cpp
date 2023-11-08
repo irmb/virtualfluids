@@ -218,7 +218,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
         for (int ix2 = minX2; ix2 < maxX2; ix2++) {
             for (int ix1 = minX1; ix1 < maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
-                    distributionsH->getDistributionInv(f, ix1, ix2, ix3);
+                    distributionsH->getPostCollisionDistribution(f, ix1, ix2, ix3);
                     (*phaseField)(ix1, ix2, ix3) =
                         ((f[DIR_PPP] + f[DIR_MMM]) + (f[DIR_PMP] + f[DIR_MPM])) + ((f[DIR_PMM] + f[DIR_MPP]) + (f[DIR_MMP] + f[DIR_PPM])) +
                         (((f[DIR_PP0] + f[DIR_MM0]) + (f[DIR_PM0] + f[DIR_MP0])) + ((f[DIR_P0P] + f[DIR_M0M]) + (f[DIR_P0M] + f[DIR_M0P])) +
@@ -261,7 +261,7 @@ void WriteSharpInterfaceQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> bl
                     phi = (*phaseField)(ix1, ix2, ix3);
 
 
-                    distributionsF->getDistributionInv(f, ix1, ix2, ix3);
+                    distributionsF->getPostCollisionDistribution(f, ix1, ix2, ix3);
                     //real dU = (*divU)(ix1, ix2, ix3);
 
                     real rhoH = 1.0;

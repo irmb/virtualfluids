@@ -92,7 +92,7 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
 
     ListIndices listIndices(k_000, collisionParameter.neighborX, collisionParameter.neighborY, collisionParameter.neighborZ);
 
-    read(para.distribution, dist, listIndices);
+    getPreCollisionDistribution(para.distribution, dist, listIndices);
 
     vf::lbm::MacroscopicValues macroscopicValues;
     collision(para, macroscopicValues, turbulentViscosity);
@@ -106,7 +106,7 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     if (turbulenceModel != vf::lbm::TurbulenceModel::None)
         collisionParameter.turbulentViscosity[k_000] = turbulentViscosity.value;
 
-    writeInverse(dist, listIndices, para.distribution);
+    setPostCollisionDistribution(dist, listIndices, para.distribution);
 }
 
 } // namespace vf::gpu

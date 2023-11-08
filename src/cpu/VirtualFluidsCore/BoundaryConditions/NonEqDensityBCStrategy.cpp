@@ -59,7 +59,7 @@ void NonEqDensityBCStrategy::applyBC()
     using namespace vf::lbm::dir;
 
     real f[D3Q27System::ENDF + 1];
-    distributions->getDistributionInv(f, x1, x2, x3);
+    distributions->getPostCollisionDistribution(f, x1, x2, x3);
     int nx1 = x1;
     int nx2 = x2;
     int nx3 = x3;
@@ -94,7 +94,7 @@ void NonEqDensityBCStrategy::applyBC()
             real ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
             // rhoBC=(rho>rhoBC)? rhoBC : rho; //Limiter 08.08.2018
             ftemp = calcFeqsForDirFct(fdir, rhoBC, vx1, vx2, vx3) + f[fdir] - ftemp;
-            distributions->setDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
+            distributions->setPostCollisionDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
         }
     }
 }

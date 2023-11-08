@@ -58,7 +58,7 @@ void NoSlipBCStrategy::applyBC()
     using namespace D3Q27System;
     real f[ENDF + 1];
     real feq[ENDF + 1];
-    distributions->getDistributionInv(f, x1, x2, x3);
+    distributions->getPostCollisionDistribution(f, x1, x2, x3);
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     calcFeqFct(feq, rho, vx1, vx2, vx3);
@@ -69,7 +69,7 @@ void NoSlipBCStrategy::applyBC()
             const int invDir = INVDIR[fdir];
             real q = bcPtr->getQ(invDir);
             real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
-            distributions->setDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
+            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
         }
     }
 }

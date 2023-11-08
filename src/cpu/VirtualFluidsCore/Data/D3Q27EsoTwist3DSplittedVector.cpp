@@ -54,7 +54,7 @@ D3Q27EsoTwist3DSplittedVector::~D3Q27EsoTwist3DSplittedVector() = default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::swap() { std::swap(this->localDistributions, this->nonLocalDistributions); }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::getDistribution(real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::getPreCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3)
 {
     const size_t x1p = x1 + 1;
     const size_t x2p = x2 + 1;
@@ -91,7 +91,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistribution(real *const f, size_t x1, si
     f[vf::lbm::dir::DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -126,7 +126,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistribution(const real *const f, size_t 
     (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::getDistributionInv(real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::getPostCollisionDistribution(real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -161,7 +161,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistributionInv(real *const f, size_t x1,
     f[DIR_000] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const real *const f, size_t x1, size_t x2, size_t x3)
+void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistribution(const real *const f, size_t x1, size_t x2, size_t x3)
 {
     using namespace vf::lbm::dir;
 
@@ -196,7 +196,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const real *const f, size
     (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                                                 unsigned long int direction)
 {
     using namespace vf::lbm::dir;
@@ -257,7 +257,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const real *cons
         (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSplittedVector::setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                                 int direction)
 {
     using namespace vf::lbm::dir;
@@ -349,7 +349,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(real f, size_t x
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const real *const f, size_t x1, size_t x2,
+void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2,
                                                                    size_t x3, unsigned long int direction)
 {
     using namespace vf::lbm::dir;
@@ -410,7 +410,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const real *c
         (*this->zeroDistributions)(x1, x2, x3) = f[DIR_000];
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(real f, size_t x1, size_t x2, size_t x3,
+void D3Q27EsoTwist3DSplittedVector::setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
                                                                    unsigned long int direction)
 {
     using namespace vf::lbm::dir;
@@ -502,7 +502,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(real f, size_
     }
 }
 //////////////////////////////////////////////////////////////////////////
-real D3Q27EsoTwist3DSplittedVector::getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)
+real D3Q27EsoTwist3DSplittedVector::getPreCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)
 {
     using namespace vf::lbm::dir;
 

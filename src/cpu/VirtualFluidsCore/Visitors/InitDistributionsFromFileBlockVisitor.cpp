@@ -232,8 +232,8 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
 
                     calcFeqsFct(f, rho, vx1, vx2, vx3);
 
-                    distributions->setDistribution(f, ix1, ix2, ix3);
-                    distributions->setDistributionInv(f, ix1, ix2, ix3);
+                    distributions->setPostCollisionDistribution(f, ix1, ix2, ix3);
+                    distributions->setPreCollisionDistribution(f, ix1, ix2, ix3);
                     dynamicPointerCast<InitDensityLBMKernel>(kernel)->setVelocity(ix1, ix2, ix3, vx1, vx2, vx3);
                 }
     }

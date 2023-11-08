@@ -1,28 +1,28 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
@@ -123,12 +123,12 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
 }
 
 /**
-*  Getting references to the 27 directions.
-*  @params distributions 1D real* array containing all data (number of elements = 27 * matrix_size)
-*  @params matrix_size number of discretizations nodes
-*  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
-*  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
-*/
+ *  Getting references to the 27 directions.
+ *  @params distributions 1D real* array containing all data (number of elements = 27 * matrix_size)
+ *  @params matrix_size number of discretizations nodes
+ *  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
+ *  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
+ */
 __inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes, const bool isEvenTimestep){
     DistributionReferences27 distribution_references;
     getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
@@ -228,13 +228,13 @@ __inline__ __device__ bool isValidFluidNode(uint nodeType)
     return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
 
-
 struct ListIndices
 {
-    __device__ ListIndices() {}
-    __device__ ListIndices(unsigned int k, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ)
+    __device__ ListIndices() {};
+    __device__ ListIndices(unsigned int index, const unsigned int* neighborX, const unsigned int* neighborY,
+                           const unsigned int* neighborZ)
     {
-        k_000 = k;
+        k_000 = index;
         k_M00 = neighborX[k_000];
         k_0M0 = neighborY[k_000];
         k_00M = neighborZ[k_000];
@@ -254,140 +254,138 @@ struct ListIndices
     unsigned int k_MMM { 0 };
 };
 
-
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Read distributions: style of reading and writing the distributions from/to
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__device__ __inline__ void read(real *f, const Distributions27 &dist, const ListIndices &indices)
+__device__ __inline__ void getPreCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
-    f[DIR_000] = (dist.f[DIR_000])[indices.k_000];
-    f[DIR_P00] = (dist.f[DIR_P00])[indices.k_000];
-    f[DIR_M00] = (dist.f[DIR_M00])[indices.k_M00];
-    f[DIR_0P0] = (dist.f[DIR_0P0])[indices.k_000];
-    f[DIR_0M0] = (dist.f[DIR_0M0])[indices.k_0M0];
-    f[DIR_00P] = (dist.f[DIR_00P])[indices.k_000];
-    f[DIR_00M] = (dist.f[DIR_00M])[indices.k_00M];
-    f[DIR_PP0] = (dist.f[DIR_PP0])[indices.k_000];
-    f[DIR_MM0] = (dist.f[DIR_MM0])[indices.k_MM0];
-    f[DIR_PM0] = (dist.f[DIR_PM0])[indices.k_0M0];
-    f[DIR_MP0] = (dist.f[DIR_MP0])[indices.k_M00];
-    f[DIR_P0P] = (dist.f[DIR_P0P])[indices.k_000];
-    f[DIR_M0M] = (dist.f[DIR_M0M])[indices.k_M0M];
-    f[DIR_P0M] = (dist.f[DIR_P0M])[indices.k_00M];
-    f[DIR_M0P] = (dist.f[DIR_M0P])[indices.k_M00];
-    f[DIR_0PP] = (dist.f[DIR_0PP])[indices.k_000];
-    f[DIR_0MM] = (dist.f[DIR_0MM])[indices.k_0MM];
-    f[DIR_0PM] = (dist.f[DIR_0PM])[indices.k_00M];
-    f[DIR_0MP] = (dist.f[DIR_0MP])[indices.k_0M0];
-    f[DIR_PPP] = (dist.f[DIR_PPP])[indices.k_000];
-    f[DIR_MPP] = (dist.f[DIR_MPP])[indices.k_M00];
-    f[DIR_PMP] = (dist.f[DIR_PMP])[indices.k_0M0];
-    f[DIR_MMP] = (dist.f[DIR_MMP])[indices.k_MM0];
-    f[DIR_PPM] = (dist.f[DIR_PPM])[indices.k_00M];
-    f[DIR_MPM] = (dist.f[DIR_MPM])[indices.k_M0M];
-    f[DIR_PMM] = (dist.f[DIR_PMM])[indices.k_0MM];
-    f[DIR_MMM] = (dist.f[DIR_MMM])[indices.k_MMM];
+    local[DIR_000] = (global.f[DIR_000])[indices.k_000];
+    local[DIR_P00] = (global.f[DIR_P00])[indices.k_000];
+    local[DIR_M00] = (global.f[DIR_M00])[indices.k_M00];
+    local[DIR_0P0] = (global.f[DIR_0P0])[indices.k_000];
+    local[DIR_0M0] = (global.f[DIR_0M0])[indices.k_0M0];
+    local[DIR_00P] = (global.f[DIR_00P])[indices.k_000];
+    local[DIR_00M] = (global.f[DIR_00M])[indices.k_00M];
+    local[DIR_PP0] = (global.f[DIR_PP0])[indices.k_000];
+    local[DIR_MM0] = (global.f[DIR_MM0])[indices.k_MM0];
+    local[DIR_PM0] = (global.f[DIR_PM0])[indices.k_0M0];
+    local[DIR_MP0] = (global.f[DIR_MP0])[indices.k_M00];
+    local[DIR_P0P] = (global.f[DIR_P0P])[indices.k_000];
+    local[DIR_M0M] = (global.f[DIR_M0M])[indices.k_M0M];
+    local[DIR_P0M] = (global.f[DIR_P0M])[indices.k_00M];
+    local[DIR_M0P] = (global.f[DIR_M0P])[indices.k_M00];
+    local[DIR_0PP] = (global.f[DIR_0PP])[indices.k_000];
+    local[DIR_0MM] = (global.f[DIR_0MM])[indices.k_0MM];
+    local[DIR_0PM] = (global.f[DIR_0PM])[indices.k_00M];
+    local[DIR_0MP] = (global.f[DIR_0MP])[indices.k_0M0];
+    local[DIR_PPP] = (global.f[DIR_PPP])[indices.k_000];
+    local[DIR_MPP] = (global.f[DIR_MPP])[indices.k_M00];
+    local[DIR_PMP] = (global.f[DIR_PMP])[indices.k_0M0];
+    local[DIR_MMP] = (global.f[DIR_MMP])[indices.k_MM0];
+    local[DIR_PPM] = (global.f[DIR_PPM])[indices.k_00M];
+    local[DIR_MPM] = (global.f[DIR_MPM])[indices.k_M0M];
+    local[DIR_PMM] = (global.f[DIR_PMM])[indices.k_0MM];
+    local[DIR_MMM] = (global.f[DIR_MMM])[indices.k_MMM];
 }
 
-__device__ __inline__ void readInverse(real *f, const Distributions27 &dist, const ListIndices &indices)
+__device__ __inline__ void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
-    f[DIR_000] = (dist.f[DIR_000])[indices.k_000];
-    f[DIR_P00] = (dist.f[DIR_P00])[indices.k_000];
-    f[DIR_M00] = (dist.f[DIR_M00])[indices.k_M00];
-    f[DIR_0P0] = (dist.f[DIR_0P0])[indices.k_000];
-    f[DIR_0M0] = (dist.f[DIR_0M0])[indices.k_0M0];
-    f[DIR_00P] = (dist.f[DIR_00P])[indices.k_000];
-    f[DIR_00M] = (dist.f[DIR_00M])[indices.k_00M];
-    f[DIR_PP0] = (dist.f[DIR_PP0])[indices.k_000];
-    f[DIR_MM0] = (dist.f[DIR_MM0])[indices.k_MM0];
-    f[DIR_PM0] = (dist.f[DIR_PM0])[indices.k_0M0];
-    f[DIR_MP0] = (dist.f[DIR_MP0])[indices.k_M00];
-    f[DIR_P0P] = (dist.f[DIR_P0P])[indices.k_000];
-    f[DIR_M0M] = (dist.f[DIR_M0M])[indices.k_M0M];
-    f[DIR_P0M] = (dist.f[DIR_P0M])[indices.k_00M];
-    f[DIR_M0P] = (dist.f[DIR_M0P])[indices.k_M00];
-    f[DIR_0PP] = (dist.f[DIR_0PP])[indices.k_000];
-    f[DIR_0MM] = (dist.f[DIR_0MM])[indices.k_0MM];
-    f[DIR_0PM] = (dist.f[DIR_0PM])[indices.k_00M];
-    f[DIR_0MP] = (dist.f[DIR_0MP])[indices.k_0M0];
-    f[DIR_PPP] = (dist.f[DIR_PPP])[indices.k_000];
-    f[DIR_MPP] = (dist.f[DIR_MPP])[indices.k_M00];
-    f[DIR_PMP] = (dist.f[DIR_PMP])[indices.k_0M0];
-    f[DIR_MMP] = (dist.f[DIR_MMP])[indices.k_MM0];
-    f[DIR_PPM] = (dist.f[DIR_PPM])[indices.k_00M];
-    f[DIR_MPM] = (dist.f[DIR_MPM])[indices.k_M0M];
-    f[DIR_PMM] = (dist.f[DIR_PMM])[indices.k_0MM];
-    f[DIR_MMM] = (dist.f[DIR_MMM])[indices.k_MMM];
+    local[DIR_000] = (global.f[DIR_000])[indices.k_000];
+    local[DIR_P00] = (global.f[DIR_P00])[indices.k_000];
+    local[DIR_M00] = (global.f[DIR_M00])[indices.k_M00];
+    local[DIR_0P0] = (global.f[DIR_0P0])[indices.k_000];
+    local[DIR_0M0] = (global.f[DIR_0M0])[indices.k_0M0];
+    local[DIR_00P] = (global.f[DIR_00P])[indices.k_000];
+    local[DIR_00M] = (global.f[DIR_00M])[indices.k_00M];
+    local[DIR_PP0] = (global.f[DIR_PP0])[indices.k_000];
+    local[DIR_MM0] = (global.f[DIR_MM0])[indices.k_MM0];
+    local[DIR_PM0] = (global.f[DIR_PM0])[indices.k_0M0];
+    local[DIR_MP0] = (global.f[DIR_MP0])[indices.k_M00];
+    local[DIR_P0P] = (global.f[DIR_P0P])[indices.k_000];
+    local[DIR_M0M] = (global.f[DIR_M0M])[indices.k_M0M];
+    local[DIR_P0M] = (global.f[DIR_P0M])[indices.k_00M];
+    local[DIR_M0P] = (global.f[DIR_M0P])[indices.k_M00];
+    local[DIR_0PP] = (global.f[DIR_0PP])[indices.k_000];
+    local[DIR_0MM] = (global.f[DIR_0MM])[indices.k_0MM];
+    local[DIR_0PM] = (global.f[DIR_0PM])[indices.k_00M];
+    local[DIR_0MP] = (global.f[DIR_0MP])[indices.k_0M0];
+    local[DIR_PPP] = (global.f[DIR_PPP])[indices.k_000];
+    local[DIR_MPP] = (global.f[DIR_MPP])[indices.k_M00];
+    local[DIR_PMP] = (global.f[DIR_PMP])[indices.k_0M0];
+    local[DIR_MMP] = (global.f[DIR_MMP])[indices.k_MM0];
+    local[DIR_PPM] = (global.f[DIR_PPM])[indices.k_00M];
+    local[DIR_MPM] = (global.f[DIR_MPM])[indices.k_M0M];
+    local[DIR_PMM] = (global.f[DIR_PMM])[indices.k_0MM];
+    local[DIR_MMM] = (global.f[DIR_MMM])[indices.k_MMM];
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Write distributions: style of reading and writing the distributions from/to
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__inline__ __device__ void write(Distributions27& destination, const ListIndices& indices, const real* f)
+__inline__ __device__ void setPreCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
-    (destination.f[DIR_000])[indices.k_000] = f[DIR_000];
-    (destination.f[DIR_P00])[indices.k_000] = f[DIR_P00];
-    (destination.f[DIR_M00])[indices.k_M00] = f[DIR_M00];
-    (destination.f[DIR_0P0])[indices.k_000] = f[DIR_0P0];
-    (destination.f[DIR_0M0])[indices.k_0M0] = f[DIR_0M0];
-    (destination.f[DIR_00P])[indices.k_000] = f[DIR_00P];
-    (destination.f[DIR_00M])[indices.k_00M] = f[DIR_00M];
-    (destination.f[DIR_PP0])[indices.k_000] = f[DIR_PP0];
-    (destination.f[DIR_MM0])[indices.k_MM0] = f[DIR_MM0];
-    (destination.f[DIR_PM0])[indices.k_0M0] = f[DIR_PM0];
-    (destination.f[DIR_MP0])[indices.k_M00] = f[DIR_MP0];
-    (destination.f[DIR_P0P])[indices.k_000] = f[DIR_P0P];
-    (destination.f[DIR_M0M])[indices.k_M0M] = f[DIR_M0M];
-    (destination.f[DIR_P0M])[indices.k_00M] = f[DIR_P0M];
-    (destination.f[DIR_M0P])[indices.k_M00] = f[DIR_M0P];
-    (destination.f[DIR_0PP])[indices.k_000] = f[DIR_0PP];
-    (destination.f[DIR_0MM])[indices.k_0MM] = f[DIR_0MM];
-    (destination.f[DIR_0PM])[indices.k_00M] = f[DIR_0PM];
-    (destination.f[DIR_0MP])[indices.k_0M0] = f[DIR_0MP];
-    (destination.f[DIR_PPP])[indices.k_000] = f[DIR_PPP];
-    (destination.f[DIR_MPP])[indices.k_M00] = f[DIR_MPP];
-    (destination.f[DIR_PMP])[indices.k_0M0] = f[DIR_PMP];
-    (destination.f[DIR_MMP])[indices.k_MM0] = f[DIR_MMP];
-    (destination.f[DIR_PPM])[indices.k_00M] = f[DIR_PPM];
-    (destination.f[DIR_MPM])[indices.k_M0M] = f[DIR_MPM];
-    (destination.f[DIR_PMM])[indices.k_0MM] = f[DIR_PMM];
-    (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_MMM];
+    (global.f[DIR_000])[indices.k_000] = local[DIR_000];
+    (global.f[DIR_P00])[indices.k_000] = local[DIR_P00];
+    (global.f[DIR_M00])[indices.k_M00] = local[DIR_M00];
+    (global.f[DIR_0P0])[indices.k_000] = local[DIR_0P0];
+    (global.f[DIR_0M0])[indices.k_0M0] = local[DIR_0M0];
+    (global.f[DIR_00P])[indices.k_000] = local[DIR_00P];
+    (global.f[DIR_00M])[indices.k_00M] = local[DIR_00M];
+    (global.f[DIR_PP0])[indices.k_000] = local[DIR_PP0];
+    (global.f[DIR_MM0])[indices.k_MM0] = local[DIR_MM0];
+    (global.f[DIR_PM0])[indices.k_0M0] = local[DIR_PM0];
+    (global.f[DIR_MP0])[indices.k_M00] = local[DIR_MP0];
+    (global.f[DIR_P0P])[indices.k_000] = local[DIR_P0P];
+    (global.f[DIR_M0M])[indices.k_M0M] = local[DIR_M0M];
+    (global.f[DIR_P0M])[indices.k_00M] = local[DIR_P0M];
+    (global.f[DIR_M0P])[indices.k_M00] = local[DIR_M0P];
+    (global.f[DIR_0PP])[indices.k_000] = local[DIR_0PP];
+    (global.f[DIR_0MM])[indices.k_0MM] = local[DIR_0MM];
+    (global.f[DIR_0PM])[indices.k_00M] = local[DIR_0PM];
+    (global.f[DIR_0MP])[indices.k_0M0] = local[DIR_0MP];
+    (global.f[DIR_PPP])[indices.k_000] = local[DIR_PPP];
+    (global.f[DIR_MPP])[indices.k_M00] = local[DIR_MPP];
+    (global.f[DIR_PMP])[indices.k_0M0] = local[DIR_PMP];
+    (global.f[DIR_MMP])[indices.k_MM0] = local[DIR_MMP];
+    (global.f[DIR_PPM])[indices.k_00M] = local[DIR_PPM];
+    (global.f[DIR_MPM])[indices.k_M0M] = local[DIR_MPM];
+    (global.f[DIR_PMM])[indices.k_0MM] = local[DIR_PMM];
+    (global.f[DIR_MMM])[indices.k_MMM] = local[DIR_MMM];
 }
 
-__inline__ __device__ void writeInverse(Distributions27& destination, const ListIndices& indices, const real* f)
+__inline__ __device__ void setPostCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
-    (destination.f[DIR_000])[indices.k_000] = f[DIR_000];
-    (destination.f[DIR_P00])[indices.k_000] = f[DIR_M00];
-    (destination.f[DIR_M00])[indices.k_M00] = f[DIR_P00];
-    (destination.f[DIR_0P0])[indices.k_000] = f[DIR_0M0];
-    (destination.f[DIR_0M0])[indices.k_0M0] = f[DIR_0P0];
-    (destination.f[DIR_00P])[indices.k_000] = f[DIR_00M];
-    (destination.f[DIR_00M])[indices.k_00M] = f[DIR_00P];
-    (destination.f[DIR_PP0])[indices.k_000] = f[DIR_MM0];
-    (destination.f[DIR_MM0])[indices.k_MM0] = f[DIR_PP0];
-    (destination.f[DIR_PM0])[indices.k_0M0] = f[DIR_MP0];
-    (destination.f[DIR_MP0])[indices.k_M00] = f[DIR_PM0];
-    (destination.f[DIR_P0P])[indices.k_000] = f[DIR_M0M];
-    (destination.f[DIR_M0M])[indices.k_M0M] = f[DIR_P0P];
-    (destination.f[DIR_P0M])[indices.k_00M] = f[DIR_M0P];
-    (destination.f[DIR_M0P])[indices.k_M00] = f[DIR_P0M];
-    (destination.f[DIR_0PP])[indices.k_000] = f[DIR_0MM];
-    (destination.f[DIR_0MM])[indices.k_0MM] = f[DIR_0PP];
-    (destination.f[DIR_0PM])[indices.k_00M] = f[DIR_0MP];
-    (destination.f[DIR_0MP])[indices.k_0M0] = f[DIR_0PM];
-    (destination.f[DIR_PPP])[indices.k_000] = f[DIR_MMM];
-    (destination.f[DIR_MPP])[indices.k_M00] = f[DIR_PMM];
-    (destination.f[DIR_PMP])[indices.k_0M0] = f[DIR_MPM];
-    (destination.f[DIR_MMP])[indices.k_MM0] = f[DIR_PPM];
-    (destination.f[DIR_PPM])[indices.k_00M] = f[DIR_MMP];
-    (destination.f[DIR_MPM])[indices.k_M0M] = f[DIR_PMP];
-    (destination.f[DIR_PMM])[indices.k_0MM] = f[DIR_MPP];
-    (destination.f[DIR_MMM])[indices.k_MMM] = f[DIR_PPP];
+    (global.f[DIR_000])[indices.k_000] = local[DIR_000];
+    (global.f[DIR_P00])[indices.k_000] = local[DIR_M00];
+    (global.f[DIR_M00])[indices.k_M00] = local[DIR_P00];
+    (global.f[DIR_0P0])[indices.k_000] = local[DIR_0M0];
+    (global.f[DIR_0M0])[indices.k_0M0] = local[DIR_0P0];
+    (global.f[DIR_00P])[indices.k_000] = local[DIR_00M];
+    (global.f[DIR_00M])[indices.k_00M] = local[DIR_00P];
+    (global.f[DIR_PP0])[indices.k_000] = local[DIR_MM0];
+    (global.f[DIR_MM0])[indices.k_MM0] = local[DIR_PP0];
+    (global.f[DIR_PM0])[indices.k_0M0] = local[DIR_MP0];
+    (global.f[DIR_MP0])[indices.k_M00] = local[DIR_PM0];
+    (global.f[DIR_P0P])[indices.k_000] = local[DIR_M0M];
+    (global.f[DIR_M0M])[indices.k_M0M] = local[DIR_P0P];
+    (global.f[DIR_P0M])[indices.k_00M] = local[DIR_M0P];
+    (global.f[DIR_M0P])[indices.k_M00] = local[DIR_P0M];
+    (global.f[DIR_0PP])[indices.k_000] = local[DIR_0MM];
+    (global.f[DIR_0MM])[indices.k_0MM] = local[DIR_0PP];
+    (global.f[DIR_0PM])[indices.k_00M] = local[DIR_0MP];
+    (global.f[DIR_0MP])[indices.k_0M0] = local[DIR_0PM];
+    (global.f[DIR_PPP])[indices.k_000] = local[DIR_MMM];
+    (global.f[DIR_MPP])[indices.k_M00] = local[DIR_PMM];
+    (global.f[DIR_PMP])[indices.k_0M0] = local[DIR_MPM];
+    (global.f[DIR_MMP])[indices.k_MM0] = local[DIR_PPM];
+    (global.f[DIR_PPM])[indices.k_00M] = local[DIR_MMP];
+    (global.f[DIR_MPM])[indices.k_M0M] = local[DIR_PMP];
+    (global.f[DIR_PMM])[indices.k_0MM] = local[DIR_MPP];
+    (global.f[DIR_MMM])[indices.k_MMM] = local[DIR_PPP];
 }
 
 }

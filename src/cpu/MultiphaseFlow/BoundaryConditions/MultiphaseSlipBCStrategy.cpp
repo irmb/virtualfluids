@@ -70,8 +70,8 @@ void MultiphaseSlipBCStrategy::applyBC()
    real h[D3Q27System::ENDF+1];
    real feq[D3Q27System::ENDF+1];
    real heq[D3Q27System::ENDF+1];
-   distributions->getDistributionInv(f, x1, x2, x3);
-   distributionsH->getDistributionInv(h, x1, x2, x3);
+   distributions->getPostCollisionDistribution(f, x1, x2, x3);
+   distributionsH->getPostCollisionDistribution(h, x1, x2, x3);
 
    real p1, vx1, vx2, vx3, phi, rho;
 
@@ -133,11 +133,11 @@ void MultiphaseSlipBCStrategy::applyBC()
          default: throw UbException(UB_EXARGS, "unknown error");
          }
          real fReturn = ((vf::basics::constant::c1o1-q)/(vf::basics::constant::c1o1+q))*((f[invDir]-feq[invDir])/(vf::basics::constant::c1o1-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(vf::basics::constant::c1o1+q));
-         distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+         distributions->setPostCollisionDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
 
 		 //real hReturn = ((1.0-q)/(1.0+q))*((h[invDir]-heq[invDir])/(1.0-collFactorPh)+heq[invDir])+((q/(1.0+q))*(h[invDir]+h[fdir]));
 		 real hReturn = h[invDir];
-		 distributionsH->setDistributionForDirection(hReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+		 distributionsH->setPostCollisionDistributionForDirection(hReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }
 }

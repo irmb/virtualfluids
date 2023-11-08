@@ -239,7 +239,7 @@ void WriteThixotropyQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block)
 					//data[index++].push_back(gammaDot);
 					//data[index++].push_back(collFactorF);
 
-					distributionsF->getDistribution(f, ix1, ix2, ix3);
+					distributionsF->getPreCollisionDistribution(f, ix1, ix2, ix3);
 					real rho = D3Q27System::getDensity(f);
 					real shearRate = D3Q27System::getShearRate(f, collFactor);
 					//LBMReal omega = Rheology::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);

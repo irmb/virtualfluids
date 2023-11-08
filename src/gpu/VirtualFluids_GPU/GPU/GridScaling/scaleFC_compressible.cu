@@ -64,7 +64,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     real fCoarse[27];
     vf::lbm::interpolateFC(fCoarse, epsilonNew, omegaCoarseNew, coefficients);
 
-    vf::gpu::write(distCoarse, indices, fCoarse);
+    vf::gpu::setPreCollisionDistribution(distCoarse, indices, fCoarse);
 }
 
 

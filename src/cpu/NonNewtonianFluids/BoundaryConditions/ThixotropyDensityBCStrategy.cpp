@@ -79,8 +79,8 @@ void ThixotropyDensityBCStrategy::applyBC()
 	real feq[D3Q27System::ENDF + 1];
 	real h[D3Q27System::ENDF + 1];
 	real heq[D3Q27System::ENDF + 1];
-	distributions->getDistributionInv(f, x1, x2, x3);
-	distributionsH->getDistributionInv(h, x1, x2, x3);
+	distributions->getPostCollisionDistribution(f, x1, x2, x3);
+	distributionsH->getPostCollisionDistribution(h, x1, x2, x3);
 	
 	real rho, vx1, vx2, vx3;
 	
@@ -112,11 +112,11 @@ void ThixotropyDensityBCStrategy::applyBC()
 		{
 			real ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
 			ftemp = calcFeqsForDirFct(fdir, rhoBC, vx1, vx2, vx3) + f[fdir] - ftemp;
-			distributions->setDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
+			distributions->setPostCollisionDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
 
 			real htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
 			htemp = D3Q27System::getCompFeqForDirection(fdir,lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
-			distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
+			distributionsH->setPostCollisionDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
 		}
 	}
 }
