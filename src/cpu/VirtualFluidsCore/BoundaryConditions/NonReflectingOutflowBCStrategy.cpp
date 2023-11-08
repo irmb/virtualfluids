@@ -101,15 +101,15 @@ void NonReflectingOutflowBCStrategy::applyBC()
 
     switch (direction) {
         case dP00:
-            f[dP00]   = ftemp[dP00] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dP00];
-            f[dPP0]  = ftemp[dPP0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dPP0];
-            f[dPM0]  = ftemp[dPM0] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dPM0];
-            f[dP0P]  = ftemp[dP0P] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dP0P];
-            f[dP0M]  = ftemp[dP0M] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dP0M];
-            f[dPPP] = ftemp[dPPP] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dPPP];
-            f[dPMP] = ftemp[dPMP] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dPMP];
-            f[dPPM] = ftemp[dPPM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dPPM];
-            f[dPMM] = ftemp[dPMM] * (one_over_sqrt3 + vx1) + (c1o1 - one_over_sqrt3 - vx1) * f[dPMM];
+            f[dP00]   = ftemp[dP00] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP00];
+            f[dPP0]  = ftemp[dPP0] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPP0];
+            f[dPM0]  = ftemp[dPM0] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPM0];
+            f[dP0P]  = ftemp[dP0P] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP0P];
+            f[dP0M]  = ftemp[dP0M] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP0M];
+            f[dPPP] = ftemp[dPPP] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPPP];
+            f[dPMP] = ftemp[dPMP] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPMP];
+            f[dPPM] = ftemp[dPPM] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPPM];
+            f[dPMM] = ftemp[dPMM] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPMM];
 
             distributions->setPreCollisionDistributionForDirection(f[dP00], x1 + DX1[dM00], x2 + DX2[dM00], x3 + DX3[dM00], dM00);
             distributions->setPreCollisionDistributionForDirection(f[dPP0], x1 + DX1[dMM0], x2 + DX2[dMM0], x3 + DX3[dMM0], dMM0);
@@ -122,15 +122,15 @@ void NonReflectingOutflowBCStrategy::applyBC()
             distributions->setPreCollisionDistributionForDirection(f[dPMM], x1 + DX1[dMPP], x2 + DX2[dMPP], x3 + DX3[dMPP], dMPP);
             break;
         case dM00:
-            f[dM00]   = ftemp[dM00] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dM00];
-            f[dMP0]  = ftemp[dMP0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dMP0];
-            f[dMM0]  = ftemp[dMM0] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dMM0];
-            f[dM0P]  = ftemp[dM0P] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dM0P];
-            f[dM0M]  = ftemp[dM0M] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dM0M];
-            f[dMPP] = ftemp[dMPP] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dMPP];
-            f[dMMP] = ftemp[dMMP] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dMMP];
-            f[dMPM] = ftemp[dMPM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dMPM];
-            f[dMMM] = ftemp[dMMM] * (one_over_sqrt3 - vx1) + (c1o1 - one_over_sqrt3 + vx1) * f[dMMM];
+            f[dM00]   = ftemp[dM00] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dM00];
+            f[dMP0]  = ftemp[dMP0] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dMP0];
+            f[dMM0]  = ftemp[dMM0] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dMM0];
+            f[dM0P]  = ftemp[dM0P] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dM0P];
+            f[dM0M]  = ftemp[dM0M] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dM0M];
+            f[dMPP] = ftemp[dMPP] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dMPP];
+            f[dMMP] = ftemp[dMMP] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dMMP];
+            f[dMPM] = ftemp[dMPM] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dMPM];
+            f[dMMM] = ftemp[dMMM] * (c1oSqrt3 - vx1) + (c1o1 - c1oSqrt3 + vx1) * f[dMMM];
 
             distributions->setPreCollisionDistributionForDirection(f[dM00], x1 + DX1[dP00], x2 + DX2[dP00], x3 + DX3[dP00], dP00);
             distributions->setPreCollisionDistributionForDirection(f[dMP0], x1 + DX1[dPM0], x2 + DX2[dPM0], x3 + DX3[dPM0], dPM0);
@@ -143,15 +143,15 @@ void NonReflectingOutflowBCStrategy::applyBC()
             distributions->setPreCollisionDistributionForDirection(f[dMMM], x1 + DX1[dPPP], x2 + DX2[dPPP], x3 + DX3[dPPP], dPPP);
             break;
         case d0P0:
-            f[d0P0]   = ftemp[d0P0] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[d0P0];
-            f[dPP0]  = ftemp[dPP0] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[dPP0];
-            f[dMP0]  = ftemp[dMP0] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[dMP0];
-            f[d0PP]  = ftemp[d0PP] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[d0PP];
-            f[d0PM]  = ftemp[d0PM] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[d0PM];
-            f[dPPP] = ftemp[dPPP] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[dPPP];
-            f[dMPP] = ftemp[dMPP] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[dMPP];
-            f[dPPM] = ftemp[dPPM] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[dPPM];
-            f[dMPM] = ftemp[dMPM] * (one_over_sqrt3 + vx2) + (c1o1 - one_over_sqrt3 - vx2) * f[dMPM];
+            f[d0P0]   = ftemp[d0P0] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[d0P0];
+            f[dPP0]  = ftemp[dPP0] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[dPP0];
+            f[dMP0]  = ftemp[dMP0] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[dMP0];
+            f[d0PP]  = ftemp[d0PP] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[d0PP];
+            f[d0PM]  = ftemp[d0PM] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[d0PM];
+            f[dPPP] = ftemp[dPPP] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[dPPP];
+            f[dMPP] = ftemp[dMPP] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[dMPP];
+            f[dPPM] = ftemp[dPPM] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[dPPM];
+            f[dMPM] = ftemp[dMPM] * (c1oSqrt3 + vx2) + (c1o1 - c1oSqrt3 - vx2) * f[dMPM];
 
             distributions->setPreCollisionDistributionForDirection(f[d0P0], x1 + DX1[d0M0], x2 + DX2[d0M0], x3 + DX3[d0M0], d0M0);
             distributions->setPreCollisionDistributionForDirection(f[dPP0], x1 + DX1[dMM0], x2 + DX2[dMM0], x3 + DX3[dMM0], dMM0);
@@ -164,15 +164,15 @@ void NonReflectingOutflowBCStrategy::applyBC()
             distributions->setPreCollisionDistributionForDirection(f[dMPM], x1 + DX1[dPMP], x2 + DX2[dPMP], x3 + DX3[dPMP], dPMP);
             break;
         case d0M0:
-            f[d0M0]   = ftemp[d0M0] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[d0M0];
-            f[dPM0]  = ftemp[dPM0] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[dPM0];
-            f[dMM0]  = ftemp[dMM0] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[dMM0];
-            f[d0MP]  = ftemp[d0MP] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[d0MP];
-            f[d0MM]  = ftemp[d0MM] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[d0MM];
-            f[dPMP] = ftemp[dPMP] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[dPMP];
-            f[dMMP] = ftemp[dMMP] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[dMMP];
-            f[dPMM] = ftemp[dPMM] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[dPMM];
-            f[dMMM] = ftemp[dMMM] * (one_over_sqrt3 - vx2) + (c1o1 - one_over_sqrt3 + vx2) * f[dMMM];
+            f[d0M0]   = ftemp[d0M0] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[d0M0];
+            f[dPM0]  = ftemp[dPM0] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[dPM0];
+            f[dMM0]  = ftemp[dMM0] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[dMM0];
+            f[d0MP]  = ftemp[d0MP] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[d0MP];
+            f[d0MM]  = ftemp[d0MM] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[d0MM];
+            f[dPMP] = ftemp[dPMP] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[dPMP];
+            f[dMMP] = ftemp[dMMP] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[dMMP];
+            f[dPMM] = ftemp[dPMM] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[dPMM];
+            f[dMMM] = ftemp[dMMM] * (c1oSqrt3 - vx2) + (c1o1 - c1oSqrt3 + vx2) * f[dMMM];
 
             distributions->setPreCollisionDistributionForDirection(f[d0M0], x1 + DX1[d0P0], x2 + DX2[d0P0], x3 + DX3[d0P0], d0P0);
             distributions->setPreCollisionDistributionForDirection(f[dPM0], x1 + DX1[dMP0], x2 + DX2[dMP0], x3 + DX3[dMP0], dMP0);
@@ -185,15 +185,15 @@ void NonReflectingOutflowBCStrategy::applyBC()
             distributions->setPreCollisionDistributionForDirection(f[dMMM], x1 + DX1[dPPP], x2 + DX2[dPPP], x3 + DX3[dPPP], dPPP);
             break;
         case d00P:
-            f[d00P]   = ftemp[d00P] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[d00P];
-            f[dP0P]  = ftemp[dP0P] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[dP0P];
-            f[dM0P]  = ftemp[dM0P] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[dM0P];
-            f[d0PP]  = ftemp[d0PP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[d0PP];
-            f[d0MP]  = ftemp[d0MP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[d0MP];
-            f[dPPP] = ftemp[dPPP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[dPPP];
-            f[dMPP] = ftemp[dMPP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[dMPP];
-            f[dPMP] = ftemp[dPMP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[dPMP];
-            f[dMMP] = ftemp[dMMP] * (one_over_sqrt3 + vx3) + (c1o1 - one_over_sqrt3 - vx3) * f[dMMP];
+            f[d00P]   = ftemp[d00P] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[d00P];
+            f[dP0P]  = ftemp[dP0P] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[dP0P];
+            f[dM0P]  = ftemp[dM0P] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[dM0P];
+            f[d0PP]  = ftemp[d0PP] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[d0PP];
+            f[d0MP]  = ftemp[d0MP] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[d0MP];
+            f[dPPP] = ftemp[dPPP] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[dPPP];
+            f[dMPP] = ftemp[dMPP] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[dMPP];
+            f[dPMP] = ftemp[dPMP] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[dPMP];
+            f[dMMP] = ftemp[dMMP] * (c1oSqrt3 + vx3) + (c1o1 - c1oSqrt3 - vx3) * f[dMMP];
 
             distributions->setPreCollisionDistributionForDirection(f[d00P], x1 + DX1[d00M], x2 + DX2[d00M], x3 + DX3[d00M], d00M);
             distributions->setPreCollisionDistributionForDirection(f[dP0P], x1 + DX1[dM0M], x2 + DX2[dM0M], x3 + DX3[dM0M], dM0M);
@@ -206,15 +206,15 @@ void NonReflectingOutflowBCStrategy::applyBC()
             distributions->setPreCollisionDistributionForDirection(f[dMMP], x1 + DX1[dPPM], x2 + DX2[dPPM], x3 + DX3[dPPM], dPPM);
             break;
         case d00M:
-            f[d00M]   = ftemp[d00M] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[d00M];
-            f[dP0M]  = ftemp[dP0M] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[dP0M];
-            f[dM0M]  = ftemp[dM0M] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[dM0M];
-            f[d0PM]  = ftemp[d0PM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[d0PM];
-            f[d0MM]  = ftemp[d0MM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[d0MM];
-            f[dPPM] = ftemp[dPPM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[dPPM];
-            f[dMPM] = ftemp[dMPM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[dMPM];
-            f[dPMM] = ftemp[dPMM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[dPMM];
-            f[dMMM] = ftemp[dMMM] * (one_over_sqrt3 - vx3) + (c1o1 - one_over_sqrt3 + vx3) * f[dMMM];
+            f[d00M]   = ftemp[d00M] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[d00M];
+            f[dP0M]  = ftemp[dP0M] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[dP0M];
+            f[dM0M]  = ftemp[dM0M] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[dM0M];
+            f[d0PM]  = ftemp[d0PM] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[d0PM];
+            f[d0MM]  = ftemp[d0MM] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[d0MM];
+            f[dPPM] = ftemp[dPPM] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[dPPM];
+            f[dMPM] = ftemp[dMPM] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[dMPM];
+            f[dPMM] = ftemp[dPMM] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[dPMM];
+            f[dMMM] = ftemp[dMMM] * (c1oSqrt3 - vx3) + (c1o1 - c1oSqrt3 + vx3) * f[dMMM];
 
             distributions->setPreCollisionDistributionForDirection(f[d00M], x1 + DX1[d00P], x2 + DX2[d00P], x3 + DX3[d00P], d00P);
             distributions->setPreCollisionDistributionForDirection(f[dP0M], x1 + DX1[dM0P], x2 + DX2[dM0P], x3 + DX3[dM0P], dM0P);

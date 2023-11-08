@@ -300,7 +300,7 @@ __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
 			real SdSd = S1d*S1d + S2d*S2d + S3d*S3d + S4d*S4d + S5d*S5d + S6d*S6d + S7d*S7d + S8d*S8d + S9d*S9d;
 			/////////////// Computing turbulent viscosity ///////////////////////
 
-			//wOper = (real)pow((double)SdSd, 1.5) / ((real)pow((double)S2, 2.5) + (real)pow((double)SdSd, 1.25) + smallSingle);// 1e-26f);
+			//wOper = (real)pow((double)SdSd, 1.5) / ((real)pow((double)S2, 2.5) + (real)pow((double)SdSd, 1.25) + cSmallSingle);// 1e-26f);
 			wOper = (float)pow((double)SdSd, 0.25) / ((float)pow((double)((float)pow((double)S2, 0.5) / ((float)pow((double)SdSd, 0.25) + 1e-10)), 5.0) + 1);
 
 			nuTurb = (Cw*Cw * DelX*DelX) * wOper;

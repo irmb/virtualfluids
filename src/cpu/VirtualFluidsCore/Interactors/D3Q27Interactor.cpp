@@ -91,8 +91,8 @@ void D3Q27Interactor::initRayVectors()
     using namespace vf::basics::constant;
 
     int fdir;
-    real c1oS2 = vf::basics::constant::one_over_sqrt2;
-    real c1oS3 = vf::basics::constant::one_over_sqrt3;
+    real c1oS2 = vf::basics::constant::c1oSqrt2;
+    real c1oS3 = vf::basics::constant::c1oSqrt3;
     fdir         = dP00;
     rayX1[fdir]  = c1o1;
     rayX2[fdir]  = c0o1;
@@ -332,19 +332,19 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
             throw UbException(
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
-        vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::basics::constant::sqrt2 * deltaX1);
+        vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::basics::constant::cSqrt2 * deltaX1);
         distNeigh[dP00] = distNeigh[dM00] = distNeigh[d0P0] = deltaX1;
         distNeigh[d0M0] = distNeigh[d00P] = distNeigh[d00M] = deltaX1;
         distNeigh[dPP0] = distNeigh[dMP0] = distNeigh[dMM0] =
-            distNeigh[dPM0]             = vf::basics::constant::sqrt2 * deltaX1;
+            distNeigh[dPM0]             = vf::basics::constant::cSqrt2 * deltaX1;
         distNeigh[dP0P] = distNeigh[d0PP] = distNeigh[dM0P] =
-            distNeigh[d0MP]             = vf::basics::constant::sqrt2 * deltaX1;
+            distNeigh[d0MP]             = vf::basics::constant::cSqrt2 * deltaX1;
         distNeigh[dP0M] = distNeigh[d0PM] = distNeigh[dM0M] =
-            distNeigh[d0MM]             = vf::basics::constant::sqrt2 * deltaX1;
+            distNeigh[d0MM]             = vf::basics::constant::cSqrt2 * deltaX1;
         distNeigh[dPPP] = distNeigh[dMPP] = distNeigh[dPMP] =
-            distNeigh[dMMP]              = vf::basics::constant::sqrt3 * deltaX1;
+            distNeigh[dMMP]              = vf::basics::constant::cSqrt3 * deltaX1;
         distNeigh[dPPM] = distNeigh[dMPM] = distNeigh[dPMM] =
-            distNeigh[dMMM]              = vf::basics::constant::sqrt3 * deltaX1;
+            distNeigh[dMMM]              = vf::basics::constant::cSqrt3 * deltaX1;
         real q;
         bool pointOnBoundary = false;
 
