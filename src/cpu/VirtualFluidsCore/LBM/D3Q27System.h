@@ -937,15 +937,15 @@ static inline void calcDistanceToNeighbors(std::vector<real> &distNeigh, const r
 {
     using namespace vf::lbm::dir;
 
-    // distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
+    // distNeigh.resize(FENDDIR+1, UbMath::cSqrt2*deltaX1);
 
     distNeigh[dP00] = distNeigh[dM00] = distNeigh[d0P0] = deltaX1;
     distNeigh[d0M0] = distNeigh[d00P] = distNeigh[d00M] = deltaX1;
-    distNeigh[dPP0] = distNeigh[dMP0] = distNeigh[dMM0] = distNeigh[dPM0] = vf::basics::constant::sqrt2 * deltaX1;
-    distNeigh[dP0P] = distNeigh[d0PP] = distNeigh[dM0P] = distNeigh[d0MP] = vf::basics::constant::sqrt2 * deltaX1;
-    distNeigh[dP0M] = distNeigh[d0PM] = distNeigh[dM0M] = distNeigh[d0MM] = vf::basics::constant::sqrt2 * deltaX1;
-    distNeigh[dPPP] = distNeigh[dMPP] = distNeigh[dPMP] = distNeigh[dMMP] = vf::basics::constant::sqrt3 * deltaX1;
-    distNeigh[dPPM] = distNeigh[dMPM] = distNeigh[dPMM] = distNeigh[dMMM] = vf::basics::constant::sqrt3 * deltaX1;
+    distNeigh[dPP0] = distNeigh[dMP0] = distNeigh[dMM0] = distNeigh[dPM0] = vf::basics::constant::cSqrt2 * deltaX1;
+    distNeigh[dP0P] = distNeigh[d0PP] = distNeigh[dM0P] = distNeigh[d0MP] = vf::basics::constant::cSqrt2 * deltaX1;
+    distNeigh[dP0M] = distNeigh[d0PM] = distNeigh[dM0M] = distNeigh[d0MM] = vf::basics::constant::cSqrt2 * deltaX1;
+    distNeigh[dPPP] = distNeigh[dMPP] = distNeigh[dPMP] = distNeigh[dMMP] = vf::basics::constant::cSqrt3 * deltaX1;
+    distNeigh[dPPM] = distNeigh[dMPM] = distNeigh[dPMM] = distNeigh[dMMM] = vf::basics::constant::cSqrt3 * deltaX1;
 }
 //////////////////////////////////////////////////////////////////////////
 static inline void calcDistanceToNeighbors(std::vector<real> &distNeigh, const real &deltaX1, const real &deltaX2,
@@ -953,7 +953,7 @@ static inline void calcDistanceToNeighbors(std::vector<real> &distNeigh, const r
 {
     using namespace vf::lbm::dir;
 
-    // distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
+    // distNeigh.resize(FENDDIR+1, UbMath::cSqrt2*deltaX1);
     distNeigh[dP00] = distNeigh[dM00] = deltaX1;
     distNeigh[d0P0] = distNeigh[d0M0] = deltaX2;
     distNeigh[d00P] = distNeigh[d00M] = deltaX3;
@@ -971,8 +971,8 @@ static inline void initRayVectors(real *const &rayX1, real *const &rayX2, real *
     using namespace vf::lbm::dir;
 
     int fdir;
-    real c1oS2 = vf::basics::constant::one_over_sqrt2;
-    real c1oS3 = vf::basics::constant::one_over_sqrt3;
+    real c1oS2 = vf::basics::constant::c1oSqrt2;
+    real c1oS3 = vf::basics::constant::c1oSqrt3;
     fdir         = dP00;
     rayX1[fdir]  = 1.0;
     rayX2[fdir]  = 0.0;

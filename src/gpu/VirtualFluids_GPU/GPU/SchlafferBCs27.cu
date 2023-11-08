@@ -172,7 +172,7 @@ __global__ void PressSchlaff27(real* rhoBC,
       //      6.2e-9  ~  29.9 dB
       //      2.0e-7  ~  60.1 dB   /Vel
       //      2.0e-5  ~ 100.1 dB   /press
-      const double dPlimit  = Op0000002;
+      const double dPlimit  = c0p0000002;
       const double dRlimit  = dPlimit * c3o1;// three = c1oCs2;
       const double uSlimit  = dRlimit * c1o1;// one = c1oRho0;
       //////////////////////////////////////////////////////////////////////////
@@ -464,7 +464,7 @@ __global__ void VelSchlaff27(  int t,
       //      6.2e-9  ~  29.9 dB
       //      2.0e-7  ~  60.1 dB   /Vel
       //      2.0e-5  ~ 100.1 dB   /press
-      real uSlimit  = Op0000002;
+      real uSlimit  = c0p0000002;
       //////////////////////////////////////////////////////////////////////////
       real VX = c0o1;
       real VY = c0o1;
