@@ -20,7 +20,7 @@ endfunction()
 #################################################################################
 include(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
 include(${VF_CMAKE_DIR}/FileUtilities.cmake)
-include(${VF_CMAKE_DIR}/3rd.cmake)
+include(${VF_CMAKE_DIR}/3rd/boost.cmake)
 include(${VF_CMAKE_DIR}/Sanitizers.cmake)
 
 ###############################################################################################################
@@ -274,8 +274,19 @@ function(vf_add_tests)
         return()
     endif()
 
-    # get the test library name
-    vf_get_library_test_name(library_test_name)
+    set( options )
+    set( oneValueArgs NAME)
+    set( multiValueArgs)
+    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if(DEFINED ARG_NAME) 
+        set(library_test_name "${ARG_NAME}Tests")
+        set(library_name "${ARG_NAME}")
+    else()
+        vf_get_library_test_name(library_test_name)
+        vf_get_library_name (library_name)
+    endif()
+
     vf_get_library_name (folder_name)
 
     status("Configuring test executable: ${library_test_name}")
@@ -297,7 +308,7 @@ function(vf_add_tests)
             PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
     # link tested library
-    target_link_libraries(${library_test_name} PRIVATE ${folder_name})
+    target_link_libraries(${library_test_name} PRIVATE ${library_name})
 
     # link tested library
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_BINARY_DIR})
@@ -308,7 +319,15 @@ function(vf_add_tests)
     addAdditionalFlags(${library_test_name})
 
     # link googlemock
-    linkGMOCK()
+    target_link_libraries(${library_test_name} PRIVATE GTest::gmock_main)
+
+    if(BUILD_SHARED_LIBS)
+        # add compile option according to
+        # https://github.com/google/googletest/blob/master/googletest/README.md#as-a-shared-library-dll
+        set_target_properties(${library_test_name}
+                PROPERTIES
+                COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+    endif()
 
     # add the target to ctest
     gtest_add_tests(TARGET ${library_test_name})

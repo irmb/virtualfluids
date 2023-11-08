@@ -1,6 +1,6 @@
 #include "InitialConditionImp.h"
 
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "gpu/core/Parameter/Parameter.h"
 
 void InitialConditionImp::setParameter(std::shared_ptr<Parameter> para)
 {

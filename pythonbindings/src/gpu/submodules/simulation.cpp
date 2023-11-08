@@ -31,17 +31,17 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include <gpu/VirtualFluids_GPU/LBM/Simulation.h>
-#include <gpu/VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactory.h>
-#include <gpu/VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
-#include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
-#include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
-#include <gpu/VirtualFluids_GPU/GPU/CudaMemoryManager.h>
-#include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
-#include <gpu/VirtualFluids_GPU/Output/DataWriter.h>
-#include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "gpu/VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include <gpu/core/LBM/Simulation.h>
+#include <gpu/core/Kernel/Utilities/KernelFactory/KernelFactory.h>
+#include <gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
+#include <gpu/core/DataStructureInitializer/GridProvider.h>
+#include <gpu/core/Parameter/Parameter.h>
+#include <gpu/core/GPU/CudaMemoryManager.h>
+#include <gpu/core/DataStructureInitializer/GridProvider.h>
+#include <gpu/core/Output/DataWriter.h>
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
+#include "gpu/core/Factories/GridScalingFactory.h"
 #include "parallel/Communicator.h"
 
 namespace simulation

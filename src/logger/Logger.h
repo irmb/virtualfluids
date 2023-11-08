@@ -37,7 +37,7 @@
 // spdlog supports 5 log level, which can be changed at runtime e.g.:
 // spdlog::set_level(spdlog::level::debug)
 // The default log level is set to trace. Supported levels: trace < debug < info < warning < critical
-// 
+//
 // The logging is realized in 3 different log sinks:
 // 1. colored console output
 // 2. a daily log file

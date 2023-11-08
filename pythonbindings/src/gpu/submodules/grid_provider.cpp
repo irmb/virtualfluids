@@ -30,7 +30,7 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include "gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
 
 namespace grid_provider
 {
