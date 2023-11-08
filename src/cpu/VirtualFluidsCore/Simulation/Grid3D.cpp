@@ -1106,82 +1106,82 @@ void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, i
     using namespace vf::lbm::dir;
 
     switch (dir) {
-        case DIR_P00:
+        case dP00:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M00:
+        case dM00:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0P0:
+        case d0P0:
             this->getNeighborsNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0M0:
+        case d0M0:
             this->getNeighborsSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_00P:
+        case d00P:
             this->getNeighborsTop(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_00M:
+        case d00M:
             this->getNeighborsBottom(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PP0:
+        case dPP0:
             this->getNeighborsNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MM0:
+        case dMM0:
             this->getNeighborsSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PM0:
+        case dPM0:
             this->getNeighborsSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MP0:
+        case dMP0:
             this->getNeighborsNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_P0P:
+        case dP0P:
             this->getNeighborsTopEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M0M:
+        case dM0M:
             this->getNeighborsBottomWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_P0M:
+        case dP0M:
             this->getNeighborsBottomEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M0P:
+        case dM0P:
             this->getNeighborsTopWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0PP:
+        case d0PP:
             this->getNeighborsTopNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0MM:
+        case d0MM:
             this->getNeighborsBottomSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0PM:
+        case d0PM:
             this->getNeighborsBottomNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0MP:
+        case d0MP:
             this->getNeighborsTopSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PPP:
+        case dPPP:
             this->getNeighborsTopNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MPP:
+        case dMPP:
             this->getNeighborsTopNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PMP:
+        case dPMP:
             this->getNeighborsTopSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MMP:
+        case dMMP:
             this->getNeighborsTopSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PPM:
+        case dPPM:
             this->getNeighborsBottomNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MPM:
+        case dMPM:
             this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PMM:
+        case dPMM:
             this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MMM:
+        case dMMM:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:
@@ -1271,85 +1271,85 @@ void Grid3D::getNeighborBlocksForDirectionWithREST(int dir, int ix1, int ix2, in
     using namespace vf::lbm::dir;
 
     switch (dir) {
-        case DIR_P00:
+        case dP00:
             this->getNeighborsEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M00:
+        case dM00:
             this->getNeighborsWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0P0:
+        case d0P0:
             this->getNeighborsNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0M0:
+        case d0M0:
             this->getNeighborsSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_00P:
+        case d00P:
             this->getNeighborsTop(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_00M:
+        case d00M:
             this->getNeighborsBottom(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PP0:
+        case dPP0:
             this->getNeighborsNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MM0:
+        case dMM0:
             this->getNeighborsSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PM0:
+        case dPM0:
             this->getNeighborsSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MP0:
+        case dMP0:
             this->getNeighborsNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_P0P:
+        case dP0P:
             this->getNeighborsTopEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M0M:
+        case dM0M:
             this->getNeighborsBottomWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_P0M:
+        case dP0M:
             this->getNeighborsBottomEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_M0P:
+        case dM0P:
             this->getNeighborsTopWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0PP:
+        case d0PP:
             this->getNeighborsTopNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0MM:
+        case d0MM:
             this->getNeighborsBottomSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0PM:
+        case d0PM:
             this->getNeighborsBottomNorth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_0MP:
+        case d0MP:
             this->getNeighborsTopSouth(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PPP:
+        case dPPP:
             this->getNeighborsTopNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MPP:
+        case dMPP:
             this->getNeighborsTopNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PMP:
+        case dPMP:
             this->getNeighborsTopSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MMP:
+        case dMMP:
             this->getNeighborsTopSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PPM:
+        case dPPM:
             this->getNeighborsBottomNorthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MPM:
+        case dMPM:
             this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_PMM:
+        case dPMM:
             this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_MMM:
+        case dMMM:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case DIR_000:
+        case d000:
             this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:

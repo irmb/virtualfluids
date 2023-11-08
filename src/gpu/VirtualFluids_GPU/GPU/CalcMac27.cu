@@ -169,70 +169,70 @@ __global__ void LBCalcMacSP27(
         if(geoD[nodeIndex] == GEO_FLUID)
         {
             rhoD[nodeIndex] = 
-                (dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
-                (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]+ (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_000])[kzero]+ 
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw];
+                (dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
+                (dist.f[d0P0])[kn  ]+ (dist.f[d0M0])[ks  ]+
+                (dist.f[d00P])[kt  ]+ (dist.f[d00M])[kb  ]+
+                (dist.f[dPP0])[kne ]+ (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]+ (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]+ (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ]+
+                (dist.f[d000])[kzero]+ 
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]+ (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw];
            
             vxD[nodeIndex] =
-                (dist.f[DIR_P00])[ke  ]- (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]- (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]- (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_PPP])[ktne]- (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]- (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw];
+                (dist.f[dP00])[ke  ]- (dist.f[dM00])[kw  ]+ 
+                (dist.f[dPP0])[kne ]- (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]- (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]- (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]- (dist.f[dM0P])[ktw ]+
+                (dist.f[dPPP])[ktne]- (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]- (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]- (dist.f[dMPM])[kbnw];
            
             vyD[nodeIndex] =
-                (dist.f[DIR_0P0])[kn  ]- (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]-
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_0PP])[ktn ]- (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]- (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_PPP])[ktne]- (dist.f[DIR_MMP])[ktsw]- 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]- 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw];
+                (dist.f[d0P0])[kn  ]- (dist.f[d0M0])[ks  ]+
+                (dist.f[dPP0])[kne ]- (dist.f[dMM0])[ksw ]-
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[d0PP])[ktn ]- (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]- (dist.f[d0MP])[kts ]+
+                (dist.f[dPPP])[ktne]- (dist.f[dMMP])[ktsw]- 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]- 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw];
            
             vzD[nodeIndex] =
-                (dist.f[DIR_00P])[kt  ]- (dist.f[DIR_00M])[kb  ]+
-                (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]-
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]- (dist.f[DIR_0MM])[kbs ]-
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]- 
-                (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]- 
-                (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw];
+                (dist.f[d00P])[kt  ]- (dist.f[d00M])[kb  ]+
+                (dist.f[dP0P])[kte ]- (dist.f[dM0M])[kbw ]-
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]- (dist.f[d0MM])[kbs ]-
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ]+
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]- 
+                (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]- 
+                (dist.f[dPMM])[kbse]- (dist.f[dMPM])[kbnw];
            
             pressD[nodeIndex] =
-                ((dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
+                ((dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
+                (dist.f[d0P0])[kn  ]+ (dist.f[d0M0])[ks  ]+
+                (dist.f[d00P])[kt  ]+ (dist.f[d00M])[kb  ]+
                 2.f*(
-                (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]+ (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ])+
+                (dist.f[dPP0])[kne ]+ (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]+ (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]+ (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ])+
                 3.f*(
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw])-
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]+ (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw])-
                 rhoD[nodeIndex]-(vxD[nodeIndex] * vxD[nodeIndex] + vyD[nodeIndex] * vyD[nodeIndex] + vzD[nodeIndex] * vzD[nodeIndex]) * (c1o1+c0o1*rhoD[nodeIndex])) * c1o2+rhoD[nodeIndex]; // times zero for incompressible case   
             //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
        }
@@ -429,74 +429,74 @@ __global__ void LBCalcMedSP27(
         if(geoD[nodeIndex] == GEO_FLUID)
         {
             rhoD[nodeIndex] =
-                (dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
-                (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]+ (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_000])[kzero]+ 
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw]+
+                (dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
+                (dist.f[d0P0])[kn  ]+ (dist.f[d0M0])[ks  ]+
+                (dist.f[d00P])[kt  ]+ (dist.f[d00M])[kb  ]+
+                (dist.f[dPP0])[kne ]+ (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]+ (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]+ (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ]+
+                (dist.f[d000])[kzero]+ 
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]+ (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw]+
                 RHO;
             
             vxD[nodeIndex] =
-                (dist.f[DIR_P00])[ke  ]- (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]- (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]- (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_PPP])[ktne]- (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]- (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw]+
+                (dist.f[dP00])[ke  ]- (dist.f[dM00])[kw  ]+ 
+                (dist.f[dPP0])[kne ]- (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]- (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]- (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]- (dist.f[dM0P])[ktw ]+
+                (dist.f[dPPP])[ktne]- (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]- (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]- (dist.f[dMPM])[kbnw]+
                 VX;
             
             vyD[nodeIndex] =
-                (dist.f[DIR_0P0])[kn  ]- (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]-
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_0PP])[ktn ]- (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]- (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_PPP])[ktne]- (dist.f[DIR_MMP])[ktsw]- 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]- 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw]+
+                (dist.f[d0P0])[kn  ]- (dist.f[d0M0])[ks  ]+
+                (dist.f[dPP0])[kne ]- (dist.f[dMM0])[ksw ]-
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[d0PP])[ktn ]- (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]- (dist.f[d0MP])[kts ]+
+                (dist.f[dPPP])[ktne]- (dist.f[dMMP])[ktsw]- 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]- 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw]+
                 VY;
             
             vzD[nodeIndex] =
-                (dist.f[DIR_00P])[kt  ]- (dist.f[DIR_00M])[kb  ]+
-                (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]-
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]- (dist.f[DIR_0MM])[kbs ]-
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]- 
-                (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]- 
-                (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw]+
+                (dist.f[d00P])[kt  ]- (dist.f[d00M])[kb  ]+
+                (dist.f[dP0P])[kte ]- (dist.f[dM0M])[kbw ]-
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]- (dist.f[d0MM])[kbs ]-
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ]+
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]- 
+                (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]- 
+                (dist.f[dPMM])[kbse]- (dist.f[dMPM])[kbnw]+
                 VZ;
             
             pressD[nodeIndex] =
-                ((dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
+                ((dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
+                (dist.f[d0P0])[kn  ]+ (dist.f[d0M0])[ks  ]+
+                (dist.f[d00P])[kt  ]+ (dist.f[d00M])[kb  ]+
                 c2o1*(
-                (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]+ (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ])+
+                (dist.f[dPP0])[kne ]+ (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]+ (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]+ (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ])+
                 c3o1*(
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw])-
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]+ (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw])-
                 rhoD[nodeIndex]-(vxD[nodeIndex] * vxD[nodeIndex] + vyD[nodeIndex] * vyD[nodeIndex] + vzD[nodeIndex] * vzD[nodeIndex]) * (c1o1+rhoD[nodeIndex])) * c1o2+rhoD[nodeIndex]+
                 PRESS;    
             //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
@@ -601,33 +601,33 @@ __global__ void LBCalcMedCompSP27(
         
         if(geoD[nodeIndex] == GEO_FLUID)
         {
-            real mfcbb = (dist.f[DIR_P00])[nodeIndex];//[ke   ];
-            real mfabb = (dist.f[DIR_M00])[kw];//[kw   ];  
-            real mfbcb = (dist.f[DIR_0P0])[nodeIndex];//[kn   ];
-            real mfbab = (dist.f[DIR_0M0])[ks];//[ks   ];  
-            real mfbbc = (dist.f[DIR_00P])[nodeIndex];//[kt   ];
-            real mfbba = (dist.f[DIR_00M])[kb];//[kb   ];  
-            real mfccb = (dist.f[DIR_PP0])[nodeIndex];//[kne  ];  
-            real mfaab = (dist.f[DIR_MM0])[ksw];//[ksw  ];
-            real mfcab = (dist.f[DIR_PM0])[ks];//[kse  ]; 
-            real mfacb = (dist.f[DIR_MP0])[kw];//[knw  ]; 
-            real mfcbc = (dist.f[DIR_P0P])[nodeIndex];//[kte  ];  
-            real mfaba = (dist.f[DIR_M0M])[kbw];//[kbw  ];
-            real mfcba = (dist.f[DIR_P0M])[kb];//[kbe  ]; 
-            real mfabc = (dist.f[DIR_M0P])[kw];//[ktw  ]; 
-            real mfbcc = (dist.f[DIR_0PP])[nodeIndex];//[ktn  ];  
-            real mfbaa = (dist.f[DIR_0MM])[kbs];//[kbs  ];
-            real mfbca = (dist.f[DIR_0PM])[kb];//[kbn  ]; 
-            real mfbac = (dist.f[DIR_0MP])[ks];//[kts  ]; 
-            real mfbbb = (dist.f[DIR_000])[nodeIndex];//[kzero];
-            real mfccc = (dist.f[DIR_PPP])[nodeIndex];//[ktne ]; 
-            real mfaac = (dist.f[DIR_MMP])[ksw];//[ktsw ]; 
-            real mfcac = (dist.f[DIR_PMP])[ks];//[ktse ];
-            real mfacc = (dist.f[DIR_MPP])[kw];//[ktnw ];
-            real mfcca = (dist.f[DIR_PPM])[kb];//[kbne ];
-            real mfaaa = (dist.f[DIR_MMM])[kbsw];//[kbsw ];
-            real mfcaa = (dist.f[DIR_PMM])[kbs];//[kbse ]; 
-            real mfaca = (dist.f[DIR_MPM])[kbw];//[kbnw ]; 
+            real mfcbb = (dist.f[dP00])[nodeIndex];//[ke   ];
+            real mfabb = (dist.f[dM00])[kw];//[kw   ];  
+            real mfbcb = (dist.f[d0P0])[nodeIndex];//[kn   ];
+            real mfbab = (dist.f[d0M0])[ks];//[ks   ];  
+            real mfbbc = (dist.f[d00P])[nodeIndex];//[kt   ];
+            real mfbba = (dist.f[d00M])[kb];//[kb   ];  
+            real mfccb = (dist.f[dPP0])[nodeIndex];//[kne  ];  
+            real mfaab = (dist.f[dMM0])[ksw];//[ksw  ];
+            real mfcab = (dist.f[dPM0])[ks];//[kse  ]; 
+            real mfacb = (dist.f[dMP0])[kw];//[knw  ]; 
+            real mfcbc = (dist.f[dP0P])[nodeIndex];//[kte  ];  
+            real mfaba = (dist.f[dM0M])[kbw];//[kbw  ];
+            real mfcba = (dist.f[dP0M])[kb];//[kbe  ]; 
+            real mfabc = (dist.f[dM0P])[kw];//[ktw  ]; 
+            real mfbcc = (dist.f[d0PP])[nodeIndex];//[ktn  ];  
+            real mfbaa = (dist.f[d0MM])[kbs];//[kbs  ];
+            real mfbca = (dist.f[d0PM])[kb];//[kbn  ]; 
+            real mfbac = (dist.f[d0MP])[ks];//[kts  ]; 
+            real mfbbb = (dist.f[d000])[nodeIndex];//[kzero];
+            real mfccc = (dist.f[dPPP])[nodeIndex];//[ktne ]; 
+            real mfaac = (dist.f[dMMP])[ksw];//[ktsw ]; 
+            real mfcac = (dist.f[dPMP])[ks];//[ktse ];
+            real mfacc = (dist.f[dMPP])[kw];//[ktnw ];
+            real mfcca = (dist.f[dPPM])[kb];//[kbne ];
+            real mfaaa = (dist.f[dMMM])[kbsw];//[kbsw ];
+            real mfcaa = (dist.f[dPMM])[kbs];//[kbse ]; 
+            real mfaca = (dist.f[dMPM])[kbw];//[kbnw ]; 
             ////////////////////////////////////////////////////////////////////////////////////
             real drho = 
                 ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
@@ -652,21 +652,21 @@ __global__ void LBCalcMedCompSP27(
                 (mfbbc - mfbba)) / rho) + VZ;
 
             pressD[nodeIndex]  =
-                ((dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
-                (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
-                (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
+                ((dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
+                (dist.f[d0P0])[kn  ]+ (dist.f[d0M0])[ks  ]+
+                (dist.f[d00P])[kt  ]+ (dist.f[d00M])[kb  ]+
                 c2o1*(
-                (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
-                (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                (dist.f[DIR_P0P])[kte ]+ (dist.f[DIR_M0M])[kbw ]+
-                (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
-                (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ])+
+                (dist.f[dPP0])[kne ]+ (dist.f[dMM0])[ksw ]+
+                (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                (dist.f[dP0P])[kte ]+ (dist.f[dM0M])[kbw ]+
+                (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                (dist.f[d0PP])[ktn ]+ (dist.f[d0MM])[kbs ]+
+                (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ])+
                 c3o1*(
-                (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
-                (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw])-
+                (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                (dist.f[dPPM])[kbne]+ (dist.f[dMMM])[kbsw]+ 
+                (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw])-
                 rhoD[nodeIndex]-(vxD[nodeIndex] * vxD[nodeIndex] + vyD[nodeIndex] * vyD[nodeIndex] + vzD[nodeIndex] * vzD[nodeIndex]) * (c1o1+rhoD[nodeIndex])) * c1o2+rhoD[nodeIndex]+
                 PRESS;    
             //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
@@ -776,33 +776,33 @@ __global__ void LBCalcMedCompAD27(
         
         if (geoD[nodeIndex] == GEO_FLUID)
         {
-            real mfcbb = (dist.f[DIR_P00])[nodeIndex];//[ke   ];
-            real mfabb = (dist.f[DIR_M00])[kw];//[kw   ];  
-            real mfbcb = (dist.f[DIR_0P0])[nodeIndex];//[kn   ];
-            real mfbab = (dist.f[DIR_0M0])[ks];//[ks   ];  
-            real mfbbc = (dist.f[DIR_00P])[nodeIndex];//[kt   ];
-            real mfbba = (dist.f[DIR_00M])[kb];//[kb   ];  
-            real mfccb = (dist.f[DIR_PP0])[nodeIndex];//[kne  ];  
-            real mfaab = (dist.f[DIR_MM0])[ksw];//[ksw  ];
-            real mfcab = (dist.f[DIR_PM0])[ks];//[kse  ]; 
-            real mfacb = (dist.f[DIR_MP0])[kw];//[knw  ]; 
-            real mfcbc = (dist.f[DIR_P0P])[nodeIndex];//[kte  ];  
-            real mfaba = (dist.f[DIR_M0M])[kbw];//[kbw  ];
-            real mfcba = (dist.f[DIR_P0M])[kb];//[kbe  ]; 
-            real mfabc = (dist.f[DIR_M0P])[kw];//[ktw  ]; 
-            real mfbcc = (dist.f[DIR_0PP])[nodeIndex];//[ktn  ];  
-            real mfbaa = (dist.f[DIR_0MM])[kbs];//[kbs  ];
-            real mfbca = (dist.f[DIR_0PM])[kb];//[kbn  ]; 
-            real mfbac = (dist.f[DIR_0MP])[ks];//[kts  ]; 
-            real mfbbb = (dist.f[DIR_000])[nodeIndex];//[kzero];
-            real mfccc = (dist.f[DIR_PPP])[nodeIndex];//[ktne ]; 
-            real mfaac = (dist.f[DIR_MMP])[ksw];//[ktsw ]; 
-            real mfcac = (dist.f[DIR_PMP])[ks];//[ktse ];
-            real mfacc = (dist.f[DIR_MPP])[kw];//[ktnw ];
-            real mfcca = (dist.f[DIR_PPM])[kb];//[kbne ];
-            real mfaaa = (dist.f[DIR_MMM])[kbsw];//[kbsw ];
-            real mfcaa = (dist.f[DIR_PMM])[kbs];//[kbse ]; 
-            real mfaca = (dist.f[DIR_MPM])[kbw];//[kbnw ]; 
+            real mfcbb = (dist.f[dP00])[nodeIndex];//[ke   ];
+            real mfabb = (dist.f[dM00])[kw];//[kw   ];  
+            real mfbcb = (dist.f[d0P0])[nodeIndex];//[kn   ];
+            real mfbab = (dist.f[d0M0])[ks];//[ks   ];  
+            real mfbbc = (dist.f[d00P])[nodeIndex];//[kt   ];
+            real mfbba = (dist.f[d00M])[kb];//[kb   ];  
+            real mfccb = (dist.f[dPP0])[nodeIndex];//[kne  ];  
+            real mfaab = (dist.f[dMM0])[ksw];//[ksw  ];
+            real mfcab = (dist.f[dPM0])[ks];//[kse  ]; 
+            real mfacb = (dist.f[dMP0])[kw];//[knw  ]; 
+            real mfcbc = (dist.f[dP0P])[nodeIndex];//[kte  ];  
+            real mfaba = (dist.f[dM0M])[kbw];//[kbw  ];
+            real mfcba = (dist.f[dP0M])[kb];//[kbe  ]; 
+            real mfabc = (dist.f[dM0P])[kw];//[ktw  ]; 
+            real mfbcc = (dist.f[d0PP])[nodeIndex];//[ktn  ];  
+            real mfbaa = (dist.f[d0MM])[kbs];//[kbs  ];
+            real mfbca = (dist.f[d0PM])[kb];//[kbn  ]; 
+            real mfbac = (dist.f[d0MP])[ks];//[kts  ]; 
+            real mfbbb = (dist.f[d000])[nodeIndex];//[kzero];
+            real mfccc = (dist.f[dPPP])[nodeIndex];//[ktne ]; 
+            real mfaac = (dist.f[dMMP])[ksw];//[ktsw ]; 
+            real mfcac = (dist.f[dPMP])[ks];//[ktse ];
+            real mfacc = (dist.f[dMPP])[kw];//[ktnw ];
+            real mfcca = (dist.f[dPPM])[kb];//[kbne ];
+            real mfaaa = (dist.f[dMMM])[kbsw];//[kbsw ];
+            real mfcaa = (dist.f[dPMM])[kbs];//[kbse ]; 
+            real mfaca = (dist.f[dMPM])[kbw];//[kbnw ]; 
             ////////////////////////////////////////////////////////////////////////////////////
             real drho =
                 ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
@@ -829,52 +829,52 @@ __global__ void LBCalcMedCompAD27(
                     (mfbbc - mfbba)) / rho) + VZ;
             
             pressD[nodeIndex] = 
-                ((dist.f[DIR_P00])[ke] + (dist.f[DIR_M00])[kw] +
-                 (dist.f[DIR_0P0])[kn] + (dist.f[DIR_0M0])[ks] +
-                 (dist.f[DIR_00P])[kt] + (dist.f[DIR_00M])[kb] +
+                ((dist.f[dP00])[ke] + (dist.f[dM00])[kw] +
+                 (dist.f[d0P0])[kn] + (dist.f[d0M0])[ks] +
+                 (dist.f[d00P])[kt] + (dist.f[d00M])[kb] +
                  c2o1*(
-                 (dist.f[DIR_PP0])[kne] + (dist.f[DIR_MM0])[ksw] +
-                 (dist.f[DIR_PM0])[kse] + (dist.f[DIR_MP0])[knw] +
-                 (dist.f[DIR_P0P])[kte] + (dist.f[DIR_M0M])[kbw] +
-                 (dist.f[DIR_P0M])[kbe] + (dist.f[DIR_M0P])[ktw] +
-                 (dist.f[DIR_0PP])[ktn] + (dist.f[DIR_0MM])[kbs] +
-                 (dist.f[DIR_0PM])[kbn] + (dist.f[DIR_0MP])[kts]) +
+                 (dist.f[dPP0])[kne] + (dist.f[dMM0])[ksw] +
+                 (dist.f[dPM0])[kse] + (dist.f[dMP0])[knw] +
+                 (dist.f[dP0P])[kte] + (dist.f[dM0M])[kbw] +
+                 (dist.f[dP0M])[kbe] + (dist.f[dM0P])[ktw] +
+                 (dist.f[d0PP])[ktn] + (dist.f[d0MM])[kbs] +
+                 (dist.f[d0PM])[kbn] + (dist.f[d0MP])[kts]) +
                  c3o1*(
-                 (dist.f[DIR_PPP])[ktne] + (dist.f[DIR_MMP])[ktsw] +
-                 (dist.f[DIR_PMP])[ktse] + (dist.f[DIR_MPP])[ktnw] +
-                 (dist.f[DIR_PPM])[kbne] + (dist.f[DIR_MMM])[kbsw] +
-                 (dist.f[DIR_PMM])[kbse] + (dist.f[DIR_MPM])[kbnw]) -
+                 (dist.f[dPPP])[ktne] + (dist.f[dMMP])[ktsw] +
+                 (dist.f[dPMP])[ktse] + (dist.f[dMPP])[ktnw] +
+                 (dist.f[dPPM])[kbne] + (dist.f[dMMM])[kbsw] +
+                 (dist.f[dPMM])[kbse] + (dist.f[dMPM])[kbnw]) -
                  rhoD[nodeIndex] - (vxD[nodeIndex] * vxD[nodeIndex] + vyD[nodeIndex] * vyD[nodeIndex] + vzD[nodeIndex] * vzD[nodeIndex]) * (c1o1 + rhoD[nodeIndex])) * c1o2 + rhoD[nodeIndex] +
                  PRESS;
                  //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
             //////////////////////////////////////////////////////////////////////////
-            mfcbb = (distAD.f[DIR_P00])[nodeIndex   ];
-            mfabb = (distAD.f[DIR_M00])[kw  ];
-            mfbcb = (distAD.f[DIR_0P0])[nodeIndex   ];
-            mfbab = (distAD.f[DIR_0M0])[ks  ];
-            mfbbc = (distAD.f[DIR_00P])[nodeIndex   ];
-            mfbba = (distAD.f[DIR_00M])[kb  ];
-            mfccb = (distAD.f[DIR_PP0])[nodeIndex   ];
-            mfaab = (distAD.f[DIR_MM0])[ksw ];
-            mfcab = (distAD.f[DIR_PM0])[ks  ];
-            mfacb = (distAD.f[DIR_MP0])[kw  ];
-            mfcbc = (distAD.f[DIR_P0P])[nodeIndex   ];
-            mfaba = (distAD.f[DIR_M0M])[kbw ];
-            mfcba = (distAD.f[DIR_P0M])[kb  ];
-            mfabc = (distAD.f[DIR_M0P])[kw  ];
-            mfbcc = (distAD.f[DIR_0PP])[nodeIndex   ];
-            mfbaa = (distAD.f[DIR_0MM])[kbs ];
-            mfbca = (distAD.f[DIR_0PM])[kb  ];
-            mfbac = (distAD.f[DIR_0MP])[ks  ];
-            mfbbb = (distAD.f[DIR_000])[nodeIndex   ];
-            mfccc = (distAD.f[DIR_PPP])[nodeIndex   ];
-            mfaac = (distAD.f[DIR_MMP])[ksw ];
-            mfcac = (distAD.f[DIR_PMP])[ks  ];
-            mfacc = (distAD.f[DIR_MPP])[kw  ];
-            mfcca = (distAD.f[DIR_PPM])[kb  ];
-            mfaaa = (distAD.f[DIR_MMM])[kbsw];
-            mfcaa = (distAD.f[DIR_PMM])[kbs ];
-            mfaca = (distAD.f[DIR_MPM])[kbw ];
+            mfcbb = (distAD.f[dP00])[nodeIndex   ];
+            mfabb = (distAD.f[dM00])[kw  ];
+            mfbcb = (distAD.f[d0P0])[nodeIndex   ];
+            mfbab = (distAD.f[d0M0])[ks  ];
+            mfbbc = (distAD.f[d00P])[nodeIndex   ];
+            mfbba = (distAD.f[d00M])[kb  ];
+            mfccb = (distAD.f[dPP0])[nodeIndex   ];
+            mfaab = (distAD.f[dMM0])[ksw ];
+            mfcab = (distAD.f[dPM0])[ks  ];
+            mfacb = (distAD.f[dMP0])[kw  ];
+            mfcbc = (distAD.f[dP0P])[nodeIndex   ];
+            mfaba = (distAD.f[dM0M])[kbw ];
+            mfcba = (distAD.f[dP0M])[kb  ];
+            mfabc = (distAD.f[dM0P])[kw  ];
+            mfbcc = (distAD.f[d0PP])[nodeIndex   ];
+            mfbaa = (distAD.f[d0MM])[kbs ];
+            mfbca = (distAD.f[d0PM])[kb  ];
+            mfbac = (distAD.f[d0MP])[ks  ];
+            mfbbb = (distAD.f[d000])[nodeIndex   ];
+            mfccc = (distAD.f[dPPP])[nodeIndex   ];
+            mfaac = (distAD.f[dMMP])[ksw ];
+            mfcac = (distAD.f[dPMP])[ks  ];
+            mfacc = (distAD.f[dMPP])[kw  ];
+            mfcca = (distAD.f[dPPM])[kb  ];
+            mfaaa = (distAD.f[dMMM])[kbsw];
+            mfcaa = (distAD.f[dPMM])[kbs ];
+            mfaca = (distAD.f[dMPM])[kbw ];
             //////////////////////////////////////////////////////////////////////////
             concD[nodeIndex] = 
                 ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa)   + (mfaac + mfcca))) +
@@ -1140,50 +1140,50 @@ __global__ void LBCalcMeasurePoints(
         
         if(geoD[kzero] == GEO_FLUID)
         {
-            rhoMP[kMac]= (dist.f[DIR_P00])[ke  ]+ (dist.f[DIR_M00])[kw  ]+ 
-                         (dist.f[DIR_0P0])[kn  ]+ (dist.f[DIR_0M0])[ks  ]+
-                         (dist.f[DIR_00P])[kt  ]+ (dist.f[DIR_00M])[kb  ]+
-                         (dist.f[DIR_PP0])[kne ]+ (dist.f[DIR_MM0])[ksw ]+
-                         (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                         (dist.f[DIR_P0P])[kte ]+ (dist.f[DIR_M0M])[kbw ]+
-                         (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                         (dist.f[DIR_0PP])[ktn ]+ (dist.f[DIR_0MM])[kbs ]+
-                         (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                         (dist.f[DIR_000])[kzero]+ 
-                         (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                         (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                         (dist.f[DIR_PPM])[kbne]+ (dist.f[DIR_MMM])[kbsw]+ 
-                         (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw];
+            rhoMP[kMac]= (dist.f[dP00])[ke  ]+ (dist.f[dM00])[kw  ]+ 
+                         (dist.f[d0P0])[kn  ]+ (dist.f[d0M0])[ks  ]+
+                         (dist.f[d00P])[kt  ]+ (dist.f[d00M])[kb  ]+
+                         (dist.f[dPP0])[kne ]+ (dist.f[dMM0])[ksw ]+
+                         (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                         (dist.f[dP0P])[kte ]+ (dist.f[dM0M])[kbw ]+
+                         (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                         (dist.f[d0PP])[ktn ]+ (dist.f[d0MM])[kbs ]+
+                         (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ]+
+                         (dist.f[d000])[kzero]+ 
+                         (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                         (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                         (dist.f[dPPM])[kbne]+ (dist.f[dMMM])[kbsw]+ 
+                         (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw];
            
-            vxMP[kMac] = (dist.f[DIR_P00])[ke  ]- (dist.f[DIR_M00])[kw  ]+ 
-                         (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]+
-                         (dist.f[DIR_PM0])[kse ]- (dist.f[DIR_MP0])[knw ]+
-                         (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]+
-                         (dist.f[DIR_P0M])[kbe ]- (dist.f[DIR_M0P])[ktw ]+
-                         (dist.f[DIR_PPP])[ktne]- (dist.f[DIR_MMP])[ktsw]+ 
-                         (dist.f[DIR_PMP])[ktse]- (dist.f[DIR_MPP])[ktnw]+ 
-                         (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]+ 
-                         (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw];
+            vxMP[kMac] = (dist.f[dP00])[ke  ]- (dist.f[dM00])[kw  ]+ 
+                         (dist.f[dPP0])[kne ]- (dist.f[dMM0])[ksw ]+
+                         (dist.f[dPM0])[kse ]- (dist.f[dMP0])[knw ]+
+                         (dist.f[dP0P])[kte ]- (dist.f[dM0M])[kbw ]+
+                         (dist.f[dP0M])[kbe ]- (dist.f[dM0P])[ktw ]+
+                         (dist.f[dPPP])[ktne]- (dist.f[dMMP])[ktsw]+ 
+                         (dist.f[dPMP])[ktse]- (dist.f[dMPP])[ktnw]+ 
+                         (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]+ 
+                         (dist.f[dPMM])[kbse]- (dist.f[dMPM])[kbnw];
            
-            vyMP[kMac] = (dist.f[DIR_0P0])[kn  ]- (dist.f[DIR_0M0])[ks  ]+
-                         (dist.f[DIR_PP0])[kne ]- (dist.f[DIR_MM0])[ksw ]-
-                         (dist.f[DIR_PM0])[kse ]+ (dist.f[DIR_MP0])[knw ]+
-                         (dist.f[DIR_0PP])[ktn ]- (dist.f[DIR_0MM])[kbs ]+
-                         (dist.f[DIR_0PM])[kbn ]- (dist.f[DIR_0MP])[kts ]+
-                         (dist.f[DIR_PPP])[ktne]- (dist.f[DIR_MMP])[ktsw]- 
-                         (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]+ 
-                         (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]- 
-                         (dist.f[DIR_PMM])[kbse]+ (dist.f[DIR_MPM])[kbnw];
+            vyMP[kMac] = (dist.f[d0P0])[kn  ]- (dist.f[d0M0])[ks  ]+
+                         (dist.f[dPP0])[kne ]- (dist.f[dMM0])[ksw ]-
+                         (dist.f[dPM0])[kse ]+ (dist.f[dMP0])[knw ]+
+                         (dist.f[d0PP])[ktn ]- (dist.f[d0MM])[kbs ]+
+                         (dist.f[d0PM])[kbn ]- (dist.f[d0MP])[kts ]+
+                         (dist.f[dPPP])[ktne]- (dist.f[dMMP])[ktsw]- 
+                         (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]+ 
+                         (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]- 
+                         (dist.f[dPMM])[kbse]+ (dist.f[dMPM])[kbnw];
            
-            vzMP[kMac] = (dist.f[DIR_00P])[kt  ]- (dist.f[DIR_00M])[kb  ]+
-                         (dist.f[DIR_P0P])[kte ]- (dist.f[DIR_M0M])[kbw ]-
-                         (dist.f[DIR_P0M])[kbe ]+ (dist.f[DIR_M0P])[ktw ]+
-                         (dist.f[DIR_0PP])[ktn ]- (dist.f[DIR_0MM])[kbs ]-
-                         (dist.f[DIR_0PM])[kbn ]+ (dist.f[DIR_0MP])[kts ]+
-                         (dist.f[DIR_PPP])[ktne]+ (dist.f[DIR_MMP])[ktsw]+ 
-                         (dist.f[DIR_PMP])[ktse]+ (dist.f[DIR_MPP])[ktnw]- 
-                         (dist.f[DIR_PPM])[kbne]- (dist.f[DIR_MMM])[kbsw]- 
-                         (dist.f[DIR_PMM])[kbse]- (dist.f[DIR_MPM])[kbnw];
+            vzMP[kMac] = (dist.f[d00P])[kt  ]- (dist.f[d00M])[kb  ]+
+                         (dist.f[dP0P])[kte ]- (dist.f[dM0M])[kbw ]-
+                         (dist.f[dP0M])[kbe ]+ (dist.f[dM0P])[ktw ]+
+                         (dist.f[d0PP])[ktn ]- (dist.f[d0MM])[kbs ]-
+                         (dist.f[d0PM])[kbn ]+ (dist.f[d0MP])[kts ]+
+                         (dist.f[dPPP])[ktne]+ (dist.f[dMMP])[ktsw]+ 
+                         (dist.f[dPMP])[ktse]+ (dist.f[dMPP])[ktnw]- 
+                         (dist.f[dPPM])[kbne]- (dist.f[dMMM])[kbsw]- 
+                         (dist.f[dPMM])[kbse]- (dist.f[dMPM])[kbnw];
         }
     }
 }

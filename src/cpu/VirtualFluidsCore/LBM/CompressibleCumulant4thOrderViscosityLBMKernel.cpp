@@ -118,7 +118,7 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
    //LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
 
    real A = (c4o1*omega*omega+c2o1*omega*OxxPyyPzz*(omega-c6o1)+OxxPyyPzz*OxxPyyPzz*(omega*(c10o1-c3o1*omega)-c4o1))/((omega-OxxPyyPzz)*(OxxPyyPzz*(c2o1+c3o1*omega)-c8o1*omega));
-   //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::DIR_00M' )
+   //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::d00M' )
    real B = (c4o1*omega*OxxPyyPzz*(c9o1*omega-c16o1)-c4o1*omega*omega-c2o1*OxxPyyPzz*OxxPyyPzz*(c2o1+c9o1*omega*(omega-c2o1)))/(c3o1*(omega-OxxPyyPzz)*(OxxPyyPzz*(c2o1+c3o1*omega)-c8o1*omega));
 
    for (int x3 = minX3; x3 < maxX3; x3++)

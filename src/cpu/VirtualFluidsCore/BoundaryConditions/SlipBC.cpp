@@ -58,17 +58,17 @@ void SlipBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions>
     if (!geo)
         throw UbException(UB_EXARGS, "derzeit nur fuer Cubes valide");
 
-    if (bc->hasSlipBoundaryFlag(DIR_P00))
+    if (bc->hasSlipBoundaryFlag(dP00))
         bc->setNormalVector(vf::basics::constant::c1o1, vf::basics::constant::c0o1, vf::basics::constant::c0o1);
-    else if (bc->hasSlipBoundaryFlag(DIR_M00))
+    else if (bc->hasSlipBoundaryFlag(dM00))
         bc->setNormalVector(-vf::basics::constant::c1o1, vf::basics::constant::c0o1, vf::basics::constant::c0o1);
-    else if (bc->hasSlipBoundaryFlag(DIR_0P0))
+    else if (bc->hasSlipBoundaryFlag(d0P0))
         bc->setNormalVector(vf::basics::constant::c0o1, vf::basics::constant::c1o1, vf::basics::constant::c0o1);
-    else if (bc->hasSlipBoundaryFlag(DIR_0M0))
+    else if (bc->hasSlipBoundaryFlag(d0M0))
         bc->setNormalVector(vf::basics::constant::c0o1, -vf::basics::constant::c1o1, vf::basics::constant::c0o1);
-    else if (bc->hasSlipBoundaryFlag(DIR_00P))
+    else if (bc->hasSlipBoundaryFlag(d00P))
         bc->setNormalVector(vf::basics::constant::c0o1, vf::basics::constant::c0o1, vf::basics::constant::c1o1);
-    else if (bc->hasSlipBoundaryFlag(DIR_00M))
+    else if (bc->hasSlipBoundaryFlag(d00M))
         bc->setNormalVector(vf::basics::constant::c0o1, vf::basics::constant::c0o1, -vf::basics::constant::c1o1);
 
     bc->setBCStrategyType(algorithmType);

@@ -266,7 +266,7 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
 
     for (SPtr<Block3DConnector> c : connectors) {
         if (c) {
-            if (c->getSendDir() >= (int)DIR_P00 && c->getSendDir() <= (int)DIR_00M && c->isLocalConnector())
+            if (c->getSendDir() >= (int)dP00 && c->getSendDir() <= (int)d00M && c->isLocalConnector())
                 count++;
         }
     }
@@ -282,7 +282,7 @@ int Block3D::getNumberOfRemoteConnectorsForSurfaces()
 
     for (SPtr<Block3DConnector> c : connectors) {
         if (c) {
-            if (c->getSendDir() >= (int)DIR_P00 && c->getSendDir() <= (int)DIR_00M && c->isRemoteConnector())
+            if (c->getSendDir() >= (int)dP00 && c->getSendDir() <= (int)d00M && c->isRemoteConnector())
                 count++;
         }
     }

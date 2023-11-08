@@ -94,12 +94,12 @@ void ThixotropyVelocityBCStrategy::applyBC()
 	int nx3 = x3;
 
 	//flag points in direction of fluid
-	if (bcPtr->hasVelocityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_M00)) { nx1 += 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_00M)) { nx3 += 1; }
+	if (bcPtr->hasVelocityBoundaryFlag(dP00)) { nx1 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(dM00)) { nx1 += 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d0P0)) { nx2 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d0M0)) { nx2 += 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d00P)) { nx3 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d00M)) { nx3 += 1; }
 	else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
 	//lambdaBC = bcPtr->getBoundaryThixotropy();

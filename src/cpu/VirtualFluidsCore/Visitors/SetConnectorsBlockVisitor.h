@@ -128,7 +128,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
                 } else if (blockRank != neighBlockRank && neighBlock->isActive()) {
                     setRemoteConnectors(block, neighBlock, dir);
 
-                    if (dir >= (int)DIR_P00 && dir <= (int)DIR_00M) {
+                    if (dir >= (int)dP00 && dir <= (int)d00M) {
                         int weight = block->getWeight(neighBlockRank);
                         weight++;
                         block->setWeight(neighBlockRank, weight);

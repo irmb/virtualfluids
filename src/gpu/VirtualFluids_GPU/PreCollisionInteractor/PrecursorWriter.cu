@@ -129,15 +129,15 @@ __global__ void fillArrayDistributions( uint numberOfPrecursorNodes,
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Get local distributions in PX directions
     //!
-    precursorData[linearIdx(PrecP00, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P00])[k_000];
-    precursorData[linearIdx(PrecPP0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PP0])[k_000];
-    precursorData[linearIdx(PrecPM0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PM0])[k_0M0];
-    precursorData[linearIdx(PrecP0P, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P0P])[k_000];
-    precursorData[linearIdx(PrecP0M, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_P0M])[k_00M];
-    precursorData[linearIdx(PrecPPP, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PPP])[k_000];
-    precursorData[linearIdx(PrecPMP, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PMP])[k_0M0];
-    precursorData[linearIdx(PrecPPM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PPM])[k_00M];
-    precursorData[linearIdx(PrecPMM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[DIR_PMM])[k_0MM];
+    precursorData[linearIdx(PrecP00, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dP00])[k_000];
+    precursorData[linearIdx(PrecPP0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPP0])[k_000];
+    precursorData[linearIdx(PrecPM0, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPM0])[k_0M0];
+    precursorData[linearIdx(PrecP0P, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dP0P])[k_000];
+    precursorData[linearIdx(PrecP0M, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dP0M])[k_00M];
+    precursorData[linearIdx(PrecPPP, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPPP])[k_000];
+    precursorData[linearIdx(PrecPMP, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPMP])[k_0M0];
+    precursorData[linearIdx(PrecPPM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPPM])[k_00M];
+    precursorData[linearIdx(PrecPMM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPMM])[k_0MM];
 }
 
 

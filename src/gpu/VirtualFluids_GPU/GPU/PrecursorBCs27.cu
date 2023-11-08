@@ -171,32 +171,32 @@ __global__ void QPrecursorDeviceCompZeroPress(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set local distributions
     //!
-    real f_M00 = (dist.f[DIR_P00])[kP00];
-    real f_P00 = (dist.f[DIR_M00])[kM00];
-    real f_0M0 = (dist.f[DIR_0P0])[k0P0];
-    real f_0P0 = (dist.f[DIR_0M0])[k0M0];
-    real f_00M = (dist.f[DIR_00P])[k00P];
-    real f_00P = (dist.f[DIR_00M])[k00M];
-    real f_MM0 = (dist.f[DIR_PP0])[kPP0];
-    real f_PP0 = (dist.f[DIR_MM0])[kMM0];
-    real f_MP0 = (dist.f[DIR_PM0])[kPM0];
-    real f_PM0 = (dist.f[DIR_MP0])[kMP0];
-    real f_M0M = (dist.f[DIR_P0P])[kP0P];
-    real f_P0P = (dist.f[DIR_M0M])[kM0M];
-    real f_M0P = (dist.f[DIR_P0M])[kP0M];
-    real f_P0M = (dist.f[DIR_M0P])[kM0P];
-    real f_0MM = (dist.f[DIR_0PP])[k0PP];
-    real f_0PP = (dist.f[DIR_0MM])[k0MM];
-    real f_0MP = (dist.f[DIR_0PM])[k0PM];
-    real f_0PM = (dist.f[DIR_0MP])[k0MP];
-    real f_MMM = (dist.f[DIR_PPP])[kPPP];
-    real f_PPM = (dist.f[DIR_MMP])[kMMP];
-    real f_MPM = (dist.f[DIR_PMP])[kPMP];
-    real f_PMM = (dist.f[DIR_MPP])[kMPP];
-    real f_MMP = (dist.f[DIR_PPM])[kPPM];
-    real f_PPP = (dist.f[DIR_MMM])[kMMM];
-    real f_MPP = (dist.f[DIR_PMM])[kPMM];
-    real f_PMP = (dist.f[DIR_MPM])[kMPM];
+    real f_M00 = (dist.f[dP00])[kP00];
+    real f_P00 = (dist.f[dM00])[kM00];
+    real f_0M0 = (dist.f[d0P0])[k0P0];
+    real f_0P0 = (dist.f[d0M0])[k0M0];
+    real f_00M = (dist.f[d00P])[k00P];
+    real f_00P = (dist.f[d00M])[k00M];
+    real f_MM0 = (dist.f[dPP0])[kPP0];
+    real f_PP0 = (dist.f[dMM0])[kMM0];
+    real f_MP0 = (dist.f[dPM0])[kPM0];
+    real f_PM0 = (dist.f[dMP0])[kMP0];
+    real f_M0M = (dist.f[dP0P])[kP0P];
+    real f_P0P = (dist.f[dM0M])[kM0M];
+    real f_M0P = (dist.f[dP0M])[kP0M];
+    real f_P0M = (dist.f[dM0P])[kM0P];
+    real f_0MM = (dist.f[vf::lbm::dir::d0PP])[k0PP];
+    real f_0PP = (dist.f[d0MM])[k0MM];
+    real f_0MP = (dist.f[d0PM])[k0PM];
+    real f_0PM = (dist.f[d0MP])[k0MP];
+    real f_MMM = (dist.f[dPPP])[kPPP];
+    real f_PPM = (dist.f[dMMP])[kMMP];
+    real f_MPM = (dist.f[dPMP])[kPMP];
+    real f_PMM = (dist.f[dMPP])[kMPP];
+    real f_MMP = (dist.f[dPPM])[kPPM];
+    real f_PPP = (dist.f[dMMM])[kMMM];
+    real f_MPP = (dist.f[dPMM])[kPMM];
+    real f_PMP = (dist.f[dMPM])[kMPM];
 
     SubgridDistances27 subgridD;
     getPointersToSubgridDistances(subgridD, subgridDistances, numberOfBCnodes);
@@ -204,7 +204,7 @@ __global__ void QPrecursorDeviceCompZeroPress(
     ////////////////////////////////////////////////////////////////////////////////
       real drho   =  f_PMP + f_MPP + f_PPP + f_MMP + f_PMM + f_MPM + f_PPM + f_MMM +
                      f_0PM + f_0PP + f_0MP + f_0MM + f_P0M + f_M0P + f_P0P + f_M0M + f_PM0 + f_MP0 + f_PP0 + f_MM0 +
-                     f_00P + f_00M + f_0P0 + f_0M0 + f_P00 + f_M00 + ((dist.f[DIR_000])[k000]);
+                     f_00P + f_00M + f_0P0 + f_0M0 + f_P00 + f_M00 + ((dist.f[d000])[k000]);
 
       real vx1 =  (((f_PMP - f_MPM) - (f_MPP - f_PMM)) + ((f_PPP - f_MMM) - (f_MMP - f_PPM)) +
                       ((f_P0M - f_M0P)   + (f_P0P - f_M0M))   + ((f_PM0 - f_MP0)   + (f_PP0 - f_MM0)) +
@@ -228,238 +228,238 @@ __global__ void QPrecursorDeviceCompZeroPress(
     ////////////////////////////////////////////////////////////////////////////////
     //! - Update distributions with subgrid distance (q) between zero and one
     real feq, q, velocityLB, velocityBC;
-    q = (subgridD.q[DIR_P00])[nodeIndex];
+    q = (subgridD.q[dP00])[nodeIndex];
     if (q>=c0o1 && q<=c1o1) // only update distribution for q between zero and one
     {
         velocityLB = vx1;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
         velocityBC = VeloX;
-        (dist.f[DIR_M00])[kM00] = getInterpolatedDistributionForVeloWithPressureBC(q, f_P00, f_M00, feq, omega, drho, velocityBC, c2o27);
+        (dist.f[dM00])[kM00] = getInterpolatedDistributionForVeloWithPressureBC(q, f_P00, f_M00, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = (subgridD.q[DIR_M00])[nodeIndex];
+    q = (subgridD.q[dM00])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
         velocityBC = -VeloX;
-        (dist.f[DIR_P00])[kP00] = getInterpolatedDistributionForVeloWithPressureBC(q, f_M00, f_P00, feq, omega, drho, velocityBC, c2o27);
+        (dist.f[dP00])[kP00] = getInterpolatedDistributionForVeloWithPressureBC(q, f_M00, f_P00, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = (subgridD.q[DIR_0P0])[nodeIndex];
+    q = (subgridD.q[d0P0])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx2;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
         velocityBC = VeloY;
-        (dist.f[DIR_0M0])[DIR_0M0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0P0, f_0M0, feq, omega, drho, velocityBC, c2o27);
+        (dist.f[d0M0])[d0M0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0P0, f_0M0, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = (subgridD.q[DIR_0M0])[nodeIndex];
+    q = (subgridD.q[d0M0])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx2;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
         velocityBC = -VeloY;
-        (dist.f[DIR_0P0])[k0P0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0M0, f_0P0, feq, omega, drho, velocityBC, c2o27);
+        (dist.f[d0P0])[k0P0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0M0, f_0P0, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = (subgridD.q[DIR_00P])[nodeIndex];
+    q = (subgridD.q[d00P])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
         velocityBC = VeloZ;
-        (dist.f[DIR_00M])[k00M] = getInterpolatedDistributionForVeloWithPressureBC(q, f_00P, f_00M, feq, omega, drho, velocityBC, c2o27);
+        (dist.f[d00M])[k00M] = getInterpolatedDistributionForVeloWithPressureBC(q, f_00P, f_00M, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = (subgridD.q[DIR_00M])[nodeIndex];
+    q = (subgridD.q[d00M])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c2o27);
         velocityBC = -VeloZ;
-        (dist.f[DIR_00P])[k00P] = getInterpolatedDistributionForVeloWithPressureBC(q, f_00M, f_00P, feq, omega, drho, velocityBC, c2o27);
+        (dist.f[d00P])[k00P] = getInterpolatedDistributionForVeloWithPressureBC(q, f_00M, f_00P, feq, omega, drho, velocityBC, c2o27);
     }
 
-    q = (subgridD.q[DIR_PP0])[nodeIndex];
+    q = (subgridD.q[dPP0])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 + vx2;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = VeloX + VeloY;
-        (dist.f[DIR_MM0])[kMM0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PP0, f_MM0, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dMM0])[kMM0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PP0, f_MM0, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_MM0])[nodeIndex];
+    q = (subgridD.q[dMM0])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 - vx2;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = -VeloX - VeloY;
-        (dist.f[DIR_PP0])[kPP0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MM0, f_PP0, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dPP0])[kPP0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MM0, f_PP0, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_PM0])[nodeIndex];
+    q = (subgridD.q[dPM0])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 - vx2;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = VeloX - VeloY;
-        (dist.f[DIR_MP0])[kMP0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PM0, f_MP0, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dMP0])[kMP0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PM0, f_MP0, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_MP0])[nodeIndex];
+    q = (subgridD.q[dMP0])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 + vx2;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = -VeloX + VeloY;
-        (dist.f[DIR_PM0])[kPM0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MP0, f_PM0, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dPM0])[kPM0] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MP0, f_PM0, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_P0P])[nodeIndex];
+    q = (subgridD.q[dP0P])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = VeloX + VeloZ;
-        (dist.f[DIR_M0M])[kM0M] = getInterpolatedDistributionForVeloWithPressureBC(q, f_P0P, f_M0M, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dM0M])[kM0M] = getInterpolatedDistributionForVeloWithPressureBC(q, f_P0P, f_M0M, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_M0M])[nodeIndex];
+    q = (subgridD.q[dM0M])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = -VeloX - VeloZ;
-        (dist.f[DIR_P0P])[kP0P] = getInterpolatedDistributionForVeloWithPressureBC(q, f_M0M, f_P0P, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dP0P])[kP0P] = getInterpolatedDistributionForVeloWithPressureBC(q, f_M0M, f_P0P, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_P0M])[nodeIndex];
+    q = (subgridD.q[dP0M])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = VeloX - VeloZ;
-        (dist.f[DIR_M0P])[kM0P] = getInterpolatedDistributionForVeloWithPressureBC(q, f_P0M, f_M0P, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dM0P])[kM0P] = getInterpolatedDistributionForVeloWithPressureBC(q, f_P0M, f_M0P, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_M0P])[nodeIndex];
+    q = (subgridD.q[dM0P])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = -VeloX + VeloZ;
-        (dist.f[DIR_P0M])[kP0M] = getInterpolatedDistributionForVeloWithPressureBC(q, f_M0P, f_P0M, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[dP0M])[kP0M] = getInterpolatedDistributionForVeloWithPressureBC(q, f_M0P, f_P0M, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_0PP])[nodeIndex];
+    q = (subgridD.q[vf::lbm::dir::d0PP])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx2 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = VeloY + VeloZ;
-        (dist.f[DIR_0MM])[k0MM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0PP, f_0MM, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[d0MM])[k0MM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0PP, f_0MM, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_0MM])[nodeIndex];
+    q = (subgridD.q[d0MM])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx2 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = -VeloY - VeloZ;
-        (dist.f[DIR_0PP])[k0PP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0MM, f_0PP, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[vf::lbm::dir::d0PP])[k0PP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0MM, f_0PP, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_0PM])[nodeIndex];
+    q = (subgridD.q[d0PM])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx2 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = VeloY - VeloZ;
-        (dist.f[DIR_0MP])[k0MP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0PM, f_0PP, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[d0MP])[k0MP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0PM, f_0PP, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_0MP])[nodeIndex];
+    q = (subgridD.q[d0MP])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx2 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o54);
         velocityBC = -VeloY + VeloZ;
-        (dist.f[DIR_0PM])[k0PM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0PP, f_0PM, feq, omega, drho, velocityBC, c1o54);
+        (dist.f[d0PM])[k0PM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_0PP, f_0PM, feq, omega, drho, velocityBC, c1o54);
     }
 
-    q = (subgridD.q[DIR_PPP])[nodeIndex];
+    q = (subgridD.q[dPPP])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 + vx2 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = VeloX + VeloY + VeloZ;
-        (dist.f[DIR_MMM])[kMMM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PPP, f_MMM, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dMMM])[kMMM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PPP, f_MMM, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_MMM])[nodeIndex];
+    q = (subgridD.q[dMMM])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 - vx2 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = -VeloX - VeloY - VeloZ;
-        (dist.f[DIR_PPP])[kPPP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MMM, f_PPP, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dPPP])[kPPP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MMM, f_PPP, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_PPM])[nodeIndex];
+    q = (subgridD.q[dPPM])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 + vx2 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = VeloX + VeloY - VeloZ;
-        (dist.f[DIR_MMP])[kMMP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PPM, f_MMP, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dMMP])[kMMP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PPM, f_MMP, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_MMP])[nodeIndex];
+    q = (subgridD.q[dMMP])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 - vx2 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = -VeloX - VeloY + VeloZ;
-        (dist.f[DIR_PPM])[kPPM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MMP, f_PPM, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dPPM])[kPPM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MMP, f_PPM, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_PMP])[nodeIndex];
+    q = (subgridD.q[dPMP])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 - vx2 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = VeloX - VeloY + VeloZ;
-        (dist.f[DIR_MPM])[kMPM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PMP, f_MPM, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dMPM])[kMPM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PMP, f_MPM, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_MPM])[nodeIndex];
+    q = (subgridD.q[dMPM])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 + vx2 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = -VeloX + VeloY - VeloZ;
-        (dist.f[DIR_PMP])[kPMP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MPM, f_PMP, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dPMP])[kPMP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MPM, f_PMP, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_PMM])[nodeIndex];
+    q = (subgridD.q[dPMM])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = vx1 - vx2 - vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = VeloX - VeloY - VeloZ;
-        (dist.f[DIR_MPP])[kMPP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PMM, f_MPP, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dMPP])[kMPP] = getInterpolatedDistributionForVeloWithPressureBC(q, f_PMM, f_MPP, feq, omega, drho, velocityBC, c1o216);
     }
 
-    q = (subgridD.q[DIR_MPP])[nodeIndex];
+    q = (subgridD.q[dMPP])[nodeIndex];
     if (q>=c0o1 && q<=c1o1)
     {
         velocityLB = -vx1 + vx2 + vx3;
         feq = getEquilibriumForBC(drho, velocityLB, cu_sq, c1o216);
         velocityBC = -VeloX + VeloY + VeloZ;
-        (dist.f[DIR_PMM])[kPMM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MPP, f_PMM, feq, omega, drho, velocityBC, c1o216);
+        (dist.f[dPMM])[kPMM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MPP, f_PMM, feq, omega, drho, velocityBC, c1o216);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -635,33 +635,33 @@ __global__ void PrecursorDeviceEQ27(
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // based on BGK Plus Comp
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    real f_M00 = (dist.f[DIR_P00])[kP00];
-    real f_P00 = (dist.f[DIR_M00])[kM00];
-    real f_0M0 = (dist.f[DIR_0P0])[k0P0];
-    real f_0P0 = (dist.f[DIR_0M0])[k0M0];
-    real f_00M = (dist.f[DIR_00P])[k00P];
-    real f_00P = (dist.f[DIR_00M])[k00M];
-    real f_MM0 = (dist.f[DIR_PP0])[kPP0];
-    real f_PP0 = (dist.f[DIR_MM0])[kMM0];
-    real f_MP0 = (dist.f[DIR_PM0])[kPM0];
-    real f_PM0 = (dist.f[DIR_MP0])[kMP0];
-    real f_M0M = (dist.f[DIR_P0P])[kP0P];
-    real f_P0P = (dist.f[DIR_M0M])[kM0M];
-    real f_M0P = (dist.f[DIR_P0M])[kP0M];
-    real f_P0M = (dist.f[DIR_M0P])[kM0P];
-    real f_0MM = (dist.f[DIR_0PP])[k0PP];
-    real f_0PP = (dist.f[DIR_0MM])[k0MM];
-    real f_0PM = (dist.f[DIR_0MP])[k0MP];
-    real f_0MP = (dist.f[DIR_0PM])[k0PM];
-    real f_000 = (dist.f[DIR_000])[k000];
-    real f_MMM = (dist.f[DIR_PPP])[kPPP];
-    real f_PPM = (dist.f[DIR_MMP])[kMMP];
-    real f_MPM = (dist.f[DIR_PMP])[kPMP];
-    real f_PMM = (dist.f[DIR_MPP])[kMPP];
-    real f_MMP = (dist.f[DIR_PPM])[kPPM];
-    real f_PPP = (dist.f[DIR_MMM])[kMMM];
-    real f_MPP = (dist.f[DIR_PMM])[kPMM];
-    real f_PMP = (dist.f[DIR_MPM])[kMPM];
+    real f_M00 = (dist.f[dP00])[kP00];
+    real f_P00 = (dist.f[dM00])[kM00];
+    real f_0M0 = (dist.f[d0P0])[k0P0];
+    real f_0P0 = (dist.f[d0M0])[k0M0];
+    real f_00M = (dist.f[d00P])[k00P];
+    real f_00P = (dist.f[d00M])[k00M];
+    real f_MM0 = (dist.f[dPP0])[kPP0];
+    real f_PP0 = (dist.f[dMM0])[kMM0];
+    real f_MP0 = (dist.f[dPM0])[kPM0];
+    real f_PM0 = (dist.f[dMP0])[kMP0];
+    real f_M0M = (dist.f[dP0P])[kP0P];
+    real f_P0P = (dist.f[dM0M])[kM0M];
+    real f_M0P = (dist.f[dP0M])[kP0M];
+    real f_P0M = (dist.f[dM0P])[kM0P];
+    real f_0MM = (dist.f[vf::lbm::dir::d0PP])[k0PP];
+    real f_0PP = (dist.f[d0MM])[k0MM];
+    real f_0PM = (dist.f[d0MP])[k0MP];
+    real f_0MP = (dist.f[d0PM])[k0PM];
+    real f_000 = (dist.f[d000])[k000];
+    real f_MMM = (dist.f[dPPP])[kPPP];
+    real f_PPM = (dist.f[dMMP])[kMMP];
+    real f_MPM = (dist.f[dPMP])[kPMP];
+    real f_PMM = (dist.f[dMPP])[kMPP];
+    real f_MMP = (dist.f[dPPM])[kPPM];
+    real f_PPP = (dist.f[dMMM])[kMMM];
+    real f_MPP = (dist.f[dPMM])[kPMM];
+    real f_PMP = (dist.f[dMPM])[kMPM];
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set macroscopic quantities
@@ -708,35 +708,35 @@ __global__ void PrecursorDeviceEQ27(
       ////////////////////////////////////////////////////////////////////////////////
       //! write the new distributions to the bc nodes
       //!
-      (dist.f[DIR_P00])[kP00] = f_M00;
-      (dist.f[DIR_PP0])[kPP0] = f_MM0;
-      (dist.f[DIR_P0M])[kP0M] = f_M0P;
-      (dist.f[DIR_PM0])[kPM0] = f_MP0;
-      (dist.f[DIR_PMP])[kPMP] = f_MPM;
-      (dist.f[DIR_P0P])[kP0P] = f_M0M;
-      (dist.f[DIR_PPM])[kPPM] = f_MMP;
-      (dist.f[DIR_PPP])[kPPP] = f_MMM;
-      (dist.f[DIR_PMM])[kPMM] = f_MPP;
+      (dist.f[dP00])[kP00] = f_M00;
+      (dist.f[dPP0])[kPP0] = f_MM0;
+      (dist.f[dP0M])[kP0M] = f_M0P;
+      (dist.f[dPM0])[kPM0] = f_MP0;
+      (dist.f[dPMP])[kPMP] = f_MPM;
+      (dist.f[dP0P])[kP0P] = f_M0M;
+      (dist.f[dPPM])[kPPM] = f_MMP;
+      (dist.f[dPPP])[kPPP] = f_MMM;
+      (dist.f[dPMM])[kPMM] = f_MPP;
 
-      (dist.f[DIR_M00])[kM00] = f_P00;
-      (dist.f[DIR_MM0])[kMM0] = f_PP0;
-      (dist.f[DIR_M0M])[kM0M] = f_P0P;
-      (dist.f[DIR_MP0])[kMP0] = f_PM0;
-      (dist.f[DIR_M0P])[kM0P] = f_P0M;
-      (dist.f[DIR_MMM])[kMMM] = f_PPP;
-      (dist.f[DIR_MMP])[kMMP] = f_PPM;
-      (dist.f[DIR_MPP])[kMPP] = f_PMM;
-      (dist.f[DIR_MPM])[kMPM] = f_PMP;
+      (dist.f[dM00])[kM00] = f_P00;
+      (dist.f[dMM0])[kMM0] = f_PP0;
+      (dist.f[dM0M])[kM0M] = f_P0P;
+      (dist.f[dMP0])[kMP0] = f_PM0;
+      (dist.f[dM0P])[kM0P] = f_P0M;
+      (dist.f[dMMM])[kMMM] = f_PPP;
+      (dist.f[dMMP])[kMMP] = f_PPM;
+      (dist.f[dMPP])[kMPP] = f_PMM;
+      (dist.f[dMPM])[kMPM] = f_PMP;
 
-      (dist.f[DIR_0P0])[k0P0] = f_0M0;
-      (dist.f[DIR_0M0])[k0M0] = f_0P0;
-      (dist.f[DIR_00P])[k00P] = f_00M;
-      (dist.f[DIR_00M])[k00M] = f_00P;
-      (dist.f[DIR_0PP])[k0PP] = f_0MM;
-      (dist.f[DIR_0MM])[k0MM] = f_0PP;
-      (dist.f[DIR_0PM])[k0PM] = f_0MP;
-      (dist.f[DIR_0MP])[k0MP] = f_0PM;
-      (dist.f[DIR_000])[k000] = f_000;
+      (dist.f[d0P0])[k0P0] = f_0M0;
+      (dist.f[d0M0])[k0M0] = f_0P0;
+      (dist.f[d00P])[k00P] = f_00M;
+      (dist.f[d00M])[k00M] = f_00P;
+      (dist.f[vf::lbm::dir::d0PP])[k0PP] = f_0MM;
+      (dist.f[d0MM])[k0MM] = f_0PP;
+      (dist.f[d0PM])[k0PM] = f_0MP;
+      (dist.f[d0MP])[k0MP] = f_0PM;
+      (dist.f[d000])[k000] = f_000;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -929,15 +929,15 @@ __global__ void PrecursorDeviceDistributions(
     unsigned int kPPP = KQK;
     // unsigned int kMMM = neighborZ[kMM0];
 
-    dist.f[DIR_P00][kP00] = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
-    dist.f[DIR_PP0][kPP0] = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
-    dist.f[DIR_PM0][kPM0] = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
-    dist.f[DIR_P0P][kP0P] = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
-    dist.f[DIR_P0M][kP0M] = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
-    dist.f[DIR_PPP][kPPP] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
-    dist.f[DIR_PMP][kPMP] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
-    dist.f[DIR_PPM][kPPM] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
-    dist.f[DIR_PMM][kPMM] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
+    dist.f[dP00][kP00] = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
+    dist.f[dPP0][kPP0] = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
+    dist.f[dPM0][kPM0] = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
+    dist.f[dP0P][kP0P] = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
+    dist.f[dP0M][kP0M] = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
+    dist.f[dPPP][kPPP] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
+    dist.f[dPMP][kPMP] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
+    dist.f[dPPM][kPPM] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
+    dist.f[dPMM][kPMM] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1143,15 +1143,15 @@ __global__ void QPrecursorDeviceDistributions(
     getPointersToSubgridDistances(qs, subgridDistances, sizeQ);
 
     real q;
-    q = qs.q[DIR_P00][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P00][kP00] = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
-    q = qs.q[DIR_PP0][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PP0][kPP0] = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
-    q = qs.q[DIR_PM0][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PM0][kPM0] = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
-    q = qs.q[DIR_P0P][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0P][kP0P] = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
-    q = qs.q[DIR_P0M][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_P0M][kP0M] = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
-    q = qs.q[DIR_PPP][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPP][kPPP] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
-    q = qs.q[DIR_PMP][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMP][kPMP] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
-    q = qs.q[DIR_PPM][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PPM][kPPM] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
-    q = qs.q[DIR_PMM][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[DIR_PMM][kPMM] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
+    q = qs.q[dP00][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dP00][kP00] = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
+    q = qs.q[dPP0][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dPP0][kPP0] = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
+    q = qs.q[dPM0][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dPM0][kPM0] = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
+    q = qs.q[dP0P][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dP0P][kP0P] = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
+    q = qs.q[dP0M][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dP0M][kP0M] = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
+    q = qs.q[dPPP][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dPPP][kPPP] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
+    q = qs.q[dPMP][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dPMP][kPMP] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
+    q = qs.q[dPPM][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dPPM][kPPM] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
+    q = qs.q[dPMM][nodeIndex]; if(q>= c0o1 && q <= c1o1) dist.f[dPMM][kPMM] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

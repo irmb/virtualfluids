@@ -202,7 +202,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
                     // f_TSW = -eps_new *((ay + bx) / (36.*o)) - f_TNE; double f_TSE = -eps_new *((az + cx) / (36.*o)) -
                     // f_TNE; double f_TNW = -eps_new *((bz + cy) / (36.*o)) - f_TNE;
 
-                    // f[DIR_P00] = f_E + feq[DIR_P00];
+                    // f[dP00] = f_E + feq[dP00];
                     // f[W] = f_E + feq[W];
                     // f[N] = f_N + feq[N];
                     // f[S] = f_N + feq[S];

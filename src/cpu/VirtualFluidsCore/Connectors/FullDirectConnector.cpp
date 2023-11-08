@@ -62,7 +62,7 @@ void FullDirectConnector::exchangeData()
     using namespace vf::lbm::dir;
 
     // EAST
-    if (sendDir == DIR_P00) {
+    if (sendDir == dP00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 exchangeData(maxX1 - 1, x2, x3, 0, x2, x3);
@@ -70,7 +70,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // WEST
-    else if (sendDir == DIR_M00) {
+    else if (sendDir == dM00) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x2 = 1; x2 < maxX2; x2++) {
                 exchangeData(1, x2, x3, maxX1, x2, x3);
@@ -78,7 +78,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // NORTH
-    else if (sendDir == DIR_0P0) {
+    else if (sendDir == d0P0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, maxX2 - 1, x3, x1, 0, x3);
@@ -86,7 +86,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // SOUTH
-    else if (sendDir == DIR_0M0) {
+    else if (sendDir == d0M0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, 1, x3, x1, maxX2, x3);
@@ -95,7 +95,7 @@ void FullDirectConnector::exchangeData()
     }
 
     // TOP
-    else if (sendDir == DIR_00P) {
+    else if (sendDir == d00P) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, x2, maxX3 - 1, x1, x2, 0);
@@ -103,7 +103,7 @@ void FullDirectConnector::exchangeData()
         }
     }
     // BOTTOM
-    else if (sendDir == DIR_00M) {
+    else if (sendDir == d00M) {
         for (int x2 = 1; x2 < maxX2; x2++) {
             for (int x1 = 1; x1 < maxX1; x1++) {
                 exchangeData(x1, x2, 1, x1, x2, maxX3);
@@ -111,77 +111,77 @@ void FullDirectConnector::exchangeData()
         }
     }
     // NORTHEAST
-    else if (sendDir == DIR_PP0) {
+    else if (sendDir == dPP0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(maxX1 - 1, maxX2 - 1, x3, 0, 0, x3);
         }
     }
     // NORTHWEST
-    else if (sendDir == DIR_MP0) {
+    else if (sendDir == dMP0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(1, maxX2 - 1, x3, maxX1, 0, x3);
         }
     }
     // SOUTHWEST
-    else if (sendDir == DIR_MM0) {
+    else if (sendDir == dMM0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(1, 1, x3, maxX1, maxX2, x3);
         }
     }
     // SOUTHEAST
-    else if (sendDir == DIR_PM0) {
+    else if (sendDir == dPM0) {
         for (int x3 = 1; x3 < maxX3; x3++) {
             exchangeData(maxX1 - 1, 1, x3, 0, maxX2, x3);
         }
-    } else if (sendDir == DIR_P0P)
+    } else if (sendDir == dP0P)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(maxX1 - 1, x2, maxX3 - 1, 0, x2, 0);
         }
-    else if (sendDir == DIR_M0M)
+    else if (sendDir == dM0M)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(1, x2, 1, maxX1, x2, maxX3);
         }
-    else if (sendDir == DIR_P0M)
+    else if (sendDir == dP0M)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(maxX1 - 1, x2, 1, 0, x2, maxX3);
         }
-    else if (sendDir == DIR_M0P)
+    else if (sendDir == dM0P)
         for (int x2 = 1; x2 < maxX2; x2++) {
             exchangeData(1, x2, maxX3 - 1, maxX1, x2, 0);
         }
-    else if (sendDir == DIR_0PP)
+    else if (sendDir == d0PP)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, maxX2 - 1, maxX3 - 1, x1, 0, 0);
         }
-    else if (sendDir == DIR_0MM)
+    else if (sendDir == d0MM)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, 1, 1, x1, maxX2, maxX3);
         }
-    else if (sendDir == DIR_0PM)
+    else if (sendDir == d0PM)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, maxX2 - 1, 1, x1, 0, maxX3);
         }
 
-    else if (sendDir == DIR_0MP)
+    else if (sendDir == d0MP)
         for (int x1 = 1; x1 < maxX1; x1++) {
             exchangeData(x1, 1, maxX3 - 1, x1, maxX2, 0);
         }
 
-    else if (sendDir == DIR_MMP) {
+    else if (sendDir == dMMP) {
         exchangeData(1, 1, maxX3 - 1, maxX1, maxX2, 0);
-    } else if (sendDir == DIR_PMP) {
+    } else if (sendDir == dPMP) {
         exchangeData(maxX1 - 1, 1, maxX3 - 1, 0, maxX2, 0);
-    } else if (sendDir == DIR_MPP) {
+    } else if (sendDir == dMPP) {
         exchangeData(1, maxX2 - 1, maxX3 - 1, maxX1, 0, 0);
-    } else if (sendDir == DIR_PPP) {
+    } else if (sendDir == dPPP) {
         exchangeData(maxX1 - 1, maxX2 - 1, maxX3 - 1, 0, 0, 0);
-    } else if (sendDir == DIR_MMM) {
+    } else if (sendDir == dMMM) {
         exchangeData(1, 1, 1, maxX1, maxX2, maxX3);
-    } else if (sendDir == DIR_PMM) {
+    } else if (sendDir == dPMM) {
         exchangeData(maxX1 - 1, 1, 1, 0, maxX2, maxX3);
-    } else if (sendDir == DIR_MPM) {
+    } else if (sendDir == dMPM) {
         exchangeData(1, maxX2 - 1, 1, maxX1, 0, maxX3);
-    } else if (sendDir == DIR_PPM) {
+    } else if (sendDir == dPPM) {
         exchangeData(maxX1 - 1, maxX2 - 1, 1, 0, 0, maxX3);
     } else
         UB_THROW(UbException(UB_EXARGS, "unknown dir"));

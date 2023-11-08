@@ -40,7 +40,7 @@ void RefineAroundGbObjectHelper::refine()
     grid->accept(overlapVisitor);
 
     std::vector<int> dirs;
-    for (int i = (int)DIR_P00; i <= (int)DIR_0MP; i++) {
+    for (int i = (int)dP00; i <= (int)d0MP; i++) {
         dirs.push_back(i);
     }
     SetInterpolationDirsBlockVisitor interDirsVisitor(dirs);

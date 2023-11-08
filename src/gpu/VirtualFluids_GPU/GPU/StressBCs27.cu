@@ -194,32 +194,32 @@ __global__ void QStressDeviceComp27(
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
             *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
-      q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
-      q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
-      q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
-      q_dirB   = &QQ[DIR_00M * numberOfBCnodes];
-      q_dirNE  = &QQ[DIR_PP0 * numberOfBCnodes];
-      q_dirSW  = &QQ[DIR_MM0 * numberOfBCnodes];
-      q_dirSE  = &QQ[DIR_PM0 * numberOfBCnodes];
-      q_dirNW  = &QQ[DIR_MP0 * numberOfBCnodes];
-      q_dirTE  = &QQ[DIR_P0P * numberOfBCnodes];
-      q_dirBW  = &QQ[DIR_M0M * numberOfBCnodes];
-      q_dirBE  = &QQ[DIR_P0M * numberOfBCnodes];
-      q_dirTW  = &QQ[DIR_M0P * numberOfBCnodes];
-      q_dirTN  = &QQ[DIR_0PP * numberOfBCnodes];
-      q_dirBS  = &QQ[DIR_0MM * numberOfBCnodes];
-      q_dirBN  = &QQ[DIR_0PM * numberOfBCnodes];
-      q_dirTS  = &QQ[DIR_0MP * numberOfBCnodes];
-      q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
-      q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
-      q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
-      q_dirTNW = &QQ[DIR_MPP * numberOfBCnodes];
-      q_dirBNE = &QQ[DIR_PPM * numberOfBCnodes];
-      q_dirBSW = &QQ[DIR_MMM * numberOfBCnodes];
-      q_dirBSE = &QQ[DIR_PMM * numberOfBCnodes];
-      q_dirBNW = &QQ[DIR_MPM * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
+      q_dirN   = &QQ[d0P0 * numberOfBCnodes];
+      q_dirS   = &QQ[d0M0 * numberOfBCnodes];
+      q_dirT   = &QQ[d00P * numberOfBCnodes];
+      q_dirB   = &QQ[d00M * numberOfBCnodes];
+      q_dirNE  = &QQ[dPP0 * numberOfBCnodes];
+      q_dirSW  = &QQ[dMM0 * numberOfBCnodes];
+      q_dirSE  = &QQ[dPM0 * numberOfBCnodes];
+      q_dirNW  = &QQ[dMP0 * numberOfBCnodes];
+      q_dirTE  = &QQ[dP0P * numberOfBCnodes];
+      q_dirBW  = &QQ[dM0M * numberOfBCnodes];
+      q_dirBE  = &QQ[dP0M * numberOfBCnodes];
+      q_dirTW  = &QQ[dM0P * numberOfBCnodes];
+      q_dirTN  = &QQ[d0PP * numberOfBCnodes];
+      q_dirBS  = &QQ[d0MM * numberOfBCnodes];
+      q_dirBN  = &QQ[d0PM * numberOfBCnodes];
+      q_dirTS  = &QQ[d0MP * numberOfBCnodes];
+      q_dirTNE = &QQ[dPPP * numberOfBCnodes];
+      q_dirTSW = &QQ[dMMP * numberOfBCnodes];
+      q_dirTSE = &QQ[dPMP * numberOfBCnodes];
+      q_dirTNW = &QQ[dMPP * numberOfBCnodes];
+      q_dirBNE = &QQ[dPPM * numberOfBCnodes];
+      q_dirBSW = &QQ[dMMM * numberOfBCnodes];
+      q_dirBSE = &QQ[dPMM * numberOfBCnodes];
+      q_dirBNW = &QQ[dMPM * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -254,38 +254,38 @@ __global__ void QStressDeviceComp27(
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];     //post-coll f's
-      f_E    = (D.f[DIR_M00])[kw   ];
-      f_S    = (D.f[DIR_0P0])[kn   ];
-      f_N    = (D.f[DIR_0M0])[ks   ];
-      f_B    = (D.f[DIR_00P])[kt   ];
-      f_T    = (D.f[DIR_00M])[kb   ];
-      f_SW   = (D.f[DIR_PP0])[kne  ];
-      f_NE   = (D.f[DIR_MM0])[ksw  ];
-      f_NW   = (D.f[DIR_PM0])[kse  ];
-      f_SE   = (D.f[DIR_MP0])[knw  ];
-      f_BW   = (D.f[DIR_P0P])[kte  ];
-      f_TE   = (D.f[DIR_M0M])[kbw  ];
-      f_TW   = (D.f[DIR_P0M])[kbe  ];
-      f_BE   = (D.f[DIR_M0P])[ktw  ];
-      f_BS   = (D.f[DIR_0PP])[ktn  ];
-      f_TN   = (D.f[DIR_0MM])[kbs  ];
-      f_TS   = (D.f[DIR_0PM])[kbn  ];
-      f_BN   = (D.f[DIR_0MP])[kts  ];
-      f_BSW  = (D.f[DIR_PPP])[ktne ];
-      f_BNE  = (D.f[DIR_MMP])[ktsw ];
-      f_BNW  = (D.f[DIR_PMP])[ktse ];
-      f_BSE  = (D.f[DIR_MPP])[ktnw ];
-      f_TSW  = (D.f[DIR_PPM])[kbne ];
-      f_TNE  = (D.f[DIR_MMM])[kbsw ];
-      f_TNW  = (D.f[DIR_PMM])[kbse ];
-      f_TSE  = (D.f[DIR_MPM])[kbnw ];
+      f_W    = (D.f[dP00])[ke   ];     //post-coll f's
+      f_E    = (D.f[dM00])[kw   ];
+      f_S    = (D.f[d0P0])[kn   ];
+      f_N    = (D.f[d0M0])[ks   ];
+      f_B    = (D.f[d00P])[kt   ];
+      f_T    = (D.f[d00M])[kb   ];
+      f_SW   = (D.f[dPP0])[kne  ];
+      f_NE   = (D.f[dMM0])[ksw  ];
+      f_NW   = (D.f[dPM0])[kse  ];
+      f_SE   = (D.f[dMP0])[knw  ];
+      f_BW   = (D.f[dP0P])[kte  ];
+      f_TE   = (D.f[dM0M])[kbw  ];
+      f_TW   = (D.f[dP0M])[kbe  ];
+      f_BE   = (D.f[dM0P])[ktw  ];
+      f_BS   = (D.f[d0PP])[ktn  ];
+      f_TN   = (D.f[d0MM])[kbs  ];
+      f_TS   = (D.f[d0PM])[kbn  ];
+      f_BN   = (D.f[d0MP])[kts  ];
+      f_BSW  = (D.f[dPPP])[ktne ];
+      f_BNE  = (D.f[dMMP])[ktsw ];
+      f_BNW  = (D.f[dPMP])[ktse ];
+      f_BSE  = (D.f[dMPP])[ktnw ];
+      f_TSW  = (D.f[dPPM])[kbne ];
+      f_TNE  = (D.f[dMMM])[kbsw ];
+      f_TNW  = (D.f[dPMM])[kbse ];
+      f_TSE  = (D.f[dMPM])[kbnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -636,49 +636,49 @@ __global__ void QStressDeviceComp27(
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ))/(c1o1+q);
+         (D.f[dM00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ))/(c1o1+q);
          wallMomentumX += -(c6o1*c2o27*( VeloX     ))/(c1o1+q);
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
+         (D.f[dP00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
       }
 
       q = q_dirN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0M0])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ))/(c1o1+q);
+         (D.f[d0M0])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ))/(c1o1+q);
          wallMomentumY += - (c6o1*c2o27*( VeloY     ))/(c1o1+q);
       }
 
       q = q_dirS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0P0])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ))/(c1o1+q);
+         (D.f[d0P0])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ))/(c1o1+q);
          wallMomentumY -=  -(c6o1*c2o27*(-VeloY     ))/(c1o1+q);
       }
 
       q = q_dirT[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_00M])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ))/(c1o1+q);
+         (D.f[d00M])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c2o27*( VeloZ     ))/(c1o1+q);
       }
 
       q = q_dirB[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_00P])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ))/(c1o1+q);
+         (D.f[d00P])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ))/(c1o1+q);
          wallMomentumZ -= -(c6o1*c2o27*(-VeloZ     ))/(c1o1+q);
       }
 
       q = q_dirNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MM0])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
+         (D.f[dMM0])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
          wallMomentumX +=  -(c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
          wallMomentumY +=  -(c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
       }
@@ -686,7 +686,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PP0])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
+         (D.f[dPP0])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
       }
@@ -694,7 +694,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MP0])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
+         (D.f[dMP0])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
          wallMomentumX += -(c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
          wallMomentumY -= -(c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
       }
@@ -702,7 +702,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PM0])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
+         (D.f[dPM0])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
       }
@@ -710,7 +710,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M0M])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
+         (D.f[dM0M])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
          wallMomentumX += - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
       }
@@ -718,7 +718,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P0P])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
+         (D.f[dP0P])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
       }
@@ -726,7 +726,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M0P])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
+         (D.f[dM0P])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
          wallMomentumX += - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
       }
@@ -734,7 +734,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P0M])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
+         (D.f[dP0M])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
       }
@@ -742,7 +742,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0MM])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
+         (D.f[d0MM])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
       }
@@ -750,7 +750,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0PP])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
+         (D.f[d0PP])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
       }
@@ -758,7 +758,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0MP])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
+         (D.f[d0MP])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
       }
@@ -766,7 +766,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0PM])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
+         (D.f[d0PM])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
       }
@@ -774,7 +774,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MMM])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
+         (D.f[dMMM])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
          wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
@@ -783,7 +783,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PPP])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
+         (D.f[dPPP])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
@@ -792,7 +792,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MMP])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
+         (D.f[dMMP])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
          wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
@@ -801,7 +801,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PPM])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
+         (D.f[dPPM])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
@@ -810,7 +810,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MPM])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
+         (D.f[dMPM])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
          wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
@@ -819,7 +819,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PMP])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
+         (D.f[dPMP])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
@@ -828,7 +828,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirBSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MPP])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
+         (D.f[dMPP])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
          wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
          wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
          wallMomentumZ -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
@@ -837,7 +837,7 @@ __global__ void QStressDeviceComp27(
       q = q_dirTNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PMM])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
+         (D.f[dPMM])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
          wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
          wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
          wallMomentumZ += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
@@ -906,32 +906,32 @@ __global__ void BBStressDevice27( real* DD,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
-      q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
-      q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
-      q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
-      q_dirB   = &QQ[DIR_00M * numberOfBCnodes];
-      q_dirNE  = &QQ[DIR_PP0 * numberOfBCnodes];
-      q_dirSW  = &QQ[DIR_MM0 * numberOfBCnodes];
-      q_dirSE  = &QQ[DIR_PM0 * numberOfBCnodes];
-      q_dirNW  = &QQ[DIR_MP0 * numberOfBCnodes];
-      q_dirTE  = &QQ[DIR_P0P * numberOfBCnodes];
-      q_dirBW  = &QQ[DIR_M0M * numberOfBCnodes];
-      q_dirBE  = &QQ[DIR_P0M * numberOfBCnodes];
-      q_dirTW  = &QQ[DIR_M0P * numberOfBCnodes];
-      q_dirTN  = &QQ[DIR_0PP * numberOfBCnodes];
-      q_dirBS  = &QQ[DIR_0MM * numberOfBCnodes];
-      q_dirBN  = &QQ[DIR_0PM * numberOfBCnodes];
-      q_dirTS  = &QQ[DIR_0MP * numberOfBCnodes];
-      q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
-      q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
-      q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
-      q_dirTNW = &QQ[DIR_MPP * numberOfBCnodes];
-      q_dirBNE = &QQ[DIR_PPM * numberOfBCnodes];
-      q_dirBSW = &QQ[DIR_MMM * numberOfBCnodes];
-      q_dirBSE = &QQ[DIR_PMM * numberOfBCnodes];
-      q_dirBNW = &QQ[DIR_MPM * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
+      q_dirN   = &QQ[d0P0 * numberOfBCnodes];
+      q_dirS   = &QQ[d0M0 * numberOfBCnodes];
+      q_dirT   = &QQ[d00P * numberOfBCnodes];
+      q_dirB   = &QQ[d00M * numberOfBCnodes];
+      q_dirNE  = &QQ[dPP0 * numberOfBCnodes];
+      q_dirSW  = &QQ[dMM0 * numberOfBCnodes];
+      q_dirSE  = &QQ[dPM0 * numberOfBCnodes];
+      q_dirNW  = &QQ[dMP0 * numberOfBCnodes];
+      q_dirTE  = &QQ[dP0P * numberOfBCnodes];
+      q_dirBW  = &QQ[dM0M * numberOfBCnodes];
+      q_dirBE  = &QQ[dP0M * numberOfBCnodes];
+      q_dirTW  = &QQ[dM0P * numberOfBCnodes];
+      q_dirTN  = &QQ[d0PP * numberOfBCnodes];
+      q_dirBS  = &QQ[d0MM * numberOfBCnodes];
+      q_dirBN  = &QQ[d0PM * numberOfBCnodes];
+      q_dirTS  = &QQ[d0MP * numberOfBCnodes];
+      q_dirTNE = &QQ[dPPP * numberOfBCnodes];
+      q_dirTSW = &QQ[dMMP * numberOfBCnodes];
+      q_dirTSE = &QQ[dPMP * numberOfBCnodes];
+      q_dirTNW = &QQ[dMPP * numberOfBCnodes];
+      q_dirBNE = &QQ[dPPM * numberOfBCnodes];
+      q_dirBSW = &QQ[dMMM * numberOfBCnodes];
+      q_dirBSE = &QQ[dPMM * numberOfBCnodes];
+      q_dirBNW = &QQ[dMPM * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -967,38 +967,38 @@ __global__ void BBStressDevice27( real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
-      f_S    = (D.f[DIR_0P0])[kn   ];
-      f_N    = (D.f[DIR_0M0])[ks   ];
-      f_B    = (D.f[DIR_00P])[kt   ];
-      f_T    = (D.f[DIR_00M])[kb   ];
-      f_SW   = (D.f[DIR_PP0])[kne  ];
-      f_NE   = (D.f[DIR_MM0])[ksw  ];
-      f_NW   = (D.f[DIR_PM0])[kse  ];
-      f_SE   = (D.f[DIR_MP0])[knw  ];
-      f_BW   = (D.f[DIR_P0P])[kte  ];
-      f_TE   = (D.f[DIR_M0M])[kbw  ];
-      f_TW   = (D.f[DIR_P0M])[kbe  ];
-      f_BE   = (D.f[DIR_M0P])[ktw  ];
-      f_BS   = (D.f[DIR_0PP])[ktn  ];
-      f_TN   = (D.f[DIR_0MM])[kbs  ];
-      f_TS   = (D.f[DIR_0PM])[kbn  ];
-      f_BN   = (D.f[DIR_0MP])[kts  ];
-      f_BSW  = (D.f[DIR_PPP])[ktne ];
-      f_BNE  = (D.f[DIR_MMP])[ktsw ];
-      f_BNW  = (D.f[DIR_PMP])[ktse ];
-      f_BSE  = (D.f[DIR_MPP])[ktnw ];
-      f_TSW  = (D.f[DIR_PPM])[kbne ];
-      f_TNE  = (D.f[DIR_MMM])[kbsw ];
-      f_TNW  = (D.f[DIR_PMM])[kbse ];
-      f_TSE  = (D.f[DIR_MPM])[kbnw ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
+      f_S    = (D.f[d0P0])[kn   ];
+      f_N    = (D.f[d0M0])[ks   ];
+      f_B    = (D.f[d00P])[kt   ];
+      f_T    = (D.f[d00M])[kb   ];
+      f_SW   = (D.f[dPP0])[kne  ];
+      f_NE   = (D.f[dMM0])[ksw  ];
+      f_NW   = (D.f[dPM0])[kse  ];
+      f_SE   = (D.f[dMP0])[knw  ];
+      f_BW   = (D.f[dP0P])[kte  ];
+      f_TE   = (D.f[dM0M])[kbw  ];
+      f_TW   = (D.f[dP0M])[kbe  ];
+      f_BE   = (D.f[dM0P])[ktw  ];
+      f_BS   = (D.f[d0PP])[ktn  ];
+      f_TN   = (D.f[d0MM])[kbs  ];
+      f_TS   = (D.f[d0PM])[kbn  ];
+      f_BN   = (D.f[d0MP])[kts  ];
+      f_BSW  = (D.f[dPPP])[ktne ];
+      f_BNE  = (D.f[dMMP])[ktsw ];
+      f_BNW  = (D.f[dPMP])[ktse ];
+      f_BSE  = (D.f[dMPP])[ktnw ];
+      f_TSW  = (D.f[dPPM])[kbne ];
+      f_TNE  = (D.f[dMMM])[kbsw ];
+      f_TNW  = (D.f[dPMM])[kbse ];
+      f_TSE  = (D.f[dMPM])[kbnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1266,49 +1266,49 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
+         (D.f[dM00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
          wallMomentumX += -(c6o1*c2o27*( VeloX     ));
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
+         (D.f[dP00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
          wallMomentumX -= - (c6o1*c2o27*(-VeloX     ));
       }
 
       q = q_dirN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0M0])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ));
+         (D.f[d0M0])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ));
          wallMomentumY += - (c6o1*c2o27*( VeloY     ));
       }
 
       q = q_dirS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0P0])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ));
+         (D.f[d0P0])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ));
          wallMomentumY -=  -(c6o1*c2o27*(-VeloY     ));
       }
 
       q = q_dirT[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_00M])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ));
+         (D.f[d00M])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ));
          wallMomentumZ += - (c6o1*c2o27*( VeloZ     ));
       }
 
       q = q_dirB[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_00P])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ));
+         (D.f[d00P])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ));
          wallMomentumZ -= -(c6o1*c2o27*(-VeloZ     ));
       }
 
       q = q_dirNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MM0])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY));
+         (D.f[dMM0])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY));
          wallMomentumX +=  -(c6o1*c1o54*(VeloX+VeloY));
          wallMomentumY +=  -(c6o1*c1o54*(VeloX+VeloY));
       }
@@ -1316,7 +1316,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PP0])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY));
+         (D.f[dPP0])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloY));
          wallMomentumY -= - (c6o1*c1o54*(-VeloX-VeloY));
       }
@@ -1324,7 +1324,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MP0])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY));
+         (D.f[dMP0])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY));
          wallMomentumX += -(c6o1*c1o54*( VeloX-VeloY));
          wallMomentumY -= -(c6o1*c1o54*( VeloX-VeloY));
       }
@@ -1332,7 +1332,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PM0])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY));
+         (D.f[dPM0])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloY));
          wallMomentumY += - (c6o1*c1o54*(-VeloX+VeloY));
       }
@@ -1340,7 +1340,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M0M])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ));
+         (D.f[dM0M])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ));
          wallMomentumX += - (c6o1*c1o54*( VeloX+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*( VeloX+VeloZ));
       }
@@ -1348,7 +1348,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P0P])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ));
+         (D.f[dP0P])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*(-VeloX-VeloZ));
       }
@@ -1356,7 +1356,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M0P])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ));
+         (D.f[dM0P])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ));
          wallMomentumX += - (c6o1*c1o54*( VeloX-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*( VeloX-VeloZ));
       }
@@ -1364,7 +1364,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P0M])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ));
+         (D.f[dP0M])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*(-VeloX+VeloZ));
       }
@@ -1372,7 +1372,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0MM])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ));
+         (D.f[d0MM])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ));
          wallMomentumY += - (c6o1*c1o54*( VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*( VeloY+VeloZ));
       }
@@ -1380,7 +1380,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0PP])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ));
+         (D.f[d0PP])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ));
          wallMomentumY -= - (c6o1*c1o54*( -VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*( -VeloY-VeloZ));
       }
@@ -1388,7 +1388,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0MP])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ));
+         (D.f[d0MP])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ));
          wallMomentumY += - (c6o1*c1o54*( VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*( VeloY-VeloZ));
       }
@@ -1396,7 +1396,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0PM])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ));
+         (D.f[d0PM])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ));
          wallMomentumY -= - (c6o1*c1o54*( -VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*( -VeloY+VeloZ));
       }
@@ -1404,7 +1404,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MMM])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
+         (D.f[dMMM])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
          wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
@@ -1413,7 +1413,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PPP])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
+         (D.f[dPPP])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
          wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
@@ -1422,7 +1422,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MMP])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
+         (D.f[dMMP])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
          wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
@@ -1431,7 +1431,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PPM])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
+         (D.f[dPPM])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
          wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
@@ -1440,7 +1440,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MPM])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
+         (D.f[dMPM])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
          wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
@@ -1449,7 +1449,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PMP])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
+         (D.f[dPMP])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
          wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
@@ -1458,7 +1458,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirBSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MPP])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
+         (D.f[dMPP])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
          wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
@@ -1467,7 +1467,7 @@ __global__ void BBStressDevice27( real* DD,
       q = q_dirTNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PMM])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
+         (D.f[dPMM])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
          wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
@@ -1536,32 +1536,32 @@ __global__ void BBStressPressureDevice27( real* DD,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
          *q_dirBSE, *q_dirBNW;
-      q_dirE   = &QQ[DIR_P00 * numberOfBCnodes];
-      q_dirW   = &QQ[DIR_M00 * numberOfBCnodes];
-      q_dirN   = &QQ[DIR_0P0 * numberOfBCnodes];
-      q_dirS   = &QQ[DIR_0M0 * numberOfBCnodes];
-      q_dirT   = &QQ[DIR_00P * numberOfBCnodes];
-      q_dirB   = &QQ[DIR_00M * numberOfBCnodes];
-      q_dirNE  = &QQ[DIR_PP0 * numberOfBCnodes];
-      q_dirSW  = &QQ[DIR_MM0 * numberOfBCnodes];
-      q_dirSE  = &QQ[DIR_PM0 * numberOfBCnodes];
-      q_dirNW  = &QQ[DIR_MP0 * numberOfBCnodes];
-      q_dirTE  = &QQ[DIR_P0P * numberOfBCnodes];
-      q_dirBW  = &QQ[DIR_M0M * numberOfBCnodes];
-      q_dirBE  = &QQ[DIR_P0M * numberOfBCnodes];
-      q_dirTW  = &QQ[DIR_M0P * numberOfBCnodes];
-      q_dirTN  = &QQ[DIR_0PP * numberOfBCnodes];
-      q_dirBS  = &QQ[DIR_0MM * numberOfBCnodes];
-      q_dirBN  = &QQ[DIR_0PM * numberOfBCnodes];
-      q_dirTS  = &QQ[DIR_0MP * numberOfBCnodes];
-      q_dirTNE = &QQ[DIR_PPP * numberOfBCnodes];
-      q_dirTSW = &QQ[DIR_MMP * numberOfBCnodes];
-      q_dirTSE = &QQ[DIR_PMP * numberOfBCnodes];
-      q_dirTNW = &QQ[DIR_MPP * numberOfBCnodes];
-      q_dirBNE = &QQ[DIR_PPM * numberOfBCnodes];
-      q_dirBSW = &QQ[DIR_MMM * numberOfBCnodes];
-      q_dirBSE = &QQ[DIR_PMM * numberOfBCnodes];
-      q_dirBNW = &QQ[DIR_MPM * numberOfBCnodes];
+      q_dirE   = &QQ[dP00 * numberOfBCnodes];
+      q_dirW   = &QQ[dM00 * numberOfBCnodes];
+      q_dirN   = &QQ[d0P0 * numberOfBCnodes];
+      q_dirS   = &QQ[d0M0 * numberOfBCnodes];
+      q_dirT   = &QQ[d00P * numberOfBCnodes];
+      q_dirB   = &QQ[d00M * numberOfBCnodes];
+      q_dirNE  = &QQ[dPP0 * numberOfBCnodes];
+      q_dirSW  = &QQ[dMM0 * numberOfBCnodes];
+      q_dirSE  = &QQ[dPM0 * numberOfBCnodes];
+      q_dirNW  = &QQ[dMP0 * numberOfBCnodes];
+      q_dirTE  = &QQ[dP0P * numberOfBCnodes];
+      q_dirBW  = &QQ[dM0M * numberOfBCnodes];
+      q_dirBE  = &QQ[dP0M * numberOfBCnodes];
+      q_dirTW  = &QQ[dM0P * numberOfBCnodes];
+      q_dirTN  = &QQ[d0PP * numberOfBCnodes];
+      q_dirBS  = &QQ[d0MM * numberOfBCnodes];
+      q_dirBN  = &QQ[d0PM * numberOfBCnodes];
+      q_dirTS  = &QQ[d0MP * numberOfBCnodes];
+      q_dirTNE = &QQ[dPPP * numberOfBCnodes];
+      q_dirTSW = &QQ[dMMP * numberOfBCnodes];
+      q_dirTSE = &QQ[dPMP * numberOfBCnodes];
+      q_dirTNW = &QQ[dMPP * numberOfBCnodes];
+      q_dirBNE = &QQ[dPPM * numberOfBCnodes];
+      q_dirBSW = &QQ[dMMM * numberOfBCnodes];
+      q_dirBSE = &QQ[dPMM * numberOfBCnodes];
+      q_dirBNW = &QQ[dMPM * numberOfBCnodes];
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
@@ -1597,38 +1597,38 @@ __global__ void BBStressPressureDevice27( real* DD,
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-      f_W    = (D.f[DIR_P00])[ke   ];
-      f_E    = (D.f[DIR_M00])[kw   ];
-      f_S    = (D.f[DIR_0P0])[kn   ];
-      f_N    = (D.f[DIR_0M0])[ks   ];
-      f_B    = (D.f[DIR_00P])[kt   ];
-      f_T    = (D.f[DIR_00M])[kb   ];
-      f_SW   = (D.f[DIR_PP0])[kne  ];
-      f_NE   = (D.f[DIR_MM0])[ksw  ];
-      f_NW   = (D.f[DIR_PM0])[kse  ];
-      f_SE   = (D.f[DIR_MP0])[knw  ];
-      f_BW   = (D.f[DIR_P0P])[kte  ];
-      f_TE   = (D.f[DIR_M0M])[kbw  ];
-      f_TW   = (D.f[DIR_P0M])[kbe  ];
-      f_BE   = (D.f[DIR_M0P])[ktw  ];
-      f_BS   = (D.f[DIR_0PP])[ktn  ];
-      f_TN   = (D.f[DIR_0MM])[kbs  ];
-      f_TS   = (D.f[DIR_0PM])[kbn  ];
-      f_BN   = (D.f[DIR_0MP])[kts  ];
-      f_BSW  = (D.f[DIR_PPP])[ktne ];
-      f_BNE  = (D.f[DIR_MMP])[ktsw ];
-      f_BNW  = (D.f[DIR_PMP])[ktse ];
-      f_BSE  = (D.f[DIR_MPP])[ktnw ];
-      f_TSW  = (D.f[DIR_PPM])[kbne ];
-      f_TNE  = (D.f[DIR_MMM])[kbsw ];
-      f_TNW  = (D.f[DIR_PMM])[kbse ];
-      f_TSE  = (D.f[DIR_MPM])[kbnw ];
+      f_W    = (D.f[dP00])[ke   ];
+      f_E    = (D.f[dM00])[kw   ];
+      f_S    = (D.f[d0P0])[kn   ];
+      f_N    = (D.f[d0M0])[ks   ];
+      f_B    = (D.f[d00P])[kt   ];
+      f_T    = (D.f[d00M])[kb   ];
+      f_SW   = (D.f[dPP0])[kne  ];
+      f_NE   = (D.f[dMM0])[ksw  ];
+      f_NW   = (D.f[dPM0])[kse  ];
+      f_SE   = (D.f[dMP0])[knw  ];
+      f_BW   = (D.f[dP0P])[kte  ];
+      f_TE   = (D.f[dM0M])[kbw  ];
+      f_TW   = (D.f[dP0M])[kbe  ];
+      f_BE   = (D.f[dM0P])[ktw  ];
+      f_BS   = (D.f[d0PP])[ktn  ];
+      f_TN   = (D.f[d0MM])[kbs  ];
+      f_TS   = (D.f[d0PM])[kbn  ];
+      f_BN   = (D.f[d0MP])[kts  ];
+      f_BSW  = (D.f[dPPP])[ktne ];
+      f_BNE  = (D.f[dMMP])[ktsw ];
+      f_BNW  = (D.f[dPMP])[ktse ];
+      f_BSE  = (D.f[dMPP])[ktnw ];
+      f_TSW  = (D.f[dPPM])[kbne ];
+      f_TNE  = (D.f[dMMM])[kbsw ];
+      f_TNW  = (D.f[dPMM])[kbse ];
+      f_TSE  = (D.f[dMPM])[kbnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[DIR_000])[kzero]);
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]);
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1896,49 +1896,49 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
+         (D.f[dM00])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));
          wallMomentumX += -(c6o1*c2o27*( VeloX     ));
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
+         (D.f[dP00])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ));
          wallMomentumX -= - (c6o1*c2o27*(-VeloX     ));
       }
 
       q = q_dirN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0M0])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ));
+         (D.f[d0M0])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ));
          wallMomentumY += - (c6o1*c2o27*( VeloY     ));
       }
 
       q = q_dirS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0P0])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ));
+         (D.f[d0P0])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ));
          wallMomentumY -=  -(c6o1*c2o27*(-VeloY     ));
       }
 
       q = q_dirT[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_00M])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ));
+         (D.f[d00M])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ));
          wallMomentumZ += - (c6o1*c2o27*( VeloZ     ));
       }
 
       q = q_dirB[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_00P])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ));
+         (D.f[d00P])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ));
          wallMomentumZ -= -(c6o1*c2o27*(-VeloZ     ));
       }
 
       q = q_dirNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MM0])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY));
+         (D.f[dMM0])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY));
          wallMomentumX +=  -(c6o1*c1o54*(VeloX+VeloY));
          wallMomentumY +=  -(c6o1*c1o54*(VeloX+VeloY));
       }
@@ -1946,7 +1946,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PP0])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY));
+         (D.f[dPP0])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloY));
          wallMomentumY -= - (c6o1*c1o54*(-VeloX-VeloY));
       }
@@ -1954,7 +1954,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MP0])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY));
+         (D.f[dMP0])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY));
          wallMomentumX += -(c6o1*c1o54*( VeloX-VeloY));
          wallMomentumY -= -(c6o1*c1o54*( VeloX-VeloY));
       }
@@ -1962,7 +1962,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PM0])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY));
+         (D.f[dPM0])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloY));
          wallMomentumY += - (c6o1*c1o54*(-VeloX+VeloY));
       }
@@ -1970,7 +1970,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M0M])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ));
+         (D.f[dM0M])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ));
          wallMomentumX += - (c6o1*c1o54*( VeloX+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*( VeloX+VeloZ));
       }
@@ -1978,7 +1978,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P0P])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ));
+         (D.f[dP0P])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*(-VeloX-VeloZ));
       }
@@ -1986,7 +1986,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_M0P])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ));
+         (D.f[dM0P])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ));
          wallMomentumX += - (c6o1*c1o54*( VeloX-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*( VeloX-VeloZ));
       }
@@ -1994,7 +1994,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_P0M])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ));
+         (D.f[dP0M])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ));
          wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*(-VeloX+VeloZ));
       }
@@ -2002,7 +2002,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0MM])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ));
+         (D.f[d0MM])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ));
          wallMomentumY += - (c6o1*c1o54*( VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*( VeloY+VeloZ));
       }
@@ -2010,7 +2010,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0PP])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ));
+         (D.f[d0PP])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ));
          wallMomentumY -= - (c6o1*c1o54*( -VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*( -VeloY-VeloZ));
       }
@@ -2018,7 +2018,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0MP])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ));
+         (D.f[d0MP])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ));
          wallMomentumY += - (c6o1*c1o54*( VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o54*( VeloY-VeloZ));
       }
@@ -2026,7 +2026,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_0PM])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ));
+         (D.f[d0PM])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ));
          wallMomentumY -= - (c6o1*c1o54*( -VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o54*( -VeloY+VeloZ));
       }
@@ -2034,7 +2034,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MMM])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
+         (D.f[dMMM])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
          wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*( VeloX+VeloY+VeloZ));
@@ -2043,7 +2043,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PPP])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
+         (D.f[dPPP])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
          wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ));
@@ -2052,7 +2052,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MMP])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
+         (D.f[dMMP])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
          wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*( VeloX+VeloY-VeloZ));
@@ -2061,7 +2061,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PPM])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
+         (D.f[dPPM])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
          wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*(-VeloX-VeloY+VeloZ));
@@ -2070,7 +2070,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MPM])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
+         (D.f[dMPM])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
          wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*( VeloX-VeloY+VeloZ));
@@ -2079,7 +2079,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PMP])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
+         (D.f[dPMP])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
          wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ));
@@ -2088,7 +2088,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirBSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_MPP])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
+         (D.f[dMPP])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
          wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
          wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
          wallMomentumZ -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ));
@@ -2097,7 +2097,7 @@ __global__ void BBStressPressureDevice27( real* DD,
       q = q_dirTNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[DIR_PMM])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
+         (D.f[dPMM])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
          wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
          wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));
          wallMomentumZ += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ));

@@ -2958,7 +2958,7 @@ void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryCondi
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        vf::lbm::dir::DIR_P00);
+        vf::lbm::dir::dP00);
     getLastCudaError("QPressNoRhoDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -2979,7 +2979,7 @@ void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoun
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        vf::lbm::dir::DIR_P00,
+        vf::lbm::dir::dP00,
         parameterDevice->outflowPressureCorrectionFactor);
     getLastCudaError("QPressZeroRhoOutflowDevice27 execution failed");
 }

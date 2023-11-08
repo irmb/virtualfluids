@@ -38,7 +38,7 @@ protected:
 
     const int level = 0;
     const unsigned long long numberOfNodes = 3;
-    const uint direction = vf::lbm::dir::DIR_P00; // x
+    const uint direction = vf::lbm::dir::dP00; // x
     std::unique_ptr<LBMSimulationParameter> parH = std::make_unique<LBMSimulationParameter>();
     WbWriterSpy writerSpy;
     std::vector<uint> typeOfGridNode;

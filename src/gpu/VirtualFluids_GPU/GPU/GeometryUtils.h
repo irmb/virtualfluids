@@ -3,7 +3,7 @@
 #include "DataTypes.h"
 
 
-__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of DIR_MMM node
+__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of dMMM node
                                         uint &ke, uint &kn, uint &kt, uint &kne, uint &kte,uint &ktn, uint &ktne,
                                         uint* neighborX, uint* neighborY, uint* neighborZ)
 {

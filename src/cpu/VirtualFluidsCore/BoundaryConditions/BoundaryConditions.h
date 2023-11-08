@@ -196,59 +196,59 @@ public:
         using namespace vf::lbm::dir;
 
         switch (direction) {
-            case DIR_P00:
+            case dP00:
                 return (float)(vf::basics::constant::c4o9 *
                                (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
-            case DIR_M00:
+            case dM00:
                 return (float)(vf::basics::constant::c4o9 *
                                (-bcVelocityX1)); // z.B. aus paper manfred MRT LB models in three dimensions (2002)
-            case DIR_0P0:
+            case d0P0:
                 return (float)(vf::basics::constant::c4o9 * (+bcVelocityX2));
-            case DIR_0M0:
+            case d0M0:
                 return (float)(vf::basics::constant::c4o9 * (-bcVelocityX2));
-            case DIR_00P:
+            case d00P:
                 return (float)(vf::basics::constant::c4o9 * (+bcVelocityX3));
-            case DIR_00M:
+            case d00M:
                 return (float)(vf::basics::constant::c4o9 * (-bcVelocityX3));
-            case DIR_PP0:
+            case dPP0:
                 return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 + bcVelocityX2));
-            case DIR_MM0:
+            case dMM0:
                 return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 - bcVelocityX2));
-            case DIR_PM0:
+            case dPM0:
                 return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 - bcVelocityX2));
-            case DIR_MP0:
+            case dMP0:
                 return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 + bcVelocityX2));
-            case DIR_P0P:
+            case dP0P:
                 return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 + bcVelocityX3));
-            case DIR_M0M:
+            case dM0M:
                 return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 - bcVelocityX3));
-            case DIR_P0M:
+            case dP0M:
                 return (float)(vf::basics::constant::c1o9 * (+bcVelocityX1 - bcVelocityX3));
-            case DIR_M0P:
+            case dM0P:
                 return (float)(vf::basics::constant::c1o9 * (-bcVelocityX1 + bcVelocityX3));
-            case DIR_0PP:
+            case d0PP:
                 return (float)(vf::basics::constant::c1o9 * (+bcVelocityX2 + bcVelocityX3));
-            case DIR_0MM:
+            case d0MM:
                 return (float)(vf::basics::constant::c1o9 * (-bcVelocityX2 - bcVelocityX3));
-            case DIR_0PM:
+            case d0PM:
                 return (float)(vf::basics::constant::c1o9 * (+bcVelocityX2 - bcVelocityX3));
-            case DIR_0MP:
+            case d0MP:
                 return (float)(vf::basics::constant::c1o9 * (-bcVelocityX2 + bcVelocityX3));
-            case DIR_PPP:
+            case dPPP:
                 return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
-            case DIR_MMM:
+            case dMMM:
                 return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
-            case DIR_PPM:
+            case dPPM:
                 return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
-            case DIR_MMP:
+            case dMMP:
                 return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
-            case DIR_PMP:
+            case dPMP:
                 return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
-            case DIR_MPM:
+            case dMPM:
                 return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
-            case DIR_PMM:
+            case dPMM:
                 return (float)(vf::basics::constant::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
-            case DIR_MPP:
+            case dMPP:
                 return (float)(vf::basics::constant::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             default:
                 throw UbException(UB_EXARGS, "unknown error");
