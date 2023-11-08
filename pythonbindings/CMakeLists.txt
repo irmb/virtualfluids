@@ -74,7 +74,7 @@ IF(BUILD_VF_CPU)
     set_target_properties(  cpu_bindings PROPERTIES
                             LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
                             OUTPUT_NAME "cpu")
-    target_link_libraries(cpu_bindings PRIVATE simulationconfig VirtualFluidsCore muparser)
+    target_link_libraries(cpu_bindings PRIVATE simulationconfig cpu_core muparser)
 
     target_include_directories(cpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(cpu_bindings PRIVATE ${CMAKE_BINARY_DIR})

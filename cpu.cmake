@@ -88,7 +88,7 @@ endif()
 
 add_subdirectory(${VF_THIRD_DIR}/MuParser)
 
-add_subdirectory(src/cpu/VirtualFluidsCore)
+add_subdirectory(src/cpu/core)
 
 if(BUILD_VF_PYTHON_BINDINGS)
     add_subdirectory(src/cpu/simulationconfig)

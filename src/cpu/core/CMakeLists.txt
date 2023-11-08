@@ -20,11 +20,11 @@ if(BUILD_USE_OPENMP)
     list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel PRIVATE_LINK lbm logger)
+set(library_name cpu_core)
 
-vf_add_tests()
+vf_add_library(NAME ${library_name} BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel PRIVATE_LINK lbm logger)
 
-vf_get_library_name(library_name)
+vf_add_tests(NAME ${library_name})
 
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)
