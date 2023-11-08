@@ -775,10 +775,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
         //   FeTriFaceMesh3D::VertexAttributes& vAttribut2 = (*attributes)[triangle.v2];
         //   FeTriFaceMesh3D::VertexAttributes& vAttribut3 = (*attributes)[triangle.v3];
         //   vx1 =
-        //   (float)(UbMath::c1o3*(vAttribut1.getVelocityX()+vAttribut2.getVelocityX()+vAttribut3.getVelocityX())); vx2
-        //   = (float)(UbMath::c1o3*(vAttribut1.getVelocityY()+vAttribut2.getVelocityY()+vAttribut3.getVelocityY()));
+        //   (float)(vf::basics::constant::c1o3*(vAttribut1.getVelocityX()+vAttribut2.getVelocityX()+vAttribut3.getVelocityX())); vx2
+        //   = (float)(vf::basics::constant::c1o3*(vAttribut1.getVelocityY()+vAttribut2.getVelocityY()+vAttribut3.getVelocityY()));
         //   vx3 =
-        //   (float)(UbMath::c1o3*(vAttribut1.getVelocityZ()+vAttribut2.getVelocityZ()+vAttribut3.getVelocityZ()));
+        //   (float)(vf::basics::constant::c1o3*(vAttribut1.getVelocityZ()+vAttribut2.getVelocityZ()+vAttribut3.getVelocityZ()));
         //}
 
         //////////////////////////////////////////////////////////////////////////
