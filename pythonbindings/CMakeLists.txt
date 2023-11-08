@@ -61,7 +61,7 @@ IF(BUILD_VF_GPU)
 
     target_include_directories(gpu_bindings PRIVATE ${VF_THIRD_DIR}/cuda_samples/)
 
-    target_link_libraries(gpu_bindings PRIVATE basics GridGenerator VirtualFluids_GPU parallel)
+    target_link_libraries(gpu_bindings PRIVATE basics GridGenerator gpu_core parallel)
 
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_BINARY_DIR})

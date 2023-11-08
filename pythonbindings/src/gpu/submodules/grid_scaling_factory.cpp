@@ -31,7 +31,7 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include <gpu/VirtualFluids_GPU/Factories/GridScalingFactory.h>
+#include <gpu/core/Factories/GridScalingFactory.h>
 
 namespace grid_scaling_factory
 {

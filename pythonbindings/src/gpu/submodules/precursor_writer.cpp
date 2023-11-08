@@ -33,8 +33,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h>
+#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/PreCollisionInteractor/PrecursorWriter.h>
 
 namespace precursor_writer
 {

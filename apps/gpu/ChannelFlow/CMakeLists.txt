@@ -1,6 +1,6 @@
 PROJECT(ChannelFlow LANGUAGES CUDA CXX)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics VirtualFluids_GPU GridGenerator FILES ChannelFlow.cpp)
+vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES ChannelFlow.cpp)
 
 set_source_files_properties(ChannelFlow.cpp PROPERTIES LANGUAGE CUDA)
 

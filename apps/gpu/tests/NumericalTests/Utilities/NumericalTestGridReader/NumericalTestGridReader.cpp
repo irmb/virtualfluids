@@ -1,6 +1,6 @@
 #include "NumericalTestGridReader.h"
 
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "gpu/core/Parameter/Parameter.h"
 
 #include "Utilities/InitialCondition/InitialCondition.h"
 
