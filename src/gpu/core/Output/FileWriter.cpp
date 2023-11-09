@@ -228,7 +228,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
         sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
 
         //////////////////////////////////////////////////////////////////////////
-        startPosition = part * para->getLimitOfNodesForVTK();
+        startPosition = FilePartCalculator::calculateStartingPostionOfPart(part);
         endPosition = startPosition + sizeOfNodes;
         //////////////////////////////////////////////////////////////////////////
         cells.clear();
@@ -327,7 +327,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
         //////////////////////////////////////////////////////////////////////////
         sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
         //////////////////////////////////////////////////////////////////////////
-        startPosition = part * para->getLimitOfNodesForVTK();
+        startPosition = FilePartCalculator::calculateStartingPostionOfPart(part);
         endPosition = startPosition + sizeOfNodes;
         //////////////////////////////////////////////////////////////////////////
         cells.clear();

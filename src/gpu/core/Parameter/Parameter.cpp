@@ -664,10 +664,6 @@ void Parameter::setOutputCount(unsigned int outputCount)
 {
     this->outputCount = outputCount;
 }
-void Parameter::setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
-{
-    this->limitOfNodesForVTK = limitOfNodesForVTK;
-}
 void Parameter::setStartTurn(unsigned int inStartTurn)
 {
     startTurn = inStartTurn;
@@ -1720,10 +1716,6 @@ unsigned int Parameter::getStepEnsight()
 unsigned int Parameter::getOutputCount()
 {
     return this->outputCount;
-}
-unsigned int Parameter::getLimitOfNodesForVTK() const
-{
-    return this->limitOfNodesForVTK;
 }
 unsigned int Parameter::getStartTurn()
 {

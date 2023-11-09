@@ -486,7 +486,6 @@ public:
     void setAngularVelocity(real inAngVel);
     void setStepEnsight(unsigned int step);
     void setOutputCount(unsigned int outputCount);
-    void setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
     void setStartTurn(unsigned int inStartTurn);
     void setDiffOn(bool isDiff);
     void setCompOn(bool isComp);
@@ -706,7 +705,6 @@ public:
     real getEndXHotWall();
     unsigned int getStepEnsight();
     unsigned int getOutputCount();
-    unsigned int getLimitOfNodesForVTK() const;
     unsigned int getStartTurn();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
@@ -1041,8 +1039,6 @@ private:
 
     double memsizeGPU;
 
-    //! \brief limits how many grid nodes are written into one vtk file
-    uint limitOfNodesForVTK;
     uint outputCount;
     uint timestep;
     uint tDoCheckPoint{ 0 };
