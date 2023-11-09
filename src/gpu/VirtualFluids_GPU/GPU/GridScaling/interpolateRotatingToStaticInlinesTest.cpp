@@ -104,7 +104,7 @@ TEST_F(RotateSecondOrderMomentsFromGlobalToRotatingTest, xAngleIsPiHalf_momentsC
     EXPECT_THAT(mxxMyy, RealNear(mxxMzzBeforeRotation, 1e-6));
     EXPECT_THAT(mxxMzz, RealNear(mxxMyyBeforeRotation, 1e-6));
     EXPECT_THAT(m110, RealNear(m101BeforeRotation, 1e-6));
-    
+
     // switched and reversed
     EXPECT_THAT(m101, RealNear(-m110BeforeRotation, 1e-6));
 }
@@ -116,13 +116,13 @@ TEST_F(RotateSecondOrderMomentsFromGlobalToRotatingTest, xAngleIsMinusPiHalf_mom
     rotateSecondOrderMomentsGlobalToRotating(m011, m101, m110, mxxMyy, mxxMzz, angles[0], angles[1], angles[2]);
 
     // reversed
-    EXPECT_THAT(-m011, RealNear(m011BeforeRotation, 1e-6));
+    EXPECT_THAT(m011, RealNear(-m011BeforeRotation, 1e-6));
 
     // switched
     EXPECT_THAT(mxxMyy, RealNear(mxxMzzBeforeRotation, 1e-6));
     EXPECT_THAT(mxxMzz, RealNear(mxxMyyBeforeRotation, 1e-6));
     EXPECT_THAT(m101, RealNear(m110BeforeRotation, 1e-6));
-    
+
     // switched and reversed
     EXPECT_THAT(m110, RealNear(-m101BeforeRotation, 1e-6));
 }

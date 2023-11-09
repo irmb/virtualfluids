@@ -30,7 +30,7 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, angleIsZero_momentsDoNo
     EXPECT_THAT(m110, RealEq(m110BeforeRotation));
 }
 
-TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, angleIs2Pi_momentsDoNotChange)
+TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, anglesAre2Pi_momentsDoNotChange)
 {
     std::array<real, 3> angles = { c2Pi, c2Pi, c2Pi };
 
@@ -97,6 +97,7 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, xAngleIsPiHalf_momentsC
 
     rotateSecondOrderMomentsRotatingToGlobal(m011, m101, m110, mxxMyy, mxxMzz, angles[0], angles[1], angles[2]);
 
+
     // reversed
     EXPECT_THAT(m011, RealNear(-m011BeforeRotation, 1e-6));
 
@@ -107,6 +108,19 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, xAngleIsPiHalf_momentsC
     
     // switched and reversed
     EXPECT_THAT(m110, RealNear(-m101BeforeRotation, 1e-6));
+
+    real mxxPyyPzz = 0.0;
+    real useNEQ = 1.0;
+    real m200BeforeRotation = c1o3 * (        mxxMyyBeforeRotation +        mxxMzzBeforeRotation + mxxPyyPzz) * useNEQ;
+    real m020BeforeRotation = c1o3 * (-c2o1 * mxxMyyBeforeRotation +        mxxMzzBeforeRotation + mxxPyyPzz) * useNEQ;
+    real m002BeforeRotation = c1o3 * (        mxxMyyBeforeRotation - c2o1 * mxxMzzBeforeRotation + mxxPyyPzz) * useNEQ;
+    real m200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    real m020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    real m002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * useNEQ;
+
+    EXPECT_THAT(m200, RealNear(m200BeforeRotation, 1e-6));
+    EXPECT_THAT(m020, RealNear(m002BeforeRotation, 1e-6));
+    EXPECT_THAT(m002, RealNear(m020BeforeRotation, 1e-6));
 }
 
 TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, xAngleIsMinusPiHalf_momentsChange)
@@ -116,7 +130,7 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, xAngleIsMinusPiHalf_mom
     rotateSecondOrderMomentsRotatingToGlobal(m011, m101, m110, mxxMyy, mxxMzz, angles[0], angles[1], angles[2]);
 
     // reversed
-    EXPECT_THAT(-m011, RealNear(m011BeforeRotation, 1e-6));
+    EXPECT_THAT(m011, RealNear(-m011BeforeRotation, 1e-6));
 
     // switched
     EXPECT_THAT(mxxMyy, RealNear(mxxMzzBeforeRotation, 1e-6));
@@ -125,6 +139,19 @@ TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, xAngleIsMinusPiHalf_mom
     
     // switched and reversed
     EXPECT_THAT(m101, RealNear(-m110BeforeRotation, 1e-6));
+
+    real mxxPyyPzz = 0.0;
+    real useNEQ = 1.0;
+    real m200BeforeRotation = c1o3 * (        mxxMyyBeforeRotation +        mxxMzzBeforeRotation + mxxPyyPzz) * useNEQ;
+    real m020BeforeRotation = c1o3 * (-c2o1 * mxxMyyBeforeRotation +        mxxMzzBeforeRotation + mxxPyyPzz) * useNEQ;
+    real m002BeforeRotation = c1o3 * (        mxxMyyBeforeRotation - c2o1 * mxxMzzBeforeRotation + mxxPyyPzz) * useNEQ;
+    real m200 = c1o3 * (        mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    real m020 = c1o3 * (-c2o1 * mxxMyy +        mxxMzz + mxxPyyPzz) * useNEQ;
+    real m002 = c1o3 * (        mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * useNEQ;
+
+    EXPECT_THAT(m200, RealNear(m200BeforeRotation, 1e-6));
+    EXPECT_THAT(m020, RealNear(m002BeforeRotation, 1e-6));
+    EXPECT_THAT(m002, RealNear(m020BeforeRotation, 1e-6));
 }
 
 TEST_F(RotateSecondOrderMomentsFromRotatingToGlobalTest, yAngleIsPiHalf_momentsChange)
