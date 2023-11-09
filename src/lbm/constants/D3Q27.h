@@ -7,6 +7,7 @@ namespace vf::lbm::dir
 {
 static constexpr size_t STARTDIR = 0;
 static constexpr size_t ENDDIR = 26;
+static constexpr size_t NUMBER_Of_DIRECTIONS = ENDDIR + 1;
 
 static constexpr size_t d000 = 0;
 static constexpr size_t dP00 = 1;

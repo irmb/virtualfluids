@@ -664,10 +664,6 @@ void Parameter::setOutputCount(unsigned int outputCount)
 {
     this->outputCount = outputCount;
 }
-void Parameter::setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
-{
-    this->limitOfNodesForVTK = limitOfNodesForVTK;
-}
 void Parameter::setStartTurn(unsigned int inStartTurn)
 {
     startTurn = inStartTurn;
@@ -1721,10 +1717,6 @@ unsigned int Parameter::getOutputCount()
 {
     return this->outputCount;
 }
-unsigned int Parameter::getLimitOfNodesForVTK()
-{
-    return this->limitOfNodesForVTK;
-}
 unsigned int Parameter::getStartTurn()
 {
     return startTurn;
@@ -1736,6 +1728,16 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParD(int level)
 std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
 {
     return parH[level];
+}
+
+LBMSimulationParameter& Parameter::getParDeviceAsReference(int level) const
+{
+    return *parD[level];
+}
+
+LBMSimulationParameter& Parameter::getParHostAsReference(int level) const
+{
+    return *parH[level];
 }
 
 const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParHallLevels()
@@ -1767,11 +1769,11 @@ unsigned int Parameter::getSizeMat(int level)
 //{
 //    return parH[level]->mem_size_real_yz;
 //}
-int Parameter::getFine()
+int Parameter::getFine() const
 {
     return fine;
 }
-int Parameter::getCoarse()
+int Parameter::getCoarse() const
 {
     return coarse;
 }

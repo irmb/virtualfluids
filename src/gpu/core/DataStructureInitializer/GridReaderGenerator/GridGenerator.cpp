@@ -7,6 +7,7 @@
 #include "Parameter/CudaStreamManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
+#include "GridGenerator/grid/Grid.h"
 
 #include <iostream>
 #include <algorithm>
@@ -102,6 +103,12 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaCopyBodyForce(level);
     }
+
+    for (int i = 0; i <= para->getMaxLevel(); i++) {
+        para->getParH(i)->gridSpacing = builder->getGrid(i)->getDelta();
+        para->getParD(i)->gridSpacing = builder->getGrid(i)->getDelta();
+    }
+
     VF_LOG_INFO("Number of Nodes: {}", numberOfNodesGlobal);
     VF_LOG_TRACE("-----finish Coord, Neighbor, Geo------");
 }
