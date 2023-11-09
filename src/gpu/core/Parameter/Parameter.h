@@ -1040,7 +1040,8 @@ private:
     int maxdev{ 1 };
 
     double memsizeGPU;
-    
+
+    //! \brief limits how many grid nodes are written into one vtk file
     uint limitOfNodesForVTK;
     uint outputCount;
     uint timestep;

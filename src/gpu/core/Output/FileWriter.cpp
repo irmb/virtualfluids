@@ -19,6 +19,7 @@
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 #include "WriterUtilities.h"
+#include "FilePartCalculator.h"
 
 #include "LBM/LB.h"
 #include "lbm/constants/D3Q27.h"
@@ -87,7 +88,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
 {
-    const unsigned int numberOfParts = WriterUtilities::calculateNumberOfParts(para.get(), level);
+    const unsigned int numberOfParts = FilePartCalculator::calculateNumberOfParts(para.get(), level);
     std::vector<std::string> fnames;
     std::vector<std::string> fnamesMed;
 
@@ -224,7 +225,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        sizeOfNodes = WriterUtilities::calculateNumberOfNodesInPart(para.get(), level, part);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
 
         //////////////////////////////////////////////////////////////////////////
         startPosition = part * para->getLimitOfNodesForVTK();
@@ -324,7 +325,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
     {
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = WriterUtilities::calculateNumberOfNodesInPart(para.get(), level, part);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
         //////////////////////////////////////////////////////////////////////////
         startPosition = part * para->getLimitOfNodesForVTK();
         endPosition = startPosition + sizeOfNodes;
