@@ -1,6 +1,6 @@
 
 #include "WriterUtilities.h"
-#include "gpu/VirtualFluids_GPU/Utilities/testUtilitiesGPU.h"
+#include "gpu/core/Utilities/testUtilitiesGPU.h"
 #include <gmock/gmock.h>
 #include <numeric>
 
