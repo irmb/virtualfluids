@@ -139,7 +139,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     // para->setTimestepEnd(10000);
 
     para->setCalcDragLift(false);
-    para->setUseWale(false);
 
     para->setOutputPrefix(simulationName);
     if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
