@@ -1,12 +1,15 @@
 #ifndef UPDATEGRID27_H
 #define UPDATEGRID27_H
 
+#include <vector>
+
 #include "Calculation/PorousMedia.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "LBM/LB.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
+#include "Kernel/AdvectionDiffusionKernel.h"
 
 namespace vf::parallel
 {
@@ -29,7 +32,9 @@ class UpdateGrid27
 {
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator& comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory);
+                 std::vector<std::shared_ptr<PorousMedia>>& pm, std::vector<SPtr<Kernel>>& kernels,
+                 std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, BoundaryConditionFactory* bcFactory,
+                 SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory);
     void updateGrid(int level, unsigned int t);
     void exchangeData(int level);
 

@@ -353,7 +353,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // Init UpdateGrid
     //////////////////////////////////////////////////////////////////////////
-    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, bcFactory, tmFactory, scalingFactory);
+    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, adKernels, bcFactory, tmFactory, scalingFactory);
 
     //////////////////////////////////////////////////////////////////////////
     // Write Initialized Files

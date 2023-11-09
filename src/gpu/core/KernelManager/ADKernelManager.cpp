@@ -34,8 +34,9 @@
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+#include "Kernel/AdvectionDiffusionKernel.h"
 
-ADKernelManager::ADKernelManager(SPtr<Parameter> parameter): para(parameter){}
+ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(parameter), adkernels(adkernels){}
 
 void ADKernelManager::initAD(const int level) const
 {
@@ -113,37 +114,7 @@ void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryMan
 ////////////////////////////////////////////////////////////////////////////////
 void ADKernelManager::runADcollisionKernel(const int level)const
 {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // incompressible
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // KernelADincomp27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->diffusivity,
-        //     para->getParD(level)->typeOfGridNode,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->distributionsAD27.f[0],
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // compressible
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->omegaDiffusivity,
-            para->getParD(level)->typeOfGridNode,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->distributionsAD.f[0],
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->forcing,
-            para->getParD(level)->isEvenTimestep);
+    adkernels[level]->run();
 }
 
 void ADKernelManager::runADslipBCKernel(const int level) const{

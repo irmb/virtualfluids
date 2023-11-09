@@ -30,17 +30,6 @@ class Parameter;
 //////////////////////////////////////////////////////////////////////////
 //Kernel
 //////////////////////////////////////////////////////////////////////////
-void KernelADincomp27(   unsigned int numberOfThreads, 
-									real diffusivity,
-									unsigned int* bcMatD,
-									unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									real* DD,
-									real* DD7,
-									unsigned long long numberOfLBnodes,
-									bool EvenOrOdd);
-
 void Init27(int myid,
                        int numprocs,
                        real u0,
@@ -767,21 +756,6 @@ void QADDev7(unsigned int numberOfThreads,
                         unsigned int* neighborZ,
                         unsigned long long numberOfLBnodes, 
                         bool isEvenTimestep);
-
-//////////////////////////////////////////////////////////////////////////
-//! \brief Advection Diffusion kernel
-void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
-	uint numberOfThreads,
-	real omegaDiffusivity,
-	uint* typeOfGridNode,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	real* distributions,
-	real* distributionsAD,
-	unsigned long long numberOfLBnodes,
-	real* forces,
-	bool isEvenTimestep);
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief defines the behavior of a slip-AD boundary condition

@@ -4,14 +4,16 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-__global__ void F16CompressibleAdvectionDiffusion_Device(real diffusivity,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	real* DDStart,
-	real* DD27,
-	int size_Mat,
-	bool EvenOrOdd);
+__global__ void F16CompressibleAdvectionDiffusion_Device(
+	real omegaDiffusivity,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	real* distributionsAD,
+	unsigned long long numberOfLBnodes,
+	real* forces,
+	bool isEvenTimestep);
 
 #endif

@@ -347,13 +347,15 @@ void UpdateGrid27::exchangeData(int level)
 }
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory>  tmFactory, GridScalingFactory* scalingFactory)
+                           std::vector<std::shared_ptr<PorousMedia>>& pm, std::vector<SPtr<Kernel>>& kernels,
+                           std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, BoundaryConditionFactory* bcFactory,
+                           SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
     : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels), tmFactory(tmFactory)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
 
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
-    this->adKernelManager = std::make_shared<ADKernelManager>(para);
+    this->adKernelManager = std::make_shared<ADKernelManager>(para, adkernels);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
 }

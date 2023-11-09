@@ -18,33 +18,6 @@
 
 #include "Parameter/Parameter.h"
 //////////////////////////////////////////////////////////////////////////
-void KernelADincomp27(
-    unsigned int numberOfThreads,
-    real diffusivity,
-    unsigned int* bcMatD,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    real* DD,
-    real* DD27,
-    unsigned long long numberOfLBnodes,
-    bool EvenOrOdd)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
-
-    F16IncompressibleAdvectionDiffusion_Device<<< grid.grid, grid.threads >>>(
-        diffusivity,
-        bcMatD,
-        neighborX,
-        neighborY,
-        neighborZ,
-        DD,
-        DD27,
-        numberOfLBnodes,
-        EvenOrOdd);
-    getLastCudaError("LB_Kernel_AD_Incomp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void Init27(
     int myid,
     int numprocs,
@@ -1091,38 +1064,6 @@ void QADDev7(
 
 
 //////////////////////////////////////////////////////////////////////////
-// Other advection diffusion kernels are in kernel factory :(
-void FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
-   uint numberOfThreads,
-   real omegaDiffusivity,
-   uint* typeOfGridNode,
-   uint* neighborX,
-   uint* neighborY,
-   uint* neighborZ,
-   real* distributions,
-   real* distributionsAD,
-   unsigned long long numberOfLBnodes,
-   real* forces,
-   bool isEvenTimestep)
-{
-    int Grid = (numberOfLBnodes / numberOfThreads) + 1;
-    dim3 grid(Grid, 1, 1);
-    dim3 threads(numberOfThreads, 1, 1);
-
-    Factorized_Central_Moments_Advection_Diffusion_Device_Kernel <<< grid, threads >>> (
-        omegaDiffusivity,
-        typeOfGridNode,
-        neighborX,
-        neighborY,
-        neighborZ,
-        distributions,
-        distributionsAD,
-        numberOfLBnodes,
-        forces,
-        isEvenTimestep);
-    getLastCudaError("Factorized_Central_Moments_Advection_Diffusion_Device_Kernel execution failed");
-}
-
 //////////////////////////////////////////////////////////////////////////
 void ADSlipVelDevComp(
     uint numberOfThreads,

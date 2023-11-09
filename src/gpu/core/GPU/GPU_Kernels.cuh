@@ -17,16 +17,6 @@
 #include "LBM/LB.h"
 
 
-__global__ void F16IncompressibleAdvectionDiffusion_Device( real diffusivity,
-                                                   unsigned int* bcMatD,
-                                                   unsigned int* neighborX,
-                                                   unsigned int* neighborY,
-                                                   unsigned int* neighborZ,
-                                                   real* DDStart,
-                                                   real* DD27,
-                                                   unsigned long long numberOfLBnodes,
-                                                   bool EvenOrOdd);
-
 __global__ void LBInit27( int myid,
                                      int numprocs,
                                      real u0,
@@ -1108,20 +1098,6 @@ __global__ void QAD7( real* DD,
                                  unsigned int* neighborZ,
                                  unsigned long long numberOfLBnodes,
                                  bool isEvenTimestep);
-
-//////////////////////////////////////////////////////////////////////////
-//! \brief \ref Advection_Diffusion_Device_Kernel : Factorized central moments for Advection Diffusion Equation
-__global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
-    real omegaDiffusivity,
-    uint* typeOfGridNode,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    real* distributions,
-    real* distributionsAD,
-    unsigned long long numberOfLBnodes,
-    real* forces,
-    bool isEvenTimestep);
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
