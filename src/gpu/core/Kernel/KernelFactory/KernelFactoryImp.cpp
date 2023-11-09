@@ -4,7 +4,7 @@
 
 #include "Parameter/Parameter.h"
 
-#include "Kernel/Utilities/KernelTypes.h"
+#include "Kernel/KernelTypes.h"
 
 //LBM kernel (compressible)
 #include "Kernel/Compressible/NavierStokes/B92/B92CompressibleNavierStokes.h"

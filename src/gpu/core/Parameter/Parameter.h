@@ -43,7 +43,7 @@
 #include "LBM/LB.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/core/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 #include <lbm/collision/TurbulentViscosity.h>
 

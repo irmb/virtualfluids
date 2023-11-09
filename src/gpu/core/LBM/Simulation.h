@@ -22,7 +22,7 @@ class RestartObject;
 class ForceCalculations;
 class DataWriter;
 class Kernel;
-class ADKernel;
+class AdvectionDiffusionKernel;
 class KernelFactory;
 class PreProcessor;
 class PreProcessorFactory;
@@ -83,7 +83,7 @@ private:
     std::shared_ptr<DataWriter> dataWriter;
 	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
 	std::vector < SPtr< Kernel>> kernels;
-	std::vector < SPtr< ADKernel>> adKernels;
+	std::vector < SPtr< AdvectionDiffusionKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;
 	SPtr<TurbulenceModelFactory> tmFactory;
 
