@@ -31,8 +31,8 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include <gpu/VirtualFluids_GPU/GPU/CudaMemoryManager.h>
-#include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
+#include <gpu/core/GPU/CudaMemoryManager.h>
+#include <gpu/core/Parameter/Parameter.h>
 
 
 namespace cuda_memory_manager

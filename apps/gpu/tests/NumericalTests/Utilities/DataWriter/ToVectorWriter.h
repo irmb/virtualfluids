@@ -1,7 +1,7 @@
 #ifndef WRITE_TO_VECTOR_H
 #define WRITE_TO_VECTOR_H
 
-#include "VirtualFluids_GPU/Output/DataWriter.h"
+#include "gpu/core/Output/DataWriter.h"
 
 class Parameter;
 class FileWriter;

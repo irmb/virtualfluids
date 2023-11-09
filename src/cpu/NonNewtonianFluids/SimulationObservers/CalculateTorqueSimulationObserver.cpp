@@ -222,7 +222,7 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromMoments(int x1, i
 
    if (bc) {
       real f[D3Q27System::ENDF + 1];
-      distributions->getDistribution(f, x1, x2, x3);
+      distributions->getPreCollisionDistribution(f, x1, x2, x3);
       real collFactor = kernel->getCollisionFactor();
       real shearRate = D3Q27System::getShearRate(f, collFactor);
       real rho = D3Q27System::getDensity(f);
@@ -256,7 +256,7 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForcesFromStressTensor(int 
 
    if (bc) {
       real f[D3Q27System::ENDF + 1];
-      distributions->getDistribution(f, x1, x2, x3);
+      distributions->getPreCollisionDistribution(f, x1, x2, x3);
       real collFactor = kernel->getCollisionFactor();
       real shearRate = D3Q27System::getShearRate(f, collFactor);
       real rho = D3Q27System::getDensity(f);

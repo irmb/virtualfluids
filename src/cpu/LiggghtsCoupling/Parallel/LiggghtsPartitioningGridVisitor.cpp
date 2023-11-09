@@ -34,8 +34,8 @@
 
 #include <comm.h>
 #include "LiggghtsPartitioningGridVisitor.h"
-#include "VirtualFluidsCore/Simulation/Grid3D.h"
-#include "VirtualFluidsCore/Simulation/Block3D.h"
+#include "cpu/core/Simulation/Grid3D.h"
+#include "cpu/core/Simulation/Block3D.h"
 
 LiggghtsPartitioningGridVisitor::LiggghtsPartitioningGridVisitor(int nx, int ny, int nz, LAMMPS_NS::LAMMPS *lmp) : nx(nx), ny(ny), nz(nz), lmp(*lmp)
 {

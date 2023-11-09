@@ -3,7 +3,7 @@
 
 #include "AnalyticalResult.h"
 
-#include "VirtualFluids_GPU/LBM/LB.h"
+#include "gpu/core/LBM/LB.h"
 
 class AnalyticalResultsImp : public AnalyticalResults
 {

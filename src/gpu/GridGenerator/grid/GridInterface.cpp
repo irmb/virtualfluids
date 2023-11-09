@@ -460,7 +460,7 @@ uint GridInterface::findOffsetBaseToNested(const uint& indexOnCoarseGrid, GridIm
     Cell cell(x, y, z, coarseGrid->getDelta());
 
     if( coarseGrid->cellContainsOnly( cell, FLUID, FLUID_CFC ) ){
-        this->bn.offset[ interfaceIndex ] = dir::DIR_000;
+        this->bn.offset[ interfaceIndex ] = dir::d000;
         return indexOnCoarseGrid;
     }
 
@@ -495,7 +495,7 @@ uint GridInterface::findOffsetNestedToBase(const uint& indexOnFineGrid, GridImp*
     Cell cell(x, y, z, fineGrid->getDelta());
 
     if( fineGrid->cellContainsOnly( cell, FLUID, FLUID_FCF ) ){
-        this->nb.offset[ interfaceIndex ] = dir::DIR_000;
+        this->nb.offset[ interfaceIndex ] = dir::d000;
         return indexOnFineGrid;
     }
 

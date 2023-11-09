@@ -89,7 +89,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline real Rheology::getBinghamCollFactor(real omegaInf, real shearRate, real drho)
 {
-	real cs2 = vf::basics::constant::one_over_sqrt3 * vf::basics::constant::one_over_sqrt3;
+	real cs2 = vf::basics::constant::c1oSqrt3 * vf::basics::constant::c1oSqrt3;
 	real rho = vf::basics::constant::c1o1 + drho;
 	//analytical solution
 	real omega = omegaInf * (vf::basics::constant::c1o1 - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<real>::val()));
@@ -120,7 +120,7 @@ inline real Rheology::getBinghamCollFactor(real omegaInf, real shearRate, real d
 
 inline real Rheology::getBinghamCollFactorOld(real omegaInf, real shearRate, real drho)
 {
-	const real cs2 = vf::basics::constant::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	const real cs2 = vf::basics::constant::c1o3; // UbMath::c1oSqrt3* UbMath::c1oSqrt3;
 	real rho = vf::basics::constant::c1o1 + drho;
 
 	if (rho * cs2 * (vf::basics::constant::c1o1 / omegaInf - vf::basics::constant::c1o2) * shearRate < tau0)
@@ -131,7 +131,7 @@ inline real Rheology::getBinghamCollFactorOld(real omegaInf, real shearRate, rea
 //////////////////////////////////////////////////////////////////////////
 inline real Rheology::getHerschelBulkleyCollFactor(real omegaInf, real shearRate, real drho)
 {
-	real cs2 = vf::basics::constant::one_over_sqrt3 * vf::basics::constant::one_over_sqrt3;
+	real cs2 = vf::basics::constant::c1oSqrt3 * vf::basics::constant::c1oSqrt3;
 	real rho = vf::basics::constant::c1o1 + drho;
 	real gammaDot = shearRate;
 	real omega = omegaInf;
@@ -164,7 +164,7 @@ inline real Rheology::getHerschelBulkleyCollFactorBackward(real shearRate, real 
 {
 	real rho = vf::basics::constant::c1o1 + drho;
 	real gamma = shearRate + UbMath::Epsilon<real>::val();
-	real cs2 = vf::basics::constant::one_over_sqrt3 * vf::basics::constant::one_over_sqrt3;
+	real cs2 = vf::basics::constant::c1oSqrt3 * vf::basics::constant::c1oSqrt3;
 
 	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + vf::basics::constant::c1o2);
 }
@@ -174,7 +174,7 @@ inline real Rheology::getPowellEyringCollFactor(real omegaInf, real shearRate, r
 //	using namespace UbMath;
 	using namespace vf::basics::constant;
 
-	real cs2 = c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	real cs2 = c1o3; // UbMath::c1oSqrt3* UbMath::c1oSqrt3;
 	real rho = c1o1 + drho;
 	real gammaDot = shearRate;
 	real omega = omegaInf;

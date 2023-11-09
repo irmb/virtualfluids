@@ -1,6 +1,6 @@
 PROJECT(TGV_3D_MultiGPU LANGUAGES CUDA CXX)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics VirtualFluids_GPU GridGenerator FILES TGV_3D_MultiGPU.cpp)
+vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES TGV_3D_MultiGPU.cpp)
 
 set_source_files_properties(TGV_3D_MultiGPU.cpp PROPERTIES LANGUAGE CUDA)
 

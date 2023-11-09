@@ -1,9 +1,9 @@
 #include "ToVectorWriter.h"
 
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "gpu/core/Output/FileWriter.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/Output/FileWriter.h"
 
 #include "Utilities/Structs/VectorWriterInformationStruct.h"
 
