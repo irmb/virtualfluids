@@ -212,52 +212,6 @@ void KernelKumCompSP27(  unsigned int numberOfThreads,
 									unsigned long long numberOfLBnodes,
 									bool EvenOrOdd);
 
-void KernelWaleBySoniMalavCumAA2016CompSP27(
-	unsigned int numberOfThreads,
-	real s9,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* neighborWSB,
-	real* veloX,
-	real* veloY,
-	real* veloZ,
-	real* DD,
-	real* turbulentViscosity,
-	unsigned long long numberOfLBnodes,
-	int size_Array,
-	int level,
-	real* forces,
-	bool EvenOrOdd);
-
-void KernelPMCumOneCompSP27(unsigned int numberOfThreads, 
-									   real omega,
-									   unsigned int* neighborX,
-									   unsigned int* neighborY,
-									   unsigned int* neighborZ,
-									   real* DD,
-									   unsigned long long numberOfLBnodes,
-									   int level,
-									   real* forces,
-									   real porosity,
-									   real darcy,
-									   real forchheimer,
-									   unsigned int sizeOfPorousMedia,
-									   unsigned int* nodeIdsPorousMedia, 
-									   bool EvenOrOdd);
-
-void KernelADincomp7(   unsigned int numberOfThreads, 
-								   real diffusivity,
-								   unsigned int* bcMatD,
-								   unsigned int* neighborX,
-								   unsigned int* neighborY,
-								   unsigned int* neighborZ,
-								   real* DD,
-								   real* DD7,
-								   unsigned long long numberOfLBnodes,
-								   bool EvenOrOdd);
-
 void KernelADincomp27(   unsigned int numberOfThreads, 
 									real diffusivity,
 									unsigned int* bcMatD,
@@ -300,19 +254,6 @@ void InitNonEqPartSP27(unsigned int numberOfThreads,
                                   real omega,
                                   bool EvenOrOdd);
 
-
-void InitThS7(  unsigned int numberOfThreads,
-                           unsigned int* neighborX,
-                           unsigned int* neighborY,
-                           unsigned int* neighborZ,
-                           unsigned int* geoD,
-                           real* Conc,
-                           real* ux,
-                           real* uy,
-                           real* uz,
-                           unsigned long long numberOfLBnodes,
-                           real* DD7,
-                           bool EvenOrOdd);
 
 void InitADDev27( unsigned int numberOfThreads,
                            unsigned int* neighborX,

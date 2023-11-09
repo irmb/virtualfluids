@@ -248,15 +248,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     }
 
     //////////////////////////////////////////////////////////////////////////
-    // Porous Media
-    //////////////////////////////////////////////////////////////////////////
-    if (para->getSimulatePorousMedia()) {
-        VF_LOG_INFO("define area(s) of porous media");
-        porousMedia();
-        kernelFactory->setPorousMedia(pm);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
     // enSightGold
     //////////////////////////////////////////////////////////////////////////
     // excludeGridInterfaceNodesForMirror(para, 7);
@@ -838,23 +829,8 @@ void Simulation::readAndWriteFiles(uint timestep)
             if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
         }
         //////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn()==true)
+        if (para->getDiffOn())
         {
-            if (para->getDiffMod() == 7)
-            {
-               CalcMacThS7( para->getParD(lev)->concentration,
-                            para->getParD(lev)->typeOfGridNode,
-                            para->getParD(lev)->neighborX,
-                            para->getParD(lev)->neighborY,
-                            para->getParD(lev)->neighborZ,
-                            para->getParD(lev)->numberOfNodes,
-                            para->getParD(lev)->numberofthreads,
-                            para->getParD(lev)->distributionsAD7.f[0],
-                            para->getParD(lev)->isEvenTimestep);
-               getLastCudaError("CalcMacTh7 execution failed");
-            }
-            else if (para->getDiffMod() == 27)
-            {
                CalcConcentration27(
                               para->getParD(lev)->numberofthreads,
                               para->getParD(lev)->concentration,
@@ -865,7 +841,6 @@ void Simulation::readAndWriteFiles(uint timestep)
                               para->getParD(lev)->numberOfNodes,
                               para->getParD(lev)->distributionsAD.f[0],
                               para->getParD(lev)->isEvenTimestep);
-            }
             cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
             //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
         }

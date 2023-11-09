@@ -69,11 +69,6 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getSimulatePorousMedia())
-        collisionPorousMedia(level);
-
-    //////////////////////////////////////////////////////////////////////////
-
     if (para->getDiffOn())
         collisionAdvectionDiffusion(level);
 }
@@ -87,38 +82,9 @@ void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *tagged
                       << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
-    //! \todo: AD collision and porousMedia should be called separately, not in collisionUsingIndices
-
-    if (para->getSimulatePorousMedia())
-        collisionPorousMedia(level);
-
-    //////////////////////////////////////////////////////////////////////////
 
     if (para->getDiffOn())
         collisionAdvectionDiffusion(level);
-}
-
-void UpdateGrid27::collisionPorousMedia(int level)
-{
-    for( std::size_t i = 0; i < pm.size(); i++ )
-    {
-        KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
-                               para->getParD(level)->omega,
-                               para->getParD(level)->neighborX,
-                               para->getParD(level)->neighborY,
-                               para->getParD(level)->neighborZ,
-                               para->getParD(level)->distributions.f[0],
-                               para->getParD(level)->numberOfNodes,
-                               level,
-                               para->getForcesDev(),
-                               pm[i]->getPorosity(),
-                               pm[i]->getDarcyLBM(),
-                               pm[i]->getForchheimerLBM(),
-                               pm[i]->getSizePM(),
-                               pm[i]->getHostNodeIDsPM(),
-                               para->getParD(level)->isEvenTimestep);
-        getLastCudaError("KernelPMCumOneCompSP27 execution failed");
-    }
 }
 
 void UpdateGrid27::collisionAdvectionDiffusion(int level)

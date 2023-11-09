@@ -40,7 +40,6 @@ private:
 
     void postCollisionBC(int level, unsigned int t);
     void preCollisionBC(int level, unsigned int t);
-    void collisionPorousMedia(int level);
 
     void fineToCoarse(int level, InterpolationCells* fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex);
     void coarseToFine(int level, InterpolationCells* coarseToFine, ICellNeigh &neighborCoarseToFine, CudaStreamIndex streamIndex);

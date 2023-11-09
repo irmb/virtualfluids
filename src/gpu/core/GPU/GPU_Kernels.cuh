@@ -189,48 +189,6 @@ inline __device__ void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, rea
 
 
 
-__global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
-    real omega_in,
-    unsigned int* bcMatD,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned int* neighborWSB,
-    real* veloX,
-    real* veloY,
-    real* veloZ,
-    real* DDStart,
-    real* turbulentViscosity,
-    unsigned long long numberOfLBnodes,
-    int level,
-    real* forces,
-    bool EvenOrOdd);
-
-
-__global__ void K15CompressibleNavierStokesPorousMedia_Device( real omega,
-                                                            unsigned int* neighborX,
-                                                            unsigned int* neighborY,
-                                                            unsigned int* neighborZ,
-                                                            real* DDStart,
-                                                            unsigned long long numberOfLBnodes,
-                                                            int level,
-                                                            real* forces,
-                                                            real porosity,
-                                                            real darcy,
-                                                            real forchheimer,
-                                                            unsigned int sizeOfPorousMedia,
-                                                            unsigned int* nodeIdsPorousMedia,
-                                                            bool EvenOrOdd);
-
-__global__ void B12IncompressibleAdvectionDiffusionD3Q7_Device( real diffusivity,
-                                                  unsigned int* bcMatD,
-                                                  unsigned int* neighborX,
-                                                  unsigned int* neighborY,
-                                                  unsigned int* neighborZ,
-                                                  real* DDStart,
-                                                  real* DD7,
-                                                  unsigned long long numberOfLBnodes,
-                                                  bool EvenOrOdd);
 
 __global__ void F16IncompressibleAdvectionDiffusion_Device( real diffusivity,
                                                    unsigned int* bcMatD,
@@ -271,18 +229,6 @@ __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
                                                real* DD,
                                                real omega,
                                                bool EvenOrOdd);
-
-__global__ void InitAD7( unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       unsigned int* geoD,
-                                       real* Conc,
-                                       real* ux,
-                                       real* uy,
-                                       real* uz,
-                                       unsigned long long numberOfLBnodes,
-                                       real* DD7,
-                                       bool EvenOrOdd);
 
 __global__ void InitAD27(unsigned int* neighborX,
                                        unsigned int* neighborY,
