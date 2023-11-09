@@ -9,7 +9,6 @@
 
 #include <cuda_helper/CudaGrid.h>
 
-class CheckParameterStrategy;
 class Parameter;
 class CudaStreamManager; 
 class KernelImp : public Kernel
@@ -18,10 +17,8 @@ public:
     virtual void run() = 0;
     virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
 
-    bool checkParameter();
     std::vector<PreProcessorType> getPreProcessorTypes();
 
-    void setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy> strategy);
     bool getKernelUsesFluidNodeIndices();
 
 protected:
@@ -29,7 +26,6 @@ protected:
     KernelImp();
 
     std::shared_ptr<Parameter> para;
-    std::shared_ptr<CheckParameterStrategy> checkStrategy;
     int level;
     std::vector<PreProcessorType> myPreProcessorTypes;
     vf::cuda::CudaGrid cudaGrid;

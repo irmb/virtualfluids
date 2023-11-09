@@ -2,26 +2,15 @@
 
 #include "LBM/LB.h" 
 
-#include "Kernel/Utilities/CheckParameterStrategy/CheckParameterStrategy.h"
-
 
 void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex)
 {
     printf("Method not implemented for this Kernel \n");
 }
 
-bool KernelImp::checkParameter() { 
-    return checkStrategy->checkParameter(para);
-}
-
 std::vector<PreProcessorType> KernelImp::getPreProcessorTypes() 
 { 
     return myPreProcessorTypes;
-}
-
-void KernelImp::setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy> strategy)
-{
-    this->checkStrategy = strategy;
 }
 
 bool KernelImp::getKernelUsesFluidNodeIndices(){

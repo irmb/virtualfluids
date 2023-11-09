@@ -48,16 +48,6 @@
 #include "Kernel/Compressible/NavierStokes/K15Wale/K15CompressibleNavierStokesWale.h"
 #include "Kernel/Compressible/NavierStokes/K15WaleSM/K15CompressibleNavierStokesWaleBySoniMalav.h"
 
-//strategies
-#include "Kernel/Compressible/NavierStokes/CompressibleNavierStokesStrategy.h"
-#include "Kernel/Incompressible/NavierStokes/IncompressibleNavierStokesStrategy.h"
-#include "Kernel/Compressible/AdvectionDiffusion/D3Q27/CompressibleAdvectionDiffusionStrategy.h"
-#include "Kernel/Compressible/AdvectionDiffusion/D3Q7/CompressibleAdvectionDiffusionD3Q7Strategy.h"
-#include "Kernel/Incompressible/AdvectionDiffusion/D3Q27/IncompressibleAdvectionDiffusionStrategy.h"
-#include "Kernel/Incompressible/AdvectionDiffusion/D3Q7/IncompressibleAdvectionDiffusionD3Q7Strategy.h"
-#include "Kernel/Compressible/NavierStokes/CompressibleNavierStokesPorousMediaStrategy.h"
-#include "Kernel/Compressible/NavierStokes/CompressibleNavierStokesWaleStrategy.h"
-
 #include <lbm/collision/TurbulentViscosity.h>
 
 using namespace vf;
@@ -97,29 +87,21 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 {
     VF_LOG_INFO("Instantiating Kernel: {}", kernel);
     std::shared_ptr<KernelImp> newKernel;
-    std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
     if (kernel == collisionKernel::compressible::BGK) {
         newKernel     = B92CompressibleNavierStokes::getNewInstance(para, level);               // compressible
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();                   //      ||
     } else if (kernel == collisionKernel::compressible::BGKPlus) {
         newKernel     = B15CompressibleNavierStokesBGKplus::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::MRT) {
         newKernel     = M02CompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::Cascade) {
         newKernel     = C06CompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::CumulantClassic) {
         newKernel     = K08CompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesBulkViscosity) {
         newKernel     = K17CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokesChimeraLegacy) {
         newKernel     = K17CompressibleNavierStokesChimeraLegacy::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokes){
         switch(para->getTurbulenceModel())
         {
@@ -139,69 +121,47 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
                 throw std::runtime_error("Unknown turbulence model!");
             break;
         }
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::CumulantAll4SP27) {
         newKernel     = K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::CumulantK18) {
         newKernel     = K18CompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::CumulantK20) {
         newKernel     = K20CompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokes) {
         newKernel     = K15CompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokesBulk) {
         newKernel     = K15CompressibleNavierStokesBulkViscosity::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokesSponge) { //     /\      //
         newKernel     = K15CompressibleNavierStokesSponge::getNewInstance(para, level);     //     ||
-        checkStrategy = CompressibleNavierStokesStrategy::getInstance();                   // compressible
     }                                                                           //===============
     else if (  kernel == collisionKernel::incompressible::BGK) {                // incompressible
         newKernel     = B92IncompressibleNavierStokes::getNewInstance(para, level);             //     ||
-        checkStrategy = IncompressibleNavierStokesStrategy::getInstance();                 //     \/
     } else if (kernel == collisionKernel::incompressible::BGKPlus) {
         newKernel     = B15IncompressibleNavierStokesBGKplus::getNewInstance(para, level);
-        checkStrategy = IncompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::incompressible::MRT) {
         newKernel     = M02IncompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = IncompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::incompressible::Cascade) {
         newKernel     = C06IncompressibleNavierStokes::getNewInstance(para, level);
-        checkStrategy = IncompressibleNavierStokesStrategy::getInstance();
     } else if (kernel == collisionKernel::incompressible::Cumulant1h) {
         newKernel     = K15IncompressibleNavierStokesRotatingVelocityField::getNewInstance(para, level);
-        checkStrategy = IncompressibleNavierStokesStrategy::getInstance();
-    //} else if (kernel == collisionKernel::incompressible::CumulantIsometric) {
-    //    newKernel     = K15IncompressibleNavierStokesIsoTest::getNewInstance(para, level);
-    //    checkStrategy = FluidFlowIncompStrategy::getInstance();
     } else if (kernel == collisionKernel::incompressible::CumulantK15) {          //     /\      //
         newKernel     = K15IncompressibleNavierStokes::getNewInstance(para, level);           //     ||
-        checkStrategy = IncompressibleNavierStokesStrategy::getInstance();                   // incompressible
     }                                                                             //===============
     else if (kernel == collisionKernel::porousMedia::CumulantOne) {               // porous media
         newKernel     = K15CompressibleNavierStokesPorousMedia::getNewInstance(para, pm, level);   //     ||
-        checkStrategy = CompressibleNavierStokesPorousMediaStrategy::getInstance();                   // porous media
     }                                                                             //===============
     else if (kernel == collisionKernel::wale::CumulantK17) {                      // wale model
         newKernel     = K17CompressibleNavierStokesWale::getNewInstance(para, level);         //     ||
-        checkStrategy = CompressibleNavierStokesWaleStrategy::getInstance();                 //     \/
     } else if (kernel == collisionKernel::wale::CumulantK17Debug) {
         newKernel     = K17CompressibleNavierStokesWaleDebug::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesWaleStrategy::getInstance();
     } else if (kernel == collisionKernel::wale::CumulantK15) {
         newKernel     = K15CompressibleNavierStokesWale::getNewInstance(para, level);
-        checkStrategy = CompressibleNavierStokesWaleStrategy::getInstance();
     } else if (kernel == collisionKernel::wale::CumulantK15SoniMalav) {              //     /\      //
         newKernel     = K15CompressibleNavierStokesWaleBySoniMalav::getNewInstance(para, level); //     ||
-        checkStrategy = CompressibleNavierStokesWaleStrategy::getInstance();                    // wale model
     }                                                                                //===============
     else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }
-    newKernel->setCheckParameterStrategy(checkStrategy);
     para->setKernelNeedsFluidNodeIndicesToRun(newKernel->getKernelUsesFluidNodeIndices());
     return newKernel;
 }
@@ -209,28 +169,18 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
     std::shared_ptr<ADKernel> newKernel;
-    std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
     if (kernel == "ADComp27") {
         newKernel     = F16CompressibleAdvectionDiffusion::getNewInstance(para, level);
-        checkStrategy = CompressibleAdvectionDiffusionStrategy::getInstance();
     } else if(kernel == "ADComp7") {
         newKernel     = B12CompressibleAdvectionDiffusionD3Q7::getNewInstance(para, level);
-        checkStrategy = CompressibleAdvectionDiffusionD3Q7Strategy::getInstance();
     } else if (kernel == "ADIncomp27") {
         newKernel     = F16IncompressibleAdvectionDiffusion::getNewInstance(para, level);
-        checkStrategy = IncompressibleAdvectionDiffusionD3Q7Strategy::getInstance();
     } else if (kernel == "ADIncomp7") {
         newKernel     = B12IncompressibleAdvectionDiffusionD3Q7::getNewInstance(para, level);
-        checkStrategy = IncompressibleAdvectionDiffusionD3Q7Strategy::getInstance();
     } else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }
 
-    if (newKernel) {
-        newKernel->setCheckParameterStrategy(checkStrategy);
-        return newKernel;
-    }
-    else
-        throw  std::runtime_error("KernelFactory does not know the KernelType.");
+    return newKernel;
 }

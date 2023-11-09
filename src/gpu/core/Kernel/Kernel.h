@@ -17,7 +17,6 @@ public:
     virtual void run() = 0;
     virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIdx=CudaStreamIndex::Legacy) = 0;
 
-    virtual bool checkParameter()                                = 0;
     virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;
 };
 #endif
