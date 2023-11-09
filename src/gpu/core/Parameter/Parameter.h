@@ -470,8 +470,8 @@ public:
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
 
-    const LBMSimulationParameter& getParHConst(int level) const;
-    const LBMSimulationParameter& getParDConst(int level) const;
+    LBMSimulationParameter& getParHostAsReference(int level) const;
+    LBMSimulationParameter& getParDeviceAsReference(int level) const;
 
     const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParHallLevels();
     const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParDallLevels();

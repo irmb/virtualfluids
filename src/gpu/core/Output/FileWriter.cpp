@@ -237,7 +237,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startPosition; pos < endPosition; pos++) {
-            const LBMSimulationParameter& parH = para->getParHConst(level);
+            const LBMSimulationParameter& parH = para->getParHostAsReference(level);
             if (parH.typeOfGridNode[pos] == GEO_FLUID) {
                 //////////////////////////////////////////////////////////////////////////
                 double x1 = parH.coordinateX[pos];
@@ -280,7 +280,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
                 //////////////////////////////////////////////////////////////////////////
 
-                WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, para->getParHConst(level));
+                WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, para->getParHostAsReference(level));
 
                 if (WriterUtilities::isPeriodicCell(parH, indicesOfOct[0], indicesOfOct[6])) {
                     continue;
@@ -390,7 +390,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
                 dn7 = number7 - startPosition;
                 dn8 = number8 - startPosition;
                 //////////////////////////////////////////////////////////////////////////
-                if (WriterUtilities::isPeriodicCell(para->getParHConst(level), number1, number7))
+                if (WriterUtilities::isPeriodicCell(para->getParHostAsReference(level), number1, number7))
                     continue;
                 //////////////////////////////////////////////////////////////////////////
                 if (neighborsFluid == true) cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));

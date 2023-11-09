@@ -10,7 +10,7 @@ std::string WriterUtilities::makePartFileNameEnding(uint level, int ID, int part
 
 uint WriterUtilities::calculateNumberOfParts(const Parameter* parameter, uint level)
 {
-    return (uint)parameter->getParHConst(level).numberOfNodes / parameter->getLimitOfNodesForVTK() + 1;
+    return (uint)parameter->getParHostAsReference(level).numberOfNodes / parameter->getLimitOfNodesForVTK() + 1;
 }
 
 bool WriterUtilities::isPeriodicCell(const LBMSimulationParameter& parH, unsigned int baseNodeOfCell,
@@ -27,8 +27,8 @@ uint WriterUtilities::calculateNumberOfNodesInPart(const Parameter* para, uint l
 {
     if (part >= WriterUtilities::calculateNumberOfParts(para, level))
         throw std::runtime_error("The number of nodes for a non-existing part can not be calculated");
-    if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParHConst(level).numberOfNodes)
-        return (uint)para->getParHConst(level).numberOfNodes - (part * para->getLimitOfNodesForVTK());
+    if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParHostAsReference(level).numberOfNodes)
+        return (uint)para->getParHostAsReference(level).numberOfNodes - (part * para->getLimitOfNodesForVTK());
     return para->getLimitOfNodesForVTK();
 }
 

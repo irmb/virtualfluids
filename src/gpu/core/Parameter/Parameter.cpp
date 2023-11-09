@@ -1738,12 +1738,12 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
     return parH[level];
 }
 
-const LBMSimulationParameter& Parameter::getParDConst(int level) const
+LBMSimulationParameter& Parameter::getParDeviceAsReference(int level) const
 {
     return *parD[level];
 }
 
-const LBMSimulationParameter& Parameter::getParHConst(int level) const
+LBMSimulationParameter& Parameter::getParHostAsReference(int level) const
 {
     return *parH[level];
 }
