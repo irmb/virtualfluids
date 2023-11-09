@@ -42,9 +42,6 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseWale()) //TODO: make WALE consistent with structure of other turbulence models
-        calcMacroscopicQuantities(level);
-
     calcTurbulentViscosity(level);
 
     //////////////////////////////////////////////////////////////////////////

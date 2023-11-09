@@ -121,7 +121,6 @@ uint nx = 64;
 uint gpuIndex = 0;
 
 bool useLimiter = false;
-bool useWale = false;
 
 std::string kernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
 
@@ -268,9 +267,6 @@ void multipleLevel(const std::string& configPath)
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
 
-    if( useWale )
-        para->setUseWale( true );
-
     para->setUseInitNeq( true );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,9 +326,6 @@ int main( int argc, char* argv[])
 
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
-
-            if( cmdOptionExists( argv, argv+argc, "--useWale" ) )
-                useWale = true;
 
 			multipleLevel(targetPath + "config.txt");
 

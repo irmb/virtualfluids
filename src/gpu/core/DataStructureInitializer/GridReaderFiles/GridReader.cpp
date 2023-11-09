@@ -82,9 +82,6 @@ void GridReader::allocArrays_CoordNeighborGeo()
         //cudaMemoryManager->cudaAllocF3SP(level);
         cudaMemoryManager->cudaAllocNeighborWSB(level);
 
-        if (para->getUseWale())
-			cudaMemoryManager->cudaAllocTurbulentViscosity(level);
-
 		coordX.initalCoords(      para->getParH(level)->coordinateX,      level);
 		coordY.initalCoords(      para->getParH(level)->coordinateY,      level);
 		coordZ.initalCoords(      para->getParH(level)->coordinateZ,      level);

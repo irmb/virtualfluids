@@ -130,9 +130,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("UseMeasurePoints"))
         this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseWale"))
-        this->setUseWale(configData.getValue<bool>("UseWale"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
     //////////////////////////////////////////////////////////////////////////
@@ -987,12 +984,6 @@ void Parameter::setUseInitNeq(bool useInitNeq)
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 {
     this->isTurbulentViscosity = useTurbulentViscosity;
-}
-void Parameter::setUseWale(bool useWale)
-{
-    this->isWale = useWale;
-    if (useWale)
-        setUseTurbulentViscosity(true);
 }
 void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
@@ -2360,10 +2351,6 @@ bool Parameter::getConcFile()
 bool Parameter::getUseMeasurePoints()
 {
     return this->isMeasurePoints;
-}
-bool Parameter::getUseWale()
-{
-    return this->isWale;
 }
 vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {

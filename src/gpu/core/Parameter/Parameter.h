@@ -323,7 +323,6 @@ struct LBMSimulationParameter {
 
     // turbulent viscosity ///
     real *turbViscosity;
-    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
 
     // turbulence intensity //
     real *vx_mean, *vy_mean, *vz_mean;       // means
@@ -602,7 +601,6 @@ public:
     void setIsCp(bool isCp);
     void setConcFile(bool concFile);
     void setUseMeasurePoints(bool useMeasurePoints);
-    void setUseWale(bool useWale);
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setSGSConstant(real SGSConstant);
@@ -894,7 +892,6 @@ public:
     bool getCalcHighOrderMoments();
     bool getConcFile();
     bool getUseMeasurePoints();
-    bool getUseWale();
     vf::lbm::TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
     real getSGSConstant();
@@ -1013,7 +1010,6 @@ private:
     bool isHighOrderMoments{ false };
     bool calcMedian{ false };
     bool isConc{ false };
-    bool isWale{ false };
     bool isTurbulentViscosity{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
