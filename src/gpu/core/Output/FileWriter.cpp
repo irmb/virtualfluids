@@ -88,7 +88,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
 {
-    const unsigned int numberOfParts = FilePartCalculator::calculateNumberOfParts(para.get(), level);
+    const unsigned int numberOfParts = FilePartCalculator::calculateNumberOfParts(para->getParH(level)->numberOfNodes);
     std::vector<std::string> fnames;
     std::vector<std::string> fnamesMed;
 
@@ -225,7 +225,8 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+        const LBMSimulationParameter& parH = para->getParHostAsReference(level);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(parH.numberOfNodes, part);
 
         //////////////////////////////////////////////////////////////////////////
         startPosition = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -238,7 +239,6 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startPosition; pos < endPosition; pos++) {
-            const LBMSimulationParameter& parH = para->getParHostAsReference(level);
             if (parH.typeOfGridNode[pos] == GEO_FLUID) {
                 //////////////////////////////////////////////////////////////////////////
                 double x1 = parH.coordinateX[pos];
@@ -325,7 +325,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_p
     {
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startPosition = FilePartCalculator::calculateStartingPostionOfPart(part);
         endPosition = startPosition + sizeOfNodes;

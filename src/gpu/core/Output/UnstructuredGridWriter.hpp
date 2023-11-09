@@ -196,7 +196,7 @@ namespace UnstructuredGridWriter
             // printf("\n test in if I... \n");
             //////////////////////////////////////////////////////////////////////////
 
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 
             //////////////////////////////////////////////////////////////////////////
             startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -334,7 +334,7 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
 
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 
             //////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -467,7 +467,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -609,7 +609,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -745,7 +745,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
             //////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -1310,7 +1310,7 @@ namespace UnstructuredGridWriter
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
 
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 
             //////////////////////////////////////////////////////////////////////////
             startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -1428,7 +1428,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -1551,7 +1551,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -1924,7 +1924,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -2022,7 +2022,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
@@ -2127,7 +2127,7 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para.get(), level, part);
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
 			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
