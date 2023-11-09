@@ -78,7 +78,7 @@
 #include "gpu/core/Factories/BoundaryConditionFactory.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/Factories/GridScalingFactory.h"
-#include "gpu/core/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 #include "gpu/core/GPU/CudaMemoryManager.h"
 

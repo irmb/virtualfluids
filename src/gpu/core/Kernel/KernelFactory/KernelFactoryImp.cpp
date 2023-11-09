@@ -4,7 +4,7 @@
 
 #include "Parameter/Parameter.h"
 
-#include "Kernel/Utilities/KernelTypes.h"
+#include "Kernel/KernelTypes.h"
 
 //LBM kernel (compressible)
 #include "Kernel/Compressible/NavierStokes/B92/B92CompressibleNavierStokes.h"
@@ -65,9 +65,9 @@ std::vector<std::shared_ptr<Kernel>> KernelFactoryImp::makeKernels(std::shared_p
     return kernels;
 }
 
-std::vector<std::shared_ptr<ADKernel>> KernelFactoryImp::makeAdvDifKernels(std::shared_ptr<Parameter> para)
+std::vector<std::shared_ptr<AdvectionDiffusionKernel>> KernelFactoryImp::makeAdvDifKernels(std::shared_ptr<Parameter> para)
 {
-    std::vector< std::shared_ptr< ADKernel>> aDKernels;
+    std::vector< std::shared_ptr< AdvectionDiffusionKernel>> aDKernels;
     for (int level = 0; level <= para->getMaxLevel(); level++)
         aDKernels.push_back(makeAdvDifKernel(para, para->getADKernel(), level));
     return aDKernels;
@@ -166,9 +166,9 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     return newKernel;
 }
 
-std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
+std::shared_ptr<AdvectionDiffusionKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
-    std::shared_ptr<ADKernel> newKernel;
+    std::shared_ptr<AdvectionDiffusionKernel> newKernel;
 
     if (kernel == "ADComp27") {
         newKernel     = F16CompressibleAdvectionDiffusion::getNewInstance(para, level);

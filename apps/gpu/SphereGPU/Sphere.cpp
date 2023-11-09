@@ -70,7 +70,7 @@
 #include "gpu/core/Factories/GridScalingFactory.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
-#include "gpu/core/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 int main(int argc, char *argv[])
 {

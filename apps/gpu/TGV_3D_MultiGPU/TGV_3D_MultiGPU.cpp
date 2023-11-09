@@ -61,7 +61,7 @@
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Output/FileWriter.h"
 
-#include "gpu/core/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "gpu/core/Kernel/KernelFactory/KernelFactoryImp.h"
 #include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "gpu/core/Factories/BoundaryConditionFactory.h"
 

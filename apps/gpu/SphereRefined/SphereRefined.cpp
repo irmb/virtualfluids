@@ -67,7 +67,7 @@
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Factories/GridScalingFactory.h"
-#include "gpu/core/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 #include <parallel/MPICommunicator.h>
 

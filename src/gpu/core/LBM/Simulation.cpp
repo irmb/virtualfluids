@@ -50,10 +50,10 @@
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
-#include "Kernel/Utilities/KernelFactory/KernelFactory.h"
+#include "Kernel/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "Kernel/KernelFactory/KernelFactoryImp.h"
 #include "Kernel/Kernel.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 

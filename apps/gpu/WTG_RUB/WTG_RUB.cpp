@@ -73,7 +73,7 @@
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/GPU/CudaMemoryManager.h"
 #include "gpu/core/Factories/BoundaryConditionFactory.h"
-#include "gpu/core/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 #include <parallel/MPICommunicator.h>
 

@@ -32,7 +32,7 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <gpu/core/LBM/Simulation.h>
-#include <gpu/core/Kernel/Utilities/KernelFactory/KernelFactory.h>
+#include <gpu/core/Kernel/KernelFactory/KernelFactory.h>
 #include <gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
 #include <gpu/core/DataStructureInitializer/GridProvider.h>
 #include <gpu/core/Parameter/Parameter.h>

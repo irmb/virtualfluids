@@ -14,7 +14,7 @@
 #include "Factories/GridScalingFactory.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "gpu/core/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 #include <parallel/Communicator.h>
 
