@@ -432,7 +432,7 @@ void KernelPMCumOneCompSP27(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid.grid, grid.threads >>>(
+    K15CompressibleNavierStokesPorousMedia_Device <<< grid.grid, grid.threads >>>(
         omega,
         neighborX,
         neighborY,
@@ -504,7 +504,7 @@ void KernelADincomp7(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LB_Kernel_AD_Incomp_7<<< grid.grid, grid.threads >>>(
+    B12IncompressibleAdvectionDiffusionD3Q7_Device<<< grid.grid, grid.threads >>>(
         diffusivity,
         bcMatD,
         neighborX,
@@ -531,7 +531,7 @@ void KernelADincomp27(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LB_Kernel_AD_Incomp_27<<< grid.grid, grid.threads >>>(
+    F16IncompressibleAdvectionDiffusion_Device<<< grid.grid, grid.threads >>>(
         diffusivity,
         bcMatD,
         neighborX,

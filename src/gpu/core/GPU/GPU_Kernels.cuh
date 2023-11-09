@@ -207,7 +207,7 @@ __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
     bool EvenOrOdd);
 
 
-__global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( real omega,
+__global__ void K15CompressibleNavierStokesPorousMedia_Device( real omega,
                                                             unsigned int* neighborX,
                                                             unsigned int* neighborY,
                                                             unsigned int* neighborZ,
@@ -222,7 +222,7 @@ __global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( real omega,
                                                             unsigned int* nodeIdsPorousMedia,
                                                             bool EvenOrOdd);
 
-__global__ void LB_Kernel_AD_Incomp_7( real diffusivity,
+__global__ void B12IncompressibleAdvectionDiffusionD3Q7_Device( real diffusivity,
                                                   unsigned int* bcMatD,
                                                   unsigned int* neighborX,
                                                   unsigned int* neighborY,
@@ -232,7 +232,7 @@ __global__ void LB_Kernel_AD_Incomp_7( real diffusivity,
                                                   unsigned long long numberOfLBnodes,
                                                   bool EvenOrOdd);
 
-__global__ void LB_Kernel_AD_Incomp_27( real diffusivity,
+__global__ void F16IncompressibleAdvectionDiffusion_Device( real diffusivity,
                                                    unsigned int* bcMatD,
                                                    unsigned int* neighborX,
                                                    unsigned int* neighborY,
