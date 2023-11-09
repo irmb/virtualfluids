@@ -109,9 +109,9 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 2.0 * L, 0.5 * L, 0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.2, 0.0, 0.0, 0.25 * L, 1. * L, Axis::x));
+        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.75 * L, Axis::z));
         if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 0.8 * L, Axis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
@@ -152,15 +152,13 @@ int main()
         // gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
         // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
-
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, -velocityLB, 0.0);
-        // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
-        gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PX, -velocityLB, 0.0, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
 
         BoundaryConditionFactory bcFactory;
 

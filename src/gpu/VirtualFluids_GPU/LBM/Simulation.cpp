@@ -332,8 +332,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         }
     }
 
-    // Allocate host memory for distribution debug writer
-    cudaMemoryManager->cudaAllocFsForAllLevelsOnHost();
 
     //////////////////////////////////////////////////////////////////////////
     // Restart
@@ -379,12 +377,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     VF_LOG_INFO("... done.");
 
-    //////////////////////////////////////////////////////////////////////////
-    VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
-    // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
-    // 1000000.0 << " MB\n" << std::endl;
-    //////////////////////////////////////////////////////////////////////////
-
+    VF_LOG_INFO("Write vtk files for debugging...");
     // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
     InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get(), 0);
@@ -399,6 +392,16 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
     //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
     //    }
+
+    // Allocate host memory for DistributionDebugWriter
+    cudaMemoryManager->cudaAllocFsForAllLevelsOnHost();
+    VF_LOG_INFO("...done");
+    
+    //////////////////////////////////////////////////////////////////////////
+    VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
+    // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
+    // 1000000.0 << " MB\n" << std::endl;
+    //////////////////////////////////////////////////////////////////////////
 }
 
 void Simulation::addKineticEnergyAnalyzer(uint tAnalyse)
