@@ -291,7 +291,7 @@ __inline__ __device__ void calcMacCompSP27ForNode(real* vxD, real* vyD, real* vz
     vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
 
     real distribution[27];
-    vf::gpu::read(distribution, dist, listIndices);
+    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
 
     rhoD[nodeIndex] = vf::lbm::getDensity(distribution);
     vxD[nodeIndex] = vf::lbm::getCompressibleVelocityX1(distribution, rhoD[nodeIndex]);

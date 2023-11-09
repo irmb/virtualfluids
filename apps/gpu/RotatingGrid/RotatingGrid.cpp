@@ -56,17 +56,17 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/Output/NeighborDebugWriter.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Parameter/ParameterRotatingGrid.h"
+#include "core/DataStructureInitializer/GridProvider.h"
+#include "core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "core/Factories/BoundaryConditionFactory.h"
+#include "core/Factories/GridScalingFactory.h"
+#include "core/GPU/CudaMemoryManager.h"
+#include "core/Kernel/KernelTypes.h"
+#include "core/LBM/Simulation.h"
+#include "core/Output/FileWriter.h"
+#include "core/Output/NeighborDebugWriter.h"
+#include "core/Parameter/Parameter.h"
+#include "core/Parameter/ParameterRotatingGrid.h"
 
 //////////////////////////////////////////////////////////////////////////
 

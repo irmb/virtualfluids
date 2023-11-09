@@ -475,33 +475,33 @@ __global__ void interpolateRotatingToStatic(
     // ////////////////////////////////////////////////////////////////////////////////
 
     real fStatic[27];
-    fStatic[DIR_000] = f000;
-    fStatic[DIR_P00] = fP00;
-    fStatic[DIR_M00] = fM00;
-    fStatic[DIR_0P0] = f0P0;
-    fStatic[DIR_0M0] = f0M0;
-    fStatic[DIR_00P] = f00P;
-    fStatic[DIR_00M] = f00M;
-    fStatic[DIR_PP0] = fPP0;
-    fStatic[DIR_MM0] = fMM0;
-    fStatic[DIR_PM0] = fPM0;
-    fStatic[DIR_MP0] = fMP0;
-    fStatic[DIR_P0P] = fP0P;
-    fStatic[DIR_M0M] = fM0M;
-    fStatic[DIR_P0M] = fP0M;
-    fStatic[DIR_M0P] = fM0P;
-    fStatic[DIR_0PP] = f0PP;
-    fStatic[DIR_0MM] = f0MM;
-    fStatic[DIR_0PM] = f0PM;
-    fStatic[DIR_0MP] = f0MP;
-    fStatic[DIR_PPP] = fPPP;
-    fStatic[DIR_MPP] = fMPP;
-    fStatic[DIR_PMP] = fPMP;
-    fStatic[DIR_MMP] = fMMP;
-    fStatic[DIR_PPM] = fPPM;
-    fStatic[DIR_MPM] = fMPM;
-    fStatic[DIR_PMM] = fPMM;
-    fStatic[DIR_MMM] = fMMM;
+    fStatic[d000] = f000;
+    fStatic[dP00] = fP00;
+    fStatic[dM00] = fM00;
+    fStatic[d0P0] = f0P0;
+    fStatic[d0M0] = f0M0;
+    fStatic[d00P] = f00P;
+    fStatic[d00M] = f00M;
+    fStatic[dPP0] = fPP0;
+    fStatic[dMM0] = fMM0;
+    fStatic[dPM0] = fPM0;
+    fStatic[dMP0] = fMP0;
+    fStatic[dP0P] = fP0P;
+    fStatic[dM0M] = fM0M;
+    fStatic[dP0M] = fP0M;
+    fStatic[dM0P] = fM0P;
+    fStatic[d0PP] = f0PP;
+    fStatic[d0MM] = f0MM;
+    fStatic[d0PM] = f0PM;
+    fStatic[d0MP] = f0MP;
+    fStatic[dPPP] = fPPP;
+    fStatic[dMPP] = fMPP;
+    fStatic[dPMP] = fPMP;
+    fStatic[dMMP] = fMMP;
+    fStatic[dPPM] = fPPM;
+    fStatic[dMPM] = fMPM;
+    fStatic[dPMM] = fPMM;
+    fStatic[dMMM] = fMMM;
 
     // get distribution pointers for destination node
     Distributions27 distStatic;
@@ -509,7 +509,7 @@ __global__ void interpolateRotatingToStatic(
 
     // write
     vf::gpu::ListIndices indicesStaticForWriting(destinationIndex, neighborXstatic, neighborYstatic, neighborZstatic);
-    vf::gpu::write(distStatic, indicesStaticForWriting, fStatic);
+    vf::gpu::setPreCollisionDistribution(distStatic, indicesStaticForWriting, fStatic);
 }
 
 __global__ void updateGlobalCoordinates(

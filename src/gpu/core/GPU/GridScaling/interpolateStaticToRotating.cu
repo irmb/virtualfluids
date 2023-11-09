@@ -346,33 +346,33 @@ __global__ void interpolateStaticToRotating(
     // ////////////////////////////////////////////////////////////////////////////////
 
     real fRotating[27];
-    fRotating[DIR_000] = f000;
-    fRotating[DIR_P00] = fP00;
-    fRotating[DIR_M00] = fM00;
-    fRotating[DIR_0P0] = f0P0;
-    fRotating[DIR_0M0] = f0M0;
-    fRotating[DIR_00P] = f00P;
-    fRotating[DIR_00M] = f00M;
-    fRotating[DIR_PP0] = fPP0;
-    fRotating[DIR_MM0] = fMM0;
-    fRotating[DIR_PM0] = fPM0;
-    fRotating[DIR_MP0] = fMP0;
-    fRotating[DIR_P0P] = fP0P;
-    fRotating[DIR_M0M] = fM0M;
-    fRotating[DIR_P0M] = fP0M;
-    fRotating[DIR_M0P] = fM0P;
-    fRotating[DIR_0PP] = f0PP;
-    fRotating[DIR_0MM] = f0MM;
-    fRotating[DIR_0PM] = f0PM;
-    fRotating[DIR_0MP] = f0MP;
-    fRotating[DIR_PPP] = fPPP;
-    fRotating[DIR_MPP] = fMPP;
-    fRotating[DIR_PMP] = fPMP;
-    fRotating[DIR_MMP] = fMMP;
-    fRotating[DIR_PPM] = fPPM;
-    fRotating[DIR_MPM] = fMPM;
-    fRotating[DIR_PMM] = fPMM;
-    fRotating[DIR_MMM] = fMMM;
+    fRotating[d000] = f000;
+    fRotating[dP00] = fP00;
+    fRotating[dM00] = fM00;
+    fRotating[d0P0] = f0P0;
+    fRotating[d0M0] = f0M0;
+    fRotating[d00P] = f00P;
+    fRotating[d00M] = f00M;
+    fRotating[dPP0] = fPP0;
+    fRotating[dMM0] = fMM0;
+    fRotating[dPM0] = fPM0;
+    fRotating[dMP0] = fMP0;
+    fRotating[dP0P] = fP0P;
+    fRotating[dM0M] = fM0M;
+    fRotating[dP0M] = fP0M;
+    fRotating[dM0P] = fM0P;
+    fRotating[d0PP] = f0PP;
+    fRotating[d0MM] = f0MM;
+    fRotating[d0PM] = f0PM;
+    fRotating[d0MP] = f0MP;
+    fRotating[dPPP] = fPPP;
+    fRotating[dMPP] = fMPP;
+    fRotating[dPMP] = fPMP;
+    fRotating[dMMP] = fMMP;
+    fRotating[dPPM] = fPPM;
+    fRotating[dMPM] = fMPM;
+    fRotating[dPMM] = fPMM;
+    fRotating[dMMM] = fMMM;
 
     // get distribution pointers for destination node
     Distributions27 distRoating;
@@ -381,7 +381,7 @@ __global__ void interpolateStaticToRotating(
     // write
     vf::gpu::ListIndices indicesRotatingForWriting(destinationIndex, neighborXrotating, neighborYrotating,
                                                    neighborZrotating);
-    vf::gpu::write(distRoating, indicesRotatingForWriting, fRotating);
+    vf::gpu::setPreCollisionDistribution(distRoating, indicesRotatingForWriting, fRotating);
 }
 
 __global__ void traverseStaticToRotating(

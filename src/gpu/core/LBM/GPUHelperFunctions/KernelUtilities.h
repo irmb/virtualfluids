@@ -231,7 +231,7 @@ __inline__ __device__ bool isValidFluidNode(uint nodeType)
 
 struct ListIndices
 {
-    __device__ ListIndices() = default;
+    __device__ ListIndices() {};
     __device__ ListIndices(unsigned int index, const unsigned int* neighborX, const unsigned int* neighborY,
                            const unsigned int* neighborZ)
     {
