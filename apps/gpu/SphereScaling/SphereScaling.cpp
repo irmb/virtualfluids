@@ -36,20 +36,20 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/Output/FileWriter.h"
+#include "gpu/core/Parameter/Parameter.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/Factories/GridScalingFactory.h"
+#include "gpu/core/Kernel/Utilities/KernelTypes.h"
 
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 

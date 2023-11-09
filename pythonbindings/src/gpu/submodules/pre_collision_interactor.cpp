@@ -32,7 +32,7 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
 
 namespace pre_collision_interactor
 {

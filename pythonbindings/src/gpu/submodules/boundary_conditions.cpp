@@ -32,7 +32,7 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <gpu/GridGenerator/grid/BoundaryConditions/Side.h>
-#include "gpu/VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
 
 namespace boundary_conditions
 {

@@ -1,6 +1,6 @@
 PROJECT(ActuatorLine LANGUAGES CUDA CXX)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics VirtualFluids_GPU GridGenerator FILES ActuatorLine.cpp)
+vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES ActuatorLine.cpp)
 
 set_source_files_properties(ActuatorLine.cpp PROPERTIES LANGUAGE CUDA)
 

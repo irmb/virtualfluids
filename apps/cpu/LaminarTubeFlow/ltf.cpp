@@ -110,7 +110,7 @@ void run(string configname)
       kernel->setBCSet(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
       //SPtr<MPIIOMigrationSimulationObserver> migSimulationObserver(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, pathname + "/mig", comm));

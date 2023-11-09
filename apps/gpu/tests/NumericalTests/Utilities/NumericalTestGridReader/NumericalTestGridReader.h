@@ -1,7 +1,7 @@
 #ifndef NUMERICAL_TESTS_GRID_READER_H
 #define NUMERICAL_TESTS_GRID_READER_H
 
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
 
 #include <memory>
 

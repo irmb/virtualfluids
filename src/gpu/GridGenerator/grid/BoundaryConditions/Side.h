@@ -106,9 +106,9 @@ protected:
         { SideType::MZ, { 0.0, 0.0, NEGATIVE_DIR } }, { SideType::PZ, { 0.0, 0.0, POSITIVE_DIR } }
     };
     const std::map<SideType, size_t> sideToD3Q27 = {
-        { SideType::MX, vf::lbm::dir::DIR_M00 }, { SideType::PX, vf::lbm::dir::DIR_P00 },
-        { SideType::MY, vf::lbm::dir::DIR_0M0 }, { SideType::PY, vf::lbm::dir::DIR_0P0 },
-        { SideType::MZ, vf::lbm::dir::DIR_00M }, { SideType::PZ, vf::lbm::dir::DIR_00P }
+        { SideType::MX, vf::lbm::dir::dM00 }, { SideType::PX, vf::lbm::dir::dP00 },
+        { SideType::MY, vf::lbm::dir::d0M0 }, { SideType::PY, vf::lbm::dir::d0P0 },
+        { SideType::MZ, vf::lbm::dir::d00M }, { SideType::PZ, vf::lbm::dir::d00P }
     };
 };
 

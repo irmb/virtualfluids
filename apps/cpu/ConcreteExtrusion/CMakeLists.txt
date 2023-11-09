@@ -3,4 +3,4 @@
 ########################################################
 PROJECT(ConcreteExtrusion)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK VirtualFluidsCore basics ${MPI_CXX_LIBRARIES} MultiphaseFlow NonNewtonianFluids FILES ConcreteExtrusion.cpp )
+vf_add_library(BUILDTYPE binary PRIVATE_LINK cpu_core basics ${MPI_CXX_LIBRARIES} MultiphaseFlow NonNewtonianFluids FILES ConcreteExtrusion.cpp )

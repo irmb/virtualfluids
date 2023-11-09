@@ -1,7 +1,7 @@
 
 set(LIGGGHTS_LIBRARIES optimized ${LIGGGHTS_RELEASE_LIBRARY} debug ${LIGGGHTS_DEBUG_LIBRARY})
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX VirtualFluidsCore ${LIGGGHTS_LIBRARIES})
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX cpu_core ${LIGGGHTS_LIBRARIES})
 
 vf_get_library_name(library_name)
 

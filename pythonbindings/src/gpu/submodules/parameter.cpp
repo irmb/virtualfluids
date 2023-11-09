@@ -33,10 +33,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
-#include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
+#include <gpu/core/Parameter/Parameter.h>
 #include "basics/constants/NumericConstants.h"
 #include <basics/config/ConfigurationFile.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
 
 
 using namespace vf::basics::constant;
