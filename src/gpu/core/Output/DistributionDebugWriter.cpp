@@ -3,6 +3,7 @@
 #include "DistributionDebugWriter.h"
 #include "Parameter/Parameter.h"
 #include "WriterUtilities.h"
+#include "FilePartCalculator.h"
 
 using namespace vf::lbm::dir;
 
@@ -36,7 +37,8 @@ void createNodeDataNames(std::vector<std::string>& nodeDataNames)
 
 void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, uint level, uint timestep)
 {
-    const uint numberOfParts = WriterUtilities::calculateNumberOfParts(para, level);
+    const LBMSimulationParameter& parH = para->getParHostAsReference(level);
+    const uint numberOfParts = FilePartCalculator::calculateNumberOfParts(parH.numberOfNodes);
 
     std::vector<std::string> fileNames;
     createFileNames(fileNames, numberOfParts, level, timestep, para);
@@ -51,12 +53,11 @@ void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, 
     std::array<uint, 8> relativePosInPart;
     uint relativePositionInPart;
 
-    const LBMSimulationParameter* parH = para->getParHConst(level).get();
-    Distributions27 distributions = parH->distributions;
+    Distributions27 distributions = parH.distributions;
 
     for (unsigned int part = 0; part < numberOfParts; part++) {
-        sizeOfNodes = WriterUtilities::calculateNumberOfNodesInPart(para, level, part);
-        startPosition = part * para->getLimitOfNodesForVTK();
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(parH.numberOfNodes, part);
+        startPosition = FilePartCalculator::calculateStartingPostionOfPart(part);
         endPosition = startPosition + sizeOfNodes;
 
         std::vector<UbTupleFloat3> nodes(sizeOfNodes);
@@ -67,16 +68,16 @@ void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, 
 
         for (unsigned int pos = startPosition; pos < endPosition; pos++) {
 
-            if (parH->typeOfGridNode[pos] != GEO_FLUID)
+            if (parH.typeOfGridNode[pos] != GEO_FLUID)
                 continue;
 
             relativePositionInPart = pos - startPosition;
 
             nodes[relativePositionInPart] =
-                makeUbTuple((float)parH->coordinateX[pos], (float)parH->coordinateY[pos], (float)parH->coordinateZ[pos]);
+                makeUbTuple((float)parH.coordinateX[pos], (float)parH.coordinateY[pos], (float)parH.coordinateZ[pos]);
 
             for (uint dir = STARTDIR; dir <= ENDDIR; dir++) {
-                nodeData[dir][relativePositionInPart] = distributions.f[0][dir * parH->numberOfNodes + pos];
+                nodeData[dir][relativePositionInPart] = distributions.f[0][dir * parH.numberOfNodes + pos];
             }
 
             WriterUtilities::getIndicesOfAllNodesInOct(indicesOfOct, pos, parH);
