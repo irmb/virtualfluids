@@ -10,25 +10,18 @@
 #include "Kernel/Compressible/NavierStokes/B92/B92CompressibleNavierStokes.h"
 #include "Kernel/Compressible/NavierStokes/B15/B15CompressibleNavierStokesBGKplus.h"
 #include "Kernel/Compressible/NavierStokes/K15/K15CompressibleNavierStokes.h"
-#include "Kernel/Compressible/NavierStokes/K15/K15CompressibleNavierStokesBulkViscosity.h"
-#include "Kernel/Compressible/NavierStokes/K15/K15CompressibleNavierStokesSponge.h"
 #include "Kernel/Compressible/NavierStokes/K17/K17CompressibleNavierStokes.h"
-#include "Kernel/Compressible/NavierStokes/K17/K17CompressibleNavierStokesChimeraLegacy.h"
-#include "Kernel/Compressible/NavierStokes/K17/K17CompressibleNavierStokesBulkViscosity.h"
-#include "Kernel/Compressible/NavierStokes/K17/K17CompressibleNavierStokesSecondDerivatesFrom5thCumulants.h"
 
 //LBM kernel (inkompressible)
 #include "Kernel/Incompressible/NavierStokes/B92/B92IncompressibleNavierStokes.h"
 #include "Kernel/Incompressible/NavierStokes/B15/B15IncompressibleNavierStokesBGKplus.h"
-#include "Kernel/Incompressible/NavierStokes/K15/K15IncompressibleNavierStokesRotatingVelocityField.h"
-#include "Kernel/Incompressible/NavierStokes/K15/K15IncompressibleNavierStokesIsoCheck.h"
 #include "Kernel/Incompressible/NavierStokes/K15/K15IncompressibleNavierStokes.h"
 
 //advection diffusion kernel (compressible)
-#include "Kernel/Compressible/AdvectionDiffusion/D3Q27/F16/F16CompressibleAdvectionDiffusion.h"
+#include "Kernel/Compressible/AdvectionDiffusion/F16/F16CompressibleAdvectionDiffusion.h"
 
 //advection diffusion kernel (incompressible)
-#include "Kernel/Incompressible/AdvectionDiffusion/D3Q27/F16/F16IncompressibleAdvectionDiffusion.h"
+#include "Kernel/Incompressible/AdvectionDiffusion/F16/F16IncompressibleAdvectionDiffusion.h"
 
 #include <lbm/collision/TurbulentViscosity.h>
 
