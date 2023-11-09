@@ -472,8 +472,8 @@ public:
     //! \brief Pointer to instance of LBMSimulationParameter - stored on Device (GPU)
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
 
-    std::shared_ptr<const LBMSimulationParameter> getParHConst(int level) const;
-    std::shared_ptr<const LBMSimulationParameter> getParDConst(int level) const;
+    LBMSimulationParameter& getParHostAsReference(int level) const;
+    LBMSimulationParameter& getParDeviceAsReference(int level) const;
 
     const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParHallLevels();
     const std::vector<std::shared_ptr<LBMSimulationParameter>>& getParDallLevels();
@@ -488,7 +488,6 @@ public:
     void setAngularVelocity(real inAngVel);
     void setStepEnsight(unsigned int step);
     void setOutputCount(unsigned int outputCount);
-    void setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
     void setStartTurn(unsigned int inStartTurn);
     void setDiffOn(bool isDiff);
     void setCompOn(bool isComp);
@@ -710,7 +709,6 @@ public:
     real getEndXHotWall();
     unsigned int getStepEnsight();
     unsigned int getOutputCount();
-    unsigned int getLimitOfNodesForVTK() const;
     unsigned int getStartTurn();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
@@ -1045,8 +1043,7 @@ private:
     int maxdev{ 1 };
 
     double memsizeGPU;
-    
-    uint limitOfNodesForVTK;
+
     uint outputCount;
     uint timestep;
     uint tDoCheckPoint{ 0 };

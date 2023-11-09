@@ -102,11 +102,10 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     gridProvider.setBoundingBox();
 
     para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-    para->setLimitOfNodesForVTK(30000000); // max 30 Million nodes per VTK file
     if (para->getDoRestart())
         para->setStartTurn(para->getTimeDoRestart());
     else
-        para->setStartTurn((unsigned int)0); // 100000
+        para->setStartTurn((unsigned int)0);
 
     restart_object = std::make_shared<ASCIIRestartObject>();
 

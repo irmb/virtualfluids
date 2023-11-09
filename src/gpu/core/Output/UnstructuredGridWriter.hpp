@@ -193,22 +193,17 @@ namespace UnstructuredGridWriter
 		for (unsigned int part=0; part < fname.size(); part++)
 		{
 			vxmax = 0;
-			//printf("\n test in if I... \n");
-			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
-			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
-			endpos = startpos + sizeOfNodes;
-			//////////////////////////////////////////////////////////////////////////
-			cells.clear();
-			nodes.resize(sizeOfNodes);
+            // printf("\n test in if I... \n");
+            //////////////////////////////////////////////////////////////////////////
+
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+
+            //////////////////////////////////////////////////////////////////////////
+            startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
+            endpos = startpos + sizeOfNodes;
+            //////////////////////////////////////////////////////////////////////////
+            cells.clear();
+            nodes.resize(sizeOfNodes);
 			nodedata[0].resize(sizeOfNodes);
 			nodedata[1].resize(sizeOfNodes);
 			nodedata[2].resize(sizeOfNodes);
@@ -338,16 +333,11 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
-			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+
+            //////////////////////////////////////////////////////////////////////////
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -477,16 +467,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -626,16 +609,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -769,16 +745,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
-			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+            //////////////////////////////////////////////////////////////////////////
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -1340,18 +1309,14 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-			if ( ((part+1)*para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
-			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
-			endpos = startpos + sizeOfNodes;
-			//////////////////////////////////////////////////////////////////////////
+
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+
+            //////////////////////////////////////////////////////////////////////////
+            startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
+            endpos = startpos + sizeOfNodes;
+
+            //////////////////////////////////////////////////////////////////////////
 			cells.clear();
 			nodes.resize(sizeOfNodes);
 			nodedata[0].resize(sizeOfNodes);
@@ -1463,16 +1428,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -1593,16 +1551,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -1973,16 +1924,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -2078,16 +2022,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();
@@ -2190,16 +2127,9 @@ namespace UnstructuredGridWriter
 			vxmax = 0;
 			//printf("\n test in if I... \n");
 			//////////////////////////////////////////////////////////////////////////
-            if (((part + 1) * para->getLimitOfNodesForVTK()) > (uint)para->getParH(level)->numberOfNodes)
-			{
-                sizeOfNodes = (uint)para->getParH(level)->numberOfNodes - (part * para->getLimitOfNodesForVTK());
-			}
-			else
-			{
-				sizeOfNodes = para->getLimitOfNodesForVTK();
-			}
+            sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
 			//////////////////////////////////////////////////////////////////////////
-			startpos = part * para->getLimitOfNodesForVTK();
+			startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
 			endpos = startpos + sizeOfNodes;
 			//////////////////////////////////////////////////////////////////////////
 			cells.clear();

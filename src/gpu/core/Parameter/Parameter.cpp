@@ -665,10 +665,6 @@ void Parameter::setOutputCount(unsigned int outputCount)
 {
     this->outputCount = outputCount;
 }
-void Parameter::setLimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
-{
-    this->limitOfNodesForVTK = limitOfNodesForVTK;
-}
 void Parameter::setStartTurn(unsigned int inStartTurn)
 {
     startTurn = inStartTurn;
@@ -1732,10 +1728,6 @@ unsigned int Parameter::getOutputCount()
 {
     return this->outputCount;
 }
-unsigned int Parameter::getLimitOfNodesForVTK() const
-{
-    return this->limitOfNodesForVTK;
-}
 unsigned int Parameter::getStartTurn()
 {
     return startTurn;
@@ -1749,14 +1741,14 @@ std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
     return parH[level];
 }
 
-std::shared_ptr<const LBMSimulationParameter> Parameter::getParDConst(int level) const
+LBMSimulationParameter& Parameter::getParDeviceAsReference(int level) const
 {
-    return parD[level];
+    return *parD[level];
 }
 
-std::shared_ptr<const LBMSimulationParameter> Parameter::getParHConst(int level) const
+LBMSimulationParameter& Parameter::getParHostAsReference(int level) const
 {
-    return parH[level];
+    return *parH[level];
 }
 
 const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParHallLevels()
