@@ -139,7 +139,7 @@ void Vertex::printFormatted(std::ostream &ost) const
 
 bool Vertex::operator==(const Vertex &v) const
 {
-	return vf::Math::equal(x, v.x) && vf::Math::equal(y, v.y) && vf::Math::equal(z, v.z);
+    return vf::Math::equal(x, v.x) && vf::Math::equal(y, v.y) && vf::Math::equal(z, v.z);
 }
 
 

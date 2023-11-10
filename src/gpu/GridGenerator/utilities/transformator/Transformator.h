@@ -47,21 +47,21 @@ class Transformator
 {
 public:
     static GRIDGENERATOR_EXPORT std::shared_ptr<Transformator> makeTransformator(real delta, real dx, real dy, real dz);
-	virtual ~Transformator() {}
+    virtual ~Transformator() {}
 
 protected:
-	Transformator(){}
+    Transformator(){}
 
 public:
-	virtual void transformWorldToGrid(Triangle &value) const = 0;
-	virtual void transformWorldToGrid(TriangularMesh &geom) const = 0;
-	virtual void transformWorldToGrid(Vertex &value) const = 0;
+    virtual void transformWorldToGrid(Triangle &value) const = 0;
+    virtual void transformWorldToGrid(TriangularMesh &geom) const = 0;
+    virtual void transformWorldToGrid(Vertex &value) const = 0;
 
     virtual void transformGridToWorld(Triangle &t) const = 0;
-	virtual void transformGridToWorld(Vertex &value) const = 0;
-	
-	virtual void transformGridToWorld(BoundingBox &box) const = 0;
-	virtual void transformWorldToGrid(BoundingBox &box) const = 0;
+    virtual void transformGridToWorld(Vertex &value) const = 0;
+    
+    virtual void transformGridToWorld(BoundingBox &box) const = 0;
+    virtual void transformWorldToGrid(BoundingBox &box) const = 0;
 
 };
 

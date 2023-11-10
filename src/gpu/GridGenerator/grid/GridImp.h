@@ -82,8 +82,8 @@ private:
     void initalNumberOfNodesAndSize();
     Cell getOddCellFromIndex(uint index) const;
     bool isValidSolidStopper(uint index) const;
-	bool shouldBeBoundarySolidNode(uint index) const;
-	bool isValidEndOfGridStopper(uint index) const;
+    bool shouldBeBoundarySolidNode(uint index) const;
+    bool isValidEndOfGridStopper(uint index) const;
     bool isValidEndOfGridBoundaryStopper(uint index) const;
     bool isOutSideOfGrid(Cell &cell) const;
     bool contains(Cell &cell, char type) const;
@@ -105,9 +105,9 @@ private:
 
     bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-	uint nx, ny, nz;
+    uint nx, ny, nz;
 
-	uint size;
+    uint size;
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
     real periodicShiftOnXinY = 0.0, periodicShiftOnXinZ = 0.0;
@@ -125,8 +125,8 @@ private:
     std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
     std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures
 
-	uint *qIndices;     //maps from matrix index to qIndex
-	real *qValues;
+    uint *qIndices;     //maps from matrix index to qIndex
+    real *qValues;
     uint *qPatches;
 
     bool innerRegionFromFinerGrid;
