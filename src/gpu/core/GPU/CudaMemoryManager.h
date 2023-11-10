@@ -24,7 +24,6 @@
 #endif
 
 class Parameter;
-class PorousMedia;
 class ActuatorFarm;
 class Probe;
 class VelocitySetter;
@@ -301,10 +300,6 @@ public:
     void cudaFreeParticles(int lev);
 
     void cudaAllocRandomValues();
-
-    void cudaAllocPorousMedia(PorousMedia* pm, int lev);
-    void cudaCopyPorousMedia(PorousMedia* pm, int lev);
-    void cudaFreePorousMedia(PorousMedia* pm, int lev);
 
     void cudaAllocConcentration(int lev);
     void cudaCopyConcentrationDeviceToHost(int lev);

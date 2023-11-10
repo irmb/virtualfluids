@@ -347,10 +347,10 @@ void UpdateGrid27::exchangeData(int level)
 }
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                           std::vector<std::shared_ptr<PorousMedia>>& pm, std::vector<SPtr<Kernel>>& kernels,
+                           std::vector<SPtr<Kernel>>& kernels,
                            std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, BoundaryConditionFactory* bcFactory,
                            SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
-    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels), tmFactory(tmFactory)
+    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), kernels(kernels), tmFactory(tmFactory)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);

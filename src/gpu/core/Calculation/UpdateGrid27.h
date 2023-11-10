@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "Calculation/PorousMedia.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "LBM/LB.h"
@@ -31,8 +30,7 @@ using RefinementStrategy = std::function<void (UpdateGrid27* updateGrid, Paramet
 class UpdateGrid27
 {
 public:
-    UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator& comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                 std::vector<std::shared_ptr<PorousMedia>>& pm, std::vector<SPtr<Kernel>>& kernels,
+    UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator& comm, SPtr<CudaMemoryManager> cudaMemoryManager, std::vector<SPtr<Kernel>>& kernels,
                  std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, BoundaryConditionFactory* bcFactory,
                  SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory);
     void updateGrid(int level, unsigned int t);
@@ -82,7 +80,6 @@ private:
     SPtr<Parameter> para;
     vf::parallel::Communicator& comm;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    std::vector<std::shared_ptr<PorousMedia>> pm;
     std::vector<SPtr<Kernel>> kernels;
     //! \property lbKernelManager is a shared pointer to an object of LBKernelManager
     std::shared_ptr<BCKernelManager> bcKernelManager;
