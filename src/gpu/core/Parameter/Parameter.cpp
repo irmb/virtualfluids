@@ -130,14 +130,8 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("UseMeasurePoints"))
         this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseWale"))
-        this->setUseWale(configData.getValue<bool>("UseWale"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("SimulatePorousMedia"))
-        this->setSimulatePorousMedia(configData.getValue<bool>("SimulatePorousMedia"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("D3Qxx"))
         this->setD3Qxx(configData.getValue<int>("D3Qxx"));
@@ -173,9 +167,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     // second component
     if (configData.contains("DiffOn"))
         this->setDiffOn(configData.getValue<bool>("DiffOn"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("DiffMod"))
-        this->setDiffMod(configData.getValue<int>("DiffMod"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Diffusivity"))
         this->setDiffusivity(configData.getValue<real>("Diffusivity"));
@@ -676,10 +667,6 @@ void Parameter::setCompOn(bool isComp)
 {
     compOn = isComp;
 }
-void Parameter::setDiffMod(int DiffMod)
-{
-    diffMod = DiffMod;
-}
 void Parameter::setD3Qxx(int d3qxx)
 {
     this->D3Qxx = d3qxx;
@@ -990,19 +977,9 @@ void Parameter::setUseInitNeq(bool useInitNeq)
 {
     this->isInitNeq = useInitNeq;
 }
-void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
-{
-    this->simulatePorousMedia = simulatePorousMedia;
-}
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 {
     this->isTurbulentViscosity = useTurbulentViscosity;
-}
-void Parameter::setUseWale(bool useWale)
-{
-    this->isWale = useWale;
-    if (useWale)
-        setUseTurbulentViscosity(true);
 }
 void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
@@ -1801,10 +1778,6 @@ bool Parameter::getCompOn()
 {
     return compOn;
 }
-int Parameter::getDiffMod()
-{
-    return diffMod;
-}
 int Parameter::getFactorNZ()
 {
     return factor_gridNZ;
@@ -2381,10 +2354,6 @@ bool Parameter::getUseMeasurePoints()
 {
     return this->isMeasurePoints;
 }
-bool Parameter::getUseWale()
-{
-    return this->isWale;
-}
 vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {
     return this->turbulenceModel;
@@ -2412,10 +2381,6 @@ std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
 bool Parameter::getUseInitNeq()
 {
     return this->isInitNeq;
-}
-bool Parameter::getSimulatePorousMedia()
-{
-    return this->simulatePorousMedia;
 }
 
 bool Parameter::getIsF3()

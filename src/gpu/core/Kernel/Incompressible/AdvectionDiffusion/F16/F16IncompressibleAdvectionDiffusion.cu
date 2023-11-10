@@ -21,7 +21,8 @@ void F16IncompressibleAdvectionDiffusion::run()
         para->getParD(level)->neighborZ,
         para->getParD(level)->distributions.f[0], 
         para->getParD(level)->distributionsAD.f[0], 
-        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->numberOfNodes, 
+        para->getParD(level)->forcing,
         para->getParD(level)->isEvenTimestep);
     getLastCudaError("F16IncompressibleAdvectionDiffusion_Device execution failed");
 }

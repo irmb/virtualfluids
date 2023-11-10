@@ -122,7 +122,6 @@ uint nx = 64;
 uint gpuIndex = 0;
 
 bool useLimiter = false;
-bool useWale = false;
 
 int mpirank;
 int mpiWorldSize;
@@ -314,9 +313,6 @@ void multipleLevel(const std::string& configPath)
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
 
-    if( useWale )
-        para->setUseWale( true );
-
     para->setUseInitNeq( true );
 
 	if (kernel == "CumulantK18Comp" || kernel == "CumulantK20Comp")
@@ -386,9 +382,6 @@ int main( int argc, char* argv[])
 
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
-
-            if( cmdOptionExists( argv, argv+argc, "--useWale" ) )
-                useWale = true;
 
             //////////////////////////////////////////////////////////////////////////
 

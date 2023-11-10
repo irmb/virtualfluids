@@ -17,7 +17,6 @@ class Communicator;
 class CudaMemoryManager;
 class Parameter;
 class GridProvider;
-class PorousMedia;
 class RestartObject;
 class ForceCalculations;
 class DataWriter;
@@ -60,8 +59,6 @@ public:
 private:
 	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
-    void porousMedia();
-    void definePMarea(std::shared_ptr<PorousMedia>& pm);
     void readAndWriteFiles(uint timestep);
 
 	std::unique_ptr<KernelFactory> kernelFactory;
@@ -99,11 +96,6 @@ private:
 	//Forcing Calculation
 	std::shared_ptr<ForceCalculations> forceCalculator;
 
-	//Porous Media
-	std::vector<std::shared_ptr<PorousMedia>> pm;
-	//PorousMedia* pm0;
-	//PorousMedia* pm1;
-	//PorousMedia* pm2;
 
     // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
 	//KQ - Schlaff

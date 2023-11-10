@@ -1,72 +1,14 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
-//      \    \  |    |   ________________________________________________________________
-//       \    \ |    |  |  ______________________________________________________________|
-//        \    \|    |  |  |         __          __     __     __     ______      _______
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of
-//  the License, or (at your option) any later version.
-//
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-//  for more details.
-//
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file AdvectionDiffusion27chim.cu
-//! \ingroup GPU
-//! \author Martin Schoenherr
-//=======================================================================================
-/* Device code */
-#include "LBM/LB.h"
+#include "LBM/LB.h" 
 #include "lbm/constants/D3Q27.h"
-
+#include <lbm/ChimeraTransformation.h>
 #include <basics/constants/NumericConstants.h>
 
 using namespace vf::basics::constant;
+using namespace vf::lbm;
 using namespace vf::lbm::dir;
+#include "math.h"
 
-////////////////////////////////////////////////////////////////////////////////
-//! \brief forward chimera transformation \ref forwardChimera
-//! - Chimera transform from distributions to central moments as defined in Eq. (43)-(45) in \ref
-//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-inline __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2) {
-	real m1 = (mfa + mfc) + mfb;
-	real m2 = mfc - mfa;
-	mfc     = (mfc + mfa) + (v2*m1 - c2o1*vv*m2);
-	mfb     = m2 - vv*m1;
-	mfa     = m1;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-//! \brief backward chimera transformation \ref backwardChimera
-//! - Chimera transform from  central moments to distributions as defined in Eq. (88)-(96) in \ref
-//! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-inline __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2) {
-	real ma = (mfc + mfa*(v2 - vv))*c1o2 + mfb*(vv - c1o2);
-	real mb = ((mfa - mfc) - mfa*v2) - c2o1*mfb*vv;
-	mfc     = (mfc + mfa*(v2 + vv))*c1o2 + mfb*(vv + c1o2);
-	mfb     = mb;
-	mfa     = ma;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-__global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
+__global__ void F16IncompressibleAdvectionDiffusion_Device(
 	real omegaDiffusivity,
 	uint* typeOfGridNode,
 	uint* neighborX,
@@ -309,21 +251,18 @@ __global__ void Factorized_Central_Moments_Advection_Diffusion_Device_Kernel(
 			(((fbac + fbca) + (fbaa + fbcc)) + ((fabc + fcba) + (faba + fcbc)) + ((facb + fcab) + (faab + fccb))) +
 			((fabb + fcbb) + (fbab + fbcb) + (fbba + fbbc))) + fbbb;
 
-		real rhoFluid = c1o1 + drhoFluid;
-		real OOrhoFluid = c1o1 / rhoFluid;
-
         real vvx =
 			((((fccc - faaa) + (fcac - faca)) + ((fcaa - facc) + (fcca - faac))) +
 			(((fcba - fabc) + (fcbc - faba)) + ((fcab - facb) + (fccb - faab))) +
-			(fcbb - fabb)) * OOrhoFluid;
+			(fcbb - fabb));
 		real vvy =
 			((((fccc - faaa) + (faca - fcac)) + ((facc - fcaa) + (fcca - faac))) +
 			(((fbca - fbac) + (fbcc - fbaa)) + ((facb - fcab) + (fccb - faab))) +
-			(fbcb - fbab)) * OOrhoFluid;
+			(fbcb - fbab));
 		real vvz =
 			((((fccc - faaa) + (fcac - faca)) + ((facc - fcaa) + (faac - fcca))) +
 			(((fbac - fbca) + (fbcc - fbaa)) + ((fabc - fcba) + (fcbc - faba))) +
-			(fbbc - fbba)) * OOrhoFluid;
+			(fbbc - fbba));
 		////////////////////////////////////////////////////////////////////////////////////
 		// second component
 		real rho =

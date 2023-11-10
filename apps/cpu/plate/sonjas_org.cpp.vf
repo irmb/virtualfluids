@@ -1,6 +1,6 @@
 
 
-..damit wir gleich damit anfangen können. So sieht das Setup aus.
+..damit wir gleich damit anfangen kï¿½nnen. So sieht das Setup aus.
 Sonja
 
 
@@ -9,7 +9,6 @@ SpD3Q19Plattenanstroemung.hpp
 #include <topology/amr3d/blockadaptation/AMR3DCrossAndInsideGbObject3DAdapter.h>
 //AMR3DCrossAndInsideGbObject3DAdapter
 #include <topology/amr3d/lbmd3q19/utils/D3Q19MetisTools.h>
-//#include <topology/amr3d/lbmd3q19/turbulenceWale/gridadaptation/TwD3Q19SpongeLayerAdapter.h>
 #include <topology/amr3d/lbmd3q19/gridadaptation/D3Q19GridInformationGridAdapter.h>
 #include <topology/amr3d/lbmd3q19/gridadaptation/D3Q19SetConnectorsGridAdapter.h>
 #include <topology/amr3d/lbmd3q19/gridadaptation/D3Q19InitDistributionsGridAdapter.h>
@@ -99,9 +98,9 @@ void SpD3Q19MasterTestcases::start( RcfClient<IRcfIpService>& ipService,
    params.collModel = D3Q19System::INCOMPGLBEJTLESMODEL;
    ///////////////Knotenabmessungen:
    //int KnotenCubeCoarse=40;
-   params.nx[0]      = 120;//60;//86;//43;//65;//50;  //länge
+   params.nx[0]      = 120;//60;//86;//43;//65;//50;  //lï¿½nge
    params.nx[1]      = 6;///1;//5;// //breite
-   params.nx[2]      = 32;//18;//5;//15;//15; //höhe gebiet
+   params.nx[2]      = 32;//18;//5;//15;//15; //hï¿½he gebiet
    params.blocknx[0] = 10;
    params.blocknx[1] = 10;
    params.blocknx[2] = 10;
@@ -113,9 +112,9 @@ void SpD3Q19MasterTestcases::start( RcfClient<IRcfIpService>& ipService,
    int bottomLevel     = 1;
 
    ///////////////Weltabmessungen:
-   double kanalhoeheSI  = 60.0/100.0;//60.0/100.0;//cm, Kanalhöhe
+   double kanalhoeheSI  = 60.0/100.0;//60.0/100.0;//cm, Kanalhï¿½he
    double kanalbreiteSI = 9.9/100.0;//1.65/100.0;//13.2/100.0;////40.0/100.0; //cm, Kanalbreite //13.2 zeilbreite
-   double kanallaengeSI = kanalhoeheSI*30.0/18.0;//80.0/100.0;//cm, Kanallänge, ist nicht angegeben
+   double kanallaengeSI = kanalhoeheSI*30.0/18.0;//80.0/100.0;//cm, Kanallï¿½nge, ist nicht angegeben
 
    // double refinewidth1=kanalhoeheSI/10.0;
 
@@ -381,7 +380,7 @@ void SpD3Q19MasterTestcases::start( RcfClient<IRcfIpService>& ipService,
    topoService.adaptGridByBlockCriterion(refineAdapterP6);
 
      UBLOG2(logINFO, std::cout, "Refinement..done");
-   //blockverhältnis von 2:1 herstellen:
+   //blockverhï¿½ltnis von 2:1 herstellen:
    UBLOG(logINFO,"ratio")
       boost::shared_ptr<AMR3DBlockAdaptationCriterion> ratioAdapter(new AMR3DBlockRatioAdapter(params.refineLevel));
    topoService.adaptGridByBlockCriterion(ratioAdapter);
@@ -554,7 +553,7 @@ void SpD3Q19MasterTestcases::start( RcfClient<IRcfIpService>& ipService,
    , params.blocknx[1]
    , params.blocknx[2] )
       , params.connsTransAttr.useConsForNotActiveBlocks()
-      , D3Q19MetisAdapterTools::getD3Q19GetBlockWeightFunctor(false) ) );   ///////hier false auf keine gewichtung - default:doppelte gewichtung für fine
+      , D3Q19MetisAdapterTools::getD3Q19GetBlockWeightFunctor(false) ) );   ///////hier false auf keine gewichtung - default:doppelte gewichtung fï¿½r fine
    //  boost::shared_ptr<AMR3DGridAdaptationCriterion> partioningAdapter(new AMR3DGridPartitionOneDirectionAdapter((int)calcServices.size()) );   
   // UBLOG2(logINFO,"params.connsTransAttr.useConsForNotActiveBlocks():" ); 
    //UBLOG2(logINFO,params.connsTransAttr.useConsForNotActiveBlocks() );         

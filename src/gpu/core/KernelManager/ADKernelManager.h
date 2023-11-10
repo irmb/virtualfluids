@@ -33,6 +33,8 @@
 #ifndef ADVECTION_DIFFUSION_H
 #define ADVECTION_DIFFUSION_H
 
+#include <vector>
+
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 
@@ -40,6 +42,7 @@
 //! \brief Class forwarding for Parameter, CudaMemoryManager
 class Parameter;
 class CudaMemoryManager;
+class AdvectionDiffusionKernel;
 
 //! \class ADKernelManager
 //! \brief manage the advection diffusion kernel calls
@@ -49,7 +52,7 @@ class ADKernelManager
 public:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
-    ADKernelManager(SPtr<Parameter> parameter);
+    ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels);
 
     //! \brief initialize the advection diffusion distributions
     void initAD(const int level) const;
@@ -79,6 +82,7 @@ public:
 
 private:
     SPtr<Parameter> para;
+    std::vector<SPtr<AdvectionDiffusionKernel>> adkernels;
 };
 
 #endif

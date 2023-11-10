@@ -149,8 +149,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setCalcDragLift(true);
 
-            para->setUseWale(false);
-
             para->configureMainKernel("CumulantK15Comp");
 
             //////////////////////////////////////////////////////////////////////////
@@ -233,8 +231,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setTimestepOut( 10000 );
             para->setTimestepEnd( 100000 );
-
-            para->setUseWale(false);
 
             para->configureMainKernel("CumulantK20Comp");
 
@@ -337,8 +333,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setTimestepOut( 1000 );
             para->setTimestepEnd( 100000 );
 
-            para->setUseWale(false);
-
             para->configureMainKernel("CumulantAA2016CompSP27");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -414,8 +408,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setTimestepOut( 1000 );
             para->setTimestepEnd( 100000 );
-
-            para->setUseWale(false);
 
             para->configureMainKernel("CumulantAA2016CompSP27");
             //para->configureMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
@@ -611,8 +603,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setTimestepEnd( 100000 );
 
             para->setCalcDragLift(true);
-
-            para->setUseWale(false);
 
             para->configureMainKernel("CumulantK15Comp");
 

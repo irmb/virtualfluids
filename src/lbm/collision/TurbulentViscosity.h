@@ -58,8 +58,6 @@ enum class TurbulenceModel {
     AMD,
     //! - QR model by Verstappen
     QR,
-    //! - TODO: move the WALE model here from the old kernels
-    // WALE
     //! - No turbulence model
     None
 };

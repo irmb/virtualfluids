@@ -42,9 +42,6 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseWale()) //TODO: make WALE consistent with structure of other turbulence models
-        calcMacroscopicQuantities(level);
-
     calcTurbulentViscosity(level);
 
     //////////////////////////////////////////////////////////////////////////
@@ -69,11 +66,6 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getSimulatePorousMedia())
-        collisionPorousMedia(level);
-
-    //////////////////////////////////////////////////////////////////////////
-
     if (para->getDiffOn())
         collisionAdvectionDiffusion(level);
 }
@@ -87,38 +79,9 @@ void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *tagged
                       << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
-    //! \todo: AD collision and porousMedia should be called separately, not in collisionUsingIndices
-
-    if (para->getSimulatePorousMedia())
-        collisionPorousMedia(level);
-
-    //////////////////////////////////////////////////////////////////////////
 
     if (para->getDiffOn())
         collisionAdvectionDiffusion(level);
-}
-
-void UpdateGrid27::collisionPorousMedia(int level)
-{
-    for( std::size_t i = 0; i < pm.size(); i++ )
-    {
-        KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
-                               para->getParD(level)->omega,
-                               para->getParD(level)->neighborX,
-                               para->getParD(level)->neighborY,
-                               para->getParD(level)->neighborZ,
-                               para->getParD(level)->distributions.f[0],
-                               para->getParD(level)->numberOfNodes,
-                               level,
-                               para->getForcesDev(),
-                               pm[i]->getPorosity(),
-                               pm[i]->getDarcyLBM(),
-                               pm[i]->getForchheimerLBM(),
-                               pm[i]->getSizePM(),
-                               pm[i]->getHostNodeIDsPM(),
-                               para->getParD(level)->isEvenTimestep);
-        getLastCudaError("KernelPMCumOneCompSP27 execution failed");
-    }
 }
 
 void UpdateGrid27::collisionAdvectionDiffusion(int level)
@@ -384,13 +347,15 @@ void UpdateGrid27::exchangeData(int level)
 }
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                           std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels , BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory>  tmFactory, GridScalingFactory* scalingFactory)
-    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), pm(pm), kernels(kernels), tmFactory(tmFactory)
+                           std::vector<SPtr<Kernel>>& kernels,
+                           std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, BoundaryConditionFactory* bcFactory,
+                           SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
+    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), kernels(kernels), tmFactory(tmFactory)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
 
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
-    this->adKernelManager = std::make_shared<ADKernelManager>(para);
+    this->adKernelManager = std::make_shared<ADKernelManager>(para, adkernels);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
 }
