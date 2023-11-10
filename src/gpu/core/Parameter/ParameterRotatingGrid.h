@@ -8,25 +8,29 @@
 #include <basics/DataTypes.h>
 #include <basics/geometry3d/Axis.h>
 
-struct ParameterRotatingGridSimulation {
+struct ParameterRotatingGridHostDevice
+{
     std::array<real, 3> centerPoint;
-    real *nestedCoordinatesX = nullptr; // in local coordinate system of rotating grid
-    real *nestedCoordinatesY = nullptr;
-    real *nestedCoordinatesZ = nullptr;
+    real* nestedCoordinatesX = nullptr; // in local coordinate system of rotating grid
+    real* nestedCoordinatesY = nullptr;
+    real* nestedCoordinatesZ = nullptr;
     uint sizeOfNestedCoordinates;
     uint memorySizeOfNestedCoordinates;
     std::array<real, 3> gridAngle = { 0.0, 0.0, 0.0 };
     std::array<real, 3> angularVelocity = { 0.0, 0.0, 0.0 };
 };
 
-struct ParameterRotatingGrid {
+class ParameterRotatingGrid
+{
 public:
-    ParameterRotatingGrid(const std::array<real, 3> &centerPoint, const Axis &rotationalAxis, uint sizeOfNestedCoordinates);
-    void fillNestedCoordinateVectorsOnHost(const std::array<real *, 3> &globalCoordinates);
+    ParameterRotatingGrid(const std::array<real, 3>& centerPoint, const Axis& rotationalAxis, uint sizeOfNestedCoordinates);
+    void fillNestedCoordinateVectorsOnHost(const std::array<real*, 3>& globalCoordinates);
 
     const Axis rotationalAxis;
-    SPtr<ParameterRotatingGridSimulation> parameterRotHost = std::make_shared<ParameterRotatingGridSimulation>();
-    SPtr<ParameterRotatingGridSimulation> parameterRotDevice = std::make_shared<ParameterRotatingGridSimulation>();
+    SPtr<ParameterRotatingGridHostDevice> parameterRotHost = std::make_shared<ParameterRotatingGridHostDevice>();
+    SPtr<ParameterRotatingGridHostDevice> parameterRotDevice = std::make_shared<ParameterRotatingGridHostDevice>();
+
+    real initialGridRotation = 0.0; // for debugging purposes
 };
 
 #endif

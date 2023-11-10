@@ -449,6 +449,10 @@ void Simulation::allocNeighborsOffsetsScalesAndBoundaries(GridProvider &gridProv
 
 void Simulation::run()
 {
+    // #TODO: do not hard code level and move to appropriate place
+    if (para->getRotatingGridParameter() != nullptr)
+        updateGrid27->rotateGridInInitializationProcess(0);
+
     this->initTimers();
 
     //////////////////////////////////////////////////////////////////////////

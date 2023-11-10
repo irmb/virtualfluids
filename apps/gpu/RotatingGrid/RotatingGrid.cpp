@@ -73,17 +73,28 @@
 int main()
 {
     try {
-         vf::logging::Logger::initializeLogger();
+        vf::logging::Logger::initializeLogger();
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        enum RotationOrInterpolation {Rot, Int};
+        enum RotationOrInterpolation { Rot, Int };
+        enum InitialRotation { Zero, TwoPi, Pi, PiHalf };
+        using namespace vf::basics::constant;
+        std::map<InitialRotation, real> rotations = { { Zero, 0.0 }, { TwoPi, c2Pi }, { Pi, cPi }, { PiHalf, PiHalf } };
+        std::map<InitialRotation, std::string> rotationStrings = {
+            { Zero, "NoRotation" }, { TwoPi, "2Pi" }, { Pi, "Pi" }, { PiHalf, "PiHalf" }
+        };
+
         const RotationOrInterpolation rotOrInt = Rot;
-        if (rotOrInt == Int) VF_LOG_INFO("Use interpolation.");
-        if (rotOrInt == Rot) VF_LOG_INFO("Use rotation.");
+        const InitialRotation initialRot = PiHalf;
+
+        if (rotOrInt == Int)
+            VF_LOG_INFO("Use interpolation.");
+        if (rotOrInt == Rot)
+            VF_LOG_INFO("Use rotation.");
 
         const std::string path("./output/RotatingGrid");
-        const std::string simulationName = rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid"; //PiHalbe";
+        const std::string simulationName = (rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid") + rotationStrings[initialRot];
 
         const real L = 1.0;
         const real Re = 2000.0;
@@ -100,7 +111,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
 
         const real dx = L / real(nx);
-        const real dt  = velocityLB / velocity * dx;
+        const real dt = velocityLB / velocity * dx;
 
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
@@ -111,8 +122,10 @@ int main()
 
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
-        if (rotOrInt == Rot) gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.75 * L, Axis::z));
-        if (rotOrInt == Int) gridBuilder->addGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 0.8 * L, Axis::x), 1);
+        if (rotOrInt == Rot)
+            gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.75 * L, Axis::x));
+        if (rotOrInt == Int)
+            gridBuilder->addGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 0.8 * L, Axis::x), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -152,13 +165,17 @@ int main()
         // gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
         // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
         gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
-        gridBuilder->setVelocityBoundaryCondition(SideType::PX, -velocityLB, 0.0, 0.0);
-        gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+        // gridBuilder->setVelocityBoundaryCondition(SideType::PX, -velocityLB, 0.0, 0.0);
+        // gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+
+        // rot around x-Axis
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, -velocityLB, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
         BoundaryConditionFactory bcFactory;
 
@@ -185,10 +202,8 @@ int main()
 
         // para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         //     // rho = (real) 0.0;
-        //     // if (coordX > -0.52 && coordY > 0.27 && coordZ > -0.1 && coordX < -0.49 && coordY < 0.3 && coordZ < 0.11) rho = 1e-5;
-        //     rho =  setPressPoint({-0.2, 0.24, 0.0}, 1e-5, dx, {coordX, coordY, coordZ});
-        //     vx = 0.0;
-        //     vy = 0.0;
+        //     // if (coordX > -0.52 && coordY > 0.27 && coordZ > -0.1 && coordX < -0.49 && coordY < 0.3 && coordZ < 0.11)
+        //     rho = 1e-5; rho =  setPressPoint({-0.2, 0.24, 0.0}, 1e-5, dx, {coordX, coordY, coordZ}); vx = 0.0; vy = 0.0;
         //     vz = 0.0;
         // });
 
@@ -196,7 +211,7 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
+        vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =
@@ -238,13 +253,14 @@ int main()
         // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
         SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
+        paraRot->initialGridRotation = rotations[initialRot];
         sim.run();
 
-    } catch (const spdlog::spdlog_ex &ex) {
+    } catch (const spdlog::spdlog_ex& ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;
-    } catch (const std::bad_alloc &e) {
+    } catch (const std::bad_alloc& e) {
         VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         VF_LOG_CRITICAL("exception: {}", e.what());
     } catch (...) {
         VF_LOG_CRITICAL("Unknown exception!");

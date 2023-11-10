@@ -427,18 +427,24 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
+}
 
+void UpdateGrid27::rotateGridInInitializationProcess(int level)
+{
+    real steps = 800; // to few steps may break the connectivity of the interpolation cells
     SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
 
-    uint level = 0;
-    real finalRotation = (real) (vf::basics::constant::cPi);
-    VF_LOG_INFO("intended rotation: {} around center point ({}, {}, {})", finalRotation,
-                paraRot->parameterRotHost->centerPoint[0], paraRot->parameterRotHost->centerPoint[1],
-                paraRot->parameterRotHost->centerPoint[2]);
-    real steps = 800;
-    paraRot->parameterRotHost->angularVelocity[0] = finalRotation / steps;
-    paraRot->parameterRotDevice->angularVelocity[0] = paraRot->parameterRotHost->angularVelocity[0];
-    VF_LOG_INFO("angular velocity: {}", paraRot->parameterRotHost->angularVelocity[0]);
+    real intendedRotation = (real)paraRot->initialGridRotation;
+    auto axis = paraRot->rotationalAxis;
+    auto angularVelocityInSimulation = paraRot->parameterRotHost->angularVelocity;
+    paraRot->parameterRotHost->angularVelocity[axis] = intendedRotation / steps;
+    paraRot->parameterRotDevice->angularVelocity[axis] = paraRot->parameterRotHost->angularVelocity[axis];
+
+
+    VF_LOG_INFO("Intended initial rotation for the rotating grid: {}. Center point for the rotation: ({}, {}, {}), Axis : {}, Angular Velocity: {}.",
+                intendedRotation, paraRot->parameterRotHost->centerPoint[0], paraRot->parameterRotHost->centerPoint[1],
+                paraRot->parameterRotHost->centerPoint[2], axis, paraRot->parameterRotHost->angularVelocity[axis]);
+
     for (int i = 0; i < steps; i++) {
         paraRot->parameterRotHost->gridAngle[0] += paraRot->parameterRotHost->angularVelocity[0];
         paraRot->parameterRotHost->gridAngle[1] += paraRot->parameterRotHost->angularVelocity[1];
@@ -450,7 +456,7 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
         // base to nested
         TraverseStaticToRotating(
             para->getParD(level).get(),
-            para->getParD(level+1).get(),
+            para->getParD(level + 1).get(),
             para->getRotatingGridParameter()->parameterRotDevice.get(),
             &para->getParD(level)->coarseToFine,
             para->getParD(level)->neighborCoarseToFine);
@@ -458,22 +464,19 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
         // nested to base
         TraverseRotatingToStatic(
             para->getParD(level).get(),
-            para->getParD(level+1).get(),
+            para->getParD(level + 1).get(),
             para->getRotatingGridParameter()->parameterRotDevice.get(),
             &para->getParD(level)->fineToCoarse,
             para->getParD(level)->neighborFineToCoarse);
     }
-    paraRot->parameterRotHost->angularVelocity[0] = 0.0;
-    paraRot->parameterRotHost->angularVelocity[1] = 0.0;
-    paraRot->parameterRotHost->angularVelocity[2] = 0.0;
-    paraRot->parameterRotDevice->angularVelocity[0] = 0.0;
-    paraRot->parameterRotDevice->angularVelocity[1] = 0.0;
-    paraRot->parameterRotDevice->angularVelocity[2] = 0.0;
+
+    paraRot->parameterRotHost->angularVelocity[axis] = angularVelocityInSimulation[axis];
+    paraRot->parameterRotDevice->angularVelocity[axis] = angularVelocityInSimulation[axis];
 
     VF_LOG_INFO("Angle x {}", paraRot->parameterRotHost->gridAngle[0]);
     VF_LOG_INFO("Angle y {}", paraRot->parameterRotHost->gridAngle[1]);
     VF_LOG_INFO("Angle z {}", paraRot->parameterRotHost->gridAngle[2]);
-    VF_LOG_INFO("Angular velocity x {}", paraRot->parameterRotHost->angularVelocity[0]);
-    VF_LOG_INFO("Angular velocity y {}", paraRot->parameterRotHost->angularVelocity[1]);
-    VF_LOG_INFO("Angular velocity z {}", paraRot->parameterRotHost->angularVelocity[2]);
+    VF_LOG_INFO("In simulation: Angular velocity x {}", paraRot->parameterRotHost->angularVelocity[0]);
+    VF_LOG_INFO("In simulation: Angular velocity y {}", paraRot->parameterRotHost->angularVelocity[1]);
+    VF_LOG_INFO("In simulation: Angular velocity z {}", paraRot->parameterRotHost->angularVelocity[2]);
 }

@@ -836,7 +836,7 @@ void CalcMacCompSP27RotatingToStatic(
     unsigned int numberOfThreads,
     real* DD,
     bool isEvenTimestep,
-    ParameterRotatingGridSimulation* parameterRotDevice)
+    ParameterRotatingGridHostDevice* parameterRotDevice)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
@@ -4097,7 +4097,7 @@ template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDevi
 void InterpolateStaticToRotating(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *baseToNested,
     ICellNeigh &neighborBaseToNested)
 {
@@ -4146,7 +4146,7 @@ void InterpolateStaticToRotating(
 void TraverseStaticToRotating(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *baseToNested,
     ICellNeigh &neighborBaseToNested)
 {
@@ -4182,7 +4182,7 @@ void TraverseStaticToRotating(
 void InterpolateRotatingToStatic(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *nestedToBase,
     ICellNeigh &neighborNestedToBase)
 {
@@ -4230,7 +4230,7 @@ void InterpolateRotatingToStatic(
 void TraverseRotatingToStatic(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *nestedToBase,
     ICellNeigh &neighborNestedToBase)
 {
@@ -4265,7 +4265,7 @@ void TraverseRotatingToStatic(
 
 void UpdateGlobalCoordinates(
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice
+    ParameterRotatingGridHostDevice *paraRotDevice
 )
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDeviceR->numberofthreads, parameterDeviceR->numberOfNodes);

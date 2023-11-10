@@ -33,6 +33,7 @@ public:
     void updateGrid(int level, unsigned int t);
     void exchangeData(int level);
 
+    void rotateGridInInitializationProcess(int baseLevelForInterpolation);
 private:
     void collisionAllNodes(int level, unsigned int t);
     void collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices = nullptr, uint numberOfTaggedFluidNodes = 0, CollisionTemplate collisionTemplate = CollisionTemplate::Default, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);

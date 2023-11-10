@@ -25,7 +25,7 @@
 #endif
 
 struct LBMSimulationParameter;
-struct ParameterRotatingGridSimulation;
+struct ParameterRotatingGridHostDevice;
 class Parameter;
 
 //////////////////////////////////////////////////////////////////////////
@@ -403,7 +403,7 @@ void CalcMacCompSP27RotatingToStatic(
     unsigned int numberOfThreads,
     real* DD,
     bool isEvenTimestep,
-    ParameterRotatingGridSimulation* parameterRotDevice);
+    ParameterRotatingGridHostDevice* parameterRotDevice);
 
 void CalcMacThS7(  real* Conc,
                               unsigned int* geoD,
@@ -1642,34 +1642,34 @@ template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationPara
 void InterpolateStaticToRotating(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *baseToNested,
     ICellNeigh &neighborBaseToNested);
 
 void TraverseStaticToRotating(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *baseToNested,
     ICellNeigh &neighborBaseToNested);
 
 void InterpolateRotatingToStatic(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *nestedToBase,
     ICellNeigh &neighborNestedToBase);
 
 void TraverseRotatingToStatic(
     LBMSimulationParameter *parameterDeviceS,
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice,
+    ParameterRotatingGridHostDevice *paraRotDevice,
     ICells *nestedToBase,
     ICellNeigh &neighborNestedToBase);
 
 void UpdateGlobalCoordinates(
     LBMSimulationParameter *parameterDeviceR,
-    ParameterRotatingGridSimulation *paraRotDevice
+    ParameterRotatingGridHostDevice *paraRotDevice
 );
 
 void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
