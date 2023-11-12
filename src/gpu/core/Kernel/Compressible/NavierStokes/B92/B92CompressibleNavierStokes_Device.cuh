@@ -5,13 +5,13 @@
 #include <curand.h>
 
 __global__ void B92CompressibleNavierStokes_Device(
-	real omega,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	real* DDStart,
-	int size_Mat,
-	bool EvenOrOdd);
+    real omega,
+    unsigned int* bcMatD,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    real* DDStart,
+    int size_Mat,
+    bool EvenOrOdd);
 
 #endif

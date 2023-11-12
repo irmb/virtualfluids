@@ -855,7 +855,7 @@ __global__ void QStressDeviceComp27(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void BBStressDevice27( real* DD,
-											            int* k_Q,
+                                                        int* k_Q,
                                              int* k_N,
                                              real* QQ,
                                              unsigned int  numberOfBCnodes,
@@ -1486,7 +1486,7 @@ __global__ void BBStressDevice27( real* DD,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void BBStressPressureDevice27( real* DD,
-											            int* k_Q,
+                                                        int* k_Q,
                                              int* k_N,
                                              real* QQ,
                                              unsigned int  numberOfBCnodes,

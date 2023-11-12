@@ -11,16 +11,16 @@ class PreProcessorStrategy;
 class PreProcessorImp : public PreProcessor
 {
 public:
-	static std::shared_ptr<PreProcessorImp> getNewInstance();
-	void addStrategy(std::shared_ptr<PreProcessorStrategy> strategy);
+    static std::shared_ptr<PreProcessorImp> getNewInstance();
+    void addStrategy(std::shared_ptr<PreProcessorStrategy> strategy);
 
-	void init(std::shared_ptr<Parameter> para, int level);
-	bool checkParameter();
+    void init(std::shared_ptr<Parameter> para, int level);
+    bool checkParameter();
 
 private:
-	PreProcessorImp();
+    PreProcessorImp();
 
-	std::vector< std::shared_ptr<PreProcessorStrategy>> strategies;
-	
+    std::vector< std::shared_ptr<PreProcessorStrategy>> strategies;
+    
 };
 #endif

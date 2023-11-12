@@ -10,14 +10,14 @@ class Parameter;
 class InitCompSP27 : public PreProcessorStrategy
 {
 public:
-	static std::shared_ptr<PreProcessorStrategy> getNewInstance(std::shared_ptr< Parameter> para);
-	void init(int level);
-	bool checkParameter();
+    static std::shared_ptr<PreProcessorStrategy> getNewInstance(std::shared_ptr< Parameter> para);
+    void init(int level);
+    bool checkParameter();
 
 private:
-	InitCompSP27();
-	InitCompSP27(std::shared_ptr< Parameter> para);
-	std::shared_ptr< Parameter> para;
+    InitCompSP27();
+    InitCompSP27(std::shared_ptr< Parameter> para);
+    std::shared_ptr< Parameter> para;
 };
 
 #endif 

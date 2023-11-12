@@ -16,7 +16,7 @@ class KineticEnergyAnalyzer
 {
 private:
 
-	SPtr<Parameter> para;
+    SPtr<Parameter> para;
 
     uint analyzeIter;
 

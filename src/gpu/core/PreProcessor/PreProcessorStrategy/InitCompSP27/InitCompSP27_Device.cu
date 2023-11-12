@@ -9,16 +9,16 @@ using namespace vf::lbm::dir;
 #include <stdio.h>
 
 __global__ void LB_Init_Comp_SP_27(unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* geoD,
-	real* rho,
-	real* ux,
-	real* uy,
-	real* uz,
-	unsigned int size_Mat,
-	real* DD,
-	bool EvenOrOdd)
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* geoD,
+    real* rho,
+    real* ux,
+    real* uy,
+    real* uz,
+    unsigned int size_Mat,
+    real* DD,
+    bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -308,50 +308,50 @@ __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
             unsigned int kbne = kb;
             unsigned int ktne = k;
             unsigned int kbsw = neighborZ[ksw];
-	        //////////////////////////////////////////////////////////////////////////////
-	        //neighbor index
-	        uint kPx   = neighborX[k];
-	        uint kPy   = neighborY[k];
-	        uint kPz   = neighborZ[k];
-	        uint kMxyz = neighborWSB[k];
-	        uint kMx   = neighborZ[neighborY[kMxyz]];
-	        uint kMy   = neighborZ[neighborX[kMxyz]];
-	        uint kMz   = neighborY[neighborX[kMxyz]];
+            //////////////////////////////////////////////////////////////////////////////
+            //neighbor index
+            uint kPx   = neighborX[k];
+            uint kPy   = neighborY[k];
+            uint kPz   = neighborZ[k];
+            uint kMxyz = neighborWSB[k];
+            uint kMx   = neighborZ[neighborY[kMxyz]];
+            uint kMy   = neighborZ[neighborX[kMxyz]];
+            uint kMz   = neighborY[neighborX[kMxyz]];
             //////////////////////////////////////////////////////////////////////////
-	        //getVeloX//
-	        real vx1NeighborPx = ux[kPx];
-	        real vx1NeighborMx = ux[kMx];
-	        real vx1NeighborPy = ux[kPy];
-	        real vx1NeighborMy = ux[kMy];
-	        real vx1NeighborPz = ux[kPz];
-	        real vx1NeighborMz = ux[kMz];
-	        //getVeloY//
-	        real vx2NeighborPx = uy[kPx];
-	        real vx2NeighborMx = uy[kMx];
-	        real vx2NeighborPy = uy[kPy];
-	        real vx2NeighborMy = uy[kMy];
-	        real vx2NeighborPz = uy[kPz];
-	        real vx2NeighborMz = uy[kMz];
-	        //getVeloZ//
-	        real vx3NeighborPx = uz[kPx];
-	        real vx3NeighborMx = uz[kMx];
-	        real vx3NeighborPy = uz[kPy];
-	        real vx3NeighborMy = uz[kMy];
-	        real vx3NeighborPz = uz[kPz];
-	        real vx3NeighborMz = uz[kMz];
+            //getVeloX//
+            real vx1NeighborPx = ux[kPx];
+            real vx1NeighborMx = ux[kMx];
+            real vx1NeighborPy = ux[kPy];
+            real vx1NeighborMy = ux[kMy];
+            real vx1NeighborPz = ux[kPz];
+            real vx1NeighborMz = ux[kMz];
+            //getVeloY//
+            real vx2NeighborPx = uy[kPx];
+            real vx2NeighborMx = uy[kMx];
+            real vx2NeighborPy = uy[kPy];
+            real vx2NeighborMy = uy[kMy];
+            real vx2NeighborPz = uy[kPz];
+            real vx2NeighborMz = uy[kMz];
+            //getVeloZ//
+            real vx3NeighborPx = uz[kPx];
+            real vx3NeighborMx = uz[kMx];
+            real vx3NeighborPy = uz[kPy];
+            real vx3NeighborMy = uz[kMy];
+            real vx3NeighborPz = uz[kPz];
+            real vx3NeighborMz = uz[kMz];
             //////////////////////////////////////////////////////////////////////////
 
-	        real dvx1dx = (vx1NeighborPx - vx1NeighborMx) / c2o1;
-	        real dvx1dy = (vx1NeighborPy - vx1NeighborMy) / c2o1;
-	        real dvx1dz = (vx1NeighborPz - vx1NeighborMz) / c2o1;
+            real dvx1dx = (vx1NeighborPx - vx1NeighborMx) / c2o1;
+            real dvx1dy = (vx1NeighborPy - vx1NeighborMy) / c2o1;
+            real dvx1dz = (vx1NeighborPz - vx1NeighborMz) / c2o1;
 
-	        real dvx2dx = (vx2NeighborPx - vx2NeighborMx) / c2o1;
-	        real dvx2dy = (vx2NeighborPy - vx2NeighborMy) / c2o1;
-	        real dvx2dz = (vx2NeighborPz - vx2NeighborMz) / c2o1;
+            real dvx2dx = (vx2NeighborPx - vx2NeighborMx) / c2o1;
+            real dvx2dy = (vx2NeighborPy - vx2NeighborMy) / c2o1;
+            real dvx2dz = (vx2NeighborPz - vx2NeighborMz) / c2o1;
 
-	        real dvx3dx = (vx3NeighborPx - vx3NeighborMx) / c2o1;
-	        real dvx3dy = (vx3NeighborPy - vx3NeighborMy) / c2o1;
-	        real dvx3dz = (vx3NeighborPz - vx3NeighborMz) / c2o1;
+            real dvx3dx = (vx3NeighborPx - vx3NeighborMx) / c2o1;
+            real dvx3dy = (vx3NeighborPy - vx3NeighborMy) / c2o1;
+            real dvx3dz = (vx3NeighborPz - vx3NeighborMz) / c2o1;
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -453,14 +453,14 @@ __global__ void LB_Init_Comp_Neq_SP_27( unsigned int* neighborX,
 
             //////////////////////////////////////////////////////////////////////////
         }
-	    else
-	    {
-		    //////////////////////////////////////////////////////////////////////////
-		    Distributions27 D;
-		    D.f[d000] = &DD[d000*size_Mat];
-		    //////////////////////////////////////////////////////////////////////////
-		    (D.f[d000])[k] = c96o1;
-		    //////////////////////////////////////////////////////////////////////////
-	    }
+        else
+        {
+            //////////////////////////////////////////////////////////////////////////
+            Distributions27 D;
+            D.f[d000] = &DD[d000*size_Mat];
+            //////////////////////////////////////////////////////////////////////////
+            (D.f[d000])[k] = c96o1;
+            //////////////////////////////////////////////////////////////////////////
+        }
    }
 }

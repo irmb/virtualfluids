@@ -488,7 +488,7 @@ void findQInflow(Parameter* para)
             if(geo_mat[m]==GEO_FLUID){
                QIN.k[QIN.numberOfBCnodes]          = kk[m];
                //vx[QIN.numberOfBCnodes]             = (real)0.f;
-			   vx[QIN.numberOfBCnodes]             = u0;
+               vx[QIN.numberOfBCnodes]             = u0;
                vy[QIN.numberOfBCnodes]             = (real)0.f;
                vz[QIN.numberOfBCnodes]             = (real)0.f;
                //vz[QIN.numberOfBCnodes]             = u0;
@@ -496,7 +496,7 @@ void findQInflow(Parameter* para)
                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
                deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
-			   //////////////////////////////////////////////////////////////////////////
+               //////////////////////////////////////////////////////////////////////////
                //Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)-1.f;
                //Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
@@ -524,42 +524,42 @@ void findQInflow(Parameter* para)
                //Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)1.f;
                //Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)1.f;
-			   //////////////////////////////////////////////////////////////////////////
+               //////////////////////////////////////////////////////////////////////////
 
 
                // ! CAUTION ! Do not use this function!
    // As the order of the distributions was changed in July 2022, this does not work anymore.
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
 
-			   Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[d0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[d00P   ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[d00M   ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dPP0  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dMM0  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dPM0  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dMP0  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dP0P  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dM0M  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dP0M  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dM0P  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[d0PP  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[d0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[d0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[d0MP  ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[d000][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dPPP ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dMMP ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dPMP ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dMPP ][QIN.numberOfBCnodes] = (real)1.f;
-			   Q.q27[dPPM ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)-1.f;
-			   Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)-1.f;
-			   //////////////////////////////////////////////////////////////////////////
-			   QIN.numberOfBCnodes++;
+               Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[d0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[d00P   ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[d00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dPP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dMM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dPM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dMP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dP0P  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dM0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dP0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dM0P  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[d0PP  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[d0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[d0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[d0MP  ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[d000][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dPPP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dMMP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dPMP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dMPP ][QIN.numberOfBCnodes] = (real)1.f;
+               Q.q27[dPPM ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)-1.f;
+               Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)-1.f;
+               //////////////////////////////////////////////////////////////////////////
+               QIN.numberOfBCnodes++;
             }
        }
    }
@@ -737,7 +737,7 @@ void findKforQInflow(Parameter* para)
                }
                if (test>0)
                {
-				   QIN.numberOfBCnodes++;
+                   QIN.numberOfBCnodes++;
                }
             }
          }
@@ -857,7 +857,7 @@ void findQOutflow(Parameter* para)
                rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
                vx[QIN.numberOfBCnodes]             = (real)0.f;
                vy[QIN.numberOfBCnodes]             = (real)0.f;
-			   //vz[QIN.numberOfBCnodes]             = u0;
+               //vz[QIN.numberOfBCnodes]             = u0;
                vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
                //vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
@@ -1068,114 +1068,114 @@ void findQPressX0(Parameter* para, int lev)
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
     VF_LOG_CRITICAL("findKforQPressX0() is deprecated! - see comment above for more information");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
-	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	unsigned int i, j, k, m;
-	int nx                        = para->getParH(lev)->nx;
-	int ny                        = para->getParH(lev)->ny;
-	unsigned int nnx              = para->getParH(lev)->gridNX;
-	unsigned int nny              = para->getParH(lev)->gridNY;
-	unsigned int nnz              = para->getParH(lev)->gridNZ;
-	int* geo_mat                  = para->getParH(lev)->geo;
-	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->outflowBC.numberOfBCnodes;
-	unsigned int sizeQ            = para->getParH(lev)->QpressX0.numberOfBCnodes;
-	real* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
-	real u0                    = para->getVelocity();
-	real* vx                   = para->getParH(lev)->QpressX0.Vx;
-	real* vy                   = para->getParH(lev)->QpressX0.Vy;
-	real* vz                   = para->getParH(lev)->QpressX0.Vz;
-	real*deltaVz               = para->getParH(lev)->QpressX0.deltaVz;
-	real* QQ                   = para->getParH(lev)->QpressX0.q27[0];
-	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
-	//unsigned int nxny = nx*ny;
-	QIN.numberOfBCnodes = 0;
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	QforBoundaryConditions Q;
-	Q.q27[dP00   ] = &QQ[dP00   *sizeQ];
-	Q.q27[dM00   ] = &QQ[dM00   *sizeQ];
-	Q.q27[d0P0   ] = &QQ[d0P0   *sizeQ];
-	Q.q27[d0M0   ] = &QQ[d0M0   *sizeQ];
-	Q.q27[d00P   ] = &QQ[d00P   *sizeQ];
-	Q.q27[d00M   ] = &QQ[d00M   *sizeQ];
-	Q.q27[dPP0  ] = &QQ[dPP0  *sizeQ];
-	Q.q27[dMM0  ] = &QQ[dMM0  *sizeQ];
-	Q.q27[dPM0  ] = &QQ[dPM0  *sizeQ];
-	Q.q27[dMP0  ] = &QQ[dMP0  *sizeQ];
-	Q.q27[dP0P  ] = &QQ[dP0P  *sizeQ];
-	Q.q27[dM0M  ] = &QQ[dM0M  *sizeQ];
-	Q.q27[dP0M  ] = &QQ[dP0M  *sizeQ];
-	Q.q27[dM0P  ] = &QQ[dM0P  *sizeQ];
-	Q.q27[d0PP  ] = &QQ[d0PP  *sizeQ];
-	Q.q27[d0MM  ] = &QQ[d0MM  *sizeQ];
-	Q.q27[d0PM  ] = &QQ[d0PM  *sizeQ];
-	Q.q27[d0MP  ] = &QQ[d0MP  *sizeQ];
-	Q.q27[d000] = &QQ[d000*sizeQ];
-	Q.q27[dPPP ] = &QQ[dPPP *sizeQ];
-	Q.q27[dMMP ] = &QQ[dMMP *sizeQ];
-	Q.q27[dPMP ] = &QQ[dPMP *sizeQ];
-	Q.q27[dMPP ] = &QQ[dMPP *sizeQ];
-	Q.q27[dPPM ] = &QQ[dPPM *sizeQ];
-	Q.q27[dMMM ] = &QQ[dMMM *sizeQ];
-	Q.q27[dPMM ] = &QQ[dPMM *sizeQ];
-	Q.q27[dMPM ] = &QQ[dMPM *sizeQ];
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
+    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+    //int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned int i, j, k, m;
+    int nx                        = para->getParH(lev)->nx;
+    int ny                        = para->getParH(lev)->ny;
+    unsigned int nnx              = para->getParH(lev)->gridNX;
+    unsigned int nny              = para->getParH(lev)->gridNY;
+    unsigned int nnz              = para->getParH(lev)->gridNZ;
+    int* geo_mat                  = para->getParH(lev)->geo;
+    unsigned int* kk              = para->getParH(lev)->k;
+    //unsigned int sizeQ            = para->getParH(lev)->outflowBC.numberOfBCnodes;
+    unsigned int sizeQ            = para->getParH(lev)->QpressX0.numberOfBCnodes;
+    real* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
+    real u0                    = para->getVelocity();
+    real* vx                   = para->getParH(lev)->QpressX0.Vx;
+    real* vy                   = para->getParH(lev)->QpressX0.Vy;
+    real* vz                   = para->getParH(lev)->QpressX0.Vz;
+    real*deltaVz               = para->getParH(lev)->QpressX0.deltaVz;
+    real* QQ                   = para->getParH(lev)->QpressX0.q27[0];
+    QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
+    //unsigned int nxny = nx*ny;
+    QIN.numberOfBCnodes = 0;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    QforBoundaryConditions Q;
+    Q.q27[dP00   ] = &QQ[dP00   *sizeQ];
+    Q.q27[dM00   ] = &QQ[dM00   *sizeQ];
+    Q.q27[d0P0   ] = &QQ[d0P0   *sizeQ];
+    Q.q27[d0M0   ] = &QQ[d0M0   *sizeQ];
+    Q.q27[d00P   ] = &QQ[d00P   *sizeQ];
+    Q.q27[d00M   ] = &QQ[d00M   *sizeQ];
+    Q.q27[dPP0  ] = &QQ[dPP0  *sizeQ];
+    Q.q27[dMM0  ] = &QQ[dMM0  *sizeQ];
+    Q.q27[dPM0  ] = &QQ[dPM0  *sizeQ];
+    Q.q27[dMP0  ] = &QQ[dMP0  *sizeQ];
+    Q.q27[dP0P  ] = &QQ[dP0P  *sizeQ];
+    Q.q27[dM0M  ] = &QQ[dM0M  *sizeQ];
+    Q.q27[dP0M  ] = &QQ[dP0M  *sizeQ];
+    Q.q27[dM0P  ] = &QQ[dM0P  *sizeQ];
+    Q.q27[d0PP  ] = &QQ[d0PP  *sizeQ];
+    Q.q27[d0MM  ] = &QQ[d0MM  *sizeQ];
+    Q.q27[d0PM  ] = &QQ[d0PM  *sizeQ];
+    Q.q27[d0MP  ] = &QQ[d0MP  *sizeQ];
+    Q.q27[d000] = &QQ[d000*sizeQ];
+    Q.q27[dPPP ] = &QQ[dPPP *sizeQ];
+    Q.q27[dMMP ] = &QQ[dMMP *sizeQ];
+    Q.q27[dPMP ] = &QQ[dPMP *sizeQ];
+    Q.q27[dMPP ] = &QQ[dMPP *sizeQ];
+    Q.q27[dPPM ] = &QQ[dPPM *sizeQ];
+    Q.q27[dMMM ] = &QQ[dMMM *sizeQ];
+    Q.q27[dPMM ] = &QQ[dPMM *sizeQ];
+    Q.q27[dMPM ] = &QQ[dMPM *sizeQ];
 
 
-	//unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
-	//unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
+    //unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
+    //unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
 
-	i=STARTOFFX+1;
-	//k=nnz+STARTOFFZ-3;
-	for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
-		for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
-			//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
-			m = nx*(ny*k + j) + i;
-			if(geo_mat[m]==GEO_FLUID){
-				QIN.k[QIN.numberOfBCnodes]          = kk[m];
-				QIN.kN[QIN.numberOfBCnodes]         = kk[m+1];
-				rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
-				vx[QIN.numberOfBCnodes]             = (real)0.f;
-				vy[QIN.numberOfBCnodes]             = (real)0.f;
-				//vz[QIN.numberOfBCnodes]             = u0;
-				vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-				//vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-				//vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-				deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
-				Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d00P   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d00M   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPP0  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dMM0  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dPM0  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dMP0  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dP0P  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dM0M  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dP0M  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dM0P  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[d0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d000][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPPP ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dMMP ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dPMP ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dMPP ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dPPM ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)1.f;
-				QIN.numberOfBCnodes++;
-			}
-		}
-	}
+    i=STARTOFFX+1;
+    //k=nnz+STARTOFFZ-3;
+    for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
+        for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
+            //for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
+            m = nx*(ny*k + j) + i;
+            if(geo_mat[m]==GEO_FLUID){
+                QIN.k[QIN.numberOfBCnodes]          = kk[m];
+                QIN.kN[QIN.numberOfBCnodes]         = kk[m+1];
+                rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
+                vx[QIN.numberOfBCnodes]             = (real)0.f;
+                vy[QIN.numberOfBCnodes]             = (real)0.f;
+                //vz[QIN.numberOfBCnodes]             = u0;
+                vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+                //vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+                deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
+                Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d00P   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dMM0  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dPM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dMP0  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dP0P  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dM0M  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dP0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dM0P  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[d0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d000][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPPP ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dMMP ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dPMP ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dMPP ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dPPM ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)1.f;
+                QIN.numberOfBCnodes++;
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1186,53 +1186,53 @@ void findKforQPressX0(Parameter* para, int lev)
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
     VF_LOG_CRITICAL("findKforQPressX0() is deprecated! - see comment above for more information");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
-	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-	real ON[27];
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
+    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+    real ON[27];
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //unsigned int mm;
-	unsigned int i, j, k, m, l;
-	real test = (real) 0.f;
-	int nx                        = para->getParH(lev)->nx;
-	int ny                        = para->getParH(lev)->ny;
-	//unsigned int nnx              = para->getParH(lev)->gridNX;
-	unsigned int nny              = para->getParH(lev)->gridNY;
-	unsigned int nnz              = para->getParH(lev)->gridNZ;
-	int* geo_mat                  = para->getParH(lev)->geo;
-	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
-	QIN.numberOfBCnodes = 0;
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned int i, j, k, m, l;
+    real test = (real) 0.f;
+    int nx                        = para->getParH(lev)->nx;
+    int ny                        = para->getParH(lev)->ny;
+    //unsigned int nnx              = para->getParH(lev)->gridNX;
+    unsigned int nny              = para->getParH(lev)->gridNY;
+    unsigned int nnz              = para->getParH(lev)->gridNZ;
+    int* geo_mat                  = para->getParH(lev)->geo;
+    QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
+    QIN.numberOfBCnodes = 0;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	i=STARTOFFX+1;
-	//k=nnz+STARTOFFZ-3;
-	{
-	for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
-		for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
-			//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
-				m = nx*(ny*k + j) + i;
-				if(geo_mat[m]==GEO_FLUID){
-					test = (real)0.f;
-					for(l=0;l<=26;l++){
-						//mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
-						if(ez[l]==1){
-							ON[l] = (real) 1.f;
-						}
-						else{
-							ON[l] = (real) 0.f;
-						}
-						test += ON[l];
-					}
-					if (test>0)
-					{
-						QIN.numberOfBCnodes++;
-					}
-				}
-			}
-		}
-	}
+    i=STARTOFFX+1;
+    //k=nnz+STARTOFFZ-3;
+    {
+    for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
+        for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
+            //for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
+                m = nx*(ny*k + j) + i;
+                if(geo_mat[m]==GEO_FLUID){
+                    test = (real)0.f;
+                    for(l=0;l<=26;l++){
+                        //mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
+                        if(ez[l]==1){
+                            ON[l] = (real) 1.f;
+                        }
+                        else{
+                            ON[l] = (real) 0.f;
+                        }
+                        test += ON[l];
+                    }
+                    if (test>0)
+                    {
+                        QIN.numberOfBCnodes++;
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -1244,114 +1244,114 @@ void findQPressX1(Parameter* para, int lev)
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
     VF_LOG_CRITICAL("findQPressX1() is deprecated! - see comment above for more information");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
-	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	unsigned int i, j, k, m;
-	int nx                        = para->getParH(lev)->nx;
-	int ny                        = para->getParH(lev)->ny;
-	unsigned int nnx              = para->getParH(lev)->gridNX;
-	unsigned int nny              = para->getParH(lev)->gridNY;
-	unsigned int nnz              = para->getParH(lev)->gridNZ;
-	int* geo_mat                  = para->getParH(lev)->geo;
-	unsigned int* kk              = para->getParH(lev)->k;
-	//unsigned int sizeQ            = para->getParH(lev)->outflowBC.numberOfBCnodes;
-	unsigned int sizeQ            = para->getParH(lev)->QpressX1.numberOfBCnodes;
-	real* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
-	real u0                    = para->getVelocity();
-	real* vx                   = para->getParH(lev)->QpressX1.Vx;
-	real* vy                   = para->getParH(lev)->QpressX1.Vy;
-	real* vz                   = para->getParH(lev)->QpressX1.Vz;
-	real*deltaVz               = para->getParH(lev)->QpressX1.deltaVz;
-	real* QQ                   = para->getParH(lev)->QpressX1.q27[0];
-	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
-	//unsigned int nxny = nx*ny;
-	QIN.numberOfBCnodes = 0;
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	QforBoundaryConditions Q;
-	Q.q27[dP00   ] = &QQ[dP00   *sizeQ];
-	Q.q27[dM00   ] = &QQ[dM00   *sizeQ];
-	Q.q27[d0P0   ] = &QQ[d0P0   *sizeQ];
-	Q.q27[d0M0   ] = &QQ[d0M0   *sizeQ];
-	Q.q27[d00P   ] = &QQ[d00P   *sizeQ];
-	Q.q27[d00M   ] = &QQ[d00M   *sizeQ];
-	Q.q27[dPP0  ] = &QQ[dPP0  *sizeQ];
-	Q.q27[dMM0  ] = &QQ[dMM0  *sizeQ];
-	Q.q27[dPM0  ] = &QQ[dPM0  *sizeQ];
-	Q.q27[dMP0  ] = &QQ[dMP0  *sizeQ];
-	Q.q27[dP0P  ] = &QQ[dP0P  *sizeQ];
-	Q.q27[dM0M  ] = &QQ[dM0M  *sizeQ];
-	Q.q27[dP0M  ] = &QQ[dP0M  *sizeQ];
-	Q.q27[dM0P  ] = &QQ[dM0P  *sizeQ];
-	Q.q27[d0PP  ] = &QQ[d0PP  *sizeQ];
-	Q.q27[d0MM  ] = &QQ[d0MM  *sizeQ];
-	Q.q27[d0PM  ] = &QQ[d0PM  *sizeQ];
-	Q.q27[d0MP  ] = &QQ[d0MP  *sizeQ];
-	Q.q27[d000] = &QQ[d000*sizeQ];
-	Q.q27[dPPP ] = &QQ[dPPP *sizeQ];
-	Q.q27[dMMP ] = &QQ[dMMP *sizeQ];
-	Q.q27[dPMP ] = &QQ[dPMP *sizeQ];
-	Q.q27[dMPP ] = &QQ[dMPP *sizeQ];
-	Q.q27[dPPM ] = &QQ[dPPM *sizeQ];
-	Q.q27[dMMM ] = &QQ[dMMM *sizeQ];
-	Q.q27[dPMM ] = &QQ[dPMM *sizeQ];
-	Q.q27[dMPM ] = &QQ[dMPM *sizeQ];
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
+    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+    //int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned int i, j, k, m;
+    int nx                        = para->getParH(lev)->nx;
+    int ny                        = para->getParH(lev)->ny;
+    unsigned int nnx              = para->getParH(lev)->gridNX;
+    unsigned int nny              = para->getParH(lev)->gridNY;
+    unsigned int nnz              = para->getParH(lev)->gridNZ;
+    int* geo_mat                  = para->getParH(lev)->geo;
+    unsigned int* kk              = para->getParH(lev)->k;
+    //unsigned int sizeQ            = para->getParH(lev)->outflowBC.numberOfBCnodes;
+    unsigned int sizeQ            = para->getParH(lev)->QpressX1.numberOfBCnodes;
+    real* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
+    real u0                    = para->getVelocity();
+    real* vx                   = para->getParH(lev)->QpressX1.Vx;
+    real* vy                   = para->getParH(lev)->QpressX1.Vy;
+    real* vz                   = para->getParH(lev)->QpressX1.Vz;
+    real*deltaVz               = para->getParH(lev)->QpressX1.deltaVz;
+    real* QQ                   = para->getParH(lev)->QpressX1.q27[0];
+    QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
+    //unsigned int nxny = nx*ny;
+    QIN.numberOfBCnodes = 0;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    QforBoundaryConditions Q;
+    Q.q27[dP00   ] = &QQ[dP00   *sizeQ];
+    Q.q27[dM00   ] = &QQ[dM00   *sizeQ];
+    Q.q27[d0P0   ] = &QQ[d0P0   *sizeQ];
+    Q.q27[d0M0   ] = &QQ[d0M0   *sizeQ];
+    Q.q27[d00P   ] = &QQ[d00P   *sizeQ];
+    Q.q27[d00M   ] = &QQ[d00M   *sizeQ];
+    Q.q27[dPP0  ] = &QQ[dPP0  *sizeQ];
+    Q.q27[dMM0  ] = &QQ[dMM0  *sizeQ];
+    Q.q27[dPM0  ] = &QQ[dPM0  *sizeQ];
+    Q.q27[dMP0  ] = &QQ[dMP0  *sizeQ];
+    Q.q27[dP0P  ] = &QQ[dP0P  *sizeQ];
+    Q.q27[dM0M  ] = &QQ[dM0M  *sizeQ];
+    Q.q27[dP0M  ] = &QQ[dP0M  *sizeQ];
+    Q.q27[dM0P  ] = &QQ[dM0P  *sizeQ];
+    Q.q27[d0PP  ] = &QQ[d0PP  *sizeQ];
+    Q.q27[d0MM  ] = &QQ[d0MM  *sizeQ];
+    Q.q27[d0PM  ] = &QQ[d0PM  *sizeQ];
+    Q.q27[d0MP  ] = &QQ[d0MP  *sizeQ];
+    Q.q27[d000] = &QQ[d000*sizeQ];
+    Q.q27[dPPP ] = &QQ[dPPP *sizeQ];
+    Q.q27[dMMP ] = &QQ[dMMP *sizeQ];
+    Q.q27[dPMP ] = &QQ[dPMP *sizeQ];
+    Q.q27[dMPP ] = &QQ[dMPP *sizeQ];
+    Q.q27[dPPM ] = &QQ[dPPM *sizeQ];
+    Q.q27[dMMM ] = &QQ[dMMM *sizeQ];
+    Q.q27[dPMM ] = &QQ[dPMM *sizeQ];
+    Q.q27[dMPM ] = &QQ[dMPM *sizeQ];
 
 
-	//unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
-	//unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
+    //unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
+    //unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
 
-	i=nnx+STARTOFFX-3;
-	//k=nnz+STARTOFFZ-3;
-	for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
-		for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
-			//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
-			m = nx*(ny*k + j) + i;
-			if(geo_mat[m]==GEO_FLUID){
-				QIN.k[QIN.numberOfBCnodes]          = kk[m];
-				QIN.kN[QIN.numberOfBCnodes]         = kk[m-1];
-				rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
-				vx[QIN.numberOfBCnodes]             = (real)0.f;
-				vy[QIN.numberOfBCnodes]             = (real)0.f;
-				//vz[QIN.numberOfBCnodes]             = u0;
-				vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-				//vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-				//vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-				deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
-				Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d00P   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d00M   ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPP0  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dMM0  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPM0  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dMP0  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dP0P  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dM0M  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dP0M  ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dM0P  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[d000][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPPP ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dMMP ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPMP ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dMPP ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPPM ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)-1.f;
-				Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)1.f;
-				Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)-1.f;
-				QIN.numberOfBCnodes++;
-			}
-		}
-	}
+    i=nnx+STARTOFFX-3;
+    //k=nnz+STARTOFFZ-3;
+    for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
+        for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
+            //for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
+            m = nx*(ny*k + j) + i;
+            if(geo_mat[m]==GEO_FLUID){
+                QIN.k[QIN.numberOfBCnodes]          = kk[m];
+                QIN.kN[QIN.numberOfBCnodes]         = kk[m-1];
+                rhoBC[QIN.numberOfBCnodes]          = (real)0.f;
+                vx[QIN.numberOfBCnodes]             = (real)0.f;
+                vy[QIN.numberOfBCnodes]             = (real)0.f;
+                //vz[QIN.numberOfBCnodes]             = u0;
+                vz[QIN.numberOfBCnodes]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+                //vz[QIN.numberOfBCnodes]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+                //vz[QIN.numberOfBCnodes]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+                deltaVz[QIN.numberOfBCnodes]        = (real)0.f;
+                Q.q27[dP00   ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dM00   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0P0   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0M0   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d00P   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d00M   ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPP0  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dMM0  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPM0  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dMP0  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dP0P  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dM0M  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dP0M  ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dM0P  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0PP  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0MM  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0PM  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d0MP  ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[d000][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPPP ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dMMP ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPMP ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dMPP ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPPM ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dMMM ][QIN.numberOfBCnodes] = (real)-1.f;
+                Q.q27[dPMM ][QIN.numberOfBCnodes] = (real)1.f;
+                Q.q27[dMPM ][QIN.numberOfBCnodes] = (real)-1.f;
+                QIN.numberOfBCnodes++;
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1362,51 +1362,51 @@ void findKforQPressX1(Parameter* para, int lev)
    // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/14
     VF_LOG_CRITICAL("findKforQPressX1() is deprecated! - see comment above for more information");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
-	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-	real ON[27];
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////  dP00   dM00   d0P0   d0M0   d00P   d00M  dPP0  dMM0  dPM0  dMP0  dP0P  dM0M  dP0M  dM0P  d0PP  d0MM  d0PM  d0MP ZERO dPPP dPPM dPMP dPMM dMPP dMPM dMMP dMMM  ////////////////////////
+    //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+    //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+    real ON[27];
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //unsigned int mm;
-	unsigned int i, j, k, m, l;
-	real test = (real) 0.f;
-	int nx                        = para->getParH(lev)->nx;
-	int ny                        = para->getParH(lev)->ny;
-	unsigned int nnx              = para->getParH(lev)->gridNX;
-	unsigned int nny              = para->getParH(lev)->gridNY;
-	unsigned int nnz              = para->getParH(lev)->gridNZ;
-	int* geo_mat                  = para->getParH(lev)->geo;
-	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
-	QIN.numberOfBCnodes = 0;
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned int i, j, k, m, l;
+    real test = (real) 0.f;
+    int nx                        = para->getParH(lev)->nx;
+    int ny                        = para->getParH(lev)->ny;
+    unsigned int nnx              = para->getParH(lev)->gridNX;
+    unsigned int nny              = para->getParH(lev)->gridNY;
+    unsigned int nnz              = para->getParH(lev)->gridNZ;
+    int* geo_mat                  = para->getParH(lev)->geo;
+    QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
+    QIN.numberOfBCnodes = 0;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	i=nnx+STARTOFFX-3;
-	//k=nnz+STARTOFFZ-3;
-	{
-		for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
-			for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
-				//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
-				m = nx*(ny*k + j) + i;
-				if(geo_mat[m]==GEO_FLUID){
-					test = (real)0.f;
-					for(l=0;l<=26;l++){
-						//mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
-						if(ez[l]==1){
-							ON[l] = (real) 1.f;
-						}
-						else{
-							ON[l] = (real) 0.f;
-						}
-						test += ON[l];
-					}
-					if (test>0)
-					{
-						QIN.numberOfBCnodes++;
-					}
-				}
-			}
-		}
-	}
+    i=nnx+STARTOFFX-3;
+    //k=nnz+STARTOFFZ-3;
+    {
+        for(k=STARTOFFZ+1 ; k<=nnz+STARTOFFZ-2 ; k++){
+            for(j=STARTOFFY+1 ; j<=nny+STARTOFFY-2 ; j++){
+                //for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
+                m = nx*(ny*k + j) + i;
+                if(geo_mat[m]==GEO_FLUID){
+                    test = (real)0.f;
+                    for(l=0;l<=26;l++){
+                        //mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
+                        if(ez[l]==1){
+                            ON[l] = (real) 1.f;
+                        }
+                        else{
+                            ON[l] = (real) 0.f;
+                        }
+                        test += ON[l];
+                    }
+                    if (test>0)
+                    {
+                        QIN.numberOfBCnodes++;
+                    }
+                }
+            }
+        }
+    }
 }

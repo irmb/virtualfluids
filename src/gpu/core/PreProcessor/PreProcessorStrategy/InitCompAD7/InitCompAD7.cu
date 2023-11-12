@@ -6,7 +6,7 @@
 
 std::shared_ptr<InitCompAD7> InitCompAD7::getNewInstance(std::shared_ptr<Parameter> para)
 {
-	return std::shared_ptr<InitCompAD7>(new InitCompAD7(para));
+    return std::shared_ptr<InitCompAD7>(new InitCompAD7(para));
 }
 
 void InitCompAD7::init(int level)
@@ -30,12 +30,12 @@ void InitCompAD7::init(int level)
 
 bool InitCompAD7::checkParameter()
 {
-	return false;
+    return false;
 }
 
 InitCompAD7::InitCompAD7(std::shared_ptr<Parameter> para)
 {
-	this->para = para;
+    this->para = para;
 }
 
 InitCompAD7::InitCompAD7()

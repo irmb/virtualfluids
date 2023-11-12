@@ -137,9 +137,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       iC = FC_Coarse[ INTERFACE_W];               iF = FC_Fine[ INTERFACE_W];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -161,7 +161,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = CF_Coarse[ INTERFACE_N];               jF = CF_Fine[ INTERFACE_N];
 
       for (hF = CF_zDefaultFine, hC = CF_zDefaultCoarse ; hF <= LzFine-4; hC++,hF+=2)
-      {			
+      {            
          for (iF = CF_xDefaultFine, iC = CF_xDefaultCoarse ; iF<=LxFine-4; iC++,iF+=2)
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -178,9 +178,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -219,9 +219,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -243,7 +243,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = CF_Coarse[ INTERFACE_S];               jF = CF_Fine[ INTERFACE_S];
 
       for (hF = CF_zDefaultFine, hC = CF_zDefaultCoarse ; hF <= LzFine-4; hC++,hF+=2)
-      {			
+      {            
          for (iF = CF_xDefaultFine, iC = CF_xDefaultCoarse ; iF<=LxFine-4; iC++,iF+=2)
          {
             posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -260,9 +260,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -301,9 +301,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
       for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-      {			
+      {            
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -342,9 +342,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
       for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-      {			
+      {            
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -424,7 +424,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -440,7 +440,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -457,7 +457,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_NCoarse[INTERFACE_N];               jF = FC_NFine[INTERFACE_N];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -529,7 +529,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -545,7 +545,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -562,7 +562,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_NCoarse[INTERFACE_S];               jF = FC_NFine[INTERFACE_S];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -634,7 +634,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
       for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -650,7 +650,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -667,7 +667,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_T];               hF = FC_NFine[INTERFACE_T];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -739,7 +739,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
       for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -755,7 +755,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -772,7 +772,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_B];               hF = FC_NFine[INTERFACE_B];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -844,7 +844,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -860,7 +860,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -877,7 +877,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_NCoarse[INTERFACE_N];               jF = FC_NFine[INTERFACE_N];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -949,7 +949,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
 
       for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -965,7 +965,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -982,7 +982,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          jC = FC_NCoarse[INTERFACE_S];               jF = FC_NFine[INTERFACE_S];
 
          for (hF = FC_zDefaultFine, hC = FC_zDefaultCoarse ; hF<=LzFine-7; hC++,hF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1054,7 +1054,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
       for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1070,7 +1070,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1087,7 +1087,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_T];               hF = FC_NFine[INTERFACE_T];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1159,7 +1159,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
       for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1175,7 +1175,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1192,7 +1192,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_B];               hF = FC_NFine[INTERFACE_B];
 
          for (jF = FC_yDefaultFine, jC = FC_yDefaultCoarse ; jF<=LyFine-7; jC++,jF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1264,7 +1264,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
       for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1280,7 +1280,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1297,7 +1297,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_T];               hF = FC_NFine[INTERFACE_T];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1369,7 +1369,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
       for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1385,7 +1385,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1402,7 +1402,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_B];               hF = FC_NFine[INTERFACE_B];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1474,7 +1474,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
       for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1490,7 +1490,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_T];               hF = FC_Fine[ INTERFACE_T];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1507,7 +1507,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_T];               hF = FC_NFine[INTERFACE_T];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1579,7 +1579,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
       hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
       for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-      {			
+      {            
          posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
          posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
          intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1595,7 +1595,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_Coarse[ INTERFACE_B];               hF = FC_Fine[ INTERFACE_B];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -1612,7 +1612,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
          hC = FC_NCoarse[INTERFACE_B];               hF = FC_NFine[INTERFACE_B];
 
          for (iF = FC_xDefaultFine, iC = FC_xDefaultCoarse ; iF<=LxFine-7; iC++,iF+=2)
-         {			
+         {            
             posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
             posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
             intFC.coarseCellIndices[intFC.numberOfCells] = kCoarse[posC];
@@ -2942,9 +2942,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + 2;                               hF = 3;
 //
 //      for (hF = 3, hC = dNz + 2 ; hF<=LzFine-5; hC++,hF+=2)
-//      {			
+//      {            
 //         for (jF = 3, jC = dNy + 2 ; jF<=LyFine-5; jC++,jF+=2)
-//         {			
+//         {            
 //            posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
@@ -2968,7 +2968,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz;                                   hF = 0;
 //
 //      for (hF = 0, hC = dNz ; hF <= LzFine-2; hC++,hF+=2)
-//      {			
+//      {            
 //         for (iF = 0 , iC = dNx ; iF<=LxFine-2; iC++,iF+=2)
 //         {
 //            posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -2987,9 +2987,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + 2;                               hF = 3;
 //
 //      for (hF = 3, hC = dNz + 2 ; hF<=LzFine-5; hC++,hF+=2)
-//      {			
+//      {            
 //         for (iF = 3, iC = dNx + 2 ; iF<=LxFine-5; iC++,iF+=2)
-//         {			
+//         {            
 //            posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
@@ -3013,7 +3013,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz;                                   hF = 0;
 //
 //      for (hF = 0, hC = dNz ; hF<=LzFine-2; hC++,hF+=2)
-//      {			
+//      {            
 //         for (jF = 0, jC = dNy ; jF<=LyFine-2; jC++,jF+=2)
 //         {
 //            posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -3032,9 +3032,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + 2;              hF = 3;
 //
 //      for (hF = 3, hC = dNz + 2 ; hF<=LzFine-5; hC++,hF+=2)
-//      {			
+//      {            
 //         for (jF = 3, jC = dNy + 2 ; jF<=LyFine-5; jC++,jF+=2)
-//         {			
+//         {            
 //            posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
@@ -3058,7 +3058,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz;                                   hF = 0;
 //
 //      for (hF = 0, hC = dNz ; hF <= LzFine-2; hC++,hF+=2)
-//      {			
+//      {            
 //         for (iF = 0, iC = dNx ; iF<=LxFine-2; iC++,iF+=2)
 //         {
 //            posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -3077,9 +3077,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + 2;                               hF = 3;
 //
 //      for (hF = 3, hC = dNz + 2 ; hF<=LzFine-5; hC++,hF+=2)
-//      {			
+//      {            
 //         for (iF = 3, iC = dNx + 2 ; iF<=LxFine-5; iC++,iF+=2)
-//         {			
+//         {            
 //            posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
@@ -3122,9 +3122,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + 2;                               hF = 3;
 //
 //      for (jF = 3, jC = dNy + 2 ; jF<=LyFine-5; jC++,jF+=2)
-//      {			
+//      {            
 //         for (iF = 3, iC = dNx + 2 ; iF<=LxFine-5; iC++,iF+=2)
-//         {			
+//         {            
 //            posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
@@ -3148,7 +3148,7 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + LzFine/2 -1;                     hF = LzFine - 2;
 //
 //      for (jF = 0, jC = dNy ; jF<=LyFine-2; jC++,jF+=2)
-//      {			
+//      {            
 //         for (iF = 0, iC = dNx ; iF<=LxFine-2; iC++,iF+=2)
 //         {
 //            posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -3167,9 +3167,9 @@ void interpolation(InterpolationCells &intCF, InterpolationCells &intFC,
 //      hC = dNz + LzFine/2 - 2;                    hF = LzFine - 5;
 //
 //      for (jF = 3, jC = dNy + 2 ; jF<=LyFine-5; jC++,jF+=2)
-//      {			
+//      {            
 //         for (iF = 3, iC = dNx + 2 ; iF<=LxFine-5; iC++,iF+=2)
-//         {			
+//         {            
 //            posC=vectorPosition(   iC, jC, hC, LxCoarse, LyCoarse);
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];

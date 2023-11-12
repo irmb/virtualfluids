@@ -11,7 +11,7 @@
 class PreProcessorStrategy
 {
 public:
-	virtual void init(int level) = 0;
-	virtual bool checkParameter() = 0;
+    virtual void init(int level) = 0;
+    virtual bool checkParameter() = 0;
 };
 #endif

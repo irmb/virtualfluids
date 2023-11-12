@@ -1135,8 +1135,8 @@ __global__ void LBCalcMeasurePoints(
         unsigned int ktne = kzero;
         unsigned int kbsw = neighborZ[ksw];
         //////////////////////////////////////////////////////////////////////////
-	    unsigned int kMac = nodeIndex*MPClockCycle + t;
-	    //////////////////////////////////////////////////////////////////////////
+        unsigned int kMac = nodeIndex*MPClockCycle + t;
+        //////////////////////////////////////////////////////////////////////////
         
         if(geoD[kzero] == GEO_FLUID)
         {

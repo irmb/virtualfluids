@@ -16,7 +16,7 @@ class EnstrophyAnalyzer
 {
 private:
 
-	SPtr<Parameter> para;
+    SPtr<Parameter> para;
 
     uint analyzeIter;
 
@@ -28,7 +28,7 @@ public:
 
     bool run( uint iter );
 
-	void writeToFile( std::string filename );
+    void writeToFile( std::string filename );
 
 };
 

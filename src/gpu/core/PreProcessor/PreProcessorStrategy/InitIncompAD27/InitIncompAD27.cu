@@ -6,7 +6,7 @@
 
 std::shared_ptr<PreProcessorStrategy> InitIncompAD27::getNewInstance(std::shared_ptr<Parameter> para)
 {
-	return std::shared_ptr<PreProcessorStrategy>(new InitIncompAD27(para));
+    return std::shared_ptr<PreProcessorStrategy>(new InitIncompAD27(para));
 }
 
 void InitIncompAD27::init(int level)
@@ -30,12 +30,12 @@ void InitIncompAD27::init(int level)
 
 bool InitIncompAD27::checkParameter()
 {
-	return false;
+    return false;
 }
 
 InitIncompAD27::InitIncompAD27(std::shared_ptr<Parameter> para)
 {
-	this->para = para;
+    this->para = para;
 }
 
 InitIncompAD27::InitIncompAD27()

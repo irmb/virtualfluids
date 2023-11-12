@@ -6,7 +6,7 @@
 
 std::shared_ptr<K15IncompressibleNavierStokes> K15IncompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<K15IncompressibleNavierStokes>(new K15IncompressibleNavierStokes(para, level));
+    return std::shared_ptr<K15IncompressibleNavierStokes>(new K15IncompressibleNavierStokes(para, level));
 }
 
 void K15IncompressibleNavierStokes::run()
@@ -27,12 +27,12 @@ void K15IncompressibleNavierStokes::run()
 
 K15IncompressibleNavierStokes::K15IncompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
 {
-	this->para = para;
-	this->level = level;
+    this->para = para;
+    this->level = level;
 
-	myPreProcessorTypes.push_back(InitSP27);
+    myPreProcessorTypes.push_back(InitSP27);
 
-	
+    
 }
 
 K15IncompressibleNavierStokes::K15IncompressibleNavierStokes()
