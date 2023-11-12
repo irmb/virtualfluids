@@ -13,6 +13,6 @@ class MathematicaFile;
 class MathematicaAssistant
 {
 public:
-	virtual void makeMathematicaOutput(std::shared_ptr<LogFileDataGroup> logFileData, std::shared_ptr<MathematicaFile> aMathmaticaFile) = 0;
+    virtual void makeMathematicaOutput(std::shared_ptr<LogFileDataGroup> logFileData, std::shared_ptr<MathematicaFile> aMathmaticaFile) = 0;
 };
 #endif 

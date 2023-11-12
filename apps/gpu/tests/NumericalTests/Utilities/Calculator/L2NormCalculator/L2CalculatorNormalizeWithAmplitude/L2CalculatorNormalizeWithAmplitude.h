@@ -6,11 +6,11 @@
 class L2CalculatorNormalizeWithAmplitude : public L2NormCalculatorImp
 {
 public:
-	static std::shared_ptr<L2NormCalculator> getInstance();
+    static std::shared_ptr<L2NormCalculator> getInstance();
 
-	double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double l0);
+    double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double l0);
 
 private:
-	L2CalculatorNormalizeWithAmplitude();
+    L2CalculatorNormalizeWithAmplitude();
 };
 #endif

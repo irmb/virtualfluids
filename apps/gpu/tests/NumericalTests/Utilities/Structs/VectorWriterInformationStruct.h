@@ -5,9 +5,9 @@
 
 struct VectorWriterInformationStruct
 {
-	unsigned int startTimeVectorWriter;
-	bool writeVTKFiles;
-	unsigned int startTimeVTKDataWriter;
+    unsigned int startTimeVectorWriter;
+    bool writeVTKFiles;
+    unsigned int startTimeVTKDataWriter;
 };
 
 #endif 

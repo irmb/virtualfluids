@@ -8,15 +8,15 @@
 class LogFileInformationImp : public LogFileInformation
 {
 public:
-	LogFileInformationImp() = default;
-	virtual std::string getOutput() = 0;
+    LogFileInformationImp() = default;
+    virtual std::string getOutput() = 0;
 
 protected:
-	void makeCenterHead(std::string head);
+    void makeCenterHead(std::string head);
 
-	std::ostringstream oss;
+    std::ostringstream oss;
 private:
-	void makeHashLine();
+    void makeHashLine();
 
 };
 #endif

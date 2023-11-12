@@ -8,23 +8,23 @@
 class ShearWaveLogFileDataImp : public ShearWaveLogFileData
 {
 public:
-	static std::shared_ptr<ShearWaveLogFileDataImp> getNewInstance();
+    static std::shared_ptr<ShearWaveLogFileDataImp> getNewInstance();
 
-	std::vector<int> getL0();
-	std::vector<double> getUx();
-	std::vector<double> getUz();
+    std::vector<int> getL0();
+    std::vector<double> getUx();
+    std::vector<double> getUz();
 
-	void setL0(std::vector<int> l0);
-	void setUx(std::vector<double> ux);
-	void setUz(std::vector<double> amp);
+    void setL0(std::vector<int> l0);
+    void setUx(std::vector<double> ux);
+    void setUz(std::vector<double> amp);
 
-	~ShearWaveLogFileDataImp();
+    ~ShearWaveLogFileDataImp();
 
 private:
-	ShearWaveLogFileDataImp();
+    ShearWaveLogFileDataImp();
 
-	std::vector<int> l0;
-	std::vector<double> ux;
-	std::vector<double> uz;
+    std::vector<int> l0;
+    std::vector<double> ux;
+    std::vector<double> uz;
 };
 #endif

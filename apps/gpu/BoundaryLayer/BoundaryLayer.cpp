@@ -294,7 +294,7 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
     }
 
-	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     VF_LOG_INFO("Number of Processes {}, Process ID {} is first subdomain {}, is last subdomain {}, is mid subdomain {}", nProcs, procID, isFirstSubDomain, isLastSubDomain, isMidSubDomain);
     

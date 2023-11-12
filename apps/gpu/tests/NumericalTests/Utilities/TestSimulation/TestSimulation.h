@@ -17,8 +17,8 @@ class TestSimulation
 public:
     virtual ~TestSimulation() = default;
     virtual void run() = 0;
-	virtual void makeSimulationHeadOutput() = 0;
-	virtual void startPostProcessing() = 0;
+    virtual void makeSimulationHeadOutput() = 0;
+    virtual void startPostProcessing() = 0;
 
     virtual std::shared_ptr<SimulationParameter> getSimulationParameter() = 0;
     virtual std::shared_ptr<TimeTracking> getTimeTracking() = 0;

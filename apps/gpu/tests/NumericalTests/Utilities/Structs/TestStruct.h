@@ -10,8 +10,8 @@ class Test;
 
 struct TestStruct
 {
-	std::shared_ptr<TestLogFileInformation> logFileInfo;
-	std::vector<std::shared_ptr<Test> > tests;
-	std::string testName;
+    std::shared_ptr<TestLogFileInformation> logFileInfo;
+    std::vector<std::shared_ptr<Test> > tests;
+    std::string testName;
 };
 #endif 

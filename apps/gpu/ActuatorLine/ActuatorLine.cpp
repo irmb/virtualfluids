@@ -136,14 +136,14 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real dx = reference_diameter/real(nodes_per_diameter);
+    const real dx = reference_diameter/real(nodes_per_diameter);
 
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-							   L_x,  L_y,  L_z, dx);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
+                               L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
     gridBuilder->addGrid( std::make_shared<Cuboid>( turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
@@ -151,11 +151,11 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
-	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 

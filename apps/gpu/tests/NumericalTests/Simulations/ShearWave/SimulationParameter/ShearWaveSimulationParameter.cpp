@@ -9,23 +9,23 @@
 
 std::shared_ptr<SimulationParameter> ShearWaveSimulationParameter::getNewInstance(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
 {
-	return std::shared_ptr<SimulationParameter>(new ShearWaveSimulationParameter(kernel, viscosity, parameterStruct, gridInfo));
+    return std::shared_ptr<SimulationParameter>(new ShearWaveSimulationParameter(kernel, viscosity, parameterStruct, gridInfo));
 }
 
 ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
 :SimulationParameterImp(kernel, viscosity, parameterStruct->basicSimulationParameter, gridInfo)
 {
-	this->timeStepLength = parameterStruct->basicTimeStepLength * (gridInfo->lx / l0)*(gridInfo->lx / l0);
+    this->timeStepLength = parameterStruct->basicTimeStepLength * (gridInfo->lx / l0)*(gridInfo->lx / l0);
 
-	if (parameterStruct->ux > parameterStruct->uz)
-		this->maxVelocity = parameterStruct->ux / (lx / l0);
-	else
-		this->maxVelocity = parameterStruct->uz / (lx / l0);
+    if (parameterStruct->ux > parameterStruct->uz)
+        this->maxVelocity = parameterStruct->ux / (lx / l0);
+    else
+        this->maxVelocity = parameterStruct->uz / (lx / l0);
  
-	std::string kernelName = kernel;
+    std::string kernelName = kernel;
 
-	std::ostringstream oss;
-	oss << parameterStruct->vtkFilePath << "/ShearWave/Viscosity_" << viscosity << "/ux_" << parameterStruct->ux << "_uz_" << parameterStruct->uz << "/" << kernelName << "/grid" << lx;
-	generateFileDirectionInMyStystem(oss.str());
-	this->filePath = oss.str();
+    std::ostringstream oss;
+    oss << parameterStruct->vtkFilePath << "/ShearWave/Viscosity_" << viscosity << "/ux_" << parameterStruct->ux << "_uz_" << parameterStruct->uz << "/" << kernelName << "/grid" << lx;
+    generateFileDirectionInMyStystem(oss.str());
+    this->filePath = oss.str();
 }
