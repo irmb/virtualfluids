@@ -1983,19 +1983,30 @@ void CudaMemoryManager::cudaFreeMeasurePointsIndex(int lev)
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->VzMP));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->RhoMP));
 }
-void CudaMemoryManager::cudaAllocFsForCheckPointAndRestart(int lev)
+void CudaMemoryManager::cudaAllocFsForCheckPointAndRestart(int lev) const
 {
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->distributions.f[0] ),           (unsigned long long)parameter->getD3Qxx()*(unsigned long long)parameter->getParH(lev)->memSizeRealLBnodes));
 }
-void CudaMemoryManager::cudaCopyFsForRestart(int lev)
+void CudaMemoryManager::cudaAllocFsForAllLevelsOnHost() const
+{
+    for (int level = 0; level <= parameter->getMaxLevel(); level++) {
+        cudaAllocFsForCheckPointAndRestart(level);
+    }
+}
+void CudaMemoryManager::cudaCopyFsForRestart(int lev) const
 {
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->distributions.f[0],  parameter->getParH(lev)->distributions.f[0],     (unsigned long long)parameter->getD3Qxx()*(unsigned long long)parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaCopyFsForCheckPoint(int lev)
+void CudaMemoryManager::cudaCopyFsForCheckPoint(int lev) const
 {
     checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->distributions.f[0],  parameter->getParD(lev)->distributions.f[0],     (unsigned long long)parameter->getD3Qxx()*(unsigned long long)parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
 }
-void CudaMemoryManager::cudaFreeFsForCheckPointAndRestart(int lev)
+void CudaMemoryManager::cudaCopyFsForAllLevelsToHost() const
+{
+    for (int level = 0; level <= parameter->getMaxLevel(); level++)
+        cudaCopyFsForCheckPoint(level);
+}
+void CudaMemoryManager::cudaFreeFsForCheckPointAndRestart(int lev) const
 {
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->distributions.f[0]));
 }

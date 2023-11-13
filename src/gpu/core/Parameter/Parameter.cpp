@@ -1786,7 +1786,7 @@ int Parameter::getD3Qxx()
 {
     return this->D3Qxx;
 }
-int Parameter::getMaxLevel()
+int Parameter::getMaxLevel() const
 {
     return this->maxlevel;
 }
