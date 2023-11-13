@@ -108,7 +108,7 @@ private:
     SPtr<BoundingBox> subDomainBox;
 
 public:
-    GRIDGENERATOR_EXPORT void findCommunicationIndices(int direction);
+    GRIDGENERATOR_EXPORT void findCommunicationIndices(int direction, bool doShift=false);
 };
 
 #endif
