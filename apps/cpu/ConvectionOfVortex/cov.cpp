@@ -151,7 +151,7 @@ void run()
       if (myid==0) GbSystem3D::writeGeoObject(geoOutflow4.get(), pathname+"/geo/geoOutflow4", WbWriterVtkXmlASCII::getInstance());
       SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBC, Interactor3D::SOLID));
 
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
       InteractorsHelper intHelper(grid, metisVisitor);
       //intHelper.addInteractor(outflowIntr1);
       //intHelper.addInteractor(outflowIntr2);

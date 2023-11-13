@@ -114,10 +114,10 @@ static constexpr double c264o1 = 264.;
 static constexpr double c290o1 = 290.;
 static constexpr double c367o1 = 367.;
 
-static constexpr double Op0000002 = 0.0000002;
+static constexpr double c0p0000002 = 0.0000002;
 static constexpr double c10eM30 = 1e-30;
 static constexpr double c10eM10 = 1e-10;
-static constexpr double smallSingle = 0.0000000002;
+static constexpr double cSmallSingle = 0.0000000002;
 
 #ifndef __CUDACC__
 static const double cPi = 4.0 * std::atan(1.0);               // 3.1415926535
@@ -131,10 +131,10 @@ static constexpr double cPio180 = 1.74532925199e-2;
 static constexpr double c180oPi = 57.2957795131;
 #endif
 
-static const double one_over_sqrt2 = 1.0 / sqrt(2.0); // 0.707106781
-static const double one_over_sqrt3 = 1.0 / sqrt(3.0); // 0.577350269
-static const double sqrt2 = sqrt(2.0);       // 1.4142135
-static const double sqrt3 = sqrt(3.0);       // 1.7320508
+static const double c1oSqrt2 = 1.0 / sqrt(2.0); // 0.707106781
+static const double c1oSqrt3 = 1.0 / sqrt(3.0); // 0.577350269
+static const double cSqrt2 = sqrt(2.0);         // 1.4142135
+static const double cSqrt3 = sqrt(3.0);         // 1.7320508
 
 #else
 static constexpr float c1o2 = 1.0f / 2.0f;
@@ -242,10 +242,10 @@ static constexpr float c264o1 = 264.0f;
 static constexpr float c290o1 = 290.0f;
 static constexpr float c367o1 = 367.0f;
 
-static constexpr float Op0000002 = 0.0000002f;
+static constexpr float c0p0000002 = 0.0000002f;
 static constexpr float c10eM30 = 1e-30f;
 static constexpr float c10eM10 = 1e-10f;
-static constexpr float smallSingle = 0.0000000002f;
+static constexpr float cSmallSingle = 0.0000000002f;
 
 #ifndef __CUDACC__
 static const float cPi = 4.0f * std::atan(1.0f);               // 3.1415926535
@@ -259,10 +259,10 @@ static constexpr float cPio180 = 1.74532925199e-2f;
 static constexpr float c180oPi = 57.2957795131f;
 #endif
 
-static const float one_over_sqrt2 = 1.0 / sqrtf(2.0); // 0.707106781
-static const float one_over_sqrt3 = 1.0 / sqrtf(3.0); // 0.577350269
-static const float sqrt2 = sqrtf(2.0);                // 1.4142135
-static const float sqrt3 = sqrtf(3.0);                // 1.7320508
+static const float c1oSqrt2 = 1.0 / sqrtf(2.0); // 0.707106781
+static const float c1oSqrt3 = 1.0 / sqrtf(3.0); // 0.577350269
+static const float cSqrt2 = sqrtf(2.0);                // 1.4142135
+static const float cSqrt3 = sqrtf(3.0);                // 1.7320508
 
 #endif
 

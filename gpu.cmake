@@ -3,7 +3,7 @@
 #############################################################
 
 add_subdirectory(src/gpu/GridGenerator)
-add_subdirectory(src/gpu/VirtualFluids_GPU)
+add_subdirectory(src/gpu/core)
 
 #############################################################
 ###                  Apps                                 ###

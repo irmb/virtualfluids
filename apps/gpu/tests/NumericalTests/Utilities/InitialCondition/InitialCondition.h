@@ -1,7 +1,7 @@
 #ifndef INITIAL_CONDITION_H
 #define INITIAL_CONDITION_H
 
-#include "VirtualFluids_GPU/LBM/LB.h"
+#include "gpu/core/LBM/LB.h"
 
 #include <vector>
 #include <memory>

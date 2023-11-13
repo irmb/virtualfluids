@@ -405,7 +405,7 @@ void run(string configname)
 
             intHelper.setBC();
 
-            SpongeLayerBlockVisitor spongeLayerVisitor(spongecube, kernel, nu, DIR_P00);
+            SpongeLayerBlockVisitor spongeLayerVisitor(spongecube, kernel, nu, dP00);
             grid->accept(spongeLayerVisitor);
 
             grid->accept(bcVisitor);

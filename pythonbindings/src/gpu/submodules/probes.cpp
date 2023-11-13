@@ -32,12 +32,12 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/Probe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/PreCollisionInteractor/Probes/Probe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/PointProbe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/PlanarAverageProbe.h>
+#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
 
 namespace probes
 {

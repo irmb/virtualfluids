@@ -1,6 +1,6 @@
 PROJECT(TPMSRow)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK VirtualFluidsCore muparser basics ${MPI_CXX_LIBRARIES} FILES TPMSRow.cpp )
+vf_add_library(BUILDTYPE binary PRIVATE_LINK cpu_core muparser basics ${MPI_CXX_LIBRARIES} FILES TPMSRow.cpp )
 
 vf_get_library_name (library_name)
 #target_include_dires(${library_name} PRIVATE ${APPS_ROOT_CPU})

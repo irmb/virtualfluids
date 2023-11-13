@@ -36,7 +36,7 @@
 #include <lammps.h>
 #include <vector>
 #include "basics/PointerDefinitions.h"
-#include "VirtualFluidsCore/Visitors/Grid3DVisitor.h"
+#include "cpu/core/Visitors/Grid3DVisitor.h"
 
 class LiggghtsCouplingWrapper;
 class Grid3D;

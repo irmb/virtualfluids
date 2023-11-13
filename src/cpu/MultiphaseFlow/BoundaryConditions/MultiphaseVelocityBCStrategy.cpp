@@ -76,10 +76,10 @@ void MultiphaseVelocityBCStrategy::applyBC()
    real heq[D3Q27System::ENDF+1];
    real htemp[D3Q27System::ENDF+1];
    
-   distributions->getDistributionInv(f, x1, x2, x3);
-   distributionsH->getDistributionInv(h, x1, x2, x3);
+   distributions->getPostCollisionDistribution(f, x1, x2, x3);
+   distributionsH->getPostCollisionDistribution(h, x1, x2, x3);
    if (distributionsH2)
-       distributionsH2->getDistributionInv(h2, x1, x2, x3);
+       distributionsH2->getPostCollisionDistribution(h2, x1, x2, x3);
    real phi, vx1, vx2, vx3, p1, phiBC;
    
    D3Q27System::calcDensity(h, phi);
@@ -107,9 +107,9 @@ void MultiphaseVelocityBCStrategy::applyBC()
 		 //  LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
    //        //17.03.2021 Let us just set the plain eq
    //        //LBMReal hReturn = htemp[fdir];
-		 //  distributionsH->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
+		 //  distributionsH->setPostCollisionDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
    //      //  if (distributionsH2)
-   //      //      distributionsH2->setDistributionForDirection(0, nx1, nx2, nx3, fdir);
+   //      //      distributionsH2->setPostCollisionDistributionForDirection(0, nx1, nx2, nx3, fdir);
 	  // }
    //}
    
@@ -123,15 +123,15 @@ void MultiphaseVelocityBCStrategy::applyBC()
 		 //16.03.2021 quick fix for velocity BC
          real fReturn = f[invDir] - velocity;
          //LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity)/(1.0+q));
-        // distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);//no delay BB
-         distributions->setDistributionForDirection(fReturn, x1, x2, x3, invDir);//delay BB  
+        // distributions->setPostCollisionDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);//no delay BB
+         distributions->setPostCollisionDistributionForDirection(fReturn, x1, x2, x3, invDir);//delay BB  
 
          real hReturn = htemp[invDir] + h[invDir] - heq[invDir] - velocity*phi;
-         distributionsH->setDistributionForDirection(hReturn, x1, x2, x3, invDir);//delay BB  
+         distributionsH->setPostCollisionDistributionForDirection(hReturn, x1, x2, x3, invDir);//delay BB  
          if (distributionsH2) {
              fReturn = h2[invDir] ;
-            // distributionsH2->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
-             distributionsH2->setDistributionForDirection(fReturn, x1, x2, x3, invDir);//delay BB 
+            // distributionsH2->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+             distributionsH2->setPostCollisionDistributionForDirection(fReturn, x1, x2, x3, invDir);//delay BB 
          }
 
       }

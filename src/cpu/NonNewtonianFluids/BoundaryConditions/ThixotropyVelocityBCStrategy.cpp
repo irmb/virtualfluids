@@ -75,8 +75,8 @@ void ThixotropyVelocityBCStrategy::applyBC()
 	real feq[D3Q27System::ENDF + 1];
 	real h[D3Q27System::ENDF + 1];
 
-	distributions->getDistributionInv(f, x1, x2, x3);
-	distributionsH->getDistributionInv(h, x1, x2, x3);
+	distributions->getPostCollisionDistribution(f, x1, x2, x3);
+	distributionsH->getPostCollisionDistribution(h, x1, x2, x3);
 	
 	real rho, vx1, vx2, vx3, drho;
 	calcMacrosFct(f, drho, vx1, vx2, vx3);
@@ -92,12 +92,12 @@ void ThixotropyVelocityBCStrategy::applyBC()
 	int nx3 = x3;
 
 	//flag points in direction of fluid
-	if (bcPtr->hasVelocityBoundaryFlag(DIR_P00)) { nx1 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_M00)) { nx1 += 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_0P0)) { nx2 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_0M0)) { nx2 += 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_00P)) { nx3 -= 1; }
-	else if (bcPtr->hasVelocityBoundaryFlag(DIR_00M)) { nx3 += 1; }
+	if (bcPtr->hasVelocityBoundaryFlag(dP00)) { nx1 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(dM00)) { nx1 += 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d0P0)) { nx2 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d0M0)) { nx2 += 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d00P)) { nx3 -= 1; }
+	else if (bcPtr->hasVelocityBoundaryFlag(d00M)) { nx3 += 1; }
 	else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
 	//lambdaBC = bcPtr->getBoundaryThixotropy();
@@ -110,11 +110,11 @@ void ThixotropyVelocityBCStrategy::applyBC()
 	//	{
 	//		LBMReal ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
 	//		ftemp = calcFeqsForDirFct(fdir, rhoBC, vx1, vx2, vx3) + f[fdir] - ftemp;
-	//		distributions->setDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
+	//		distributions->setPostCollisionDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
 
 	//		LBMReal htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
 	//		htemp = D3Q27System::getCompFeqForDirection(fdir,lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
-	//		distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
+	//		distributionsH->setPostCollisionDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
 	//	}
 	//}
 
@@ -126,11 +126,11 @@ void ThixotropyVelocityBCStrategy::applyBC()
 			real q = bcPtr->getQ(invDir);// m+m q=0 stabiler
 			real velocity = bcPtr->getBoundaryVelocity(invDir);
 			real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) + ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::basics::constant::c1o1 + q));
-			distributions->setDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+			distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
 			real htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
 			htemp = D3Q27System::getCompFeqForDirection(fdir, lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
-			distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
+			distributionsH->setPostCollisionDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
 		}
 	}
 }

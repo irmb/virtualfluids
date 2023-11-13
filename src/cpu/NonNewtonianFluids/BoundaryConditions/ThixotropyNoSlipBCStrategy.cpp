@@ -71,8 +71,8 @@ void ThixotropyNoSlipBCStrategy::applyBC()
 	real feq[D3Q27System::ENDF + 1];
 	real h[D3Q27System::ENDF + 1];
 	real heq[D3Q27System::ENDF + 1];
-	distributions->getDistributionInv(f, x1, x2, x3);
-	distributionsH->getDistributionInv(h, x1, x2, x3);
+	distributions->getPostCollisionDistribution(f, x1, x2, x3);
+	distributionsH->getPostCollisionDistribution(h, x1, x2, x3);
 	real rho, vx1, vx2, vx3;//, concentration, fl1, fl2, fl3, m100;
 	calcMacrosFct(f, rho, vx1, vx2, vx3);
 	calcFeqFct(feq, rho, vx1, vx2, vx3);
@@ -91,8 +91,8 @@ void ThixotropyNoSlipBCStrategy::applyBC()
 			real fReturnf = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q))*((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) + ((q / (vf::basics::constant::c1o1 + q))*(f[invDir] + f[fdir]));
 			real fReturnh = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q))*((h[invDir] - heq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + heq[invDir]) + ((q / (vf::basics::constant::c1o1 + q))*(h[invDir] + h[fdir]));
 
-			distributions->setDistributionForDirection(fReturnf, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
-			distributionsH->setDistributionForDirection(fReturnh, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+			distributions->setPostCollisionDistributionForDirection(fReturnf, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+			distributionsH->setPostCollisionDistributionForDirection(fReturnh, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
 		}
 	}

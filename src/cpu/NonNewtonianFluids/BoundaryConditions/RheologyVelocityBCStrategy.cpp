@@ -55,7 +55,7 @@ void RheologyVelocityBCStrategy::applyBC()
 
     real f[D3Q27System::ENDF+1];
     real feq[D3Q27System::ENDF+1];
-    distributions->getDistribution(f, x1, x2, x3);
+    distributions->getPreCollisionDistribution(f, x1, x2, x3);
     real rho, vx1, vx2, vx3, drho;
     calcMacrosFct(f, drho, vx1, vx2, vx3);
     calcFeqFct(feq, drho, vx1, vx2, vx3);
@@ -75,7 +75,7 @@ void RheologyVelocityBCStrategy::applyBC()
             real q = bcPtr->getQ(invDir);
             real velocity = bcPtr->getBoundaryVelocity(invDir);
             real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir])) + ((q * (f[invDir] + f[fdir] - collFactorF * (f[invDir] - feq[invDir] + f[fdir] - feq[fdir])) - velocity * rho) / (c1o1 + q));
-            distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+            distributions->setPostCollisionDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
         }
     }
 

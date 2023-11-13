@@ -69,23 +69,23 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/Output/FileWriter.h"
+#include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
+#include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "gpu/core/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
+#include "gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h"
+#include "gpu/core/PreCollisionInteractor/PrecursorWriter.h"
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/Factories/GridScalingFactory.h"
+#include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
 
 #include "utilities/communication.h"
 
@@ -213,7 +213,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams = (nProcs > 1 ? true: false);
     // useStreams=false;
     para->setUseStreams(useStreams);
-    para->configureMainKernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
     para->setIsBodyForce( config.getValue<bool>("bodyForce") );
 
     para->setTimestepStartOut(uint(tStartOut/dt) );

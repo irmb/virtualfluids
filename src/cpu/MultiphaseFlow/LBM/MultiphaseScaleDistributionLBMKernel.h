@@ -139,34 +139,34 @@ protected:
 inline bool MultiphaseScaleDistributionLBMKernel::isGas(real phiLim, real* phi, real* phi2)
 {
     using namespace vf::lbm::dir;
-    return (phi2[DIR_000] <= phiLim) || ((phi[DIR_000] <= phiLim) &&
+    return (phi2[d000] <= phiLim) || ((phi[d000] <= phiLim) &&
                         (
-						(phi[DIR_P00] > phiLim) ||
-						(phi[DIR_M00] > phiLim) ||
-						(phi[DIR_00P] > phiLim) ||
-						(phi[DIR_00M] > phiLim) ||
-						(phi[DIR_0M0] > phiLim) ||
-						(phi[DIR_0P0] > phiLim) ||
-						(phi[DIR_PP0] > phiLim) ||
-						(phi[DIR_PM0] > phiLim) ||
-						(phi[DIR_P0P] > phiLim) ||
-						(phi[DIR_P0M] > phiLim) ||
-						(phi[DIR_MP0] > phiLim) ||
-						(phi[DIR_MM0] > phiLim) ||
-						(phi[DIR_M0P] > phiLim) ||
-						(phi[DIR_M0M] > phiLim) ||
-						(phi[DIR_0PM] > phiLim) ||
-						(phi[DIR_0MM] > phiLim) ||
-						(phi[DIR_0PP] > phiLim) ||
-						(phi[DIR_0MP] > phiLim) ||
-						(phi[DIR_PPP] > phiLim) ||
-						(phi[DIR_PMP] > phiLim) ||
-						(phi[DIR_MPP] > phiLim) ||
-						(phi[DIR_MMP] > phiLim) ||
-						(phi[DIR_PPM] > phiLim) ||
-						(phi[DIR_PMM] > phiLim) ||
-						(phi[DIR_MPM] > phiLim) ||
-						(phi[DIR_MMM] > phiLim)
+						(phi[dP00] > phiLim) ||
+						(phi[dM00] > phiLim) ||
+						(phi[d00P] > phiLim) ||
+						(phi[d00M] > phiLim) ||
+						(phi[d0M0] > phiLim) ||
+						(phi[d0P0] > phiLim) ||
+						(phi[dPP0] > phiLim) ||
+						(phi[dPM0] > phiLim) ||
+						(phi[dP0P] > phiLim) ||
+						(phi[dP0M] > phiLim) ||
+						(phi[dMP0] > phiLim) ||
+						(phi[dMM0] > phiLim) ||
+						(phi[dM0P] > phiLim) ||
+						(phi[dM0M] > phiLim) ||
+						(phi[d0PM] > phiLim) ||
+						(phi[d0MM] > phiLim) ||
+						(phi[d0PP] > phiLim) ||
+						(phi[d0MP] > phiLim) ||
+						(phi[dPPP] > phiLim) ||
+						(phi[dPMP] > phiLim) ||
+						(phi[dMPP] > phiLim) ||
+						(phi[dMMP] > phiLim) ||
+						(phi[dPPM] > phiLim) ||
+						(phi[dPMM] > phiLim) ||
+						(phi[dMPM] > phiLim) ||
+						(phi[dMMM] > phiLim)
 						));
 }
 

@@ -178,7 +178,7 @@ void run(string configname)
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(sphereInt);
          intHelper.addInteractor(addWallYminInt);

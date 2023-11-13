@@ -118,7 +118,7 @@ void CPUSimulation::run()
 
     auto metisVisitor = std::make_shared<MetisPartitioningGridVisitor>(communicator,
                                                                        MetisPartitioningGridVisitor::LevelBased,
-                                                                       vf::lbm::dir::DIR_00M, MetisPartitioner::RECURSIVE);
+                                                                       vf::lbm::dir::d00M, MetisPartitioner::RECURSIVE);
 
     InteractorsHelper intHelper(grid, metisVisitor);
     for (auto const &interactor : interactors)

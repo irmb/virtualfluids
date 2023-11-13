@@ -77,10 +77,10 @@ void MultiphasePressureBCStrategy::applyBC()
    //LBMReal heq[D3Q27System::ENDF+1];
    LBMReal htemp[D3Q27System::ENDF+1];
    
-   distributions->getDistributionInv(f, x1, x2, x3);
-   distributionsH->getDistributionInv(h, x1, x2, x3);
+   distributions->getPostCollisionDistribution(f, x1, x2, x3);
+   distributionsH->getPostCollisionDistribution(h, x1, x2, x3);
    if (distributionsH2)
-       distributionsH2->getDistributionInv(h2, x1, x2, x3);
+       distributionsH2->getPostCollisionDistribution(h2, x1, x2, x3);
    LBMReal phi, vx1, vx2, vx3, p1, phiBC;
    
    D3Q27System::calcDensity(h, phi);

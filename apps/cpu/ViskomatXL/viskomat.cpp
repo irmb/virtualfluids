@@ -190,7 +190,7 @@ void bflow(string configname)
 
       ////////////////////////////////////////////
       //METIS
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_MMM, MetisPartitioner::RECURSIVE));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, dMMM, MetisPartitioner::RECURSIVE));
       ////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////
       //restart
