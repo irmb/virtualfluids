@@ -130,6 +130,7 @@ void multipleLevel(const std::string& configPath)
 
     const real L_x = 6*H;
     const real L_y = 4*H;
+
     const real L_z = H;
 
     const real z0  = config.getValue("z0", 0.1f); // roughness length in m
@@ -143,6 +144,8 @@ void multipleLevel(const std::string& configPath)
     const real mach = config.getValue<real>("Ma", 0.1);
 
     const uint nodes_per_H = config.getValue<uint>("nz", 64);
+
+    const float periodicShift = config.getValue<float>("periodicShift", 0.0f);
 
     const bool writePrecursor = config.getValue("writePrecursor", false);
     bool useDistributions;
@@ -165,6 +168,8 @@ void multipleLevel(const std::string& configPath)
         precursorDirectory = config.getValue<std::string>("precursorDirectory");
         useDistributions     = config.getValue<bool>("useDistributions", false);
     }
+
+    const bool useRefinement = config.getValue<bool>("refinement", false);
 
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
@@ -262,7 +267,9 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
                                 xGridMax,  L_y,  L_z, dx);
-    if(false)// Add refinement
+
+
+    if(useRefinement)// Add refinement
     {
         gridBuilder->setNumberOfLayers(4,0);
         real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
@@ -282,9 +289,14 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
     }
 
+    if(!readPrecursor)
+    {
+        gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
+    }
+
 	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
-    std::cout << "nProcs: "<< nProcs << "Proc: " << procID << " isFirstSubDomain: " << isFirstSubDomain << " isLastSubDomain: " << isLastSubDomain << " isMidSubDomain: " << isMidSubDomain << std::endl;
+    VF_LOG_INFO("Number of Processes {}, Process ID {} is first subdomain {}, is last subdomain {}, is mid subdomain {}", nProcs, procID, isFirstSubDomain, isLastSubDomain, isMidSubDomain);
     
     if(nProcs > 1){
         if (isFirstSubDomain || isMidSubDomain) {
@@ -293,7 +305,7 @@ void multipleLevel(const std::string& configPath)
         }
 
         if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, true);
             gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
         }
 
@@ -307,17 +319,16 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
     }
-    uint samplingOffset = 2;
+
     
-    std::cout << " precursorDirectory " << precursorDirectory << std::endl;
     
     if(readPrecursor)
     {
+        VF_LOG_INFO("Precursor directory {}", precursorDirectory);
         if(isFirstSubDomain || nProcs == 1)
         {   
             auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
             gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
-            // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
         }
 
         if(isLastSubDomain || nProcs == 1)
@@ -326,6 +337,7 @@ void multipleLevel(const std::string& configPath)
         }     
     } 
 
+    uint samplingOffset = 2;
     gridBuilder->setStressBoundaryCondition(SideType::MZ,
                                             0.0, 0.0, 1.0,              // wall normals
                                             samplingOffset, z0, dx);    // wall model settinng
@@ -343,9 +355,8 @@ void multipleLevel(const std::string& configPath)
     if(readPrecursor)
     {
         para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-        rho = (real)0.0;
-        vx  = rho = c0o1;
-        vx  = u_star/c4o10*(u_star/c4o10 * log(coordZ/z0+c1o1)) * dt/dx; 
+        rho = c0o1;
+        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1)) * dt/dx; 
         vy  = c0o1; 
         vz  = c0o1;
         });
@@ -353,10 +364,9 @@ void multipleLevel(const std::string& configPath)
     else
     {
         para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-        rho = (real)0.0;
-        vx  = rho = c0o1;
-        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)) * dt/dx; 
-        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx; 
+        rho = c0o1;
+        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))*(c1o1-0.1f*abs(coordY/L_y-0.5)) * dt/dx; 
+        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx;
         vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) * dt/dx;
         });
     }
@@ -381,8 +391,16 @@ void multipleLevel(const std::string& configPath)
         para->addProbe( wallModelProbe );
     }
 
+    for(int i=0; i<3; i++)
+    {
+        SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("horizontalProbe"+std::to_string(i), para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
+        planeProbe->setProbePlane(0, 0, i*L_z/4., L_x, L_y, dx);
+        planeProbe->addAllAvailableStatistics();
+        para->addProbe( planeProbe );
+    }
+
     SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    planeProbe1->setProbePlane(100.0, 0.0, 0, dx, L_y, L_z);
+    planeProbe1->setProbePlane(c1o2*L_x, 0.0, 0, dx, L_y, L_z);
     planeProbe1->addAllAvailableStatistics();
     para->addProbe( planeProbe1 );
 

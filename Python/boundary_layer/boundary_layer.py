@@ -150,16 +150,17 @@ if read_precursor:
     precursor = gpu.create_file_collection(precursor_directory + "/precursor", gpu.FileType.VTK)
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
-grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0/dx)
+grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0, dx)
 para.set_has_wall_model_monitor(True)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
+    bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
+    bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
+    
 bc_factory.set_stress_boundary_condition(gpu.StressBC.StressPressureBounceBack)
 bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipBounceBack) 
-bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
-bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
 para.set_outflow_pressure_correction_factor(0.0); 
 #%%
 para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, dx/dx)
