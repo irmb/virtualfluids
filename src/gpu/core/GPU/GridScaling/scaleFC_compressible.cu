@@ -31,7 +31,6 @@
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 
-#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
