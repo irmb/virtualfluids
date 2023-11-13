@@ -327,11 +327,11 @@ protected:
     long long densityBoundaryFlags{ 0 };
     long long wallModelBoundaryFlags{ 0 };
 
-    float bcVelocityX1{ vf::basics::constant::c0o1 };
-    float bcVelocityX2{ vf::basics::constant::c0o1 };
-    float bcVelocityX3{ vf::basics::constant::c0o1 };
-    float bcDensity{ vf::basics::constant::c0o1 };
-    float bcPhaseField{ vf::basics::constant::c0o1 };
+    float bcVelocityX1{ 0.0 };
+    float bcVelocityX2{ 0.0 };
+    float bcVelocityX3{ 0.0 };
+    float bcDensity{ 0.0 };
+    float bcPhaseField{ 0.0 };
 
     float nx1{ vf::basics::constant::c0o1 }, nx2{ vf::basics::constant::c0o1 }, nx3{ vf::basics::constant::c0o1 };
 

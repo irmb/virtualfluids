@@ -84,8 +84,10 @@ void MultiphaseVelocityBCStrategy::applyBC()
    
    D3Q27System::calcDensity(h, phi);
 
+   phi = 1;
+
    calcMacrosFct(f, p1, vx1, vx2, vx3);
-   vx1=bcPtr->getBoundaryVelocityX1();
+   vx1 = bcPtr->getBoundaryVelocityX1();
    vx2 = bcPtr->getBoundaryVelocityX2();
    vx3 = bcPtr->getBoundaryVelocityX3();
    p1 = vf::basics::constant::c0o1;

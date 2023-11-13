@@ -5155,7 +5155,7 @@ void MultiphaseScaleDistributionLBMKernel::calculate(int step)
                         //scaleNorm = scaleNorm * scaleNorm;
                         //scaleNorm = scaleNorm * scaleNorm;
                         //scaleNorm = scaleNorm * scaleNorm;
-                        if  (phi[DIR_000] > phiLim) //(true) // ((phi[DIR_000] > phiLim)||(normX1*vvx+normX2*vvy+normX3*vvz<0))
+                        if  (true)//(phi[DIR_000] > phiLim) //(true) // ((phi[DIR_000] > phiLim)||(normX1*vvx+normX2*vvy+normX3*vvz<0))
 						{
                         
                         normX1 = (normX1 * (c1o1 - mixNormal) + mixNormal * MomX1 / MomXDenom) * scaleNorm;
@@ -5933,12 +5933,15 @@ void MultiphaseScaleDistributionLBMKernel::findNeighbors(CbArray3D<real, Indexer
             //else
             //    phi[k] = 0.0; // unwetting
             //phi[k] = (*ph)(x1, x2, x3) * 0.7;
-            if (bcArray->getBC(x1, x2, x3)->hasNoSlipBoundaryFlag(D3Q27System::INVDIR[k]))
+            SPtr<BoundaryConditions> bcPtr = bcArray->getBC(x1, x2, x3);
+            if (bcPtr)
 			{
-			   if(bcArray->getBC(x1, x2, x3)->getNoSlipSecondaryOption(D3Q27System::INVDIR[k]) == 0)
-                  phi[k] = (*ph)(x1, x2, x3); // neutral wetting
-			   else
-                  phi[k] = 0.0; // unwetting
+                if (bcPtr->hasNoSlipBoundaryFlag(D3Q27System::INVDIR[k])) {
+                    if (bcPtr->getNoSlipSecondaryOption(D3Q27System::INVDIR[k]) == 0)
+                        phi[k] = (*ph)(x1, x2, x3); // neutral wetting
+                    else
+                        phi[k] = 0.0; // unwetting
+                }
 		    }
 
 		}
@@ -5964,11 +5967,14 @@ void MultiphaseScaleDistributionLBMKernel::findNeighbors2(CbArray3D<real, Indexe
             // else
             //     phi[k] = 0.0; // unwetting
             // phi[k] = (*ph)(x1, x2, x3) * 0.7;
-            if (bcArray->getBC(x1, x2, x3)->hasNoSlipBoundaryFlag(D3Q27System::INVDIR[k])) {
-               if (bcArray->getBC(x1, x2, x3)->getNoSlipSecondaryOption(D3Q27System::INVDIR[k]) == 0)
-                  phi2[k] = (*ph)(x1, x2, x3); // neutral wetting
-               else
-                  phi2[k] = 0.0; // unwetting
+            SPtr<BoundaryConditions> bcPtr = bcArray->getBC(x1, x2, x3);
+            if (bcPtr) {
+                if (bcPtr->hasNoSlipBoundaryFlag(D3Q27System::INVDIR[k])) {
+                    if (bcPtr->getNoSlipSecondaryOption(D3Q27System::INVDIR[k]) == 0)
+                        phi[k] = (*ph)(x1, x2, x3); // neutral wetting
+                    else
+                        phi[k] = 0.0; // unwetting
+                }
             }
         }
     }
