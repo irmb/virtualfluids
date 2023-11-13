@@ -724,7 +724,7 @@ public:
     int getFactorNZ();
     int getD3Qxx();
     //! \returns the maximum level of grid refinement
-    int getMaxLevel();
+    int getMaxLevel() const;
     int getTimeCalcMedStart();
     int getTimeCalcMedEnd();
     int getMaxDev();

@@ -44,6 +44,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "Output/Timer.h"
 #include "Output/FileWriter.h"
+#include "Output/DistributionDebugWriter.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Restart/RestartObject.h"
 //////////////////////////////////////////////////////////////////////////
@@ -362,12 +363,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
     VF_LOG_INFO("... done.");
 
-    //////////////////////////////////////////////////////////////////////////
-    VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
-    // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
-    // 1000000.0 << " MB\n" << std::endl;
-    //////////////////////////////////////////////////////////////////////////
-
+    VF_LOG_INFO("Write vtk files for debugging...");
     // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
     // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
@@ -382,6 +378,19 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
     //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
     //    }
+
+#if DEBUG_FS
+    VF_LOG_INFO("Allocating host memory for DistributionWriter.");
+    DistributionDebugWriter::allocateDistributionsOnHost(*cudaMemoryManager);
+#endif
+
+    VF_LOG_INFO("...done");
+
+    //////////////////////////////////////////////////////////////////////////
+    VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
+    // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
+    // 1000000.0 << " MB\n" << std::endl;
+    //////////////////////////////////////////////////////////////////////////
 }
 
 void Simulation::addKineticEnergyAnalyzer(uint tAnalyse)
@@ -951,6 +960,13 @@ void Simulation::readAndWriteFiles(uint timestep)
     }
     ////////////////////////////////////////////////////////////////////////
     if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
+
+#if DEBUG_FS
+    // Write distributions (f's) for debugging purposes.
+    DistributionDebugWriter::copyDistributionsToHost(*para, *cudaMemoryManager);
+    DistributionDebugWriter::writeDistributions(*para, timestep);
+#endif
+
     ////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("... done");
     ////////////////////////////////////////////////////////////////////////
