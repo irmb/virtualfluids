@@ -116,6 +116,7 @@ protected:
     void findNeighbors(CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, int x1, int x2, int x3);
     void findNeighbors2(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2, int x3);
     bool isGas(real phiLim, real* phi, real* phi2);
+    bool isGasBoundaryNow(real phiLim, real *phi);
 
     real nabla2_phi();
 
@@ -167,6 +168,20 @@ inline bool MultiphaseScaleDistributionLBMKernel::isGas(real phiLim, real* phi, 
 						(phi[DIR_MPM] > phiLim) ||
 						(phi[DIR_MMM] > phiLim)
 						));
+}
+
+inline bool MultiphaseScaleDistributionLBMKernel::isGasBoundaryNow(real phiLim, real *phi)
+{
+        using namespace vf::lbm::dir;
+    return 
+           ((phi[DIR_000] <= phiLim) &&
+            ((phi[DIR_P00] > phiLim) || (phi[DIR_M00] > phiLim) || (phi[DIR_00P] > phiLim) || (phi[DIR_00M] > phiLim) ||
+             (phi[DIR_0M0] > phiLim) || (phi[DIR_0P0] > phiLim) || (phi[DIR_PP0] > phiLim) || (phi[DIR_PM0] > phiLim) ||
+             (phi[DIR_P0P] > phiLim) || (phi[DIR_P0M] > phiLim) || (phi[DIR_MP0] > phiLim) || (phi[DIR_MM0] > phiLim) ||
+             (phi[DIR_M0P] > phiLim) || (phi[DIR_M0M] > phiLim) || (phi[DIR_0PM] > phiLim) || (phi[DIR_0MM] > phiLim) ||
+             (phi[DIR_0PP] > phiLim) || (phi[DIR_0MP] > phiLim) || (phi[DIR_PPP] > phiLim) || (phi[DIR_PMP] > phiLim) ||
+             (phi[DIR_MPP] > phiLim) || (phi[DIR_MMP] > phiLim) || (phi[DIR_PPM] > phiLim) || (phi[DIR_PMM] > phiLim) ||
+             (phi[DIR_MPM] > phiLim) || (phi[DIR_MMM] > phiLim)));
 }
 
 #endif
