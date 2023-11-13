@@ -15,7 +15,7 @@ class PreProcessorFactory
 {
 public:
     virtual ~PreProcessorFactory() = default;
-	virtual std::shared_ptr<PreProcessor> makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para) = 0;
+    virtual std::shared_ptr<PreProcessor> makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para) = 0;
 
 };
 #endif

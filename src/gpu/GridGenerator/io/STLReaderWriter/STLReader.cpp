@@ -234,34 +234,34 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
         triangles.push_back(Triangle(p1, p2, p3, normal));
     }
     (void)sizef;
-	fclose(file);
+    fclose(file);
 
     return triangles;
 }
 
 std::vector<Triangle> STLReader::readSTL(const BoundingBox &box, const std::string& name)
 {
-	std::ifstream file(name.c_str());
-	if (file.is_open()) {
-		std::string line;
-		std::getline(file, line);
-		line[strcspn(line.c_str(), "\r\n")] = 0;
-		if (strcmp(line.c_str(), "solid ascii") == 0) {
-			file.close();
+    std::ifstream file(name.c_str());
+    if (file.is_open()) {
+        std::string line;
+        std::getline(file, line);
+        line[strcspn(line.c_str(), "\r\n")] = 0;
+        if (strcmp(line.c_str(), "solid ascii") == 0) {
+            file.close();
             VF_LOG_INFO("start reading ascii STL file {}", name);
-			return readASCIISTL(box, name);
-		}
-		else {
-			file.close();
+            return readASCIISTL(box, name);
+        }
+        else {
+            file.close();
             VF_LOG_INFO("start reading binary STL file {}", name);
-			std::vector<Triangle> triangles = readBinarySTL(box, name);
-			return triangles;
-		}
-	}
-	else {
+            std::vector<Triangle> triangles = readBinarySTL(box, name);
+            return triangles;
+        }
+    }
+    else {
         VF_LOG_CRITICAL("can't open STL-file {}", name);
-		exit(1);
-	}
+        exit(1);
+    }
 }
 
 std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox &box, const std::string& name)
@@ -332,7 +332,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     VF_LOG_INFO("Number of Triangles in process: {}", size);
     VF_LOG_INFO("Complete reading STL file");
     (void)sizef;
-	fclose(file);
+    fclose(file);
 
     return triangles;
 }

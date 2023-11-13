@@ -5,9 +5,9 @@
 
 struct LogFileParameterStruct
 {
-	std::vector<int> devices;
-	int numberOfTimeSteps;
-	bool writeAnalyticalToVTK;
+    std::vector<int> devices;
+    int numberOfTimeSteps;
+    bool writeAnalyticalToVTK;
 
 };
 #endif 

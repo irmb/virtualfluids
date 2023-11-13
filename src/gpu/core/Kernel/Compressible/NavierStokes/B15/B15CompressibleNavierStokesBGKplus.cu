@@ -6,7 +6,7 @@
 
 std::shared_ptr<B15CompressibleNavierStokesBGKplus> B15CompressibleNavierStokesBGKplus::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<B15CompressibleNavierStokesBGKplus>(new B15CompressibleNavierStokesBGKplus(para, level));
+    return std::shared_ptr<B15CompressibleNavierStokesBGKplus>(new B15CompressibleNavierStokesBGKplus(para, level));
 }
 
 void B15CompressibleNavierStokesBGKplus::run()
@@ -27,12 +27,12 @@ void B15CompressibleNavierStokesBGKplus::run()
 
 B15CompressibleNavierStokesBGKplus::B15CompressibleNavierStokesBGKplus(std::shared_ptr<Parameter> para, int level)
 {
-	this->para = para;
-	this->level = level;
+    this->para = para;
+    this->level = level;
 
-	myPreProcessorTypes.push_back(InitCompSP27);
+    myPreProcessorTypes.push_back(InitCompSP27);
 
-	
+    
 }
 
 B15CompressibleNavierStokesBGKplus::B15CompressibleNavierStokesBGKplus()

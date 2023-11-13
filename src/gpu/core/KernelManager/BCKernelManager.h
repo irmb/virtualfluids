@@ -86,8 +86,8 @@ public:
     //! \brief calls the device function of the pressure boundary condition (post-collision)
     void runPressureBCKernelPost(const int level) const;
 
-	//! \brief calls the device function of the precursor boundary condition
-	void runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);
+    //! \brief calls the device function of the precursor boundary condition
+    void runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);
 
     //! \brief calls the device function of the outflow boundary condition
     void runOutflowBCKernelPre(const int level) const;

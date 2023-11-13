@@ -381,7 +381,7 @@ __global__ void QDeviceCompThinWallsPartOne27(real* DD,
                                                          unsigned long long numberOfLBnodes,
                                                          bool isEvenTimestep);
 
-__global__ void QDevice3rdMomentsComp27(	 real* distributions,
+__global__ void QDevice3rdMomentsComp27(     real* distributions,
                                                      int* subgridDistanceIndices,
                                                      real* subgridDistances,
                                                      unsigned int numberOfBCnodes,
@@ -403,7 +403,7 @@ __global__ void QDeviceIncompHighNu27(real* DD,
                                                  unsigned long long numberOfLBnodes,
                                                  bool isEvenTimestep);
 
-__global__ void QDeviceCompHighNu27(	 real* DD,
+__global__ void QDeviceCompHighNu27(     real* DD,
                                                  int* k_Q,
                                                  real* QQ,
                                                  unsigned int numberOfBCnodes,
@@ -565,7 +565,7 @@ __global__ void QVelDeviceIncompHighNu27(real* vx,
                                                     unsigned long long numberOfLBnodes,
                                                     bool isEvenTimestep);
 
-__global__ void QVelDeviceCompHighNu27(	real* vx,
+__global__ void QVelDeviceCompHighNu27(    real* vx,
                                                     real* vy,
                                                     real* vz,
                                                     real* DD,
@@ -987,7 +987,7 @@ __global__ void VelSchlaff27(  int t,
                                           unsigned long long numberOfLBnodes,
                                           bool isEvenTimestep);
 
-__global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
+__global__ void QPrecursorDeviceCompZeroPress(     int* subgridDistanceIndices,
                                                 int numberOfBCnodes,
                                                 int numberOfPrecursorNodes,
                                                 int sizeQ,
@@ -1015,7 +1015,7 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
 
-__global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
+__global__ void PrecursorDeviceEQ27(     int* subgridDistanceIndices,
                                         int numberOfBCnodes,
                                         int numberOfPrecursorNodes,
                                         real omega,
@@ -1041,7 +1041,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
                                         unsigned long long numberOfLBnodes,
                                         bool isEvenTimestep);
 
-__global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
+__global__ void PrecursorDeviceDistributions(     int* subgridDistanceIndices,
                                                 int numberOfBCNodes,
                                                 int numberOfPrecursorNodes,
                                                 real* distributions,
@@ -1061,7 +1061,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
                                                 real timeRatio,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
-__global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
+__global__ void QPrecursorDeviceDistributions(     int* subgridDistanceIndices,
                                                 real* subgridDistances,
                                                 int sizeQ,
                                                 int numberOfBCNodes,
@@ -2231,7 +2231,7 @@ __global__ void setRecvGsF3(
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
-__global__ void WallFunction27( 	real* vx,
+__global__ void WallFunction27(     real* vx,
                                             real* vy,
                                             real* vz,
                                             real* DD,

@@ -9,14 +9,14 @@
 
 struct L2NormTestBetweenKernelsParameterStruct
 {
-	std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
+    std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
 
-	std::string basicKernel;
+    std::string basicKernel;
 
-	std::vector<std::string> kernelsToTest;
-	std::vector<int> timeSteps;
+    std::vector<std::string> kernelsToTest;
+    std::vector<int> timeSteps;
 
-	std::vector<std::string> normalizeData;
+    std::vector<std::string> normalizeData;
 };
 
 #endif 

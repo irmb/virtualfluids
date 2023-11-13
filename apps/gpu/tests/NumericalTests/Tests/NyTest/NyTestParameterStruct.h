@@ -7,10 +7,10 @@
 
 struct NyTestParameterStruct
 {
-	std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
+    std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
 
-	double minOrderOfAccuracy;
-	unsigned int startTimeStepCalculation;
-	unsigned int endTimeStepCalculation;
+    double minOrderOfAccuracy;
+    unsigned int startTimeStepCalculation;
+    unsigned int endTimeStepCalculation;
 };
 #endif 

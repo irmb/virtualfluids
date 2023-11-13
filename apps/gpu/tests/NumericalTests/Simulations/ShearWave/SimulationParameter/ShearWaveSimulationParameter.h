@@ -8,11 +8,11 @@ struct ShearWaveParameterStruct;
 class ShearWaveSimulationParameter : public SimulationParameterImp
 {
 public:
-	static std::shared_ptr<SimulationParameter> getNewInstance(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
+    static std::shared_ptr<SimulationParameter> getNewInstance(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 
 protected:
-	ShearWaveSimulationParameter() {};
-	ShearWaveSimulationParameter(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
+    ShearWaveSimulationParameter() {};
+    ShearWaveSimulationParameter(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 
 };
 

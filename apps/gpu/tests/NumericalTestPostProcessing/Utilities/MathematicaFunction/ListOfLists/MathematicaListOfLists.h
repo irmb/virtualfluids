@@ -6,6 +6,6 @@
 class MathematicaListOfLists : public MathematicaFunctionImp
 {
 public:
-	virtual std::string getListName() = 0;
+    virtual std::string getListName() = 0;
 };
 #endif

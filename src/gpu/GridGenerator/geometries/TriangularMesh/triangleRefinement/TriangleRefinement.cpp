@@ -59,14 +59,14 @@ void TriangleRefinement::redoubleTriangles()
 void TriangleRefinement::refineUntilMinDistance(double d_min)
 {
     double d = 10e9;
-	int counter = 0;
+    int counter = 0;
 
-	while (d > d_min) {
+    while (d > d_min) {
         int triangleToRefine = findIndexFromTriangleWithLongestEdge(&d);
         refine(triangleToRefine);
 
         counter++;
-		if (counter % 50 == 0)
+        if (counter % 50 == 0)
             printf("triangle refine: %d, actual dMAX = %2.6f, d_min = %2.6f\n", counter, d, d_min);
 
     }

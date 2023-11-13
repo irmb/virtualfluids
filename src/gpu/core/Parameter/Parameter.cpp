@@ -1768,7 +1768,7 @@ int Parameter::getNumberOfParticles()
 }
 bool Parameter::getEvenOrOdd(int level)
 {
-	return parD[level]->isEvenTimestep;
+    return parD[level]->isEvenTimestep;
 }
 bool Parameter::getDiffOn()
 {
@@ -2308,14 +2308,14 @@ unsigned int Parameter::getTimeDoRestart()
 unsigned int Parameter::getTimeStep(int level, unsigned int t, bool isPostCollision)
 {
     if(level>this->getMaxLevel()) throw std::runtime_error("Parameter::getTimeStep: level>this->getMaxLevel()!");
-	unsigned int tLevel = t;                                                                  
+    unsigned int tLevel = t;                                                                  
     if(level>0)
     {
         for(int i=1; i<level; i++){ tLevel = 1 + 2*(tLevel-1) + !this->getEvenOrOdd(i); }     
         bool addOne = isPostCollision? !this->getEvenOrOdd(level): this->getEvenOrOdd(level); 
         tLevel = 1 + 2*(tLevel-1) + addOne;
     }
-	return tLevel;
+    return tLevel;
 }
 
 bool Parameter::getDoCheckPoint()

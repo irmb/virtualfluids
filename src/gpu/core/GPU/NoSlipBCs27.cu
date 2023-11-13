@@ -221,8 +221,8 @@ __global__ void QDevice3rdMomentsComp27(
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho, feq, q, m3;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
-				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
+                f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -304,14 +304,14 @@ __global__ void QDevice3rdMomentsComp27(
       //Test
          //(D.f[d000])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  
-	  
-	  //ToDo anders klammern !!!!!!
-	  
+      
+      
+      //ToDo anders klammern !!!!!!
+      
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_E - f_W - c2o1 * drho * c2o27 * (c3o1*( vx1        ));
+         m3 = f_E - f_W - c2o1 * drho * c2o27 * (c3o1*( vx1        ));
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
          (D.f[dM00])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W-m3+(f_E+f_W-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_E+f_W))/(c1o1+q)+(m3*c1o2);
          //(D.f[dM00])[kw]=zero;
@@ -320,7 +320,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_W - f_E - c2o1 * drho * c2o27 * (c3o1*(-vx1        ));
+         m3 = f_W - f_E - c2o1 * drho * c2o27 * (c3o1*(-vx1        ));
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
          (D.f[dP00])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E-m3+(f_W+f_E-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_W+f_E))/(c1o1+q)+(m3*c1o2);
          //(D.f[dP00])[ke]=zero;
@@ -329,7 +329,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_N - f_S - c2o1 * drho * c2o27 * (c3o1*( vx2        ));
+         m3 = f_N - f_S - c2o1 * drho * c2o27 * (c3o1*( vx2        ));
          feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[d0M0])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S-m3+(f_N+f_S-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_N+f_S))/(c1o1+q)+(m3*c1o2);
          //(D.f[d0M0])[ks]=zero;
@@ -338,7 +338,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_S - f_N - c2o1 * drho * c2o27 * (c3o1*(   -vx2     ));
+         m3 = f_S - f_N - c2o1 * drho * c2o27 * (c3o1*(   -vx2     ));
          feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[d0P0])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N-m3+(f_S+f_N-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_S+f_N))/(c1o1+q)+(m3*c1o2);
          //(D.f[d0P0])[kn]=zero;
@@ -347,7 +347,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirT[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_T - f_B - c2o1 * drho * c2o27 * (c3o1*(         vx3));
+         m3 = f_T - f_B - c2o1 * drho * c2o27 * (c3o1*(         vx3));
          feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[d00M])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B-m3+(f_T+f_B-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_T+f_B))/(c1o1+q)+(m3*c1o2);
          //(D.f[d00M])[kb]=one;
@@ -356,7 +356,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirB[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_B - f_T - c2o1 * drho * c2o27 * (c3o1*(        -vx3));
+         m3 = f_B - f_T - c2o1 * drho * c2o27 * (c3o1*(        -vx3));
          feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[d00P])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T-m3+(f_B+f_T-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_B+f_T))/(c1o1+q)+(m3*c1o2);
          //(D.f[d00P])[kt]=zero;
@@ -365,7 +365,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_NE - f_SW - c2o1 * drho * c1o54 * (c3o1*( vx1+vx2    ));
+         m3 = f_NE - f_SW - c2o1 * drho * c1o54 * (c3o1*( vx1+vx2    ));
          feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[dMM0])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW-m3+(f_NE+f_SW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_NE+f_SW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dMM0])[ksw]=zero;
@@ -374,7 +374,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_SW - f_NE - c2o1 * drho * c1o54 * (c3o1*(-vx1-vx2    ));
+         m3 = f_SW - f_NE - c2o1 * drho * c1o54 * (c3o1*(-vx1-vx2    ));
          feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[dPP0])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE-m3+(f_SW+f_NE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_SW+f_NE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dPP0])[kne]=zero;
@@ -383,7 +383,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_SE - f_NW - c2o1 * drho * c1o54 * (c3o1*( vx1-vx2    ));
+         m3 = f_SE - f_NW - c2o1 * drho * c1o54 * (c3o1*( vx1-vx2    ));
          feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[dMP0])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW-m3+(f_SE+f_NW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_SE+f_NW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dMP0])[knw]=zero;
@@ -392,7 +392,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_NW - f_SE - c2o1 * drho * c1o54 * (c3o1*(-vx1+vx2    ));
+         m3 = f_NW - f_SE - c2o1 * drho * c1o54 * (c3o1*(-vx1+vx2    ));
          feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
          (D.f[dPM0])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE-m3+(f_NW+f_SE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_NW+f_SE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dPM0])[kse]=zero;
@@ -401,7 +401,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TE - f_BW - c2o1 * drho * c1o54 * (c3o1*( vx1    +vx3));
+         m3 = f_TE - f_BW - c2o1 * drho * c1o54 * (c3o1*( vx1    +vx3));
          feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dM0M])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW-m3+(f_TE+f_BW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TE+f_BW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dM0M])[kbw]=zero;
@@ -410,7 +410,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BW - f_TE - c2o1 * drho * c1o54 * (c3o1*(-vx1    -vx3));
+         m3 = f_BW - f_TE - c2o1 * drho * c1o54 * (c3o1*(-vx1    -vx3));
          feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dP0P])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE-m3+(f_BW+f_TE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BW+f_TE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dP0P])[kte]=zero;
@@ -419,7 +419,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BE - f_TW - c2o1 * drho * c1o54 * (c3o1*( vx1    -vx3));
+         m3 = f_BE - f_TW - c2o1 * drho * c1o54 * (c3o1*( vx1    -vx3));
          feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dM0P])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW-m3+(f_BE+f_TW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BE+f_TW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dM0P])[ktw]=zero;
@@ -428,7 +428,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TW - f_BE - c2o1 * drho * c1o54 * (c3o1*(-vx1    +vx3));
+         m3 = f_TW - f_BE - c2o1 * drho * c1o54 * (c3o1*(-vx1    +vx3));
          feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dP0M])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE-m3+(f_TW+f_BE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TW+f_BE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dP0M])[kbe]=zero;
@@ -437,7 +437,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TN - f_BS - c2o1 * drho * c1o54 * (c3o1*(     vx2+vx3));
+         m3 = f_TN - f_BS - c2o1 * drho * c1o54 * (c3o1*(     vx2+vx3));
          feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[d0MM])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS-m3+(f_TN+f_BS-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TN+f_BS))/(c1o1+q)+(m3*c1o2);
          //(D.f[d0MM])[kbs]=zero;
@@ -446,7 +446,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BS - f_TN - c2o1 * drho * c1o54 * (c3o1*(    -vx2-vx3));
+         m3 = f_BS - f_TN - c2o1 * drho * c1o54 * (c3o1*(    -vx2-vx3));
          feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[d0PP])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN-m3+(f_BS+f_TN-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BS+f_TN))/(c1o1+q)+(m3*c1o2);
          //(D.f[d0PP])[ktn]=zero;
@@ -455,7 +455,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBN[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BN - f_TS - c2o1 * drho * c1o54 * (c3o1*(     vx2-vx3));
+         m3 = f_BN - f_TS - c2o1 * drho * c1o54 * (c3o1*(     vx2-vx3));
          feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[d0MP])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS-m3+(f_BN+f_TS-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BN+f_TS))/(c1o1+q)+(m3*c1o2);
          //(D.f[d0MP])[kts]=zero;
@@ -464,7 +464,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTS[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TS - f_BN - c2o1 * drho * c1o54 * (c3o1*(    -vx2+vx3));
+         m3 = f_TS - f_BN - c2o1 * drho * c1o54 * (c3o1*(    -vx2+vx3));
          feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[d0PM])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN-m3+(f_TS+f_BN-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TS+f_BN))/(c1o1+q)+(m3*c1o2);
          //(D.f[d0PM])[kbn]=zero;
@@ -473,7 +473,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TNE - f_BSW - c2o1 * drho * c1o216 * (c3o1*( vx1+vx2+vx3));
+         m3 = f_TNE - f_BSW - c2o1 * drho * c1o216 * (c3o1*( vx1+vx2+vx3));
          feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dMMM])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW-m3+(f_TNE+f_BSW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TNE+f_BSW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dMMM])[kbsw]=zero;
@@ -482,7 +482,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BSW - f_TNE - c2o1 * drho * c1o216 * (c3o1*(-vx1-vx2-vx3));
+         m3 = f_BSW - f_TNE - c2o1 * drho * c1o216 * (c3o1*(-vx1-vx2-vx3));
          feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dPPP])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE-m3+(f_BSW+f_TNE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BSW+f_TNE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dPPP])[ktne]=zero;
@@ -491,7 +491,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BNE - f_TSW - c2o1 * drho * c1o216 * (c3o1*( vx1+vx2-vx3));
+         m3 = f_BNE - f_TSW - c2o1 * drho * c1o216 * (c3o1*( vx1+vx2-vx3));
          feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dMMP])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW-m3+(f_BNE+f_TSW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BNE+f_TSW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dMMP])[ktsw]=zero;
@@ -500,7 +500,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TSW - f_BNE - c2o1 * drho * c1o216 * (c3o1*(-vx1-vx2+vx3));
+         m3 = f_TSW - f_BNE - c2o1 * drho * c1o216 * (c3o1*(-vx1-vx2+vx3));
          feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dPPM])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE-m3+(f_TSW+f_BNE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TSW+f_BNE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dPPM])[kbne]=zero;
@@ -509,7 +509,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TSE - f_BNW - c2o1 * drho * c1o216 * (c3o1*( vx1-vx2+vx3));
+         m3 = f_TSE - f_BNW - c2o1 * drho * c1o216 * (c3o1*( vx1-vx2+vx3));
          feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dMPM])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW-m3+(f_TSE+f_BNW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TSE+f_BNW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dMPM])[kbnw]=zero;
@@ -518,7 +518,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BNW - f_TSE - c2o1 * drho * c1o216 * (c3o1*(-vx1+vx2-vx3));
+         m3 = f_BNW - f_TSE - c2o1 * drho * c1o216 * (c3o1*(-vx1+vx2-vx3));
          feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dPMP])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE-m3+(f_BNW+f_TSE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BNW+f_TSE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dPMP])[ktse]=zero;
@@ -527,7 +527,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirBSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_BSE - f_TNW - c2o1 * drho * c1o216 * (c3o1*( vx1-vx2-vx3));
+         m3 = f_BSE - f_TNW - c2o1 * drho * c1o216 * (c3o1*( vx1-vx2-vx3));
          feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dMPP])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW-m3+(f_BSE+f_TNW-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_BSE+f_TNW))/(c1o1+q)+(m3*c1o2);
          //(D.f[dMPP])[ktnw]=zero;
@@ -536,7 +536,7 @@ __global__ void QDevice3rdMomentsComp27(
       q = q_dirTNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
-		 m3 = f_TNW - f_BSE - c2o1 * drho * c1o216 * (c3o1*(-vx1+vx2+vx3));
+         m3 = f_TNW - f_BSE - c2o1 * drho * c1o216 * (c3o1*(-vx1+vx2+vx3));
          feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dPMM])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE-m3+(f_TNW+f_BSE-c2o1*feq*omega)/(c1o1-omega))*c1o2+(q*(f_TNW+f_BSE))/(c1o1+q)+(m3*c1o2);
          //(D.f[dPMM])[kbse]=zero;
@@ -765,8 +765,8 @@ __global__ void QDeviceIncompHighNu27(
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
-				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
+                f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -852,10 +852,10 @@ __global__ void QDeviceIncompHighNu27(
       real VeloY = c0o1;
       real VeloZ = c0o1;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  
-	  
-	  //ToDo anders klammern !!!!!!
-	  
+      
+      
+      //ToDo anders klammern !!!!!!
+      
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
@@ -1287,8 +1287,8 @@ __global__ void QDeviceCompHighNu27(
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
-				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
+                f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[d000])[kzero]); 
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
@@ -1374,10 +1374,10 @@ __global__ void QDeviceCompHighNu27(
       real VeloY = c0o1;
       real VeloZ = c0o1;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  
-	  
-	  //ToDo anders klammern !!!!!!
-	  
+      
+      
+      //ToDo anders klammern !!!!!!
+      
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {

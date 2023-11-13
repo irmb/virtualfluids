@@ -6,11 +6,11 @@
 class LogFileDataAssistantStrategyFactoryImp : public LogFileDataAssistantStrategyFactory
 {
 public:
-	static std::shared_ptr<LogFileDataAssistantStrategyFactory> getNewInstance();
+    static std::shared_ptr<LogFileDataAssistantStrategyFactory> getNewInstance();
 
-	std::shared_ptr<LogFileDataAssistantStrategy> makeLogFileDataAssistantStrategy(BasicSimulation sim);
-	
+    std::shared_ptr<LogFileDataAssistantStrategy> makeLogFileDataAssistantStrategy(BasicSimulation sim);
+    
 private:
-	LogFileDataAssistantStrategyFactoryImp();
+    LogFileDataAssistantStrategyFactoryImp();
 };
 #endif 

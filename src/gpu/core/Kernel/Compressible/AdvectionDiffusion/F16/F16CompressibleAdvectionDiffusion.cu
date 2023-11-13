@@ -6,7 +6,7 @@
 
 std::shared_ptr<F16CompressibleAdvectionDiffusion> F16CompressibleAdvectionDiffusion::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<F16CompressibleAdvectionDiffusion>(new F16CompressibleAdvectionDiffusion(para, level));
+    return std::shared_ptr<F16CompressibleAdvectionDiffusion>(new F16CompressibleAdvectionDiffusion(para, level));
 }
 
 void F16CompressibleAdvectionDiffusion::run()
@@ -29,10 +29,10 @@ void F16CompressibleAdvectionDiffusion::run()
 
 F16CompressibleAdvectionDiffusion::F16CompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para, int level)
 {
-	this->para = para;
-	this->level = level;
+    this->para = para;
+    this->level = level;
 
-	myPreProcessorTypes.push_back(InitCompAD27);
+    myPreProcessorTypes.push_back(InitCompAD27);
 
 }
 

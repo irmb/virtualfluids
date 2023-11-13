@@ -7,16 +7,16 @@ using namespace vf::lbm::dir;
 #include "math.h"
 
 __global__ void LB_Init_Incomp_AD_27(unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* geoD,
-	real* Conc,
-	real* ux,
-	real* uy,
-	real* uz,
-	unsigned int size_Mat,
-	real* DD27,
-	bool EvenOrOdd)
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* geoD,
+    real* Conc,
+    real* ux,
+    real* uy,
+    real* uz,
+    unsigned int size_Mat,
+    real* DD27,
+    bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 

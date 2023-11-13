@@ -8,18 +8,18 @@
 class AnalyticalResultsImp : public AnalyticalResults
 {
 public:
-	virtual void calc(std::shared_ptr<SimulationResults> simResults) = 0;
-	bool isCalculated();
-	int getL0();
+    virtual void calc(std::shared_ptr<SimulationResults> simResults) = 0;
+    bool isCalculated();
+    int getL0();
 
 protected:
-	AnalyticalResultsImp(int l0);
-	void init(std::shared_ptr<SimulationResults> simResults);
+    AnalyticalResultsImp(int l0);
+    void init(std::shared_ptr<SimulationResults> simResults);
 
-	bool calculated;
-	int l0;
+    bool calculated;
+    int l0;
 
 private:
-	AnalyticalResultsImp();
+    AnalyticalResultsImp();
 };
 #endif 

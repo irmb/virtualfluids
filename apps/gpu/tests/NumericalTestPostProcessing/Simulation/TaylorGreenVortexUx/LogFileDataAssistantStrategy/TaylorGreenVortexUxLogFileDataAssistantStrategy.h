@@ -6,14 +6,14 @@
 class TaylorGreenVortexUxLogFileDataAssistantStrategy : public LogFileDataAssistantStrategyImp
 {
 public:
-	static std::shared_ptr<LogFileDataAssistantStrategy> getNewInstance();
+    static std::shared_ptr<LogFileDataAssistantStrategy> getNewInstance();
 
-	std::string getSimulationName();
-	bool checkSimulationParameter(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
+    std::string getSimulationName();
+    bool checkSimulationParameter(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
 
 private:
-	TaylorGreenVortexUxLogFileDataAssistantStrategy();
+    TaylorGreenVortexUxLogFileDataAssistantStrategy();
 
-	std::string simName;
+    std::string simName;
 };
 #endif

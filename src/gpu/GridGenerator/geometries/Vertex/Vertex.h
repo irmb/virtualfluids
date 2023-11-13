@@ -44,24 +44,24 @@ struct GRIDGENERATOR_EXPORT Vertex
 public:
     real x, y, z;
 
-	Vertex(real x, real y, real z);
-	Vertex();
+    Vertex(real x, real y, real z);
+    Vertex();
 
-	real getEuclideanDistanceTo(const Vertex &w) const;
-	Vertex operator-(const Vertex &v) const;
-	Vertex operator+(const Vertex &v) const;
-	Vertex operator*(const real& value) const;
+    real getEuclideanDistanceTo(const Vertex &w) const;
+    Vertex operator-(const Vertex &v) const;
+    Vertex operator+(const Vertex &v) const;
+    Vertex operator*(const real& value) const;
     Vertex operator/(const real& value) const;
 
-	real operator*(const Vertex &w) const;
-	struct Vertex crossProduct(const Vertex &w) const;
-	real length() const;
-	void normalize();
-	real getMagnitude() const;
-	int isEqual(const Vertex &w) const;
-	real getInnerAngle(const Vertex &w) const;
+    real operator*(const Vertex &w) const;
+    struct Vertex crossProduct(const Vertex &w) const;
+    real length() const;
+    void normalize();
+    real getMagnitude() const;
+    int isEqual(const Vertex &w) const;
+    real getInnerAngle(const Vertex &w) const;
 
-	bool operator==(const Vertex &v) const;
+    bool operator==(const Vertex &v) const;
 
     bool isXbetween(real min, real max) const;
     bool isYbetween(real min, real max) const;

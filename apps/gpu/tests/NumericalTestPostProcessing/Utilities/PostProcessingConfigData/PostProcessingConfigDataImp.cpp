@@ -6,55 +6,55 @@ PostProcessingConfigDataImp::PostProcessingConfigDataImp()
 
 std::shared_ptr<PostProcessingConfigDataImp> PostProcessingConfigDataImp::getNewInstance()
 {
-	return std::shared_ptr<PostProcessingConfigDataImp>(new PostProcessingConfigDataImp());
+    return std::shared_ptr<PostProcessingConfigDataImp>(new PostProcessingConfigDataImp());
 }
 
 std::vector<BasicSimulation> PostProcessingConfigDataImp::getSimulations()
 {
-	return simulations;
+    return simulations;
 }
 
 std::vector<Assistant> PostProcessingConfigDataImp::getAssistants()
 {
-	return assistants;
+    return assistants;
 }
 
 std::vector<DataCombination> PostProcessingConfigDataImp::getDataCombinations()
 {
-	return dataCombinations;
+    return dataCombinations;
 }
 
 std::string PostProcessingConfigDataImp::getMathematicaFilePath()
 {
-	return mathematicaFilePath;
+    return mathematicaFilePath;
 }
 
 std::string PostProcessingConfigDataImp::getLogFilesPath()
 {
-	return logFilesPath;
+    return logFilesPath;
 }
 
 void PostProcessingConfigDataImp::setSimulations(std::vector<BasicSimulation> simulations)
 {
-	this->simulations = simulations;
+    this->simulations = simulations;
 }
 
 void PostProcessingConfigDataImp::setAssistants(std::vector<Assistant> assis)
 {
-	this->assistants = assis;
+    this->assistants = assis;
 }
 
 void PostProcessingConfigDataImp::setDataCombinations(std::vector<DataCombination> dataComb)
 {
-	this->dataCombinations = dataComb;
+    this->dataCombinations = dataComb;
 }
 
 void PostProcessingConfigDataImp::setMathematicaFilePath(std::string mathematicaFilePath)
 {
-	this->mathematicaFilePath = mathematicaFilePath;
+    this->mathematicaFilePath = mathematicaFilePath;
 }
 
 void PostProcessingConfigDataImp::setLogFilesPath(std::string logFilesPath)
 {
-	this->logFilesPath = logFilesPath;
+    this->logFilesPath = logFilesPath;
 }
