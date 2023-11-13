@@ -458,7 +458,7 @@ cppcheck:
 
 ###############################################################################
 # lizard - Cyclomatic Complexity Analyzer
-# Ignore warnings is manually set to 191. This job will fail when new warnings are added.
+# Ignore warnings is manually set to 185. This job will fail when new warnings are added.
 lizard:
   extends: .analyze_template
 
@@ -467,7 +467,7 @@ lizard:
 
   script:
     - cd $CI_PROJECT_DIR
-    - lizard -l cpp src/ > lizard.txt --warnings_only --ignore_warnings 400
+    - lizard -l cpp src/ > lizard.txt --warnings_only --ignore_warnings 185
 
   artifacts:
     expire_in: 1 week
