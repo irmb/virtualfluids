@@ -38,7 +38,6 @@
 
 NonReflectingInflowBCStrategy::NonReflectingInflowBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::NonReflectingInflowBCStrategy;
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////

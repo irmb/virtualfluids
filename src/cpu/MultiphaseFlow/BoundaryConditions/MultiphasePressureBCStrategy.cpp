@@ -100,19 +100,19 @@ void MultiphasePressureBCStrategy::applyBC()
         //    if (false)//(phi<0.01)
         //    {
         //    LBMReal ftemp = -f[D3Q27System::INVDIR[fdir]] + feq[fdir] + feq[D3Q27System::INVDIR[fdir]];
-        //    distributions->setDistributionForDirection(ftemp, x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        //    distributions->setPostCollisionDistributionForDirection(ftemp, x1, x2, x3, D3Q27System::INVDIR[fdir]);
 
         //    LBMReal hReturn = 0;
         //    //h[fdir]; //-h[D3Q27System::INVDIR[fdir]] + htemp[fdir] +
         //                                                    //htemp[D3Q27System::INVDIR[fdir]];
-        //    distributionsH->setDistributionForDirection(hReturn, x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        //    distributionsH->setPostCollisionDistributionForDirection(hReturn, x1, x2, x3, D3Q27System::INVDIR[fdir]);
         // } 
 
         // else{
-        // //   //distributions->setDistributionForDirection(rhoBC*D3Q27System::WEIGTH[fdir], x1, x2, x3, D3Q27System::INVDIR[fdir]);
-        // //   //distributionsH->setDistributionForDirection(phiBC*D3Q27System::WEIGTH[fdir], x1, x2, x3, D3Q27System::INVDIR[fdir]);
-           distributions->setDistributionForDirection(0.7*f[D3Q27System::INVDIR[fdir]], x1, x2, x3, D3Q27System::INVDIR[fdir]);
-           distributionsH->setDistributionForDirection(0.7*h[D3Q27System::INVDIR[fdir]], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        // //   //distributions->setPostCollisionDistributionForDirection(rhoBC*D3Q27System::WEIGTH[fdir], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+        // //   //distributionsH->setPostCollisionDistributionForDirection(phiBC*D3Q27System::WEIGTH[fdir], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+           distributions->setPostCollisionDistributionForDirection(0.7*f[D3Q27System::INVDIR[fdir]], x1, x2, x3, D3Q27System::INVDIR[fdir]);
+           distributionsH->setPostCollisionDistributionForDirection(0.7*h[D3Q27System::INVDIR[fdir]], x1, x2, x3, D3Q27System::INVDIR[fdir]);
         // }
        }
    }

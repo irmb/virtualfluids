@@ -270,7 +270,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                     SPtr<DistributionArray3D> distributionH = this->getDataSet()->getHdistributions();
                     real hh[27];
-                    distributionH->getDistributionInv(hh, x1, x2, x3);
+                    distributionH->getPostCollisionDistribution(hh, x1, x2, x3);
                     real phiD, vxP, vyP, vzP;
 
                     D3Q27System::calcIncompMacroscopicValues(hh, phiD, vxP, vyP, vzP);
@@ -278,7 +278,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                     SPtr<DistributionArray3D> distribution = this->getDataSet()->getFdistributions();
                     real ff[27];
-                    distribution->getDistributionInv(ff, x1, x2, x3);
+                    distribution->getPostCollisionDistribution(ff, x1, x2, x3);
                     real rhoG, vx, vy, vz;
 
                     D3Q27System::calcIncompMacroscopicValues(ff, rhoG, vx, vy, vz);
@@ -320,7 +320,7 @@ void IBsharpInterfaceLBMKernel::calculate(int step)
 
                         // 16.03.23 c: BB gas side with updated boundary velocity
 
-                        distribution->getDistributionInv(ff, x1, x2, x3);
+                        distribution->getPostCollisionDistribution(ff, x1, x2, x3);
                         real rhoG;
                         if (phi[d000] > c1o2) { // initialization necessary
                             real sumRho = 0;

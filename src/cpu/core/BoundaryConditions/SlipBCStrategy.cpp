@@ -4,7 +4,6 @@
 
 SlipBCStrategy::SlipBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::SlipBCStrategy;
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////

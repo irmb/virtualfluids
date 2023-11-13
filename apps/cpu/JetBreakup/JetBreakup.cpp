@@ -313,7 +313,8 @@ void run(string configname)
         //SPtr<BC> velBCF2(new MultiphaseVelocityBC(true, false, false, fctF2, phiH, startTime, endTime));
         SPtr<BC> velBCF2(new MultiphaseVelocityBC(true, false, false, fctF2, phiL, 0.0, BCFunction::INFCONST));
 
-        SPtr<BC> noSlipBC(new NoSlipBC());
+        short wetting = 1;
+        SPtr<BC> noSlipBC(new NoSlipBC(wetting));
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
         SPtr<BC> denBC(new DensityBC(rhoLB));

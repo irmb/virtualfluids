@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
     //////////////////////////////////////////////////////////////////////////////////
     // BC visitor
     BoundaryConditionsBlockVisitor bcVisitor;
-    bcVisitor.addBC(noSlipBC);
 
     SPtr<Grid3D> grid = make_shared<Grid3D>(comm);
     grid->setPeriodicX1(true);

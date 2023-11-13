@@ -38,7 +38,6 @@
 
 NonReflectingOutflowWithRelaxationBCStrategy::NonReflectingOutflowWithRelaxationBCStrategy()
 {
-    BCStrategy::type         = BCStrategy::NonReflectingOutflowWithRelaxationBCStrategy;
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////

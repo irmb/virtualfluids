@@ -59,7 +59,6 @@ int main(int argc, char *argv[])
     //////////////////////////////////////////////////////////////////////////////////
     // BC visitor
     BoundaryConditionsBlockVisitor bcVisitor;
-    bcVisitor.addBC(noSlipBC);
 
 
 
