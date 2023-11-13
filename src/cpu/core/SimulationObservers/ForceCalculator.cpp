@@ -29,8 +29,8 @@ Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArr
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
                 const int invDir  = D3Q27System::INVDIR[fdir];
-                const real f    = distributions->getDistributionInvForDirection(x1, x2, x3, invDir);
-                const real fnbr = distributions->getDistributionInvForDirection(
+                const real f    = distributions->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
+                const real fnbr = distributions->getPostCollisionDistributionForDirection(
                     x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
 
                 real correction[3] = { c0o1, c0o1, c0o1 };

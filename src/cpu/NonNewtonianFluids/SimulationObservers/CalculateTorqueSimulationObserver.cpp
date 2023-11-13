@@ -199,8 +199,8 @@ UbTupleDouble3 CalculateTorqueSimulationObserver::getForces(int x1, int x2, int 
          if(bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir))
          {
             const int invDir = D3Q27System::INVDIR[fdir];
-            f = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1, x2, x3, invDir);
-            fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+            f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
+            fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
 
             forceX1 += (f + fnbr) * D3Q27System::DX1[invDir];
             forceX2 += (f + fnbr) * D3Q27System::DX2[invDir];

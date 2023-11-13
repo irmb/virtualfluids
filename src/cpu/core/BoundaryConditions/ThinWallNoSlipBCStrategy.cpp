@@ -73,7 +73,7 @@ void ThinWallNoSlipBCStrategy::applyBC()
                 fTemp[fdir] = fReturn;
             } else {
                 // quadratic bounce back with for thin walls
-                // fReturn = distributionsTemp->getDistributionInvForDirection(x1 + D3Q27System::DX1[invDir], x2 +
+                // fReturn = distributionsTemp->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 +
                 // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
                 fReturn = fTemp[fdir];
                 distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
