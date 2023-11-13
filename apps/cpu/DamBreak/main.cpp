@@ -321,8 +321,8 @@ void run(string configname)
             //LBMReal x3c = 2.5 * D;
             mu::Parser fct1;
             //fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+0*(x3-x3c)^2)-radius)/interfaceThickness)");
-            //fct1.SetExpr("(x1-x1c<-100 && x3>3 ? 1: 0)");
-            fct1.SetExpr("(x1-x1c<-100 ? 1: 0)");
+            fct1.SetExpr("(x1-x1c<-100 && x3>3 ? 1: 0)");
+            //fct1.SetExpr("(x1-x1c<-100 ? 1: 0)");
            // fct1.SetExpr("(((x1-x1c)*(x1-x1c+1)<180 ? 1: 0)*(x2>530? 1:0)*(sin(x2*0.3)>-0.1?1:0)-0.5*0)");
            // *(x2 > 530 ? 1 : 0) ");
             fct1.DefineConst("x1c", x1c);
@@ -427,7 +427,7 @@ void run(string configname)
         SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
         simulation->addSimulationObserver(npr);
         simulation->addSimulationObserver(pp);
-        simulation->addSimulationObserver(rcp);
+        //simulation->addSimulationObserver(rcp);
 
 
         if (myid == 0)
