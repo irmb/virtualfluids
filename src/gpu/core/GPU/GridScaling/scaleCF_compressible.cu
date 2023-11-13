@@ -33,7 +33,6 @@
 
 #include <basics/DataTypes.h>
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 
 #include <lbm/refinement/InterpolationCF.h>
