@@ -129,28 +129,6 @@ void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::v
     printf("Added list of %u  points \n", uint(_pointCoordsX.size()) );
 }
 
-void PointProbe::addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, uint n_y, uint n_z)
-{
-    int delta_y = (pos1_y-pos0_y)/(n_y-1);
-    int delta_z = (pos1_z-pos0_z)/(n_z-1);
-
-    this->pointCoordsX.reserve(this->pointCoordsX.size()+n_y*n_z);
-    this->pointCoordsY.reserve(this->pointCoordsY.size()+n_y*n_z);
-    this->pointCoordsZ.reserve(this->pointCoordsZ.size()+n_y*n_z);
-
-    for(int n_y=0; n_y<n_y; n_y++)
-    {
-        for(int n_z=0; n_z<n_z; n_z++)
-        {
-            this->pointCoordsX.push_back(pos_x);
-            this->pointCoordsY.push_back(pos0_y+delta_y*n_y);
-            this->pointCoordsZ.push_back(pos0_z+delta_z*n_z);
-        }
-    }
-    printf("Added %u  points \n",  n_y*n_z);
-
-}
-
 void PointProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
