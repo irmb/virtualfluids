@@ -2,12 +2,12 @@
 
 #include "PreProcessor/PreProcessorImp.h"
 
-#include "PreProcessor/PreProcessorStrategy/InitCompAD7/InitCompAD7.h"
-#include "PreProcessor/PreProcessorStrategy/InitCompAD27/InitCompAD27.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionCompressibleD3Q7/InitAdvectionDiffusionCompressibleD3Q7.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionCompressible/InitAdvectionDiffusionCompressible.h"
 #include "PreProcessor/PreProcessorStrategy/InitNavierStokesCompressible/InitNavierStokesCompressible.h"
 #include "PreProcessor/PreProcessorStrategy/InitK18K20NavierStokesCompressible/InitK18K20NavierStokesCompressible.h"
-#include "PreProcessor/PreProcessorStrategy/InitIncompAD27/InitIncompAD27.h"
-#include "PreProcessor/PreProcessorStrategy/InitIncompAD7/InitIncompAD7.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionIncompressible/InitAdvectionDiffusionIncompressible.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionIncompressibleD3Q7/InitAdvectionDiffusionIncompressibleD3Q7.h"
 #include "PreProcessor/PreProcessorStrategy/InitNavierStokesIncompressible/InitNavierStokesIncompressible.h"
 
 
@@ -34,17 +34,17 @@ std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorSt
     case InitK18K20NavierStokesCompressible:
         return InitK18K20NavierStokesCompressible::getNewInstance(para);
         break;
-    case InitIncompAD7:
-        return InitIncompAD7::getNewInstance(para);
+    case InitAdvectionDiffusionIncompressibleD3Q7:
+        return InitAdvectionDiffusionIncompressibleD3Q7::getNewInstance(para);
         break;
-    case InitIncompAD27:
-        return InitIncompAD27::getNewInstance(para);
+    case InitAdvectionDiffusionIncompressible:
+        return InitAdvectionDiffusionIncompressible::getNewInstance(para);
         break;
-    case InitCompAD7:
-        return InitCompAD7::getNewInstance(para);
+    case InitAdvectionDiffusionCompressibleD3Q7:
+        return InitAdvectionDiffusionCompressibleD3Q7::getNewInstance(para);
         break;
-    case InitCompAD27:
-        return InitCompAD27::getNewInstance(para);
+    case InitAdvectionDiffusionCompressible:
+        return InitAdvectionDiffusionCompressible::getNewInstance(para);
         break;
     default:
         break;

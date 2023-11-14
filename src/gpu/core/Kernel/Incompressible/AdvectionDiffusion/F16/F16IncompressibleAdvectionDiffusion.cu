@@ -32,7 +32,7 @@ F16IncompressibleAdvectionDiffusion::F16IncompressibleAdvectionDiffusion(std::sh
     this->para = para;
     this->level = level;
 
-    myPreProcessorTypes.push_back(InitIncompAD27);
+    myPreProcessorTypes.push_back(InitAdvectionDiffusionIncompressible);
 
 }
 

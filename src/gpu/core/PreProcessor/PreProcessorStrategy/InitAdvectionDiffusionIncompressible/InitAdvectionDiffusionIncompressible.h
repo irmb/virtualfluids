@@ -28,17 +28,26 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#ifndef InitAdvectionDiffusionIncompressible_H
+#define InitAdvectionDiffusionIncompressible_H
 
-enum PreProcessorType
+#include "PreProcessor/PreProcessorStrategy/PreProcessorStrategy.h"
+
+#include <memory>
+
+class Parameter;
+
+class InitAdvectionDiffusionIncompressible : public PreProcessorStrategy
 {
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitAdvectionDiffusionIncompressibleD3Q7,
-    InitAdvectionDiffusionIncompressible,
-    InitAdvectionDiffusionCompressibleD3Q7,
-    InitAdvectionDiffusionCompressible
+public:
+    static std::shared_ptr<PreProcessorStrategy> getNewInstance(std::shared_ptr< Parameter> para);
+    void init(int level);
+    bool checkParameter();
+
+private:
+    InitAdvectionDiffusionIncompressible();
+    InitAdvectionDiffusionIncompressible(std::shared_ptr< Parameter> para);
+    std::shared_ptr< Parameter> para;
 };
-#endif
+
+#endif 

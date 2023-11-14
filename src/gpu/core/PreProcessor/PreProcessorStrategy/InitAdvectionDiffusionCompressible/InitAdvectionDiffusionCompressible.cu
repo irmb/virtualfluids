@@ -28,17 +28,46 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#include "InitAdvectionDiffusionCompressible.h"
 
-enum PreProcessorType
+#include "InitAdvectionDiffusionCompressible_Device.cuh"
+#include "Parameter/Parameter.h"
+#include <cuda_helper/CudaGrid.h>
+
+std::shared_ptr<PreProcessorStrategy> InitAdvectionDiffusionCompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitAdvectionDiffusionIncompressibleD3Q7,
-    InitAdvectionDiffusionIncompressible,
-    InitAdvectionDiffusionCompressibleD3Q7,
-    InitAdvectionDiffusionCompressible
-};
-#endif
+    return std::shared_ptr<PreProcessorStrategy>(new InitAdvectionDiffusionCompressible(para));
+}
+
+void InitAdvectionDiffusionCompressible::init(int level)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    InitAdvectionDiffusionCompressible_Device <<< grid.grid, grid.threads >>>(
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->concentration,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("InitAdvectionDiffusionCompressible_Device execution failed");
+}
+
+bool InitAdvectionDiffusionCompressible::checkParameter()
+{
+    return false;
+}
+
+InitAdvectionDiffusionCompressible::InitAdvectionDiffusionCompressible(std::shared_ptr<Parameter> para)
+{
+    this->para = para;
+}
+
+InitAdvectionDiffusionCompressible::InitAdvectionDiffusionCompressible()
+{
+}

@@ -28,17 +28,23 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#ifndef InitAdvectionDiffusionCompressibleD3Q7_Device_H
+#define InitAdvectionDiffusionCompressibleD3Q7_Device_H
 
-enum PreProcessorType
-{
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitAdvectionDiffusionIncompressibleD3Q7,
-    InitAdvectionDiffusionIncompressible,
-    InitAdvectionDiffusionCompressibleD3Q7,
-    InitAdvectionDiffusionCompressible
-};
+#include <DataTypes.h>
+#include <curand.h>
+
+__global__ void InitAdvectionDiffusionCompressibleD3Q7_Device(
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* geoD,
+    real* Conc,
+    real* ux,
+    real* uy,
+    real* uz,
+    unsigned int size_Mat,
+    real* DD7,
+    bool EvenOrOdd);
+
 #endif

@@ -32,7 +32,7 @@ F16CompressibleAdvectionDiffusion::F16CompressibleAdvectionDiffusion(std::shared
     this->para = para;
     this->level = level;
 
-    myPreProcessorTypes.push_back(InitCompAD27);
+    myPreProcessorTypes.push_back(InitAdvectionDiffusionCompressible);
 
 }
 
