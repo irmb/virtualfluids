@@ -132,7 +132,7 @@ para.set_velocity_ratio(dx/dt)
 para.set_viscosity_ratio(dx*dx/dt)
 para.set_density_ratio(1.0)
 
-para.configure_main_kernel(gpu.Kernel.Compressible.K17CompressibleNavierStokes)
+para.configure_main_kernel(gpu.kernel.compressible.K17CompressibleNavierStokes)
 
 para.set_timestep_start_out(int(t_start_out/dt))
 para.set_timestep_out(int(t_out/dt))
