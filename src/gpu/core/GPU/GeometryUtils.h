@@ -1,6 +1,6 @@
 #ifndef _GEOMETRYUTILS_H
 #define _GEOMETRYUTILS_H
-#include <basics/DataTypes.h>
+#include "basics/DataTypes.h"
 
 
 __inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of DIR_MMM node
