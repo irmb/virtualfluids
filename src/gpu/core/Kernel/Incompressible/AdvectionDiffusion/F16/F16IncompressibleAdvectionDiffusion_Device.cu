@@ -246,11 +246,6 @@ __global__ void F16IncompressibleAdvectionDiffusion_Device(
         //!
         ////////////////////////////////////////////////////////////////////////////////////
         // fluid component
-        real drhoFluid =
-            ((((fccc + faaa) + (faca + fcac)) + ((facc + fcaa) + (faac + fcca))) +
-            (((fbac + fbca) + (fbaa + fbcc)) + ((fabc + fcba) + (faba + fcbc)) + ((facb + fcab) + (faab + fccb))) +
-            ((fabb + fcbb) + (fbab + fbcb) + (fbba + fbbc))) + fbbb;
-
         real vvx =
             ((((fccc - faaa) + (fcac - faca)) + ((fcaa - facc) + (fcca - faac))) +
             (((fcba - fabc) + (fcbc - faba)) + ((fcab - facb) + (fccb - faab))) +
