@@ -44,6 +44,7 @@
 #include "submodules/transient_bc_setter.cpp"
 #include "submodules/actuator_farm.cpp"
 #include "submodules/grid_scaling_factory.cpp"
+#include "submodules/kernel.cpp"
 
 namespace gpu_bindings
 {

@@ -33,9 +33,9 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Actuator/ActuatorFarm.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/PreCollisionInteractor/Actuator/ActuatorFarm.h>
+#include <gpu/core/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h>
+#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
 
 
 class PyActuatorFarm : public ActuatorFarm 
