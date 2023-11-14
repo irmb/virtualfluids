@@ -37,6 +37,7 @@
 #include <string>
 #include <memory>
 
+#include "Axis.h"
 #include "gpu/GridGenerator/global.h"
 
 #define GEOMQS 6
@@ -161,8 +162,7 @@ public:
     virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, int level) const = 0;
 
     virtual bool getUseRotatingGrid() const = 0;
-
-
+    virtual Axis getGridRotationAxis() const = 0;
 };
 
 #endif

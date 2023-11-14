@@ -151,6 +151,7 @@ public:
     GRIDGENERATOR_EXPORT virtual void getGeometryValues(real *vx, real *vy, real *vz, int level) const override;
 
     GRIDGENERATOR_EXPORT bool getUseRotatingGrid() const override;
+    GRIDGENERATOR_EXPORT Axis getGridRotationAxis() const override;
 
     GRIDGENERATOR_EXPORT void writeArrows(std::string fileName) const override;
 
@@ -188,6 +189,7 @@ protected:
     void checkLevel(int level);
 
     bool useGridRotation = false;
+    Axis gridRotationAxis;
 
 protected:
     void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);

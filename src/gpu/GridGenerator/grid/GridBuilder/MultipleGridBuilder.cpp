@@ -108,6 +108,7 @@ void MultipleGridBuilder::addGridRotatingGrid(SPtr<Cylinder> cylinder)
     const uint level = getNumberOfLevels();
     const uint levelFine = 1;
 
+    gridRotationAxis = cylinder->getRotationalAxis();
     const auto grid = makeRotatingGrid(std::move(cylinder), level, levelFine);
 
     if (!isGridInCoarseGrid(grid)) return emitGridIsNotInCoarseGridWarning();

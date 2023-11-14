@@ -909,3 +909,9 @@ bool LevelGridBuilder::getUseRotatingGrid() const
 {
     return useGridRotation;
 }
+
+Axis LevelGridBuilder::getGridRotationAxis() const
+{
+    VF_LOG_CRITICAL("getGridRotationAxis");
+    return gridRotationAxis;
+}

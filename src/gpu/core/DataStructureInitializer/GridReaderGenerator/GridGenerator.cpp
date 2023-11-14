@@ -115,8 +115,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         SPtr<const Object> cylinder = builder->getGrid(1)->getObject();
         const std::array<real, 3> centerPointOfCylinder = { (real)cylinder->getX1Centroid(), (real)cylinder->getX2Centroid(),
                                                             (real)cylinder->getX3Centroid() };
-        para->setRotatingGridParameter(
-            std::make_shared<ParameterRotatingGrid>(centerPointOfCylinder, Axis::x, para->getParH(1)->numberOfNodes));
+        para->setRotatingGridParameter(std::make_shared<ParameterRotatingGrid>(
+            centerPointOfCylinder, builder->getGridRotationAxis(), para->getParH(1)->numberOfNodes));
         cudaMemoryManager->cudaAllocCoordRotation(1);
         para->fillCoordinateVectorsForRotatingGrid(1);
         cudaMemoryManager->cudaCopyCoordRotation(1);
