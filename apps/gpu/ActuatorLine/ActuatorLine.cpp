@@ -65,21 +65,21 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
+#include "core/LBM/Simulation.h"
+#include "core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "core/DataStructureInitializer/GridProvider.h"
+#include "core/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "core/Parameter/Parameter.h"
+#include "core/Output/FileWriter.h"
+#include "core/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h"
+#include "core/PreCollisionInteractor/Probes/PointProbe.h"
+#include "core/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "core/Factories/BoundaryConditionFactory.h"
+#include "core/TurbulenceModels/TurbulenceModelFactory.h"
+#include "core/Factories/GridScalingFactory.h"
+#include "core/Kernel/KernelTypes.h"
 
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "core/GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ void multipleLevel(const std::string& configPath)
     config.load(configPath);
 
     const real referenceDiameter = config.getValue<real>("ReferenceDiameter");
-    const uint nodes_perDiameter = config.getValue<uint>("NodesPerDiameter");
+    const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
     const real velocity = config.getValue<real>("Velocity");
 
 
@@ -219,10 +219,10 @@ void multipleLevel(const std::string& configPath)
     const real density = 1.225f;
     const uint nBladeNodes = 32;
     const real tipspeedRatio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
-    const std::vector<real> rotor_speeds = {2*tipspeedRatio*velocity/referenceDiameter};    
+    const std::vector<real> rotorSpeeds = {2*tipspeedRatio*velocity/referenceDiameter};    
 
     SPtr<ActuatorFarmStandalone> actuatorFarm = std::make_shared<ActuatorFarmStandalone>(referenceDiameter, nBladeNodes, turbinePositionsX, turbinePositionsZ, turbinePositionsZ, rotorSpeeds, density, smearingWidth, level, dt, dx);
-    actuator_farm->enableOutput("ALM", uint(tStartOutProbe/dt), uint(tOutProbe/dt));
+    actuatorFarm->enableOutput("ALM", uint(tStartOutProbe/dt), uint(tOutProbe/dt));
     para->addActuator( actuatorFarm );
 
 

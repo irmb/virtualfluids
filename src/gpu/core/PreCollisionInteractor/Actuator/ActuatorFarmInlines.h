@@ -36,7 +36,7 @@
 
 #include "basics/DataTypes.h"
 #include "basics/constants/NumericConstants.h"
-#include "VirtualFluids_GPU/GPU/GeometryUtils.h"
+#include "GPU/GeometryUtils.h"
 
 using namespace vf::basics::constant;
 

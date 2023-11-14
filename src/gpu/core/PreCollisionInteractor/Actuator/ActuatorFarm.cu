@@ -42,7 +42,7 @@
 #include <basics/constants/NumericConstants.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include "VirtualFluids_GPU/GPU/GeometryUtils.h"
+#include "GPU/GeometryUtils.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
