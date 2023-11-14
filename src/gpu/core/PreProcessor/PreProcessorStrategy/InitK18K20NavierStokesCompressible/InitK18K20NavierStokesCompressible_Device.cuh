@@ -28,17 +28,23 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#ifndef InitK18K20NavierStokesCompressible_Device_H
+#define InitK18K20NavierStokesCompressible_Device_H
 
-enum PreProcessorType
-{
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitIncompAD7,
-    InitIncompAD27,
-    InitCompAD7,
-    InitCompAD27
-};
+#include <DataTypes.h>
+#include <curand.h>
+
+__global__ void InitK18K20NavierStokesCompressible_Device(
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* geoD,
+    real* rho,
+    real* ux,
+    real* uy,
+    real* uz,
+    unsigned int size_Mat,
+    real* G6,
+    bool EvenOrOdd);
+
 #endif

@@ -4,11 +4,11 @@
 
 #include "PreProcessor/PreProcessorStrategy/InitCompAD7/InitCompAD7.h"
 #include "PreProcessor/PreProcessorStrategy/InitCompAD27/InitCompAD27.h"
-#include "PreProcessor/PreProcessorStrategy/InitCompSP27/InitCompSP27.h"
-#include "PreProcessor/PreProcessorStrategy/InitF3/InitF3.h"
+#include "PreProcessor/PreProcessorStrategy/InitNavierStokesCompressible/InitNavierStokesCompressible.h"
+#include "PreProcessor/PreProcessorStrategy/InitK18K20NavierStokesCompressible/InitK18K20NavierStokesCompressible.h"
 #include "PreProcessor/PreProcessorStrategy/InitIncompAD27/InitIncompAD27.h"
 #include "PreProcessor/PreProcessorStrategy/InitIncompAD7/InitIncompAD7.h"
-#include "PreProcessor/PreProcessorStrategy/InitSP27/InitSP27.h"
+#include "PreProcessor/PreProcessorStrategy/InitNavierStokesIncompressible/InitNavierStokesIncompressible.h"
 
 
 std::shared_ptr<PreProcessor> PreProcessorFactoryImp::makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para)
@@ -25,14 +25,14 @@ std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorSt
 {
     switch (preProcessorType)
     {
-    case InitSP27:
-        return InitSP27::getNewInstance(para);
+    case InitNavierStokesIncompressible:
+        return InitNavierStokesIncompressible::getNewInstance(para);
         break;
-    case InitCompSP27:
-        return InitCompSP27::getNewInstance(para);
+    case InitNavierStokesCompressible:
+        return InitNavierStokesCompressible::getNewInstance(para);
         break;
-    case InitF3:
-        return InitF3::getNewInstance(para);
+    case InitK18K20NavierStokesCompressible:
+        return InitK18K20NavierStokesCompressible::getNewInstance(para);
         break;
     case InitIncompAD7:
         return InitIncompAD7::getNewInstance(para);

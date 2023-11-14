@@ -28,17 +28,46 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#include "InitK18K20NavierStokesCompressible.h"
 
-enum PreProcessorType
+#include "InitK18K20NavierStokesCompressible_Device.cuh"
+#include "Parameter/Parameter.h"
+#include <cuda_helper/CudaGrid.h>
+
+std::shared_ptr<PreProcessorStrategy> InitK18K20NavierStokesCompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitIncompAD7,
-    InitIncompAD27,
-    InitCompAD7,
-    InitCompAD27
-};
-#endif
+    return std::shared_ptr<PreProcessorStrategy>(new InitK18K20NavierStokesCompressible(para));
+}
+
+void InitK18K20NavierStokesCompressible::init(int level)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    InitK18K20NavierStokesCompressible_Device <<< grid.grid, grid.threads >>>(
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->rho,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->g6.g[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("InitK18K20NavierStokesCompressible_Device execution failed");
+}
+
+bool InitK18K20NavierStokesCompressible::checkParameter()
+{
+    return false;
+}
+
+InitK18K20NavierStokesCompressible::InitK18K20NavierStokesCompressible(std::shared_ptr<Parameter> para)
+{
+    this->para = para;
+}
+
+InitK18K20NavierStokesCompressible::InitK18K20NavierStokesCompressible()
+{
+}

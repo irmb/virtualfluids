@@ -28,17 +28,26 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#ifndef InitNavierStokesCompressible_H
+#define InitNavierStokesCompressible_H
 
-enum PreProcessorType
+#include "PreProcessor/PreProcessorStrategy/PreProcessorStrategy.h"
+
+#include <memory>
+
+class Parameter;
+
+class InitNavierStokesCompressible : public PreProcessorStrategy
 {
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitIncompAD7,
-    InitIncompAD27,
-    InitCompAD7,
-    InitCompAD27
+public:
+    static std::shared_ptr<PreProcessorStrategy> getNewInstance(std::shared_ptr< Parameter> para);
+    void init(int level);
+    bool checkParameter();
+
+private:
+    InitNavierStokesCompressible();
+    InitNavierStokesCompressible(std::shared_ptr< Parameter> para);
+    std::shared_ptr< Parameter> para;
 };
-#endif
+
+#endif 

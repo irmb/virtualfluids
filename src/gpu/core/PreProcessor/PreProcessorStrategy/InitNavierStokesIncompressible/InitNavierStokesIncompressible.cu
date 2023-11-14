@@ -28,17 +28,46 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef PRE_PROCESSOR_TYPE_H
-#define PRE_PROCESSOR_TYPE_H
+#include "InitNavierStokesIncompressible.h"
 
-enum PreProcessorType
+#include "InitNavierStokesIncompressible_Device.cuh"
+#include "Parameter/Parameter.h"
+#include <cuda_helper/CudaGrid.h>
+
+std::shared_ptr<PreProcessorStrategy> InitNavierStokesIncompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
-    InitNavierStokesIncompressible,
-    InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
-    InitIncompAD7,
-    InitIncompAD27,
-    InitCompAD7,
-    InitCompAD27
-};
-#endif
+    return std::shared_ptr<PreProcessorStrategy>(new InitNavierStokesIncompressible(para));
+}
+
+void InitNavierStokesIncompressible::init(int level)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    InitNavierStokesIncompressible_Device<<<grid.grid, grid.threads>>>(
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->rho,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->distributions.f[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("LB_Init_SP_27 execution failed");
+}
+
+bool InitNavierStokesIncompressible::checkParameter()
+{
+    return false;
+}
+
+InitNavierStokesIncompressible::InitNavierStokesIncompressible(std::shared_ptr<Parameter> para)
+{
+    this->para = para;
+}
+
+InitNavierStokesIncompressible::InitNavierStokesIncompressible()
+{
+}

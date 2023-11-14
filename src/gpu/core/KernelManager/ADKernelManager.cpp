@@ -46,7 +46,7 @@ void ADKernelManager::initAD(const int level) const
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = true;
     //////////////////////////////////////////////////////////////////////////
-    InitADDev27(
+    initAdvectionDiffusion(
         para->getParD(level)->numberofthreads, 
         para->getParD(level)->neighborX, 
         para->getParD(level)->neighborY,
@@ -62,7 +62,7 @@ void ADKernelManager::initAD(const int level) const
     //////////////////////////////////////////////////////////////////////////
     para->getParD(level)->isEvenTimestep = false;
     //////////////////////////////////////////////////////////////////////////
-    InitADDev27(
+    initAdvectionDiffusion(
         para->getParD(level)->numberofthreads, 
         para->getParD(level)->neighborX, 
         para->getParD(level)->neighborY,
