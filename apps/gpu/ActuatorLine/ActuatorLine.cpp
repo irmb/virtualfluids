@@ -65,21 +65,21 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "gpu/core/LBM/Simulation.h"
-#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "gpu/core/DataStructureInitializer/GridProvider.h"
-#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "gpu/core/Parameter/Parameter.h"
-#include "gpu/core/Output/FileWriter.h"
-#include "gpu/core/PreCollisionInteractor/ActuatorFarm.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
-#include "gpu/core/Factories/BoundaryConditionFactory.h"
-#include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/core/Factories/GridScalingFactory.h"
-#include "gpu/core/Kernel/KernelTypes.h"
+#include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
+#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
 
-#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,14 +106,14 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    const real reference_diameter = config.getValue<real>("ReferenceDiameter");
-    const uint nodes_per_diameter = config.getValue<uint>("NodesPerDiameter");
+    const real referenceDiameter = config.getValue<real>("ReferenceDiameter");
+    const uint nodes_perDiameter = config.getValue<uint>("NodesPerDiameter");
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 24*reference_diameter;
-    const real L_y = 6*reference_diameter;
-    const real L_z = 6*reference_diameter;
+    const real L_x = 24*referenceDiameter;
+    const real L_y = 6*referenceDiameter;
+    const real L_z = 6*referenceDiameter;
 
     const real viscosity = 1.56e-5;
 
@@ -136,26 +136,28 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const real dx = reference_diameter/real(nodes_per_diameter);
+	const real dx = referenceDiameter/real(nodesPerDiameter);
 
-    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+    std::vector<real>turbinePositionsX{3.f*referenceDiameter};
+    std::vector<real>turbinePositionsY{0.5f*L_y};
+    std::vector<real>turbinePositionsZ{0.5f*L_y};
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-                               L_x,  L_y,  L_z, dx);
+	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
+							   L_x,  L_y,  L_z, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( std::make_shared<Cuboid>( turbPos[0]-1.5*reference_diameter,  turbPos[1]-1.5*reference_diameter,  turbPos[2]-1.5*reference_diameter, 
-                                                    turbPos[0]+10.0*reference_diameter, turbPos[1]+1.5*reference_diameter,  turbPos[2]+1.5*reference_diameter) , 1 );
+    gridBuilder->addGrid( std::make_shared<Cuboid>( turbinePositionsX[0]-1.5*referenceDiameter,  turbinePositionsY[0]-1.5*referenceDiameter,  turbinePositionsZ[2]-1.5*referenceDiameter, 
+                                                    turbinePositionsX[0]+10.0*referenceDiameter, turbinePositionsY[0]+1.5*referenceDiameter,  turbinePositionsZ[2]+1.5*referenceDiameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-    gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -213,28 +215,24 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int level = 1; // grid level at which the turbine samples velocities and distributes forces
-    const real epsilon = dx*exp2(-level)*1.5; // width of gaussian smearing
+    const real smearingWidth = dx*exp2(-level)*1.5; // width of gaussian smearing
     const real density = 1.225f;
-    const uint nBlades = 3;
     const uint nBladeNodes = 32;
-    const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
-    const real omega = 2*tipspeed_ratio*velocity/reference_diameter;
-    
+    const real tipspeedRatio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
+    const std::vector<real> rotor_speeds = {2*tipspeedRatio*velocity/referenceDiameter};    
 
-    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, epsilon, level, dt, dx, true);
-    std::vector<real> bladeRadii;
-    real dr = reference_diameter/(nBladeNodes*2);
-    for(uint node=0; node<nBladeNodes; node++){ bladeRadii.emplace_back(dr*(node+1)); }
-    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, omega, 0, 0, bladeRadii);
-    para->addActuator( actuator_farm );
+    SPtr<ActuatorFarmStandalone> actuatorFarm = std::make_shared<ActuatorFarmStandalone>(referenceDiameter, nBladeNodes, turbinePositionsX, turbinePositionsZ, turbinePositionsZ, rotorSpeeds, density, smearingWidth, level, dt, dx);
+    actuator_farm->enableOutput("ALM", uint(tStartOutProbe/dt), uint(tOutProbe/dt));
+    para->addActuator( actuatorFarm );
 
 
     SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), 100, 1, 500, 100, false);
-    std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
-    std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-    std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    std::vector<real> probeCoordsX = {referenceDiameter,2*referenceDiameter,5*referenceDiameter};
+    std::vector<real> probeCoordsY = {3*referenceDiameter,3*referenceDiameter,3*referenceDiameter};
+    std::vector<real> probeCoordsZ = {3*referenceDiameter,3*referenceDiameter,3*referenceDiameter};
 
     pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
 
     pointProbe->addStatistic(Statistic::Means);
     pointProbe->addStatistic(Statistic::Variances);
@@ -247,7 +245,7 @@ void multipleLevel(const std::string& configPath)
     para->addProbe( timeseriesProbe );
 
     SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
-    planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+    planeProbe->setProbePlane(5*referenceDiameter, 0, 0, dx, L_y, L_z);
     planeProbe->addStatistic(Statistic::Means);
     para->addProbe( planeProbe );
 

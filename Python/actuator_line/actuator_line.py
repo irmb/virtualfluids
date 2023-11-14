@@ -36,7 +36,7 @@ r"""
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
-from pyfluids import basics, gpu, logger, communicator
+from pyfluids import basics, gpu, logger, parallel
 #%%
 sim_name = "ABL"
 config_file = Path(__file__).parent/"configActuatorLine.txt"
@@ -44,19 +44,24 @@ output_path = Path(__file__).parent/Path("output")
 output_path.mkdir(exist_ok=True)
 
 
+def get_velocity(z, u_star, kappa, z0):
+    return u_star/kappa*np.log(z/z0+1)
 #%%
 logger.Logger.initialize_logger()
 
 grid_builder = gpu.grid_generator.MultipleGridBuilder()
-communicator = communicator.Communicator.get_instance()
+communicator = parallel.MPICommunicator.get_instance()
 
 config = basics.ConfigurationFile()
 config.load(str(config_file))
 
-para = gpu.Parameter(communicator.get_number_of_processes(), communicator.get_number_of_processes(), config)
+para = gpu.Parameter(communicator.get_number_of_processes(), communicator.get_process_id(), config)
 bc_factory = gpu.BoundaryConditionFactory()
 
 #%%
+use_refinement = config.get_bool_value("useRefinement", False)
+turbine_height = config.get_float_value("turbineHeight", 120)
+tip_speed_ratio = config.get_float_value("tipSpeedRatio", 7.55)
 turbine_diameter = config.get_float_value("turbineDiameter", 126)
 boundary_layer_height = config.get_float_value("boundaryLayerHeight", 1000)
 z0 = config.get_float_value("z0", 0.1)
@@ -66,17 +71,18 @@ kappa = config.get_float_value("vonKarmanConstant", 0.4) # von Karman constant
 
 viscosity = config.get_float_value("viscosity", 1.56e-5)
 
-velocity  = 0.5*u_star/kappa*np.log(boundary_layer_height/z0+1) #0.5 times max mean velocity at the top in m/s
+velocity  = 0.5*get_velocity(boundary_layer_height, u_star, kappa, z0) #0.5 times max mean velocity at the top in m/s
 
 mach = config.get_float_value("Ma", 0.1)
 nodes_per_height = config.get_uint_value("nz", 64)
 
-
-turb_pos = np.array([3,3,3])*turbine_diameter
-epsilon = config.get_float_value("SmearingWidth", 5)
-density = config.get_float_value("Density", 1.225)
+length = np.array([6,4,1])*boundary_layer_height
+turbine_positions_x = np.ones(1)*boundary_layer_height
+turbine_positions_y = np.ones(1)*length[1]/2
+turbine_positions_z = np.ones(1)*turbine_height
 level = 0
-n_blades = 3
+
+density = config.get_float_value("Density", 1.225)
 n_blade_nodes = config.get_int_value("NumberOfNodesPerAL", 32)
 
 read_precursor = config.get_bool_value("readPrecursor", False)
@@ -98,7 +104,6 @@ t_start_out_probe      =  config.get_float_value("tStartOutProbe")
 t_out_probe           =  config.get_float_value("tOutProbe")
 
 #%%
-length = np.array([6,4,1])*boundary_layer_height
 dx = boundary_layer_height/nodes_per_height
 dt = dx * mach / (np.sqrt(3) * velocity)
 velocity_ratio = dx/dt
@@ -127,7 +132,7 @@ para.set_velocity_ratio(dx/dt)
 para.set_viscosity_ratio(dx*dx/dt)
 para.set_density_ratio(1.0)
 
-para.set_main_kernel("CumulantK17")
+para.configure_main_kernel(gpu.Kernel.Compressible.K17CompressibleNavierStokes)
 
 para.set_timestep_start_out(int(t_start_out/dt))
 para.set_timestep_out(int(t_out/dt))
@@ -141,6 +146,11 @@ grid_scaling_factory = gpu.GridScalingFactory()
 grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
 grid_builder.add_coarse_grid(0.0, 0.0, 0.0, length[0], length[1], length[2], dx)
+
+if use_refinement:  
+    level = 1
+    grid_builder.add_grid(gpu.grid_generator.Cuboid(turbine_positions_x[0]- 3*turbine_diameter, turbine_positions_y[0]-3*turbine_diameter, 0,
+                                                    turbine_positions_x[0]+10*turbine_diameter, turbine_positions_y[0]+3*turbine_diameter, turbine_positions_z[0]+3*turbine_diameter), level)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
 grid_builder.build_grids(False)
 
@@ -156,7 +166,7 @@ grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
 bc_factory.set_stress_boundary_condition(gpu.StressBC.StressPressureBounceBack)
-bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipBounceBack) 
+bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipCompressibleTurbulentViscosity) 
 bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
 if read_precursor:
     bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
@@ -174,16 +184,13 @@ para.set_outflow_pressure_correction_factor(0.0)
 para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, velocity_ratio)
 
 #%%
-turb_pos = np.array([3, 3, 3])*turbine_diameter
-epsilon = 1.5*dx
-density = 1.225
-level = 0
-n_blades = 3
-n_blade_nodes = 32
-omega = 1
-blade_radii = np.arange(n_blade_nodes, dtype=np.float32)/(0.5*turbine_diameter)
-alm = gpu.ActuatorFarm(n_blades, density, n_blade_nodes, epsilon, level, dt, dx, True)
-alm.add_turbine(turb_pos[0], turb_pos[1], turb_pos[2], turbine_diameter, omega, 0, 0, blade_radii)
+
+smearing_width = 1.5*dx
+blade_radius = 0.5*turbine_diameter
+hub_height_velocity = get_velocity(turbine_height, u_star, kappa, z0)
+rotor_speeds = np.ones(1)*tip_speed_ratio*hub_height_velocity/blade_radius
+alm = gpu.ActuatorFarmStandalone(turbine_diameter, n_blade_nodes, turbine_positions_x, turbine_positions_y, turbine_positions_z, rotor_speeds, density, smearing_width, level, dt, dx)
+alm.enable_output("ALM", int(t_start_out_probe/dt), int(t_out_probe/dt) )
 para.add_actuator(alm)
 #%%
 planar_average_probe = gpu.probes.PlanarAverageProbe("horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')
@@ -210,7 +217,6 @@ for n_probe, probe_pos in enumerate(plane_locs):
 #%%
 cuda_memory_manager = gpu.CudaMemoryManager(para)
 grid_generator = gpu.GridProvider.make_grid_generator(grid_builder, para, cuda_memory_manager, communicator)
-#%%
 #%%
 sim = gpu.Simulation(para, cuda_memory_manager, communicator, grid_generator, bc_factory, tm_factory, grid_scaling_factory)
 #%%

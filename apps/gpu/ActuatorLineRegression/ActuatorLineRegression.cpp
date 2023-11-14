@@ -71,7 +71,7 @@
 #include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Output/FileWriter.h"
-#include "gpu/core/PreCollisionInteractor/ActuatorFarm.h"
+#include "gpu/core/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "gpu/core/PreCollisionInteractor/Probes/Probe.h"
@@ -107,13 +107,13 @@ void multipleLevel(const std::string& configPath)
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    const real reference_diameter = config.getValue<real>("ReferenceDiameter");
-    const uint nodes_per_diameter = config.getValue<uint>("NodesPerDiameter");
+    const real referenceDiameter = config.getValue<real>("ReferenceDiameter");
+    const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
     const real velocity = config.getValue<real>("Velocity");
 
-    const real L_x = 10 * reference_diameter;
-    const real L_y = 4 * reference_diameter;
-    const real L_z = 4 * reference_diameter;
+    const real L_x = 10 * referenceDiameter;
+    const real L_y = 4 * referenceDiameter;
+    const real L_z = 4 * referenceDiameter;
 
     const real viscosity = 1.56e-5;
 
@@ -136,9 +136,11 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const real dx = reference_diameter/real(nodes_per_diameter);
+    const real dx = referenceDiameter/real(nodesPerDiameter);
 
-    real turbPos[3] = {3.0f * reference_diameter, 0.0, 0.0};
+    std::vector<real>turbinePositionsX{3.f*referenceDiameter};
+    std::vector<real>turbinePositionsY{0.0};
+    std::vector<real>turbinePositionsZ{0.0};
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
@@ -207,42 +209,37 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     int level = 0; // grid level at which the turbine samples velocities and distributes forces
-    const real smearing_width = dx*exp2(-level)*2; // width of gaussian smearing
-    VF_LOG_INFO("smearing_width = {}m", smearing_width);
+    const real smearingWidth = dx*exp2(-level)*2; // width of gaussian smearing
+    VF_LOG_INFO("smearingWidth = {}m", smearingWidth);
     const real density = 1.225f;
-    const uint nBlades = 3;
     const uint nBladeNodes = 32;
-    const real tipspeed_ratio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
-    const real rotor_speed = 2*tipspeed_ratio*velocity/reference_diameter;
+    const real tipspeedRatio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
+    const std::vector<real> rotorSpeeds{2*tipspeedRatio*velocity/referenceDiameter};
 
 
-    SPtr<ActuatorFarm> actuator_farm = std::make_shared<ActuatorFarm>(nBlades, density, nBladeNodes, smearing_width, level, dt, dx, true);
-    std::vector<real> bladeRadii;
-    real dr = reference_diameter/(nBladeNodes*2);
-    for(uint node=0; node<nBladeNodes; node++){ bladeRadii.emplace_back(dr*(node+1)); }
-    actuator_farm->addTurbine(turbPos[0], turbPos[1], turbPos[2], reference_diameter, rotor_speed, 0, 0, bladeRadii);
-    para->addActuator( actuator_farm );
+    SPtr<ActuatorFarmStandalone> actuatorFarm = std::make_shared<ActuatorFarmStandalone>(referenceDiameter, nBladeNodes, turbinePositionsX, turbinePositionsY, turbinePositionsZ, rotorSpeeds, density, smearingWidth, level, dt, dx);
+    para->addActuator( actuatorFarm );
 
-    std::vector<real> planePositions = {-1*reference_diameter, 1*reference_diameter, 3*reference_diameter};
+    std::vector<real> planePositions = {-1*referenceDiameter, 1*referenceDiameter, 3*referenceDiameter};
 
     for(int i=0; i < planePositions.size(); i++)
     {
         SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe_" + std::to_string(i), para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
-        planeProbe->setProbePlane(turbPos[0]+planePositions[i], -0.5 * L_y, -0.5 * L_z, dx, L_y, L_z);
+        planeProbe->setProbePlane(turbinePositionsX[0]+planePositions[i], -0.5 * L_y, -0.5 * L_z, dx, L_y, L_z);
         planeProbe->addStatistic(Statistic::Means);
         planeProbe->addStatistic(Statistic::Variances);
         planeProbe->addStatistic(Statistic::Instantaneous);
         para->addProbe( planeProbe );
     }
     SPtr<PlaneProbe> planeProbeVert = std::make_shared<PlaneProbe>("planeProbeVertical", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
-    planeProbeVert->setProbePlane(0, turbPos[1], -0.5 * L_z, L_x, dx, L_z);
+    planeProbeVert->setProbePlane(0, turbinePositionsY[0], -0.5 * L_z, L_x, dx, L_z);
     planeProbeVert->addStatistic(Statistic::Means);
     planeProbeVert->addStatistic(Statistic::Variances);
     planeProbeVert->addStatistic(Statistic::Instantaneous);
     para->addProbe( planeProbeVert );
 
     SPtr<PlaneProbe> planeProbeHorz = std::make_shared<PlaneProbe>("planeProbeHorizontal", para->getOutputPath(), tStartTmpAveraging/dt, tAveraging/dt, tStartOutProbe/dt, tOutProbe/dt);
-    planeProbeHorz->setProbePlane(0, -0.5 * L_y, turbPos[2], L_x, L_y, dx);
+    planeProbeHorz->setProbePlane(0, -0.5 * L_y, turbinePositionsZ[0], L_x, L_y, dx);
     planeProbeHorz->addStatistic(Statistic::Means);
     planeProbeHorz->addStatistic(Statistic::Variances);
     planeProbeHorz->addStatistic(Statistic::Instantaneous);
