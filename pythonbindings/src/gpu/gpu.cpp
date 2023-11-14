@@ -62,5 +62,6 @@ PYBIND11_MODULE(gpu, m)
     grid_provider::makeModule(m);
     turbulence_model::makeModule(m);
     grid_scaling_factory::makeModule(m);
+    kernel::makeModule(m);
 }
 } // namespace gpu_bindings

@@ -42,7 +42,7 @@ import basics, parallel
 
 from . import grid_generator as grid_generator
 from . import probes as probes
-from . import Kernel as Kernel
+from . import kernel as kernel
 
 class PreCollisionInteractor:
     def __init__(self, *args, **kwargs) -> None: ...
