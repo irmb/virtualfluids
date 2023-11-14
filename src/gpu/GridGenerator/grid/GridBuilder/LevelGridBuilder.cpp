@@ -207,11 +207,59 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
         VF_LOG_INFO("Set Pressure BC on level {} with {}", level, pressureBoundaryCondition->indices.size());
     }
 }
-
 void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z)
 {
     for( uint level = 0; level < this->grids.size(); level++ )
         grids[level]->setPeriodicity(periodic_X, periodic_Y, periodic_Z);
+}
+
+real adjustShift(real shift, real delta, real length)
+{
+    shift = std::fmod(shift, length);
+    shift = shift < 0 ? shift + length : shift;
+    return std::rint(shift/delta) * delta;
+}
+
+void LevelGridBuilder::setPeriodicShiftOnXBoundaryInYDirection(real shift)
+{
+    shift = adjustShift(shift, grids[0]->getDelta(), grids[0]->getEndY() - grids[0]->getStartY());
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicBoundaryShiftsOnXinY(shift);
+}
+
+void LevelGridBuilder::setPeriodicShiftOnXBoundaryInZDirection(real shift)
+{
+    shift = adjustShift(shift, grids[0]->getDelta(), grids[0]->getEndZ() - grids[0]->getStartZ());
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicBoundaryShiftsOnXinZ(shift);
+}
+
+void LevelGridBuilder::setPeriodicShiftOnYBoundaryInXDirection(real shift)
+{
+    shift = adjustShift(shift, grids[0]->getDelta(), grids[0]->getEndX() - grids[0]->getStartX());
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicBoundaryShiftsOnYinX(shift);
+}
+
+void LevelGridBuilder::setPeriodicShiftOnYBoundaryInZDirection(real shift)
+{
+    shift = adjustShift(shift, grids[0]->getDelta(), grids[0]->getEndZ() - grids[0]->getStartZ());
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicBoundaryShiftsOnYinZ(shift);
+}
+
+void LevelGridBuilder::setPeriodicShiftOnZBoundaryInXDirection(real shift)
+{
+    shift = adjustShift(shift, grids[0]->getDelta(), grids[0]->getEndX() - grids[0]->getStartX());
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicBoundaryShiftsOnZinX(shift);
+}
+
+void LevelGridBuilder::setPeriodicShiftOnZBoundaryInYDirection(real shift)
+{
+    shift = adjustShift(shift, grids[0]->getDelta(), grids[0]->getEndY() - grids[0]->getStartY());
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicBoundaryShiftsOnZinY(shift);
 }
 
 void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)

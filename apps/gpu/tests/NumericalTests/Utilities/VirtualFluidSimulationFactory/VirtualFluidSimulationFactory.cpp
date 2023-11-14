@@ -84,8 +84,6 @@ std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<Simulat
     para->setCalcMedian(false);
     para->setConcFile(false);
     para->setUseMeasurePoints(false);
-    para->setUseWale(false);
-    para->setSimulatePorousMedia(false);
     para->setForcing(0.0, 0.0, 0.0);
 
     std::vector<int> dist;

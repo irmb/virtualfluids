@@ -6,7 +6,7 @@
 
 std::shared_ptr<PreProcessorStrategy> InitF3::getNewInstance(std::shared_ptr<Parameter> para)
 {
-	return std::shared_ptr<PreProcessorStrategy>(new InitF3(para));
+    return std::shared_ptr<PreProcessorStrategy>(new InitF3(para));
 }
 
 void InitF3::init(int level)
@@ -30,12 +30,12 @@ void InitF3::init(int level)
 
 bool InitF3::checkParameter()
 {
-	return false;
+    return false;
 }
 
 InitF3::InitF3(std::shared_ptr<Parameter> para)
 {
-	this->para = para;
+    this->para = para;
 }
 
 InitF3::InitF3()

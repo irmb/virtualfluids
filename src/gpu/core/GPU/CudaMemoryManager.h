@@ -24,7 +24,6 @@
 #endif
 
 class Parameter;
-class PorousMedia;
 class ActuatorFarm;
 class Probe;
 class VelocitySetter;
@@ -273,14 +272,14 @@ public:
     void cudaCopyMeasurePointsToHost(int lev);
     void cudaFreeMeasurePointsIndex(int lev);
 
-    void cudaAllocFsForCheckPointAndRestart(int lev);
-    void cudaAllocFsForAllLevelsOnHost();
+    void cudaAllocFsForCheckPointAndRestart(int lev) const;
+    void cudaAllocFsForAllLevelsOnHost() const;
     //! \brief copy distributions from host to device
-    void cudaCopyFsForRestart(int lev);
+    void cudaCopyFsForRestart(int lev) const;
     //! \brief copy distributions from device to host
-    void cudaCopyFsForCheckPoint(int lev);
-    void cudaCopyFsForAllLevelsToHost();
-    void cudaFreeFsForCheckPointAndRestart(int lev);
+    void cudaCopyFsForCheckPoint(int lev) const;
+    void cudaCopyFsForAllLevelsToHost() const;
+    void cudaFreeFsForCheckPointAndRestart(int lev) const;
 
     void cudaAllocDragLift(int lev, int numofelem);
     void cudaCopyDragLift(int lev, int numofelem);
@@ -313,10 +312,6 @@ public:
     void cudaFreeParticles(int lev);
 
     void cudaAllocRandomValues();
-
-    void cudaAllocPorousMedia(PorousMedia* pm, int lev);
-    void cudaCopyPorousMedia(PorousMedia* pm, int lev);
-    void cudaFreePorousMedia(PorousMedia* pm, int lev);
 
     void cudaAllocConcentration(int lev);
     void cudaCopyConcentrationDeviceToHost(int lev);

@@ -6,11 +6,11 @@
 class K15CompressibleNavierStokes : public KernelImp
 {
 public:
-	static std::shared_ptr< K15CompressibleNavierStokes> getNewInstance(std::shared_ptr< Parameter> para, int level);
-	void run();
+    static std::shared_ptr< K15CompressibleNavierStokes> getNewInstance(std::shared_ptr< Parameter> para, int level);
+    void run();
 
 private:
-	K15CompressibleNavierStokes();
-	K15CompressibleNavierStokes(std::shared_ptr< Parameter> para, int level);
+    K15CompressibleNavierStokes();
+    K15CompressibleNavierStokes(std::shared_ptr< Parameter> para, int level);
 };
 #endif 

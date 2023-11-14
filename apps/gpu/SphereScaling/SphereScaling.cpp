@@ -106,7 +106,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     para->setDensityRatio((real)998.0);
 
     para->setCalcDragLift(false);
-    para->setUseWale(false);
 
     para->setOutputPrefix(simulationName);
     if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}

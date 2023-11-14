@@ -69,7 +69,7 @@ double Cuboid::getX2Centroid() const
 double Cuboid::getX2Minimum() const
 {
     return getMinimum(minX2, maxX2);
-}	
+}    
 
 double Cuboid::getX2Maximum() const
 {
@@ -82,9 +82,9 @@ double Cuboid::getX3Centroid() const
 }
 
 double Cuboid::getX3Minimum() const
-{	
+{
     return getMinimum(minX3, maxX3);
-}	
+}    
 
 double Cuboid::getX3Maximum() const
 {

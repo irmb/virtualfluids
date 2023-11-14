@@ -67,9 +67,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getCalcPlaneConc(), testing::Eq(true));
     EXPECT_THAT(para.getConcFile(), testing::Eq(true));
     EXPECT_THAT(para.getUseMeasurePoints(), testing::Eq(true));
-    EXPECT_THAT(para.getUseWale(), testing::Eq(true));
     EXPECT_THAT(para.getUseInitNeq(), testing::Eq(true));
-    EXPECT_THAT(para.getSimulatePorousMedia(), testing::Eq(true));
 
     EXPECT_THAT(para.getD3Qxx(), testing::Eq(99));
     EXPECT_THAT(para.getTimestepEnd(), testing::Eq(33));
@@ -83,7 +81,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getPressOutZ(), testing::Eq(28));
 
     EXPECT_THAT(para.getDiffOn(), testing::Eq(true));
-    EXPECT_THAT(para.getDiffMod(), testing::Eq(99));
     EXPECT_THAT(para.getDiffusivity(), RealEq(1.11));
     EXPECT_THAT(para.getTemperatureInit(), RealEq(2.22));
     EXPECT_THAT(para.getTemperatureBC(), RealEq(3.33));

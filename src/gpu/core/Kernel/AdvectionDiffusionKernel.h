@@ -5,6 +5,8 @@
 
 class AdvectionDiffusionKernel : public KernelImp
 {
-	virtual void run() = 0;
+public:
+    virtual ~AdvectionDiffusionKernel() = default;
+    virtual void run() = 0;
 };
-#endif 
+#endif

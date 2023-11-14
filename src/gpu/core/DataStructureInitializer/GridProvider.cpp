@@ -72,21 +72,6 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
             para->getParH(level)->rho_SP_Med[pos] = 0.0f;
             para->getParH(level)->press_SP_Med[pos] = 0.0f;
         }
-        if (para->getUseWale()) {
-            para->getParH(level)->turbViscosity[pos] = 0.0f;
-            //Debug
-            para->getParH(level)->gSij[pos] = 0.0f;
-            para->getParH(level)->gSDij[pos] = 0.0f;
-            para->getParH(level)->gDxvx[pos] = 0.0f;
-            para->getParH(level)->gDyvx[pos] = 0.0f;
-            para->getParH(level)->gDzvx[pos] = 0.0f;
-            para->getParH(level)->gDxvy[pos] = 0.0f;
-            para->getParH(level)->gDyvy[pos] = 0.0f;
-            para->getParH(level)->gDzvy[pos] = 0.0f;
-            para->getParH(level)->gDxvz[pos] = 0.0f;
-            para->getParH(level)->gDyvz[pos] = 0.0f;
-            para->getParH(level)->gDzvz[pos] = 0.0f;
-        }
 
         if (para->getIsBodyForce()) {
             para->getParH(level)->forceX_SP[pos] = 0.0f;

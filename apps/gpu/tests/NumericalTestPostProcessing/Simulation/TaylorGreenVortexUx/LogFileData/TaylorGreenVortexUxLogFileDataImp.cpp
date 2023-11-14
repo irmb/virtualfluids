@@ -2,37 +2,37 @@
 
 std::shared_ptr<TaylorGreenVortexUxLogFileDataImp> TaylorGreenVortexUxLogFileDataImp::getNewInstance()
 {
-	return std::shared_ptr<TaylorGreenVortexUxLogFileDataImp>(new TaylorGreenVortexUxLogFileDataImp());
+    return std::shared_ptr<TaylorGreenVortexUxLogFileDataImp>(new TaylorGreenVortexUxLogFileDataImp());
 }
 
 std::vector<int> TaylorGreenVortexUxLogFileDataImp::getL0()
 {
-	return l0;
+    return l0;
 }
 
 std::vector<double> TaylorGreenVortexUxLogFileDataImp::getUx()
 {
-	return ux;
+    return ux;
 }
 
 std::vector<double> TaylorGreenVortexUxLogFileDataImp::getAmplitude()
 {
-	return amp;
+    return amp;
 }
 
 void TaylorGreenVortexUxLogFileDataImp::setL0(std::vector<int> l0)
 {
-	this->l0 = l0;
+    this->l0 = l0;
 }
 
 void TaylorGreenVortexUxLogFileDataImp::setUx(std::vector<double> ux)
 {
-	this->ux = ux;
+    this->ux = ux;
 }
 
 void TaylorGreenVortexUxLogFileDataImp::setAmplitude(std::vector<double> amp)
 {
-	this->amp = amp;
+    this->amp = amp;
 }
 
 TaylorGreenVortexUxLogFileDataImp::TaylorGreenVortexUxLogFileDataImp()

@@ -8,8 +8,8 @@ using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void getSendFsPost27(real* DD,
-										   real* bufferFs,
-										   int* sendIndex,
+                                           real* bufferFs,
+                                           int* sendIndex,
                                            int buffmax,
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
@@ -61,7 +61,7 @@ __global__ void getSendFsPost27(real* DD,
       unsigned int ktne    = kIndex;
       unsigned int kbsw    = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Fs
+      //set Pointer for Fs
       Distributions27 D;
       if (isEvenTimestep==true)
       {
@@ -124,7 +124,7 @@ __global__ void getSendFsPost27(real* DD,
          D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Buffer Fs
+      //set Pointer for Buffer Fs
       Distributions27 Dbuff;
       Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
       Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
@@ -154,7 +154,7 @@ __global__ void getSendFsPost27(real* DD,
       Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
       Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //copy to buffer
+      //copy to buffer
       //(Dbuff.f[dP00])[k] = (D.f[dP00])[ke   ];
       //(Dbuff.f[dM00])[k] = (D.f[dM00])[kw   ];
       //(Dbuff.f[d0P0])[k] = (D.f[d0P0])[kn   ];
@@ -244,8 +244,8 @@ __global__ void getSendFsPost27(real* DD,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void setRecvFsPost27(real* DD,
-										   real* bufferFs,
-										   int* recvIndex,
+                                           real* bufferFs,
+                                           int* recvIndex,
                                            int buffmax,
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
@@ -297,7 +297,7 @@ __global__ void setRecvFsPost27(real* DD,
       unsigned int ktne    = kIndex;
       unsigned int kbsw    = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Fs
+      //set Pointer for Fs
       Distributions27 D;
       if (isEvenTimestep==true)
       {
@@ -360,7 +360,7 @@ __global__ void setRecvFsPost27(real* DD,
          D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Buffer Fs
+      //set Pointer for Buffer Fs
       Distributions27 Dbuff;
       Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
       Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
@@ -390,7 +390,7 @@ __global__ void setRecvFsPost27(real* DD,
       Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
       Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //copy from buffer
+      //copy from buffer
       //(D.f[dP00])[ke   ] = (Dbuff.f[dP00])[k];
       //(D.f[dM00])[kw   ] = (Dbuff.f[dM00])[k];
       //(D.f[d0P0])[kn   ] = (Dbuff.f[d0P0])[k];
@@ -479,8 +479,8 @@ __global__ void setRecvFsPost27(real* DD,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void getSendFsPre27(real* DD,
-										  real* bufferFs,
-										  int* sendIndex,
+                                          real* bufferFs,
+                                          int* sendIndex,
                                           int buffmax,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -532,7 +532,7 @@ __global__ void getSendFsPre27(real* DD,
       unsigned int ktne    = kIndex;
       unsigned int kbsw    = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Fs
+      //set Pointer for Fs
       Distributions27 D;
       if (isEvenTimestep==true)
       {
@@ -595,7 +595,7 @@ __global__ void getSendFsPre27(real* DD,
          D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Buffer Fs
+      //set Pointer for Buffer Fs
       Distributions27 Dbuff;
       Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
       Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
@@ -625,7 +625,7 @@ __global__ void getSendFsPre27(real* DD,
       Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
       Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //copy to buffer
+      //copy to buffer
       (Dbuff.f[dP00])[k] = (D.f[dP00])[ke   ];
       (Dbuff.f[dM00])[k] = (D.f[dM00])[kw   ];
       (Dbuff.f[d0P0])[k] = (D.f[d0P0])[kn   ];
@@ -688,8 +688,8 @@ __global__ void getSendFsPre27(real* DD,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void setRecvFsPre27(real* DD,
-										  real* bufferFs,
-										  int* recvIndex,
+                                          real* bufferFs,
+                                          int* recvIndex,
                                           int buffmax,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
@@ -741,7 +741,7 @@ __global__ void setRecvFsPre27(real* DD,
       unsigned int ktne    = kIndex;
       unsigned int kbsw    = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Fs
+      //set Pointer for Fs
       Distributions27 D;
       if (isEvenTimestep==true)
       {
@@ -804,7 +804,7 @@ __global__ void setRecvFsPre27(real* DD,
          D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //set Pointer for Buffer Fs
+      //set Pointer for Buffer Fs
       Distributions27 Dbuff;
       Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
       Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
@@ -834,7 +834,7 @@ __global__ void setRecvFsPre27(real* DD,
       Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
       Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //copy from buffer
+      //copy from buffer
       (D.f[dP00])[ke   ] = (Dbuff.f[dP00])[k];
       (D.f[dM00])[kw   ] = (Dbuff.f[dM00])[k];
       (D.f[d0P0])[kn   ] = (Dbuff.f[d0P0])[k];
@@ -896,75 +896,75 @@ __global__ void setRecvFsPre27(real* DD,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void getSendGsF3(
-	real* G6,
-	real* bufferGs,
-	int* sendIndex,
-	int buffmax,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned long long numberOfLBnodes,
-	bool isEvenTimestep)
+    real* G6,
+    real* bufferGs,
+    int* sendIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-	////////////////////////////////////////////////////////////////////////////////
-	const unsigned  x = threadIdx.x;  // Globaler x-Index 
-	const unsigned  y = blockIdx.x;   // Globaler y-Index 
-	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+    ////////////////////////////////////////////////////////////////////////////////
+    const unsigned  x = threadIdx.x;  // Globaler x-Index 
+    const unsigned  y = blockIdx.x;   // Globaler y-Index 
+    const unsigned  z = blockIdx.y;   // Globaler z-Index 
 
-	const unsigned nx = blockDim.x;
-	const unsigned ny = gridDim.x;
+    const unsigned nx = blockDim.x;
+    const unsigned ny = gridDim.x;
 
-	const unsigned k = nx*(ny*z + y) + x;
-	//////////////////////////////////////////////////////////////////////////
+    const unsigned k = nx*(ny*z + y) + x;
+    //////////////////////////////////////////////////////////////////////////
 
-	if (k < buffmax)
-	{
-		////////////////////////////////////////////////////////////////////////////////
-		//set index
-		unsigned int kIndex = sendIndex[k];
-		unsigned int kr = kIndex;
-		unsigned int kw = neighborX[kIndex];
-		unsigned int ks = neighborY[kIndex];
-		unsigned int kb = neighborZ[kIndex];
-		////////////////////////////////////////////////////////////////////////////////
-		//set Pointer for Gs
-		Distributions6 G;
-		if (isEvenTimestep)
-		{
-			G.g[dP00] = &G6[dP00 * numberOfLBnodes];
-			G.g[dM00] = &G6[dM00 * numberOfLBnodes];
-			G.g[d0P0] = &G6[d0P0 * numberOfLBnodes];
-			G.g[d0M0] = &G6[d0M0 * numberOfLBnodes];
-			G.g[d00P] = &G6[d00P * numberOfLBnodes];
-			G.g[d00M] = &G6[d00M * numberOfLBnodes];
-		}
-		else
-		{
-			G.g[dM00] = &G6[dP00 * numberOfLBnodes];
-			G.g[dP00] = &G6[dM00 * numberOfLBnodes];
-			G.g[d0M0] = &G6[d0P0 * numberOfLBnodes];
-			G.g[d0P0] = &G6[d0M0 * numberOfLBnodes];
-			G.g[d00M] = &G6[d00P * numberOfLBnodes];
-			G.g[d00P] = &G6[d00M * numberOfLBnodes];
-		}
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//set Pointer for Buffer Gs
-		Distributions6 Dbuff;
-		Dbuff.g[dP00] = &bufferGs[dP00 * buffmax];
-		Dbuff.g[dM00] = &bufferGs[dM00 * buffmax];
-		Dbuff.g[d0P0] = &bufferGs[d0P0 * buffmax];
-		Dbuff.g[d0M0] = &bufferGs[d0M0 * buffmax];
-		Dbuff.g[d00P] = &bufferGs[d00P * buffmax];
-		Dbuff.g[d00M] = &bufferGs[d00M * buffmax];
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//write Gs to buffer
-		(Dbuff.g[dP00])[k] = (G.g[dM00])[kw];
-		(Dbuff.g[dM00])[k] = (G.g[dP00])[kr];
-		(Dbuff.g[d0P0])[k] = (G.g[d0M0])[ks];
-		(Dbuff.g[d0M0])[k] = (G.g[d0P0])[kr];
-		(Dbuff.g[d00P])[k] = (G.g[d00M])[kb];
-		(Dbuff.g[d00M])[k] = (G.g[d00P])[kr];
-	}
+    if (k < buffmax)
+    {
+        ////////////////////////////////////////////////////////////////////////////////
+        //set index
+        unsigned int kIndex = sendIndex[k];
+        unsigned int kr = kIndex;
+        unsigned int kw = neighborX[kIndex];
+        unsigned int ks = neighborY[kIndex];
+        unsigned int kb = neighborZ[kIndex];
+        ////////////////////////////////////////////////////////////////////////////////
+        //set Pointer for Gs
+        Distributions6 G;
+        if (isEvenTimestep)
+        {
+            G.g[dP00] = &G6[dP00 * numberOfLBnodes];
+            G.g[dM00] = &G6[dM00 * numberOfLBnodes];
+            G.g[d0P0] = &G6[d0P0 * numberOfLBnodes];
+            G.g[d0M0] = &G6[d0M0 * numberOfLBnodes];
+            G.g[d00P] = &G6[d00P * numberOfLBnodes];
+            G.g[d00M] = &G6[d00M * numberOfLBnodes];
+        }
+        else
+        {
+            G.g[dM00] = &G6[dP00 * numberOfLBnodes];
+            G.g[dP00] = &G6[dM00 * numberOfLBnodes];
+            G.g[d0M0] = &G6[d0P0 * numberOfLBnodes];
+            G.g[d0P0] = &G6[d0M0 * numberOfLBnodes];
+            G.g[d00M] = &G6[d00P * numberOfLBnodes];
+            G.g[d00P] = &G6[d00M * numberOfLBnodes];
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //set Pointer for Buffer Gs
+        Distributions6 Dbuff;
+        Dbuff.g[dP00] = &bufferGs[dP00 * buffmax];
+        Dbuff.g[dM00] = &bufferGs[dM00 * buffmax];
+        Dbuff.g[d0P0] = &bufferGs[d0P0 * buffmax];
+        Dbuff.g[d0M0] = &bufferGs[d0M0 * buffmax];
+        Dbuff.g[d00P] = &bufferGs[d00P * buffmax];
+        Dbuff.g[d00M] = &bufferGs[d00M * buffmax];
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //write Gs to buffer
+        (Dbuff.g[dP00])[k] = (G.g[dM00])[kw];
+        (Dbuff.g[dM00])[k] = (G.g[dP00])[kr];
+        (Dbuff.g[d0P0])[k] = (G.g[d0M0])[ks];
+        (Dbuff.g[d0M0])[k] = (G.g[d0P0])[kr];
+        (Dbuff.g[d00P])[k] = (G.g[d00M])[kb];
+        (Dbuff.g[d00M])[k] = (G.g[d00P])[kr];
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -999,74 +999,74 @@ __global__ void getSendGsF3(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void setRecvGsF3(
-	real* G6,
-	real* bufferGs,
-	int* recvIndex,
-	int buffmax,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned long long numberOfLBnodes,
-	bool isEvenTimestep)
+    real* G6,
+    real* bufferGs,
+    int* recvIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-	////////////////////////////////////////////////////////////////////////////////
-	const unsigned  x = threadIdx.x;  // Globaler x-Index 
-	const unsigned  y = blockIdx.x;   // Globaler y-Index 
-	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+    ////////////////////////////////////////////////////////////////////////////////
+    const unsigned  x = threadIdx.x;  // Globaler x-Index 
+    const unsigned  y = blockIdx.x;   // Globaler y-Index 
+    const unsigned  z = blockIdx.y;   // Globaler z-Index 
 
-	const unsigned nx = blockDim.x;
-	const unsigned ny = gridDim.x;
+    const unsigned nx = blockDim.x;
+    const unsigned ny = gridDim.x;
 
-	const unsigned k = nx*(ny*z + y) + x;
-	//////////////////////////////////////////////////////////////////////////
+    const unsigned k = nx*(ny*z + y) + x;
+    //////////////////////////////////////////////////////////////////////////
 
-	if (k < buffmax)
-	{
-		////////////////////////////////////////////////////////////////////////////////
-		//set index
-		unsigned int kIndex = recvIndex[k];
-		unsigned int kr = kIndex;
-		unsigned int kw = neighborX[kIndex];
-		unsigned int ks = neighborY[kIndex];
-		unsigned int kb = neighborZ[kIndex];
-		////////////////////////////////////////////////////////////////////////////////
-		//set Pointer for Gs
-		Distributions6 G;
-		if (isEvenTimestep)
-		{
-			G.g[dP00] = &G6[dP00 * numberOfLBnodes];
-			G.g[dM00] = &G6[dM00 * numberOfLBnodes];
-			G.g[d0P0] = &G6[d0P0 * numberOfLBnodes];
-			G.g[d0M0] = &G6[d0M0 * numberOfLBnodes];
-			G.g[d00P] = &G6[d00P * numberOfLBnodes];
-			G.g[d00M] = &G6[d00M * numberOfLBnodes];
-		}
-		else
-		{
-			G.g[dM00] = &G6[dP00 * numberOfLBnodes];
-			G.g[dP00] = &G6[dM00 * numberOfLBnodes];
-			G.g[d0M0] = &G6[d0P0 * numberOfLBnodes];
-			G.g[d0P0] = &G6[d0M0 * numberOfLBnodes];
-			G.g[d00M] = &G6[d00P * numberOfLBnodes];
-			G.g[d00P] = &G6[d00M * numberOfLBnodes];
-		}
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//set Pointer for Buffer Gs
-		Distributions6 Dbuff;
-		Dbuff.g[dP00] = &bufferGs[dP00 * buffmax];
-		Dbuff.g[dM00] = &bufferGs[dM00 * buffmax];
-		Dbuff.g[d0P0] = &bufferGs[d0P0 * buffmax];
-		Dbuff.g[d0M0] = &bufferGs[d0M0 * buffmax];
-		Dbuff.g[d00P] = &bufferGs[d00P * buffmax];
-		Dbuff.g[d00M] = &bufferGs[d00M * buffmax];
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//write buffer to Gs
-		(G.g[dM00])[kw] = (Dbuff.g[dP00])[k];
-		(G.g[dP00])[kr] = (Dbuff.g[dM00])[k];
-		(G.g[d0M0])[ks] = (Dbuff.g[d0P0])[k];
-		(G.g[d0P0])[kr] = (Dbuff.g[d0M0])[k];
-		(G.g[d00M])[kb] = (Dbuff.g[d00P])[k];
-		(G.g[d00P])[kr] = (Dbuff.g[d00M])[k];
-	}
+    if (k < buffmax)
+    {
+        ////////////////////////////////////////////////////////////////////////////////
+        //set index
+        unsigned int kIndex = recvIndex[k];
+        unsigned int kr = kIndex;
+        unsigned int kw = neighborX[kIndex];
+        unsigned int ks = neighborY[kIndex];
+        unsigned int kb = neighborZ[kIndex];
+        ////////////////////////////////////////////////////////////////////////////////
+        //set Pointer for Gs
+        Distributions6 G;
+        if (isEvenTimestep)
+        {
+            G.g[dP00] = &G6[dP00 * numberOfLBnodes];
+            G.g[dM00] = &G6[dM00 * numberOfLBnodes];
+            G.g[d0P0] = &G6[d0P0 * numberOfLBnodes];
+            G.g[d0M0] = &G6[d0M0 * numberOfLBnodes];
+            G.g[d00P] = &G6[d00P * numberOfLBnodes];
+            G.g[d00M] = &G6[d00M * numberOfLBnodes];
+        }
+        else
+        {
+            G.g[dM00] = &G6[dP00 * numberOfLBnodes];
+            G.g[dP00] = &G6[dM00 * numberOfLBnodes];
+            G.g[d0M0] = &G6[d0P0 * numberOfLBnodes];
+            G.g[d0P0] = &G6[d0M0 * numberOfLBnodes];
+            G.g[d00M] = &G6[d00P * numberOfLBnodes];
+            G.g[d00P] = &G6[d00M * numberOfLBnodes];
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //set Pointer for Buffer Gs
+        Distributions6 Dbuff;
+        Dbuff.g[dP00] = &bufferGs[dP00 * buffmax];
+        Dbuff.g[dM00] = &bufferGs[dM00 * buffmax];
+        Dbuff.g[d0P0] = &bufferGs[d0P0 * buffmax];
+        Dbuff.g[d0M0] = &bufferGs[d0M0 * buffmax];
+        Dbuff.g[d00P] = &bufferGs[d00P * buffmax];
+        Dbuff.g[d00M] = &bufferGs[d00M * buffmax];
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //write buffer to Gs
+        (G.g[dM00])[kw] = (Dbuff.g[dP00])[k];
+        (G.g[dP00])[kr] = (Dbuff.g[dM00])[k];
+        (G.g[d0M0])[ks] = (Dbuff.g[d0P0])[k];
+        (G.g[d0P0])[kr] = (Dbuff.g[d0M0])[k];
+        (G.g[d00M])[kb] = (Dbuff.g[d00P])[k];
+        (G.g[d00P])[kr] = (Dbuff.g[d00M])[k];
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

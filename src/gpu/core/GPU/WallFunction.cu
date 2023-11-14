@@ -9,19 +9,19 @@ using namespace vf::lbm::dir;
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void WallFunction27(
-										  real* vx,
-										  real* vy,
-										  real* vz,
-										  real* DD, 
-										  int* k_Q, 
-										  real* QQ,
-										  unsigned int numberOfBCnodes, 
-										  real om1, 
-										  unsigned int* neighborX,
-										  unsigned int* neighborY,
-										  unsigned int* neighborZ,
-										  unsigned long long numberOfLBnodes, 
-										  bool isEvenTimestep)
+                                          real* vx,
+                                          real* vy,
+                                          real* vz,
+                                          real* DD, 
+                                          int* k_Q, 
+                                          real* QQ,
+                                          unsigned int numberOfBCnodes, 
+                                          real om1, 
+                                          unsigned int* neighborX,
+                                          unsigned int* neighborY,
+                                          unsigned int* neighborZ,
+                                          unsigned long long numberOfLBnodes, 
+                                          bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -215,21 +215,21 @@ __global__ void WallFunction27(
 
       //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
-	  real nu = c1o3 * (c1o1 / om1 - c1o2);
-	  real qw = c1o1;
-	  real uTau = sqrt(nu * (vx1 - VeloX) / qw);
+      real nu = c1o3 * (c1o1 / om1 - c1o2);
+      real qw = c1o1;
+      real uTau = sqrt(nu * (vx1 - VeloX) / qw);
 
-	  if (abs(uTau)/nu>11){
-	  uTau = vx1 * 0.41 / (log10(9.8 * uTau * qw / nu));
-	  
+      if (abs(uTau)/nu>11){
+      uTau = vx1 * 0.41 / (log10(9.8 * uTau * qw / nu));
+      
 
-	  
-	  vx[k] = vx1 - uTau * uTau * qw / nu;
-	  vx[k] = (vx[k]> 0.05) ? 0.05 : ((vx[k]< -0.05) ? -0.05 : vx[k] );  
-	  }
-	  else{ vx[k]=c0o1; }
-	  //vy[k] = 0.01;							//Test...muss wieder raus
-	  //vz[k] = 0.01;							//Test...muss wieder raus
+      
+      vx[k] = vx1 - uTau * uTau * qw / nu;
+      vx[k] = (vx[k]> 0.05) ? 0.05 : ((vx[k]< -0.05) ? -0.05 : vx[k] );  
+      }
+      else{ vx[k]=c0o1; }
+      //vy[k] = 0.01;                            //Test...muss wieder raus
+      //vz[k] = 0.01;                            //Test...muss wieder raus
 
    //   //////////////////////////////////////////////////////////////////////////
    //   if (isEvenTimestep==false)
@@ -297,7 +297,7 @@ __global__ void WallFunction27(
    //   //(D.f[d000])[k]=c1o10;
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	  ////ToDo anders Klammern
+      ////ToDo anders Klammern
 
    //   q = q_dirE[k];
    //   if (q>=zero && q<=one)

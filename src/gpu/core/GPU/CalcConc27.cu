@@ -40,14 +40,14 @@ using namespace vf::lbm::dir;
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void CalcConc27(
-	real* concentration,
-	uint* typeOfGridNode,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	unsigned long long numberOfLBnodes,
-	real* distributionsAD,
-	bool isEvenTimestep)
+    real* concentration,
+    uint* typeOfGridNode,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    unsigned long long numberOfLBnodes,
+    real* distributionsAD,
+    bool isEvenTimestep)
 {
    //////////////////////////////////////////////////////////////////////////
    //! The velocity boundary condition is executed in the following steps
@@ -134,10 +134,10 @@ __global__ void CalcConc27(
          distAD.f[dPMM] = &distributionsAD[dMPP * numberOfLBnodes];
          distAD.f[dMPM] = &distributionsAD[dPMP * numberOfLBnodes];
       }
-	  ////////////////////////////////////////////////////////////////////////////////
-	  //! - Set neighbor indices (necessary for indirect addressing)
-	  //!
-	  uint ke   = k;
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set neighbor indices (necessary for indirect addressing)
+      //!
+      uint ke   = k;
       uint kw   = neighborX[k];
       uint kn   = k;
       uint ks   = neighborY[k];
@@ -163,44 +163,44 @@ __global__ void CalcConc27(
       uint kbne = kb;
       uint ktne = k;
       uint kbsw = neighborZ[ksw];
-	  ////////////////////////////////////////////////////////////////////////////////
-	  //! - Set local distributions
-	  //!
-	  real mfcbb = (distAD.f[dP00])[ke  ];
-	  real mfabb = (distAD.f[dM00])[kw  ];
-	  real mfbcb = (distAD.f[d0P0])[kn  ];
-	  real mfbab = (distAD.f[d0M0])[ks  ];
-	  real mfbbc = (distAD.f[d00P])[kt  ];
-	  real mfbba = (distAD.f[d00M])[kb  ];
-	  real mfccb = (distAD.f[dPP0])[kne ];
-	  real mfaab = (distAD.f[dMM0])[ksw ];
-	  real mfcab = (distAD.f[dPM0])[kse ];
-	  real mfacb = (distAD.f[dMP0])[knw ];
-	  real mfcbc = (distAD.f[dP0P])[kte ];
-	  real mfaba = (distAD.f[dM0M])[kbw ];
-	  real mfcba = (distAD.f[dP0M])[kbe ];
-	  real mfabc = (distAD.f[dM0P])[ktw ];
-	  real mfbcc = (distAD.f[d0PP])[ktn ];
-	  real mfbaa = (distAD.f[d0MM])[kbs ];
-	  real mfbca = (distAD.f[d0PM])[kbn ];
-	  real mfbac = (distAD.f[d0MP])[kts ];
-	  real mfbbb = (distAD.f[d000])[k   ];
-	  real mfccc = (distAD.f[dPPP])[ktne];
-	  real mfaac = (distAD.f[dMMP])[ktsw];
-	  real mfcac = (distAD.f[dPMP])[ktse];
-	  real mfacc = (distAD.f[dMPP])[ktnw];
-	  real mfcca = (distAD.f[dPPM])[kbne];
-	  real mfaaa = (distAD.f[dMMM])[kbsw];
-	  real mfcaa = (distAD.f[dPMM])[kbse];
-	  real mfaca = (distAD.f[dMPM])[kbnw];
+      ////////////////////////////////////////////////////////////////////////////////
+      //! - Set local distributions
+      //!
+      real mfcbb = (distAD.f[dP00])[ke  ];
+      real mfabb = (distAD.f[dM00])[kw  ];
+      real mfbcb = (distAD.f[d0P0])[kn  ];
+      real mfbab = (distAD.f[d0M0])[ks  ];
+      real mfbbc = (distAD.f[d00P])[kt  ];
+      real mfbba = (distAD.f[d00M])[kb  ];
+      real mfccb = (distAD.f[dPP0])[kne ];
+      real mfaab = (distAD.f[dMM0])[ksw ];
+      real mfcab = (distAD.f[dPM0])[kse ];
+      real mfacb = (distAD.f[dMP0])[knw ];
+      real mfcbc = (distAD.f[dP0P])[kte ];
+      real mfaba = (distAD.f[dM0M])[kbw ];
+      real mfcba = (distAD.f[dP0M])[kbe ];
+      real mfabc = (distAD.f[dM0P])[ktw ];
+      real mfbcc = (distAD.f[d0PP])[ktn ];
+      real mfbaa = (distAD.f[d0MM])[kbs ];
+      real mfbca = (distAD.f[d0PM])[kbn ];
+      real mfbac = (distAD.f[d0MP])[kts ];
+      real mfbbb = (distAD.f[d000])[k   ];
+      real mfccc = (distAD.f[dPPP])[ktne];
+      real mfaac = (distAD.f[dMMP])[ktsw];
+      real mfcac = (distAD.f[dPMP])[ktse];
+      real mfacc = (distAD.f[dMPP])[ktnw];
+      real mfcca = (distAD.f[dPPM])[kbne];
+      real mfaaa = (distAD.f[dMMM])[kbsw];
+      real mfcaa = (distAD.f[dPMM])[kbse];
+      real mfaca = (distAD.f[dMPM])[kbnw];
       //////////////////////////////////////////////////////////////////////////
-	  //! - Calculate concentration using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
-	  //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
-	  //!
-	  concentration[k] =
-	   ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa)   + (mfaac + mfcca))) +
-      	(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba)   + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
-      	 ((mfabb + mfcbb) + (mfbab + mfbcb)  +  (mfbba + mfbbc))) +  mfbbb;
+      //! - Calculate concentration using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
+      //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
+      //!
+      concentration[k] =
+       ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa)   + (mfaac + mfcca))) +
+          (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba)   + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
+           ((mfabb + mfcbb) + (mfbab + mfbcb)  +  (mfbba + mfbbc))) +  mfbbb;
 
    }
 }
@@ -470,15 +470,15 @@ __global__ void CalcConc7( real* Conc,
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void GetPlaneConc7(real* Conc,
-								            int* kPC,
-								            unsigned int numberOfPointskPC,
-											unsigned int* geoD,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned long long numberOfLBnodes,
-											real* DD7,
-											bool isEvenTimestep)
+                                            int* kPC,
+                                            unsigned int numberOfPointskPC,
+                                            unsigned int* geoD,
+                                            unsigned int* neighborX,
+                                            unsigned int* neighborY,
+                                            unsigned int* neighborZ,
+                                            unsigned long long numberOfLBnodes,
+                                            real* DD7,
+                                            bool isEvenTimestep)
 {
    Distributions7 D7;
    if (isEvenTimestep==true)
@@ -575,15 +575,15 @@ __global__ void GetPlaneConc7(real* Conc,
 
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void GetPlaneConc27(real* Conc,
-								             int* kPC,
-								             unsigned int numberOfPointskPC,
-											 unsigned int* geoD,
-											 unsigned int* neighborX,
-											 unsigned int* neighborY,
-											 unsigned int* neighborZ,
-											 unsigned long long numberOfLBnodes,
-											 real* DD27,
-											 bool isEvenTimestep)
+                                             int* kPC,
+                                             unsigned int numberOfPointskPC,
+                                             unsigned int* geoD,
+                                             unsigned int* neighborX,
+                                             unsigned int* neighborY,
+                                             unsigned int* neighborZ,
+                                             unsigned long long numberOfLBnodes,
+                                             real* DD27,
+                                             bool isEvenTimestep)
 {
    Distributions27 D27;
    if (isEvenTimestep==true)

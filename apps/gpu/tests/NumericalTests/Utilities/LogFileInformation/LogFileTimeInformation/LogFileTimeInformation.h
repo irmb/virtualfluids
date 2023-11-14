@@ -11,14 +11,14 @@ class SimulationInfo;
 class LogFileTimeInformation : public LogFileInformationImp
 {
 public:
-	static std::shared_ptr<LogFileTimeInformation> getNewInstance(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting);
-	std::string getOutput();
+    static std::shared_ptr<LogFileTimeInformation> getNewInstance(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting);
+    std::string getOutput();
 
 private:
-	LogFileTimeInformation();
-	LogFileTimeInformation(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting);
+    LogFileTimeInformation();
+    LogFileTimeInformation(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting);
 
-	std::vector<std::shared_ptr<SimulationInfo> > simInfo;
-	bool fileWriting;
+    std::vector<std::shared_ptr<SimulationInfo> > simInfo;
+    bool fileWriting;
 };
 #endif

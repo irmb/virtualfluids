@@ -85,6 +85,12 @@ public:
     GRIDGENERATOR_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+    GRIDGENERATOR_EXPORT void setPeriodicShiftOnXBoundaryInYDirection(real shift);
+    GRIDGENERATOR_EXPORT void setPeriodicShiftOnXBoundaryInZDirection(real shift);
+    GRIDGENERATOR_EXPORT void setPeriodicShiftOnYBoundaryInXDirection(real shift);
+    GRIDGENERATOR_EXPORT void setPeriodicShiftOnYBoundaryInZDirection(real shift);
+    GRIDGENERATOR_EXPORT void setPeriodicShiftOnZBoundaryInXDirection(real shift);
+    GRIDGENERATOR_EXPORT void setPeriodicShiftOnZBoundaryInYDirection(real shift);
     GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
     GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
                                                             real velocityX=c0o1, real velocityY=c0o1, real velocityZ=c0o1,

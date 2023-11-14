@@ -19,36 +19,36 @@
 
 struct ConfigDataStruct
 {
-	std::vector<double> viscosity;
+    std::vector<double> viscosity;
     std::vector<std::string> kernelsToTest;
 
-	std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > taylorGreenVortexUxParameter;
-	std::vector<std::shared_ptr<GridInformationStruct> > taylorGreenVortexUxGridInformation;
+    std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > taylorGreenVortexUxParameter;
+    std::vector<std::shared_ptr<GridInformationStruct> > taylorGreenVortexUxGridInformation;
 
-	std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > taylorGreenVortexUzParameter;
-	std::vector<std::shared_ptr<GridInformationStruct> > taylorGreenVortexUzGridInformation;
+    std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > taylorGreenVortexUzParameter;
+    std::vector<std::shared_ptr<GridInformationStruct> > taylorGreenVortexUzGridInformation;
 
-	std::vector<std::shared_ptr<ShearWaveParameterStruct> > shearWaveParameter;
-	std::vector<std::shared_ptr<GridInformationStruct> > shearWaveGridInformation;
+    std::vector<std::shared_ptr<ShearWaveParameterStruct> > shearWaveParameter;
+    std::vector<std::shared_ptr<GridInformationStruct> > shearWaveGridInformation;
 
-	
+    
 
 
-	bool writeAnalyticalToVTK;
-	unsigned int ySliceForCalculation;
-	
-	std::string logFilePath;
+    bool writeAnalyticalToVTK;
+    unsigned int ySliceForCalculation;
+    
+    std::string logFilePath;
 
-	int numberOfSimulations;
+    int numberOfSimulations;
 
-	std::shared_ptr<PhiTestParameterStruct> phiTestParameter;
-	std::shared_ptr<NyTestParameterStruct> nyTestParameter;
-	std::shared_ptr<L2NormTestParameterStruct> l2NormTestParameter;
-	std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> l2NormTestBetweenKernelsParameter;
+    std::shared_ptr<PhiTestParameterStruct> phiTestParameter;
+    std::shared_ptr<NyTestParameterStruct> nyTestParameter;
+    std::shared_ptr<L2NormTestParameterStruct> l2NormTestParameter;
+    std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> l2NormTestBetweenKernelsParameter;
 
-	std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo;
+    std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo;
 
-	std::shared_ptr<LogFileParameterStruct> logFilePara;
+    std::shared_ptr<LogFileParameterStruct> logFilePara;
 };
 
 #endif 

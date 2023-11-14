@@ -7,17 +7,17 @@
 
 
 class MeasuredPoints 
-	: public CoordNeighborGeoV 
+    : public CoordNeighborGeoV 
 {
 private:
     std::vector< std::vector<unsigned int> > points;
 
 public:
-	MeasuredPoints();
-	MeasuredPoints(std::string ad);
-	~MeasuredPoints();
+    MeasuredPoints();
+    MeasuredPoints(std::string ad);
+    ~MeasuredPoints();
 
-	void init();
+    void init();
 
 };
 

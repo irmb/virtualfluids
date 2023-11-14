@@ -7,14 +7,14 @@
 
 struct ShearWaveParameterStruct
 {
-	std::shared_ptr<BasicSimulationParameterStruct> basicSimulationParameter;
+    std::shared_ptr<BasicSimulationParameterStruct> basicSimulationParameter;
 
-	double ux;
-	double uz;
-	int basicTimeStepLength;
-	double l0;
-	double rho0;
-	std::string vtkFilePath;
-	std::vector<std::string> dataToCalcTests;
+    double ux;
+    double uz;
+    int basicTimeStepLength;
+    double l0;
+    double rho0;
+    std::string vtkFilePath;
+    std::vector<std::string> dataToCalcTests;
 };
 #endif

@@ -5,10 +5,10 @@
 
 struct GridInformationStruct
 {
-	unsigned int numberOfGridLevels;
-	unsigned int maxLevel;
-	std::string gridPath;
-	double lx;
-	double lz;
+    unsigned int numberOfGridLevels;
+    unsigned int maxLevel;
+    std::string gridPath;
+    double lx;
+    double lz;
 };
 #endif

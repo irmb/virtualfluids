@@ -11,15 +11,15 @@ class DataPoint;
 class MathematicaPointList : public MathematicaFunctionImp
 {
 public:
-	static std::shared_ptr< MathematicaPointList> getNewInstance(std::string listName, std::vector< std::shared_ptr< DataPoint>> plotData);
+    static std::shared_ptr< MathematicaPointList> getNewInstance(std::string listName, std::vector< std::shared_ptr< DataPoint>> plotData);
 
-	std::string getListName();
+    std::string getListName();
 
 private:
-	MathematicaPointList();
-	MathematicaPointList(std::string listName, std::vector< std::shared_ptr< DataPoint>> plotData);
+    MathematicaPointList();
+    MathematicaPointList(std::string listName, std::vector< std::shared_ptr< DataPoint>> plotData);
 
 
-	std::string listName;
+    std::string listName;
 };
 #endif

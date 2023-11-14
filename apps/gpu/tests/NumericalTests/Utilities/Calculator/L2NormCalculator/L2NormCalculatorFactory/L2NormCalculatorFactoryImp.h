@@ -6,11 +6,11 @@
 class L2NormCalculatorFactoryImp : public L2NormCalculatorFactory
 {
 public:
-	static std::shared_ptr<L2NormCalculatorFactory> getInstance();
+    static std::shared_ptr<L2NormCalculatorFactory> getInstance();
 
-	std::shared_ptr<L2NormCalculator> makeL2NormCalculator(std::string type);
+    std::shared_ptr<L2NormCalculator> makeL2NormCalculator(std::string type);
 
 private:
-	L2NormCalculatorFactoryImp();
+    L2NormCalculatorFactoryImp();
 };
 #endif 

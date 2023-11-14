@@ -106,10 +106,9 @@ void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, G
     for(const auto dir : coarseGrid->distribution)
     {
         const bool isFineGridNeighborInvalid = isNeighborNestedInvalid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);
-        if(isFineGridNeighborInvalid)
-        {
-			bn.base[bn.numberOfEntries] = this->findOffsetBaseToNested(indexOnCoarseGrid, coarseGrid, bn.numberOfEntries);
-			bn.nested[bn.numberOfEntries]   = indexOnFineGridCF;
+        if (isFineGridNeighborInvalid) {
+            bn.base[bn.numberOfEntries] = this->findOffsetBaseToNested(indexOnCoarseGrid, coarseGrid, bn.numberOfEntries);
+            bn.nested[bn.numberOfEntries] = indexOnFineGridCF;
 
             bn.numberOfEntries++;
 
@@ -145,24 +144,23 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
-    for (const auto dir : coarseGrid->distribution)
-    {
+    for (const auto dir : coarseGrid->distribution) {
         const uint neighborIndex = findNeighborIndex(x, y, z, coarseGrid, dir);
-		if (neighborIndex != INVALID_INDEX)
-		{
-			const bool neighborBelongsToCoarseToFineInterpolationCell = coarseGrid->getField().isBaseToNestedNode(neighborIndex);
-			if (neighborBelongsToCoarseToFineInterpolationCell)
-			{
-				nb.base[nb.numberOfEntries] = indexOnCoarseGrid;
-				nb.nested[nb.numberOfEntries] = this->findOffsetNestedToBase(indexOnFineGridFC, fineGrid, nb.numberOfEntries);
+        if (neighborIndex != INVALID_INDEX) {
+            const bool neighborBelongsToCoarseToFineInterpolationCell =
+                coarseGrid->getField().isBaseToNestedNode(neighborIndex);
+            if (neighborBelongsToCoarseToFineInterpolationCell) {
+                nb.base[nb.numberOfEntries] = indexOnCoarseGrid;
+                nb.nested[nb.numberOfEntries] =
+                    this->findOffsetNestedToBase(indexOnFineGridFC, fineGrid, nb.numberOfEntries);
 
-				nb.numberOfEntries++;
+                nb.numberOfEntries++;
 
-				fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, FLUID_FCF);
-				coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
-				break;
-			}
-		}
+                fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, FLUID_FCF);
+                coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
+                break;
+            }
+        }
     }
 }
 
@@ -290,7 +288,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
     for (const auto dir : coarseGrid->distribution)
     {
         //if (dir[0] > 0 || dir[1] > 0 || dir[2] > 0)  //only Esoteric Twist stopper, not perfectly implemented
-        //    continue;								   //should not be here, should be made conditional
+        //    continue;                                   //should not be here, should be made conditional
 
         const uint neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
         neighborBelongsToFineToCoarseInterpolationCell = neighborIndex != INVALID_INDEX ? coarseGrid->getField().isFineToCoarseNode(neighborIndex) : false;
@@ -301,11 +299,11 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
         }
     }
 
-	//should be inside of fine grid and can be deleted
+    //should be inside of fine grid and can be deleted
     if(!neighborBelongsToFineToCoarseInterpolationCell && (fineGrid->getField().isInvalidSolid(indexOnFineGridFC) || 
-	                                                       fineGrid->getField().isFluid(indexOnFineGridFC) ||
-	                                                       fineGrid->getField().is(indexOnFineGridFC, STOPPER_SOLID) || 
-	                                                       fineGrid->getField().is(indexOnFineGridFC, BC_SOLID)))
+                                                           fineGrid->getField().isFluid(indexOnFineGridFC) ||
+                                                           fineGrid->getField().is(indexOnFineGridFC, STOPPER_SOLID) || 
+                                                           fineGrid->getField().is(indexOnFineGridFC, BC_SOLID)))
         coarseGrid->getField().setFieldEntryToInvalidCoarseUnderFine(indexOnCoarseGrid);
 }
 
@@ -475,16 +473,16 @@ uint GridInterface::findOffsetBaseToNested(const uint& indexOnCoarseGrid, GridIm
         if( coarseGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
             this->bn.offset[ interfaceIndex ] = dirIndex;
 
-			return coarseGrid->transCoordToIndex( x + dir[0] * coarseGrid->getDelta(),
-				                                  y + dir[1] * coarseGrid->getDelta(),
-				                                  z + dir[2] * coarseGrid->getDelta() );
+            return coarseGrid->transCoordToIndex( x + dir[0] * coarseGrid->getDelta(),
+                                                  y + dir[1] * coarseGrid->getDelta(),
+                                                  z + dir[2] * coarseGrid->getDelta() );
         }
     
         dirIndex++;
     }
 
-	// this point should never be reached
-	return indexOnCoarseGrid;
+    // this point should never be reached
+    return indexOnCoarseGrid;
 }
 
 uint GridInterface::findOffsetNestedToBase(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
@@ -508,18 +506,18 @@ uint GridInterface::findOffsetNestedToBase(const uint& indexOnFineGrid, GridImp*
                            fineGrid->getDelta() );
 
         if( fineGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
-			this->nb.offset[interfaceIndex] = dirIndex;
+            this->nb.offset[interfaceIndex] = dirIndex;
 
-			return fineGrid->transCoordToIndex(x + dir[0] * fineGrid->getDelta(),
-				                               y + dir[1] * fineGrid->getDelta(),
-				                               z + dir[2] * fineGrid->getDelta());
+            return fineGrid->transCoordToIndex(x + dir[0] * fineGrid->getDelta(),
+                                               y + dir[1] * fineGrid->getDelta(),
+                                               z + dir[2] * fineGrid->getDelta());
         }
     
         dirIndex++;
     }
 
-	// this point should never be reached
-	return indexOnFineGrid;
+    // this point should never be reached
+    return indexOnFineGrid;
 }
 
 void GridInterface::print() const

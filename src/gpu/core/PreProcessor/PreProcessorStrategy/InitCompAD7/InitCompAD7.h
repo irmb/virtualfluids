@@ -10,13 +10,13 @@ class Parameter;
 class InitCompAD7 : public PreProcessorStrategy
 {
 public:
-	static std::shared_ptr<InitCompAD7> getNewInstance(std::shared_ptr< Parameter> para);
-	void init(int level);
-	bool checkParameter();
+    static std::shared_ptr<InitCompAD7> getNewInstance(std::shared_ptr< Parameter> para);
+    void init(int level);
+    bool checkParameter();
 
 private:
-	InitCompAD7();
-	InitCompAD7(std::shared_ptr< Parameter> para);
-	std::shared_ptr< Parameter> para;
+    InitCompAD7();
+    InitCompAD7(std::shared_ptr< Parameter> para);
+    std::shared_ptr< Parameter> para;
 };
 #endif 

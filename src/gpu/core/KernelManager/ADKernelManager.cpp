@@ -34,8 +34,9 @@
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+#include "Kernel/AdvectionDiffusionKernel.h"
 
-ADKernelManager::ADKernelManager(SPtr<Parameter> parameter): para(parameter){}
+ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(parameter), adkernels(adkernels){}
 
 void ADKernelManager::initAD(const int level) const
 {
@@ -113,71 +114,7 @@ void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryMan
 ////////////////////////////////////////////////////////////////////////////////
 void ADKernelManager::runADcollisionKernel(const int level)const
 {
-    if (para->getDiffMod() == 7)
-    {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // incompressible
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // KernelADincomp7(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->diffusivity,
-        //     para->getParD(level)->typeOfGridNode,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->distributionsAD7.f[0],
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // compressible
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // KernelThS7(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->diffusivity,
-        //     para->getParD(level)->typeOfGridNode,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->distributionsAD7.f[0],
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-    }
-    else if (para->getDiffMod() == 27)
-    {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // incompressible
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // KernelADincomp27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->diffusivity,
-        //     para->getParD(level)->typeOfGridNode,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->distributionsAD27.f[0],
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // compressible
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        FactorizedCentralMomentsAdvectionDiffusionDeviceKernel(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->omegaDiffusivity,
-            para->getParD(level)->typeOfGridNode,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->distributionsAD.f[0],
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->forcing,
-            para->getParD(level)->isEvenTimestep);
-    }
+    adkernels[level]->run();
 }
 
 void ADKernelManager::runADslipBCKernel(const int level) const{
@@ -203,45 +140,6 @@ void ADKernelManager::runADslipBCKernel(const int level) const{
 
 void ADKernelManager::runADpressureBCKernel(const int level) const{
     if (para->getParD(level)->TempPress.kTemp > 0){
-        if (para->getDiffMod() == 7) {
-            // QADPressIncompDev7( 
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD7.f[0],
-            //     para->getParD(level)->TempPress.temp,
-            //     para->getParD(level)->TempPress.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->TempPress.k,
-            //     para->getParD(level)->pressureBC.q27[0],
-            //     para->getParD(level)->TempPress.kTemp,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-
-             //////////////////////////////////////////////////////////////////////////
-             // C O M P R E S S I B L E
-             //////////////////////////////////////////////////////////////////////////
-            QADPressDev7(
-                para->getParD(level)->numberofthreads,
-                para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD7.f[0],
-                para->getParD(level)->TempPress.temp,
-                para->getParD(level)->TempPress.velo,
-                para->getParD(level)->diffusivity,
-                para->getParD(level)->TempPress.k,
-                para->getParD(level)->pressureBC.q27[0],
-                para->getParD(level)->TempPress.kTemp,
-                para->getParD(level)->omega,
-                para->getParD(level)->neighborX,
-                para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ,
-                para->getParD(level)->numberOfNodes,
-                para->getParD(level)->isEvenTimestep);
-
-        } else if (para->getDiffMod() == 27) {
             // QADPressIncompDev27(
             //     para->getParD(level)->numberofthreads,
             //     para->getParD(level)->distributions.f[0],
@@ -278,51 +176,12 @@ void ADKernelManager::runADpressureBCKernel(const int level) const{
                 para->getParD(level)->neighborZ,
                 para->getParD(level)->numberOfNodes,
                 para->getParD(level)->isEvenTimestep);
-        }
     }
 }
 
 void ADKernelManager::runADgeometryBCKernel(const int level) const
 {
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0) {
-        if (para->getDiffMod() == 7) {
-            // QNoSlipADincompDev7(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD7.f[0],
-            //     para->getParD(level)->Temp.temp,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->Temp.k,
-            //     para->getParD(level)->geometryBC.q27[0],
-            //     para->getParD(level)->Temp.kTemp,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-
-            //////////////////////////////////////////////////////////////////////////
-            // C O M P R E S S I B L E
-            //////////////////////////////////////////////////////////////////////////
-
-            QADDev7(
-                para->getParD(level)->numberofthreads,
-                para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD7.f[0],
-                para->getParD(level)->Temp.temp,
-                para->getParD(level)->diffusivity,
-                para->getParD(level)->Temp.k,
-                para->getParD(level)->geometryBC.q27[0],
-                para->getParD(level)->Temp.kTemp,
-                para->getParD(level)->omega,
-                para->getParD(level)->neighborX,
-                para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ,
-                para->getParD(level)->numberOfNodes,
-                para->getParD(level)->isEvenTimestep);
-
-        } else if (para->getDiffMod() == 27) {
             // QNoSlipADincompDev27(
             //     para->getParD(level)->numberofthreads,
             //     para->getParD(level)->distributions.f[0],
@@ -358,53 +217,11 @@ void ADKernelManager::runADgeometryBCKernel(const int level) const
                 para->getParD(level)->neighborZ,
                 para->getParD(level)->numberOfNodes,
                 para->getParD(level)->isEvenTimestep);
-        }
     }
 }
 
 void ADKernelManager::runADveloBCKernel(const int level) const{
     if (para->getParD(level)->TempVel.kTemp > 0){
-        if (para->getDiffMod() == 7)
-        {
-            // QADVeloIncompDev7(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD7.f[0],
-            //     para->getParD(level)->TempVel.tempPulse,
-            //     para->getParD(level)->TempVel.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->TempVel.k,
-            //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->TempVel.kTemp,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-
-            //////////////////////////////////////////////////////////////////////////
-            // C O M P R E S S I B L E
-            //////////////////////////////////////////////////////////////////////////
-
-            QADVelDev7(
-                para->getParD(level)->numberofthreads,
-                para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD7.f[0],
-                para->getParD(level)->TempVel.temp,
-                para->getParD(level)->TempVel.velo,
-                para->getParD(level)->diffusivity,
-                para->getParD(level)->TempVel.k,
-                para->getParD(level)->velocityBC.q27[0],
-                para->getParD(level)->TempVel.kTemp,
-                para->getParD(level)->omega,
-                para->getParD(level)->neighborX,
-                para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ,
-                para->getParD(level)->numberOfNodes,
-                para->getParD(level)->isEvenTimestep);
-
-        } else if (para->getDiffMod() == 27) {
             // QADVeloIncompDev27(
             //     para->getParD(level)->numberofthreads,
             //     para->getParD(level)->distributions.f[0],
@@ -442,48 +259,6 @@ void ADKernelManager::runADveloBCKernel(const int level) const{
                 para->getParD(level)->numberOfNodes,
                 para->getParD(level)->isEvenTimestep);
 
-            //////////////////////////////////////////////////////////////////////////
-            // W T G _ R U B
-            //////////////////////////////////////////////////////////////////////////
-            // if (t<1000)//(t>100000 && t<103895)//(t>1600000 && t<1662317)//(t>500000 && t<515580)//(t<1000)//(t<15580)//(t>400000 && t<415580)//
-            // {
-            //   QADVelDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->TempVel.tempPulse,
-            //     para->getParD(level)->TempVel.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->velocityBC.k,
-            //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->velocityBC.numberOfBCnodes,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-            // }
-            // else
-            // {
-            //   QADVelDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->TempVel.temp,
-            //     para->getParD(level)->TempVel.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->velocityBC.k,
-            //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->velocityBC.numberOfBCnodes,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-            // }
-        }
     }
 }
 

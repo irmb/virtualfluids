@@ -6,27 +6,27 @@
 
 std::shared_ptr<LogFileDataAssistantStrategyFactory> LogFileDataAssistantStrategyFactoryImp::getNewInstance()
 {
-	return std::shared_ptr<LogFileDataAssistantStrategyFactory>(new LogFileDataAssistantStrategyFactoryImp());
+    return std::shared_ptr<LogFileDataAssistantStrategyFactory>(new LogFileDataAssistantStrategyFactoryImp());
 }
 
 std::shared_ptr<LogFileDataAssistantStrategy> LogFileDataAssistantStrategyFactoryImp::makeLogFileDataAssistantStrategy(BasicSimulation sim)
 {
-	std::shared_ptr<LogFileDataAssistantStrategy> assistentStrategy;
-	switch (sim)
-	{
-	case ShearWave:
-		assistentStrategy = ShearWaveLogFileDataAssistantStrategy::getNewInstance();
-		break;
-	case TaylorGreenVortexUx:
-		assistentStrategy = TaylorGreenVortexUxLogFileDataAssistantStrategy::getNewInstance();
-		break;
-	case TaylorGreenVortexUz:
-		assistentStrategy = TaylorGreenVortexUzLogFileDataAssistantStrategy::getNewInstance();
-		break;
-	default:
-		break;
-	}
-	return assistentStrategy;
+    std::shared_ptr<LogFileDataAssistantStrategy> assistentStrategy;
+    switch (sim)
+    {
+    case ShearWave:
+        assistentStrategy = ShearWaveLogFileDataAssistantStrategy::getNewInstance();
+        break;
+    case TaylorGreenVortexUx:
+        assistentStrategy = TaylorGreenVortexUxLogFileDataAssistantStrategy::getNewInstance();
+        break;
+    case TaylorGreenVortexUz:
+        assistentStrategy = TaylorGreenVortexUzLogFileDataAssistantStrategy::getNewInstance();
+        break;
+    default:
+        break;
+    }
+    return assistentStrategy;
 }
 
 LogFileDataAssistantStrategyFactoryImp::LogFileDataAssistantStrategyFactoryImp()

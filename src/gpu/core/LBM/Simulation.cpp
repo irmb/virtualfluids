@@ -42,10 +42,10 @@
 #include "Calculation/CalcMedian.h"
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/ForceCalculations.h"
-#include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/Timer.h"
 #include "Output/FileWriter.h"
+#include "Output/DistributionDebugWriter.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Restart/RestartObject.h"
 //////////////////////////////////////////////////////////////////////////
@@ -75,8 +75,8 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
-	this->tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
-	init(gridProvider, bcFactory, tmFactory, scalingFactory);
+    this->tmFactory = SPtr<TurbulenceModelFactory>( new TurbulenceModelFactory(para) );
+    init(gridProvider, bcFactory, tmFactory, scalingFactory);
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
@@ -84,7 +84,7 @@ Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemo
     : para(para), cudaMemoryManager(memoryManager), communicator(communicator), kernelFactory(std::make_unique<KernelFactoryImp>()),
       preProcessorFactory(std::make_shared<PreProcessorFactoryImp>()), dataWriter(std::make_unique<FileWriter>())
 {
-	init(gridProvider, bcFactory, tmFactory, scalingFactory);
+    init(gridProvider, bcFactory, tmFactory, scalingFactory);
 }
 
 void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory)
@@ -249,15 +249,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     }
 
     //////////////////////////////////////////////////////////////////////////
-    // Porous Media
-    //////////////////////////////////////////////////////////////////////////
-    if (para->getSimulatePorousMedia()) {
-        VF_LOG_INFO("define area(s) of porous media");
-        porousMedia();
-        kernelFactory->setPorousMedia(pm);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
     // enSightGold
     //////////////////////////////////////////////////////////////////////////
     // excludeGridInterfaceNodesForMirror(para, 7);
@@ -364,7 +355,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     // Init UpdateGrid
     //////////////////////////////////////////////////////////////////////////
-    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, pm, kernels, bcFactory, tmFactory, scalingFactory);
+    this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaMemoryManager, kernels, adKernels, bcFactory, tmFactory, scalingFactory);
 
     //////////////////////////////////////////////////////////////////////////
     // Write Initialized Files
@@ -392,10 +383,13 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
     //    }
 
-    // Allocate host memory for DistributionDebugWriter
-    cudaMemoryManager->cudaAllocFsForAllLevelsOnHost();
+#if DEBUG_FS
+    VF_LOG_INFO("Allocating host memory for DistributionWriter.");
+    DistributionDebugWriter::allocateDistributionsOnHost(*cudaMemoryManager);
+#endif
+
     VF_LOG_INFO("...done");
-    
+
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
     // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
@@ -872,23 +866,8 @@ void Simulation::readAndWriteFiles(uint timestep)
             if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
         }
         //////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn()==true)
+        if (para->getDiffOn())
         {
-            if (para->getDiffMod() == 7)
-            {
-               CalcMacThS7( para->getParD(lev)->concentration,
-                            para->getParD(lev)->typeOfGridNode,
-                            para->getParD(lev)->neighborX,
-                            para->getParD(lev)->neighborY,
-                            para->getParD(lev)->neighborZ,
-                            para->getParD(lev)->numberOfNodes,
-                            para->getParD(lev)->numberofthreads,
-                            para->getParD(lev)->distributionsAD7.f[0],
-                            para->getParD(lev)->isEvenTimestep);
-               getLastCudaError("CalcMacTh7 execution failed");
-            }
-            else if (para->getDiffMod() == 27)
-            {
                CalcConcentration27(
                               para->getParD(lev)->numberofthreads,
                               para->getParD(lev)->concentration,
@@ -899,7 +878,6 @@ void Simulation::readAndWriteFiles(uint timestep)
                               para->getParD(lev)->numberOfNodes,
                               para->getParD(lev)->distributionsAD.f[0],
                               para->getParD(lev)->isEvenTimestep);
-            }
             cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
             //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
         }
@@ -1024,147 +1002,15 @@ void Simulation::readAndWriteFiles(uint timestep)
     ////////////////////////////////////////////////////////////////////////
     if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
 
+#if DEBUG_FS
     // Write distributions (f's) for debugging purposes.
-    cudaMemoryManager->cudaCopyFsForAllLevelsToHost();
-    DistributionDebugWriter::writeDistributions(para.get(), timestep);
+    DistributionDebugWriter::copyDistributionsToHost(*para, *cudaMemoryManager);
+    DistributionDebugWriter::writeDistributions(*para, timestep);
+#endif
 
     ////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("... done");
     ////////////////////////////////////////////////////////////////////////
-}
-
-void Simulation::porousMedia()
-{
-    double porosity, darcySI, forchheimerSI;
-    double dxLBM = 0.00390625;
-    double dtLBM = 0.00000658;
-    unsigned int level, geo;
-    double startX, startY, startZ, endX, endY, endZ;
-    //////////////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////Test = porous media 0
-    //porosity = 0.7;
-    //darcySI = 137.36; //[1/s]
-    //forchheimerSI = 1037.8; //[1/m]
-    //level = para->getFine();
-    //geo = GEO_PM_0;
-    //startX = 20.0;
-    //startY =  0.0;
-    //startZ =  0.0;
-    //endX = 40.0;
-    //endY = 22.0;
-    //endZ = 22.0;
-    //pm[0] = new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level);
-    //pm[0]->setStartCoordinates(startX, startY, startZ);
-    //pm[0]->setEndCoordinates(endX, endY, endZ);
-    //pm[0]->setResistanceLBM();
-    //definePMarea(pm[0]);
-    ////////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-    //Kondensator = porous media 0
-    porosity = 0.7;
-    darcySI = 137.36; //[1/s]
-    forchheimerSI = 1037.8; //[1/m]
-    level = para->getFine();
-    geo = GEO_PM_0;
-    startX = -0.715882;
-    startY = -0.260942;
-    startZ = -0.031321;
-    endX = -0.692484;
-    endY =  0.277833;
-    endZ =  0.360379;
-    pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-    int n = (int)pm.size() - 1;
-    pm.at(n)->setStartCoordinates(startX, startY, startZ);
-    pm.at(n)->setEndCoordinates(endX, endY, endZ);
-    pm.at(n)->setResistanceLBM();
-    definePMarea(pm.at(n));
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-    //NT-Kuehler = porous media 1
-    porosity = 0.6;
-    darcySI = 149.98; //[1/s]
-    forchheimerSI = 960.57; //[1/m]
-    level = para->getFine();
-    geo = GEO_PM_1;
-    startX = -0.696146;
-    startY = -0.32426;
-    startZ = -0.0421345;
-    endX = -0.651847;
-    endY =  0.324822;
-    endZ =  0.057098;
-    pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-    n = (int)pm.size() - 1;
-    pm.at(n)->setStartCoordinates(startX, startY, startZ);
-    pm.at(n)->setEndCoordinates(endX, endY, endZ);
-    pm.at(n)->setResistanceLBM();
-    definePMarea(pm.at(n));
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-    //Wasserkuehler = porous media 2
-    porosity = 0.6;
-    darcySI = 148.69; //[1/s]
-    forchheimerSI = 629.45; //[1/m]
-    level = para->getFine();
-    geo = GEO_PM_2;
-    startX = -0.692681;
-    startY = -0.324954;
-    startZ = 0.0789429;
-    endX = -0.657262;
-    endY =  0.32538;
-    endZ =  0.400974;
-    pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-    n = (int)pm.size() - 1;
-    pm.at(n)->setStartCoordinates(startX, startY, startZ);
-    pm.at(n)->setEndCoordinates(endX, endY, endZ);
-    pm.at(n)->setResistanceLBM();
-    definePMarea(pm.at(n));
-    //////////////////////////////////////////////////////////////////////////
-
-}
-
-void Simulation::definePMarea(std::shared_ptr<PorousMedia>& pMedia)
-{
-    unsigned int counter = 0;
-    unsigned int level = pMedia->getLevelPM();
-    std::vector< unsigned int > nodeIDsPorousMedia;
-    VF_LOG_INFO("definePMarea....find nodes");
-
-    for (unsigned int i = 0; i < para->getParH(level)->numberOfNodes; i++)
-    {
-        if (((para->getParH(level)->coordinateX[i] >= pMedia->getStartX()) && (para->getParH(level)->coordinateX[i] <= pMedia->getEndX())) &&
-            ((para->getParH(level)->coordinateY[i] >= pMedia->getStartY()) && (para->getParH(level)->coordinateY[i] <= pMedia->getEndY())) &&
-            ((para->getParH(level)->coordinateZ[i] >= pMedia->getStartZ()) && (para->getParH(level)->coordinateZ[i] <= pMedia->getEndZ())) )
-        {
-            if (para->getParH(level)->typeOfGridNode[i] >= GEO_FLUID)
-            {
-                para->getParH(level)->typeOfGridNode[i] = pMedia->getGeoID();
-                nodeIDsPorousMedia.push_back(i);
-                counter++;
-            }
-        }
-    }
-
-    VF_LOG_INFO("definePMarea....cuda copy SP");
-    cudaMemoryManager->cudaCopySP(level);
-    pMedia->setSizePM(counter);
-    VF_LOG_INFO("definePMarea....cuda alloc PM");
-    cudaMemoryManager->cudaAllocPorousMedia(pMedia.get(), level);
-    unsigned int *tpmArrayIDs = pMedia->getHostNodeIDsPM();
-
-    VF_LOG_INFO("definePMarea....copy vector to array");
-    for (unsigned int j = 0; j < pMedia->getSizePM(); j++)
-    {
-        tpmArrayIDs[j] = nodeIDsPorousMedia[j];
-    }
-
-    pMedia->setHostNodeIDsPM(tpmArrayIDs);
-    VF_LOG_INFO("definePMarea....cuda copy PM");
-    cudaMemoryManager->cudaCopyPorousMedia(pMedia.get(), level);
 }
 
 Simulation::~Simulation()

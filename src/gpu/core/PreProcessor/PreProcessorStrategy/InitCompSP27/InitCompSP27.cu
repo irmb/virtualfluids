@@ -6,7 +6,7 @@
 
 std::shared_ptr<PreProcessorStrategy> InitCompSP27::getNewInstance(std::shared_ptr<Parameter> para)
 {
-	return std::shared_ptr<PreProcessorStrategy>(new InitCompSP27(para));
+    return std::shared_ptr<PreProcessorStrategy>(new InitCompSP27(para));
 }
 
 void InitCompSP27::init(int level)
@@ -55,12 +55,12 @@ void InitCompSP27::init(int level)
 
 bool InitCompSP27::checkParameter()
 {
-	return false;
+    return false;
 }
 
 InitCompSP27::InitCompSP27(std::shared_ptr<Parameter> para)
 {
-	this->para = para;
+    this->para = para;
 }
 
 InitCompSP27::InitCompSP27()

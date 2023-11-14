@@ -2,7 +2,7 @@
 
 std::string MathematicaFunctionImp::getFunction()
 {
-	return mathematicaFunction.str();
+    return mathematicaFunction.str();
 }
 
 MathematicaFunctionImp::MathematicaFunctionImp()

@@ -7,16 +7,16 @@ using namespace vf::lbm::dir;
 #include "math.h"
 
 __global__ void LB_Init_SP_27(unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* geoD,
-	real* rho,
-	real* ux,
-	real* uy,
-	real* uz,
-	unsigned int size_Mat,
-	real* DD,
-	bool EvenOrOdd)
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* geoD,
+    real* rho,
+    real* ux,
+    real* uy,
+    real* uz,
+    unsigned int size_Mat,
+    real* DD,
+    bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
    const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -164,14 +164,14 @@ __global__ void LB_Init_SP_27(unsigned int* neighborX,
          (D.f[dPMM ])[kbse ] =   c1o216*(drho+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
          (D.f[dMPP ])[ktnw ] =   c1o216*(drho+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       }
-	  else
-	  {
-		  //////////////////////////////////////////////////////////////////////////
-		  Distributions27 D;
-		  D.f[d000] = &DD[d000*size_Mat];
-		  //////////////////////////////////////////////////////////////////////////
-		  (D.f[d000])[k] = c96o1;
-		  //////////////////////////////////////////////////////////////////////////
-	  }
+      else
+      {
+          //////////////////////////////////////////////////////////////////////////
+          Distributions27 D;
+          D.f[d000] = &DD[d000*size_Mat];
+          //////////////////////////////////////////////////////////////////////////
+          (D.f[d000])[k] = c96o1;
+          //////////////////////////////////////////////////////////////////////////
+      }
    }
 }

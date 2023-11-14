@@ -48,28 +48,28 @@ struct GRIDGENERATOR_EXPORT Triangle
     
     uint patchIndex;
 
-	Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal);
-	Triangle(Vertex &v1, Vertex &v2, Vertex &v3);
-	Triangle();
+    Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal);
+    Triangle(Vertex &v1, Vertex &v2, Vertex &v3);
+    Triangle();
 
-	void set(const Vertex &v1, const Vertex &v2, const Vertex &v3);
+    void set(const Vertex &v1, const Vertex &v2, const Vertex &v3);
     void set(int index, Vertex value);
     Vertex get(int index);
-	void calcNormal();
+    void calcNormal();
 
     void initalLayerThickness(real delta);
 
 
-	Vertex getCenterOfMass() const;
-	real getHalfAngleBetweenToAdjacentTriangle(const Triangle &t2) const;
-	int isEqual(const Triangle &t2) const;
-	bool doesNormalsShowToEachOther(const  Triangle &t2) const;
-	int getCommonEdge(const Triangle &t2) const;
+    Vertex getCenterOfMass() const;
+    real getHalfAngleBetweenToAdjacentTriangle(const Triangle &t2) const;
+    int isEqual(const Triangle &t2) const;
+    bool doesNormalsShowToEachOther(const  Triangle &t2) const;
+    int getCommonEdge(const Triangle &t2) const;
 
-	bool contains(const Vertex& v)const;
-	int getNumberOfCommonEdge(const Triangle &t2) const;
-	int getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const;
-	void print() const;
+    bool contains(const Vertex& v)const;
+    int getNumberOfCommonEdge(const Triangle &t2) const;
+    int getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const;
+    void print() const;
 
     char isUnderFace(const Vertex &point) const;
 

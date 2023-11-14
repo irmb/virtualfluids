@@ -65,66 +65,66 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
         int testcase = SphereTest;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (testcase == TGV)
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		{
-			real dx = 1.0;
-			// real vx = 0.049;
-			//////////////////////////////////////////////////////////////////////////
-			//32
-			gridBuilder->addCoarseGrid(-24, -2, -16,
-										24,  2,  16, dx);
-			//////////////////////////////////////////////////////////////////////////
-			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
-			//////////////////////////////////////////////////////////////////////////
-			gridBuilder->buildGrids(true);
-			//////////////////////////////////////////////////////////////////////////
-			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
-			//////////////////////////////////////////////////////////////////////////
-			gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results/32/TGV32turned_Grid");
-			gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results/32/TGV32turned_Grid_arrow");
-			//////////////////////////////////////////////////////////////////////////
-			SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids/turned/gridUni48x4x32/", gridBuilder, FILEFORMAT::BINARY);
-			//////////////////////////////////////////////////////////////////////////
-			return;
-		}
+        if (testcase == TGV)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {
+            real dx = 1.0;
+            // real vx = 0.049;
+            //////////////////////////////////////////////////////////////////////////
+            //32
+            gridBuilder->addCoarseGrid(-24, -2, -16,
+                                        24,  2,  16, dx);
+            //////////////////////////////////////////////////////////////////////////
+            gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+            //////////////////////////////////////////////////////////////////////////
+            gridBuilder->buildGrids(true);
+            //////////////////////////////////////////////////////////////////////////
+            SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+            //////////////////////////////////////////////////////////////////////////
+            gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results/32/TGV32turned_Grid");
+            gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results/32/TGV32turned_Grid_arrow");
+            //////////////////////////////////////////////////////////////////////////
+            SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids/turned/gridUni48x4x32/", gridBuilder, FILEFORMAT::BINARY);
+            //////////////////////////////////////////////////////////////////////////
+            return;
+        }
 
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (testcase == TGV3D)
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		{
-			const real PI = 3.141592653589793238462643383279;
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (testcase == TGV3D)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {
+            const real PI = 3.141592653589793238462643383279;
 
-			real dx = 2.0 * PI / 32.0; // 32^3 nodes
-			//real dx = 2.0 * PI / 64.0; // 64^3 nodes
-			//real dx = 2.0 * PI / 128.0; // 128^3 nodes
-			//real dx = 2.0 * PI / 256.0; // 128^3 nodes
-			// real vx = 0.049;
+            real dx = 2.0 * PI / 32.0; // 32^3 nodes
+            //real dx = 2.0 * PI / 64.0; // 64^3 nodes
+            //real dx = 2.0 * PI / 128.0; // 128^3 nodes
+            //real dx = 2.0 * PI / 256.0; // 128^3 nodes
+            // real vx = 0.049;
 
-			gridBuilder->addCoarseGrid(-PI, -PI, -PI,
-										PI,  PI,  PI, dx);
+            gridBuilder->addCoarseGrid(-PI, -PI, -PI,
+                                        PI,  PI,  PI, dx);
 
-			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+            gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-			gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
-			//////////////////////////////////////////////////////////////////////////
-			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
-			//////////////////////////////////////////////////////////////////////////
-			//32
-			gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results3D/32/TGV3D_Grid");
-			gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results3D/32/TGV3D_Grid_arrow");
-			SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids3D/gridTGV3D/32/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
-			//256
-		    //gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results3D/256/TGV3D_Grid");
-			//gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results3D/256/TGV3D_Grid_arrow");
-			//SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids3D/gridTGV3D/256/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
+            //////////////////////////////////////////////////////////////////////////
+            SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+            //////////////////////////////////////////////////////////////////////////
+            //32
+            gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results3D/32/TGV3D_Grid");
+            gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results3D/32/TGV3D_Grid_arrow");
+            SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids3D/gridTGV3D/32/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
+            //256
+            //gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results3D/256/TGV3D_Grid");
+            //gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results3D/256/TGV3D_Grid_arrow");
+            //SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids3D/gridTGV3D/256/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
 
-			return;
+            return;
 
-		}
+        }
 
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == SphereTest)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
@@ -148,8 +148,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setTimestepEnd( 100000 );
 
             para->setCalcDragLift(true);
-
-            para->setUseWale(false);
 
             para->configureMainKernel("CumulantK15Comp");
 
@@ -233,8 +231,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             para->setTimestepOut( 10000 );
             para->setTimestepEnd( 100000 );
-
-            para->setUseWale(false);
 
             para->configureMainKernel("CumulantK20Comp");
 
@@ -337,8 +333,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setTimestepOut( 1000 );
             para->setTimestepEnd( 100000 );
 
-            para->setUseWale(false);
-
             para->configureMainKernel("CumulantAA2016CompSP27");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -415,8 +409,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setTimestepOut( 1000 );
             para->setTimestepEnd( 100000 );
 
-            para->setUseWale(false);
-
             para->configureMainKernel("CumulantAA2016CompSP27");
             //para->configureMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
 
@@ -469,12 +461,12 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
         if( testcase == DLC )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
-			real velocityRatio = 594.093427;
+            real velocityRatio = 594.093427;
 
-			real dx = 0.2;
-			real vx = 0.065272188;
+            real dx = 0.2;
+            real vx = 0.065272188;
 
-			real z0 = 0.24395 + 0.5*dx;
+            real z0 = 0.24395 + 0.5*dx;
 
             std::vector<uint> ignorePatches = { 152, 153, 154 };
 
@@ -552,9 +544,9 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
             real wheelsRadius =  0.318;
 
-			real wheelRotationFrequency = 1170.74376 / 60.0;
+            real wheelRotationFrequency = 1170.74376 / 60.0;
 
-			real wheelTangentialVelocity = -2.0 * M_PI * wheelsRadius * wheelRotationFrequency / velocityRatio;
+            real wheelTangentialVelocity = -2.0 * M_PI * wheelsRadius * wheelRotationFrequency / velocityRatio;
 
             std::vector<uint> frontWheelPatches = { 71, 86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97, 159 };
             std::vector<uint> rearWheelPatches  = { 82, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 160 };
@@ -562,13 +554,13 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             for( uint patch : frontWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsFrontX, -2.0, wheelsFrontZ,
                                                                                                                                              wheelsFrontX,  2.0, wheelsFrontZ,
-					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
+                                                                                                                                             wheelTangentialVelocity, wheelsRadius);
             }
 
             for( uint patch : rearWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsRearX , -2.0, wheelsRearZ ,
                                                                                                                                              wheelsRearX ,  2.0, wheelsRearZ ,
-					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
+                                                                                                                                             wheelTangentialVelocity, wheelsRadius);
             }
 
             //////////////////////////////////////////////////////////////////////////
@@ -611,8 +603,6 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
             para->setTimestepEnd( 100000 );
 
             para->setCalcDragLift(true);
-
-            para->setUseWale(false);
 
             para->configureMainKernel("CumulantK15Comp");
 

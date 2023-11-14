@@ -219,8 +219,8 @@ real Triangle::getHalfAngleBetweenToAdjacentTriangle(const Triangle &t2) const
     if (isEqual(t2)) return 0.0f;
 
     real alpha = normal.getInnerAngle(t2.normal);
-	if (alpha == 0.0f)
-		return 90.0f;
+    if (alpha == 0.0f)
+        return 90.0f;
 
     if(doesNormalsShowToEachOther(t2))
         return (180.0f + alpha) / 2.0f;
@@ -246,12 +246,12 @@ bool Triangle::doesNormalsShowToEachOther(const  Triangle &t2) const
 int Triangle::getCommonEdge(const Triangle &t2) const 
 {
     bool edgeOneCommon = false;
-	bool edgeTwoCommon = false;
-	bool edgeThreeCommon = false;
+    bool edgeTwoCommon = false;
+    bool edgeThreeCommon = false;
 
-	edgeOneCommon = t2.contains(v1);
-	edgeTwoCommon = t2.contains(v2);
-	edgeThreeCommon = t2.contains(v3);
+    edgeOneCommon = t2.contains(v1);
+    edgeTwoCommon = t2.contains(v2);
+    edgeThreeCommon = t2.contains(v3);
 
     if (edgeOneCommon && edgeTwoCommon)
         return 0;
@@ -265,19 +265,19 @@ int Triangle::getCommonEdge(const Triangle &t2) const
 
 bool Triangle::contains(const Vertex& v) const 
 {
-	return (v == v1 || v == v2 || v == v3);
+    return (v == v1 || v == v2 || v == v3);
 }
 
 
 int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
 {
-	int commonEdge = 0;
-	if (t2.contains(v1))
-		commonEdge++;
-	if (t2.contains(v2))
-		commonEdge++;
-	if (t2.contains(v3))
-		commonEdge++;
+    int commonEdge = 0;
+    if (t2.contains(v1))
+        commonEdge++;
+    if (t2.contains(v2))
+        commonEdge++;
+    if (t2.contains(v3))
+        commonEdge++;
 
     if (commonEdge == 2 || commonEdge == 3) return commonEdge;
     return 0;
@@ -286,8 +286,8 @@ int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
 
 int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const
 {
-	///// taken from /////
-	//http://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
+    ///// taken from /////
+    //http://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 
 
     Vertex edge1, edge2, tvec, pvec, qvec, tuv;
@@ -307,14 +307,14 @@ int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, 
     tvec = P - v1;
     tuv.y = (tvec * pvec) * inv_det;
 
-	if (!vf::Math::greaterEqual(tuv.y, 0.0) || !vf::Math::lessEqual(tuv.y, 1.0))
-	//if (tuv.y < 0.0 || tuv.y > 1.0)
+    if (!vf::Math::greaterEqual(tuv.y, 0.0) || !vf::Math::lessEqual(tuv.y, 1.0))
+    //if (tuv.y < 0.0 || tuv.y > 1.0)
         return 1;
 
     qvec = tvec.crossProduct(edge1);
     tuv.z = (direction * qvec) * inv_det;
 
-	if ( !vf::Math::greaterEqual(tuv.z, 0.0) || !vf::Math::lessEqual((tuv.y + tuv.z), 1.0))
+    if ( !vf::Math::greaterEqual(tuv.z, 0.0) || !vf::Math::lessEqual((tuv.y + tuv.z), 1.0))
     //if (tuv.z < 0.0 || (tuv.y + tuv.z) > 1.0)
         return 2;
 

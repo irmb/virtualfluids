@@ -8,9 +8,9 @@
 class L2NormCalculator
 {
 public:
-	virtual ~L2NormCalculator() = default;
-	virtual double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double l0) = 0;
-	virtual std::string getErrorMessage() = 0;
+    virtual ~L2NormCalculator() = default;
+    virtual double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double l0) = 0;
+    virtual std::string getErrorMessage() = 0;
 
 };
 #endif

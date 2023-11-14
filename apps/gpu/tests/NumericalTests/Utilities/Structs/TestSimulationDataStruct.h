@@ -12,9 +12,9 @@ class TimeImp;
 
 struct TestSimulationDataStruct
 {
-	std::shared_ptr<AnalyticalResults> analyticalResult;
-	std::shared_ptr<InitialCondition> initialCondition;
-	std::shared_ptr<SimulationInfo> simInformation;
-	std::shared_ptr<SimulationParameter> simParameter;
+    std::shared_ptr<AnalyticalResults> analyticalResult;
+    std::shared_ptr<InitialCondition> initialCondition;
+    std::shared_ptr<SimulationInfo> simInformation;
+    std::shared_ptr<SimulationParameter> simParameter;
 };
 #endif 

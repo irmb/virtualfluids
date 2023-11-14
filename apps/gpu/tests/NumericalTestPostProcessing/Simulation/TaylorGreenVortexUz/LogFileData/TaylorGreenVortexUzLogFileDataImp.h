@@ -8,23 +8,23 @@
 class TaylorGreenVortexUzLogFileDataImp : public TaylorGreenVortexUzLogFileData
 {
 public:
-	static std::shared_ptr<TaylorGreenVortexUzLogFileDataImp> getNewInstance();
+    static std::shared_ptr<TaylorGreenVortexUzLogFileDataImp> getNewInstance();
 
-	std::vector<int> getL0();
-	std::vector<double> getUz();
-	std::vector<double> getAmplitude();
+    std::vector<int> getL0();
+    std::vector<double> getUz();
+    std::vector<double> getAmplitude();
 
-	void setL0(std::vector<int> l0);
-	void setUz(std::vector<double> ux);
-	void setAmplitude(std::vector<double> amp);
+    void setL0(std::vector<int> l0);
+    void setUz(std::vector<double> ux);
+    void setAmplitude(std::vector<double> amp);
 
-	~TaylorGreenVortexUzLogFileDataImp();
+    ~TaylorGreenVortexUzLogFileDataImp();
 
 private:
-	TaylorGreenVortexUzLogFileDataImp();
+    TaylorGreenVortexUzLogFileDataImp();
 
-	std::vector<int> l0;
-	std::vector<double> ux;
-	std::vector<double> amp;
+    std::vector<int> l0;
+    std::vector<double> ux;
+    std::vector<double> amp;
 };
 #endif

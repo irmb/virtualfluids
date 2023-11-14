@@ -1,12 +1,14 @@
 #ifndef UPDATEGRID27_H
 #define UPDATEGRID27_H
 
-#include "Calculation/PorousMedia.h"
+#include <vector>
+
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "LBM/LB.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
+#include "Kernel/AdvectionDiffusionKernel.h"
 
 namespace vf::parallel
 {
@@ -28,8 +30,9 @@ using RefinementStrategy = std::function<void (UpdateGrid27* updateGrid, Paramet
 class UpdateGrid27
 {
 public:
-    UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator& comm, SPtr<CudaMemoryManager> cudaMemoryManager,
-                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory);
+    UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator& comm, SPtr<CudaMemoryManager> cudaMemoryManager, std::vector<SPtr<Kernel>>& kernels,
+                 std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, BoundaryConditionFactory* bcFactory,
+                 SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory);
     void updateGrid(int level, unsigned int t);
     void exchangeData(int level);
 
@@ -41,7 +44,6 @@ private:
 
     void postCollisionBC(int level, unsigned int t);
     void preCollisionBC(int level, unsigned int t);
-    void collisionPorousMedia(int level);
 
     void fineToCoarse(int level, InterpolationCells* fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex);
     void coarseToFine(int level, InterpolationCells* coarseToFine, ICellNeigh &neighborCoarseToFine, CudaStreamIndex streamIndex);
@@ -81,7 +83,6 @@ private:
     SPtr<Parameter> para;
     vf::parallel::Communicator& comm;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    std::vector<std::shared_ptr<PorousMedia>> pm;
     std::vector<SPtr<Kernel>> kernels;
     //! \property lbKernelManager is a shared pointer to an object of LBKernelManager
     std::shared_ptr<BCKernelManager> bcKernelManager;

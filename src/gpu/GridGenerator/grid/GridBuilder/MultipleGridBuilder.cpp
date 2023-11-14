@@ -296,12 +296,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
     //  Step  4)                |                 x<------                                      |      ------>x     |
     //  Step  5)                |                      |                                        | x<--x<--x<--      |
     //
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const real deltaCoarse = this->grids[level - 1]->getDelta();
     const real delta = gridIsForRotation ? deltaCoarse : 0.5 * deltaCoarse;
 
-	std::array<real, 6> staggeredCoordinates;
+    std::array<real, 6> staggeredCoordinates;
 
     real X1Minimum = gridShape->getX1Minimum();
     real X2Minimum = gridShape->getX2Minimum();
@@ -333,41 +333,42 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
         X3Maximum += overlap;
     }
 
-	// Step 1
+    // Step 1
     // go to boundary of coarse grid
-	staggeredCoordinates[0] = this->grids[level-1]->getStartX();
-	staggeredCoordinates[1] = this->grids[level-1]->getStartY();
-	staggeredCoordinates[2] = this->grids[level-1]->getStartZ();
-	staggeredCoordinates[3] = this->grids[level-1]->getEndX();
-	staggeredCoordinates[4] = this->grids[level-1]->getEndY();
-	staggeredCoordinates[5] = this->grids[level-1]->getEndZ();
+    staggeredCoordinates[0] = this->grids[level-1]->getStartX();
+    staggeredCoordinates[1] = this->grids[level-1]->getStartY();
+    staggeredCoordinates[2] = this->grids[level-1]->getStartZ();
+    staggeredCoordinates[3] = this->grids[level-1]->getEndX();
+    staggeredCoordinates[4] = this->grids[level-1]->getEndY();
+    staggeredCoordinates[5] = this->grids[level-1]->getEndZ();
 
-	// Step 2
+    // Step 2
     // move to first coarse node in refinement region
-	while (staggeredCoordinates[0] < X1Minimum) staggeredCoordinates[0] += deltaCoarse;
-	while (staggeredCoordinates[1] < X2Minimum) staggeredCoordinates[1] += deltaCoarse;
-	while (staggeredCoordinates[2] < X3Minimum) staggeredCoordinates[2] += deltaCoarse;
-	while (staggeredCoordinates[3] > X1Maximum) staggeredCoordinates[3] -= deltaCoarse;
-	while (staggeredCoordinates[4] > X2Maximum) staggeredCoordinates[4] -= deltaCoarse;
-	while (staggeredCoordinates[5] > X3Maximum) staggeredCoordinates[5] -= deltaCoarse;
+    while (staggeredCoordinates[0] < X1Minimum) staggeredCoordinates[0] += deltaCoarse;
+    while (staggeredCoordinates[1] < X2Minimum) staggeredCoordinates[1] += deltaCoarse;
+    while (staggeredCoordinates[2] < X3Minimum) staggeredCoordinates[2] += deltaCoarse;
+    while (staggeredCoordinates[3] > X1Maximum) staggeredCoordinates[3] -= deltaCoarse;
+    while (staggeredCoordinates[4] > X2Maximum) staggeredCoordinates[4] -= deltaCoarse;
+    while (staggeredCoordinates[5] > X3Maximum) staggeredCoordinates[5] -= deltaCoarse;
 
-	// Step 3
+    // Step 3
     // make the grid staggered with one layer of stopper nodes on the outside
-	staggeredCoordinates[0] -= relativeStagger[0] * deltaCoarse;
-	staggeredCoordinates[1] -= relativeStagger[1] * deltaCoarse;
-	staggeredCoordinates[2] -= relativeStagger[2] * deltaCoarse;
-	staggeredCoordinates[3] += relativeStagger[0] * deltaCoarse;
-	staggeredCoordinates[4] += relativeStagger[1] * deltaCoarse;
-	staggeredCoordinates[5] += relativeStagger[2] * deltaCoarse;
+    staggeredCoordinates[0] -= relativeStagger[0] * deltaCoarse;
+    staggeredCoordinates[1] -= relativeStagger[1] * deltaCoarse;
+    staggeredCoordinates[2] -= relativeStagger[2] * deltaCoarse;
+    staggeredCoordinates[3] += relativeStagger[0] * deltaCoarse;
+    staggeredCoordinates[4] += relativeStagger[1] * deltaCoarse;
+    staggeredCoordinates[5] += relativeStagger[2] * deltaCoarse;
 
-	// Step 4
+    // Step 4
     // add two layers until the refinement region is completely inside the fine grid
-	if (staggeredCoordinates[0] > X1Minimum) staggeredCoordinates[0] -= deltaCoarse;
-	if (staggeredCoordinates[1] > X2Minimum) staggeredCoordinates[1] -= deltaCoarse;
-	if (staggeredCoordinates[2] > X3Minimum) staggeredCoordinates[2] -= deltaCoarse;
-	if (staggeredCoordinates[3] < X1Maximum) staggeredCoordinates[3] += deltaCoarse;
-	if (staggeredCoordinates[4] < X2Maximum) staggeredCoordinates[4] += deltaCoarse;
-	if (staggeredCoordinates[5] < X3Maximum) staggeredCoordinates[5] += deltaCoarse;
+    if (staggeredCoordinates[0] > X1Minimum)
+        staggeredCoordinates[0] -= deltaCoarse;
+    if (staggeredCoordinates[1] > X2Minimum) staggeredCoordinates[1] -= deltaCoarse;
+    if (staggeredCoordinates[2] > X3Minimum) staggeredCoordinates[2] -= deltaCoarse;
+    if (staggeredCoordinates[3] < X1Maximum) staggeredCoordinates[3] += deltaCoarse;
+    if (staggeredCoordinates[4] < X2Maximum) staggeredCoordinates[4] += deltaCoarse;
+    if (staggeredCoordinates[5] < X3Maximum) staggeredCoordinates[5] += deltaCoarse;
 
     // Step 5
 
@@ -384,13 +385,13 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(SPtr<Object> gr
     while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= delta;
     while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= delta;
 
-	return staggeredCoordinates;
+    return staggeredCoordinates;
 }
 
 std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
 {
-	//previous version of Soeren P.	
-	auto offset = getOffset(delta);
+    //previous version of Soeren P.    
+    auto offset = getOffset(delta);
 
     const real startXStaggered = std::floor(startX) - offset[0];
     const real startYStaggered = std::floor(startY) - offset[1];
@@ -659,13 +660,13 @@ void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
     VF_LOG_WARNING("Grid lies not inside of coarse grid. Actual Grid is not added.");
 }
 
-void MultipleGridBuilder::findCommunicationIndices(int direction)
+void MultipleGridBuilder::findCommunicationIndices(int direction, bool doShift)
 {
     VF_LOG_TRACE("Start findCommunicationIndices()");
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->findCommunicationIndices(direction, this->subDomainBox);
+            grids[i]->findCommunicationIndices(direction, this->subDomainBox, doShift);
 
     VF_LOG_TRACE("Done findCommunicationIndices()");
 }

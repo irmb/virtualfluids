@@ -325,7 +325,6 @@ struct LBMSimulationParameter {
 
     // turbulent viscosity ///
     real *turbViscosity;
-    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
 
     // turbulence intensity //
     real *vx_mean, *vy_mean, *vz_mean;       // means
@@ -491,7 +490,6 @@ public:
     void setStartTurn(unsigned int inStartTurn);
     void setDiffOn(bool isDiff);
     void setCompOn(bool isComp);
-    void setDiffMod(int DiffMod);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
     void setMaxLevel(int numberOfLevels);
@@ -607,13 +605,11 @@ public:
     void setIsCp(bool isCp);
     void setConcFile(bool concFile);
     void setUseMeasurePoints(bool useMeasurePoints);
-    void setUseWale(bool useWale);
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
-    void setSimulatePorousMedia(bool simulatePorousMedia);
     void setIsF3(bool isF3);
     void setIsBodyForce(bool isBodyForce);
     void setclockCycleForMP(real clockCycleForMP);
@@ -729,11 +725,10 @@ public:
     int getParticleBasicLevel();
     int getParticleInitLevel();
     int getNumberOfParticles();
-    int getDiffMod();
     int getFactorNZ();
     int getD3Qxx();
     //! \returns the maximum level of grid refinement
-    int getMaxLevel();
+    int getMaxLevel() const;
     int getTimeCalcMedStart();
     int getTimeCalcMedEnd();
     int getMaxDev();
@@ -902,13 +897,11 @@ public:
     bool getCalcHighOrderMoments();
     bool getConcFile();
     bool getUseMeasurePoints();
-    bool getUseWale();
     vf::lbm::TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();
-    bool getSimulatePorousMedia();
     bool getIsF3();
     bool getIsBodyForce();
     double getMemsizeGPU();
@@ -1023,15 +1016,12 @@ private:
     bool isHighOrderMoments{ false };
     bool calcMedian{ false };
     bool isConc{ false };
-    bool isWale{ false };
     bool isTurbulentViscosity{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
     bool isGeoNormal, isInflowNormal, isOutflowNormal;
     bool hasWallModelMonitor{ false };
-    bool simulatePorousMedia{ false };
 
-    int diffMod{ 27 };
     //! \property maximum level of grid refinement
     int maxlevel{ 0 };
     int coarse{ 0 };

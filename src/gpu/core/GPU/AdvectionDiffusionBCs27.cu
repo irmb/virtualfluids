@@ -247,7 +247,7 @@ __global__ void QADPress7(  real* DD,
       real vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-	  //real cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
       real ux_sq       = vx1 * vx1;
       real uy_sq       = vx2 * vx2;
       real uz_sq       = vx3 * vx3;
@@ -981,398 +981,398 @@ __global__ void QADPress27( real* DD,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QADPressNEQNeighbor27(
-													real* DD,
-													real* DD27,
-													int* k_Q,
-													int* k_N,
-													int numberOfBCnodes,
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													unsigned long long numberOfLBnodes,
-													bool isEvenTimestep
-												)
+                                                    real* DD,
+                                                    real* DD27,
+                                                    int* k_Q,
+                                                    int* k_N,
+                                                    int numberOfBCnodes,
+                                                    unsigned int* neighborX,
+                                                    unsigned int* neighborY,
+                                                    unsigned int* neighborZ,
+                                                    unsigned long long numberOfLBnodes,
+                                                    bool isEvenTimestep
+                                                )
 {
-	Distributions27 D;
-	if (isEvenTimestep == true)
-	{
-		D.f[dP00] = &DD[dP00 * numberOfLBnodes];
-		D.f[dM00] = &DD[dM00 * numberOfLBnodes];
-		D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
-		D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
-		D.f[d00P] = &DD[d00P * numberOfLBnodes];
-		D.f[d00M] = &DD[d00M * numberOfLBnodes];
-		D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
-		D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
-		D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
-		D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
-		D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
-		D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
-		D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
-		D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
-		D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
-		D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
-		D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
-		D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
-		D.f[d000] = &DD[d000 * numberOfLBnodes];
-		D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
-		D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
-		D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
-		D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
-		D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
-		D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
-		D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
-		D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
-	}
-	else
-	{
-		D.f[dM00] = &DD[dP00 * numberOfLBnodes];
-		D.f[dP00] = &DD[dM00 * numberOfLBnodes];
-		D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
-		D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
-		D.f[d00M] = &DD[d00P * numberOfLBnodes];
-		D.f[d00P] = &DD[d00M * numberOfLBnodes];
-		D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
-		D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
-		D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
-		D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
-		D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
-		D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
-		D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
-		D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
-		D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
-		D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
-		D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
-		D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
-		D.f[d000] = &DD[d000 * numberOfLBnodes];
-		D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
-		D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
-		D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
-		D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
-		D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
-		D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
-		D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
-		D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
-	}
+    Distributions27 D;
+    if (isEvenTimestep == true)
+    {
+        D.f[dP00] = &DD[dP00 * numberOfLBnodes];
+        D.f[dM00] = &DD[dM00 * numberOfLBnodes];
+        D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
+        D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
+        D.f[d00P] = &DD[d00P * numberOfLBnodes];
+        D.f[d00M] = &DD[d00M * numberOfLBnodes];
+        D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
+        D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
+        D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
+        D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
+        D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
+        D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
+        D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
+        D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
+        D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
+        D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
+        D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
+        D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
+        D.f[d000] = &DD[d000 * numberOfLBnodes];
+        D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
+        D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
+        D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
+        D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
+        D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
+        D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
+        D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
+        D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
+    }
+    else
+    {
+        D.f[dM00] = &DD[dP00 * numberOfLBnodes];
+        D.f[dP00] = &DD[dM00 * numberOfLBnodes];
+        D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
+        D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
+        D.f[d00M] = &DD[d00P * numberOfLBnodes];
+        D.f[d00P] = &DD[d00M * numberOfLBnodes];
+        D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
+        D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
+        D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
+        D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
+        D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
+        D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
+        D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
+        D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
+        D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
+        D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
+        D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
+        D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
+        D.f[d000] = &DD[d000 * numberOfLBnodes];
+        D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
+        D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
+        D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
+        D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
+        D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
+        D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
+        D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
+        D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
+    }
 
-	Distributions27 D27;
-	if (isEvenTimestep == true)
-	{
-		D27.f[dP00] = &DD27[dP00 * numberOfLBnodes];
-		D27.f[dM00] = &DD27[dM00 * numberOfLBnodes];
-		D27.f[d0P0] = &DD27[d0P0 * numberOfLBnodes];
-		D27.f[d0M0] = &DD27[d0M0 * numberOfLBnodes];
-		D27.f[d00P] = &DD27[d00P * numberOfLBnodes];
-		D27.f[d00M] = &DD27[d00M * numberOfLBnodes];
-		D27.f[dPP0] = &DD27[dPP0 * numberOfLBnodes];
-		D27.f[dMM0] = &DD27[dMM0 * numberOfLBnodes];
-		D27.f[dPM0] = &DD27[dPM0 * numberOfLBnodes];
-		D27.f[dMP0] = &DD27[dMP0 * numberOfLBnodes];
-		D27.f[dP0P] = &DD27[dP0P * numberOfLBnodes];
-		D27.f[dM0M] = &DD27[dM0M * numberOfLBnodes];
-		D27.f[dP0M] = &DD27[dP0M * numberOfLBnodes];
-		D27.f[dM0P] = &DD27[dM0P * numberOfLBnodes];
-		D27.f[d0PP] = &DD27[d0PP * numberOfLBnodes];
-		D27.f[d0MM] = &DD27[d0MM * numberOfLBnodes];
-		D27.f[d0PM] = &DD27[d0PM * numberOfLBnodes];
-		D27.f[d0MP] = &DD27[d0MP * numberOfLBnodes];
-		D27.f[d000] = &DD27[d000 * numberOfLBnodes];
-		D27.f[dPPP] = &DD27[dPPP * numberOfLBnodes];
-		D27.f[dMMP] = &DD27[dMMP * numberOfLBnodes];
-		D27.f[dPMP] = &DD27[dPMP * numberOfLBnodes];
-		D27.f[dMPP] = &DD27[dMPP * numberOfLBnodes];
-		D27.f[dPPM] = &DD27[dPPM * numberOfLBnodes];
-		D27.f[dMMM] = &DD27[dMMM * numberOfLBnodes];
-		D27.f[dPMM] = &DD27[dPMM * numberOfLBnodes];
-		D27.f[dMPM] = &DD27[dMPM * numberOfLBnodes];
-	}
-	else
-	{
-		D27.f[dM00] = &DD27[dP00 * numberOfLBnodes];
-		D27.f[dP00] = &DD27[dM00 * numberOfLBnodes];
-		D27.f[d0M0] = &DD27[d0P0 * numberOfLBnodes];
-		D27.f[d0P0] = &DD27[d0M0 * numberOfLBnodes];
-		D27.f[d00M] = &DD27[d00P * numberOfLBnodes];
-		D27.f[d00P] = &DD27[d00M * numberOfLBnodes];
-		D27.f[dMM0] = &DD27[dPP0 * numberOfLBnodes];
-		D27.f[dPP0] = &DD27[dMM0 * numberOfLBnodes];
-		D27.f[dMP0] = &DD27[dPM0 * numberOfLBnodes];
-		D27.f[dPM0] = &DD27[dMP0 * numberOfLBnodes];
-		D27.f[dM0M] = &DD27[dP0P * numberOfLBnodes];
-		D27.f[dP0P] = &DD27[dM0M * numberOfLBnodes];
-		D27.f[dM0P] = &DD27[dP0M * numberOfLBnodes];
-		D27.f[dP0M] = &DD27[dM0P * numberOfLBnodes];
-		D27.f[d0MM] = &DD27[d0PP * numberOfLBnodes];
-		D27.f[d0PP] = &DD27[d0MM * numberOfLBnodes];
-		D27.f[d0MP] = &DD27[d0PM * numberOfLBnodes];
-		D27.f[d0PM] = &DD27[d0MP * numberOfLBnodes];
-		D27.f[d000] = &DD27[d000 * numberOfLBnodes];
-		D27.f[dPPP] = &DD27[dMMM * numberOfLBnodes];
-		D27.f[dMMP] = &DD27[dPPM * numberOfLBnodes];
-		D27.f[dPMP] = &DD27[dMPM * numberOfLBnodes];
-		D27.f[dMPP] = &DD27[dPMM * numberOfLBnodes];
-		D27.f[dPPM] = &DD27[dMMP * numberOfLBnodes];
-		D27.f[dMMM] = &DD27[dPPP * numberOfLBnodes];
-		D27.f[dPMM] = &DD27[dMPP * numberOfLBnodes];
-		D27.f[dMPM] = &DD27[dPMP * numberOfLBnodes];
-	}
-	////////////////////////////////////////////////////////////////////////////////
-	const unsigned  x = threadIdx.x;  // Globaler x-Index 
-	const unsigned  y = blockIdx.x;   // Globaler y-Index 
-	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+    Distributions27 D27;
+    if (isEvenTimestep == true)
+    {
+        D27.f[dP00] = &DD27[dP00 * numberOfLBnodes];
+        D27.f[dM00] = &DD27[dM00 * numberOfLBnodes];
+        D27.f[d0P0] = &DD27[d0P0 * numberOfLBnodes];
+        D27.f[d0M0] = &DD27[d0M0 * numberOfLBnodes];
+        D27.f[d00P] = &DD27[d00P * numberOfLBnodes];
+        D27.f[d00M] = &DD27[d00M * numberOfLBnodes];
+        D27.f[dPP0] = &DD27[dPP0 * numberOfLBnodes];
+        D27.f[dMM0] = &DD27[dMM0 * numberOfLBnodes];
+        D27.f[dPM0] = &DD27[dPM0 * numberOfLBnodes];
+        D27.f[dMP0] = &DD27[dMP0 * numberOfLBnodes];
+        D27.f[dP0P] = &DD27[dP0P * numberOfLBnodes];
+        D27.f[dM0M] = &DD27[dM0M * numberOfLBnodes];
+        D27.f[dP0M] = &DD27[dP0M * numberOfLBnodes];
+        D27.f[dM0P] = &DD27[dM0P * numberOfLBnodes];
+        D27.f[d0PP] = &DD27[d0PP * numberOfLBnodes];
+        D27.f[d0MM] = &DD27[d0MM * numberOfLBnodes];
+        D27.f[d0PM] = &DD27[d0PM * numberOfLBnodes];
+        D27.f[d0MP] = &DD27[d0MP * numberOfLBnodes];
+        D27.f[d000] = &DD27[d000 * numberOfLBnodes];
+        D27.f[dPPP] = &DD27[dPPP * numberOfLBnodes];
+        D27.f[dMMP] = &DD27[dMMP * numberOfLBnodes];
+        D27.f[dPMP] = &DD27[dPMP * numberOfLBnodes];
+        D27.f[dMPP] = &DD27[dMPP * numberOfLBnodes];
+        D27.f[dPPM] = &DD27[dPPM * numberOfLBnodes];
+        D27.f[dMMM] = &DD27[dMMM * numberOfLBnodes];
+        D27.f[dPMM] = &DD27[dPMM * numberOfLBnodes];
+        D27.f[dMPM] = &DD27[dMPM * numberOfLBnodes];
+    }
+    else
+    {
+        D27.f[dM00] = &DD27[dP00 * numberOfLBnodes];
+        D27.f[dP00] = &DD27[dM00 * numberOfLBnodes];
+        D27.f[d0M0] = &DD27[d0P0 * numberOfLBnodes];
+        D27.f[d0P0] = &DD27[d0M0 * numberOfLBnodes];
+        D27.f[d00M] = &DD27[d00P * numberOfLBnodes];
+        D27.f[d00P] = &DD27[d00M * numberOfLBnodes];
+        D27.f[dMM0] = &DD27[dPP0 * numberOfLBnodes];
+        D27.f[dPP0] = &DD27[dMM0 * numberOfLBnodes];
+        D27.f[dMP0] = &DD27[dPM0 * numberOfLBnodes];
+        D27.f[dPM0] = &DD27[dMP0 * numberOfLBnodes];
+        D27.f[dM0M] = &DD27[dP0P * numberOfLBnodes];
+        D27.f[dP0P] = &DD27[dM0M * numberOfLBnodes];
+        D27.f[dM0P] = &DD27[dP0M * numberOfLBnodes];
+        D27.f[dP0M] = &DD27[dM0P * numberOfLBnodes];
+        D27.f[d0MM] = &DD27[d0PP * numberOfLBnodes];
+        D27.f[d0PP] = &DD27[d0MM * numberOfLBnodes];
+        D27.f[d0MP] = &DD27[d0PM * numberOfLBnodes];
+        D27.f[d0PM] = &DD27[d0MP * numberOfLBnodes];
+        D27.f[d000] = &DD27[d000 * numberOfLBnodes];
+        D27.f[dPPP] = &DD27[dMMM * numberOfLBnodes];
+        D27.f[dMMP] = &DD27[dPPM * numberOfLBnodes];
+        D27.f[dPMP] = &DD27[dMPM * numberOfLBnodes];
+        D27.f[dMPP] = &DD27[dPMM * numberOfLBnodes];
+        D27.f[dPPM] = &DD27[dMMP * numberOfLBnodes];
+        D27.f[dMMM] = &DD27[dPPP * numberOfLBnodes];
+        D27.f[dPMM] = &DD27[dMPP * numberOfLBnodes];
+        D27.f[dMPM] = &DD27[dPMP * numberOfLBnodes];
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+    const unsigned  x = threadIdx.x;  // Globaler x-Index 
+    const unsigned  y = blockIdx.x;   // Globaler y-Index 
+    const unsigned  z = blockIdx.y;   // Globaler z-Index 
 
-	const unsigned nx = blockDim.x;
-	const unsigned ny = gridDim.x;
+    const unsigned nx = blockDim.x;
+    const unsigned ny = gridDim.x;
 
-	const unsigned k = nx*(ny*z + y) + x;
-	//////////////////////////////////////////////////////////////////////////
+    const unsigned k = nx*(ny*z + y) + x;
+    //////////////////////////////////////////////////////////////////////////
 
-	if (k < numberOfBCnodes)
-	{
-		////////////////////////////////////////////////////////////////////////////////
-		//Fluid - BC Nodes
-		////////////////////////////////////////////////////////////////////////////////
-		//index
-		unsigned int KQK = k_Q[k];
-		unsigned int kzero = KQK;
-		unsigned int ke = KQK;
-		unsigned int kw = neighborX[KQK];
-		unsigned int kn = KQK;
-		unsigned int ks = neighborY[KQK];
-		unsigned int kt = KQK;
-		unsigned int kb = neighborZ[KQK];
-		unsigned int ksw = neighborY[kw];
-		unsigned int kne = KQK;
-		unsigned int kse = ks;
-		unsigned int knw = kw;
-		unsigned int kbw = neighborZ[kw];
-		unsigned int kte = KQK;
-		unsigned int kbe = kb;
-		unsigned int ktw = kw;
-		unsigned int kbs = neighborZ[ks];
-		unsigned int ktn = KQK;
-		unsigned int kbn = kb;
-		unsigned int kts = ks;
-		unsigned int ktse = ks;
-		unsigned int kbnw = kbw;
-		unsigned int ktnw = kw;
-		unsigned int kbse = kbs;
-		unsigned int ktsw = ksw;
-		unsigned int kbne = kb;
-		unsigned int ktne = KQK;
-		unsigned int kbsw = neighborZ[ksw];
-		////////////////////////////////////////////////////////////////////////////////
-		//distributions
-		real f_W =    (D.f[dP00])[ke];
-		real f_E =    (D.f[dM00])[kw];
-		real f_S =    (D.f[d0P0])[kn];
-		real f_N =    (D.f[d0M0])[ks];
-		real f_B =    (D.f[d00P])[kt];
-		real f_T =    (D.f[d00M])[kb];
-		real f_SW =   (D.f[dPP0])[kne];
-		real f_NE =   (D.f[dMM0])[ksw];
-		real f_NW =   (D.f[dPM0])[kse];
-		real f_SE =   (D.f[dMP0])[knw];
-		real f_BW =   (D.f[dP0P])[kte];
-		real f_TE =   (D.f[dM0M])[kbw];
-		real f_TW =   (D.f[dP0M])[kbe];
-		real f_BE =   (D.f[dM0P])[ktw];
-		real f_BS =   (D.f[d0PP])[ktn];
-		real f_TN =   (D.f[d0MM])[kbs];
-		real f_TS =   (D.f[d0PM])[kbn];
-		real f_BN =   (D.f[d0MP])[kts];
-		real f_ZERO = (D.f[d000])[kzero];
-		real f_BSW =  (D.f[dPPP])[ktne];
-		real f_BNE =  (D.f[dMMP])[ktsw];
-		real f_BNW =  (D.f[dPMP])[ktse];
-		real f_BSE =  (D.f[dMPP])[ktnw];
-		real f_TSW =  (D.f[dPPM])[kbne];
-		real f_TNE =  (D.f[dMMM])[kbsw];
-		real f_TNW =  (D.f[dPMM])[kbse];
-		real f_TSE =  (D.f[dMPM])[kbnw];
-		////////////////////////////////////////////////////////////////////////////////
-		//macroscopic values
-		real rho0 = 
-			(f_TNE + f_BSW) + (f_TSW + f_BNE) + (f_TSE + f_BNW) + (f_TNW + f_BSE) + 
-			(f_NE  + f_SW ) + (f_NW  + f_SE ) + (f_TE  + f_BW ) + (f_BE  + f_TW ) + 
-			(f_TN  + f_BS ) + (f_BN  + f_TS ) + 
-			(f_E   + f_W  ) + (f_N   + f_S  ) + (f_T   + f_B  ) +  f_ZERO;
-		real rho = rho0 + c1o1;
-		real OORho = c1o1 / rho;
+    if (k < numberOfBCnodes)
+    {
+        ////////////////////////////////////////////////////////////////////////////////
+        //Fluid - BC Nodes
+        ////////////////////////////////////////////////////////////////////////////////
+        //index
+        unsigned int KQK = k_Q[k];
+        unsigned int kzero = KQK;
+        unsigned int ke = KQK;
+        unsigned int kw = neighborX[KQK];
+        unsigned int kn = KQK;
+        unsigned int ks = neighborY[KQK];
+        unsigned int kt = KQK;
+        unsigned int kb = neighborZ[KQK];
+        unsigned int ksw = neighborY[kw];
+        unsigned int kne = KQK;
+        unsigned int kse = ks;
+        unsigned int knw = kw;
+        unsigned int kbw = neighborZ[kw];
+        unsigned int kte = KQK;
+        unsigned int kbe = kb;
+        unsigned int ktw = kw;
+        unsigned int kbs = neighborZ[ks];
+        unsigned int ktn = KQK;
+        unsigned int kbn = kb;
+        unsigned int kts = ks;
+        unsigned int ktse = ks;
+        unsigned int kbnw = kbw;
+        unsigned int ktnw = kw;
+        unsigned int kbse = kbs;
+        unsigned int ktsw = ksw;
+        unsigned int kbne = kb;
+        unsigned int ktne = KQK;
+        unsigned int kbsw = neighborZ[ksw];
+        ////////////////////////////////////////////////////////////////////////////////
+        //distributions
+        real f_W =    (D.f[dP00])[ke];
+        real f_E =    (D.f[dM00])[kw];
+        real f_S =    (D.f[d0P0])[kn];
+        real f_N =    (D.f[d0M0])[ks];
+        real f_B =    (D.f[d00P])[kt];
+        real f_T =    (D.f[d00M])[kb];
+        real f_SW =   (D.f[dPP0])[kne];
+        real f_NE =   (D.f[dMM0])[ksw];
+        real f_NW =   (D.f[dPM0])[kse];
+        real f_SE =   (D.f[dMP0])[knw];
+        real f_BW =   (D.f[dP0P])[kte];
+        real f_TE =   (D.f[dM0M])[kbw];
+        real f_TW =   (D.f[dP0M])[kbe];
+        real f_BE =   (D.f[dM0P])[ktw];
+        real f_BS =   (D.f[d0PP])[ktn];
+        real f_TN =   (D.f[d0MM])[kbs];
+        real f_TS =   (D.f[d0PM])[kbn];
+        real f_BN =   (D.f[d0MP])[kts];
+        real f_ZERO = (D.f[d000])[kzero];
+        real f_BSW =  (D.f[dPPP])[ktne];
+        real f_BNE =  (D.f[dMMP])[ktsw];
+        real f_BNW =  (D.f[dPMP])[ktse];
+        real f_BSE =  (D.f[dMPP])[ktnw];
+        real f_TSW =  (D.f[dPPM])[kbne];
+        real f_TNE =  (D.f[dMMM])[kbsw];
+        real f_TNW =  (D.f[dPMM])[kbse];
+        real f_TSE =  (D.f[dMPM])[kbnw];
+        ////////////////////////////////////////////////////////////////////////////////
+        //macroscopic values
+        real rho0 = 
+            (f_TNE + f_BSW) + (f_TSW + f_BNE) + (f_TSE + f_BNW) + (f_TNW + f_BSE) + 
+            (f_NE  + f_SW ) + (f_NW  + f_SE ) + (f_TE  + f_BW ) + (f_BE  + f_TW ) + 
+            (f_TN  + f_BS ) + (f_BN  + f_TS ) + 
+            (f_E   + f_W  ) + (f_N   + f_S  ) + (f_T   + f_B  ) +  f_ZERO;
+        real rho = rho0 + c1o1;
+        real OORho = c1o1 / rho;
 
-		real vx1 = 
-			OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_TSE - f_BNW) + (f_BSE - f_TNW) + 
-			(f_NE - f_SW) + (f_SE - f_NW) + (f_TE - f_BW) + (f_BE - f_TW) + (f_E - f_W));
-		real vx2 = 
-			OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_BNW - f_TSE) + (f_TNW - f_BSE) + 
-			(f_NE - f_SW) + (f_NW - f_SE) + (f_TN - f_BS) + (f_BN - f_TS) + (f_N - f_S));
-		real vx3 = 
-			OORho*((f_TNE - f_BSW) + (f_TSW - f_BNE) + (f_TSE - f_BNW) + (f_TNW - f_BSE) + 
-			(f_TE - f_BW) + (f_TW - f_BE) + (f_TN - f_BS) + (f_TS - f_BN) + (f_T - f_B));
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//AD - BC Nodes
-		////////////////////////////////////////////////////////////////////////////////
-		//distributions
-		real f27_W =    (D27.f[dP00])[ke];
-		real f27_E =    (D27.f[dM00])[kw];
-		real f27_S =    (D27.f[d0P0])[kn];
-		real f27_N =    (D27.f[d0M0])[ks];
-		real f27_B =    (D27.f[d00P])[kt];
-		real f27_T =    (D27.f[d00M])[kb];
-		real f27_SW =   (D27.f[dPP0])[kne];
-		real f27_NE =   (D27.f[dMM0])[ksw];
-		real f27_NW =   (D27.f[dPM0])[kse];
-		real f27_SE =   (D27.f[dMP0])[knw];
-		real f27_BW =   (D27.f[dP0P])[kte];
-		real f27_TE =   (D27.f[dM0M])[kbw];
-		real f27_TW =   (D27.f[dP0M])[kbe];
-		real f27_BE =   (D27.f[dM0P])[ktw];
-		real f27_BS =   (D27.f[d0PP])[ktn];
-		real f27_TN =   (D27.f[d0MM])[kbs];
-		real f27_TS =   (D27.f[d0PM])[kbn];
-		real f27_BN =   (D27.f[d0MP])[kts];
-		real f27_ZERO = (D27.f[d000])[kzero];
-		real f27_BSW =  (D27.f[dPPP])[ktne];
-		real f27_BNE =  (D27.f[dMMP])[ktsw];
-		real f27_BNW =  (D27.f[dPMP])[ktse];
-		real f27_BSE =  (D27.f[dMPP])[ktnw];
-		real f27_TSW =  (D27.f[dPPM])[kbne];
-		real f27_TNE =  (D27.f[dMMM])[kbsw];
-		real f27_TNW =  (D27.f[dPMM])[kbse];
-		real f27_TSE =  (D27.f[dMPM])[kbnw];
-		////////////////////////////////////////////////////////////////////////////////
-		real cusq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
-		////////////////////////////////////////////////////////////////////////////////
-		//concentration
-		real ConcD = 
-			(f27_TNE + f27_BSW) + (f27_TSW + f27_BNE) + (f27_TSE + f27_BNW) + (f27_TNW + f27_BSE) + 
-			(f27_NE  + f27_SW ) + (f27_NW  + f27_SE ) + (f27_TE  + f27_BW ) + (f27_BE  + f27_TW ) + 
-			(f27_TN  + f27_BS ) + (f27_BN  + f27_TS ) +   						
-			(f27_E   + f27_W  ) + (f27_N   + f27_S  ) + (f27_T   + f27_B  ) +  f27_ZERO;
-		////////////////////////////////////////////////////////////////////////////////
-		//calculate non-equilibrium
-		f27_ZERO  -=  c8o27* (ConcD-(ConcD+c1o1)*cusq);
-		f27_E     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
-		f27_W     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
-		f27_N     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
-		f27_S     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
-		f27_T     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
-		f27_B     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
-		f27_NE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-		f27_SW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-		f27_SE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-		f27_NW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-		f27_TE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-		f27_BW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-		f27_BE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-		f27_TW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-		f27_TN    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-		f27_BS    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-		f27_BN    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-		f27_TS    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-		f27_TNE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-		f27_BSW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-		f27_BNE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-		f27_TSW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-		f27_TSE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-		f27_BNW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-		f27_BSE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-		f27_TNW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
-		////////////////////////////////////////////////////////////////////////////////
-		ConcD = c0o1;
-		////////////////////////////////////////////////////////////////////////////////
-		//add BC equilibrium
-		f27_ZERO  +=  c8o27* (ConcD-(ConcD+c1o1)*cusq);
-		f27_E     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
-		f27_W     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
-		f27_N     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
-		f27_S     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
-		f27_T     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
-		f27_B     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
-		f27_NE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-		f27_SW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-		f27_SE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-		f27_NW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-		f27_TE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-		f27_BW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-		f27_BE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-		f27_TW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-		f27_TN    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-		f27_BS    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-		f27_BN    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-		f27_TS    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-		f27_TNE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-		f27_BSW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-		f27_BNE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-		f27_TSW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-		f27_TSE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-		f27_BNW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-		f27_BSE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-		f27_TNW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        real vx1 = 
+            OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_TSE - f_BNW) + (f_BSE - f_TNW) + 
+            (f_NE - f_SW) + (f_SE - f_NW) + (f_TE - f_BW) + (f_BE - f_TW) + (f_E - f_W));
+        real vx2 = 
+            OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_BNW - f_TSE) + (f_TNW - f_BSE) + 
+            (f_NE - f_SW) + (f_NW - f_SE) + (f_TN - f_BS) + (f_BN - f_TS) + (f_N - f_S));
+        real vx3 = 
+            OORho*((f_TNE - f_BSW) + (f_TSW - f_BNE) + (f_TSE - f_BNW) + (f_TNW - f_BSE) + 
+            (f_TE - f_BW) + (f_TW - f_BE) + (f_TN - f_BS) + (f_TS - f_BN) + (f_T - f_B));
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //AD - BC Nodes
+        ////////////////////////////////////////////////////////////////////////////////
+        //distributions
+        real f27_W =    (D27.f[dP00])[ke];
+        real f27_E =    (D27.f[dM00])[kw];
+        real f27_S =    (D27.f[d0P0])[kn];
+        real f27_N =    (D27.f[d0M0])[ks];
+        real f27_B =    (D27.f[d00P])[kt];
+        real f27_T =    (D27.f[d00M])[kb];
+        real f27_SW =   (D27.f[dPP0])[kne];
+        real f27_NE =   (D27.f[dMM0])[ksw];
+        real f27_NW =   (D27.f[dPM0])[kse];
+        real f27_SE =   (D27.f[dMP0])[knw];
+        real f27_BW =   (D27.f[dP0P])[kte];
+        real f27_TE =   (D27.f[dM0M])[kbw];
+        real f27_TW =   (D27.f[dP0M])[kbe];
+        real f27_BE =   (D27.f[dM0P])[ktw];
+        real f27_BS =   (D27.f[d0PP])[ktn];
+        real f27_TN =   (D27.f[d0MM])[kbs];
+        real f27_TS =   (D27.f[d0PM])[kbn];
+        real f27_BN =   (D27.f[d0MP])[kts];
+        real f27_ZERO = (D27.f[d000])[kzero];
+        real f27_BSW =  (D27.f[dPPP])[ktne];
+        real f27_BNE =  (D27.f[dMMP])[ktsw];
+        real f27_BNW =  (D27.f[dPMP])[ktse];
+        real f27_BSE =  (D27.f[dMPP])[ktnw];
+        real f27_TSW =  (D27.f[dPPM])[kbne];
+        real f27_TNE =  (D27.f[dMMM])[kbsw];
+        real f27_TNW =  (D27.f[dPMM])[kbse];
+        real f27_TSE =  (D27.f[dMPM])[kbnw];
+        ////////////////////////////////////////////////////////////////////////////////
+        real cusq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
+        ////////////////////////////////////////////////////////////////////////////////
+        //concentration
+        real ConcD = 
+            (f27_TNE + f27_BSW) + (f27_TSW + f27_BNE) + (f27_TSE + f27_BNW) + (f27_TNW + f27_BSE) + 
+            (f27_NE  + f27_SW ) + (f27_NW  + f27_SE ) + (f27_TE  + f27_BW ) + (f27_BE  + f27_TW ) + 
+            (f27_TN  + f27_BS ) + (f27_BN  + f27_TS ) +                           
+            (f27_E   + f27_W  ) + (f27_N   + f27_S  ) + (f27_T   + f27_B  ) +  f27_ZERO;
+        ////////////////////////////////////////////////////////////////////////////////
+        //calculate non-equilibrium
+        f27_ZERO  -=  c8o27* (ConcD-(ConcD+c1o1)*cusq);
+        f27_E     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+        f27_W     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+        f27_N     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+        f27_S     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+        f27_T     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+        f27_B     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+        f27_NE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+        f27_SW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+        f27_SE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+        f27_NW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+        f27_TE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+        f27_BW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+        f27_BE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+        f27_TW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+        f27_TN    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+        f27_BS    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+        f27_BN    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+        f27_TS    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+        f27_TNE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+        f27_BSW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+        f27_BNE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+        f27_TSW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+        f27_TSE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+        f27_BNW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+        f27_BSE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+        f27_TNW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+        ////////////////////////////////////////////////////////////////////////////////
+        ConcD = c0o1;
+        ////////////////////////////////////////////////////////////////////////////////
+        //add BC equilibrium
+        f27_ZERO  +=  c8o27* (ConcD-(ConcD+c1o1)*cusq);
+        f27_E     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+        f27_W     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+        f27_N     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+        f27_S     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+        f27_T     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+        f27_B     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+        f27_NE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+        f27_SW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+        f27_SE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+        f27_NW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+        f27_TE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+        f27_BW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+        f27_BE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+        f27_TW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+        f27_TN    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+        f27_BS    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+        f27_BN    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+        f27_TS    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+        f27_TNE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+        f27_BSW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+        f27_BNE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+        f27_TSW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+        f27_TSE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+        f27_BNW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+        f27_BSE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+        f27_TNW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         __syncthreads();
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//Neighbors of BC Nodes
-		////////////////////////////////////////////////////////////////////////////////
-		//index neighbor
-		unsigned int KNQK = k_N[k];
-		unsigned int kNzero = KNQK;
-		unsigned int kNe = KNQK;
-		unsigned int kNw = neighborX[KNQK];
-		unsigned int kNn = KNQK;
-		unsigned int kNs = neighborY[KNQK];
-		unsigned int kNt = KNQK;
-		unsigned int kNb = neighborZ[KNQK];
-		unsigned int kNsw = neighborY[kNw];
-		unsigned int kNne = KNQK;
-		unsigned int kNse = kNs;
-		unsigned int kNnw = kNw;
-		unsigned int kNbw = neighborZ[kNw];
-		unsigned int kNte = KNQK;
-		unsigned int kNbe = kNb;
-		unsigned int kNtw = kNw;
-		unsigned int kNbs = neighborZ[kNs];
-		unsigned int kNtn = KNQK;
-		unsigned int kNbn = kNb;
-		unsigned int kNts = kNs;
-		unsigned int kNtse = kNs;
-		unsigned int kNbnw = kNbw;
-		unsigned int kNtnw = kNw;
-		unsigned int kNbse = kNbs;
-		unsigned int kNtsw = kNsw;
-		unsigned int kNbne = kNb;
-		unsigned int kNtne = KNQK;
-		unsigned int kNbsw = neighborZ[kNsw];
-		////////////////////////////////////////////////////////////////////////////////
-		//update distributions at neighbor nodes
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Neighbors of BC Nodes
+        ////////////////////////////////////////////////////////////////////////////////
+        //index neighbor
+        unsigned int KNQK = k_N[k];
+        unsigned int kNzero = KNQK;
+        unsigned int kNe = KNQK;
+        unsigned int kNw = neighborX[KNQK];
+        unsigned int kNn = KNQK;
+        unsigned int kNs = neighborY[KNQK];
+        unsigned int kNt = KNQK;
+        unsigned int kNb = neighborZ[KNQK];
+        unsigned int kNsw = neighborY[kNw];
+        unsigned int kNne = KNQK;
+        unsigned int kNse = kNs;
+        unsigned int kNnw = kNw;
+        unsigned int kNbw = neighborZ[kNw];
+        unsigned int kNte = KNQK;
+        unsigned int kNbe = kNb;
+        unsigned int kNtw = kNw;
+        unsigned int kNbs = neighborZ[kNs];
+        unsigned int kNtn = KNQK;
+        unsigned int kNbn = kNb;
+        unsigned int kNts = kNs;
+        unsigned int kNtse = kNs;
+        unsigned int kNbnw = kNbw;
+        unsigned int kNtnw = kNw;
+        unsigned int kNbse = kNbs;
+        unsigned int kNtsw = kNsw;
+        unsigned int kNbne = kNb;
+        unsigned int kNtne = KNQK;
+        unsigned int kNbsw = neighborZ[kNsw];
+        ////////////////////////////////////////////////////////////////////////////////
+        //update distributions at neighbor nodes
         (D27.f[dP00])[kNe   ] = f27_W   ;  
-        (D27.f[dM00])[kNw   ] = f27_E   ;	
-        (D27.f[d0P0])[kNn   ] = f27_S   ;	
-        (D27.f[d0M0])[kNs   ] = f27_N   ;	
-        (D27.f[d00P])[kNt   ] = f27_B   ;	
-        (D27.f[d00M])[kNb   ] = f27_T   ;	
-        (D27.f[dPP0])[kNne  ] = f27_SW  ;	
-        (D27.f[dMM0])[kNsw  ] = f27_NE  ;	
-        (D27.f[dPM0])[kNse  ] = f27_NW  ;	
-        (D27.f[dMP0])[kNnw  ] = f27_SE  ;	
-        (D27.f[dP0P])[kNte  ] = f27_BW  ;	
-        (D27.f[dM0M])[kNbw  ] = f27_TE  ;	
-        (D27.f[dP0M])[kNbe  ] = f27_TW  ;	
-        (D27.f[dM0P])[kNtw  ] = f27_BE  ;	
-        (D27.f[d0PP])[kNtn  ] = f27_BS  ;	
-        (D27.f[d0MM])[kNbs  ] = f27_TN  ;	
-        (D27.f[d0PM])[kNbn  ] = f27_TS  ;	
-        (D27.f[d0MP])[kNts  ] = f27_BN  ;	
-        (D27.f[d000])[kNzero] = f27_ZERO;	
-        (D27.f[dPPP])[kNtne ] = f27_BSW ;	
-        (D27.f[dMMP])[kNtsw ] = f27_BNE ;	
-        (D27.f[dPMP])[kNtse ] = f27_BNW ;	
-        (D27.f[dMPP])[kNtnw ] = f27_BSE ;	
-        (D27.f[dPPM])[kNbne ] = f27_TSW ;	
-        (D27.f[dMMM])[kNbsw ] = f27_TNE ;	
-        (D27.f[dPMM])[kNbse ] = f27_TNW ;	
+        (D27.f[dM00])[kNw   ] = f27_E   ;    
+        (D27.f[d0P0])[kNn   ] = f27_S   ;    
+        (D27.f[d0M0])[kNs   ] = f27_N   ;    
+        (D27.f[d00P])[kNt   ] = f27_B   ;    
+        (D27.f[d00M])[kNb   ] = f27_T   ;    
+        (D27.f[dPP0])[kNne  ] = f27_SW  ;    
+        (D27.f[dMM0])[kNsw  ] = f27_NE  ;    
+        (D27.f[dPM0])[kNse  ] = f27_NW  ;    
+        (D27.f[dMP0])[kNnw  ] = f27_SE  ;    
+        (D27.f[dP0P])[kNte  ] = f27_BW  ;    
+        (D27.f[dM0M])[kNbw  ] = f27_TE  ;    
+        (D27.f[dP0M])[kNbe  ] = f27_TW  ;    
+        (D27.f[dM0P])[kNtw  ] = f27_BE  ;    
+        (D27.f[d0PP])[kNtn  ] = f27_BS  ;    
+        (D27.f[d0MM])[kNbs  ] = f27_TN  ;    
+        (D27.f[d0PM])[kNbn  ] = f27_TS  ;    
+        (D27.f[d0MP])[kNts  ] = f27_BN  ;    
+        (D27.f[d000])[kNzero] = f27_ZERO;    
+        (D27.f[dPPP])[kNtne ] = f27_BSW ;    
+        (D27.f[dMMP])[kNtsw ] = f27_BNE ;    
+        (D27.f[dPMP])[kNtse ] = f27_BNW ;    
+        (D27.f[dMPP])[kNtnw ] = f27_BSE ;    
+        (D27.f[dPPM])[kNbne ] = f27_TSW ;    
+        (D27.f[dMMM])[kNbsw ] = f27_TNE ;    
+        (D27.f[dPMM])[kNbse ] = f27_TNW ;    
         (D27.f[dMPM])[kNbnw ] = f27_TSE ;       
-	}
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1630,7 +1630,7 @@ __global__ void QADVel7( real* DD,
       real vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-	  //real cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
       real ux_sq       = vx1 * vx1;
       real uy_sq       = vx2 * vx2;
       real uz_sq       = vx3 * vx3;
@@ -2853,19 +2853,19 @@ __global__ void QAD7( real* DD,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QADDirichlet27(
-											 real* DD, 
-											 real* DD27, 
-											 real* temp,
-											 real diffusivity,
-											 int* k_Q, 
-											 real* QQ,
-											 unsigned int numberOfBCnodes, 
-											 real om1, 
-											 unsigned int* neighborX,
-											 unsigned int* neighborY,
-											 unsigned int* neighborZ,
-											 unsigned long long numberOfLBnodes, 
-											 bool isEvenTimestep)
+                                             real* DD, 
+                                             real* DD27, 
+                                             real* temp,
+                                             real diffusivity,
+                                             int* k_Q, 
+                                             real* QQ,
+                                             unsigned int numberOfBCnodes, 
+                                             real om1, 
+                                             unsigned int* neighborX,
+                                             unsigned int* neighborY,
+                                             unsigned int* neighborZ,
+                                             unsigned long long numberOfLBnodes, 
+                                             bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -3881,9 +3881,9 @@ __global__ void QADBB27( real* DD,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////																																		  //////
-//////                 										incomp   																		  //////
-//////																																		  //////
+//////                                                                                                                                          //////
+//////                                                         incomp                                                                             //////
+//////                                                                                                                                          //////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3894,19 +3894,19 @@ __global__ void QADBB27( real* DD,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QNoSlipADincomp7(
-											 real* DD, 
-											 real* DD7, 
-											 real* temp,
-											 real diffusivity,
-											 int* k_Q, 
-											 real* QQ,
-											 unsigned int numberOfBCnodes, 
-											 real om1, 
-											 unsigned int* neighborX,
-											 unsigned int* neighborY,
-											 unsigned int* neighborZ,
-											 unsigned long long numberOfLBnodes, 
-											 bool isEvenTimestep)
+                                             real* DD, 
+                                             real* DD7, 
+                                             real* temp,
+                                             real diffusivity,
+                                             int* k_Q, 
+                                             real* QQ,
+                                             unsigned int numberOfBCnodes, 
+                                             real om1, 
+                                             unsigned int* neighborX,
+                                             unsigned int* neighborY,
+                                             unsigned int* neighborZ,
+                                             unsigned long long numberOfLBnodes, 
+                                             bool isEvenTimestep)
 {
    //Distributions27 D;
    //if (isEvenTimestep==true)
@@ -4076,7 +4076,7 @@ __global__ void QNoSlipADincomp7(
       //real vx1 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       //real vx2 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       //real vx3 =  ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
-		 ////d�rrrrrty !!!!!!!!!!!!!
+         ////d�rrrrrty !!!!!!!!!!!!!
    //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
    //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
    //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -4086,7 +4086,7 @@ __global__ void QNoSlipADincomp7(
       //real uy_sq       = vx2 * vx2;
       //real uz_sq       = vx3 * vx3;
       ////////////////////////////////////////////////////////////////////////////////
-	  //BGK
+      //BGK
       //real omegaD     = three - sqrt(three);
       //real Lam         = -(c1o2-one/omegaD);
       //real nue_d       = Lam/three;
@@ -4125,7 +4125,7 @@ __global__ void QNoSlipADincomp7(
       //feqW7_B    = TempD*(c1o6*(ae+one));//+c1o2*(uz_sq)-vx3*c1o2);
 
       ////////////////////////////////////////////////////////////////////////////////
-	  //TRT
+      //TRT
       real cs2     = c1o4;
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
@@ -4318,19 +4318,19 @@ __global__ void QNoSlipADincomp7(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QNoSlipADincomp27(
-											 real* DD, 
-											 real* DD27, 
-											 real* temp,
-											 real diffusivity,
-											 int* k_Q, 
-											 real* QQ,
-											 unsigned int numberOfBCnodes, 
-											 real om1, 
-											 unsigned int* neighborX,
-											 unsigned int* neighborY,
-											 unsigned int* neighborZ,
-											 unsigned long long numberOfLBnodes, 
-											 bool isEvenTimestep)
+                                             real* DD, 
+                                             real* DD27, 
+                                             real* temp,
+                                             real diffusivity,
+                                             int* k_Q, 
+                                             real* QQ,
+                                             unsigned int numberOfBCnodes, 
+                                             real om1, 
+                                             unsigned int* neighborX,
+                                             unsigned int* neighborY,
+                                             unsigned int* neighborZ,
+                                             unsigned long long numberOfLBnodes, 
+                                             bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -4727,7 +4727,7 @@ __global__ void QNoSlipADincomp27(
       //Test
       //(D.f[d000])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real q;
+      real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dM00])[kw  ]=(c2o1*feqW27_W  -(f27_E  *(q*omegaD-c1o1)-omegaD*feq27_E  *(q-c1o1))/(omegaD-c1o1)+f27_W  *q)/(q+c1o1);
       q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dP00])[ke  ]=(c2o1*feqW27_E  -(f27_W  *(q*omegaD-c1o1)-omegaD*feq27_W  *(q-c1o1))/(omegaD-c1o1)+f27_E  *q)/(q+c1o1);
@@ -4799,20 +4799,20 @@ __global__ void QNoSlipADincomp27(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QADVeloIncomp7(
-											real* DD, 
-											real* DD7, 
-											real* temp,
-											real* velo,
-											real diffusivity,
-											int* k_Q, 
-											real* QQ,
-											unsigned int numberOfBCnodes, 
-											real om1, 
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned long long numberOfLBnodes, 
-											bool isEvenTimestep)
+                                            real* DD, 
+                                            real* DD7, 
+                                            real* temp,
+                                            real* velo,
+                                            real diffusivity,
+                                            int* k_Q, 
+                                            real* QQ,
+                                            unsigned int numberOfBCnodes, 
+                                            real om1, 
+                                            unsigned int* neighborX,
+                                            unsigned int* neighborY,
+                                            unsigned int* neighborZ,
+                                            unsigned long long numberOfLBnodes, 
+                                            bool isEvenTimestep)
 {
    //Distributions27 D;
    //if (isEvenTimestep==true)
@@ -4989,12 +4989,12 @@ __global__ void QADVeloIncomp7(
       //real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       //real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       //real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
-		 ////d�rrrrrty !!!!!!!!!!!!!
+         ////d�rrrrrty !!!!!!!!!!!!!
    //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
    //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
    //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-	  //real cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
       //real ux_sq       = vx1 * vx1;
       //real uy_sq       = vx2 * vx2;
       //real uz_sq       = vx3 * vx3;
@@ -5015,7 +5015,7 @@ __global__ void QADVeloIncomp7(
       //real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       ////////////////////////////////////////////////////////////////////////////////
-	  //BGK
+      //BGK
       //real omegaD     = three - sqrt(three);
       //real Lam         = -(c1o2-one/omegaD);
       //real nue_d       = Lam/three;
@@ -5039,13 +5039,13 @@ __global__ void QADVeloIncomp7(
       //feqW7_B    = TempD*(c1o6*(ae+one)+c1o2*(uz_sq_Inflow)-vx3_Inflow*c1o2);
 
    //      ////////////////////////////////////////////////////////////////////////////////
-		 ////TRT  Yoshida Kernel - based on Ying
+         ////TRT  Yoshida Kernel - based on Ying
          real cs2         = c1o4;
    //      real Lam         = diffusivity/(one)/cs2;
    //      real omegaD      = - one / (Lam + c1o2);
    //      real ae          = zero;
    //      ////////////////////////////////////////////////////////////////////////////////
-		 //real Mom000 = f7_ZERO + f7_W + f7_E + f7_N + f7_S + f7_T + f7_B; //1
+         //real Mom000 = f7_ZERO + f7_W + f7_E + f7_N + f7_S + f7_T + f7_B; //1
    //      real Mom100 = f7_E - f7_W;
    //      real Mom010 = f7_N - f7_S;
    //      real Mom001 = f7_T - f7_B;
@@ -5277,20 +5277,20 @@ __global__ void QADVeloIncomp7(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QADVeloIncomp27(
-											real* DD, 
-											real* DD27, 
-											real* temp,
-											real* velo,
-											real diffusivity,
-											int* k_Q, 
-											real* QQ,
-											unsigned int numberOfBCnodes, 
-											real om1, 
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned long long numberOfLBnodes, 
-											bool isEvenTimestep)
+                                            real* DD, 
+                                            real* DD27, 
+                                            real* temp,
+                                            real* velo,
+                                            real diffusivity,
+                                            int* k_Q, 
+                                            real* QQ,
+                                            unsigned int numberOfBCnodes, 
+                                            real om1, 
+                                            unsigned int* neighborX,
+                                            unsigned int* neighborY,
+                                            unsigned int* neighborZ,
+                                            unsigned long long numberOfLBnodes, 
+                                            bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)
@@ -5790,19 +5790,19 @@ __global__ void QADVeloIncomp27(
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QADPressIncomp7( real* DD, 
-										   real* DD7, 
-										   real* temp,
-										   real* velo,
-										   real diffusivity,
-										   int* k_Q, 
-										   real* QQ,
-										   unsigned int numberOfBCnodes, 
-										   real om1, 
-										   unsigned int* neighborX,
-										   unsigned int* neighborY,
-										   unsigned int* neighborZ,
-										   unsigned long long numberOfLBnodes, 
-										   bool isEvenTimestep)
+                                           real* DD7, 
+                                           real* temp,
+                                           real* velo,
+                                           real diffusivity,
+                                           int* k_Q, 
+                                           real* QQ,
+                                           unsigned int numberOfBCnodes, 
+                                           real om1, 
+                                           unsigned int* neighborX,
+                                           unsigned int* neighborY,
+                                           unsigned int* neighborZ,
+                                           unsigned long long numberOfLBnodes, 
+                                           bool isEvenTimestep)
 {
   /* Distributions27 D;
    if (isEvenTimestep==true)
@@ -5975,17 +5975,17 @@ __global__ void QADPressIncomp7( real* DD,
       //real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       //real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       //real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
-		 ////d�rrrrrty !!!!!!!!!!!!!
+         ////d�rrrrrty !!!!!!!!!!!!!
    //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
    //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
    //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-	  //real cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
       //real ux_sq       = vx1 * vx1;
       //real uy_sq       = vx2 * vx2;
       //real uz_sq       = vx3 * vx3;
       //////////////////////////////////////////////////////////////////////////
-	  //BGK
+      //BGK
       //real omegaD     = three - sqrt(three);
       //real Lam         = -(c1o2-one/omegaD);
       //real nue_d       = Lam/three;
@@ -6025,7 +6025,7 @@ __global__ void QADPressIncomp7( real* DD,
       //feqW7_B    = feq7_B;// TempD*(c1o6*(ae+one)+c1o2*(uz_sq_Inflow)-vx3_Inflow*c1o2);
 
       //////////////////////////////////////////////////////////////////////////
-	  //TRT  Yoshida Kernel - based on Ying
+      //TRT  Yoshida Kernel - based on Ying
       real cs2         = c1o4;
       real Lam         = diffusivity/(c1o1)/cs2;
       //real omegaD      = - c1o1 / (Lam + c1o2);
@@ -6228,20 +6228,20 @@ __global__ void QADPressIncomp7( real* DD,
 
 //////////////////////////////////////////////////////////////////////////////
 __global__ void QADPressIncomp27(
-											   real* DD,
-											   real* DD27,
-											   real* temp,
-											   real* velo,
-											   real diffusivity,
-											   int* k_Q, 
-											   real* QQ,
-											   unsigned int numberOfBCnodes, 
-											   real om1, 
-											   unsigned int* neighborX,
-											   unsigned int* neighborY,
-											   unsigned int* neighborZ,
-											   unsigned long long numberOfLBnodes, 
-											   bool isEvenTimestep)
+                                               real* DD,
+                                               real* DD27,
+                                               real* temp,
+                                               real* velo,
+                                               real diffusivity,
+                                               int* k_Q, 
+                                               real* QQ,
+                                               unsigned int numberOfBCnodes, 
+                                               real om1, 
+                                               unsigned int* neighborX,
+                                               unsigned int* neighborY,
+                                               unsigned int* neighborZ,
+                                               unsigned long long numberOfLBnodes, 
+                                               bool isEvenTimestep)
 {
    Distributions27 D;
    if (isEvenTimestep==true)

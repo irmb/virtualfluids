@@ -12,10 +12,10 @@ class LogFileQueue;
 class NumericalTestFactory
 {
 public:
-	virtual ~NumericalTestFactory() = default;
-	virtual std::vector<std::shared_ptr<TestSimulation> > getTestSimulations() = 0;
-	virtual std::shared_ptr<TestQueue> getTestQueue() = 0;
-	virtual std::shared_ptr<LogFileQueue> getLogFileQueue() = 0;
+    virtual ~NumericalTestFactory() = default;
+    virtual std::vector<std::shared_ptr<TestSimulation> > getTestSimulations() = 0;
+    virtual std::shared_ptr<TestQueue> getTestQueue() = 0;
+    virtual std::shared_ptr<LogFileQueue> getLogFileQueue() = 0;
 private:
 
 };

@@ -4,8 +4,8 @@
 class SimulationObserver
 {
 public:
-	virtual ~SimulationObserver() = default;
-	virtual void update() = 0;
+    virtual ~SimulationObserver() = default;
+    virtual void update() = 0;
 
 };
 #endif 

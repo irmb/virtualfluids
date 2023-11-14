@@ -10,18 +10,18 @@
 class BasicTestLogFileInformation : public LogFileInformationImp
 {
 public:
-	static std::shared_ptr<BasicTestLogFileInformation> getNewInstance();
+    static std::shared_ptr<BasicTestLogFileInformation> getNewInstance();
 
-	std::string getOutput();
-	void addTest(std::string testName, bool testRun);
+    std::string getOutput();
+    void addTest(std::string testName, bool testRun);
 
 private:
-	BasicTestLogFileInformation();
+    BasicTestLogFileInformation();
 
-	void buildOutput();
+    void buildOutput();
 
-	bool outputBuild;
-	std::vector<std::string> testName;
-	std::vector<bool> testRun;
+    bool outputBuild;
+    std::vector<std::string> testName;
+    std::vector<bool> testRun;
 };
 #endif

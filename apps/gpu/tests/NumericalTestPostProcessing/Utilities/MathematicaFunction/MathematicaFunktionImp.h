@@ -7,11 +7,11 @@
 class MathematicaFunctionImp : public MathematicaFunction
 {
 public:
-	std::string getFunction();
+    std::string getFunction();
 
 protected:
-	MathematicaFunctionImp();
-	std::ostringstream mathematicaFunction;
+    MathematicaFunctionImp();
+    std::ostringstream mathematicaFunction;
 
 };
 #endif

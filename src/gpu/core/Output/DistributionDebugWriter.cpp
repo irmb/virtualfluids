@@ -4,21 +4,22 @@
 #include "Parameter/Parameter.h"
 #include "WriterUtilities.h"
 #include "FilePartCalculator.h"
+#include "GPU/CudaMemoryManager.h"
 
 using namespace vf::lbm::dir;
 
-void DistributionDebugWriter::writeDistributions(const Parameter* para, uint timestep)
+void DistributionDebugWriter::writeDistributions(const Parameter& para, uint timestep)
 {
-    for (int level = para->getCoarse(); level <= para->getFine(); level++) {
+    for (int level = para.getCoarse(); level <= para.getFine(); level++) {
         DistributionDebugWriter::writeDistributionsForLevel(para, level, timestep);
     }
 }
 
-void createFileNames(std::vector<std::string>& fileNames, uint numberOfParts, uint level, uint timestep, const Parameter* para)
+void createFileNames(std::vector<std::string>& fileNames, uint numberOfParts, uint level, uint timestep, const Parameter& para)
 {
     for (uint i = 1; i <= numberOfParts; i++) {
-        fileNames.push_back(para->getFName() + "_bin_distributions" +
-                            WriterUtilities::makePartFileNameEnding(level, para->getMyProcessID(), i, timestep));
+        fileNames.push_back(para.getFName() + "_bin_distributions" +
+                            WriterUtilities::makePartFileNameEnding(level, para.getMyProcessID(), i, timestep));
     }
 }
 
@@ -35,9 +36,9 @@ void createNodeDataNames(std::vector<std::string>& nodeDataNames)
     }
 }
 
-void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, uint level, uint timestep)
+void DistributionDebugWriter::writeDistributionsForLevel(const Parameter& para, uint level, uint timestep)
 {
-    const LBMSimulationParameter& parH = para->getParHostAsReference(level);
+    const LBMSimulationParameter& parH = para.getParHostAsReference(level);
     const uint numberOfParts = FilePartCalculator::calculateNumberOfParts(parH.numberOfNodes);
 
     std::vector<std::string> fileNames;
@@ -54,6 +55,10 @@ void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, 
     uint relativePositionInPart;
 
     Distributions27 distributions = parH.distributions;
+
+    if (distributions.f[0] == nullptr)
+        throw std::runtime_error("Distributions (distributions.f[0]) at level " + std::to_string(level) +
+                                 " are not allocated on the host. Can't write distributions.");
 
     for (unsigned int part = 0; part < numberOfParts; part++) {
         sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(parH.numberOfNodes, part);
@@ -95,4 +100,30 @@ void DistributionDebugWriter::writeDistributionsForLevel(const Parameter* para, 
                                                                                           nodeDataNames, nodeData);
         VF_LOG_DEBUG("DistributionDebugWriter wrote to {} ", fileName);
     }
+}
+
+void DistributionDebugWriter::allocateDistributionsOnHost(const CudaMemoryManager& cudaMemoryManager)
+{
+    cudaMemoryManager.cudaAllocFsForAllLevelsOnHost();
+}
+
+void DistributionDebugWriter::allocateDistributionsOnHost(const CudaMemoryManager& cudaMemoryManager, uint level)
+{
+    cudaMemoryManager.cudaAllocFsForCheckPointAndRestart(level);
+}
+
+void DistributionDebugWriter::copyDistributionsToHost(const Parameter& para, const CudaMemoryManager& cudaMemoryManager)
+{
+    for (int level = 0; level <= para.getMaxLevel(); level++)
+        DistributionDebugWriter::copyDistributionsToHost(para, cudaMemoryManager, level);
+}
+
+void DistributionDebugWriter::copyDistributionsToHost(const Parameter& para, const CudaMemoryManager& cudaMemoryManager,
+                                                      uint level)
+{
+
+    if (para.getParHostAsReference(level).distributions.f[0] == nullptr)
+        throw std::runtime_error("Distributions (distributions.f[0]) at level " + std::to_string(level) +
+                                 " are not allocated on the host. Can't copy distributions to host");
+    cudaMemoryManager.cudaCopyFsForCheckPoint(level);
 }
