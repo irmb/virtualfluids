@@ -39,7 +39,7 @@
 #include "Temperature/FindTemperature.h"
 
 
-void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<CudaMemoryManager> cudaMemoryManager)
+void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<PreProcessor> preProcessorAD, SPtr<CudaMemoryManager> cudaMemoryManager)
 {
     for (int lev = para->getFine(); lev >= para->getCoarse(); lev--) {
         preProcessor->init(para, lev);
@@ -84,7 +84,8 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Cud
             for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++) {
                 para->getParH(lev)->concentration[index] = para->getTemperatureInit();
             }
-            initTemperatur(para.get(), cudaMemoryManager.get(), lev);
+
+            preProcessorAD->init(para, lev);
         }
     }
 }

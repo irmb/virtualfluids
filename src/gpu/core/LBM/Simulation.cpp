@@ -156,6 +156,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     if (para->getDiffOn()) {
         VF_LOG_INFO("make AD Kernels");
         adKernels = kernelFactory->makeAdvDifKernels(para);
+        std::vector<PreProcessorType> preProADTypes = adKernels.at(0)->getPreProcessorTypes();
+        preProcessorAD = preProcessorFactory->makePreProcessor(preProADTypes, para);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -270,7 +272,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // VF_LOG_INFO("done.");
 
     VF_LOG_INFO("init lattice...");
-    initLattice(para, preProcessor, cudaMemoryManager);
+    initLattice(para, preProcessor, preProcessorAD, cudaMemoryManager);
     VF_LOG_INFO("done");
 
     // VF_LOG_INFO("set geo for Q...\n");
