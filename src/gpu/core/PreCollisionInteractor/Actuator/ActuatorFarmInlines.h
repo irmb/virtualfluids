@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ActuatorFarm.cu
+//! \file ActuatorFarmInlines.cu
 //! \ingroup PreCollisionInteractor
 //! \author Henrik Asmuth, Henry Korb, Anna Wellmann
 //======================================================================================
@@ -35,6 +35,10 @@
 #define ACTUATOR_FARM_INLINES
 
 #include "basics/DataTypes.h"
+#include "basics/constants/NumericConstants.h"
+#include "VirtualFluids_GPU/GPU/GeometryUtils.h"
+
+using namespace vf::basics::constant;
 
 struct TurbineNodeIndex {
     uint turbine;
@@ -57,11 +61,12 @@ __host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint
 {
     // see https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/merge_requests/248 for visualization
     turbine = node / (numberOfNodesPerBlade * numberOfBlades);
-    uint x_off = turbine * numberOfNodesPerBlade * numberOfBlades;
+    const uint x_off = turbine * numberOfNodesPerBlade * numberOfBlades;
     blade = (node - x_off) / numberOfNodesPerBlade;
-    uint y_off = numberOfNodesPerBlade * blade + x_off;
+    const uint y_off = numberOfNodesPerBlade * blade + x_off;
     bladeNode = node - y_off;
 }
+
 __host__ __device__ __inline__ TurbineNodeIndex calcTurbineBladeAndBladeNode(uint node, uint numberOfNodesPerBlade, uint numberOfBlades)
 {
     uint turbine;
@@ -69,6 +74,49 @@ __host__ __device__ __inline__ TurbineNodeIndex calcTurbineBladeAndBladeNode(uin
     uint bladeNode;
     calcTurbineBladeAndBladeNode(node, bladeNode, numberOfNodesPerBlade, blade, numberOfBlades, turbine);
     return { /*.turbine = */ turbine, /*.blade = */ blade, /*.bladeNode = */ bladeNode }; // Designated initializers are a C++ 20 feature
+}
+
+__host__ __device__ __inline__ void rotateFromBladeToGlobal(
+                            real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF, 
+                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
+                            real azimuth)
+{
+    rotateAboutX3D(azimuth, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF);
+}
+
+__host__ __device__ __inline__ void rotateFromGlobalToBlade(
+                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
+                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
+                            real azimuth)
+{
+    invRotateAboutX3D(azimuth, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF);
+}
+__host__ __device__ __inline__ real distSqrd(real distX, real distY, real distZ)
+{
+    return distX * distX + distY * distY + distZ * distZ;
+}
+
+__host__ __device__ __inline__ real getBoundingSphereRadius(real diameter, real smearingWidth)
+{
+    return c1o2 * diameter + c4o1 * smearingWidth;
+}
+
+__host__ __device__ __inline__ bool inBoundingSphere(real distX, real distY, real distZ, real diameter, real smearingWidth)
+{
+    const real boundingSphereRadius = getBoundingSphereRadius(diameter, smearingWidth);
+    return distSqrd(distX, distY, distZ) < boundingSphereRadius * boundingSphereRadius;
+}
+
+__host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real epsilon, real factorGaussian)
+{
+    return factorGaussian * exp(-distSqrd(distX, distY, distZ) / (epsilon * epsilon));
+}
+
+__inline__ void swapArrays(real* &arr1, real* &arr2)
+{
+    real* tmp = arr1;
+    arr1 = arr2;
+    arr2 = tmp;
 }
 
 #endif
