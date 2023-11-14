@@ -3,9 +3,9 @@
 #include <basics/DataTypes.h>
 
 
-__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of dMMM node
+__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of DIR_MMM node
                                         uint &ke, uint &kn, uint &kt, uint &kne, uint &kte,uint &ktn, uint &ktne,
-                                        uint* neighborX, uint* neighborY, uint* neighborZ)
+                                        const uint* neighborX, const uint* neighborY, const uint* neighborZ)
 {
     ke   = neighborX[k];
     kn   = neighborY[k];
@@ -16,10 +16,10 @@ __inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of
     ktne = neighborX[ktn];
 }
 
-__inline__ __host__ __device__ uint findNearestCellBSW(uint index, 
-                                              real* coordsX, real* coordsY, real* coordsZ, 
-                                              real posX, real posY, real posZ, 
-                                              uint* neighborsX, uint* neighborsY, uint* neighborsZ, uint* neighborsWSB)
+__inline__ __host__ __device__ uint findNearestCellBSW(const uint index, 
+                                              const real* coordsX, const real* coordsY, const real* coordsZ, 
+                                              const real posX, const real posY, const real posZ,
+                                              const uint* neighborsX, const uint* neighborsY, const uint* neighborsZ, const uint* neighborsWSB)
 {
     uint new_index = index;
 
@@ -53,7 +53,7 @@ __inline__ __host__ __device__ void getInterpolationWeights(real &dW, real &dE, 
 
 __inline__ __host__ __device__ real trilinearInterpolation( real dW, real dE, real dN, real dS, real dT, real dB,
                                         uint k,  uint ke, uint kn, uint kt, uint kne, uint kte, uint ktn, uint ktne,
-                                        real* quantity )
+                                        const real* quantity )
 {
     return  (   dE*dN*dT*quantity[k]    + dW*dN*dT*quantity[ke]
               + dE*dS*dT*quantity[kn]   + dW*dS*dT*quantity[kne]
