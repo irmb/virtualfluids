@@ -30,7 +30,7 @@
 //=======================================================================================
 #include "InitAdvectionDiffusionIncompressibleD3Q7.h"
 
-#include "InitIncompAD7_Device.cuh"
+#include "InitAdvectionDiffusionIncompressibleD3Q7_Device.cuh"
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
 

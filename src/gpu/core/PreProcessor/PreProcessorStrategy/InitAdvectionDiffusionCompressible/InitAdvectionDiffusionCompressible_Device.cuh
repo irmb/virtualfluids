@@ -35,16 +35,16 @@
 #include <curand.h>
 
 __global__ void InitAdvectionDiffusionCompressible_Device(
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned int* geoD,
-    real* Conc,
-    real* ux,
-    real* uy,
-    real* uz,
-    unsigned int size_Mat,
-    real* DD27,
-    bool EvenOrOdd);
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint* typeOfGridNode,
+    real* concentration,
+    real* velocityX,
+    real* velocityY,
+    real* velocityZ,
+    unsigned long long numberOfLBnodes,
+    real* distributionsAD,
+    bool isEvenTimestep);
 
 #endif

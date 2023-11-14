@@ -33,11 +33,10 @@
 #include <basics/constants/NumericConstants.h>
 
 using namespace vf::basics::constant;
-using namespace vf::lbm;
 using namespace vf::lbm::dir;
+#include "math.h"
 
-
-__global__ void InitAdvectionDiffusionCompressible_Device(
+__global__ void InitAdvectionDiffusionIncompressible_Device(
     uint* neighborX,
     uint* neighborY,
     uint* neighborZ,
