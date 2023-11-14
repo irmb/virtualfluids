@@ -33,7 +33,7 @@
 
 #include "DataTypes.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/GPUHelperFunctions/ChimeraTransformation.h"
+#include "lbm/ChimeraTransformation.h"
 #include "LBM/GPUHelperFunctions/ScalingUtilities.h"
 #include "LBM/GPUHelperFunctions/GridTraversion.h"
 #include "LBM/GPUHelperFunctions/CoordinateTransformation.h"
