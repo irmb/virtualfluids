@@ -86,7 +86,9 @@ int main()
         };
 
         const RotationOrInterpolation rotOrInt = Rot;
-        const InitialRotation initialRot = PiHalf;
+        const InitialRotation initialRot = Pi;
+        const Axis rotationAxis = Axis::z;
+        const SideType inflowSide = SideType::PY;
 
         if (rotOrInt == Int)
             VF_LOG_INFO("Use interpolation.");
@@ -94,7 +96,8 @@ int main()
             VF_LOG_INFO("Use rotation.");
 
         const std::string path("./output/RotatingGrid");
-        const std::string simulationName = (rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid") + rotationStrings[initialRot];
+        const std::string simulationName = (rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid") +
+                                           rotationStrings.at(initialRot) + "_inflowFrom" + sideTypeNames.at(inflowSide);
 
         const real L = 1.0;
         const real Re = 2000.0;
@@ -123,9 +126,9 @@ int main()
         gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
 
         if (rotOrInt == Rot)
-            gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.75 * L, Axis::x));
+            gridBuilder->addGridRotatingGrid(std::make_shared<Cylinder>(0.0, 0.0, 0.0, 0.25 * L, 0.75 * L, rotationAxis));
         if (rotOrInt == Int)
-            gridBuilder->addGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 0.8 * L, Axis::x), 1);
+            gridBuilder->addGrid(std::make_shared<Cylinder>(0.2, 0.1, 0.1, 0.25 * L, 0.8 * L, rotationAxis), 1);
 
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
@@ -165,17 +168,42 @@ int main()
         // gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
         // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
 
-        gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-        gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
-
         // gridBuilder->setVelocityBoundaryCondition(SideType::PX, -velocityLB, 0.0, 0.0);
         // gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
 
-        // rot around x-Axis
+        switch (inflowSide) {
+            case SideType::MX:
+                gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+                break;
+            case SideType::PX:
+                gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PX, -velocityLB, 0.0, 0.0);
+                break;
+            case SideType::MY:
+                gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, velocityLB, 0.0);
+                gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
+                break;
+            case SideType::PY:
+                gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, -velocityLB, 0.0);
+                break;
+            case SideType::MZ:
+                gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, velocityLB);
+                gridBuilder->setPressureBoundaryCondition(SideType::PZ, 0.0);
+                break;
+            case SideType::PZ:
+                gridBuilder->setPressureBoundaryCondition(SideType::MZ, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, -velocityLB);
+                break;
+        }
+
         gridBuilder->setNoSlipBoundaryCondition(SideType::MX);
         gridBuilder->setNoSlipBoundaryCondition(SideType::PX);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, -velocityLB, 0.0);
-        gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+        gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
         BoundaryConditionFactory bcFactory;
 
@@ -196,8 +224,7 @@ int main()
             };
             if (isCoordinateInPressPoint(0) && isCoordinateInPressPoint(1) && isCoordinateInPressPoint(2))
                 return rhoPressPoint;
-            else
-                return (real)0.0;
+            return (real)0.0;
         };
 
         // para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {

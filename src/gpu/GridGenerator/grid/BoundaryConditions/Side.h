@@ -58,10 +58,15 @@ class BoundaryCondition;
 
 class Side;
 
-enum class SideType
-{
-    MX, PX, MY, PY, MZ, PZ, GEOMETRY
-};
+enum class SideType { MX, PX, MY, PY, MZ, PZ, GEOMETRY };
+
+const std::map<SideType, std::string> sideTypeNames = { { SideType::MX, "MX" },
+                                                        { SideType::PX, "PX" },
+                                                        { SideType::MY, "MY" },
+                                                        { SideType::PY, "PY" },
+                                                        { SideType::MZ, "MZ" },
+                                                        { SideType::PZ, "PZ" },
+                                                        { SideType::GEOMETRY, "Geometry" } };
 
 class Side
 {
