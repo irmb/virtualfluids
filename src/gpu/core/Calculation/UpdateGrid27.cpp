@@ -398,15 +398,16 @@ void UpdateGrid27::rotateGridInInitializationProcess(int level)
     SPtr<ParameterRotatingGrid> paraRot = para->getRotatingGridParameter();
 
     real intendedRotation = (real)paraRot->initialGridRotation;
-    auto axis = paraRot->rotationalAxis;
+    auto axisRotation = paraRot->rotationalAxis;
     auto angularVelocityInSimulation = paraRot->parameterRotHost->angularVelocity;
-    paraRot->parameterRotHost->angularVelocity[axis] = intendedRotation / steps;
-    paraRot->parameterRotDevice->angularVelocity[axis] = paraRot->parameterRotHost->angularVelocity[axis];
+    paraRot->parameterRotHost->angularVelocity[axisRotation] = intendedRotation / steps;
+    paraRot->parameterRotDevice->angularVelocity[axisRotation] = paraRot->parameterRotHost->angularVelocity[axisRotation];
 
-
-    VF_LOG_INFO("Intended initial rotation for the rotating grid: {}. Center point for the rotation: ({}, {}, {}), Axis : {}, Angular Velocity: {}.",
+    VF_LOG_INFO("Intended initial rotation for the rotating grid: {}. Center point for the rotation: ({}, {}, {}), Axis : "
+                "{}, Angular Velocity: {}.",
                 intendedRotation, paraRot->parameterRotHost->centerPoint[0], paraRot->parameterRotHost->centerPoint[1],
-                paraRot->parameterRotHost->centerPoint[2], axis, paraRot->parameterRotHost->angularVelocity[axis]);
+                paraRot->parameterRotHost->centerPoint[2], axis::to_string(axisRotation),
+                paraRot->parameterRotHost->angularVelocity[axisRotation]);
 
     for (int i = 0; i < steps; i++) {
         paraRot->parameterRotHost->gridAngle[0] += paraRot->parameterRotHost->angularVelocity[0];
@@ -433,8 +434,8 @@ void UpdateGrid27::rotateGridInInitializationProcess(int level)
             para->getParD(level)->neighborFineToCoarse);
     }
 
-    paraRot->parameterRotHost->angularVelocity[axis] = angularVelocityInSimulation[axis];
-    paraRot->parameterRotDevice->angularVelocity[axis] = angularVelocityInSimulation[axis];
+    paraRot->parameterRotHost->angularVelocity[axisRotation] = angularVelocityInSimulation[axisRotation];
+    paraRot->parameterRotDevice->angularVelocity[axisRotation] = angularVelocityInSimulation[axisRotation];
 
     VF_LOG_INFO("Angle x {}", paraRot->parameterRotHost->gridAngle[0]);
     VF_LOG_INFO("Angle y {}", paraRot->parameterRotHost->gridAngle[1]);

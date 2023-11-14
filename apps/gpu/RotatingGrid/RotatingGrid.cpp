@@ -97,7 +97,7 @@ int main()
 
         const std::string path("./output/RotatingGrid");
         const std::string simulationName = (rotOrInt == Int ? "RotatingGridInterpolationTest" : "RotatingGrid") +
-                                           rotationStrings.at(initialRot) + "_inflowFrom" + sideTypeNames.at(inflowSide);
+                                           rotationStrings.at(initialRot) + "around" + axis::to_string(rotationAxis) + "_inflowFrom" + sideTypeNames.at(inflowSide);
 
         const real L = 1.0;
         const real Re = 2000.0;
@@ -195,6 +195,9 @@ int main()
             case SideType::PZ:
                 gridBuilder->setPressureBoundaryCondition(SideType::MZ, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, -velocityLB);
+                break;
+            case SideType::GEOMETRY:
+                throw std::runtime_error("Can't generate inflow at geometry.");
                 break;
         }
 
