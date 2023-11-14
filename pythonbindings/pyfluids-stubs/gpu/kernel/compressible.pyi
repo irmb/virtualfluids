@@ -1,17 +1,4 @@
 BGK: str
-BGKUnified: str
 BGKPlus: str
-MRT: str
-Cascade: str
-CumulantClassic: str
-CumulantK15Unified: str
-K17CompressibleNavierStokesUnified: str
 K17CompressibleNavierStokes: str
-K17CompressibleNavierStokesBulkViscosity: str
-K17CompressibleNavierStokesChimeraLegacy: str
-CumulantAll4SP27: str
-CumulantK18: str
-CumulantK20: str
 K15CompressibleNavierStokes: str
-K15CompressibleNavierStokesBulk: str
-K15CompressibleNavierStokesSponge: str
