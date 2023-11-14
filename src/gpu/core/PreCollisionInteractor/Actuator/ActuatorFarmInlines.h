@@ -98,7 +98,7 @@ __host__ __device__ __inline__ real distSqrd(real distX, real distY, real distZ)
 
 __host__ __device__ __inline__ real getBoundingSphereRadius(real diameter, real smearingWidth)
 {
-    return c1o2 * diameter + c4o1 * smearingWidth;
+    return c1o2 * diameter + c3o2 * smearingWidth;
 }
 
 __host__ __device__ __inline__ bool inBoundingSphere(real distX, real distY, real distZ, real diameter, real smearingWidth)
