@@ -17,48 +17,6 @@
 #include "LBM/LB.h"
 
 
-__global__ void LBInit27( int myid,
-                                     int numprocs,
-                                     real u0,
-                                     unsigned int* geoD,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     real* vParabel,
-                                     unsigned long long numberOfLBnodes,
-                                     unsigned int grid_nx,
-                                     unsigned int grid_ny,
-                                     unsigned int grid_nz,
-                                     real* DD,
-                                     int lev,
-                                     int maxlev);
-
-__global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
-                                               unsigned int* neighborY,
-                                               unsigned int* neighborZ,
-                                               unsigned int* neighborWSB,
-                                               unsigned int* geoD,
-                                               real* rho,
-                                               real* ux,
-                                               real* uy,
-                                               real* uz,
-                                               unsigned long long numberOfLBnodes,
-                                               real* DD,
-                                               real omega,
-                                               bool EvenOrOdd);
-
-__global__ void InitAD27(unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       unsigned int* geoD,
-                                       real* Conc,
-                                       real* ux,
-                                       real* uy,
-                                       real* uz,
-                                       unsigned long long numberOfLBnodes,
-                                       real* DD27,
-                                       bool EvenOrOdd);
-
 __global__ void LBCalcMac27( real* vxD,
                                         real* vyD,
                                         real* vzD,
@@ -381,7 +339,7 @@ __global__ void QDeviceCompThinWallsPartOne27(real* DD,
                                                          unsigned long long numberOfLBnodes,
                                                          bool isEvenTimestep);
 
-__global__ void QDevice3rdMomentsComp27(	 real* distributions,
+__global__ void QDevice3rdMomentsComp27(     real* distributions,
                                                      int* subgridDistanceIndices,
                                                      real* subgridDistances,
                                                      unsigned int numberOfBCnodes,
@@ -403,7 +361,7 @@ __global__ void QDeviceIncompHighNu27(real* DD,
                                                  unsigned long long numberOfLBnodes,
                                                  bool isEvenTimestep);
 
-__global__ void QDeviceCompHighNu27(	 real* DD,
+__global__ void QDeviceCompHighNu27(     real* DD,
                                                  int* k_Q,
                                                  real* QQ,
                                                  unsigned int numberOfBCnodes,
@@ -565,7 +523,7 @@ __global__ void QVelDeviceIncompHighNu27(real* vx,
                                                     unsigned long long numberOfLBnodes,
                                                     bool isEvenTimestep);
 
-__global__ void QVelDeviceCompHighNu27(	real* vx,
+__global__ void QVelDeviceCompHighNu27(    real* vx,
                                                     real* vy,
                                                     real* vz,
                                                     real* DD,
@@ -987,7 +945,7 @@ __global__ void VelSchlaff27(  int t,
                                           unsigned long long numberOfLBnodes,
                                           bool isEvenTimestep);
 
-__global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
+__global__ void QPrecursorDeviceCompZeroPress(     int* subgridDistanceIndices,
                                                 int numberOfBCnodes,
                                                 int numberOfPrecursorNodes,
                                                 int sizeQ,
@@ -1015,7 +973,7 @@ __global__ void QPrecursorDeviceCompZeroPress( 	int* subgridDistanceIndices,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
 
-__global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
+__global__ void PrecursorDeviceEQ27(     int* subgridDistanceIndices,
                                         int numberOfBCnodes,
                                         int numberOfPrecursorNodes,
                                         real omega,
@@ -1041,7 +999,7 @@ __global__ void PrecursorDeviceEQ27( 	int* subgridDistanceIndices,
                                         unsigned long long numberOfLBnodes,
                                         bool isEvenTimestep);
 
-__global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
+__global__ void PrecursorDeviceDistributions(     int* subgridDistanceIndices,
                                                 int numberOfBCNodes,
                                                 int numberOfPrecursorNodes,
                                                 real* distributions,
@@ -1061,7 +1019,7 @@ __global__ void PrecursorDeviceDistributions( 	int* subgridDistanceIndices,
                                                 real timeRatio,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
-__global__ void QPrecursorDeviceDistributions( 	int* subgridDistanceIndices,
+__global__ void QPrecursorDeviceDistributions(     int* subgridDistanceIndices,
                                                 real* subgridDistances,
                                                 int sizeQ,
                                                 int numberOfBCNodes,
@@ -2231,7 +2189,7 @@ __global__ void setRecvGsF3(
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
-__global__ void WallFunction27( 	real* vx,
+__global__ void WallFunction27(     real* vx,
                                             real* vy,
                                             real* vz,
                                             real* DD,

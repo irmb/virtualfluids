@@ -12,20 +12,20 @@ class LogFileWriter;
 class LogFileQueueImp : public LogFileQueue 
 {
 public:
-	static std::shared_ptr<LogFileQueueImp> getNewInstance(std::string basicLogFilePath);
+    static std::shared_ptr<LogFileQueueImp> getNewInstance(std::string basicLogFilePath);
 
-	void writeLogFiles() override;
-	void addLogFileWriter(std::shared_ptr<LogFileWriter> aLogFileWriter);
+    void writeLogFiles() override;
+    void addLogFileWriter(std::shared_ptr<LogFileWriter> aLogFileWriter);
 
 private:
-	LogFileQueueImp() = default;
-	LogFileQueueImp(std::string basicLogFilePath);
+    LogFileQueueImp() = default;
+    LogFileQueueImp(std::string basicLogFilePath);
 
-	std::string calcDateAndTime();
+    std::string calcDateAndTime();
 
-	std::string basicLogFilePath;
-	std::vector<std::shared_ptr<LogFileWriter> > logFileWriter;
-	time_t now;
-	struct tm nowLocal;
+    std::string basicLogFilePath;
+    std::vector<std::shared_ptr<LogFileWriter> > logFileWriter;
+    time_t now;
+    struct tm nowLocal;
 };
 #endif

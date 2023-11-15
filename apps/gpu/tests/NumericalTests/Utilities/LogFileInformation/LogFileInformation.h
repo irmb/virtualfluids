@@ -6,8 +6,8 @@
 class LogFileInformation
 {
 public:
-	virtual ~LogFileInformation() = default;
-	virtual std::string getOutput() = 0;
+    virtual ~LogFileInformation() = default;
+    virtual std::string getOutput() = 0;
 
 private:
 

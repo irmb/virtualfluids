@@ -43,13 +43,13 @@ class ArrowTransformator
 {
 public:
     static GRIDGENERATOR_EXPORT std::shared_ptr<ArrowTransformator> makeTransformator(real delta, real dx, real dy, real dz);
-	virtual ~ArrowTransformator() {}
+    virtual ~ArrowTransformator() {}
 
 protected:
-	ArrowTransformator() {}
-	
+    ArrowTransformator() {}
+    
 public:
-	virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const = 0;
+    virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const = 0;
 };
 
 

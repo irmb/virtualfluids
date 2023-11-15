@@ -3518,31 +3518,31 @@ __global__ void QPressDeviceOld27(
       __syncthreads();
 
       (D.f[dP00])[ke   ] = f1_W   -c2o27*drho1;   //  c1o100;  // zero;  //
-      (D.f[dM00])[kw   ] = f1_E   -c2o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0P0])[kn   ] = f1_S   -c2o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0M0])[ks   ] = f1_N   -c2o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[d00P])[kt   ] = f1_B   -c2o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[d00M])[kb   ] = f1_T   -c2o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPP0])[kne  ] = f1_SW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMM0])[ksw  ] = f1_NE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPM0])[kse  ] = f1_NW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMP0])[knw  ] = f1_SE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dP0P])[kte  ] = f1_BW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dM0M])[kbw  ] = f1_TE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dP0M])[kbe  ] = f1_TW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dM0P])[ktw  ] = f1_BE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0PP])[ktn  ] = f1_BS  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0MM])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0PM])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0MP])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPPP])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMMP])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPMP])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMPP])[ktnw ] = f1_BSE -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPPM])[kbne ] = f1_TSW -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMMM])[kbsw ] = f1_TNE -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPMM])[kbse ] = f1_TNW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dM00])[kw   ] = f1_E   -c2o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0P0])[kn   ] = f1_S   -c2o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0M0])[ks   ] = f1_N   -c2o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[d00P])[kt   ] = f1_B   -c2o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[d00M])[kb   ] = f1_T   -c2o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPP0])[kne  ] = f1_SW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMM0])[ksw  ] = f1_NE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPM0])[kse  ] = f1_NW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMP0])[knw  ] = f1_SE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dP0P])[kte  ] = f1_BW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dM0M])[kbw  ] = f1_TE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dP0M])[kbe  ] = f1_TW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dM0P])[ktw  ] = f1_BE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0PP])[ktn  ] = f1_BS  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0MM])[kbs  ] = f1_TN  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0PM])[kbn  ] = f1_TS  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0MP])[kts  ] = f1_BN  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPPP])[ktne ] = f1_BSW -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMMP])[ktsw ] = f1_BNE -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPMP])[ktse ] = f1_BNW -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMPP])[ktnw ] = f1_BSE -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPPM])[kbne ] = f1_TSW -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMMM])[kbsw ] = f1_TNE -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPMM])[kbse ] = f1_TNW -c1o216*drho1;    //  c1o100;  // zero;  //
       (D.f[dMPM])[kbnw ] = f1_TSE -c1o216*drho1;  //  c1o100;  // zero;  //
    }
 }
@@ -4013,8 +4013,8 @@ __global__ void QPressDeviceEQZ27(
          //real mfaca = (D.f[dMPM])[kbnw ];
          ////////////////////////////////////////////////////////////////////////////////////
          //real rho   = (((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) +
-         //				(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-         //				((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb) + one;//!!!!Achtung + one
+         //                (((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
+         //                ((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb) + one;//!!!!Achtung + one
          ////////////////////////////////////////////////////////////////////////////////////
          real rho = rhoBC[k];
          ////////////////////////////////////////////////////////////////////////////////////
@@ -4037,61 +4037,61 @@ __global__ void QPressDeviceEQZ27(
          ////////////////////////////////////////////////////////////////////////////////////////
          ////round off error test
          //if(vvx!=zero){
-         //	(kDistTest.f[dP00])[k] = mfabb;
-         //	(kDistTest.f[dM00])[k] = mfcbb;
-         //	(kDistTest.f[d0P0])[k] = mfbab;
-         //	(kDistTest.f[d0M0])[k] = mfbcb;
-         //	(kDistTest.f[d00P])[k] = mfbba;
-         //	(kDistTest.f[d00M])[k] = mfbbc;
-         //	(kDistTest.f[dPP0])[k] = mfaab;
-         //	(kDistTest.f[dMM0])[k] = mfccb;
-         //	(kDistTest.f[dPM0])[k] = mfacb;
-         //	(kDistTest.f[dMP0])[k] = mfcab;
-         //	(kDistTest.f[dP0P])[k] = mfaba;
-         //	(kDistTest.f[dM0M])[k] = mfcbc;
-         //	(kDistTest.f[dP0M])[k] = mfabc;
-         //	(kDistTest.f[dM0P])[k] = mfcba;
-         //	(kDistTest.f[d0PP])[k] = mfbaa;
-         //	(kDistTest.f[d0MM])[k] = mfbcc;
-         //	(kDistTest.f[d0PM])[k] = mfbac;
-         //	(kDistTest.f[d0MP])[k] = mfbca;
-         //	(kDistTest.f[d000])[k] = KQK;
-         //	(kDistTest.f[dPPP])[k] = mfaaa;
-         //	(kDistTest.f[dMMP])[k] = mfcca;
-         //	(kDistTest.f[dPMP])[k] = mfaca;
-         //	(kDistTest.f[dMPP])[k] = mfcaa;
-         //	(kDistTest.f[dPPM])[k] = mfaac;
-         //	(kDistTest.f[dMMM])[k] = mfccc;
-         //	(kDistTest.f[dPMM])[k] = mfacc;
-         //	(kDistTest.f[dMPM])[k] = mfcac;
+         //    (kDistTest.f[dP00])[k] = mfabb;
+         //    (kDistTest.f[dM00])[k] = mfcbb;
+         //    (kDistTest.f[d0P0])[k] = mfbab;
+         //    (kDistTest.f[d0M0])[k] = mfbcb;
+         //    (kDistTest.f[d00P])[k] = mfbba;
+         //    (kDistTest.f[d00M])[k] = mfbbc;
+         //    (kDistTest.f[dPP0])[k] = mfaab;
+         //    (kDistTest.f[dMM0])[k] = mfccb;
+         //    (kDistTest.f[dPM0])[k] = mfacb;
+         //    (kDistTest.f[dMP0])[k] = mfcab;
+         //    (kDistTest.f[dP0P])[k] = mfaba;
+         //    (kDistTest.f[dM0M])[k] = mfcbc;
+         //    (kDistTest.f[dP0M])[k] = mfabc;
+         //    (kDistTest.f[dM0P])[k] = mfcba;
+         //    (kDistTest.f[d0PP])[k] = mfbaa;
+         //    (kDistTest.f[d0MM])[k] = mfbcc;
+         //    (kDistTest.f[d0PM])[k] = mfbac;
+         //    (kDistTest.f[d0MP])[k] = mfbca;
+         //    (kDistTest.f[d000])[k] = KQK;
+         //    (kDistTest.f[dPPP])[k] = mfaaa;
+         //    (kDistTest.f[dMMP])[k] = mfcca;
+         //    (kDistTest.f[dPMP])[k] = mfaca;
+         //    (kDistTest.f[dMPP])[k] = mfcaa;
+         //    (kDistTest.f[dPPM])[k] = mfaac;
+         //    (kDistTest.f[dMMM])[k] = mfccc;
+         //    (kDistTest.f[dPMM])[k] = mfacc;
+         //    (kDistTest.f[dMPM])[k] = mfcac;
          //}else{
-         //	(kDistTest.f[dP00])[k] = zero;
-         //	(kDistTest.f[dM00])[k] = zero;
-         //	(kDistTest.f[d0P0])[k] = zero;
-         //	(kDistTest.f[d0M0])[k] = zero;
-         //	(kDistTest.f[d00P])[k] = zero;
-         //	(kDistTest.f[d00M])[k] = zero;
-         //	(kDistTest.f[dPP0])[k] = zero;
-         //	(kDistTest.f[dMM0])[k] = zero;
-         //	(kDistTest.f[dPM0])[k] = zero;
-         //	(kDistTest.f[dMP0])[k] = zero;
-         //	(kDistTest.f[dP0P])[k] = zero;
-         //	(kDistTest.f[dM0M])[k] = zero;
-         //	(kDistTest.f[dP0M])[k] = zero;
-         //	(kDistTest.f[dM0P])[k] = zero;
-         //	(kDistTest.f[d0PP])[k] = zero;
-         //	(kDistTest.f[d0MM])[k] = zero;
-         //	(kDistTest.f[d0PM])[k] = zero;
-         //	(kDistTest.f[d0MP])[k] = zero;
-         //	(kDistTest.f[d000])[k] = zero;
-         //	(kDistTest.f[dPPP])[k] = zero;
-         //	(kDistTest.f[dMMP])[k] = zero;
-         //	(kDistTest.f[dPMP])[k] = zero;
-         //	(kDistTest.f[dMPP])[k] = zero;
-         //	(kDistTest.f[dPPM])[k] = zero;
-         //	(kDistTest.f[dMMM])[k] = zero;
-         //	(kDistTest.f[dPMM])[k] = zero;
-         //	(kDistTest.f[dMPM])[k] = zero;
+         //    (kDistTest.f[dP00])[k] = zero;
+         //    (kDistTest.f[dM00])[k] = zero;
+         //    (kDistTest.f[d0P0])[k] = zero;
+         //    (kDistTest.f[d0M0])[k] = zero;
+         //    (kDistTest.f[d00P])[k] = zero;
+         //    (kDistTest.f[d00M])[k] = zero;
+         //    (kDistTest.f[dPP0])[k] = zero;
+         //    (kDistTest.f[dMM0])[k] = zero;
+         //    (kDistTest.f[dPM0])[k] = zero;
+         //    (kDistTest.f[dMP0])[k] = zero;
+         //    (kDistTest.f[dP0P])[k] = zero;
+         //    (kDistTest.f[dM0M])[k] = zero;
+         //    (kDistTest.f[dP0M])[k] = zero;
+         //    (kDistTest.f[dM0P])[k] = zero;
+         //    (kDistTest.f[d0PP])[k] = zero;
+         //    (kDistTest.f[d0MM])[k] = zero;
+         //    (kDistTest.f[d0PM])[k] = zero;
+         //    (kDistTest.f[d0MP])[k] = zero;
+         //    (kDistTest.f[d000])[k] = zero;
+         //    (kDistTest.f[dPPP])[k] = zero;
+         //    (kDistTest.f[dMMP])[k] = zero;
+         //    (kDistTest.f[dPMP])[k] = zero;
+         //    (kDistTest.f[dMPP])[k] = zero;
+         //    (kDistTest.f[dPPM])[k] = zero;
+         //    (kDistTest.f[dMMM])[k] = zero;
+         //    (kDistTest.f[dPMM])[k] = zero;
+         //    (kDistTest.f[dMPM])[k] = zero;
          //}
 
          //////////////////////////////////////////////////////////////////////////////////////
@@ -4100,9 +4100,9 @@ __global__ void QPressDeviceEQZ27(
          //////////////////////////////////////////////////////////////////////////////////////
          ////// second bad fix for negative x velocity
          ////if(vvx > zero){
-         ////	vvx = -vvx;
-         ////	vvy = -vvy;
-         ////	vvz = -vvz;
+         ////    vvx = -vvx;
+         ////    vvy = -vvy;
+         ////    vvz = -vvz;
          ////}
          ////////////////////////////////////////////////////////////////////////////////////
          double vx2    = vvx * vvx;
@@ -4768,26 +4768,26 @@ __global__ void QPressDeviceFake27(
       (D.f[d0M0])[ks   ] = c2o27* (rhoBC[k]+c3o1*(     vx2    )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
       (D.f[d00P])[kt   ] = c2o27* (rhoBC[k]+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
       (D.f[d00M])[kb   ] = c2o27* (rhoBC[k]+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
-      (D.f[dPP0])[kne  ] = f1_SW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMM0])[ksw  ] = f1_NE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPM0])[kse  ] = f1_NW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMP0])[knw  ] = f1_SE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dP0P])[kte  ] = f1_BW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dM0M])[kbw  ] = f1_TE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dP0M])[kbe  ] = f1_TW  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dM0P])[ktw  ] = f1_BE  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0PP])[ktn  ] = f1_BS  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0MM])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0PM])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d0MP])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
-      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPPP])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMMP])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPMP])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMPP])[ktnw ] = f1_BSE -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPPM])[kbne ] = f1_TSW -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dMMM])[kbsw ] = f1_TNE -c1o216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dPMM])[kbse ] = f1_TNW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dPP0])[kne  ] = f1_SW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMM0])[ksw  ] = f1_NE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPM0])[kse  ] = f1_NW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMP0])[knw  ] = f1_SE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dP0P])[kte  ] = f1_BW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dM0M])[kbw  ] = f1_TE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dP0M])[kbe  ] = f1_TW  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[dM0P])[ktw  ] = f1_BE  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0PP])[ktn  ] = f1_BS  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0MM])[kbs  ] = f1_TN  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0PM])[kbn  ] = f1_TS  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d0MP])[kts  ] = f1_BN  -c1o54*drho1;    //  c1o100;  // zero;  //
+      (D.f[d000])[kzero] = f1_ZERO-c8o27*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPPP])[ktne ] = f1_BSW -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMMP])[ktsw ] = f1_BNE -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPMP])[ktse ] = f1_BNW -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMPP])[ktnw ] = f1_BSE -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPPM])[kbne ] = f1_TSW -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dMMM])[kbsw ] = f1_TNE -c1o216*drho1;    //  c1o100;  // zero;  //
+      (D.f[dPMM])[kbse ] = f1_TNW -c1o216*drho1;    //  c1o100;  // zero;  //
       (D.f[dMPM])[kbnw ] = f1_TSE -c1o216*drho1;  //  c1o100;  // zero;  //
    }
 }

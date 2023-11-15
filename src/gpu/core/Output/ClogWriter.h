@@ -15,4 +15,4 @@ private:
    int data;
 };
 #endif
-#endif	//CLOGWRITER_H
+#endif    //CLOGWRITER_H

@@ -7,61 +7,61 @@
 
 void SimulationInfoImp::setTimeInfo(std::shared_ptr<TimeInfo> timeInfo)
 {
-	this->timeInfo = timeInfo;
+    this->timeInfo = timeInfo;
 }
 
 std::string SimulationInfoImp::getKernelName()
 {
-	return kernelName;
+    return kernelName;
 }
 
 double SimulationInfoImp::getViscosity()
 {
-	return viscosity;
+    return viscosity;
 }
 
 std::string SimulationInfoImp::getSimulationName()
 {
-	return simulationName;
+    return simulationName;
 }
 
 std::string SimulationInfoImp::getSimulationParameterString()
 {
-	return simulationParameterString;
+    return simulationParameterString;
 }
 
 int SimulationInfoImp::getLx()
 {
-	return lx;
+    return lx;
 }
 
 int SimulationInfoImp::getNumberOfSimulations()
 {
-	return numberOfSimulations;
+    return numberOfSimulations;
 }
 
 int SimulationInfoImp::getSimulationID()
 {
-	return simID;
+    return simID;
 }
 
 std::string SimulationInfoImp::getRunTimeOutput()
 {
-	std::ostringstream oss;
-	oss << "SimulationTime_" << lx << "=" << timeInfo->getSimulationTime() << std::endl;
-	oss << "ResultsCheckTime_" << lx << "=" << timeInfo->getResultCheckTime() << std::endl;
-	oss << "TestTime_" << lx << "=" << timeInfo->getTestTime() << std::endl;
-	oss << "AnalyticalVTKFileWritingTime_" << lx << "=" << timeInfo->getAnalyticalResultWriteTime() << std::endl;
-	return oss.str();
+    std::ostringstream oss;
+    oss << "SimulationTime_" << lx << "=" << timeInfo->getSimulationTime() << std::endl;
+    oss << "ResultsCheckTime_" << lx << "=" << timeInfo->getResultCheckTime() << std::endl;
+    oss << "TestTime_" << lx << "=" << timeInfo->getTestTime() << std::endl;
+    oss << "AnalyticalVTKFileWritingTime_" << lx << "=" << timeInfo->getAnalyticalResultWriteTime() << std::endl;
+    return oss.str();
 }
 
 std::vector<std::string> SimulationInfoImp::getDataToCalcTests()
 {
-	return dataToCalcTests;
+    return dataToCalcTests;
 }
 
 SimulationInfoImp::SimulationInfoImp(int simID, std::string kernel, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests)
-	: simID(simID), lx(lx), viscosity(viscosity), numberOfSimulations(numberOfSimulations), simulationName(simulationName), dataToCalcTests(dataToCalcTests)
+    : simID(simID), lx(lx), viscosity(viscosity), numberOfSimulations(numberOfSimulations), simulationName(simulationName), dataToCalcTests(dataToCalcTests)
 {
-	this->kernelName = kernel;
+    this->kernelName = kernel;
 }

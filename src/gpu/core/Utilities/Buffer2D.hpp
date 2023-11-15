@@ -73,4 +73,4 @@ private:
    int row, column;
    int size;
 };
-#endif	//BUFFER2D_H
+#endif    //BUFFER2D_H

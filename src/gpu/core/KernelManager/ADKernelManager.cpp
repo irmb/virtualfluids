@@ -38,56 +38,6 @@
 
 ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(parameter), adkernels(adkernels){}
 
-void ADKernelManager::initAD(const int level) const
-{
-    //////////////////////////////////////////////////////////////////////////
-    // calculation of omega for diffusivity
-    para->getParD(level)->omegaDiffusivity = (real)2.0 / ((real)6.0 * para->getParD(level)->diffusivity + (real)1.0);
-    //////////////////////////////////////////////////////////////////////////
-    para->getParD(level)->isEvenTimestep = true;
-    //////////////////////////////////////////////////////////////////////////
-    InitADDev27(
-        para->getParD(level)->numberofthreads, 
-        para->getParD(level)->neighborX, 
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ, 
-        para->getParD(level)->typeOfGridNode, 
-        para->getParD(level)->concentration,
-        para->getParD(level)->velocityX, 
-        para->getParD(level)->velocityY, 
-        para->getParD(level)->velocityZ,
-        para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level)->isEvenTimestep);
-    //////////////////////////////////////////////////////////////////////////
-    para->getParD(level)->isEvenTimestep = false;
-    //////////////////////////////////////////////////////////////////////////
-    InitADDev27(
-        para->getParD(level)->numberofthreads, 
-        para->getParD(level)->neighborX, 
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ, 
-        para->getParD(level)->typeOfGridNode, 
-        para->getParD(level)->concentration,
-        para->getParD(level)->velocityX, 
-        para->getParD(level)->velocityY, 
-        para->getParD(level)->velocityZ,
-        para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level)->isEvenTimestep);
-    //////////////////////////////////////////////////////////////////////////
-    CalcConcentration27(
-        para->getParD(level)->numberofthreads,
-        para->getParD(level)->concentration,
-        para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level)->isEvenTimestep);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
 {

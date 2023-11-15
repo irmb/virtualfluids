@@ -94,85 +94,85 @@
  bool BoundingBox::isInside(const Vertex &v) const
  {
      if (v.isXbetween(minX, maxX) && v.isYbetween(minY, maxY) && v.isZbetween(minZ, maxZ))
-		 return true;
-	 return false;
+         return true;
+     return false;
  }
 
  std::vector<std::vector<Vertex> > BoundingBox::getIntersectionPoints(const BoundingBox &b) const
  {
-	 std::vector<std::vector<Vertex> > intersectionBox;
-	 intersectionBox.resize(6);
+     std::vector<std::vector<Vertex> > intersectionBox;
+     intersectionBox.resize(6);
 
-	 int intersects = 0;
-	 if (b.minX < maxX && b.maxX > maxX) { //maxX is intersect
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)maxY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)maxZ));
-		 intersects++;
-	 }
-	 if (b.minX < minX && b.maxX > minX) { //minX is intersect
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
-		 intersects++;
-	 }
-	 if (b.minY < minY && b.maxY > minY) { //minY is intersect
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
-		 intersects++;
-	 }
-	 if (b.minY < maxY && b.maxY > maxY) { //maxY is intersect
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)maxY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)maxZ));
-		 intersects++;
-	 }
-	 if (b.minZ < minZ && b.maxZ > minZ) { //minZ is intersect
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
-		 intersects++;
-	 }
-	 if (b.minZ < maxZ && b.maxZ > maxZ) { //maxZ is intersect
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
-		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)maxZ));
-		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)maxZ));
-		 intersects++;
-	 }
+     int intersects = 0;
+     if (b.minX < maxX && b.maxX > maxX) { //maxX is intersect
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)maxY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)maxZ));
+         intersects++;
+     }
+     if (b.minX < minX && b.maxX > minX) { //minX is intersect
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
+         intersects++;
+     }
+     if (b.minY < minY && b.maxY > minY) { //minY is intersect
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
+         intersects++;
+     }
+     if (b.minY < maxY && b.maxY > maxY) { //maxY is intersect
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)maxY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)maxZ));
+         intersects++;
+     }
+     if (b.minZ < minZ && b.maxZ > minZ) { //minZ is intersect
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
+         intersects++;
+     }
+     if (b.minZ < maxZ && b.maxZ > maxZ) { //maxZ is intersect
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
+         intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)maxZ));
+         intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)maxZ));
+         intersects++;
+     }
 
-	 return intersectionBox;
+     return intersectionBox;
  }
 
  bool BoundingBox::intersect(const BoundingBox &box) const
  {
-	 struct Vertex v[8];
-	 box.getPoints(v);
+     struct Vertex v[8];
+     box.getPoints(v);
 
-	 for (int i = 0; i < 8; i++) {
-		 if (isInside(v[i]))
-			 return true;
-	 }
-	 return false;
+     for (int i = 0; i < 8; i++) {
+         if (isInside(v[i]))
+             return true;
+     }
+     return false;
  }
 
  void BoundingBox::getPoints(Vertex v[8]) const
  {
-	 v[0] = Vertex(minX, minY, minZ);
-	 v[1] = Vertex(maxX, minY, minZ);
-	 v[2] = Vertex(minX, maxY, minZ);
-	 v[3] = Vertex(maxX, maxY, minZ);
+     v[0] = Vertex(minX, minY, minZ);
+     v[1] = Vertex(maxX, minY, minZ);
+     v[2] = Vertex(minX, maxY, minZ);
+     v[3] = Vertex(maxX, maxY, minZ);
 
-	 v[4] = Vertex(minX, minY, maxZ);
-	 v[5] = Vertex(maxX, minY, maxZ);
-	 v[6] = Vertex(minX, maxY, maxZ);
-	 v[7] = Vertex(maxX, maxY, maxZ);
+     v[4] = Vertex(minX, minY, maxZ);
+     v[5] = Vertex(maxX, minY, maxZ);
+     v[6] = Vertex(minX, maxY, maxZ);
+     v[7] = Vertex(maxX, maxY, maxZ);
  }
 
 
  void BoundingBox::print() const
  {
-	 printf("min/max - x: %2.4f/ %2.4f, y: %2.4f, %2.4f, z: %2.4f, %2.4f \n", minX, maxX, minY, maxY, minZ, maxZ);
+     printf("min/max - x: %2.4f/ %2.4f, y: %2.4f, %2.4f, z: %2.4f, %2.4f \n", minX, maxX, minY, maxY, minZ, maxZ);
  }
 
 

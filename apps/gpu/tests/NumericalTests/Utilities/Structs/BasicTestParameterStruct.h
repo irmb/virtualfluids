@@ -6,7 +6,7 @@
 
 struct BasicTestParameterStruct
 {
-	unsigned int ySliceForCalculation;
-	bool runTest;
+    unsigned int ySliceForCalculation;
+    bool runTest;
 };
 #endif 

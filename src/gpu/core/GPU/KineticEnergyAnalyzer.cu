@@ -34,7 +34,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
 {
     if( iter % this->analyzeIter != 0 ) return false;
 
-	int lev = 0;
+    int lev = 0;
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(lev)->numberofthreads, para->getParD(lev)->numberOfNodes);
 
     thrust::device_vector<real> kineticEnergy( this->para->getParD(lev)->numberOfNodes, c0o1);
@@ -72,7 +72,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
 
     getLastCudaError("kineticEnergyKernel execution failed");
 
-	 real EKin               = thrust::reduce(kineticEnergy.begin(), kineticEnergy.end(), c0o1, thrust::plus<real>());
+     real EKin               = thrust::reduce(kineticEnergy.begin(), kineticEnergy.end(), c0o1, thrust::plus<real>());
      uint numberOfFluidNodes = thrust::reduce(isFluid.begin(),       isFluid.end(),       0,    thrust::plus<uint>());
 
     //std::cout << "EKin " << EKin << "   " << numberOfFluidNodes << std::endl;
@@ -96,16 +96,16 @@ __global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uin
     const uint ny = gridDim.x;
 
     const uint index = nx*(ny*z + y) + x;
-	////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     //printf("%d\n", index);
 
     //if( index % 34 == 0 || index % 34 == 33 ) return;
 
     if( index >= (uint)numberOfLBnodes) return;
 
-	unsigned int BC;
-	BC = geo[index];
-	if (BC != GEO_FLUID) return;
+    unsigned int BC;
+    BC = geo[index];
+    if (BC != GEO_FLUID) return;
 
     kineticEnergyFunction( vx, vy, vz, rho, neighborX, neighborY, neighborZ, neighborWSB, geo, kineticEnergy, isFluid, index );
 }
@@ -113,15 +113,15 @@ __global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uin
 __host__ __device__ void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint index)
 {
     //////////////////////////////////////////////////////////////////////////////
-	//neighbor index                                
-	uint k     = index;                             
-	uint kPx   = neighborX[k];                      if( geo[ kPx   ] != GEO_FLUID ) return;
-	uint kPy   = neighborY[k];                      if( geo[ kPy   ] != GEO_FLUID ) return;
-	uint kPz   = neighborZ[k];                      if( geo[ kPz   ] != GEO_FLUID ) return;
-	uint kMxyz = neighborWSB[k];                    if( geo[ kMxyz ] != GEO_FLUID ) return;
-	uint kMx   = neighborZ[neighborY[kMxyz]];       if( geo[ kMx   ] != GEO_FLUID ) return;
-	uint kMy   = neighborZ[neighborX[kMxyz]];       if( geo[ kMy   ] != GEO_FLUID ) return;
-	uint kMz   = neighborY[neighborX[kMxyz]];       if( geo[ kMz   ] != GEO_FLUID ) return;
+    //neighbor index                                
+    uint k     = index;                             
+    uint kPx   = neighborX[k];                      if( geo[ kPx   ] != GEO_FLUID ) return;
+    uint kPy   = neighborY[k];                      if( geo[ kPy   ] != GEO_FLUID ) return;
+    uint kPz   = neighborZ[k];                      if( geo[ kPz   ] != GEO_FLUID ) return;
+    uint kMxyz = neighborWSB[k];                    if( geo[ kMxyz ] != GEO_FLUID ) return;
+    uint kMx   = neighborZ[neighborY[kMxyz]];       if( geo[ kMx   ] != GEO_FLUID ) return;
+    uint kMy   = neighborZ[neighborX[kMxyz]];       if( geo[ kMy   ] != GEO_FLUID ) return;
+    uint kMz   = neighborY[neighborX[kMxyz]];       if( geo[ kMz   ] != GEO_FLUID ) return;
     //////////////////////////////////////////////////////////////////////////
 
     isFluid[ index ] = 1;
@@ -139,7 +139,7 @@ KineticEnergyAnalyzer::KineticEnergyAnalyzer(SPtr<Parameter> para, uint analyzeI
 
 void KineticEnergyAnalyzer::writeToFile(std::string filename)
 {
-	std::cout << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
+    std::cout << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 
     std::ofstream file;
 
@@ -150,7 +150,7 @@ void KineticEnergyAnalyzer::writeToFile(std::string filename)
 
     file.close();
 
-	std::cout << "done!\n";
+    std::cout << "done!\n";
 }
 
 

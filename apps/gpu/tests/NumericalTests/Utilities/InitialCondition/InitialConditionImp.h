@@ -11,22 +11,22 @@ class Parameter;
 class InitialConditionImp : public InitialCondition
 {
 public:
-	void setParameter(std::shared_ptr<Parameter> para);
-	void init(const int level);
-	virtual real getInitVX(int i, int level) = 0;
-	virtual real getInitVY(int i, int level) = 0;
-	virtual real getInitVZ(int i, int level) = 0;
-	virtual real getInitROH(int i, int level) = 0;
-	virtual real getInitPRESS(int i, int level) = 0;
+    void setParameter(std::shared_ptr<Parameter> para);
+    void init(const int level);
+    virtual real getInitVX(int i, int level) = 0;
+    virtual real getInitVY(int i, int level) = 0;
+    virtual real getInitVZ(int i, int level) = 0;
+    virtual real getInitROH(int i, int level) = 0;
+    virtual real getInitPRESS(int i, int level) = 0;
 
 protected:
-	InitialConditionImp() {};
-	real getXCoord(int i, int level);
-	real getYCoord(int i, int level);
-	real getZCoord(int i, int level);
+    InitialConditionImp() {};
+    real getXCoord(int i, int level);
+    real getYCoord(int i, int level);
+    real getZCoord(int i, int level);
 
-	std::shared_ptr<Parameter> para;
-	real XCoordStopNode, YCoordStopNode, ZCoordStopNode;
+    std::shared_ptr<Parameter> para;
+    real XCoordStopNode, YCoordStopNode, ZCoordStopNode;
 
 };
 #endif

@@ -116,7 +116,7 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
 template <vf::lbm::TurbulenceModel turbulenceModel>
 K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level) : KernelImp(para, level)
 {
-    myPreProcessorTypes.push_back(InitCompSP27);
+    myPreProcessorTypes.push_back(InitNavierStokesCompressible);
 
     this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
     this->kernelUsesFluidNodeIndices = true;

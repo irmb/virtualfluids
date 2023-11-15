@@ -13,28 +13,28 @@ struct L2NormTestBetweenKernelsParameterStruct;
 class L2NormBetweenKernelPostProcessingStrategy : public PostProcessingStrategyImp
 {
 public:
-	static std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests);
-	void evaluate();
+    static std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests);
+    void evaluate();
 
-	double getL2Norm(std::string aDataToCalc, std::string aNormalizeData, int aTimeStep);
+    double getL2Norm(std::string aDataToCalc, std::string aNormalizeData, int aTimeStep);
 
-	std::string getErrorMessage(std::string aNormalizeData);
+    std::string getErrorMessage(std::string aNormalizeData);
 
-	virtual std::shared_ptr<SimulationResults> getSimulationResult();
+    virtual std::shared_ptr<SimulationResults> getSimulationResult();
 
 private:
-	L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests);
+    L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests);
 
-	int calcPosInTimeStep(int time);
+    int calcPosInTimeStep(int time);
 
-	std::shared_ptr<AnalyticalResults> analyticalResult;
-	std::vector<std::shared_ptr<L2NormCalculator> > l2Normcalculator;
-	std::vector<std::string> dataToCalculate;
-	std::vector<std::string> normalizeData;
-	std::vector<int> timeSteps;
+    std::shared_ptr<AnalyticalResults> analyticalResult;
+    std::vector<std::shared_ptr<L2NormCalculator> > l2Normcalculator;
+    std::vector<std::string> dataToCalculate;
+    std::vector<std::string> normalizeData;
+    std::vector<int> timeSteps;
 
-	std::vector<std::vector<std::vector<double> > > l2Norm;	
-	bool isEvaluated;
+    std::vector<std::vector<std::vector<double> > > l2Norm;    
+    bool isEvaluated;
 
 };
 #endif

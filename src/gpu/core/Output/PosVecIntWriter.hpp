@@ -24,69 +24,69 @@
 class PositionVectorIntegerWriter
 {
 public:
-	PositionVectorIntegerWriter(){}
-	~PositionVectorIntegerWriter(){}
+    PositionVectorIntegerWriter(){}
+    ~PositionVectorIntegerWriter(){}
 
-	static void writePositionInterface(Parameter* para, std::string Type)
-	{
-		UbFileOutputASCII out(para->getFName()+Type+".dat");
+    static void writePositionInterface(Parameter* para, std::string Type)
+    {
+        UbFileOutputASCII out(para->getFName()+Type+".dat");
 
-		out.writeInteger(para->getMaxLevel());
-		out.writeLine();
+        out.writeInteger(para->getMaxLevel());
+        out.writeLine();
 
-		if (Type == "_InterfaceCFC")
-		{
-			for (int level = 0; level < para->getMaxLevel(); level++)
-			{
+        if (Type == "_InterfaceCFC")
+        {
+            for (int level = 0; level < para->getMaxLevel(); level++)
+            {
                 out.writeInteger(para->getParH(level)->coarseToFine.numberOfCells);
-				out.writeLine();
+                out.writeLine();
                 for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++)
-				{
-					out.writeInteger(para->getParH(level)->coarseToFine.coarseCellIndices[u]);
-				}
-				out.writeLine();
-			} //end levelloop
-		}
-		else if (Type == "_InterfaceCFF")
-		{
-			for (int level = 0; level < para->getMaxLevel(); level++)
-			{
+                {
+                    out.writeInteger(para->getParH(level)->coarseToFine.coarseCellIndices[u]);
+                }
+                out.writeLine();
+            } //end levelloop
+        }
+        else if (Type == "_InterfaceCFF")
+        {
+            for (int level = 0; level < para->getMaxLevel(); level++)
+            {
                 out.writeInteger(para->getParH(level)->coarseToFine.numberOfCells);
-				out.writeLine();
+                out.writeLine();
                 for (unsigned int u = 0; u < para->getParH(level)->coarseToFine.numberOfCells; u++)
-				{
-					out.writeInteger(para->getParH(level)->coarseToFine.fineCellIndices[u]);
-				}
-				out.writeLine();
-			} //end levelloop
-		}
-		else if (Type == "_InterfaceFCC")
-		{
-			for (int level = 0; level < para->getMaxLevel(); level++)
-			{
+                {
+                    out.writeInteger(para->getParH(level)->coarseToFine.fineCellIndices[u]);
+                }
+                out.writeLine();
+            } //end levelloop
+        }
+        else if (Type == "_InterfaceFCC")
+        {
+            for (int level = 0; level < para->getMaxLevel(); level++)
+            {
                 out.writeInteger(para->getParH(level)->fineToCoarse.numberOfCells);
-				out.writeLine();
+                out.writeLine();
                 for (unsigned int u = 0; u < para->getParH(level)->fineToCoarse.numberOfCells; u++)
-				{
-					out.writeInteger(para->getParH(level)->fineToCoarse.coarseCellIndices[u]);
-				}
-				out.writeLine();
-			} //end levelloop
-		}
-		else if (Type == "_InterfaceFCF")
-		{
-			for (int level = 0; level < para->getMaxLevel(); level++)
-			{
+                {
+                    out.writeInteger(para->getParH(level)->fineToCoarse.coarseCellIndices[u]);
+                }
+                out.writeLine();
+            } //end levelloop
+        }
+        else if (Type == "_InterfaceFCF")
+        {
+            for (int level = 0; level < para->getMaxLevel(); level++)
+            {
                 out.writeInteger(para->getParH(level)->fineToCoarse.numberOfCells);
-				out.writeLine();
+                out.writeLine();
                 for (unsigned int u = 0; u < para->getParH(level)->fineToCoarse.numberOfCells; u++)
-				{
-					out.writeInteger(para->getParH(level)->fineToCoarse.fineCellIndices[u]);
-				}
-				out.writeLine();
-			} //end levelloop
-		}
-	}
+                {
+                    out.writeInteger(para->getParH(level)->fineToCoarse.fineCellIndices[u]);
+                }
+                out.writeLine();
+            } //end levelloop
+        }
+    }
 protected:
 private:
 };

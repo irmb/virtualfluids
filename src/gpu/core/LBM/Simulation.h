@@ -38,8 +38,8 @@ class Simulation
 {
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
-               vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory = nullptr);	
-	Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
+               vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory = nullptr);    
+    Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
                vf::parallel::Communicator &communicator, GridProvider &gridProvider, BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory = nullptr);
 
     ~Simulation();
@@ -57,32 +57,33 @@ public:
     void initTimers();
 
 private:
-	void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory);
+    void init(GridProvider &gridProvider, BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory);
     void allocNeighborsOffsetsScalesAndBoundaries(GridProvider& gridProvider);
     void readAndWriteFiles(uint timestep);
 
-	std::unique_ptr<KernelFactory> kernelFactory;
-	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
+    std::unique_ptr<KernelFactory> kernelFactory;
+    std::shared_ptr<PreProcessorFactory> preProcessorFactory;
 
-	Buffer2D <real> sbuf_t;
-	Buffer2D <real> rbuf_t;
-	Buffer2D <real> sbuf_b;
-	Buffer2D <real> rbuf_b;
+    Buffer2D <real> sbuf_t;
+    Buffer2D <real> rbuf_t;
+    Buffer2D <real> sbuf_b;
+    Buffer2D <real> rbuf_b;
 
-	Buffer2D <int> geo_sbuf_t;
-	Buffer2D <int> geo_rbuf_t;
-	Buffer2D <int> geo_sbuf_b;
-	Buffer2D <int> geo_rbuf_b;
+    Buffer2D <int> geo_sbuf_t;
+    Buffer2D <int> geo_rbuf_t;
+    Buffer2D <int> geo_sbuf_b;
+    Buffer2D <int> geo_rbuf_b;
 
 
-	vf::parallel::Communicator& communicator;
+    vf::parallel::Communicator& communicator;
     SPtr<Parameter> para;
     std::shared_ptr<DataWriter> dataWriter;
-	std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
-	std::vector < SPtr< Kernel>> kernels;
-	std::vector < SPtr< AdvectionDiffusionKernel>> adKernels;
-	std::shared_ptr<PreProcessor> preProcessor;
-	SPtr<TurbulenceModelFactory> tmFactory;
+    std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
+    std::vector < SPtr< Kernel>> kernels;
+    std::vector < SPtr< AdvectionDiffusionKernel>> adKernels;
+    std::shared_ptr<PreProcessor> preProcessor;
+    std::shared_ptr<PreProcessor> preProcessorAD;
+    SPtr<TurbulenceModelFactory> tmFactory;
 
     SPtr<RestartObject> restart_object;
 
@@ -93,25 +94,25 @@ private:
     uint timestepForMeasuringPoints;
     
 
-	//Forcing Calculation
-	std::shared_ptr<ForceCalculations> forceCalculator;
+    //Forcing Calculation
+    std::shared_ptr<ForceCalculations> forceCalculator;
 
 
     // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-	//KQ - Schlaff
-	// unsigned int            kNQ, kSQ, kEQ, kWQ;
-	// QforBoundaryConditions  QnH, QnD;
-	// QforBoundaryConditions  QsH, QsD;
-	// QforBoundaryConditions  QeH, QeD;
-	// QforBoundaryConditions  QwH, QwD;
-	// real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
-	// real *VxND,          *VyND,       *VzND,       *deltaVND;
-	// real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
-	// real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
-	// real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
-	// real *VxED,          *VyED,       *VzED,       *deltaVED;
-	// real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
-	// real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+    //KQ - Schlaff
+    // unsigned int            kNQ, kSQ, kEQ, kWQ;
+    // QforBoundaryConditions  QnH, QnD;
+    // QforBoundaryConditions  QsH, QsD;
+    // QforBoundaryConditions  QeH, QeD;
+    // QforBoundaryConditions  QwH, QwD;
+    // real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
+    // real *VxND,          *VyND,       *VzND,       *deltaVND;
+    // real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
+    // real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
+    // real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
+    // real *VxED,          *VyED,       *VzED,       *deltaVED;
+    // real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
+    // real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
 
 
     std::unique_ptr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;

@@ -12,21 +12,21 @@ struct L2NormTestBetweenKernelsParameterStruct;
 class L2NormBetweenKernelsInformation : public TestLogFileInformation
 {
 public:
-	static std::shared_ptr<L2NormBetweenKernelsInformation> getNewInstance(std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::string> dataToCalcTests);
+    static std::shared_ptr<L2NormBetweenKernelsInformation> getNewInstance(std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::string> dataToCalcTests);
 
-	std::string getOutput();
+    std::string getOutput();
 
 private:
-	L2NormBetweenKernelsInformation() {};
-	L2NormBetweenKernelsInformation(std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::string> dataToCalcTests);
+    L2NormBetweenKernelsInformation() {};
+    L2NormBetweenKernelsInformation(std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::string> dataToCalcTests);
 
-	void deleteLastCharInOss();
+    void deleteLastCharInOss();
 
-	std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests;
+    std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests;
 
-	std::string basicKernel;
-	std::vector<int> timeSteps;
-	std::vector<std::string> dataToCalc;
-	std::vector<std::string> normalizeData;
+    std::string basicKernel;
+    std::vector<int> timeSteps;
+    std::vector<std::string> dataToCalc;
+    std::vector<std::string> normalizeData;
 };
 #endif

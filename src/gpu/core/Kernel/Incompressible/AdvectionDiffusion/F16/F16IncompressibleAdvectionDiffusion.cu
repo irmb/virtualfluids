@@ -6,7 +6,7 @@
 
 std::shared_ptr<F16IncompressibleAdvectionDiffusion> F16IncompressibleAdvectionDiffusion::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<F16IncompressibleAdvectionDiffusion>(new F16IncompressibleAdvectionDiffusion(para, level));
+    return std::shared_ptr<F16IncompressibleAdvectionDiffusion>(new F16IncompressibleAdvectionDiffusion(para, level));
 }
 
 void F16IncompressibleAdvectionDiffusion::run()
@@ -29,10 +29,10 @@ void F16IncompressibleAdvectionDiffusion::run()
 
 F16IncompressibleAdvectionDiffusion::F16IncompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para, int level)
 {
-	this->para = para;
-	this->level = level;
+    this->para = para;
+    this->level = level;
 
-	myPreProcessorTypes.push_back(InitIncompAD27);
+    myPreProcessorTypes.push_back(InitAdvectionDiffusionIncompressible);
 
 }
 

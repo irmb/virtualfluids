@@ -3,23 +3,23 @@
 
 void findPressQShip(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
-	//x = begin (0)
-	findKforQPressX0(para, para->getCoarse());
-	cudaMemoryManager->cudaAllocPressX0(para->getCoarse());
-	findQPressX0(para, para->getCoarse());
-	cudaMemoryManager->cudaCopyPressX0(para->getCoarse());
-	//x = end (1)
-	findKforQPressX1(para, para->getCoarse());
-	cudaMemoryManager->cudaAllocPressX1(para->getCoarse());
-	findQPressX1(para, para->getCoarse());
-	cudaMemoryManager->cudaCopyPressX1(para->getCoarse());
-	//for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
-	//{
-	//	findKforQPressX1(para, lev);
-	//	para->cudaAllocPressX1(lev);
-	//	findQPressX1(para, lev);
-	//	para->cudaCopyPressX1(lev);
-	//}
+    //x = begin (0)
+    findKforQPressX0(para, para->getCoarse());
+    cudaMemoryManager->cudaAllocPressX0(para->getCoarse());
+    findQPressX0(para, para->getCoarse());
+    cudaMemoryManager->cudaCopyPressX0(para->getCoarse());
+    //x = end (1)
+    findKforQPressX1(para, para->getCoarse());
+    cudaMemoryManager->cudaAllocPressX1(para->getCoarse());
+    findQPressX1(para, para->getCoarse());
+    cudaMemoryManager->cudaCopyPressX1(para->getCoarse());
+    //for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
+    //{
+    //    findKforQPressX1(para, lev);
+    //    para->cudaAllocPressX1(lev);
+    //    findQPressX1(para, lev);
+    //    para->cudaCopyPressX1(lev);
+    //}
 }
 
 
@@ -30,16 +30,16 @@ void findQ27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
    for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
    {
       findKforQ(para, lev);
-	   para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+       para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->noSlipBC.numberOfBCnodes);
 
-	  cudaMemoryManager->cudaAllocNoSlipBC(lev);
+      cudaMemoryManager->cudaAllocNoSlipBC(lev);
 
       findQ(para, lev);
- 	  para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
+       para->getParD(lev)->noSlipBC.numberOfBCnodes = para->getParH(lev)->noSlipBC.numberOfBCnodes;
       printf("numberOfBCnodes= %d\n", para->getParH(lev)->noSlipBC.numberOfBCnodes);
 
-	  cudaMemoryManager->cudaCopyNoSlipBC(lev);
+      cudaMemoryManager->cudaCopyNoSlipBC(lev);
    }
 }
 
@@ -56,11 +56,11 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
       printf("numberOfVeloBCnodes= %d\n", para->getParH(para->getCoarse())->velocityBC.numberOfBCnodes);
 
-	  cudaMemoryManager->cudaAllocVeloBC(0); //level = 0
+      cudaMemoryManager->cudaAllocVeloBC(0); //level = 0
 
       findQInflow(para);
 
-	  cudaMemoryManager->cudaCopyVeloBC(0); //level = 0
+      cudaMemoryManager->cudaCopyVeloBC(0); //level = 0
    }
 
     // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
@@ -69,15 +69,15 @@ void findBC27(Parameter* para, CudaMemoryManager* cudaMemoryManager)
    //{
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //   //Outflow
-	  // findKforQOutflow(para);
+      // findKforQOutflow(para);
 
-	  // printf("numberOfOutflowBCnodes= %d\n", para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes);
+      // printf("numberOfOutflowBCnodes= %d\n", para->getParH(para->getCoarse())->outflowBC.numberOfBCnodes);
 
-	  // para->cudaAllocPressBC();
+      // para->cudaAllocPressBC();
 
-	  // findQOutflow(para);
+      // findQOutflow(para);
 
-	  // para->cudaCopyPressBC();
+      // para->cudaCopyPressBC();
    //}
 
 

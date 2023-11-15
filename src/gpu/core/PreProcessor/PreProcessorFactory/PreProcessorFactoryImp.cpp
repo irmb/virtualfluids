@@ -1,53 +1,83 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #include "PreProcessorFactoryImp.h"
 
 #include "PreProcessor/PreProcessorImp.h"
 
-#include "PreProcessor/PreProcessorStrategy/InitCompAD7/InitCompAD7.h"
-#include "PreProcessor/PreProcessorStrategy/InitCompAD27/InitCompAD27.h"
-#include "PreProcessor/PreProcessorStrategy/InitCompSP27/InitCompSP27.h"
-#include "PreProcessor/PreProcessorStrategy/InitF3/InitF3.h"
-#include "PreProcessor/PreProcessorStrategy/InitIncompAD27/InitIncompAD27.h"
-#include "PreProcessor/PreProcessorStrategy/InitIncompAD7/InitIncompAD7.h"
-#include "PreProcessor/PreProcessorStrategy/InitSP27/InitSP27.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionCompressibleD3Q7/InitAdvectionDiffusionCompressibleD3Q7.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionCompressible/InitAdvectionDiffusionCompressible.h"
+#include "PreProcessor/PreProcessorStrategy/InitNavierStokesCompressible/InitNavierStokesCompressible.h"
+#include "PreProcessor/PreProcessorStrategy/InitK18K20NavierStokesCompressible/InitK18K20NavierStokesCompressible.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionIncompressible/InitAdvectionDiffusionIncompressible.h"
+#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionIncompressibleD3Q7/InitAdvectionDiffusionIncompressibleD3Q7.h"
+#include "PreProcessor/PreProcessorStrategy/InitNavierStokesIncompressible/InitNavierStokesIncompressible.h"
 
 
 std::shared_ptr<PreProcessor> PreProcessorFactoryImp::makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para)
 {
-	std::shared_ptr<PreProcessorImp> prePro = PreProcessorImp::getNewInstance();
+    std::shared_ptr<PreProcessorImp> prePro = PreProcessorImp::getNewInstance();
 
-	for (std::size_t i = 0; i < preProcessorTypes.size(); i++)
-		prePro->addStrategy(makePreProcessorStrategy(preProcessorTypes.at(i), para));
+    for (std::size_t i = 0; i < preProcessorTypes.size(); i++)
+        prePro->addStrategy(makePreProcessorStrategy(preProcessorTypes.at(i), para));
 
-	return prePro;
+    return prePro;
 }
 
 std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorStrategy(PreProcessorType preProcessorType, std::shared_ptr<Parameter> para)
 {
-	switch (preProcessorType)
-	{
-	case InitSP27:
-		return InitSP27::getNewInstance(para);
-		break;
-	case InitCompSP27:
-		return InitCompSP27::getNewInstance(para);
-		break;
-	case InitF3:
-		return InitF3::getNewInstance(para);
-		break;
-	case InitIncompAD7:
-		return InitIncompAD7::getNewInstance(para);
-		break;
-	case InitIncompAD27:
-		return InitIncompAD27::getNewInstance(para);
-		break;
-	case InitCompAD7:
-		return InitCompAD7::getNewInstance(para);
-		break;
-	case InitCompAD27:
-		return InitCompAD27::getNewInstance(para);
-		break;
-	default:
-		break;
-	}
-	throw  std::runtime_error("PreProcessorFactory does not know the PreProcessorType.");
+    switch (preProcessorType)
+    {
+    case InitNavierStokesIncompressible:
+        return InitNavierStokesIncompressible::getNewInstance(para);
+        break;
+    case InitNavierStokesCompressible:
+        return InitNavierStokesCompressible::getNewInstance(para);
+        break;
+    case InitK18K20NavierStokesCompressible:
+        return InitK18K20NavierStokesCompressible::getNewInstance(para);
+        break;
+    case InitAdvectionDiffusionIncompressibleD3Q7:
+        return InitAdvectionDiffusionIncompressibleD3Q7::getNewInstance(para);
+        break;
+    case InitAdvectionDiffusionIncompressible:
+        return InitAdvectionDiffusionIncompressible::getNewInstance(para);
+        break;
+    case InitAdvectionDiffusionCompressibleD3Q7:
+        return InitAdvectionDiffusionCompressibleD3Q7::getNewInstance(para);
+        break;
+    case InitAdvectionDiffusionCompressible:
+        return InitAdvectionDiffusionCompressible::getNewInstance(para);
+        break;
+    default:
+        break;
+    }
+    throw  std::runtime_error("PreProcessorFactory does not know the PreProcessorType.");
 }

@@ -6,7 +6,7 @@
 
 std::shared_ptr<B92IncompressibleNavierStokes> B92IncompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<B92IncompressibleNavierStokes>(new B92IncompressibleNavierStokes(para, level));
+    return std::shared_ptr<B92IncompressibleNavierStokes>(new B92IncompressibleNavierStokes(para, level));
 }
 
 void B92IncompressibleNavierStokes::run()
@@ -27,12 +27,12 @@ void B92IncompressibleNavierStokes::run()
 
 B92IncompressibleNavierStokes::B92IncompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
 {
-	this->para = para;
-	this->level = level;
+    this->para = para;
+    this->level = level;
 
-	myPreProcessorTypes.push_back(InitSP27);
+    myPreProcessorTypes.push_back(InitNavierStokesIncompressible);
 
-	
+    
 }
 
 B92IncompressibleNavierStokes::B92IncompressibleNavierStokes()

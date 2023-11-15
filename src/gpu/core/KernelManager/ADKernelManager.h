@@ -54,9 +54,6 @@ public:
     //! \param parameter shared pointer to instance of class Parameter
     ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels);
 
-    //! \brief initialize the advection diffusion distributions
-    void initAD(const int level) const;
-
     //! \brief set initial concentration values at all nodes
     //! \param cudaMemoryManager instance of class CudaMemoryManager
     void setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;

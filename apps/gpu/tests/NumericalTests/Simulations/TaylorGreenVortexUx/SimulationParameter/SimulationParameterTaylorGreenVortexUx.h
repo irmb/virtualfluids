@@ -11,11 +11,11 @@ struct TaylorGreenVortexUxParameterStruct;
 class SimulationParameterTaylorGreenUx : public SimulationParameterImp
 {
 public:
-	static std::shared_ptr<SimulationParameter> getNewInstance(std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
+    static std::shared_ptr<SimulationParameter> getNewInstance(std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 
-	
+    
 protected:
-	SimulationParameterTaylorGreenUx(std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
+    SimulationParameterTaylorGreenUx(std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 
 };
 #endif 

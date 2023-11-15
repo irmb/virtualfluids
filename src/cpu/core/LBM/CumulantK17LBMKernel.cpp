@@ -39,10 +39,13 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
+#include <lbm/ChimeraTransformation.h>
+
 #define PROOF_CORRECTNESS
 
 //using namespace UbMath;
 using namespace vf::basics::constant;
+using namespace vf::lbm;
 
 //////////////////////////////////////////////////////////////////////////
 CumulantK17LBMKernel::CumulantK17LBMKernel()

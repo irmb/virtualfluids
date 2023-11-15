@@ -14,8 +14,8 @@ dist/
 *.egg-info/
 **/__pycache__/
 .venv/
-pythonbindings/pyfluids/bindings*
-pythonbindings/pymuparser/bindings*
+pythonbindings/pyfluids/*.cpython*
+pythonbindings/pymuparser/*.cpython*
 
 # IDE
 .vscode/

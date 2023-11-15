@@ -104,7 +104,7 @@ double Conglomerate::getX2Minimum()
     for (uint i = 1; i < numberOfAddObjects; i++)
         minimum = getMinimum(minimum, addObjects[i]->getX2Minimum());
     return minimum;
-}	
+}    
 
 double Conglomerate::getX2Maximum()
 {
@@ -125,7 +125,7 @@ double Conglomerate::getX3Minimum()
     for (uint i = 1; i < numberOfAddObjects; i++)
         minimum = getMinimum(minimum, addObjects[i]->getX3Minimum());
     return minimum;
-}	
+}    
 
 double Conglomerate::getX3Maximum()
 {

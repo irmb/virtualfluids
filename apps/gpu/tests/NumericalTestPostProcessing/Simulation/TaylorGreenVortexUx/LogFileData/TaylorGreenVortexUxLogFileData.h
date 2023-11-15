@@ -6,8 +6,8 @@
 class TaylorGreenVortexUxLogFileData
 {
 public:
-	virtual std::vector<int> getL0() = 0;
-	virtual std::vector<double> getUx() = 0;
-	virtual std::vector<double> getAmplitude() = 0;
+    virtual std::vector<int> getL0() = 0;
+    virtual std::vector<double> getUx() = 0;
+    virtual std::vector<double> getAmplitude() = 0;
 };
 #endif

@@ -48,11 +48,11 @@ void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vec
 
 void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryCondition> geometryBoundaryCondition, SPtr<Grid> grid)
 {
-	if (geometryBoundaryCondition == nullptr)
-	{
+    if (geometryBoundaryCondition == nullptr)
+    {
         VF_LOG_WARNING("(QLineWriter::writeArrows) no geometry bc on this grid level.");
-		return;
-	}
+        return;
+    }
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleInt2> cells;
 
@@ -60,7 +60,7 @@ void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryConditi
     for (std::size_t index = 0; index < geometryBoundaryCondition->indices.size(); index++)
     {
         Vertex startNode = getVertex(geometryBoundaryCondition->indices[index], grid);
-		for (int qi = 0; qi <= 26; qi++)
+        for (int qi = 0; qi <= 26; qi++)
         {
             real qval = geometryBoundaryCondition->qs[index][qi];
             if (qval > 0.0f)

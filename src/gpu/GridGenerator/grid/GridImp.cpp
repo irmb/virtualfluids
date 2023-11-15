@@ -37,7 +37,7 @@
 # include <algorithm>
 #include <cmath>
 #include <vector>
-
+#include <stdexcept>
 #include "global.h"
 
 #include "geometries/Object.h"
@@ -56,10 +56,13 @@
 
 #include "utilities/communication.h"
 #include "utilities/math/Math.h"
+#include "basics/constants/NumericConstants.h"
+#include "basics/DataTypes.h"
 
 int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 using namespace vf::gpu;
+using namespace vf::basics::constant;
 
 GridImp::GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution distribution, uint level)
             : object(object),
@@ -763,6 +766,55 @@ bool GridImp::getPeriodicityZ() const
     return this->periodicityZ;
 }
 
+void GridImp::setPeriodicBoundaryShiftsOnXinY(real shift)
+{
+    if(!this->periodicityY)
+        throw std::runtime_error("Domain needs to be periodic in X and Y to shift periodic boundary!");
+    
+    VF_LOG_INFO("Shifting periodicity in X direction by {} in Y direction.", shift);
+    this->periodicShiftOnXinY = shift;
+}
+void GridImp::setPeriodicBoundaryShiftsOnXinZ(real shift)
+{
+    if(!this->periodicityX || !this->periodicityZ)
+    throw std::runtime_error("Domain needs to be periodic in X and Z to shift periodic boundary!");
+
+    VF_LOG_INFO("Shifting periodicity in X direction by {} in Z direction.", shift);
+    this->periodicShiftOnXinZ = shift;
+}
+void GridImp::setPeriodicBoundaryShiftsOnYinX(real shift)
+{
+    if(!this->periodicityY || !this->periodicityX)
+    throw std::runtime_error("Domain needs to be periodic in Y and X to shift periodic boundary!");
+
+    VF_LOG_INFO("Shifting periodicity in Y direction by {} in X direction.", shift);
+    this->periodicShiftOnYinX = shift;
+}
+void GridImp::setPeriodicBoundaryShiftsOnYinZ(real shift)
+{
+    if(!this->periodicityY || !this->periodicityZ)
+    throw std::runtime_error("Domain needs to be periodic in Y and Z to shift periodic boundary!");
+
+    VF_LOG_INFO("Shifting periodicity in Y direction by {} in Z direction.", shift);
+    this->periodicShiftOnYinZ = shift;    
+}
+void GridImp::setPeriodicBoundaryShiftsOnZinX(real shift)
+{
+    if(!this->periodicityZ || !this->periodicityX)
+    throw std::runtime_error("Domain needs to be periodic in Z and X to shift periodic boundary!");
+
+    VF_LOG_INFO("Shifting periodicity in Z direction by {} in X direction.", shift);
+    this->periodicShiftOnZinX = shift;   
+}
+void GridImp::setPeriodicBoundaryShiftsOnZinY(real shift)
+{
+    if(!this->periodicityZ || !this->periodicityY)
+    throw std::runtime_error("Domain needs to be periodic in Z and Y to shift periodic boundary!");
+
+    VF_LOG_INFO("Shifting periodicity in Z direction by {} in Y direction.", shift);
+    this->periodicShiftOnZinY = shift;
+}
+
 void GridImp::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
 {
     this->enableFixRefinementIntoTheWall = enableFixRefinementIntoTheWall;
@@ -846,7 +898,7 @@ uint GridImp::getQPatch(const uint index) const
 
 void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
 {
-   this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
+    this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
 }
 
 void GridImp::setNumberOfLayers(uint numberOfLayers)
@@ -974,21 +1026,11 @@ void GridImp::setNeighborIndices(uint index)
 
     if (this->sparseIndices[index] == -1)
         return;
-
-
-    real neighborXCoord, neighborYCoord, neighborZCoord;
-    this->getNeighborCoords(neighborXCoord, neighborYCoord, neighborZCoord, x, y, z);
-    const int neighborX = getSparseIndex(neighborXCoord, y, z);
-    const int neighborY = getSparseIndex(x, neighborYCoord, z);
-    const int neighborZ = getSparseIndex(x, y, neighborZCoord);
-
-    this->getNegativeNeighborCoords(neighborXCoord, neighborYCoord, neighborZCoord, x, y, z);
-    const int neighborNegative = getSparseIndex(neighborXCoord, neighborYCoord, neighborZCoord);
-
-    this->neighborIndexX[index]        = neighborX;
-    this->neighborIndexY[index]        = neighborY;
-    this->neighborIndexZ[index]        = neighborZ;
-    this->neighborIndexNegative[index] = neighborNegative;
+    
+    this->neighborIndexX[index] = this->getNeighborIndex(x, y, z, 0, periodicityX);
+    this->neighborIndexY[index] = this->getNeighborIndex(x, y, z, 1, periodicityY);
+    this->neighborIndexZ[index] = this->getNeighborIndex(x, y, z, 2, periodicityZ);
+    this->neighborIndexNegative[index] = this->getNegativeNeighborIndex(x, y, z);
 }
 
 void GridImp::setStopperNeighborCoords(uint index)
@@ -1014,59 +1056,114 @@ void GridImp::setStopperNeighborCoords(uint index)
     }
 }
 
-void GridImp::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const
+inline real wrapCoord(real coord, real start, real end)
 {
-    real coords[3] = { x, y, z };
-    neighborX = getNeighborCoord(periodicityX, startX, coords, 0);
-    neighborY = getNeighborCoord(periodicityY, startY, coords, 1);
-    neighborZ = getNeighborCoord(periodicityZ, startZ, coords, 2);
+    const real length = end - start;
+    if(coord < start)
+        return coord + length;
+    if(coord > end)
+        return coord - length;
+    return coord;
 }
 
-real GridImp::getNeighborCoord(bool periodicity, real startCoord, real coords[3], int direction) const
+
+int GridImp::getNeighborIndex(real x, real y, real z, int direction, bool periodicity) const
 {
-    if (periodicity)
+    real neighborCoords[3] = { x, y, z };
+    neighborCoords[direction] = neighborCoords[direction] + delta;
+    if(periodicity)
+        getPeriodicNeighborCoords(x, y, z, neighborCoords, direction);
+
+    return getSparseIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+}
+
+
+void GridImp::getPeriodicNeighborCoords(real x, real y, real z, real* neighborCoords, int direction) const
+{
+    const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+    if( !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) ) return;
+
+    real coords[3] = {x, y, z};
+    switch(direction)
     {
-        real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
-        neighborCoords[direction] = neighborCoords[direction] + delta;
-        const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+        case 0:
+            neighborCoords[0] = getFirstFluidNode(coords, 0, startX);
+            neighborCoords[1] = wrapCoord(neighborCoords[1] + periodicShiftOnXinY, startY + c1o2*delta, endY - c1o2*delta);
+            neighborCoords[2] = wrapCoord(neighborCoords[2] + periodicShiftOnXinZ, startZ + c1o2*delta, endZ - c1o2*delta);
+            break;
+        case 1:            
+            neighborCoords[0] = wrapCoord(neighborCoords[0] + periodicShiftOnYinX, startX + c1o2*delta, endX - c1o2*delta);
+            neighborCoords[1] = getFirstFluidNode(coords, 1, startY);
+            neighborCoords[2] = wrapCoord(neighborCoords[2] + periodicShiftOnYinZ, startZ + c1o2*delta, endZ - c1o2*delta);
+            break;
+        case 2:
+            neighborCoords[0] = wrapCoord(neighborCoords[0] + periodicShiftOnZinX, startX + c1o2*delta, endX - c1o2*delta);
+            neighborCoords[1] = wrapCoord(neighborCoords[1] + periodicShiftOnZinY, startY + c1o2*delta, endY - c1o2*delta);
+            neighborCoords[2] = getFirstFluidNode(coords, 2, startZ);
+            break;
+        default:
+            throw std::runtime_error("GridImp::getPeriodicNeighbor() -> direction must be 0, 1 or 2.");
+            break;
+    } 
+}
 
-        //////////////////////////////////////////////////////////////////////////
 
-        if( field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
-            return getFirstFluidNode(coords, direction, startCoord);
-        else
-            return coords[direction] + delta;
+int GridImp::getNegativeNeighborIndex(real x, real y, real z) const
+{
+    real neighborCoords[3] = { x-delta, y-delta, z-delta };
 
+    if(periodicityX || periodicityY || periodicityZ)
+        getNegativePeriodicNeighborCoords(x, y, z, neighborCoords);
+
+    return getSparseIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);    
+}
+
+
+void GridImp::getNegativePeriodicNeighborCoords(real x, real y, real z, real* neighborCoords) const
+{
+    const bool periodicity[3] = {periodicityX, periodicityY, periodicityZ};
+    real coords[3] = {x, y, z};
+    bool onBoundary[3] = {false, false, false};
+
+    for(uint direction=0; direction<3; direction++){
+        if(!periodicity[direction]) continue;
+        
+        real neighborInThisDirection[3] = {x, y, z};
+        neighborInThisDirection[direction] -= delta;
+
+        const int neighborIndex = getSparseIndex(neighborInThisDirection[0], neighborInThisDirection[1], neighborInThisDirection[2]);
+        if( !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) ) continue;
+
+        onBoundary[direction] = true;
     }
 
-    return coords[direction] + delta;
-}
 
-void GridImp::getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const
-{
-    real coords[3] = { x, y, z };
 
-    neighborX = getNegativeNeighborCoord(periodicityX, endX, coords, 0);
-    neighborY = getNegativeNeighborCoord(periodicityY, endY, coords, 1);
-    neighborZ = getNegativeNeighborCoord(periodicityZ, endZ, coords, 2);
-}
+    for(int direction=0; direction<3; direction++){
+        switch(direction){
 
-real GridImp::getNegativeNeighborCoord(bool periodicity, real startCoord, real coords[3], int direction) const
-{
-    if (periodicity)
-    {
-        real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
-        neighborCoords[direction] = neighborCoords[direction] - delta;
-        const uint neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
-
-        if(neighborIndex != INVALID_INDEX && !field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
-            return coords[direction] - delta;
-
-        return getLastFluidNode(coords, direction, startCoord);
+        case 0:
+            if( (onBoundary[1] && periodicShiftOnYinX > 0) || (onBoundary[2] && periodicShiftOnZinX > 0)  )
+                neighborCoords[direction] = wrapCoord(neighborCoords[direction] - (periodicShiftOnYinX + periodicShiftOnZinX), startX + c1o2*delta, endX - c1o2*delta);
+            else if(onBoundary[direction])
+                neighborCoords[direction] = getLastFluidNode(coords, direction, endX);
+            break;
+        case 1:
+            if( (onBoundary[0] && periodicShiftOnXinY > 0) || (onBoundary[2] && periodicShiftOnZinY > 0) )
+                neighborCoords[direction] = wrapCoord(neighborCoords[direction] - (periodicShiftOnXinY + periodicShiftOnZinY), startY + c1o2*delta, endY - c1o2*delta);
+            else if(onBoundary[direction])
+                neighborCoords[direction] = getLastFluidNode(coords, direction, endY);
+            break;
+        case 2:
+            if( (onBoundary[0] && periodicShiftOnXinZ > 0) || (onBoundary[1] && periodicShiftOnYinZ > 0) )
+                neighborCoords[direction] = wrapCoord(neighborCoords[direction] - (periodicShiftOnXinZ + periodicShiftOnYinZ), startZ + c1o2*delta, endZ - c1o2*delta);
+            else if(onBoundary[direction])
+                neighborCoords[direction] = getLastFluidNode(coords, direction, endZ);
+            break;
+        }
     }
-
-    return coords[direction] - delta;
 }
+
 
 
 real GridImp::getLastFluidNode(real coords[3], int direction, real startCoord) const
@@ -1632,26 +1729,71 @@ bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex & point, co
     return false;
 }
 
-void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox)
+int GridImp::getShiftedCommunicationIndex(uint index, int direction)
+{
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    switch (direction)
+    {
+    case CommunicationDirections::MX:
+        y = wrapCoord(y - (this->periodicShiftOnXinY + delta), startY - c1o2*delta, endY + c1o2*delta);
+        z = wrapCoord(z - (this->periodicShiftOnXinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
+        break;
+    case CommunicationDirections::PX:
+        y = wrapCoord(y + (this->periodicShiftOnXinY + delta), startY - c1o2*delta, endY + c1o2*delta);
+        z = wrapCoord(z + (this->periodicShiftOnXinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
+        break;
+    case CommunicationDirections::MY:
+        x = wrapCoord(x - (this->periodicShiftOnYinX + delta), startX - c1o2*delta, endX + c1o2*delta);
+        z = wrapCoord(z - (this->periodicShiftOnYinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
+        break;
+    case CommunicationDirections::PY:
+        x = wrapCoord(x + (this->periodicShiftOnYinX + delta), startX - c1o2*delta, endX + c1o2*delta);
+        z = wrapCoord(z + (this->periodicShiftOnYinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
+        break;
+    case CommunicationDirections::MZ:
+        x = wrapCoord(x - (this->periodicShiftOnZinX + delta), startX - c1o2*delta, endX + c1o2*delta);
+        y = wrapCoord(y - (this->periodicShiftOnZinY + delta), startY - c1o2*delta, endY + c1o2*delta);
+        break;
+    case CommunicationDirections::PZ:
+        x = wrapCoord(x + (this->periodicShiftOnZinX + delta), startX - c1o2*delta, endX + c1o2*delta);
+        y = wrapCoord(y + (this->periodicShiftOnZinY + delta), startY - c1o2*delta, endY + c1o2*delta);
+        break;
+    default:
+        break;
+    }
+
+    return this->transCoordToIndex(x, y, z);
+}
+
+void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, bool doShift)
 {
     for( uint index = 0; index < this->size; index++ ){
+
+        int shiftedIndex = doShift ? getShiftedCommunicationIndex(index, direction) : index;
+        
+        const char fieldEntry = this->getFieldEntry(shiftedIndex);
+        if( fieldEntry == INVALID_OUT_OF_GRID ||
+            fieldEntry == INVALID_SOLID ||
+            fieldEntry == INVALID_COARSE_UNDER_FINE ||
+            fieldEntry == STOPPER_OUT_OF_GRID ||
+            fieldEntry == STOPPER_COARSE_UNDER_FINE ||
+            fieldEntry == STOPPER_OUT_OF_GRID_BOUNDARY ||
+            fieldEntry == STOPPER_SOLID ) continue;
+
         real x, y, z;
-        this->transIndexToCoords(index, x, y, z);
+        this->transIndexToCoords(shiftedIndex, x, y, z);
 
-        if( this->getFieldEntry(index) == INVALID_OUT_OF_GRID ||
-            this->getFieldEntry(index) == INVALID_SOLID ||
-            this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ||
-            this->getFieldEntry(index) == STOPPER_OUT_OF_GRID ||
-            this->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE ) continue;
-
-        if( this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
-        if( this->getFieldEntry(index) == STOPPER_SOLID ) continue;
-        if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
-        if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);
-        if( direction == CommunicationDirections::MY ) findCommunicationIndex( index, y, subDomainBox->minY, direction);
-        if( direction == CommunicationDirections::PY ) findCommunicationIndex( index, y, subDomainBox->maxY, direction);
-        if( direction == CommunicationDirections::MZ ) findCommunicationIndex( index, z, subDomainBox->minZ, direction);
-        if( direction == CommunicationDirections::PZ ) findCommunicationIndex( index, z, subDomainBox->maxZ, direction);
+        switch(direction)
+        {
+            case CommunicationDirections::MX: findCommunicationIndex( shiftedIndex, x, subDomainBox->minX, direction); break;
+            case CommunicationDirections::PX: findCommunicationIndex( shiftedIndex, x, subDomainBox->maxX, direction); break;
+            case CommunicationDirections::MY: findCommunicationIndex( shiftedIndex, y, subDomainBox->minY, direction); break;
+            case CommunicationDirections::PY: findCommunicationIndex( shiftedIndex, y, subDomainBox->maxY, direction); break;
+            case CommunicationDirections::MZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->minZ, direction); break;
+            case CommunicationDirections::PZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->maxZ, direction); break;
+        }
     }
 }
 

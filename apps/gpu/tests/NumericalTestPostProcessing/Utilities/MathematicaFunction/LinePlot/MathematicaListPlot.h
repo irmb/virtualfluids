@@ -7,6 +7,6 @@
 class MathematicaListPlot : public MathematicaFunctionImp
 {
 public:
-	
+    
 };
 #endif

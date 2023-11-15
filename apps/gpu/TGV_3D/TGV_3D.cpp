@@ -138,7 +138,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real PI = 3.141592653589793238462643383279;
+    const real PI = 3.141592653589793238462643383279;
 
     real L = nx / ( 2.0 * PI );
 
@@ -151,21 +151,21 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	real dx = 2.0 * PI / real(nx);
+    real dx = 2.0 * PI / real(nx);
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-	gridBuilder->addCoarseGrid(-PI, -PI, -PI,
-								PI,  PI,  PI, dx);
+    gridBuilder->addCoarseGrid(-PI, -PI, -PI,
+                                PI,  PI,  PI, dx);
 
-	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//std::stringstream _path;
+    //std::stringstream _path;
  //   std::stringstream _prefix;
 
  //   //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
@@ -220,7 +220,7 @@ void multipleLevel(const std::string& configPath)
     para->setPrintFiles(true);
 
     para->setTimestepEnd( 40 * lround(L/velocity) );
-	para->setTimestepOut(  5 * lround(L/velocity) );
+    para->setTimestepOut(  5 * lround(L/velocity) );
 
     para->setVelocityLB( velocity );
 
@@ -278,12 +278,12 @@ int main( int argc, char* argv[])
         try
         {
             //////////////////////////////////////////////////////////////////////////
-			std::string targetPath( __FILE__ );
+            std::string targetPath( __FILE__ );
 
 #ifdef _WIN32
-			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
+            targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
 #else
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+            targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
             //////////////////////////////////////////////////////////////////////////
@@ -306,10 +306,10 @@ int main( int argc, char* argv[])
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
 
-			multipleLevel(targetPath + "config.txt");
+            multipleLevel(targetPath + "config.txt");
 
             //////////////////////////////////////////////////////////////////////////
-		}
+        }
         catch (const std::bad_alloc& e)
         {
             std::cout << e.what() << std::flush;

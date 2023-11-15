@@ -6,8 +6,8 @@
 class ShearWaveLogFileData
 {
 public:
-	virtual std::vector<int> getL0() = 0;
-	virtual std::vector<double> getUx() = 0;
-	virtual std::vector<double> getUz() = 0;
+    virtual std::vector<int> getL0() = 0;
+    virtual std::vector<double> getUx() = 0;
+    virtual std::vector<double> getUz() = 0;
 };
 #endif

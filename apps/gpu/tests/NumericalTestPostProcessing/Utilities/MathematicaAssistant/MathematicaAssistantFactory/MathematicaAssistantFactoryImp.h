@@ -6,11 +6,11 @@
 class MathematicaAssistantFactoryImp : public MathematicaAssistantFactory
 {
 public:
-	static std::shared_ptr<MathematicaAssistantFactory> getNewInstance();
+    static std::shared_ptr<MathematicaAssistantFactory> getNewInstance();
 
-	std::vector<std::shared_ptr<MathematicaAssistant> > makeMathematicaAssistants(std::vector<Assistant> types, std::shared_ptr<MathematicaFunctionFactory> functionFactory);
+    std::vector<std::shared_ptr<MathematicaAssistant> > makeMathematicaAssistants(std::vector<Assistant> types, std::shared_ptr<MathematicaFunctionFactory> functionFactory);
 
 private: 
-	MathematicaAssistantFactoryImp();
+    MathematicaAssistantFactoryImp();
 };
 #endif

@@ -11,7 +11,7 @@ class MathematicaFunctionFactory;
 class MathematicaAssistantFactory
 {
 public:
-	virtual std::vector<std::shared_ptr<MathematicaAssistant> > makeMathematicaAssistants(std::vector<Assistant> types, std::shared_ptr<MathematicaFunctionFactory> functionFactory) = 0;
+    virtual std::vector<std::shared_ptr<MathematicaAssistant> > makeMathematicaAssistants(std::vector<Assistant> types, std::shared_ptr<MathematicaFunctionFactory> functionFactory) = 0;
 
 };
 #endif

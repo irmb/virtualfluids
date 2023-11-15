@@ -8,15 +8,15 @@ struct ShearWaveParameterStruct;
 class ShearWaveAnalyticalResults : public AnalyticalResultsImp
 {
 public:
-	static std::shared_ptr<AnalyticalResults> getNewInstance(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct);
-	void calc(std::shared_ptr<SimulationResults> simResults);
+    static std::shared_ptr<AnalyticalResults> getNewInstance(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct);
+    void calc(std::shared_ptr<SimulationResults> simResults);
 
 private:
-	ShearWaveAnalyticalResults();
-	ShearWaveAnalyticalResults(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct);
+    ShearWaveAnalyticalResults();
+    ShearWaveAnalyticalResults(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct);
 
-	double viscosity, rho0;
-	double l0;
-	double u0, v0;
+    double viscosity, rho0;
+    double l0;
+    double u0, v0;
 };
 #endif 
