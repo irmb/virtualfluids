@@ -114,7 +114,7 @@ void pf1()
 
    //LBM kernel definition
    SPtr<LBMKernel> kernel;
-   kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+   kernel = SPtr<LBMKernel>(new K16IncompressibleNavierStokes());
    SPtr<BCSet> bcProc(new BCSet());
    kernel->setBCSet(bcProc);
 

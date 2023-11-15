@@ -1,5 +1,5 @@
-#ifndef CompressibleCumulant4thOrderViscosityLBMKernel_h__
-#define CompressibleCumulant4thOrderViscosityLBMKernel_h__
+#ifndef K15CompressibleNavierStokes_h__
+#define K15CompressibleNavierStokes_h__
 
 #include "LBMKernel.h"
 #include "BCSet.h"
@@ -11,24 +11,27 @@
 //! \brief   compressible cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  K. Kutscher, M. Geier
-class CompressibleCumulant4thOrderViscosityLBMKernel :  public LBMKernel
+class K15CompressibleNavierStokes :  public LBMKernel
 {
 public:
    //! This option set relaxation parameter: NORMAL  
    enum Parameter{NORMAL, MAGIC};
 public:
-   CompressibleCumulant4thOrderViscosityLBMKernel();
-   ~CompressibleCumulant4thOrderViscosityLBMKernel() override;
+   K15CompressibleNavierStokes();
+   ~K15CompressibleNavierStokes() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    real getCalculationTime() override;
-   //! The value should not be equal to a shear viscosity
-   void setBulkViscosity(real value);
+   void setBulkOmegaToOmega(bool value);
+   void setRelaxationParameter(Parameter p);
 protected:
    virtual void initDataSet();
    real f[D3Q27System::ENDF+1];
 
    UbTimer timer;
+
+   real OxyyMxzz;
+   Parameter parameter;
 
    CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
    CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
@@ -42,10 +45,9 @@ protected:
    real forcingX3;
    
    // bulk viscosity
-   real OxxPyyPzz; //omega2 (bulk viscosity)
-   real bulkViscosity;
-
+   bool bulkOmegaToOmega;
+   real OxxPyyPzz; 
 };
-#endif // CompressibleCumulant4thOrderViscosityLBMKernel_h__
+#endif // CompressibleCumulantLBMKernel_h__
 
 

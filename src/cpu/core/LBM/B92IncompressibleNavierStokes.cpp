@@ -1,4 +1,4 @@
-#include "BGKLBMKernel.h"
+#include "B92IncompressibleNavierStokes.h"
 #include "BCArray3D.h"
 #include "BCSet.h"
 #include "D3Q27EsoTwist3DSoA.h"
@@ -11,21 +11,21 @@
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
-BGKLBMKernel::BGKLBMKernel() { this->compressible = false; }
+B92IncompressibleNavierStokes::B92IncompressibleNavierStokes() { this->compressible = false; }
 //////////////////////////////////////////////////////////////////////////
-BGKLBMKernel::~BGKLBMKernel(void) = default;
+B92IncompressibleNavierStokes::~B92IncompressibleNavierStokes(void) = default;
 //////////////////////////////////////////////////////////////////////////
-void BGKLBMKernel::initDataSet()
+void B92IncompressibleNavierStokes::initDataSet()
 {
     SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
     dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<LBMKernel> BGKLBMKernel::clone()
+SPtr<LBMKernel> B92IncompressibleNavierStokes::clone()
 {
-    SPtr<LBMKernel> kernel(new BGKLBMKernel());
+    SPtr<LBMKernel> kernel(new B92IncompressibleNavierStokes());
     kernel->setNX(nx);
-    std::dynamic_pointer_cast<BGKLBMKernel>(kernel)->initDataSet();
+    std::dynamic_pointer_cast<B92IncompressibleNavierStokes>(kernel)->initDataSet();
     kernel->setCollisionFactor(this->collFactor);
     kernel->setBCSet(bcSet->clone(kernel));
     kernel->setWithForcing(withForcing);
@@ -38,7 +38,7 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
     return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void BGKLBMKernel::calculate(int step)
+void B92IncompressibleNavierStokes::calculate(int step)
 {
     using namespace D3Q27System;
  //   using namespace UbMath;
@@ -302,4 +302,4 @@ void BGKLBMKernel::calculate(int step)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-real BGKLBMKernel::getCalculationTime() { return vf::basics::constant::c0o1; }
+real B92IncompressibleNavierStokes::getCalculationTime() { return vf::basics::constant::c0o1; }

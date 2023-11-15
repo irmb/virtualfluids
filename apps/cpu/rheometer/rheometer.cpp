@@ -198,8 +198,8 @@ void bflow(string configname)
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());
 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BGKLBMKernel());
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new B92IncompressibleNavierStokes());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K16IncompressibleNavierStokes());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 

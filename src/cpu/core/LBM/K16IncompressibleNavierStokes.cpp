@@ -1,4 +1,4 @@
-#include "IncompressibleCumulantLBMKernel.h"
+#include "K16IncompressibleNavierStokes.h"
 #include "D3Q27System.h"
 #include "Interpolator.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
@@ -12,27 +12,27 @@
 using namespace vf::basics::constant;
 
 //////////////////////////////////////////////////////////////////////////
-IncompressibleCumulantLBMKernel::IncompressibleCumulantLBMKernel()
+K16IncompressibleNavierStokes::K16IncompressibleNavierStokes()
 {
    this->parameter = NORMAL;
    this->OxyyMxzz = c1o1;
    this->compressible = false;
 }
 //////////////////////////////////////////////////////////////////////////
-IncompressibleCumulantLBMKernel::~IncompressibleCumulantLBMKernel(void)
+K16IncompressibleNavierStokes::~K16IncompressibleNavierStokes(void)
 = default;
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantLBMKernel::initDataSet()
+void K16IncompressibleNavierStokes::initDataSet()
 {
    SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<LBMKernel> IncompressibleCumulantLBMKernel::clone()
+SPtr<LBMKernel> K16IncompressibleNavierStokes::clone()
 {
-   SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel());
+   SPtr<LBMKernel> kernel(new K16IncompressibleNavierStokes());
    kernel->setNX(nx);
-   dynamicPointerCast<IncompressibleCumulantLBMKernel>(kernel)->initDataSet();
+   dynamicPointerCast<K16IncompressibleNavierStokes>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -46,16 +46,16 @@ SPtr<LBMKernel> IncompressibleCumulantLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      dynamicPointerCast<IncompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = c1o1;
+      dynamicPointerCast<K16IncompressibleNavierStokes>(kernel)->OxyyMxzz = c1o1;
       break;
    case MAGIC:
-      dynamicPointerCast<IncompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = c2o1 +(-collFactor);
+      dynamicPointerCast<K16IncompressibleNavierStokes>(kernel)->OxyyMxzz = c2o1 +(-collFactor);
       break;
    }
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantLBMKernel::calculate(int step)
+void K16IncompressibleNavierStokes::calculate(int step)
 {
    using namespace D3Q27System;
    using namespace std;
@@ -890,13 +890,13 @@ void IncompressibleCumulantLBMKernel::calculate(int step)
    //timer.stop();
 }
 //////////////////////////////////////////////////////////////////////////
-real IncompressibleCumulantLBMKernel::getCalculationTime()
+real K16IncompressibleNavierStokes::getCalculationTime()
 {
    //return timer.getDuration();
    return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantLBMKernel::setRelaxationParameter(Parameter p)
+void K16IncompressibleNavierStokes::setRelaxationParameter(Parameter p)
 {
    parameter = p;
 }

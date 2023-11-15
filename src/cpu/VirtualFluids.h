@@ -213,21 +213,17 @@
 #include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolator.h>
 #include <LBM/Interpolation/IncompressibleOffsetInterpolator.h>
 #include <LBM/Interpolation/Interpolator.h>
-#include <IncompressibleCumulantWithSpongeLayerLBMKernel.h>
-#include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
-#include <LBM/CompressibleCumulantLBMKernel.h>
 #include <LBM/D3Q27System.h>
-#include <LBM/ICell.h>
-#include <LBM/IncompressibleCumulantLBMKernel.h>
-#include <LBM/InitDensityLBMKernel.h>
+#include <LBM/Interpolation/ICell.h>
 #include <LBM/LBMKernel.h>
-#include <LBM/LBMKernelETD3Q27BGK.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
-#include <LBM/BGKLBMKernel.h>
 
-#include <LBM/CumulantLBMKernel.h>
-#include <LBM/CumulantK17LBMKernel.h>
+
+#include <LBM/B92IncompressibleNavierStokes.h>
+#include <LBM/K15CompressibleNavierStokes.h>
+#include <LBM/K16IncompressibleNavierStokes.h>
+#include <LBM/K17CompressibleNavierStokes.h>
 
 
 #include <geometry3d/CoordinateTransformation3D.h>
@@ -277,7 +273,6 @@
 #include <Utilities/VoxelMatrixUtil.hpp>
 
 #include <CheckRatioBlockVisitor.h>
-#include <InitDistributionsFromFileBlockVisitor.h>
 #include <InitDistributionsWithInterpolationGridVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 #include <Visitors/Block3DVisitor.h>
@@ -309,7 +304,6 @@
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
-#include <InitDistributionsFromFileBlockVisitor.h>
 #include <InitDistributionsWithInterpolationGridVisitor.h>
 #include <InitThixotropyBlockVisitor.h>
 #include <CheckRatioBlockVisitor.h>

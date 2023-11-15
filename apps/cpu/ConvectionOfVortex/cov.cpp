@@ -205,10 +205,8 @@ void run()
       }
 
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(10.0*nuLB);
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
-      //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
+      //dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->setBulkOmegaToOmega(true);
       //
       SPtr<BCSet> bcSet(new BCSet());
 
