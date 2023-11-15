@@ -28,43 +28,26 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "PreProcessorImp.h"
+#ifndef INIT_SP27_H
+#define INIT_SP27_H
 
-#include "PreProcessorStrategy/PreProcessorStrategy.h"
+#include "PreProcessor/PreProcessorStrategy/PreProcessorStrategy.h"
 
-#include "Parameter/Parameter.h"
+#include <memory>
 
-std::shared_ptr<PreProcessorImp> PreProcessorImp::getNewInstance()
+class Parameter;
+
+class InitNavierStokesIncompressible : public PreProcessorStrategy
 {
-    return std::shared_ptr<PreProcessorImp>(new PreProcessorImp());
-}
+public:
+    static std::shared_ptr<PreProcessorStrategy> getNewInstance(std::shared_ptr< Parameter> para);
+    void init(int level);
+    bool checkParameter();
 
-void PreProcessorImp::addStrategy(std::shared_ptr<PreProcessorStrategy> strategy)
-{
-    strategies.push_back(strategy);
-}
+private:
+    InitNavierStokesIncompressible();
+    InitNavierStokesIncompressible(std::shared_ptr< Parameter> para);
+    std::shared_ptr< Parameter> para;
+};
 
-void PreProcessorImp::init(std::shared_ptr<Parameter> para, int level)
-{
-    para->getParD(level)->isEvenTimestep = false;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-
-    para->getParD(level)->isEvenTimestep = true;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-}
-
-bool PreProcessorImp::checkParameter()
-{
-    for (std::size_t i = 0; i < strategies.size(); i++) {
-        if (!strategies.at(i)->checkParameter())
-            return false;
-    }
-    return true;
-}
-
-PreProcessorImp::PreProcessorImp()
-{
-    strategies.resize(0);
-}
+#endif 

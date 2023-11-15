@@ -17,48 +17,6 @@
 #include "LBM/LB.h"
 
 
-__global__ void LBInit27( int myid,
-                                     int numprocs,
-                                     real u0,
-                                     unsigned int* geoD,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     real* vParabel,
-                                     unsigned long long numberOfLBnodes,
-                                     unsigned int grid_nx,
-                                     unsigned int grid_ny,
-                                     unsigned int grid_nz,
-                                     real* DD,
-                                     int lev,
-                                     int maxlev);
-
-__global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
-                                               unsigned int* neighborY,
-                                               unsigned int* neighborZ,
-                                               unsigned int* neighborWSB,
-                                               unsigned int* geoD,
-                                               real* rho,
-                                               real* ux,
-                                               real* uy,
-                                               real* uz,
-                                               unsigned long long numberOfLBnodes,
-                                               real* DD,
-                                               real omega,
-                                               bool EvenOrOdd);
-
-__global__ void InitAD27(unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       unsigned int* geoD,
-                                       real* Conc,
-                                       real* ux,
-                                       real* uy,
-                                       real* uz,
-                                       unsigned long long numberOfLBnodes,
-                                       real* DD27,
-                                       bool EvenOrOdd);
-
 __global__ void LBCalcMac27( real* vxD,
                                         real* vyD,
                                         real* vzD,

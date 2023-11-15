@@ -27,53 +27,6 @@
 struct LBMSimulationParameter;
 class Parameter;
 
-//////////////////////////////////////////////////////////////////////////
-//Kernel
-//////////////////////////////////////////////////////////////////////////
-void Init27(int myid,
-                       int numprocs,
-                       real u0,
-                       unsigned int* geoD,
-                       unsigned int* neighborX,
-                       unsigned int* neighborY,
-                       unsigned int* neighborZ,
-                       real* vParab,
-                       unsigned long long numberOfLBnodes,
-                       unsigned int grid_nx, 
-                       unsigned int grid_ny, 
-                       unsigned int grid_nz, 
-                       real* DD,
-                       int level,
-                       int maxlevel);
-
-void InitNonEqPartSP27(unsigned int numberOfThreads,
-                                  unsigned int* neighborX,
-                                  unsigned int* neighborY,
-                                  unsigned int* neighborZ,
-                                  unsigned int* neighborWSB,
-                                  unsigned int* geoD,
-                                  real* rho,
-                                  real* ux,
-                                  real* uy,
-                                  real* uz,
-                                  unsigned long long numberOfLBnodes,
-                                  real* DD,
-                                  real omega,
-                                  bool EvenOrOdd);
-
-
-void InitADDev27( unsigned int numberOfThreads,
-                           unsigned int* neighborX,
-                           unsigned int* neighborY,
-                           unsigned int* neighborZ,
-                           unsigned int* geoD,
-                           real* Conc,
-                           real* ux,
-                           real* uy,
-                           real* uz,
-                           unsigned long long numberOfLBnodes,
-                           real* DD27,
-                           bool EvenOrOdd);
 
 void CalcMac27( real* vxD,
                           real* vyD,

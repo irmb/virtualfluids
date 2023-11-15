@@ -28,43 +28,46 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "PreProcessorImp.h"
+#include "InitAdvectionDiffusionIncompressible.h"
 
-#include "PreProcessorStrategy/PreProcessorStrategy.h"
-
+#include "InitAdvectionDiffusionIncompressible_Device.cuh"
 #include "Parameter/Parameter.h"
+#include <cuda_helper/CudaGrid.h>
 
-std::shared_ptr<PreProcessorImp> PreProcessorImp::getNewInstance()
+std::shared_ptr<PreProcessorStrategy> InitAdvectionDiffusionIncompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
-    return std::shared_ptr<PreProcessorImp>(new PreProcessorImp());
+    return std::shared_ptr<PreProcessorStrategy>(new InitAdvectionDiffusionIncompressible(para));
 }
 
-void PreProcessorImp::addStrategy(std::shared_ptr<PreProcessorStrategy> strategy)
+void InitAdvectionDiffusionIncompressible::init(int level)
 {
-    strategies.push_back(strategy);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    InitAdvectionDiffusionIncompressible_Device <<< grid.grid, grid.threads >>>(
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->concentration,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->distributionsAD.f[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("InitAdvectionDiffusionIncompressible_Device execution failed");
 }
 
-void PreProcessorImp::init(std::shared_ptr<Parameter> para, int level)
+bool InitAdvectionDiffusionIncompressible::checkParameter()
 {
-    para->getParD(level)->isEvenTimestep = false;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-
-    para->getParD(level)->isEvenTimestep = true;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
+    return false;
 }
 
-bool PreProcessorImp::checkParameter()
+InitAdvectionDiffusionIncompressible::InitAdvectionDiffusionIncompressible(std::shared_ptr<Parameter> para)
 {
-    for (std::size_t i = 0; i < strategies.size(); i++) {
-        if (!strategies.at(i)->checkParameter())
-            return false;
-    }
-    return true;
+    this->para = para;
 }
 
-PreProcessorImp::PreProcessorImp()
+InitAdvectionDiffusionIncompressible::InitAdvectionDiffusionIncompressible()
 {
-    strategies.resize(0);
 }

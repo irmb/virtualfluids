@@ -28,43 +28,23 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "PreProcessorImp.h"
+#ifndef InitK18K20NavierStokesCompressible_Device_H
+#define InitK18K20NavierStokesCompressible_Device_H
 
-#include "PreProcessorStrategy/PreProcessorStrategy.h"
+#include <DataTypes.h>
+#include <curand.h>
 
-#include "Parameter/Parameter.h"
+__global__ void InitK18K20NavierStokesCompressible_Device(
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned int* geoD,
+    real* rho,
+    real* ux,
+    real* uy,
+    real* uz,
+    unsigned int size_Mat,
+    real* G6,
+    bool EvenOrOdd);
 
-std::shared_ptr<PreProcessorImp> PreProcessorImp::getNewInstance()
-{
-    return std::shared_ptr<PreProcessorImp>(new PreProcessorImp());
-}
-
-void PreProcessorImp::addStrategy(std::shared_ptr<PreProcessorStrategy> strategy)
-{
-    strategies.push_back(strategy);
-}
-
-void PreProcessorImp::init(std::shared_ptr<Parameter> para, int level)
-{
-    para->getParD(level)->isEvenTimestep = false;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-
-    para->getParD(level)->isEvenTimestep = true;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-}
-
-bool PreProcessorImp::checkParameter()
-{
-    for (std::size_t i = 0; i < strategies.size(); i++) {
-        if (!strategies.at(i)->checkParameter())
-            return false;
-    }
-    return true;
-}
-
-PreProcessorImp::PreProcessorImp()
-{
-    strategies.resize(0);
-}
+#endif

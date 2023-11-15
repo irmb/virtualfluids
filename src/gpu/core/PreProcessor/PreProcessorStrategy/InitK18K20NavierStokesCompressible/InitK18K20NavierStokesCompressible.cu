@@ -28,43 +28,46 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "PreProcessorImp.h"
+#include "InitK18K20NavierStokesCompressible.h"
 
-#include "PreProcessorStrategy/PreProcessorStrategy.h"
-
+#include "InitK18K20NavierStokesCompressible_Device.cuh"
 #include "Parameter/Parameter.h"
+#include <cuda_helper/CudaGrid.h>
 
-std::shared_ptr<PreProcessorImp> PreProcessorImp::getNewInstance()
+std::shared_ptr<PreProcessorStrategy> InitK18K20NavierStokesCompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
-    return std::shared_ptr<PreProcessorImp>(new PreProcessorImp());
+    return std::shared_ptr<PreProcessorStrategy>(new InitK18K20NavierStokesCompressible(para));
 }
 
-void PreProcessorImp::addStrategy(std::shared_ptr<PreProcessorStrategy> strategy)
+void InitK18K20NavierStokesCompressible::init(int level)
 {
-    strategies.push_back(strategy);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    InitK18K20NavierStokesCompressible_Device <<< grid.grid, grid.threads >>>(
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->rho,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->g6.g[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("InitK18K20NavierStokesCompressible_Device execution failed");
 }
 
-void PreProcessorImp::init(std::shared_ptr<Parameter> para, int level)
+bool InitK18K20NavierStokesCompressible::checkParameter()
 {
-    para->getParD(level)->isEvenTimestep = false;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-
-    para->getParD(level)->isEvenTimestep = true;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
+    return false;
 }
 
-bool PreProcessorImp::checkParameter()
+InitK18K20NavierStokesCompressible::InitK18K20NavierStokesCompressible(std::shared_ptr<Parameter> para)
 {
-    for (std::size_t i = 0; i < strategies.size(); i++) {
-        if (!strategies.at(i)->checkParameter())
-            return false;
-    }
-    return true;
+    this->para = para;
 }
 
-PreProcessorImp::PreProcessorImp()
+InitK18K20NavierStokesCompressible::InitK18K20NavierStokesCompressible()
 {
-    strategies.resize(0);
 }

@@ -82,6 +82,7 @@ private:
     std::vector < SPtr< Kernel>> kernels;
     std::vector < SPtr< AdvectionDiffusionKernel>> adKernels;
     std::shared_ptr<PreProcessor> preProcessor;
+    std::shared_ptr<PreProcessor> preProcessorAD;
     SPtr<TurbulenceModelFactory> tmFactory;
 
     SPtr<RestartObject> restart_object;

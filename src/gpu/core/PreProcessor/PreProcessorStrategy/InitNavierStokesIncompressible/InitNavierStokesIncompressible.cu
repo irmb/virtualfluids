@@ -28,43 +28,46 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "PreProcessorImp.h"
+#include "InitNavierStokesIncompressible.h"
 
-#include "PreProcessorStrategy/PreProcessorStrategy.h"
-
+#include "InitNavierStokesIncompressible_Device.cuh"
 #include "Parameter/Parameter.h"
+#include <cuda_helper/CudaGrid.h>
 
-std::shared_ptr<PreProcessorImp> PreProcessorImp::getNewInstance()
+std::shared_ptr<PreProcessorStrategy> InitNavierStokesIncompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
-    return std::shared_ptr<PreProcessorImp>(new PreProcessorImp());
+    return std::shared_ptr<PreProcessorStrategy>(new InitNavierStokesIncompressible(para));
 }
 
-void PreProcessorImp::addStrategy(std::shared_ptr<PreProcessorStrategy> strategy)
+void InitNavierStokesIncompressible::init(int level)
 {
-    strategies.push_back(strategy);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+
+    InitNavierStokesIncompressible_Device<<<grid.grid, grid.threads>>>(
+        para->getParD(level)->neighborX,
+        para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ,
+        para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->rho,
+        para->getParD(level)->velocityX,
+        para->getParD(level)->velocityY,
+        para->getParD(level)->velocityZ,
+        para->getParD(level)->numberOfNodes,
+        para->getParD(level)->distributions.f[0],
+        para->getParD(level)->isEvenTimestep);
+    getLastCudaError("LB_Init_SP_27 execution failed");
 }
 
-void PreProcessorImp::init(std::shared_ptr<Parameter> para, int level)
+bool InitNavierStokesIncompressible::checkParameter()
 {
-    para->getParD(level)->isEvenTimestep = false;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
-
-    para->getParD(level)->isEvenTimestep = true;
-    for (std::size_t i = 0; i < strategies.size(); i++)
-        strategies.at(i)->init(level);
+    return false;
 }
 
-bool PreProcessorImp::checkParameter()
+InitNavierStokesIncompressible::InitNavierStokesIncompressible(std::shared_ptr<Parameter> para)
 {
-    for (std::size_t i = 0; i < strategies.size(); i++) {
-        if (!strategies.at(i)->checkParameter())
-            return false;
-    }
-    return true;
+    this->para = para;
 }
 
-PreProcessorImp::PreProcessorImp()
+InitNavierStokesIncompressible::InitNavierStokesIncompressible()
 {
-    strategies.resize(0);
 }
