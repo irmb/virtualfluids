@@ -165,7 +165,7 @@ void run(string configname)
 
 
             SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(
-                comm, MetisPartitioningGridVisitor::LevelIntersected, DIR_00M, MetisPartitioner::RECURSIVE));
+                comm, MetisPartitioningGridVisitor::LevelIntersected, d00M, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
         // restart
