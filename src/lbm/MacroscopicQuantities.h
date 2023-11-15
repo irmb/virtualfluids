@@ -21,13 +21,15 @@ namespace vf::lbm
 //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
 //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
 //!
-
 inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 {
-    return ((f[dir::DIR_PPP] + f[dir::DIR_MMM]) + (f[dir::DIR_PMP] + f[dir::DIR_MPM])) + ((f[dir::DIR_PMM] + f[dir::DIR_MPP]) + (f[dir::DIR_MMP] + f[dir::DIR_PPM])) +
-           (((f[dir::DIR_PP0] + f[dir::DIR_MM0]) + (f[dir::DIR_PM0] + f[dir::DIR_MP0])) + ((f[dir::DIR_P0P] + f[dir::DIR_M0M]) + (f[dir::DIR_P0M] + f[dir::DIR_M0P])) +
-            ((f[dir::DIR_0PM] + f[dir::DIR_0MP]) + (f[dir::DIR_0PP] + f[dir::DIR_0MM]))) +
-           ((f[dir::DIR_P00] + f[dir::DIR_M00]) + (f[dir::DIR_0P0] + f[dir::DIR_0M0]) + (f[dir::DIR_00P] + f[dir::DIR_00M])) + f[dir::DIR_000];
+    return ((((f[dir::dPPP] + f[dir::dMMM]) + (f[dir::dMPM] + f[dir::dPMP])) +
+             ((f[dir::dMPP] + f[dir::dPMM]) + (f[dir::dMMP] + f[dir::dPPM]))) +
+            (((f[dir::d0MP] + f[dir::d0PM]) + (f[dir::d0MM] + f[dir::d0PP])) +
+             ((f[dir::dM0P] + f[dir::dP0M]) + (f[dir::dM0M] + f[dir::dP0P])) +
+             ((f[dir::dMP0] + f[dir::dPM0]) + (f[dir::dMM0] + f[dir::dPP0]))) +
+            f[dir::d000]) +
+           ((f[dir::dM00] + f[dir::dP00]) + (f[dir::d0M0] + f[dir::d0P0]) + (f[dir::d00M] + f[dir::d00P]));
 }
 
 /*
@@ -35,22 +37,20 @@ inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 */
 inline __host__ __device__ real getIncompressibleVelocityX1(const real *const &f /*[27]*/)
 {
-    return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_PMP] - f[dir::DIR_MPM])) + ((f[dir::DIR_PMM] - f[dir::DIR_MPP]) + (f[dir::DIR_PPM] - f[dir::DIR_MMP]))) +
-            (((f[dir::DIR_P0M] - f[dir::DIR_M0P]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M])) + ((f[dir::DIR_PM0] - f[dir::DIR_MP0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_P00] - f[dir::DIR_M00]));
+    return ((((f[dir::dPPP] - f[dir::dMMM]) + (f[dir::dPMP] - f[dir::dMPM])) + ((f[dir::dPMM] - f[dir::dMPP]) + (f[dir::dPPM] - f[dir::dMMP]))) +
+            (((f[dir::dP0M] - f[dir::dM0P]) + (f[dir::dP0P] - f[dir::dM0M])) + ((f[dir::dPM0] - f[dir::dMP0]) + (f[dir::dPP0] - f[dir::dMM0]))) + (f[dir::dP00] - f[dir::dM00]));
 }
-
 
 inline __host__ __device__ real getIncompressibleVelocityX2(const real *const &f /*[27]*/)
 {
-    return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_MPM] - f[dir::DIR_PMP])) + ((f[dir::DIR_MPP] - f[dir::DIR_PMM]) + (f[dir::DIR_PPM] - f[dir::DIR_MMP]))) +
-            (((f[dir::DIR_0PM] - f[dir::DIR_0MP]) + (f[dir::DIR_0PP] - f[dir::DIR_0MM])) + ((f[dir::DIR_MP0] - f[dir::DIR_PM0]) + (f[dir::DIR_PP0] - f[dir::DIR_MM0]))) + (f[dir::DIR_0P0] - f[dir::DIR_0M0]));
+    return ((((f[dir::dPPP] - f[dir::dMMM]) + (f[dir::dMPM] - f[dir::dPMP])) + ((f[dir::dMPP] - f[dir::dPMM]) + (f[dir::dPPM] - f[dir::dMMP]))) +
+            (((f[dir::d0PM] - f[dir::d0MP]) + (f[dir::d0PP] - f[dir::d0MM])) + ((f[dir::dMP0] - f[dir::dPM0]) + (f[dir::dPP0] - f[dir::dMM0]))) + (f[dir::d0P0] - f[dir::d0M0]));
 }
-
 
 inline __host__ __device__ real getIncompressibleVelocityX3(const real *const &f /*[27]*/)
 {
-    return ((((f[dir::DIR_PPP] - f[dir::DIR_MMM]) + (f[dir::DIR_PMP] - f[dir::DIR_MPM])) + ((f[dir::DIR_MPP] - f[dir::DIR_PMM]) + (f[dir::DIR_MMP] - f[dir::DIR_PPM]))) +
-            (((f[dir::DIR_0MP] - f[dir::DIR_0PM]) + (f[dir::DIR_0PP] - f[dir::DIR_0MM])) + ((f[dir::DIR_M0P] - f[dir::DIR_P0M]) + (f[dir::DIR_P0P] - f[dir::DIR_M0M]))) + (f[dir::DIR_00P] - f[dir::DIR_00M]));
+    return ((((f[dir::dPPP] - f[dir::dMMM]) + (f[dir::dPMP] - f[dir::dMPM])) + ((f[dir::dMPP] - f[dir::dPMM]) + (f[dir::dMMP] - f[dir::dPPM]))) +
+            (((f[dir::d0MP] - f[dir::d0PM]) + (f[dir::d0PP] - f[dir::d0MM])) + ((f[dir::dM0P] - f[dir::dP0M]) + (f[dir::dP0P] - f[dir::dM0M]))) + (f[dir::d00P] - f[dir::d00M]));
 }
 
 inline __host__ __device__ void getIncompressibleMacroscopicValues(const real *const &f /*[27]*/, real &rho, real &vx1, real &vx2, real &vx3)
@@ -107,12 +107,12 @@ inline __host__ __device__ void getCompressibleMacroscopicValues(const real *con
 */
 inline __host__ __device__ real getPressure(const real *const &f27, const real& rho, const real& vx, const real& vy, const real& vz)
 {
-    return (f27[dir::DIR_P00] + f27[dir::DIR_M00] + f27[dir::DIR_0P0] + f27[dir::DIR_0M0] + f27[dir::DIR_00P] + f27[dir::DIR_00M] + 
-    basics::constant::c2o1 * (f27[dir::DIR_PP0] + f27[dir::DIR_MM0] + f27[dir::DIR_PM0] + f27[dir::DIR_MP0] + f27[dir::DIR_P0P] + 
-                      f27[dir::DIR_M0M] + f27[dir::DIR_P0M] + f27[dir::DIR_M0P] + f27[dir::DIR_0PP] + f27[dir::DIR_0MM] + 
-                      f27[dir::DIR_0PM] + f27[dir::DIR_0MP]) + 
-    basics::constant::c3o1 * (f27[dir::DIR_PPP] + f27[dir::DIR_MMP] + f27[dir::DIR_PMP] + f27[dir::DIR_MPP] + 
-                      f27[dir::DIR_PPM] + f27[dir::DIR_MMM] + f27[dir::DIR_PMM] + f27[dir::DIR_MPM]) -
+    return (f27[dir::dP00] + f27[dir::dM00] + f27[dir::d0P0] + f27[dir::d0M0] + f27[dir::d00P] + f27[dir::d00M] + 
+    basics::constant::c2o1 * (f27[dir::dPP0] + f27[dir::dMM0] + f27[dir::dPM0] + f27[dir::dMP0] + f27[dir::dP0P] + 
+                      f27[dir::dM0M] + f27[dir::dP0M] + f27[dir::dM0P] + f27[dir::d0PP] + f27[dir::d0MM] + 
+                      f27[dir::d0PM] + f27[dir::d0MP]) + 
+    basics::constant::c3o1 * (f27[dir::dPPP] + f27[dir::dMMP] + f27[dir::dPMP] + f27[dir::dMPP] + 
+                      f27[dir::dPPM] + f27[dir::dMMM] + f27[dir::dPMM] + f27[dir::dMPM]) -
     rho - (vx * vx + vy * vy + vz * vz) * (basics::constant::c1o1 + rho)) * 
     basics::constant::c1o2 + rho; // times zero for incompressible case                 
                           // Attention: op defined directly to op = 1 ; ^^^^(1.0/op-0.5)=0.5

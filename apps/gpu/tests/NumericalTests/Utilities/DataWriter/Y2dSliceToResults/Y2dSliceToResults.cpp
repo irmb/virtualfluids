@@ -1,7 +1,7 @@
 #include "Y2dSliceToResults.h"
 
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "gpu/core/Parameter/Parameter.h"
 
 #include <cmath>
 #include <sstream>

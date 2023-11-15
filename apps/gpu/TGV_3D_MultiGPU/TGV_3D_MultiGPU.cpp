@@ -35,7 +35,7 @@
 //Martin Branch
 #include <mpi.h>
 #if defined( MPI_LOGGING )
-	#include <mpe.h>
+    #include <mpe.h>
 #endif
 
 #include <string>
@@ -53,19 +53,19 @@
 #include "StringUtilities/StringUtil.h"
 #include "basics/config/ConfigurationFile.h"
 
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Communication/MpiCommunicator.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/Communication/MpiCommunicator.h"
+#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/Output/FileWriter.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/Kernel/KernelFactory/KernelFactoryImp.h"
+#include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
 
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
 
 #include "global.h"
 
@@ -122,7 +122,6 @@ uint nx = 64;
 uint gpuIndex = 0;
 
 bool useLimiter = false;
-bool useWale = false;
 
 int mpirank;
 int mpiWorldSize;
@@ -179,7 +178,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real PI = 3.141592653589793238462643383279;
+    const real PI = 3.141592653589793238462643383279;
 
     real L = nx / ( 2.0 * PI );
 
@@ -201,7 +200,7 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	real dx = 2.0 * PI / real(nx);
+    real dx = 2.0 * PI / real(nx);
 
     real xOverlap = ( sideLengthX == 1 ) ? 0.0 : 5.0*dx;
     real yOverlap = ( sideLengthY == 1 ) ? 0.0 : 5.0*dx;
@@ -219,7 +218,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setPeriodicBoundaryCondition(sideLengthX == 1, sideLengthY == 1, sideLengthZ == 1);
 
-	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     if( mpiWorldSize > 1 )
     {
@@ -269,7 +268,7 @@ void multipleLevel(const std::string& configPath)
     //para->setDevices(std::vector<uint>{0,1});
     para->setDevices(devices);
 
-	para->setMaxDev(mpiWorldSize);
+    para->setMaxDev(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -279,11 +278,11 @@ void multipleLevel(const std::string& configPath)
     para->setPrintFiles(true);
 
  //   para->setTimestepEnd( 40 * lround(L/velocity) );
-	//para->setTimestepOut(  5 * lround(L/velocity) );
-	para->setTimestepOut(  100  );
+    //para->setTimestepOut(  5 * lround(L/velocity) );
+    para->setTimestepOut(  100  );
 
     para->setTimestepEnd( 1000 );
-	//para->setTimestepOut(    1 );
+    //para->setTimestepOut(    1 );
 
     para->setVelocityLB( velocity );
 
@@ -314,15 +313,12 @@ void multipleLevel(const std::string& configPath)
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
 
-    if( useWale )
-        para->setUseWale( true );
-
     para->setUseInitNeq( true );
 
-	if (kernel == "CumulantK18Comp" || kernel == "CumulantK20Comp")
-		para->setIsF3(true);
-	else
-		para->setIsF3(false);
+    if (kernel == "CumulantK18Comp" || kernel == "CumulantK20Comp")
+        para->setIsF3(true);
+    else
+        para->setIsF3(false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,12 +355,12 @@ int main( int argc, char* argv[])
             MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
 
             //////////////////////////////////////////////////////////////////////////
-			std::string targetPath( __FILE__ );
+            std::string targetPath( __FILE__ );
 
 #ifdef _WIN32
-			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
+            targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
 #else
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+            targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
             //////////////////////////////////////////////////////////////////////////
@@ -386,9 +382,6 @@ int main( int argc, char* argv[])
 
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
-
-            if( cmdOptionExists( argv, argv+argc, "--useWale" ) )
-                useWale = true;
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -418,10 +411,10 @@ int main( int argc, char* argv[])
 
             //////////////////////////////////////////////////////////////////////////
 
-			multipleLevel(targetPath + "config.txt");
+            multipleLevel(targetPath + "config.txt");
 
             //////////////////////////////////////////////////////////////////////////
-		}
+        }
         catch (const std::bad_alloc& e)
         {
 

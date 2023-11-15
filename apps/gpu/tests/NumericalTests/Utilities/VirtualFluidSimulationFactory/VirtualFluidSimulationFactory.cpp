@@ -5,11 +5,11 @@
 #include "Utilities/NumericalTestGridReader/NumericalTestGridReader.h"
 #include "Utilities/SimulationParameter/SimulationParameter.h"
 
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/Parameter/Parameter.h"
 
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/LBM/Simulation.h"
 
 #include <parallel/MPICommunicator.h>
 
@@ -84,8 +84,6 @@ std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<Simulat
     para->setCalcMedian(false);
     para->setConcFile(false);
     para->setUseMeasurePoints(false);
-    para->setUseWale(false);
-    para->setSimulatePorousMedia(false);
     para->setForcing(0.0, 0.0, 0.0);
 
     std::vector<int> dist;

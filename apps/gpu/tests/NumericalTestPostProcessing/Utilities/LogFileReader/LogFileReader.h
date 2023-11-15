@@ -10,18 +10,18 @@ class LogFileData;
 class LogFileReader
 {
 public:
-	static std::shared_ptr<LogFileReader> getInstance();
-	
-	std::shared_ptr<LogFileData> readLogFileToLogFileData(std::string filePath);
-	std::vector<std::shared_ptr<LogFileData> > readLogFilesInDirectoryToLogFileData(std::string directory);
-	
+    static std::shared_ptr<LogFileReader> getInstance();
+    
+    std::shared_ptr<LogFileData> readLogFileToLogFileData(std::string filePath);
+    std::vector<std::shared_ptr<LogFileData> > readLogFilesInDirectoryToLogFileData(std::string directory);
+    
 
 private:
-	LogFileReader();
+    LogFileReader();
 
-	std::vector<std::string> getAllFilesInDir(const std::string &dirPath, const std::string &fileExtension);
-	std::string removeCharsFromString(std::string str, char* charsToRemove);
-	bool checkEqualDouble(double one, double two);
+    std::vector<std::string> getAllFilesInDir(const std::string &dirPath, const std::string &fileExtension);
+    std::string removeCharsFromString(std::string str, char* charsToRemove);
+    bool checkEqualDouble(double one, double two);
 
 };
 

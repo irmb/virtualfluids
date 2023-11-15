@@ -68,16 +68,16 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "parallel/MpiCommunicator.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "VirtualFluids_GPU/Factories/BoundaryConditionFactory.h"
-#include "VirtualFluids_GPU/Factories/GridScalingFactory.h"
-#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-#include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/KernelTypes.h"
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/Factories/GridScalingFactory.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/Output/FileWriter.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,9 +121,8 @@ uint nx = 64;
 uint gpuIndex = 0;
 
 bool useLimiter = false;
-bool useWale = false;
 
-std::string kernel(vf::CollisionKernel::Compressible::K17CompressibleNavierStokes);
+std::string kernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
 
 std::string path("D:/out/TGV_3D/"); //MOLLOK
 
@@ -145,7 +144,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real PI = 3.141592653589793238462643383279;
+    const real PI = 3.141592653589793238462643383279;
 
     real L = nx / ( 2.0 * PI );
 
@@ -159,10 +158,10 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-	real dx = 2.0 * PI / real(nx);
+    real dx = 2.0 * PI / real(nx);
 
-	gridBuilder->addCoarseGrid(-PI, -PI, -PI,
-								PI,  PI,  PI, dx);
+    gridBuilder->addCoarseGrid(-PI, -PI, -PI,
+                                PI,  PI,  PI, dx);
 
     gridBuilder->setNumberOfLayers(0, 0);
 
@@ -171,9 +170,9 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addGrid(fineGrid, 1);
 
-	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-	gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +180,7 @@ void multipleLevel(const std::string& configPath)
 
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
-	//std::stringstream _path;
+    //std::stringstream _path;
  //   std::stringstream _prefix;
 
  //   //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
@@ -239,7 +238,7 @@ void multipleLevel(const std::string& configPath)
     para->setTimestepOut(5 * lround(L / velocity));
     //para->setTimestepOut(lround(L / velocity));
  //   para->setTimestepEnd(2048);
-	//para->setTimestepOut(512);
+    //para->setTimestepOut(512);
  //   para->setTimestepStartOut(500);
 
     para->setVelocityLB( velocity );
@@ -267,9 +266,6 @@ void multipleLevel(const std::string& configPath)
 
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
-
-    if( useWale )
-        para->setUseWale( true );
 
     para->setUseInitNeq( true );
 
@@ -303,12 +299,12 @@ int main( int argc, char* argv[])
         try
         {
             //////////////////////////////////////////////////////////////////////////
-			std::string targetPath( __FILE__ );
+            std::string targetPath( __FILE__ );
 
 #ifdef _WIN32
-			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
+            targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
 #else
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+            targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
             //////////////////////////////////////////////////////////////////////////
@@ -331,13 +327,10 @@ int main( int argc, char* argv[])
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
 
-            if( cmdOptionExists( argv, argv+argc, "--useWale" ) )
-                useWale = true;
-
-			multipleLevel(targetPath + "config.txt");
+            multipleLevel(targetPath + "config.txt");
 
             //////////////////////////////////////////////////////////////////////////
-		}
+        }
         catch (const std::bad_alloc& e)
         {
             std::cout << "Bad alloc: " << e.what() << std::flush;

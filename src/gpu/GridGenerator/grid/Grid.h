@@ -138,6 +138,13 @@ public:
     virtual bool getPeriodicityY() const = 0;
     virtual bool getPeriodicityZ() const = 0;
 
+    virtual void setPeriodicBoundaryShiftsOnXinY(real shift) = 0;
+    virtual void setPeriodicBoundaryShiftsOnXinZ(real shift) = 0;
+    virtual void setPeriodicBoundaryShiftsOnYinX(real shift) = 0;
+    virtual void setPeriodicBoundaryShiftsOnYinZ(real shift) = 0;
+    virtual void setPeriodicBoundaryShiftsOnZinX(real shift) = 0;
+    virtual void setPeriodicBoundaryShiftsOnZinY(real shift) = 0;
+
     virtual void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) = 0;
 
     virtual void freeMemory() = 0;
@@ -159,7 +166,7 @@ public:
 
     virtual void setNumberOfLayers(uint numberOfLayers) = 0;
 
-    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) = 0;
+    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, bool doShift) = 0;
 
     virtual uint getNumberOfSendNodes(int direction)    = 0;
     virtual uint getNumberOfReceiveNodes(int direction) = 0;

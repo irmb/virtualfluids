@@ -10,8 +10,8 @@ class TestSimulationImp;
 
 struct NumericalTestStruct
 {
-	std::vector<std::shared_ptr<TestSimulationImp> > testSimulations;
-	std::vector<std::shared_ptr<Test> > tests;
-	std::shared_ptr<LogFileWriter> logFileWriter;
+    std::vector<std::shared_ptr<TestSimulationImp> > testSimulations;
+    std::vector<std::shared_ptr<Test> > tests;
+    std::shared_ptr<LogFileWriter> logFileWriter;
 };
 #endif

@@ -9,7 +9,7 @@ class PostProcessingConfigData;
 class PostProcessingConfigFileReader
 {
 public:
-	virtual ~PostProcessingConfigFileReader() = default;
-	virtual std::shared_ptr<PostProcessingConfigData> readConfigFile(std::string filePath) = 0;
+    virtual ~PostProcessingConfigFileReader() = default;
+    virtual std::shared_ptr<PostProcessingConfigData> readConfigFile(std::string filePath) = 0;
 };
 #endif

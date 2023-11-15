@@ -5,18 +5,18 @@
 
 std::shared_ptr<L2NormCalculatorFactory> L2NormCalculatorFactoryImp::getInstance()
 {
-	static std::shared_ptr<L2NormCalculatorFactory> uniqueInstance;
-	if (!uniqueInstance)
-		uniqueInstance = std::shared_ptr<L2NormCalculatorFactory>(new L2NormCalculatorFactoryImp());
-	return uniqueInstance;
+    static std::shared_ptr<L2NormCalculatorFactory> uniqueInstance;
+    if (!uniqueInstance)
+        uniqueInstance = std::shared_ptr<L2NormCalculatorFactory>(new L2NormCalculatorFactoryImp());
+    return uniqueInstance;
 }
 
 std::shared_ptr<L2NormCalculator> L2NormCalculatorFactoryImp::makeL2NormCalculator(std::string type)
 {
-	if(type == "Amplitude")
-		return L2CalculatorNormalizeWithAmplitude::getInstance();
-	if (type == "BasicData")
-		return L2CalculatorNormalizeWithBasicData::getInstance();
+    if(type == "Amplitude")
+        return L2CalculatorNormalizeWithAmplitude::getInstance();
+    if (type == "BasicData")
+        return L2CalculatorNormalizeWithBasicData::getInstance();
 }
 
 L2NormCalculatorFactoryImp::L2NormCalculatorFactoryImp()

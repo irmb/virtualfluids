@@ -16,6 +16,12 @@ stages:
     - chmod +x ./regression-tests/*
     - pip install fieldcompare
 
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - output/
+    when: on_failure
+
 {% for regression_test in regression_tests %}
 run-regression-test-{{ regression_test }}:
   extends: .regression-test

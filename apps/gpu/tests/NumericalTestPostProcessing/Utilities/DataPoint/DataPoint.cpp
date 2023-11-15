@@ -6,17 +6,17 @@ DataPoint::DataPoint()
 
 std::shared_ptr<DataPoint> DataPoint::getNewInstance(double x, double y)
 {
-	return std::shared_ptr<DataPoint>(new DataPoint(x, y));
+    return std::shared_ptr<DataPoint>(new DataPoint(x, y));
 }
 
 double DataPoint::getX()
 {
-	return x;
+    return x;
 }
 
 double DataPoint::getY()
 {
-	return y;
+    return y;
 }
 
 DataPoint::DataPoint(double x, double y) : x(x), y(y)

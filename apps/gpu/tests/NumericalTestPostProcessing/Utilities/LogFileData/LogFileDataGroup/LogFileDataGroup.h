@@ -8,7 +8,7 @@ class LogFileData;
 class LogFileDataGroup
 {
 public:
-	virtual std::shared_ptr<LogFileData> getLogFileData(int number) = 0;
-	virtual int getGroupSize() = 0;
+    virtual std::shared_ptr<LogFileData> getLogFileData(int number) = 0;
+    virtual int getGroupSize() = 0;
 };
 #endif

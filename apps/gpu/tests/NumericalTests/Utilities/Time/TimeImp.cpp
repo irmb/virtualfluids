@@ -4,7 +4,7 @@
 
 std::shared_ptr<TimeImp> TimeImp::getNewInstance()
 {
-	return std::shared_ptr<TimeImp>(new TimeImp());
+    return std::shared_ptr<TimeImp>(new TimeImp());
 }
 
 TimeImp::TimeImp()
@@ -14,90 +14,90 @@ TimeImp::TimeImp()
 
 void TimeImp::setSimulationStartTime()
 {
-	simulationStartTime = time(NULL);
+    simulationStartTime = time(NULL);
 }
 
 void TimeImp::setSimulationEndTime()
 {
-	simulationEndTime = time(NULL);
+    simulationEndTime = time(NULL);
 }
 
 void TimeImp::setTestStartTime()
 {
-	testStartTime = clock();
+    testStartTime = clock();
 }
 
 void TimeImp::setTestEndTime()
 {
-	testEndTime = clock();
+    testEndTime = clock();
 }
 
 void TimeImp::setAnalyticalResultWriteStartTime()
 {
-	analyticalResultWriteStartTime = time(NULL);
+    analyticalResultWriteStartTime = time(NULL);
 }
 
 void TimeImp::setAnalyticalResultWriteEndTime()
 {
-	analyticalResultWriteEndTime = time(NULL);
+    analyticalResultWriteEndTime = time(NULL);
 }
 
 void TimeImp::setResultCheckStartTime()
 {
-	resultCheckStartTime = clock();
+    resultCheckStartTime = clock();
 }
 
 void TimeImp::setResultCheckEndTime()
 {
-	resultCheckEndTime = clock();
+    resultCheckEndTime = clock();
 }
 
 std::string TimeImp::getSimulationTime()
 {
-	std::ostringstream oss;
-	oss << calcSimulationTime() << "sec";
-	return oss.str();
+    std::ostringstream oss;
+    oss << calcSimulationTime() << "sec";
+    return oss.str();
 }
 
 std::string TimeImp::getResultCheckTime()
 {
-	std::ostringstream oss;
-	oss << calcResultCheckTime() << "sec";
-	return oss.str();
+    std::ostringstream oss;
+    oss << calcResultCheckTime() << "sec";
+    return oss.str();
 }
 
 std::string TimeImp::getTestTime()
 {
-	std::ostringstream oss;
-	oss << calcTestTime() << "sec";
-	return oss.str();
+    std::ostringstream oss;
+    oss << calcTestTime() << "sec";
+    return oss.str();
 }
 
 std::string TimeImp::getAnalyticalResultWriteTime()
 {
-	std::ostringstream oss;
-	oss << calcAnalyticalResultWriteTime() << "sec";
-	return oss.str();
+    std::ostringstream oss;
+    oss << calcAnalyticalResultWriteTime() << "sec";
+    return oss.str();
 }
 
 double TimeImp::calcSimulationTime()
 {
-	return difftime(simulationEndTime, simulationStartTime);
+    return difftime(simulationEndTime, simulationStartTime);
 }
 
 float TimeImp::calcResultCheckTime()
 {
-	float timeInMiliSec = ((float)(resultCheckEndTime - resultCheckStartTime) / CLOCKS_PER_SEC);
-	return timeInMiliSec;
+    float timeInMiliSec = ((float)(resultCheckEndTime - resultCheckStartTime) / CLOCKS_PER_SEC);
+    return timeInMiliSec;
 }
 
 float TimeImp::calcTestTime()
 {
-	float timeInMiliSec = ((float)(testEndTime - testStartTime) / CLOCKS_PER_SEC);
-	return timeInMiliSec;
+    float timeInMiliSec = ((float)(testEndTime - testStartTime) / CLOCKS_PER_SEC);
+    return timeInMiliSec;
 }
 
 double TimeImp::calcAnalyticalResultWriteTime()
 {
-	return difftime(analyticalResultWriteEndTime, analyticalResultWriteStartTime);
+    return difftime(analyticalResultWriteEndTime, analyticalResultWriteStartTime);
 }

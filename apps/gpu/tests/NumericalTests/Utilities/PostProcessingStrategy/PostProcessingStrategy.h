@@ -10,7 +10,7 @@ class SimulationResults;
 class PostProcessingStrategy
 {
 public:
-	virtual ~PostProcessingStrategy() = default;
-	virtual void evaluate() = 0;
+    virtual ~PostProcessingStrategy() = default;
+    virtual void evaluate() = 0;
 };
 #endif

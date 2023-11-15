@@ -92,7 +92,14 @@ namespace grid_generator
         .def("set_periodic_boundary_condition", &LevelGridBuilder::setPeriodicBoundaryCondition, py::arg("periodic_x"), py::arg("periodic_y"), py::arg("periodic_z"))
         .def("set_no_slip_boundary_condition", &LevelGridBuilder::setNoSlipBoundaryCondition, py::arg("side_type"))
         .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"), py::arg("n_t_read"), py::arg("velocity_x")=c0o1, py::arg("velocity_y")=c0o1, py::arg("velocity_z")=c0o1, py::arg("file_level_to_grid_level_map")=std::vector<uint>())
-        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"));
+        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"))
+        .def("set_periodic_shift_on_x_boundary_in_y_direction", &LevelGridBuilder::setPeriodicShiftOnXBoundaryInYDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_x_boundary_in_z_direction", &LevelGridBuilder::setPeriodicShiftOnXBoundaryInZDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_y_boundary_in_x_direction", &LevelGridBuilder::setPeriodicShiftOnYBoundaryInXDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_y_boundary_in_z_direction", &LevelGridBuilder::setPeriodicShiftOnYBoundaryInZDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_z_boundary_in_x_direction", &LevelGridBuilder::setPeriodicShiftOnZBoundaryInXDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_z_boundary_in_y_direction", &LevelGridBuilder::setPeriodicShiftOnZBoundaryInYDirection, py::arg("shift"))
+        .def("set_communication_process", &LevelGridBuilder::setCommunicationProcess, py::arg("direction"), py::arg("process"));
 
         py::class_<MultipleGridBuilder, LevelGridBuilder, std::shared_ptr<MultipleGridBuilder>>(gridGeneratorModule, "MultipleGridBuilder")
         .def(py::init())
@@ -104,8 +111,7 @@ namespace grid_generator
         .def("get_number_of_levels", &MultipleGridBuilder::getNumberOfLevels)
         .def("build_grids", &MultipleGridBuilder::buildGrids, py::arg("enable_thin_walls"))
         .def("set_subdomain_box", &MultipleGridBuilder::setSubDomainBox, py::arg("bounding_box"))
-        .def("find_communication_indices", &MultipleGridBuilder::findCommunicationIndices)
-        .def("set_communication_process", &MultipleGridBuilder::setCommunicationProcess)
+        .def("find_communication_indices", &MultipleGridBuilder::findCommunicationIndices, py::arg("direction"), py::arg("do_shift")=false)
         .def("set_number_of_layers", &MultipleGridBuilder::setNumberOfLayers, py::arg("number_of_layers_fine"), py::arg("number_of_layers_between_levels"));
 
         return gridGeneratorModule;

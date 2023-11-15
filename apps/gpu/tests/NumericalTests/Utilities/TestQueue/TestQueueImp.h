@@ -12,28 +12,28 @@ class ColorConsoleOutput;
 class TestQueueImp : public TestQueue
 {
 public:
-	TestSuiteResult run() override;
-	void makeFinalOutput() override;
+    TestSuiteResult run() override;
+    void makeFinalOutput() override;
 
-	int getNumberOfFailedTests() const noexcept override;
+    int getNumberOfFailedTests() const noexcept override;
 
-	static std::shared_ptr<TestQueueImp> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput);
-	void addTest(std::shared_ptr<Test> test);
+    static std::shared_ptr<TestQueueImp> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput);
+    void addTest(std::shared_ptr<Test> test);
 
 private:
-	TestQueueImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
+    TestQueueImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
 
-	void calcTestNumbers();
+    void calcTestNumbers();
 
-	std::shared_ptr<ColorConsoleOutput> colorOutput;
-	std::vector<std::shared_ptr<Test> > tests;
-	
-	int numberOfPassedTest;
-	int numberOfFailedTest;
-	int numberOfErrorTest;
-	int numberOfExecutedTest;
-	int numberOfNotExecutedTest;
+    std::shared_ptr<ColorConsoleOutput> colorOutput;
+    std::vector<std::shared_ptr<Test> > tests;
+    
+    int numberOfPassedTest;
+    int numberOfFailedTest;
+    int numberOfErrorTest;
+    int numberOfExecutedTest;
+    int numberOfNotExecutedTest;
 
-	int numberOfTests;
+    int numberOfTests;
 };
 #endif

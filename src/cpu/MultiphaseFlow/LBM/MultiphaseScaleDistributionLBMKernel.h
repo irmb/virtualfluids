@@ -115,6 +115,7 @@ protected:
     void computePhasefield();
     void findNeighbors(CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, int x1, int x2, int x3);
     void findNeighbors2(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2, int x3);
+    bool isGas(real phiLim, real* phi, real* phi2);
 
     real nabla2_phi();
 
@@ -128,5 +129,44 @@ protected:
     real forcingX2;
     real forcingX3;
 };
+
+/// @brief The function computes a fancy expression
+/// @param phiLim 
+/// @param phi 
+/// @param phi2 
+/// @return 
+inline bool MultiphaseScaleDistributionLBMKernel::isGas(real phiLim, real* phi, real* phi2)
+{
+    using namespace vf::lbm::dir;
+    return (phi2[d000] <= phiLim) || ((phi[d000] <= phiLim) &&
+                        (
+						(phi[dP00] > phiLim) ||
+						(phi[dM00] > phiLim) ||
+						(phi[d00P] > phiLim) ||
+						(phi[d00M] > phiLim) ||
+						(phi[d0M0] > phiLim) ||
+						(phi[d0P0] > phiLim) ||
+						(phi[dPP0] > phiLim) ||
+						(phi[dPM0] > phiLim) ||
+						(phi[dP0P] > phiLim) ||
+						(phi[dP0M] > phiLim) ||
+						(phi[dMP0] > phiLim) ||
+						(phi[dMM0] > phiLim) ||
+						(phi[dM0P] > phiLim) ||
+						(phi[dM0M] > phiLim) ||
+						(phi[d0PM] > phiLim) ||
+						(phi[d0MM] > phiLim) ||
+						(phi[d0PP] > phiLim) ||
+						(phi[d0MP] > phiLim) ||
+						(phi[dPPP] > phiLim) ||
+						(phi[dPMP] > phiLim) ||
+						(phi[dMPP] > phiLim) ||
+						(phi[dMMP] > phiLim) ||
+						(phi[dPPM] > phiLim) ||
+						(phi[dPMM] > phiLim) ||
+						(phi[dMPM] > phiLim) ||
+						(phi[dMMM] > phiLim)
+						));
+}
 
 #endif

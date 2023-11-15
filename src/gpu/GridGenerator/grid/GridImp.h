@@ -82,8 +82,8 @@ private:
     void initalNumberOfNodesAndSize();
     Cell getOddCellFromIndex(uint index) const;
     bool isValidSolidStopper(uint index) const;
-	bool shouldBeBoundarySolidNode(uint index) const;
-	bool isValidEndOfGridStopper(uint index) const;
+    bool shouldBeBoundarySolidNode(uint index) const;
+    bool isValidEndOfGridStopper(uint index) const;
     bool isValidEndOfGridBoundaryStopper(uint index) const;
     bool isOutSideOfGrid(Cell &cell) const;
     bool contains(Cell &cell, char type) const;
@@ -105,11 +105,14 @@ private:
 
     bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-	uint nx, ny, nz;
+    uint nx, ny, nz;
 
-	uint size;
+    uint size;
     uint sparseSize;
     bool periodicityX = false, periodicityY = false, periodicityZ = false;
+    real periodicShiftOnXinY = 0.0, periodicShiftOnXinZ = 0.0;
+    real periodicShiftOnYinX = 0.0, periodicShiftOnYinZ = 0.0;
+    real periodicShiftOnZinX = 0.0, periodicShiftOnZinY = 0.0;
 
     SPtr<Object> object;
     GridInterface *gridInterface;
@@ -122,8 +125,8 @@ private:
     std::vector<uint> fluidNodeIndicesApplyBodyForce;   // run on CollisionTemplate::ApplyBodyForce
     std::vector<uint> fluidNodeIndicesAllFeatures;      // run on CollisionTemplate::AllFeatures
 
-	uint *qIndices;     //maps from matrix index to qIndex
-	real *qValues;
+    uint *qIndices;     //maps from matrix index to qIndex
+    real *qValues;
     uint *qPatches;
 
     bool innerRegionFromFinerGrid;
@@ -155,6 +158,13 @@ public:
     bool getPeriodicityX() const override;
     bool getPeriodicityY() const override;
     bool getPeriodicityZ() const override;
+
+    void setPeriodicBoundaryShiftsOnXinY(real shift) override;
+    void setPeriodicBoundaryShiftsOnXinZ(real shift) override;
+    void setPeriodicBoundaryShiftsOnYinX(real shift) override;
+    void setPeriodicBoundaryShiftsOnYinZ(real shift) override;
+    void setPeriodicBoundaryShiftsOnZinX(real shift) override;
+    void setPeriodicBoundaryShiftsOnZinY(real shift) override;
 
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall) override;
 
@@ -270,9 +280,9 @@ public:
     bool isStopperForBC(uint index) const override;
 
     int *getNeighborsX() const override;
-    int* getNeighborsY() const override;
-    int* getNeighborsZ() const override;
-    int* getNeighborsNegative() const override;
+    int *getNeighborsY() const override;
+    int *getNeighborsZ() const override;
+    int *getNeighborsNegative() const override;
 
     uint *getCF_coarse() const override;
     uint *getCF_fine() const override;
@@ -295,12 +305,11 @@ public:
 protected:
     virtual void setStopperNeighborCoords(uint index);
 private:
-    void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
-    real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
-    void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
-    real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
+    int getNeighborIndex(real x, real y, real z, int direction, bool periodicity) const;
+    void getPeriodicNeighborCoords(real x, real y, real z, real* neighborCoords, int direction) const;
+    int getNegativeNeighborIndex(real x, real y, real z) const;
+    void getNegativePeriodicNeighborCoords(real x, real y, real z, real* neighborCoords) const;
     
-
     virtual int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
     static real getMinimumOnNodes(const real &minExact, const real &decimalStart, const real &delta);
@@ -353,7 +362,8 @@ private:
     void allocateQs();
 
 public:
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override;
+    int getShiftedCommunicationIndex(uint index, int direction);
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, bool doShift) override;
     void findCommunicationIndex(uint index, real coordinate, real limit, int direction);
 
     uint getNumberOfSendNodes(int direction) override;

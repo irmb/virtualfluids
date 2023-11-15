@@ -8,15 +8,15 @@
 class LogFileDataGroupImp : public LogFileDataGroup
 {
 public:
-	static std::shared_ptr<LogFileDataGroupImp> getNewInstance();
+    static std::shared_ptr<LogFileDataGroupImp> getNewInstance();
 
-	std::shared_ptr<LogFileData> getLogFileData(int number);
-	int getGroupSize();
-	void addLogFileData(std::shared_ptr<LogFileData> logFileData);
+    std::shared_ptr<LogFileData> getLogFileData(int number);
+    int getGroupSize();
+    void addLogFileData(std::shared_ptr<LogFileData> logFileData);
 
 private:
-	LogFileDataGroupImp();
+    LogFileDataGroupImp();
 
-	std::vector<std::shared_ptr<LogFileData>> data;
+    std::vector<std::shared_ptr<LogFileData>> data;
 };
 #endif

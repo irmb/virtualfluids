@@ -3,8 +3,9 @@ build/
 bin/
 cmake-build-debug/
 run/
-buildGCC
-buildWSL
+buildGCC/
+buildWSL/
+buildCygwin/
 pybuild/
 
 # Python
@@ -13,8 +14,8 @@ dist/
 *.egg-info/
 **/__pycache__/
 .venv/
-pythonbindings/pyfluids/bindings*
-pythonbindings/pymuparser/bindings*
+pythonbindings/pyfluids/*.cpython*
+pythonbindings/pymuparser/*.cpython*
 
 # IDE
 .vscode/
