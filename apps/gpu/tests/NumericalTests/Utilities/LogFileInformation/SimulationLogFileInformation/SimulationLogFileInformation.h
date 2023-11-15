@@ -9,10 +9,10 @@
 class SimulationLogFileInformation : public LogFileInformationImp
 {
 public:
-	virtual ~SimulationLogFileInformation() = default;
-	virtual std::string getOutput() = 0;
+    virtual ~SimulationLogFileInformation() = default;
+    virtual std::string getOutput() = 0;
 
-	virtual std::vector<std::string> getFilePathExtension() = 0;
+    virtual std::vector<std::string> getFilePathExtension() = 0;
 
 private:
 

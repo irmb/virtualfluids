@@ -16,6 +16,7 @@
 
 #include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
 #include <mpi.h>
+#include "core/Output/FilePartCalculator.h"
 
 std::shared_ptr<AnalyticalResults2DToVTKWriterImp>
 AnalyticalResults2DToVTKWriterImp::getInstance(bool writeAnalyticalResults)
@@ -40,7 +41,7 @@ void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Pa
         for (int level = para->getCoarse(); level <= para->getFine(); level++) {
 #pragma omp parallel for
             for (int timeStep = 0; timeStep < analyticalResult->getNumberOfTimeSteps(); timeStep++) {
-                const unsigned int numberOfParts = para->getParH(level)->size_Mat / para->getLimitOfNodesForVTK() + 1;
+                const unsigned int numberOfParts = FilePartCalculator::calculateNumberOfParts(para->getParH(level)->size_Mat);
                 std::vector<std::string> fname;
                 unsigned int time =
                     analyticalResult->getTimeSteps().at(timeStep) * analyticalResult->getTimeStepLength();
@@ -93,13 +94,10 @@ void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter>
     std::vector<double> vz = analyticalResult->getVz()[timeStep];
 
     for (unsigned int part = 0; part < fname.size(); part++) {
-        if (((part + 1) * para->getLimitOfNodesForVTK()) > para->getParH(level)->size_Mat)
-            sizeOfNodes = para->getParH(level)->size_Mat - (part * para->getLimitOfNodesForVTK());
-        else
-            sizeOfNodes = para->getLimitOfNodesForVTK();
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->size_Mat, part);
 
         //////////////////////////////////////////////////////////////////////////
-        startpos = part * para->getLimitOfNodesForVTK();
+        startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
         //////////////////////////////////////////////////////////////////////////
         cells.clear();

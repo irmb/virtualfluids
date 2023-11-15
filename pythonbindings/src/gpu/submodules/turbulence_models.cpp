@@ -31,12 +31,13 @@
 //! \author Henry Korb
 //=======================================================================================
 #include "pybind11/pybind11.h"
-#include "gpu/VirtualFluids_GPU/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/VirtualFluids_GPU/LBM/LB.h"
+#include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
+#include "gpu/core/LBM/LB.h"
 
 namespace turbulence_model
 {
     namespace py = pybind11;
+    using namespace vf::lbm;
 
     void makeModule(py::module_ &parentModule)
     {

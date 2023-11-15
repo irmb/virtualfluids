@@ -17,13 +17,17 @@ tStartAveraging     = 0
 tStartTmpAveraging  = 100000
 tAveraging          = 200
 tStartOutProbe      = 0
-tOutProbe           = 1000 
+tOutProbe           = 1000
 ##################################################
 Ma = 0.1
-nz = 96 
+nz = 96
+
+periodicShift = 1100
+refinement = false
 
 bodyForce = true
 TurbulenceModel = QR
+SGSconstant = 0.333333
 QuadricLimiterP = 100000.0
 QuadricLimiterM = 100000.0
 QuadricLimiterD = 100000.0

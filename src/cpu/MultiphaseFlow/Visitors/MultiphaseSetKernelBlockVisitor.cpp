@@ -79,6 +79,16 @@ void MultiphaseSetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 				block->setKernel(newKernel);
 			}
 			break;
+        case MultiphaseSetKernelBlockVisitor::AddKernel: 
+			{
+                if (!block->getKernel()) 
+				{
+                    block->setKernel(newKernel);
+                } 
+				//else
+    //                std::cout << "block: " << block->getX1() << "," << block->getX2() << ","<< block->getX3() << std::endl;
+			} 
+			break;
 		}
 
 	}

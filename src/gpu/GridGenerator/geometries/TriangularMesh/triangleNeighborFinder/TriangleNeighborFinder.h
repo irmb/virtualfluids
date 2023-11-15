@@ -60,7 +60,7 @@ public:
     std::vector< std::vector<Triangle> > getTrianglesPerVertex() const;
 
     void GRIDGENERATOR_EXPORT fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
-	void GRIDGENERATOR_EXPORT fillWithNeighborAngles(TriangularMesh *geom) const;
+    void GRIDGENERATOR_EXPORT fillWithNeighborAngles(TriangularMesh *geom) const;
 
     void printSortedToTriangles() const;
     void printSortedInSpace() const;

@@ -13,19 +13,19 @@ struct GridInformationStruct;
 class LogFileInformationTaylorGreenUz : public SimulationLogFileInformation
 {
 public:
-	static std::shared_ptr<LogFileInformationTaylorGreenUz> getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
-	
-	std::string getOutput();
-	std::vector<std::string> getFilePathExtension();
+    static std::shared_ptr<LogFileInformationTaylorGreenUz> getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+    
+    std::string getOutput();
+    std::vector<std::string> getFilePathExtension();
 
 private:
-	LogFileInformationTaylorGreenUz() {};
-	LogFileInformationTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+    LogFileInformationTaylorGreenUz() {};
+    LogFileInformationTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
-	double uz;
-	double amplitude;
-	std::vector<double> lz;
-	std::vector<double> lx;
-	int l0;
+    double uz;
+    double amplitude;
+    std::vector<double> lz;
+    std::vector<double> lx;
+    int l0;
 };
 #endif 

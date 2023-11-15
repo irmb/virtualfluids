@@ -6,7 +6,7 @@
 class MathematicaFunction
 {
 public:
-	virtual std::string getFunction() = 0;
+    virtual std::string getFunction() = 0;
 
 private:
 

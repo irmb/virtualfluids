@@ -8,14 +8,14 @@
 
 struct TaylorGreenVortexUzParameterStruct
 {
-	std::shared_ptr<BasicSimulationParameterStruct> basicSimulationParameter;
+    std::shared_ptr<BasicSimulationParameterStruct> basicSimulationParameter;
 
-	double uz;
-	double amplitude;
-	int basicTimeStepLength;
-	double l0;
-	double rho0;
-	std::string vtkFilePath;
-	std::vector<std::string> dataToCalcTests;
+    double uz;
+    double amplitude;
+    int basicTimeStepLength;
+    double l0;
+    double rho0;
+    std::string vtkFilePath;
+    std::vector<std::string> dataToCalcTests;
 };
 #endif

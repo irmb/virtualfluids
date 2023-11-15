@@ -5,13 +5,15 @@ VF has been developed essentially over the last fifteen years by various researc
 Damilola Adekanye, M.Sc.
 Dr. Benjamin Ahrenholz
 Dr. Hussein Alihussein
+Dr. Henrik Asmuth
 Dr. Sebastian Bindick
 Aileen Brendel, B.Sc.
-J.Prof. Dr. Martin Geier
+Prof. Dr. Martin Geier
 Dr. Sebastian Geller
 Dr. Ehsan Goraki Fard
 Dr. Jan Hegewald
 Dr. Christian Janßen
+Henry Korb, M.Sc.
 Prof. Dr.-Ing. habil. Manfred Krafczyk
 Dr. Konstantin Kutscher
 Dr. Stephan Lenz

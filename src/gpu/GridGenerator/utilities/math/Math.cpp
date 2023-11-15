@@ -38,28 +38,28 @@
 
 bool vf::Math::equal(const real& val1, const real& val2, real maxRelDiff)
 {
-	const real diff = std::fabs(val1 - val2);
-	const real val1_abs = std::fabs(val1);
-	const real val2_abs = std::fabs(val2);
+    const real diff = std::fabs(val1 - val2);
+    const real val1_abs = std::fabs(val1);
+    const real val2_abs = std::fabs(val2);
 
-	const real largest = (val2_abs > val1_abs) ? val2_abs : val1_abs;
-	if (diff <= largest * maxRelDiff)
-		return true;
-	return false;
+    const real largest = (val2_abs > val1_abs) ? val2_abs : val1_abs;
+    if (diff <= largest * maxRelDiff)
+        return true;
+    return false;
 }
 
 bool vf::Math::lessEqual(const real& val1, const real& val2, real maxRelDiff)
 {
-	if (val1 < val2 || equal(val1, val2, maxRelDiff))
-		return true;
-	return false;
+    if (val1 < val2 || equal(val1, val2, maxRelDiff))
+        return true;
+    return false;
 }
 
 bool vf::Math::greaterEqual(const real& val1, const real& val2, real maxRelDiff)
 {
-	if (val1 > val2 || equal(val1, val2, maxRelDiff))
-		return true;
-	return false;
+    if (val1 > val2 || equal(val1, val2, maxRelDiff))
+        return true;
+    return false;
 }
 
 real vf::Math::sqrtReal(const real& val)

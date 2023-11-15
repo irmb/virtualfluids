@@ -10,6 +10,6 @@ class LogFileDataAssistantStrategy;
 class LogFileDataAssistantStrategyFactory
 {
 public:
-	virtual std::shared_ptr<LogFileDataAssistantStrategy> makeLogFileDataAssistantStrategy(BasicSimulation sim) = 0;
+    virtual std::shared_ptr<LogFileDataAssistantStrategy> makeLogFileDataAssistantStrategy(BasicSimulation sim) = 0;
 };
 #endif 

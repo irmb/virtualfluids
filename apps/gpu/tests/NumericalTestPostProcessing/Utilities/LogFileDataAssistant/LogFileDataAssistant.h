@@ -16,7 +16,7 @@ class LogFileDataAssistantStrategy;
 class LogFileDataAssistant
 {
 public:
-	virtual std::vector<std::shared_ptr<LogFileDataGroup> > findDataCombination(std::vector<std::shared_ptr<LogFileData> > allLogFileData, std::shared_ptr<LogFileDataAssistantStrategy> strategy, DataCombination combination) = 0;
+    virtual std::vector<std::shared_ptr<LogFileDataGroup> > findDataCombination(std::vector<std::shared_ptr<LogFileData> > allLogFileData, std::shared_ptr<LogFileDataAssistantStrategy> strategy, DataCombination combination) = 0;
 
 };
 #endif

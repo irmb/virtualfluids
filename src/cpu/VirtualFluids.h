@@ -228,11 +228,6 @@
 
 #include <LBM/CumulantLBMKernel.h>
 #include <LBM/CumulantK17LBMKernel.h>
-//#include <LBM/RheologyModelLBMKernel.h>
-//#include <LBM/RheologyModelLBMKernel2.h>
-
-
-
 
 
 #include <geometry3d/CoordinateTransformation3D.h>

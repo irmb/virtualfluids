@@ -10,8 +10,8 @@ class AnalyticalResults;
 class AnalyticalResults2DToVTKWriter
 {
 public:
-	virtual ~AnalyticalResults2DToVTKWriter() = default;
-	virtual void writeAnalyticalResult(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult) = 0;
+    virtual ~AnalyticalResults2DToVTKWriter() = default;
+    virtual void writeAnalyticalResult(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult) = 0;
 
 };
 #endif

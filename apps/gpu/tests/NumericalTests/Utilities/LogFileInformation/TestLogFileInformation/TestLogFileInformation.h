@@ -8,7 +8,7 @@
 class TestLogFileInformation : public LogFileInformationImp
 {
 public:
-	virtual std::string getOutput() = 0;
+    virtual std::string getOutput() = 0;
 
 private:
 

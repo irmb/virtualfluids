@@ -1,5 +1,5 @@
 
-vf_add_library(PUBLIC_LINK VirtualFluidsCore basics muparser lbm)
+vf_add_library(PUBLIC_LINK cpu_core basics muparser lbm)
 
 set_target_properties(simulationconfig PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

@@ -10,20 +10,20 @@ class MathematicaFunction;
 class MathematicaFile
 {
 public:
-	static std::shared_ptr<MathematicaFile> getNewInstance(std::string filePath);
+    static std::shared_ptr<MathematicaFile> getNewInstance(std::string filePath);
 
-	void addMathematicaFunction(std::shared_ptr<MathematicaFunction> aMathFunc);
-	void finishFile();
-	
+    void addMathematicaFunction(std::shared_ptr<MathematicaFunction> aMathFunc);
+    void finishFile();
+    
 
 private:
-	MathematicaFile();
-	MathematicaFile(std::string filePath);
+    MathematicaFile();
+    MathematicaFile(std::string filePath);
 
-	std::string calcDateAndTime();
+    std::string calcDateAndTime();
 
-	std::string filePathTxtFile, filePathMathematicaFile;
-	bool fileFinished;
-	std::ofstream myFile;
+    std::string filePathTxtFile, filePathMathematicaFile;
+    bool fileFinished;
+    std::ofstream myFile;
 };
 #endif

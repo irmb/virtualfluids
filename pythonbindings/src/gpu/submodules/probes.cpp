@@ -32,12 +32,12 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/Probe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/PreCollisionInteractor/Probes/Probe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/PointProbe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h>
+#include <gpu/core/PreCollisionInteractor/Probes/PlanarAverageProbe.h>
+#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
 
 namespace probes
 {
@@ -82,8 +82,7 @@ namespace probes
                         py::arg("t_out"),
                         py::arg("output_timeseries"))
         .def("add_probe_point", &PointProbe::addProbePoint, py::arg("point_coord_x"), py::arg("point_coord_y"), py::arg("point_coord_z"))
-        .def("add_probe_points_from_list", &PointProbe::addProbePointsFromList, py::arg("point_coords_x"), py::arg("point_coords_y"), py::arg("point_coords_z"))
-        .def("add_probe_points_from_x_normal_plane", &PointProbe::addProbePointsFromXNormalPlane, py::arg("pos_x"), py::arg("pos0_y"), py::arg("pos0_z"), py::arg("pos1_y"), py::arg("pos1_z"), py::arg("n_y"), py::arg("n_z"));
+        .def("add_probe_points_from_list", &PointProbe::addProbePointsFromList, py::arg("point_coords_x"), py::arg("point_coords_y"), py::arg("point_coords_z"));
 
         py::class_<PlaneProbe, Probe, std::shared_ptr<PlaneProbe>>(probeModule, "PlaneProbe")
         .def(py::init<

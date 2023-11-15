@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "K17CompressibleNavierStokes.h"
 #include "VirtualFluids.h"
 
 using namespace std;
@@ -205,7 +206,7 @@ void run(string configname)
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
          
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, DIR_00M));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(cylinderInt);
          intHelper.addInteractor(addWallYminInt);
@@ -245,7 +246,7 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
+         SPtr<LBMKernel> kernel(new K17CompressibleNavierStokes());
 
          SPtr<BCSet> bcProc(new BCSet());
          kernel->setBCSet(bcProc);

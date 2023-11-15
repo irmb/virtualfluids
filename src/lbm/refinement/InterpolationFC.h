@@ -40,10 +40,9 @@
 #include <basics/constants/NumericConstants.h>
 
 #include "lbm/constants/D3Q27.h"
-#include "lbm/KernelParameter.h"
-#include "lbm/Chimera.h"
+#include "lbm/ChimeraTransformation.h"
 
-#include "lbm/refinement/Coefficients.h"
+#include "lbm/interpolation/InterpolationCoefficients.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -51,7 +50,7 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, const real omegaC, const Coefficients& coefficients)
+inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
 {
 
     const real kxyAverage    = c0o1;
@@ -231,33 +230,33 @@ inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, 
     backwardInverseChimeraWithK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
     backwardInverseChimeraWithK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
 
-    f[DIR_000] = f000;
-    f[DIR_P00] = fP00;
-    f[DIR_M00] = fM00;
-    f[DIR_0P0] = f0P0;
-    f[DIR_0M0] = f0M0;
-    f[DIR_00P] = f00P;
-    f[DIR_00M] = f00M;
-    f[DIR_PP0] = fPP0;
-    f[DIR_MM0] = fMM0;
-    f[DIR_PM0] = fPM0;
-    f[DIR_MP0] = fMP0;
-    f[DIR_P0P] = fP0P;
-    f[DIR_M0M] = fM0M;
-    f[DIR_P0M] = fP0M;
-    f[DIR_M0P] = fM0P;
-    f[DIR_0PP] = f0PP;
-    f[DIR_0MM] = f0MM;
-    f[DIR_0PM] = f0PM;
-    f[DIR_0MP] = f0MP;
-    f[DIR_PPP] = fPPP;
-    f[DIR_MPP] = fMPP;
-    f[DIR_PMP] = fPMP;
-    f[DIR_MMP] = fMMP;
-    f[DIR_PPM] = fPPM;
-    f[DIR_MPM] = fMPM;
-    f[DIR_PMM] = fPMM;
-    f[DIR_MMM] = fMMM;
+    f[d000] = f000;
+    f[dP00] = fP00;
+    f[dM00] = fM00;
+    f[d0P0] = f0P0;
+    f[d0M0] = f0M0;
+    f[d00P] = f00P;
+    f[d00M] = f00M;
+    f[dPP0] = fPP0;
+    f[dMM0] = fMM0;
+    f[dPM0] = fPM0;
+    f[dMP0] = fMP0;
+    f[dP0P] = fP0P;
+    f[dM0M] = fM0M;
+    f[dP0M] = fP0M;
+    f[dM0P] = fM0P;
+    f[d0PP] = f0PP;
+    f[d0MM] = f0MM;
+    f[d0PM] = f0PM;
+    f[d0MP] = f0MP;
+    f[dPPP] = fPPP;
+    f[dMPP] = fMPP;
+    f[dPMP] = fPMP;
+    f[dMMP] = fMMP;
+    f[dPPM] = fPPM;
+    f[dMPM] = fMPM;
+    f[dPMM] = fPMM;
+    f[dMMM] = fMMM;
 }
 
 }

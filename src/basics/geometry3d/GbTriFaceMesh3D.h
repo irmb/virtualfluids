@@ -46,6 +46,8 @@
 
 #include <PointerDefinitions.h>
 
+#include "basics/constants/NumericConstants.h"
+
 #include <basics_export.h>
 
 namespace Kd
@@ -201,15 +203,15 @@ public:
 
         float getX1Centroid(std::vector<Vertex> &nodes)
         {
-            return (float)UbMath::c1o3 * (getV1x(nodes) + getV2x(nodes) + getV3x(nodes));
+            return (float)vf::basics::constant::c1o3 * (getV1x(nodes) + getV2x(nodes) + getV3x(nodes));
         }
         float getX2Centroid(std::vector<Vertex> &nodes)
         {
-            return (float)UbMath::c1o3 * (getV1y(nodes) + getV2y(nodes) + getV3y(nodes));
+            return (float)vf::basics::constant::c1o3 * (getV1y(nodes) + getV2y(nodes) + getV3y(nodes));
         }
         float getX3Centroid(std::vector<Vertex> &nodes)
         {
-            return (float)UbMath::c1o3 * (getV1z(nodes) + getV2z(nodes) + getV3z(nodes));
+            return (float)vf::basics::constant::c1o3 * (getV1z(nodes) + getV2z(nodes) + getV3z(nodes));
         }
 
         double calculateDistanceToPoint3D(const double &x1, const double &x2, const double &x3,
