@@ -27,10 +27,6 @@ SET(VFCPU_USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(VFCPU_USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 SET(VFCPU_USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 
-SET(VFCPU_ENABLE_LiggghtsCoupling OFF CACHE BOOL "enable coupling with LIGGGHTS library")
-SET(VFCPU_ENABLE_NonNewtonianFluids ON CACHE BOOL "enable non-Newtonian fluids module")
-SET(VFCPU_ENABLE_MultiphaseFlow ON CACHE BOOL "enable multiphase flow module")
-
 if(BUILD_VF_ALL_SAMPLES)
     set(VFCPU_ENABLE_NonNewtonianFluids ON)
     set(VFCPU_ENABLE_MultiphaseFlow ON)
@@ -41,12 +37,6 @@ IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MAT
     FIND_PACKAGE(MPI REQUIRED)
 ENDIF()
 #SET(MPI_CXX_LINK_FLAGS -mpe=mpilog)
-
-if(VFCPU_ENABLE_LiggghtsCoupling)
-    add_subdirectory(src/cpu/LiggghtsCoupling)
-    SET(VFCPU_USE_VTK ON CACHE BOOL "include VTK library support" FORCE)
-endif()
-
 
 #VTK
 IF(${VFCPU_USE_VTK})
@@ -92,14 +82,6 @@ add_subdirectory(src/cpu/core)
 
 if(BUILD_VF_PYTHON_BINDINGS)
     add_subdirectory(src/cpu/simulationconfig)
-endif()
-
-if(VFCPU_ENABLE_NonNewtonianFluids)
-    add_subdirectory(src/cpu/NonNewtonianFluids)
-endif()
-
-if(VFCPU_ENABLE_MultiphaseFlow)
-    add_subdirectory(src/cpu/MultiphaseFlow)
 endif()
 
 set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")
