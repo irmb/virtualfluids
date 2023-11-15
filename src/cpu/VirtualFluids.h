@@ -208,9 +208,7 @@
 #include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
-#include <LBM/Interpolation/CompressibleOffsetInterpolator.h>
 #include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
-#include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolator.h>
 #include <LBM/Interpolation/IncompressibleOffsetInterpolator.h>
 #include <LBM/Interpolation/Interpolator.h>
 #include <LBM/D3Q27System.h>
