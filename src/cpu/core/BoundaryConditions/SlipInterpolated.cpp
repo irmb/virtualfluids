@@ -1,23 +1,23 @@
-#include "SlipBCStrategy.h"
+#include "SlipInterpolated.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
 
-SlipBCStrategy::SlipBCStrategy()
+SlipInterpolated::SlipInterpolated()
 {
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SlipBCStrategy::~SlipBCStrategy() = default;
+SlipInterpolated::~SlipInterpolated() = default;
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> SlipBCStrategy::clone()
+SPtr<BCStrategy> SlipInterpolated::clone()
 {
-    SPtr<BCStrategy> bc(new SlipBCStrategy());
+    SPtr<BCStrategy> bc(new SlipInterpolated());
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions) { this->distributions = distributions; }
+void SlipInterpolated::addDistributions(SPtr<DistributionArray3D> distributions) { this->distributions = distributions; }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCStrategy::applyBC()
+void SlipInterpolated::applyBC()
 {
     using namespace vf::lbm::dir;
 

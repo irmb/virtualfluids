@@ -26,29 +26,28 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityWithDensityBCStrategy.h
+//! \file NoSlipInterpolated.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef VelocityWithDensityBCStrategy_h__
-#define VelocityWithDensityBCStrategy_h__
+#ifndef NoSlipInterpolated_h__
+#define NoSlipInterpolated_h__
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-//!  \brief Class implements Dirichlet boundary condition for velocity. Set density in system. It is used together with
-//!  non reflecting outflow.
-
-class VelocityWithDensityBCStrategy : public BCStrategy
+//! A class implements no-slip boundary condition
+class NoSlipInterpolated : public BCStrategy
 {
 public:
-    VelocityWithDensityBCStrategy();
-    ~VelocityWithDensityBCStrategy() override;
+    NoSlipInterpolated();
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
+
+private:
 };
-#endif // VelocityWithDensityBCStrategy_h__
+#endif

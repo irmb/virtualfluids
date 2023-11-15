@@ -26,34 +26,49 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThinWallNoSlipBCStrategy.h
+//! \file NoSlipInterpolated.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef ThinWallNoSlipBCStrategy_h__
-#define ThinWallNoSlipBCStrategy_h__
 
-#include "BCStrategy.h"
-#include <PointerDefinitions.h>
+#include "NoSlipInterpolated.h"
+#include "BoundaryConditions.h"
+#include "DistributionArray3D.h"
 
-class DistributionArray3D;
-
-class ThinWallNoSlipBCStrategy : public BCStrategy
+NoSlipInterpolated::NoSlipInterpolated()
 {
-public:
-    ThinWallNoSlipBCStrategy();
-    ~ThinWallNoSlipBCStrategy() override;
-    SPtr<BCStrategy> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void setPass(int pass);
-    bool isThinWallNoSlipBCStrategy();
-    void applyBC() override;
+    BCStrategy::preCollision = false;
+}
+//////////////////////////////////////////////////////////////////////////
+SPtr<BCStrategy> NoSlipInterpolated::clone()
+{
+    SPtr<BCStrategy> bc(new NoSlipInterpolated());
+    return bc;
+}
+//////////////////////////////////////////////////////////////////////////
+void NoSlipInterpolated::addDistributions(SPtr<DistributionArray3D> distributions)
+{
+    this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
+void NoSlipInterpolated::applyBC()
+{
+    using namespace vf::basics::constant;
+    using namespace D3Q27System;
+    real f[ENDF + 1];
+    real feq[ENDF + 1];
+    distributions->getPostCollisionDistribution(f, x1, x2, x3);
+    real rho, vx1, vx2, vx3;
+    calcMacrosFct(f, rho, vx1, vx2, vx3);
+    calcFeqFct(feq, rho, vx1, vx2, vx3);
 
-protected:
-    SPtr<DistributionArray3D> distributionsTemp;
-
-private:
-    int pass;
-    real fTemp[D3Q27System::ENDF + 1];
-};
-#endif // ThinWallNoSlipBCStrategy_h__
+    for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
+        if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
+            // quadratic bounce back
+            const int invDir = INVDIR[fdir];
+            real q = bcPtr->getQ(invDir);
+            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
+            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
+        }
+    }
+}

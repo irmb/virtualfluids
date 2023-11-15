@@ -1,16 +1,16 @@
-#ifndef SlipBCStrategy_h__
-#define SlipBCStrategy_h__
+#ifndef SlipInterpolated_h__
+#define SlipInterpolated_h__
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-class SlipBCStrategy : public BCStrategy
+class SlipInterpolated : public BCStrategy
 {
 public:
-    SlipBCStrategy();
-    ~SlipBCStrategy() override;
+    SlipInterpolated();
+    ~SlipInterpolated() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;

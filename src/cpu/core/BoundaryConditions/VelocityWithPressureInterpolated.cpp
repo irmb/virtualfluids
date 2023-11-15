@@ -26,75 +26,77 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThinWallNoSlipBCStrategy.cpp
+//! \file VelocityWithPressureInterpolated.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "ThinWallNoSlipBCStrategy.h"
+#include "VelocityWithPressureInterpolated.h"
+#include "BCArray3D.h"
+#include "DistributionArray3D.h"
 
-#include "BoundaryConditions.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
-
-ThinWallNoSlipBCStrategy::ThinWallNoSlipBCStrategy()
+VelocityWithPressureInterpolated::VelocityWithPressureInterpolated()
 {
     BCStrategy::preCollision = false;
-    pass                      = 1;
 }
 //////////////////////////////////////////////////////////////////////////
-ThinWallNoSlipBCStrategy::~ThinWallNoSlipBCStrategy() = default;
+VelocityWithPressureInterpolated::~VelocityWithPressureInterpolated() = default;
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> ThinWallNoSlipBCStrategy::clone()
+SPtr<BCStrategy> VelocityWithPressureInterpolated::clone()
 {
-    SPtr<BCStrategy> bc(new ThinWallNoSlipBCStrategy());
+    SPtr<BCStrategy> bc(new VelocityWithPressureInterpolated());
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThinWallNoSlipBCStrategy::applyBC()
-{
-    real f[D3Q27System::ENDF + 1];
-    real feq[D3Q27System::ENDF + 1];
-    distributions->getPostCollisionDistribution(f, x1, x2, x3);
-    real rho, vx1, vx2, vx3;
-    calcMacrosFct(f, rho, vx1, vx2, vx3);
-    calcFeqFct(feq, rho, vx1, vx2, vx3);
-
-    real fReturn;
-
-    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
-        if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
-            const int invDir = D3Q27System::INVDIR[fdir];
-            if (pass == 1) {
-                real q = bcPtr->getQ(invDir);
-                fReturn   = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * vf::basics::constant::c1o2 *
-                          (f[invDir] - f[fdir] +
-                           (f[invDir] + f[fdir] - collFactor * (feq[fdir] + feq[invDir])) / (vf::basics::constant::c1o1 - collFactor));
-                // distributionsTemp->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 +
-                // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
-                fTemp[fdir] = fReturn;
-            } else {
-                // quadratic bounce back with for thin walls
-                // fReturn = distributionsTemp->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 +
-                // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
-                fReturn = fTemp[fdir];
-                distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
-                                                           x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
-                                                           fdir);
-            }
-        }
-    }
-}
-//////////////////////////////////////////////////////////////////////////
-void ThinWallNoSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
+void VelocityWithPressureInterpolated::addDistributions(SPtr<DistributionArray3D> distributions)
 {
     this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThinWallNoSlipBCStrategy::setPass(int pass)
+void VelocityWithPressureInterpolated::applyBC()
 {
-    this->pass = pass;
-}
+    using namespace vf::basics::constant;
 
-bool ThinWallNoSlipBCStrategy::isThinWallNoSlipBCStrategy()
-{
-    return true;
+   //velocity bc for non reflecting pressure bc
+   real f[D3Q27System::ENDF+1];
+   //real feq[D3Q27System::ENDF+1];
+   distributions->getPostCollisionDistribution(f, x1, x2, x3);
+   real rho, vx1, vx2, vx3, drho;
+   calcMacrosFct(f, drho, vx1, vx2, vx3);
+   //calcFeqFct(feq, drho, vx1, vx2, vx3);
+   
+   rho = c1o1+drho*compressibleFactor;
+
+   for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
+   {
+        int nX1 = x1 + D3Q27System::DX1[fdir];
+        int nX2 = x2 + D3Q27System::DX2[fdir];
+        int nX3 = x3 + D3Q27System::DX3[fdir];
+
+        int minX1 = 0;
+        int minX2 = 0;
+        int minX3 = 0;
+
+        int maxX1 = (int)bcArray->getNX1();
+        int maxX2 = (int)bcArray->getNX2();
+        int maxX3 = (int)bcArray->getNX3();
+
+        if (minX1 <= nX1 && maxX1 > nX1 && minX2 <= nX2 && maxX2 > nX2 && minX3 <= nX3 && maxX3 > nX3) {
+            if (bcArray->isSolid(nX1, nX2, nX3)) {
+                const int invDir = D3Q27System::INVDIR[fdir];
+                //LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
+                real velocity = bcPtr->getBoundaryVelocity(fdir);
+                
+                //LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 -
+                //collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
+                //q))-drho*D3Q27System::WEIGTH[invDir];
+
+                // if q=1
+                // LBMReal fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
+                // q))-drho*D3Q27System::WEIGTH[invDir];
+                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / vf::basics::constant::c2o1 - drho * D3Q27System::WEIGTH[invDir];
+
+                distributions->setPostCollisionDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
+            }
+        }
+    }
 }

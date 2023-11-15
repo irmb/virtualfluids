@@ -69,7 +69,7 @@ void pf1()
    //boundary conditions adapters
    //////////////////////////////////////////////////////////////////////////////
    SPtr<BC> noSlipBC(new NoSlipBC());
-   noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+   noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
    //boundary conditions visitor
    BoundaryConditionsBlockVisitor bcVisitor;

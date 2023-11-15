@@ -26,25 +26,29 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCStrategy.h
+//! \file VelocityWithPressureInterpolated.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCStrategy_h__
-#define EqDensityBCStrategy_h__
+
+#ifndef VelocityWithPressureInterpolated_h__
+#define VelocityWithPressureInterpolated_h__
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-class EqDensityBCStrategy : public BCStrategy
+//!  \brief Class implements Dirichlet boundary condition for velocity. Set density in system. It is used together with
+//!  non reflecting outflow.
+
+class VelocityWithPressureInterpolated : public BCStrategy
 {
 public:
-    EqDensityBCStrategy();
-    ~EqDensityBCStrategy() override;
+    VelocityWithPressureInterpolated();
+    ~VelocityWithPressureInterpolated() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
 };
-#endif // EqDensityBCStrategy_h__
+#endif // VelocityWithDensityBCStrategy_h__

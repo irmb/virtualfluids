@@ -26,26 +26,29 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SimpleVelocityBCStrategy.h
+//! \file VelocityBounceBack.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef SimpleSlipBCStrategy_h__
-#define SimpleSlipBCStrategy_h__
+
+#ifndef VelocityBounceBack_H
+#define VelocityBounceBack_H
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-//! \brief A class implements slip boundary condition by using simple bounce back
-class SimpleSlipBCStrategy : public BCStrategy
+//! \brief A class implements velocyty boundary condition
+class VelocityBounceBack : public BCStrategy
 {
 public:
-   SimpleSlipBCStrategy();
-   virtual ~SimpleSlipBCStrategy();
+   VelocityBounceBack();
+   ~VelocityBounceBack();
    SPtr<BCStrategy> clone() override;
    void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 };
-#endif // SimpleSlipBCStrategy_h__
+
+#endif 
+

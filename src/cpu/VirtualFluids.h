@@ -114,24 +114,22 @@
 #include <BoundaryConditions/BCFunction.h>
 #include <BoundaryConditions/BCSet.h>
 #include <BoundaryConditions/BoundaryConditions.h>
-#include <BoundaryConditions/DensityBC.h>
-#include <BoundaryConditions/EqDensityBCStrategy.h>
-#include <BoundaryConditions/HighViscosityNoSlipBCStrategy.h>
+#include <BoundaryConditions/PressureBC.h>
 #include <BoundaryConditions/NoSlipBC.h>
-#include <BoundaryConditions/NoSlipBCStrategy.h>
-#include <BoundaryConditions/NonEqDensityBCStrategy.h>
-#include <BoundaryConditions/NonReflectingOutflowBCStrategy.h>
-#include <BoundaryConditions/NonReflectingOutflowWithRelaxationBCStrategy.h>
-#include <BoundaryConditions/NonReflectingInflowBCStrategy.h>
+#include <BoundaryConditions/NoSlipInterpolated.h>
+#include <BoundaryConditions/PressureNonEquilibrium.h>
+#include <BoundaryConditions/OutflowNonReflecting.h>
+#include <BoundaryConditions/OutflowNonReflectingWithPressure.h>
+#include <BoundaryConditions/VelocityNonReflecting.h>
 #include <BoundaryConditions/SlipBC.h>
-#include <BoundaryConditions/SlipBCStrategy.h>
+#include <BoundaryConditions/SlipInterpolated.h>
 #include <BoundaryConditions/ThinWallBCSet.h>
-#include <BoundaryConditions/ThinWallNoSlipBCStrategy.h>
+#include <BoundaryConditions/ThinWallNoSlip.h>
 #include <BoundaryConditions/VelocityBC.h>
-#include <BoundaryConditions/VelocityBCStrategy.h>
-#include <BoundaryConditions/VelocityWithDensityBCStrategy.h>
-#include <BoundaryConditions/SimpleVelocityBCStrategy.h>
-#include <BoundaryConditions/SimpleSlipBCStrategy.h>
+#include <BoundaryConditions/VelocityInterpolated.h>
+#include <BoundaryConditions/VelocityWithPressureInterpolated.h>
+#include <BoundaryConditions/VelocityBounceBack.h>
+#include <BoundaryConditions/SlipBounceBack.h>
 
 
 

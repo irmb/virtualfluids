@@ -26,29 +26,54 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SimpleVelocityBCStrategy.h
+//! \file VelocityBounceBack.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef SimpleVelocityBCStrategy_H
-#define SimpleVelocityBCStrategy_H
+#include "VelocityBounceBack.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
-#include "BCStrategy.h"
-#include <PointerDefinitions.h>
-
-class DistributionArray3D;
-
-//! \brief A class implements velocyty boundary condition
-class SimpleVelocityBCStrategy : public BCStrategy
+VelocityBounceBack::VelocityBounceBack()
 {
-public:
-   SimpleVelocityBCStrategy();
-   ~SimpleVelocityBCStrategy();
-   SPtr<BCStrategy> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void applyBC() override;
-};
+   BCStrategy::preCollision = false;
+}
+//////////////////////////////////////////////////////////////////////////
+VelocityBounceBack::~VelocityBounceBack()
+{
+}
+//////////////////////////////////////////////////////////////////////////
+SPtr<BCStrategy> VelocityBounceBack::clone()
+{
+   SPtr<BCStrategy> bc(new VelocityBounceBack());
+   return bc;
+}
+//////////////////////////////////////////////////////////////////////////
+void VelocityBounceBack::addDistributions(SPtr<DistributionArray3D> distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
+void VelocityBounceBack::applyBC()
+{
+   real f[D3Q27System::ENDF+1];
+   real feq[D3Q27System::ENDF+1];
+   distributions->getPostCollisionDistribution(f, x1, x2, x3);
+   real vx1, vx2, vx3, drho;
+   calcMacrosFct(f, drho, vx1, vx2, vx3);
+   calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-#endif 
+   for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
+   {
+      if (bcPtr->hasVelocityBoundaryFlag(fdir))
+      {
+         const int invDir = D3Q27System::INVDIR[fdir];
+         real velocity = bcPtr->getBoundaryVelocity(invDir);
+         real fReturn = f[invDir] - velocity;
+         distributions->setPostCollisionDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+      }
+   }
+
+}
 

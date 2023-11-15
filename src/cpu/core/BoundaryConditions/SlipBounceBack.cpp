@@ -26,36 +26,36 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SimpleSlipBCStrategy.cpp
+//! \file SlipBounceBack.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "SimpleSlipBCStrategy.h"
+#include "SlipBounceBack.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
 
-SimpleSlipBCStrategy::SimpleSlipBCStrategy()
+SlipBounceBack::SlipBounceBack()
 {
    BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SimpleSlipBCStrategy::~SimpleSlipBCStrategy()
+SlipBounceBack::~SlipBounceBack()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> SimpleSlipBCStrategy::clone()
+SPtr<BCStrategy> SlipBounceBack::clone()
 {
-   SPtr<BCStrategy> bc(new SimpleSlipBCStrategy());
+   SPtr<BCStrategy> bc(new SlipBounceBack());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void SimpleSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
+void SlipBounceBack::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void SimpleSlipBCStrategy::applyBC()
+void SlipBounceBack::applyBC()
 {
     using namespace vf::lbm::dir;
 

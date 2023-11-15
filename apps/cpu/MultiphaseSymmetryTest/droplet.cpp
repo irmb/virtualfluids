@@ -192,7 +192,7 @@ void run(string configname)
         SPtr<BCStrategy> noSlipStrategy = std::make_shared<MultiphaseNoSlipBCStrategy>();
         noSlipBC->setBCStrategy(noSlipStrategy);
 
-        SPtr<BC> outflowBC(new DensityBC(rhoLB));
+        SPtr<BC> outflowBC(new PressureBC(rhoLB));
         outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
         //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
         //outflowBC->setBCStrategy(SPtr<BCStrategy>(new ThixotropyNonReflectingOutflowBCStrategy()));

@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file DensityBC.h
+//! \file PressureBC.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef DensityBC_H
-#define DensityBC_H
+#ifndef PressureBC_H
+#define PressureBC_H
 
 #include <iostream>
 #include <sstream>
@@ -45,27 +45,15 @@
 #include "BC.h"
 #include "BCFunction.h"
 
-//*  DensityBC                                                            */
-//*                                                                         */
-//**
-//<BR><BR>
-//@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-//@version 1.0 - 06.09.06
-//*/
-//
-//*
-// usage: ...
-//*/
-
-class DensityBC : public BC
+class PressureBC : public BC
 {
 public:
     // constructors
-    DensityBC() { this->init(); }
-    DensityBC(const real &dens, const real &startTime = 0.0, const real &endTime = BCFunction::INFCONST);
-    DensityBC(const BCFunction &densBC);
-    DensityBC(const std::vector<BCFunction> &densBCs);
-    DensityBC(const mu::Parser &function, const real &startTime = 0.0,
+    PressureBC() { this->init(); }
+    PressureBC(const real &dens, const real &startTime = 0.0, const real &endTime = BCFunction::INFCONST);
+    PressureBC(const BCFunction &densBC);
+    PressureBC(const std::vector<BCFunction> &densBCs);
+    PressureBC(const mu::Parser &function, const real &startTime = 0.0,
                      const real &endTime = BCFunction::INFCONST);
 
     //------------- implements D3Q27BoundaryConditionAdapter ----- start

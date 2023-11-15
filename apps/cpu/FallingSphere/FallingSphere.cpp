@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     kernel->setBCSet(bcProc);
 
     SPtr<BC> noSlipBC(new NoSlipBC());
-    noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+    noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
     //////////////////////////////////////////////////////////////////////////////////
     // BC visitor
     BoundaryConditionsBlockVisitor bcVisitor;

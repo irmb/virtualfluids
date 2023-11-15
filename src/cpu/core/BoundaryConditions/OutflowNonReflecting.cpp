@@ -26,35 +26,35 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NonReflectingOutflowBCStrategy.cpp
+//! \file OutflowNonReflecting.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "NonReflectingOutflowBCStrategy.h"
+#include "OutflowNonReflecting.h"
 
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
 #include "DistributionArray3D.h"
 
-NonReflectingOutflowBCStrategy::NonReflectingOutflowBCStrategy()
+OutflowNonReflecting::OutflowNonReflecting()
 {
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////
-NonReflectingOutflowBCStrategy::~NonReflectingOutflowBCStrategy() = default;
+OutflowNonReflecting::~OutflowNonReflecting() = default;
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> NonReflectingOutflowBCStrategy::clone()
+SPtr<BCStrategy> OutflowNonReflecting::clone()
 {
-    SPtr<BCStrategy> bc(new NonReflectingOutflowBCStrategy());
+    SPtr<BCStrategy> bc(new OutflowNonReflecting());
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonReflectingOutflowBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
+void OutflowNonReflecting::addDistributions(SPtr<DistributionArray3D> distributions)
 {
     this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonReflectingOutflowBCStrategy::applyBC()
+void OutflowNonReflecting::applyBC()
 {
     using namespace vf::lbm::dir;
 

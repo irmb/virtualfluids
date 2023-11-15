@@ -26,25 +26,34 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NonReflectingInflowBCStrategy.h
+//! \file ThinWallNoSlip.h
 //! \ingroup BoundarConditions
-//! \author Hussein Alihussein
+//! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef NonReflectingInflowBCStrategy_h__
-#define NonReflectingInflowBCStrategy_h__
+#ifndef ThinWallNoSlip_h__
+#define ThinWallNoSlip_h__
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-class NonReflectingInflowBCStrategy : public BCStrategy
+class ThinWallNoSlip : public BCStrategy
 {
 public:
-    NonReflectingInflowBCStrategy();
-    ~NonReflectingInflowBCStrategy() override;
+    ThinWallNoSlip();
+    ~ThinWallNoSlip() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
+    void setPass(int pass);
+    bool isThinWallNoSlipBCStrategy();
     void applyBC() override;
+
+protected:
+    SPtr<DistributionArray3D> distributionsTemp;
+
+private:
+    int pass;
+    real fTemp[D3Q27System::ENDF + 1];
 };
-#endif // NonReflectingDensityBCStrategy_h__
+#endif // ThinWallNoSlipBCStrategy_h__

@@ -26,23 +26,23 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NonReflectingOutflowBCStrategy.h
+//! \file OutflowNonReflecting.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef NonReflectingOutflowBCStrategy_h__
-#define NonReflectingOutflowBCStrategy_h__
+#ifndef OutflowNonReflecting_h__
+#define OutflowNonReflecting_h__
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-class NonReflectingOutflowBCStrategy : public BCStrategy
+class OutflowNonReflecting : public BCStrategy
 {
 public:
-    NonReflectingOutflowBCStrategy();
-    ~NonReflectingOutflowBCStrategy() override;
+    OutflowNonReflecting();
+    ~OutflowNonReflecting() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;

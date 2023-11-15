@@ -26,77 +26,56 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityWithDensityBCStrategy.cpp
+//! \file VelocityInterpolated.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "VelocityWithDensityBCStrategy.h"
-#include "BCArray3D.h"
-#include "DistributionArray3D.h"
 
-VelocityWithDensityBCStrategy::VelocityWithDensityBCStrategy()
+#include "VelocityInterpolated.h"
+#include "BoundaryConditions.h"
+#include "DistributionArray3D.h"
+#include "Block3D.h"
+
+VelocityInterpolated::VelocityInterpolated()
 {
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-VelocityWithDensityBCStrategy::~VelocityWithDensityBCStrategy() = default;
-//////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> VelocityWithDensityBCStrategy::clone()
+SPtr<BCStrategy> VelocityInterpolated::clone()
 {
-    SPtr<BCStrategy> bc(new VelocityWithDensityBCStrategy());
+    SPtr<BCStrategy> bc(new VelocityInterpolated());
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityWithDensityBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
+void VelocityInterpolated::addDistributions(SPtr<DistributionArray3D> distributions)
 {
     this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityWithDensityBCStrategy::applyBC()
+void VelocityInterpolated::applyBC()
 {
-    using namespace vf::basics::constant;
+    real f[D3Q27System::ENDF + 1];
+    real feq[D3Q27System::ENDF + 1];
+    distributions->getPostCollisionDistribution(f, x1, x2, x3);
+    real rho, vx1, vx2, vx3, drho;
+    calcMacrosFct(f, drho, vx1, vx2, vx3);
+    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-   //velocity bc for non reflecting pressure bc
-   real f[D3Q27System::ENDF+1];
-   //real feq[D3Q27System::ENDF+1];
-   distributions->getPostCollisionDistribution(f, x1, x2, x3);
-   real rho, vx1, vx2, vx3, drho;
-   calcMacrosFct(f, drho, vx1, vx2, vx3);
-   //calcFeqFct(feq, drho, vx1, vx2, vx3);
-   
-   rho = c1o1+drho*compressibleFactor;
+    //DEBUG
+    //int blockID = block->getGlobalID();
 
-   for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
-   {
-        int nX1 = x1 + D3Q27System::DX1[fdir];
-        int nX2 = x2 + D3Q27System::DX2[fdir];
-        int nX3 = x3 + D3Q27System::DX3[fdir];
+    rho = vf::basics::constant::c1o1 + drho * compressibleFactor;
 
-        int minX1 = 0;
-        int minX2 = 0;
-        int minX3 = 0;
-
-        int maxX1 = (int)bcArray->getNX1();
-        int maxX2 = (int)bcArray->getNX2();
-        int maxX3 = (int)bcArray->getNX3();
-
-        if (minX1 <= nX1 && maxX1 > nX1 && minX2 <= nX2 && maxX2 > nX2 && minX3 <= nX3 && maxX3 > nX3) {
-            if (bcArray->isSolid(nX1, nX2, nX3)) {
-                const int invDir = D3Q27System::INVDIR[fdir];
-                //LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
-                real velocity = bcPtr->getBoundaryVelocity(fdir);
-                
-                //LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 -
-                //collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
-                //q))-drho*D3Q27System::WEIGTH[invDir];
-
-                // if q=1
-                // LBMReal fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
-                // q))-drho*D3Q27System::WEIGTH[invDir];
-                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / vf::basics::constant::c2o1 - drho * D3Q27System::WEIGTH[invDir];
-
-                distributions->setPostCollisionDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
-            }
+    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+        if (bcPtr->hasVelocityBoundaryFlag(fdir)) {
+            const int invDir = D3Q27System::INVDIR[fdir];
+            real q        = bcPtr->getQ(invDir);
+            real velocity = bcPtr->getBoundaryVelocity(invDir);
+            real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) +
+                              ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::basics::constant::c1o1 + q));
+            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
+                                                       x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
+                                                       fdir);
         }
     }
 }

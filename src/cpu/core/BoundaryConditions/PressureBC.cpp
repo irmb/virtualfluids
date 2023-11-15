@@ -26,42 +26,42 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file DensityBC.cpp
+//! \file PressureBC.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#include "DensityBC.h"
+#include "PressureBC.h"
 #include "basics/utilities/UbInfinity.h"
 #include "basics/utilities/UbLogger.h"
 #include "basics/constants/NumericConstants.h"
 
 using namespace std;
 /*==========================================================*/
-DensityBC::DensityBC(const real &dens, const real &startTime, const real &endTime)
+PressureBC::PressureBC(const real &dens, const real &startTime, const real &endTime)
 {
     this->densBCs.emplace_back(dens, startTime, endTime);
     this->init();
 }
 /*==========================================================*/
-DensityBC::DensityBC(const BCFunction &densBC)
+PressureBC::PressureBC(const BCFunction &densBC)
 {
     this->densBCs.push_back(densBC);
     this->init();
 }
 /*==========================================================*/
-DensityBC::DensityBC(const std::vector<BCFunction> &densBCs)
+PressureBC::PressureBC(const std::vector<BCFunction> &densBCs)
 {
     this->densBCs = densBCs;
     this->init();
 }
 /*==========================================================*/
-DensityBC::DensityBC(const mu::Parser &function, const real &startTime, const real &endTime)
+PressureBC::PressureBC(const mu::Parser &function, const real &startTime, const real &endTime)
 {
     this->densBCs.emplace_back(function, startTime, endTime);
     this->init();
 }
 /*==========================================================*/
-void DensityBC::init()
+void PressureBC::init()
 {
     this->timeStep = vf::basics::constant::c0o1;
 
@@ -97,7 +97,7 @@ void DensityBC::init()
     }
 }
 /*==========================================================*/
-void DensityBC::init(const D3Q27Interactor *const & /*interactor*/, const real &time)
+void PressureBC::init(const D3Q27Interactor *const & /*interactor*/, const real &time)
 {
     this->timeStep           = time;
     this->tmpDensityFunction = NULL;
@@ -131,12 +131,12 @@ void DensityBC::init(const D3Q27Interactor *const & /*interactor*/, const real &
                          << "\", timedependant=" << (this->isTimeDependent() ? "true" : "false"));
 }
 /*==========================================================*/
-void DensityBC::update(const D3Q27Interactor *const &interactor, const real &time)
+void PressureBC::update(const D3Q27Interactor *const &interactor, const real &time)
 {
     this->init(interactor, time);
 }
 /*==========================================================*/
-void DensityBC::adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
+void PressureBC::adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
                                            const real & /*worldX1*/, const real & /*worldX2*/,
                                            const real & /*worldX3*/, const real &q, const int &fdirection,
                                            const real & /*time*/)
@@ -145,14 +145,14 @@ void DensityBC::adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPtr
     bc->setQ((real)q, fdirection);
 }
 /*==========================================================*/
-void DensityBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
+void PressureBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real &worldX1,
                                const real &worldX2, const real &worldX3, const real &time)
 {
     this->setNodeDensity(interactor, bc, worldX1, worldX2, worldX3, time);
     bc->setBCStrategyKey(bcStrategyKey);
 }
 /*==========================================================*/
-void DensityBC::setNodeDensity(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
+void PressureBC::setNodeDensity(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc,
                                       const real &worldX1, const real &worldX2, const real &worldX3,
                                       const real &timestep)
 {
@@ -177,7 +177,7 @@ void DensityBC::setNodeDensity(const D3Q27Interactor & /*interactor*/, SPtr<Boun
     }
 }
 /*==========================================================*/
-real DensityBC::getDensity(const real &x1, const real &x2, const real &x3, const real &timeStep)
+real PressureBC::getDensity(const real &x1, const real &x2, const real &x3, const real &timeStep)
 {
     this->x1       = x1;
     this->x2       = x2;
@@ -190,7 +190,7 @@ real DensityBC::getDensity(const real &x1, const real &x2, const real &x3, const
     return tmpDensityFunction->Eval();
 }
 /*==========================================================*/
-string DensityBC::toString()
+string PressureBC::toString()
 {
     stringstream info;
     info << "D3Q27DensityBC:\n";

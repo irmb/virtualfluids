@@ -26,27 +26,25 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityBCStrategy.h
+//! \file OutflowNonReflectingWithPressure.h
 //! \ingroup BoundarConditions
-//! \author Konstantin Kutscher
+//! \author Konstantin Kutscher, Hussein Alihussein
 //=======================================================================================
-
-#ifndef VelocityBCStrategy_H
-#define VelocityBCStrategy_H
+#ifndef OutflowNonReflectingWithPressure_h__
+#define OutflowNonReflectingWithPressure_h__
 
 #include "BCStrategy.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-//! \brief A class implements velocyty boundary condition
-class VelocityBCStrategy : public BCStrategy
+class OutflowNonReflectingWithPressure : public BCStrategy
 {
 public:
-    VelocityBCStrategy();
+    OutflowNonReflectingWithPressure();
+    ~OutflowNonReflectingWithPressure() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
 };
-
-#endif
+#endif // NonReflectingDensityBCStrategy_h__

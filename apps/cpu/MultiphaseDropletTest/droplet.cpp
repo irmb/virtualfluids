@@ -188,7 +188,7 @@ void run(string configname)
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
-        SPtr<BC> outflowBC(new DensityBC(rhoLB));
+        SPtr<BC> outflowBC(new PressureBC(rhoLB));
         outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
 
         //////////////////////////////////////////////////////////////////////////////////

@@ -26,49 +26,74 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NoSlipBCStrategy.cpp
+//! \file PressureNonEquilibrium.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
+#include "PressureNonEquilibrium.h"
 
-#include "NoSlipBCStrategy.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
 
-NoSlipBCStrategy::NoSlipBCStrategy()
+PressureNonEquilibrium::PressureNonEquilibrium()
 {
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> NoSlipBCStrategy::clone()
+PressureNonEquilibrium::~PressureNonEquilibrium() = default;
+//////////////////////////////////////////////////////////////////////////
+SPtr<BCStrategy> PressureNonEquilibrium::clone()
 {
-    SPtr<BCStrategy> bc(new NoSlipBCStrategy());
+    SPtr<BCStrategy> bc(new PressureNonEquilibrium());
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipBCStrategy::addDistributions(SPtr<DistributionArray3D> distributions)
+void PressureNonEquilibrium::addDistributions(SPtr<DistributionArray3D> distributions)
 {
     this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipBCStrategy::applyBC()
+void PressureNonEquilibrium::applyBC()
 {
-    using namespace vf::basics::constant;
-    using namespace D3Q27System;
-    real f[ENDF + 1];
-    real feq[ENDF + 1];
+    using namespace vf::lbm::dir;
+
+    real f[D3Q27System::ENDF + 1];
     distributions->getPostCollisionDistribution(f, x1, x2, x3);
+    int nx1 = x1;
+    int nx2 = x2;
+    int nx3 = x3;
+
+    // flag points in direction of fluid
+    if (bcPtr->hasDensityBoundaryFlag(dP00)) {
+        nx1 -= 1;
+    } else if (bcPtr->hasDensityBoundaryFlag(dM00)) {
+        nx1 += 1;
+    } else if (bcPtr->hasDensityBoundaryFlag(d0P0)) {
+        nx2 -= 1;
+    } else if (bcPtr->hasDensityBoundaryFlag(d0M0)) {
+        nx2 += 1;
+    } else if (bcPtr->hasDensityBoundaryFlag(d00P)) {
+        nx3 -= 1;
+    } else if (bcPtr->hasDensityBoundaryFlag(d00M)) {
+        nx3 += 1;
+    } else
+        return; // UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
+
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
-    calcFeqFct(feq, rho, vx1, vx2, vx3);
-
-    for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
-        if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
-            // quadratic bounce back
-            const int invDir = INVDIR[fdir];
-            real q = bcPtr->getQ(invDir);
-            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
-            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
+    // LBMReal vlimit=0.01;
+    // vx1=(fabs(vx1)>vlimit) ? vx1/fabs(vx1)*vlimit : vx1;
+    // vx2=(fabs(vx2)>vlimit) ? vx2/fabs(vx2)*vlimit : vx2;
+    // vx3=(fabs(vx3)>vlimit) ? vx3/fabs(vx3)*vlimit : vx3;
+    real rhoBC = bcPtr->getBoundaryDensity();
+    for (int fdir = D3Q27System::STARTF; fdir <= D3Q27System::ENDF; fdir++) {
+        if (bcPtr->hasDensityBoundaryFlag(fdir)) {
+            // Martins NEQ ADDON
+            ////original: 15.2.2013:
+            real ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
+            // rhoBC=(rho>rhoBC)? rhoBC : rho; //Limiter 08.08.2018
+            ftemp = calcFeqsForDirFct(fdir, rhoBC, vx1, vx2, vx3) + f[fdir] - ftemp;
+            distributions->setPostCollisionDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
         }
     }
 }

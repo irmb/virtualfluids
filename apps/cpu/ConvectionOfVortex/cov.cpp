@@ -112,8 +112,8 @@ void run()
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      SPtr<BC> outflowBC(new DensityBC(rhoLB));
-      outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
+      SPtr<BC> outflowBC(new PressureBC(rhoLB));
+      outflowBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
 

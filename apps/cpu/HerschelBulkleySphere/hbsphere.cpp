@@ -104,12 +104,12 @@ void bflow(string configname)
       thix->setOmegaMin(omegaMin);
 
       SPtr<BC> noSlipBC(new NoSlipBC());
-      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
       noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyHerschelBulkleyModelNoSlipBCStrategy()));
       //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelNoSlipBCStrategy()));
 
       SPtr<BC> slipBC(new SlipBC());
-      slipBC->setBCStrategy(SPtr<BCStrategy>(new SimpleSlipBCStrategy()));
+      slipBC->setBCStrategy(SPtr<BCStrategy>(new SlipBounceBack()));
 
       mu::Parser fct;
       fct.SetExpr("U");
@@ -120,12 +120,12 @@ void bflow(string configname)
       //fct.DefineConst("U", U);
       //fct.DefineConst("H", H);
       SPtr<BC> velocityBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      velocityBC->setBCStrategy(SPtr<BCStrategy>(new SimpleVelocityBCStrategy()));
-      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+      velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBounceBack()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithPressureInterpolated()));
 
-      SPtr<BC> densityBC(new DensityBC());
-      densityBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
-      //densityBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
+      SPtr<BC> densityBC(new PressureBC());
+      densityBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
+      //densityBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
 
 
       //BS visitor

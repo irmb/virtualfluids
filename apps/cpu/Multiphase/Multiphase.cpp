@@ -164,7 +164,7 @@ void run(string configname)
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
-        SPtr<BC> denBC(new DensityBC(rhoLB));
+        SPtr<BC> denBC(new PressureBC(rhoLB));
         denBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
 
         mu::Parser fctPhi_F1;

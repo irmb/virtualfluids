@@ -144,7 +144,7 @@ void bflow(string configname)
  
 
       SPtr<BC> velocityBC(new VelocityBC(true, false, false, fctVx, 0, BCFunction::INFCONST));
-      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+      //velocityBC->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
       velocityBC->setBCStrategy(SPtr<BCStrategy>(new RheologyBinghamModelVelocityBCStrategy()));
 
       //BS visitor

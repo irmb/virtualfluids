@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
         if (myid == 0) VF_LOG_INFO("Yield stress LB = {} ", tau0_LB);
 
         //SPtr<BC> noSlipBC(new NoSlipBC());
-        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
         SPtr<BC> noSlipBC(new NoSlipBC());
         noSlipBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNoSlipBCStrategy()));
 
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
         //    fct.DefineConst("NplusOne", N + 1.0);
 
         //SPtr<BC> inflowConcreteBC(new VelocityBC(false, false, true, fct, 0, BCFunction::INFCONST));
-        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         SPtr<BC> inflowConcreteBC(new MultiphaseVelocityBC(false, false, true, fct, phiH, 0, BCFunction::INFCONST));
         inflowConcreteBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("gamma", gamma);
 
         // SPtr<BC> inflowAirBC1(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-        // inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        // inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         // t = U * sin(alpha * _pi / 180) * (1 - (((((x1 - x0) ^ 2 + (x2 - y0) ^ 2 + (x3 - z0) ^ 2) ^ 0.5) / R) ^ NplusOne));
         cx1 = -1.31416e3;
         cx2 = 0.388684e3;
@@ -379,7 +379,7 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("gamma", gamma);
 
         //SPtr<BC> inflowAirBC1(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        //inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));        
+        //inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));        
         SPtr<BC> inflowAirBC1(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
         inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -418,7 +418,7 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
         //SPtr<BC> inflowAirBC2(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        //inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         SPtr<BC> inflowAirBC2(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
         inflowAirBC2->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -438,7 +438,7 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
         //SPtr<BC> inflowAirBC3(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        //inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         SPtr<BC> inflowAirBC3(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
         inflowAirBC3->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -458,7 +458,7 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
         //SPtr<BC> inflowAirBC4(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        //inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         SPtr<BC> inflowAirBC4(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
         inflowAirBC4->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -478,7 +478,7 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
         //SPtr<BC> inflowAirBC5(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        //inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         SPtr<BC> inflowAirBC5(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
         inflowAirBC5->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
@@ -498,19 +498,19 @@ int main(int argc, char *argv[])
         fctVx3.DefineConst("y0", cx2);
         fctVx3.DefineConst("z0", cx3);
         //SPtr<BC> inflowAirBC6(new VelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, 0, BCFunction::INFCONST));
-        //inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
+        //inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
         SPtr<BC> inflowAirBC6(new MultiphaseVelocityBC(true, true, true, fctVx1, fctVx2, fctVx3, phiL, 0, BCFunction::INFCONST));
         inflowAirBC6->setBCStrategy(SPtr<BCStrategy>(new MultiphaseVelocityBCStrategy()));
 
         // Pressure BC for air inlet
-        // SPtr<BC> inflowAirBC1(new DensityBC(p_air_LB));
+        // SPtr<BC> inflowAirBC1(new PressureBC(p_air_LB));
         // inflowAirBC1->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
 
-        SPtr<BC> outflowBC(new DensityBC(rhoLB));
-        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+        SPtr<BC> outflowBC(new PressureBC(rhoLB));
+        //outflowBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
         outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphasePressureBCStrategy()));
         
-        // SPtr<BC> outflowBC(new DensityBC(rhoLB));
+        // SPtr<BC> outflowBC(new PressureBC(rhoLB));
         //outflowBC->setBCStrategy(SPtr<BCStrategy>(new MultiphaseNonReflectingOutflowBCStrategy()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
