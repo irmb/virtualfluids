@@ -161,7 +161,7 @@ void run(string configname)
 
          SPtr<LBMKernel> kernel;
          //kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
-         kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+         kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
          SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
          kernel->setForcingX1(0.1);

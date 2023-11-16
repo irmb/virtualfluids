@@ -1,5 +1,5 @@
 #include <LBM/LBMKernel.h>
-#include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
+#include <LBM/K17CompressibleNavierStokes.h>
 #include <LBM/BGKLBMKernel.h>
 #include <simulationconfig/D3Q27LBMSystem.h>
 #include "simulationconfig/KernelFactory.h"
@@ -10,7 +10,7 @@ std::shared_ptr<LBMKernel> KernelFactory::makeKernel(KernelType kernelType)
         case BGK:
             return std::shared_ptr<LBMKernel>(new BGKLBMKernel());
         case COMPRESSIBLE_CUMULANT_4TH_ORDER_VISCOSITY:
-            return std::shared_ptr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+            return std::shared_ptr<LBMKernel>(new K17CompressibleNavierStokes());
         default:
             throw std::logic_error("No such kernel type");
     }
