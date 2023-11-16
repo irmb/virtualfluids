@@ -48,6 +48,6 @@ protected:
    bool bulkOmegaToOmega;
    real OxxPyyPzz; 
 };
-#endif // CompressibleCumulantLBMKernel_h__
+#endif // K15CompressibleNavierStokes_h__
 
 
