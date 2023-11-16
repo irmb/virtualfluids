@@ -34,8 +34,8 @@
 #ifndef ACTUATOR_FARM_INLINES
 #define ACTUATOR_FARM_INLINES
 
-#include "basics/DataTypes.h"
-#include "basics/constants/NumericConstants.h"
+#include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 #include "GPU/GeometryUtils.h"
 
 using namespace vf::basics::constant;
