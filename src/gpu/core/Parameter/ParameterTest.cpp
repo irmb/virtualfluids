@@ -10,8 +10,8 @@
 #include "basics/config/ConfigurationFile.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "Factories/BoundaryConditionFactory.h"
 #include "GridScaling/GridScalingFactory.h"
+#include "BoundaryConditions/BoundaryConditionFactory.h"
 #include "GPU/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "gpu/core/Kernel/KernelTypes.h"

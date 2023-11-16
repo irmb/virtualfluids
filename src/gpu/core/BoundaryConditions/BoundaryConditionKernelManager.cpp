@@ -36,15 +36,15 @@
 #include <stdexcept>
 #include <string>
 
-#include "BCKernelManager.h"
-#include "Factories/BoundaryConditionFactory.h"
+#include "BoundaryConditionKernelManager.h"
+#include "BoundaryConditions/BoundaryConditionFactory.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 
-BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
+BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {
     this->velocityBoundaryConditionPost = bcFactory->getVelocityBoundaryConditionPost();
     this->noSlipBoundaryConditionPost   = bcFactory->getNoSlipBoundaryConditionPost();
@@ -70,7 +70,7 @@ BCKernelManager::BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFac
                            "precursorBoundaryConditionPost");
 }
 
-void BCKernelManager::runVelocityBCKernelPre(const int level) const
+void BoundaryConditionKernelManager::runVelocityBCKernelPre(const int level) const
 {
     if (para->getParD(level)->velocityBC.numberOfBCnodes > 0)
     {
@@ -124,7 +124,7 @@ void BCKernelManager::runVelocityBCKernelPre(const int level) const
     }
 }
 
-void BCKernelManager::runVelocityBCKernelPost(const int level) const
+void BoundaryConditionKernelManager::runVelocityBCKernelPost(const int level) const
 {
      if (para->getParD(level)->velocityBC.numberOfBCnodes > 0)
      {
@@ -146,7 +146,7 @@ void BCKernelManager::runVelocityBCKernelPost(const int level) const
      }
 }
 
-void BCKernelManager::runGeoBCKernelPre(const int level, unsigned int t, CudaMemoryManager* cudaMemoryManager) const{
+void BoundaryConditionKernelManager::runGeoBCKernelPre(const int level, unsigned int t, CudaMemoryManager* cudaMemoryManager) const{
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0){
         if (para->getCalcDragLift())
         {
@@ -254,7 +254,7 @@ void BCKernelManager::runGeoBCKernelPre(const int level, unsigned int t, CudaMem
     }
 }
 
-void BCKernelManager::runGeoBCKernelPost(const int level) const
+void BoundaryConditionKernelManager::runGeoBCKernelPost(const int level) const
 {
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0)
     {
@@ -318,7 +318,7 @@ void BCKernelManager::runGeoBCKernelPost(const int level) const
     }
 }
 
-void BCKernelManager::runOutflowBCKernelPre(const int level) const{
+void BoundaryConditionKernelManager::runOutflowBCKernelPre(const int level) const{
     if (para->getParD(level)->outflowBC.numberOfBCnodes > 0)
     {
         QPressNoRhoDev27(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
@@ -345,14 +345,14 @@ void BCKernelManager::runOutflowBCKernelPre(const int level) const{
     }
 }
 
-void BCKernelManager::runPressureBCKernelPre(const int level) const{
+void BoundaryConditionKernelManager::runPressureBCKernelPre(const int level) const{
     if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
     {
         this->pressureBoundaryConditionPre(para->getParD(level).get(), &(para->getParD(level)->pressureBC));
     }
 }
 
-void BCKernelManager::runPressureBCKernelPost(const int level) const{
+void BoundaryConditionKernelManager::runPressureBCKernelPost(const int level) const{
     if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
     {
         // QPressDev27_IntBB(
@@ -371,28 +371,28 @@ void BCKernelManager::runPressureBCKernelPost(const int level) const{
     }
 }
 
-void BCKernelManager::runStressWallModelKernelPost(const int level) const{
+void BoundaryConditionKernelManager::runStressWallModelKernelPost(const int level) const{
     if (para->getParD(level)->stressBC.numberOfBCnodes > 0)
     {
         stressBoundaryConditionPost(para.get(), &(para->getParD(level)->stressBC), level);
     }
 }
 
-void BCKernelManager::runSlipBCKernelPost(const int level) const{
+void BoundaryConditionKernelManager::runSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 0)
     {
         slipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->slipBC));
     }
 }
 
-void BCKernelManager::runNoSlipBCKernelPost(const int level) const{
+void BoundaryConditionKernelManager::runNoSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
     {
         noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));
     }
 }
 
-void BCKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
+void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
 {
     if(para->getParH(level)->precursorBC.numberOfBCnodes == 0) return;
 
