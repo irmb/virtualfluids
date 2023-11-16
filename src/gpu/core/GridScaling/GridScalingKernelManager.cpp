@@ -30,14 +30,14 @@
 //! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "KernelManager/GridScalingKernelManager.h"
+#include "GridScaling/GridScalingKernelManager.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "Logger.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
-#include "Factories/GridScalingFactory.h"
+#include "GridScaling/GridScalingFactory.h"
 #include <stdexcept>
 
 GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory)

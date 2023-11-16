@@ -4,7 +4,7 @@
 
 #include <helper_timer.h>
 
-#include "Factories/GridScalingFactory.h"
+#include "GridScaling/GridScalingFactory.h"
 #include "LBM/LB.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"

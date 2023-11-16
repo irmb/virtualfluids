@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 #include "GridScalingKernelManager.h"
-#include "Factories/GridScalingFactory.h"
+#include "GridScaling/GridScalingFactory.h"
 #include "Parameter/Parameter.h"
 #include <basics/PointerDefinitions.h>
 

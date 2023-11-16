@@ -43,7 +43,7 @@
 #include "gpu/core/Kernel/KernelFactory/KernelFactoryImp.h"
 #include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 #include "gpu/core/Factories/BoundaryConditionFactory.h"
-#include "gpu/core/Factories/GridScalingFactory.h"
+#include "gpu/core/GridScaling/GridScalingFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 
 #include "gpu/core/GPU/CudaMemoryManager.h"

@@ -5,8 +5,8 @@
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
 #include "KernelManager/BCKernelManager.h"
-#include "KernelManager/ADKernelManager.h"
-#include "KernelManager/GridScalingKernelManager.h"
+#include "Kernel/ADKernelManager.h"
+#include "GridScaling/GridScalingKernelManager.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "Kernel/Kernel.h"
 
