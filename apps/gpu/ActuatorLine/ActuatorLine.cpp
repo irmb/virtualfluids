@@ -111,9 +111,9 @@ void multipleLevel(const std::string& configPath)
     const real velocity = config.getValue<real>("Velocity");
 
 
-    const real L_x = 24*referenceDiameter;
-    const real L_y = 6*referenceDiameter;
-    const real L_z = 6*referenceDiameter;
+    const real lengthX = 24*referenceDiameter;
+    const real lengthY = 6*referenceDiameter;
+    const real lengthZ = 6*referenceDiameter;
 
     const real viscosity = 1.56e-5;
 
@@ -139,17 +139,17 @@ void multipleLevel(const std::string& configPath)
 	const real dx = referenceDiameter/real(nodesPerDiameter);
 
     std::vector<real>turbinePositionsX{3.f*referenceDiameter};
-    std::vector<real>turbinePositionsY{0.5f*L_y};
-    std::vector<real>turbinePositionsZ{0.5f*L_y};
+    std::vector<real>turbinePositionsY{0.5f*lengthY};
+    std::vector<real>turbinePositionsZ{0.5f*lengthY};
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-							   L_x,  L_y,  L_z, dx);
+							   lengthX,  lengthY,  lengthZ, dx);
 
     gridBuilder->setNumberOfLayers(4,0);
-    gridBuilder->addGrid( std::make_shared<Cuboid>( turbinePositionsX[0]-1.5*referenceDiameter,  turbinePositionsY[0]-1.5*referenceDiameter,  turbinePositionsZ[2]-1.5*referenceDiameter, 
-                                                    turbinePositionsX[0]+10.0*referenceDiameter, turbinePositionsY[0]+1.5*referenceDiameter,  turbinePositionsZ[2]+1.5*referenceDiameter) , 1 );
+    gridBuilder->addGrid( std::make_shared<Cuboid>( turbinePositionsX[0]-1.5*referenceDiameter,  turbinePositionsY[0]-1.5*referenceDiameter,  turbinePositionsZ[0]-1.5*referenceDiameter, 
+                                                    turbinePositionsX[0]+10.0*referenceDiameter, turbinePositionsY[0]+1.5*referenceDiameter,  turbinePositionsZ[0]+1.5*referenceDiameter) , 1 );
     para->setMaxLevel(2);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -232,7 +232,7 @@ void multipleLevel(const std::string& configPath)
     std::vector<real> probeCoordsZ = {3*referenceDiameter,3*referenceDiameter,3*referenceDiameter};
 
     pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, lengthY, lengthZ, (uint)lengthY/dx, (uint)lengthZ/dx);
 
     pointProbe->addStatistic(Statistic::Means);
     pointProbe->addStatistic(Statistic::Variances);
@@ -245,7 +245,7 @@ void multipleLevel(const std::string& configPath)
     para->addProbe( timeseriesProbe );
 
     SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), 100, 500, 100, 100);
-    planeProbe->setProbePlane(5*referenceDiameter, 0, 0, dx, L_y, L_z);
+    planeProbe->setProbePlane(5*referenceDiameter, 0, 0, dx, lengthY, lengthZ);
     planeProbe->addStatistic(Statistic::Means);
     para->addProbe( planeProbe );
 
