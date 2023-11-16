@@ -32,7 +32,6 @@
 
 #include "PreProcessor/PreProcessorImp.h"
 
-#include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionCompressibleD3Q7/InitAdvectionDiffusionCompressibleD3Q7.h"
 #include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionCompressible/InitAdvectionDiffusionCompressible.h"
 #include "PreProcessor/PreProcessorStrategy/InitNavierStokesCompressible/InitNavierStokesCompressible.h"
 #include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionIncompressible/InitAdvectionDiffusionIncompressible.h"
@@ -65,9 +64,6 @@ std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorSt
         break;
     case InitAdvectionDiffusionIncompressible:
         return InitAdvectionDiffusionIncompressible::getNewInstance(para);
-        break;
-    case InitAdvectionDiffusionCompressibleD3Q7:
-        return InitAdvectionDiffusionCompressibleD3Q7::getNewInstance(para);
         break;
     case InitAdvectionDiffusionCompressible:
         return InitAdvectionDiffusionCompressible::getNewInstance(para);
