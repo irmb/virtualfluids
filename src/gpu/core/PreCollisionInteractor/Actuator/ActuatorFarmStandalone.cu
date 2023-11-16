@@ -51,12 +51,12 @@
 
 using namespace vf::basics::constant;
 
-
-std::vector<real> ActuatorFarmStandalone::computeBladeRadii(const real diameter, const uint numberOfNodesPerBlade){
+std::vector<real> ActuatorFarmStandalone::computeBladeRadii(const real diameter, const uint numberOfNodesPerBlade)
+{
     const real dr = c1o2 * diameter / numberOfNodesPerBlade;
-    std::vector<real>blade_radii(numberOfNodesPerBlade);
-    for(uint node=0; node<numberOfNodesPerBlade; node++)
-        blade_radii[node] = dr * (node+0.5);
+    std::vector<real> blade_radii(numberOfNodesPerBlade);
+    for (uint node = 0; node < numberOfNodesPerBlade; node++)
+        blade_radii[node] = dr * (node + 0.5);
     return blade_radii;
 }
 
@@ -67,24 +67,22 @@ void ActuatorFarmStandalone::updateForcesAndCoordinates()
     const real c0 = 20 * c1o10;
     const real delta_azimuth = c2Pi / this->numberOfBlades;
 
-    for (uint turbine = 0; turbine < this->numberOfTurbines; turbine++)
-    {
+    for (uint turbine = 0; turbine < this->numberOfTurbines; turbine++) {
         const real rotor_speed = this->rotorSpeeds[turbine];
         const real azimuth_old = this->azimuths[turbine];
         const real azimuth_new = azimuth_old + deltaT * rotor_speed;
         this->azimuths[turbine] = azimuth_new > c2Pi ? azimuth_new - c2Pi : azimuth_new;
 
-        for (uint blade = 0; blade < this->numberOfBlades; blade++)
-        {
-            const real local_azimuth_new = azimuth_new + blade*delta_azimuth;
+        for (uint blade = 0; blade < this->numberOfBlades; blade++) {
+            const real local_azimuth_new = azimuth_new + blade * delta_azimuth;
 
             real last_node_radius = c0o1;
             real current_node_radius = c0o1;
             real next_node_radius = this->bladeRadii[0];
 
-            for (uint bladeNode = 0; bladeNode < this->numberOfNodesPerBlade; bladeNode++)
-            {
-                const uint node = calcNodeIndexInBladeArrays({ turbine, blade, bladeNode }, this->numberOfNodesPerBlade, this->numberOfBlades);
+            for (uint bladeNode = 0; bladeNode < this->numberOfNodesPerBlade; bladeNode++) {
+                const uint node = calcNodeIndexInBladeArrays({ turbine, blade, bladeNode }, this->numberOfNodesPerBlade,
+                                                             this->numberOfBlades);
 
                 real u_rel, v_rel, w_rel;
                 rotateFromGlobalToBlade(u_rel, v_rel, w_rel,
@@ -92,10 +90,11 @@ void ActuatorFarmStandalone::updateForcesAndCoordinates()
                                         this->bladeVelocitiesYH[node],
                                         this->bladeVelocitiesZH[node],
                                         azimuth_old + delta_azimuth);
-                
+
                 last_node_radius = current_node_radius;
                 current_node_radius = next_node_radius;
-                next_node_radius = bladeNode < this->numberOfNodesPerBlade-1 ? this->bladeRadii[bladeNode+1] : this->diameter * c1o2;
+                next_node_radius =
+                    bladeNode < this->numberOfNodesPerBlade - 1 ? this->bladeRadii[bladeNode + 1] : this->diameter * c1o2;
 
                 const real dr = c1o2 * (next_node_radius - last_node_radius);
 
@@ -123,4 +122,3 @@ void ActuatorFarmStandalone::updateForcesAndCoordinates()
         }
     }
 }
-
