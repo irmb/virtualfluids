@@ -58,19 +58,19 @@ InitThixotropyBlockVisitor::InitThixotropyBlockVisitor()
 }
 //////////////////////////////////////////////////////////////////////////
 //InitThixotropyBlockVisitor::InitThixotropyBlockVisitor(LBMReal lambda /*LBMReal nu, LBMReal D, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal c, LBMReal f1, LBMReal f2, LBMReal f3*/)
-//	: Block3DVisitor(0, D3Q27System::MAXLEVEL)
+//    : Block3DVisitor(0, D3Q27System::MAXLEVEL)
 //{
-//	//this->setVx1(vx1);
-//	//this->setVx2(vx2);
-//	//this->setVx3(vx3);
-//	//this->setRho(rho);
-//	//this->setf1(vx1);
-//	//this->setf2(vx2);
-//	//this->setf3(vx3);
-//	//this->setConcentration(rho);
-//	//this->setNu(nu);
-//	//this->setD(D);
-//	this->setLambda(lambda);
+//    //this->setVx1(vx1);
+//    //this->setVx2(vx2);
+//    //this->setVx3(vx3);
+//    //this->setRho(rho);
+//    //this->setf1(vx1);
+//    //this->setf2(vx2);
+//    //this->setf3(vx3);
+//    //this->setConcentration(rho);
+//    //this->setNu(nu);
+//    //this->setD(D);
+//    this->setLambda(lambda);
 //}
 //////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx1(const mu::Parser& parser)
@@ -93,26 +93,26 @@ InitThixotropyBlockVisitor::InitThixotropyBlockVisitor()
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setRho(const mu::Parser& parser)
 //{
-//	this->checkFunction(parser);
-//	this->muRho = parser;
+//    this->checkFunction(parser);
+//    this->muRho = parser;
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf1(const mu::Parser& parser)
 //{
-//	this->checkFunction(parser);
-//	this->muf1 = parser;
+//    this->checkFunction(parser);
+//    this->muf1 = parser;
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf2(const mu::Parser& parser)
 //{
-//	this->checkFunction(parser);
-//	this->muf2 = parser;
+//    this->checkFunction(parser);
+//    this->muf2 = parser;
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf3(const mu::Parser& parser)
 //{
-//	this->checkFunction(parser);
-//	this->muf3 = parser;
+//    this->checkFunction(parser);
+//    this->muf3 = parser;
 //}
 ////////////////////////////////////////////////////////////////////////////
 void InitThixotropyBlockVisitor::setLambda(const mu::Parser& parser)
@@ -123,44 +123,44 @@ void InitThixotropyBlockVisitor::setLambda(const mu::Parser& parser)
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx1(const std::string& muParserString)
 //{
-//	this->muVx1.SetExpr(muParserString);
-//	this->checkFunction(muVx1);
+//    this->muVx1.SetExpr(muParserString);
+//    this->checkFunction(muVx1);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx2(const std::string& muParserString)
 //{
-//	this->muVx2.SetExpr(muParserString);
-//	this->checkFunction(muVx2);
+//    this->muVx2.SetExpr(muParserString);
+//    this->checkFunction(muVx2);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx3(const std::string& muParserString)
 //{
-//	this->muVx3.SetExpr(muParserString);
-//	this->checkFunction(muVx3);
+//    this->muVx3.SetExpr(muParserString);
+//    this->checkFunction(muVx3);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setRho(const std::string& muParserString)
 //{
-//	this->muRho.SetExpr(muParserString);
-//	this->checkFunction(muRho);
+//    this->muRho.SetExpr(muParserString);
+//    this->checkFunction(muRho);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf1(const std::string& muParserString)
 //{
-//	this->muf1.SetExpr(muParserString);
-//	this->checkFunction(muf1);
+//    this->muf1.SetExpr(muParserString);
+//    this->checkFunction(muf1);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf2(const std::string& muParserString)
 //{
-//	this->muf2.SetExpr(muParserString);
-//	this->checkFunction(muf2);
+//    this->muf2.SetExpr(muParserString);
+//    this->checkFunction(muf2);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf3(const std::string& muParserString)
 //{
-//	this->muf3.SetExpr(muParserString);
-//	this->checkFunction(muf3);
+//    this->muf3.SetExpr(muParserString);
+//    this->checkFunction(muf3);
 //}
 ////////////////////////////////////////////////////////////////////////////
 void InitThixotropyBlockVisitor::setLambda(const std::string& muParserString)
@@ -171,44 +171,44 @@ void InitThixotropyBlockVisitor::setLambda(const std::string& muParserString)
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx1(LBMReal vx1)
 //{
-//	this->muVx1.SetExpr(UbSystem::toString(vx1, D3Q27RealLim::digits10));
-//	this->checkFunction(muVx1);
+//    this->muVx1.SetExpr(UbSystem::toString(vx1, D3Q27RealLim::digits10));
+//    this->checkFunction(muVx1);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx2(LBMReal vx2)
 //{
-//	this->muVx2.SetExpr(UbSystem::toString(vx2, D3Q27RealLim::digits10));
-//	this->checkFunction(muVx2);
+//    this->muVx2.SetExpr(UbSystem::toString(vx2, D3Q27RealLim::digits10));
+//    this->checkFunction(muVx2);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setVx3(LBMReal vx3)
 //{
-//	this->muVx3.SetExpr(UbSystem::toString(vx3, D3Q27RealLim::digits10));
-//	this->checkFunction(muVx3);
+//    this->muVx3.SetExpr(UbSystem::toString(vx3, D3Q27RealLim::digits10));
+//    this->checkFunction(muVx3);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setRho(LBMReal rho)
 //{
-//	this->muRho.SetExpr(UbSystem::toString(rho, D3Q27RealLim::digits10));
-//	this->checkFunction(muRho);
+//    this->muRho.SetExpr(UbSystem::toString(rho, D3Q27RealLim::digits10));
+//    this->checkFunction(muRho);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf1(LBMReal f1)
 //{
-//	this->muf1.SetExpr(UbSystem::toString(f1, D3Q27RealLim::digits10));
-//	this->checkFunction(muf1);
+//    this->muf1.SetExpr(UbSystem::toString(f1, D3Q27RealLim::digits10));
+//    this->checkFunction(muf1);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf2(LBMReal f2)
 //{
-//	this->muf2.SetExpr(UbSystem::toString(f2, D3Q27RealLim::digits10));
-//	this->checkFunction(muf2);
+//    this->muf2.SetExpr(UbSystem::toString(f2, D3Q27RealLim::digits10));
+//    this->checkFunction(muf2);
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setf3(LBMReal f3)
 //{
-//	this->muf3.SetExpr(UbSystem::toString(f3, D3Q27RealLim::digits10));
-//	this->checkFunction(muf3);
+//    this->muf3.SetExpr(UbSystem::toString(f3, D3Q27RealLim::digits10));
+//    this->checkFunction(muf3);
 //}
 //////////////////////////////////////////////////////////////////////////
 void InitThixotropyBlockVisitor::setLambda(real lambda)
@@ -325,12 +325,12 @@ void InitThixotropyBlockVisitor::checkFunction(mu::Parser fct)
 //////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setNu(LBMReal nu)
 //{
-//	this->nu = nu;
+//    this->nu = nu;
 //}
 ////////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::setD(LBMReal D)
 //{
-//	this->D = D;
+//    this->D = D;
 //}
 //////////////////////////////////////////////////////////////////////////
 //void InitThixotropyBlockVisitor::initialize(double* f, double x1, double x2, double x3, double vx1, double vx2, double vx3, double rho, UbTupleDouble3 coords, double dx, double o, bool NSE)
@@ -343,7 +343,7 @@ void InitThixotropyBlockVisitor::checkFunction(mu::Parser fct)
 //
 //   //if (NSE)
 //   //{
-//   //	calcFeqsFct = &D3Q27System::calcIncompFeq;
+//   //    calcFeqsFct = &D3Q27System::calcIncompFeq;
 //
 //   //}
 //   //else

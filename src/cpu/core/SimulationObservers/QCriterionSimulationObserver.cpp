@@ -92,7 +92,7 @@ void QCriterionSimulationObserver::addData(const SPtr<Block3D> block)
     using namespace vf::basics::constant;
 
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
-    //	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+    //    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
     real dx                 = grid->getDeltaX(block);
 
@@ -213,9 +213,9 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
 
     bool compressible = block->getKernel()->getCompressible();
 
-    //	int minX1 = 0;
-    //	int minX2 = 0;
-    //	int minX3 = 0;
+    //    int minX1 = 0;
+    //    int minX2 = 0;
+    //    int minX3 = 0;
 
     int maxX1 = (int)(distributions->getNX1());
     // int maxX2 = (int)(distributions->getNX2());

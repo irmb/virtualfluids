@@ -794,19 +794,19 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNodeFC(real* f, real omeg
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolator::calcInterpolatedVelocity(real x, real y, real z, real& vx1, real& vx2, real& vx3)
 {
-	vx1  = a0 + ax*x + ay*y + az*z + axx*x*x + ayy*y*y + azz*z*z + axy*x*y + axz*x*z + ayz*y*z+axyz*x*y*z;
-	vx2  = b0 + bx*x + by*y + bz*z + bxx*x*x + byy*y*y + bzz*z*z + bxy*x*y + bxz*x*z + byz*y*z+bxyz*x*y*z;
-	vx3  = c0 + cx*x + cy*y + cz*z + cxx*x*x + cyy*y*y + czz*z*z + cxy*x*y + cxz*x*z + cyz*y*z+cxyz*x*y*z;
+    vx1  = a0 + ax*x + ay*y + az*z + axx*x*x + ayy*y*y + azz*z*z + axy*x*y + axz*x*z + ayz*y*z+axyz*x*y*z;
+    vx2  = b0 + bx*x + by*y + bz*z + bxx*x*x + byy*y*y + bzz*z*z + bxy*x*y + bxz*x*z + byz*y*z+bxyz*x*y*z;
+    vx3  = c0 + cx*x + cy*y + cz*z + cxx*x*x + cyy*y*y + czz*z*z + cxy*x*y + cxz*x*z + cyz*y*z+cxyz*x*y*z;
 }
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolator::calcInterpolatedShearStress(real x, real y, real z,real& tauxx, real& tauyy, real& tauzz,real& tauxy, real& tauxz, real& tauyz)
 {
     using namespace vf::basics::constant;
 
-	tauxx=ax+c2o1*axx*x+axy*y+axz*z+axyz*y*z;
-	tauyy=by+c2o1*byy*y+bxy*x+byz*z+bxyz*x*z;
-	tauzz=cz+c2o1*czz*z+cxz*x+cyz*y+cxyz*x*y;
-	tauxy=c1o2*((ay+c2o1*ayy*y+axy*x+ayz*z+axyz*x*z)+(bx+c2o1*bxx*x+bxy*y+bxz*z+bxyz*y*z));
-	tauxz=c1o2*((az+c2o1*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+c2o1*cxx*x+cxy*y+cxz*z+cxyz*y*z));
-	tauyz=c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
+    tauxx=ax+c2o1*axx*x+axy*y+axz*z+axyz*y*z;
+    tauyy=by+c2o1*byy*y+bxy*x+byz*z+bxyz*x*z;
+    tauzz=cz+c2o1*czz*z+cxz*x+cyz*y+cxyz*x*y;
+    tauxy=c1o2*((ay+c2o1*ayy*y+axy*x+ayz*z+axyz*x*z)+(bx+c2o1*bxx*x+bxy*y+bxz*z+bxyz*y*z));
+    tauxz=c1o2*((az+c2o1*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+c2o1*cxx*x+cxy*y+cxz*z+cxyz*y*z));
+    tauyz=c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
 }

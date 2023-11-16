@@ -165,7 +165,7 @@ void Grid3D::deleteBlocks()
     int maxInitLevel = D3Q27System::MAXLEVEL;
     for (int level = minInitLevel; level < maxInitLevel; level++) {
         getBlocks(level, blocksVector[level]);
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
             deleteBlock(block);
     }
 }
@@ -239,7 +239,7 @@ SPtr<Block3D> Grid3D::getSuperBlock(int ix1, int ix2, int ix3, int level)
     if (level < 1)
         throw UbException(UB_EXARGS, "level <1");
 
-    // from Lower Level to higher:	 >> 	1 in x1,x2,x3
+    // from Lower Level to higher:     >>     1 in x1,x2,x3
     SPtr<Block3D> block;
     for (int l = level - 1; l >= 0; l--) {
         ix1 = ix1 >> 1;

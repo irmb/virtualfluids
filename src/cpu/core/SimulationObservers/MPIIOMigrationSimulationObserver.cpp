@@ -159,7 +159,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
 
@@ -487,7 +487,7 @@ void MPIIOMigrationSimulationObserver::write4DArray(int step, Arrays arrayType, 
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             dataSetSmallArray[ic].globalID = block->getGlobalID(); // id of the block needed to find it while regenerating the grid
 
@@ -617,7 +617,7 @@ void MPIIOMigrationSimulationObserver::write3DArray(int step, Arrays arrayType, 
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             dataSetSmallArray[ic].globalID = block->getGlobalID(); // id of the block needed to find it while regenerating the grid
 
@@ -987,7 +987,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             read_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
             MPI_File_read_at(file_handler, read_offset, &dataSetArray[ic], 1, dataSetType, MPI_STATUS_IGNORE);
@@ -1016,7 +1016,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
 
         for (int level = minInitLevel; level <= maxInitLevel; level++)
         {
-            for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+            for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
             {
                 read_offset = (MPI_Offset)(block->getGlobalID() * sizeofOneDataSet);
                 MPI_File_read_at(file_handler, read_offset, &doubleValuesArrayH1[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
@@ -1043,7 +1043,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
 
         for (int level = minInitLevel; level <= maxInitLevel; level++)
         {
-            for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+            for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
             {
                 read_offset = (MPI_Offset)(block->getGlobalID() * sizeofOneDataSet);
                 MPI_File_read_at(file_handler, read_offset, &doubleValuesArrayH2[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
@@ -1265,7 +1265,7 @@ void MPIIOMigrationSimulationObserver::readArray(int step, Arrays arrType, std::
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
             MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -1425,7 +1425,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
     MPI_Offset read_offset1, read_offset2;
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             read_offset1 = (MPI_Offset)(sizeof(boundCondParam) + block->getGlobalID() * sizeof(size_t));
 
