@@ -22,7 +22,7 @@ class Block3D;
 //! \brief  Computes the value Q with which vortices can be visualized as isocontours to Q=0, writes to .vtk, For
 //! uniform, serial setups only! \details writes at given time intervals specified in scheduler (s)
 //!          Processing: paraview, take isolines of entry for Q-criterion vortex detection
-//!			 Q-Criterion: Visualize Vorteces as regions where Vorticity is larger than strain rate (Hunt, 1988)
+//!             Q-Criterion: Visualize Vorteces as regions where Vorticity is larger than strain rate (Hunt, 1988)
 //! \author  Sonja Uphoff
 
 class QCriterionSimulationObserver : public SimulationObserver

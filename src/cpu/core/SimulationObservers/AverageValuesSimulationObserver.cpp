@@ -221,7 +221,7 @@ void AverageValuesSimulationObserver::clearData()
 void AverageValuesSimulationObserver::addData(const SPtr<Block3D> block)
 {
     UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
-    //	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+    //    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
     UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
     real dx                 = grid->getDeltaX(block);
 
@@ -454,97 +454,97 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 // void AverageValuesSimulationObserver::initPlotData(double step)
 //{
 //   std::shared_ptr<vf::parallel::Communicator> comm = vf::parallel::Communicator::getInstance();
-//	if (comm->getProcessID() == comm->getRoot())
-//	{
-//		std::ofstream ostr;
-//		string fname = path + "_PlotData_" + UbSystem::toString(step) + ".txt";
-//		ostr.open(fname.c_str(), std::ios_base::out);
-//		if(!ostr)
-//		{
-//			ostr.clear();
-//			string path = UbSystem::getPathFromString(fname);
-//			if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out);}
-//			if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
-//		}
-//		ostr << "Time"<< "\t" <<"Ref.Time"<<"\t"<< "Z_Coor"<< "\t" << "Pore fraction" << "\t";
-//		ostr << "Vx"  << "\t" << "Vy" << "\t" << "Vz" << "\t";
-//		ostr << "TSx" << "\t" << "TSy"<< "\t" << "TSz"<< "TSxz";
-//		ostr << endl;
-//		ostr.close();
-//	}
+//    if (comm->getProcessID() == comm->getRoot())
+//    {
+//        std::ofstream ostr;
+//        string fname = path + "_PlotData_" + UbSystem::toString(step) + ".txt";
+//        ostr.open(fname.c_str(), std::ios_base::out);
+//        if(!ostr)
+//        {
+//            ostr.clear();
+//            string path = UbSystem::getPathFromString(fname);
+//            if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out);}
+//            if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
+//        }
+//        ostr << "Time"<< "\t" <<"Ref.Time"<<"\t"<< "Z_Coor"<< "\t" << "Pore fraction" << "\t";
+//        ostr << "Vx"  << "\t" << "Vy" << "\t" << "Vz" << "\t";
+//        ostr << "TSx" << "\t" << "TSy"<< "\t" << "TSz"<< "TSxz";
+//        ostr << endl;
+//        ostr.close();
+//    }
 //}
 //////////////////////////////////////////////////////////////////////////////
 // void AverageValuesSimulationObserver::collectPlotData(double step)
 //{
 //
-//	double hminX1 = 0.9;
-//	double hminX2 = 0.0;
-//	double hmaxX1 = 0.95;
-//	double hmaxX2 = 0.01; //systemabmessungen world units
+//    double hminX1 = 0.9;
+//    double hminX2 = 0.0;
+//    double hmaxX1 = 0.95;
+//    double hmaxX2 = 0.01; //systemabmessungen world units
 //
-//	// 3 level platte standard:
-//	double hX3_level[] = {0.305, 0.309,0.3365,0.35};
-//	//0.004, 0,0365,0.045
-//	//musis: 3 level refinement
-//	//double hX3_level[] = {0.42, 0.28, 0.105, 0.0}; //refinement coords
-//	                    //bsislevel von 0.42-0.28,... (level 0 bis 2 , 3 insgesamt)
-//	//musis: 4 level refinement
-//	//double hX3_level[] = {0.42, 0.3, 0.195, 0.078, 0.0};
-//	//musis: 5 level refinement
-//	//double hX3_level[] = {0.396, 0.28, 0.18, 0.08, 0.006, 0.0};
+//    // 3 level platte standard:
+//    double hX3_level[] = {0.305, 0.309,0.3365,0.35};
+//    //0.004, 0,0365,0.045
+//    //musis: 3 level refinement
+//    //double hX3_level[] = {0.42, 0.28, 0.105, 0.0}; //refinement coords
+//                        //bsislevel von 0.42-0.28,... (level 0 bis 2 , 3 insgesamt)
+//    //musis: 4 level refinement
+//    //double hX3_level[] = {0.42, 0.3, 0.195, 0.078, 0.0};
+//    //musis: 5 level refinement
+//    //double hX3_level[] = {0.396, 0.28, 0.18, 0.08, 0.006, 0.0};
 //
-//	ostringstream Str;
-//	Str << step;
-//	string step2string(Str.str());
-//	string fname = path + "_PlotZ_" + step2string + ".txt";
+//    ostringstream Str;
+//    Str << step;
+//    string step2string(Str.str());
+//    string fname = path + "_PlotZ_" + step2string + ".txt";
 //
 //
-//	for(int level = minInitLevel; level<=maxInitLevel;level++)
-//	{
-//		double dx = grid->getDeltaX(level);
+//    for(int level = minInitLevel; level<=maxInitLevel;level++)
+//    {
+//        double dx = grid->getDeltaX(level);
 //
-//		for (double hi =hX3_level[level]; hi >= hX3_level[level+1]; hi=hi-dx ){
-//			D3Q27IntegrateValuesHelper h1(grid, comm,
-//				hminX1, hminX2, hi,
-//				hmaxX1, hmaxX2, hi-dx);
+//        for (double hi =hX3_level[level]; hi >= hX3_level[level+1]; hi=hi-dx ){
+//            D3Q27IntegrateValuesHelper h1(grid, comm,
+//                hminX1, hminX2, hi,
+//                hmaxX1, hmaxX2, hi-dx);
 //
-//			h1.calculateAV();
-//			double nn1 = h1.getNumberOfNodes();
-//			double ns1 = h1.getNumberOfSolids();
-//			if (nn1 > 0.0){
-//				// get data and write into txt files
-//				if (comm->getProcessID() == comm->getRoot())
-//				{
-//					int istep = static_cast<int>(step);
-//					std::ofstream ostr;
+//            h1.calculateAV();
+//            double nn1 = h1.getNumberOfNodes();
+//            double ns1 = h1.getNumberOfSolids();
+//            if (nn1 > 0.0){
+//                // get data and write into txt files
+//                if (comm->getProcessID() == comm->getRoot())
+//                {
+//                    int istep = static_cast<int>(step);
+//                    std::ofstream ostr;
 //
-//					double AvVx1 = h1.getAvVx1()/nn1;
-//					double AvVx2 = h1.getAvVx2()/nn1;
-//					double AvVx3 = h1.getAvVx3()/nn1;
+//                    double AvVx1 = h1.getAvVx1()/nn1;
+//                    double AvVx2 = h1.getAvVx2()/nn1;
+//                    double AvVx3 = h1.getAvVx3()/nn1;
 //
-//					double AvTSx1 = h1.getTSx1()/nn1;
-//					double AvTSx2 = h1.getTSx2()/nn1;
-//					double AvTSx3 = h1.getTSx3()/nn1;
+//                    double AvTSx1 = h1.getTSx1()/nn1;
+//                    double AvTSx2 = h1.getTSx2()/nn1;
+//                    double AvTSx3 = h1.getTSx3()/nn1;
 //
-//					double AvTSx1x3 = h1.getTSx1x3()/nn1;
+//                    double AvTSx1x3 = h1.getTSx1x3()/nn1;
 //
-//					ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
-//					if(!ostr)
-//					{
-//						ostr.clear();
-//						string path = UbSystem::getPathFromString(fname);
-//						if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out |
-//std::ios_base::app);} 						if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
-//					}
-//					ostr << istep << "\t" << resetStep << "\t" << hi+0.5*dx << "\t" << nn1/(nn1+ns1)*100.0 << "%\t";
-//					ostr << AvVx1 << "\t" << AvVx2 << "\t" << AvVx3 << "\t";
-//					ostr << AvTSx1<< "\t" << AvTSx2<< "\t" << AvTSx3<< "\t" << AvTSx1x3;
-//					ostr << endl;
-//					ostr.close();
+//                    ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
+//                    if(!ostr)
+//                    {
+//                        ostr.clear();
+//                        string path = UbSystem::getPathFromString(fname);
+//                        if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out |
+//std::ios_base::app);}                         if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
+//                    }
+//                    ostr << istep << "\t" << resetStep << "\t" << hi+0.5*dx << "\t" << nn1/(nn1+ns1)*100.0 << "%\t";
+//                    ostr << AvVx1 << "\t" << AvVx2 << "\t" << AvVx3 << "\t";
+//                    ostr << AvTSx1<< "\t" << AvTSx2<< "\t" << AvTSx3<< "\t" << AvTSx1x3;
+//                    ostr << endl;
+//                    ostr.close();
 //
-//				}
-//			}
-//		}
+//                }
+//            }
+//        }
 //
-//	}
+//    }
 //}

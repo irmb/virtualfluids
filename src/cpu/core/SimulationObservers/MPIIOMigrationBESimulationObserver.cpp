@@ -137,7 +137,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
             localDistributionsF    = D3Q27EsoTwist3DSplittedVectorPtrF->getLocalDistributions();
@@ -438,7 +438,7 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             switch (arrayType) 
             {
@@ -554,7 +554,7 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             switch (arrayType) 
             {

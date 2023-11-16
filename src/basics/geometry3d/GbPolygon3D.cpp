@@ -53,7 +53,7 @@ void GbPolygon3D::init()
     x2max = 0.0;
     x3min = 0.0;
     x3max = 0.0;
-    //		points   = NULL;
+    //        points   = NULL;
     consistent = false;
     ps         = NULL;
 }
@@ -99,9 +99,9 @@ GbPolygon3D::~GbPolygon3D()
     // if(points)
     // for(unsigned u=0; u<points->size(); u++)
     //{
-    //	delete (*points)[u];
+    //    delete (*points)[u];
     //}
-    //		delete this->points;
+    //        delete this->points;
     delete this->ps;
 }
 
@@ -331,7 +331,7 @@ void GbPolygon3D::addPoints(vector<GbPoint3D> &points)
  */
 void GbPolygon3D::clear()
 {
-    //		delete this->points;
+    //        delete this->points;
     this->ps->clearAndTrim();
     delete this->ps;
 

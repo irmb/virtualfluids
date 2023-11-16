@@ -57,9 +57,9 @@ class UbObserver;
 //!   a copy of an UbservableObject will NOT copy the observerList
 //!  <UL>
 //!    <LI><B>Extending:</B> This UbObservable is the observable object itself. Extending should be used
-//!	where object types can be extended from UbObservable.
+//!    where object types can be extended from UbObservable.
 //!    <LI><B>Associating:</B> Initialization is done via the constructor <tt>UbObservable(ObservableObject)</tt>.
-//!	Associating may be used, where object types to be observed could not be extended from UbObservable.
+//!    Associating may be used, where object types to be observed could not be extended from UbObservable.
 //!  </UL>
 //!
 //! see UbObserver

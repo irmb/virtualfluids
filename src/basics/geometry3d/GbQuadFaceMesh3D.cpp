@@ -64,7 +64,7 @@ GbQuadFaceMesh3D::GbQuadFaceMesh3D(string name, vector<Vertex> *nodes, vector<Qu
 GbQuadFaceMesh3D::~GbQuadFaceMesh3D()
 {
     if (nodes) {
-        //	for(unsigned u=0; u<nodes->size(); u++) delete (*nodes)[u];
+        //    for(unsigned u=0; u<nodes->size(); u++) delete (*nodes)[u];
         delete nodes;
     }
     if (quads) {

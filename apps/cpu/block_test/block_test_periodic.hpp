@@ -189,7 +189,7 @@ void block_test_periodic(const char *cstr1, const char *cstr2)
 
       if (refineLevel > 0)
       {
-         if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - start");    
          RefineCrossAndInsideGbObjectBlockVisitor refVisitor(refineCube, refineLevel);
          grid->accept(refVisitor);
 
@@ -206,7 +206,7 @@ void block_test_periodic(const char *cstr1, const char *cstr2)
          D3Q27System::getLBMDirections(dirs);
          SetInterpolationDirsBlockVisitor interDirsVisitor(dirs);
          grid->accept(interDirsVisitor);
-         if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - end");    
       }
 
       MetisPartitioningGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, true, numOfThreads);

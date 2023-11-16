@@ -164,7 +164,7 @@ void MPIIORestartSimulationObserver::writeDataSet(int step)
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
 
@@ -508,7 +508,7 @@ void MPIIORestartSimulationObserver::write4DArray(int step, Arrays arrayType, st
 
     for (int level = minInitLevel; level <= maxInitLevel; level++)
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             dataSetSmallArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
             dataSetSmallArray[ic].x2 = block->getX2();
@@ -665,7 +665,7 @@ void MPIIORestartSimulationObserver::write3DArray(int step, Arrays arrayType, st
 
     for (int level = minInitLevel; level <= maxInitLevel; level++)
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             dataSetSmallArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
             dataSetSmallArray[ic].x2 = block->getX2();

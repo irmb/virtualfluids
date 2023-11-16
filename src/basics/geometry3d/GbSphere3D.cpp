@@ -195,7 +195,7 @@ bool GbSphere3D::isPointInGbObject3D(const double &x1p, const double &x2p, const
 //   if(this->isPointInCrossection(x11, x12) || this->isPointInCrossection(x21, x22) || this->isPointInCrossection(x11,
 //   x22) || this->isPointInCrossection(x21, x12))
 //   {
-//		if(!this->isPointInCrossection(x11, x12) || !this->isPointInCrossection(x21, x22) ||
+//        if(!this->isPointInCrossection(x11, x12) || !this->isPointInCrossection(x21, x22) ||
 //!this->isPointInCrossection(x11, x22) || !this->isPointInCrossection(x21, x12)) return true;
 //   }
 //   return false;
