@@ -566,7 +566,7 @@ real D3Q27EsoTwist3DSplittedVector::getPreCollisionDistributionForDirection(size
     }
 }
 //////////////////////////////////////////////////////////////////////////
-real D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)
+real D3Q27EsoTwist3DSplittedVector::getPostCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)
 {
     using namespace vf::lbm::dir;
 

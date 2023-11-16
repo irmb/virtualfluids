@@ -134,8 +134,8 @@ void run()
       }
 
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
-      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
+      dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->setRelaxationParameter(K15CompressibleNavierStokes::NORMAL);
       //
       SPtr<BCProcessor> bcProcessor(new BCProcessor());
 

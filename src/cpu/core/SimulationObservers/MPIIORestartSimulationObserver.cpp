@@ -859,7 +859,7 @@ void MPIIORestartSimulationObserver::writeBoundaryConds(int step)
                     bouCond->nx3                    = bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
-                    bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
+                    bouCond->bcStrategyKey = bcArr->bcvector[bc]->getBCStrategyKey();
                 }
 
                 bcVector.push_back(*bouCond);
@@ -1546,7 +1546,7 @@ void MPIIORestartSimulationObserver::readBoundaryConds(int step)
                 bc->nx3 = bcArray[index].nx3;
                 for (int iq = 0; iq < 26; iq++)
                     bc->setQ(bcArray[index].q[iq], iq);
-                bc->setBCStrategyType(bcArray[index].algorithmType);
+                bc->setBCStrategyKey(bcArray[index].bcStrategyKey);
             }
 
             bcVector.push_back(bc);

@@ -69,11 +69,10 @@ void pf1()
    //boundary conditions adapters
    //////////////////////////////////////////////////////////////////////////////
    SPtr<BC> noSlipBC(new NoSlipBC());
-   noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+   noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
    //boundary conditions visitor
    BoundaryConditionsBlockVisitor bcVisitor;
-   bcVisitor.addBC(noSlipBC);
    //////////////////////////////////////////////////////////////////////////////////
 
    //set boundary conditions for blocks and create process decomposition for MPI
@@ -115,7 +114,7 @@ void pf1()
 
    //LBM kernel definition
    SPtr<LBMKernel> kernel;
-   kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+   kernel = SPtr<LBMKernel>(new K16IncompressibleNavierStokes());
    SPtr<BCSet> bcProc(new BCSet());
    kernel->setBCSet(bcProc);
 

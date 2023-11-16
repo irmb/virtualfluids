@@ -146,8 +146,8 @@ void run(string configname)
         // grid, kernel and BCProcessor
         SPtr<Grid3D> grid(new Grid3D(comm));
         SPtr<LBMKernel> kernel;
-        //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-         kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
+         kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantWithSpongeLayerLBMKernel());       
         //kernel->setWithSpongeLayer(true);
         //kernel->setSpongeLayer(spongeLayer);

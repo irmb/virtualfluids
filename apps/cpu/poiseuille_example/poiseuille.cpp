@@ -26,7 +26,7 @@ int main()
     const auto writer = WbWriterVtkXmlBinary::getInstance();
 
     const auto communicator = vf::parallel::MPICommunicator::getInstance();
-    const auto kernel = std::make_shared<CompressibleCumulant4thOrderViscosityLBMKernel>();
+    const auto kernel = std::make_shared<K17CompressibleNavierStokes>();
     kernel->setBCProcessor(std::make_shared<BCProcessor>());
     kernel->setForcingX1(1e-6 * lbmUnitConverter->getFactorForceWToLb());
 

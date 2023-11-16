@@ -82,22 +82,19 @@ void run(string configname)
 
       //BC
       SPtr<BC> noSlipAdapter(new NoSlipBC());
-      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
       mu::Parser fct;
       fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithPressureInterpolated()));
 
-      SPtr<BC> denBC(new DensityBC(rhoLB));
-      denBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
+      SPtr<BC> denBC(new PressureBC(rhoLB));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
       
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipAdapter);
-      bcVisitor.addBC(velBC);
-      bcVisitor.addBC(denBC);
 
       //////////////////////////////////////////////////////////////////////////
       //restart

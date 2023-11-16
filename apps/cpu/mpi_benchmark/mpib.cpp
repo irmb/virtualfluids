@@ -195,7 +195,7 @@ void run(string configname)
          }
 
          SPtr<LBMKernel> kernel;
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes(blockNx[0], blockNx[1], blockNx[2], InK15CompressibleNavierStokes::NORMAL));
 
          SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);

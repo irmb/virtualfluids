@@ -232,7 +232,7 @@ void pflowdp(string configname)
 
          int kernelType = 2;
          SPtr<LBMKernel> kernel;
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+         kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
          //}
 
          SPtr<BCProcessor> bcProc(new BCProcessor());

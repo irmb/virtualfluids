@@ -429,7 +429,7 @@ void pflowdp(string configname)
       //MPIIORestart1CoProcessor rcp(grid, rSch2, pathname, comm);
 
       SPtr<LBMKernel> kernel;
-      kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+      kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
 
       SPtr<BCProcessor> bcProc(new BCProcessor());
       //SPtr<BCProcessor> bcProc = SPtr<BCProcessor>(new ThinWallBCProcessor());
@@ -591,8 +591,8 @@ void pflowdp(string configname)
          }
 
          //SPtr<LBMKernel> kernel;
-         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
-         //kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
+         //kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes(blocknx[0], blocknx[1], blocknx[2], InK15CompressibleNavierStokes::NORMAL));
+         //kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes(blocknx[0], blocknx[1], blocknx[2], K15CompressibleNavierStokes::NORMAL));
          //}
          //kernel->setWithForcing(true);
          //kernel->setForcingX1(2e-6);
