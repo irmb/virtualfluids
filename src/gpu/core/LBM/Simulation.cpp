@@ -25,8 +25,8 @@
 #include "Utilities/Buffer2D.hpp"
 #include "StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Init/InitLattice.h"
-#include "Init/ReaderMeasurePoints.h"
+#include "PreProcessor/InitLattice.h"
+#include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
 #include "FindQ/FindQ.h"
 #include "FindQ/DefineBCs.h"

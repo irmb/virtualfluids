@@ -30,7 +30,7 @@
 //! \ingroup Init
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "Init/InitLattice.h"
+#include "PreProcessor/InitLattice.h"
 
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
