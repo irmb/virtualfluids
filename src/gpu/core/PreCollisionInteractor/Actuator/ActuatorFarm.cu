@@ -325,7 +325,7 @@ void ActuatorFarm::initBladeForces(CudaMemoryManager* cudaManager)
     cudaManager->cudaCopyBladeForcesHtoD(this);
 }
 
-void ActuatorFarm::initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager)
+void ActuatorFarm::initBladeIndices(CudaMemoryManager* cudaManager)
 {
     cudaManager->cudaAllocBladeIndices(this);
 
@@ -440,7 +440,7 @@ std::string ActuatorFarm::getFilename(Parameter* para, uint t) const
     return para->getOutputPath() + this->outputName + "_t_" + std::to_string(t);
 }
 
-void ActuatorFarm::write(const std::string &filename)
+void ActuatorFarm::write(const std::string& filename) const
 {
     std::vector<std::string> dataNames = {
         "bladeVelocitiesX",

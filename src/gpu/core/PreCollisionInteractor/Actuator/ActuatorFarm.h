@@ -2,14 +2,13 @@
 #define ActuatorFarm_H
 
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
-#include "basics/constants/NumericConstants.h"
-#include "basics/DataTypes.h"
+#include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 #include <stdexcept>
 
 class Parameter;
 class GridProvider;
 using namespace vf::basics::constant;
-
 
 class ActuatorFarm : public PreCollisionInteractor
 {
@@ -63,7 +62,7 @@ public:
         this->tOut = tOut;
     }
 
-    void write(const std::string& filename);
+    void write(const std::string& filename) const;
 
     real getDensity() const { return this->density; };
     real getDeltaT() const { return this->deltaT; };
@@ -143,7 +142,7 @@ private:
     void initBladeCoords(CudaMemoryManager* cudaManager);
     void initBladeVelocities(CudaMemoryManager* cudaManager);
     void initBladeForces(CudaMemoryManager* cudaManager);
-    void initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager);
+    void initBladeIndices(CudaMemoryManager* cudaManager);
     std::string getFilename(Parameter* para, uint t) const;
     void swapDeviceArrays();
 
