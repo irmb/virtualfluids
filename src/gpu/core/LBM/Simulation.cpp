@@ -25,8 +25,8 @@
 #include "Utilities/Buffer2D.hpp"
 #include "StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Init/InitLattice.h"
-#include "Init/VfReader.h"
+#include "PreProcessor/InitLattice.h"
+#include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
 #include "FindQ/FindQ.h"
 #include "FindQ/DefineBCs.h"
@@ -245,7 +245,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     if (para->getUseMeasurePoints()) {
         VF_LOG_INFO("read measure points");
-        readMeasurePoints(para.get(), cudaMemoryManager.get());
+        ReaderMeasurePoints::readMeasurePoints(para.get(), cudaMemoryManager.get());
     }
 
     //////////////////////////////////////////////////////////////////////////
