@@ -198,11 +198,11 @@ void block_test_incompressible(const char *cstr1, const char *cstr2)
 
          if (refineLevel > 0)
          {
-            if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - start");    
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
             refineHelper.addGbObject(refineCube, refineLevel);
             refineHelper.refine();
-            if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - end");    
          }
 
 

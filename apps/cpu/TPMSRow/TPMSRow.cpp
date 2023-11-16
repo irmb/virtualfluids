@@ -146,18 +146,18 @@ void run(string configname)
         // grid, kernel and BCProcessor
         SPtr<Grid3D> grid(new Grid3D(comm));
         SPtr<LBMKernel> kernel;
-        //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-         kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
+         kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantWithSpongeLayerLBMKernel());       
         //kernel->setWithSpongeLayer(true);
         //kernel->setSpongeLayer(spongeLayer);
         // kernel = ;
          // kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
-        // 		 mu::Parser fctForcingX1;
-        // 		 fctForcingX1.SetExpr("Fx2");
-        // 		 fctForcingX1.DefineConst("Fx2", 5e-4);
-        // 		 kernel->setForcingX1(fctForcingX1);
-        // 		 kernel->setWithForcing(true);
+        //          mu::Parser fctForcingX1;
+        //          fctForcingX1.SetExpr("Fx2");
+        //          fctForcingX1.DefineConst("Fx2", 5e-4);
+        //          kernel->setForcingX1(fctForcingX1);
+        //          kernel->setWithForcing(true);
         //
         // SPtr<ThinWallBCProcessor> bcProc(new ThinWallBCProcessor());
          SPtr<BCSet> bcProc(new BCSet());
@@ -186,10 +186,10 @@ void run(string configname)
                                                               TPMSOrigin[2] + TPMSL[2],
                                                               UnitEdgeLength, dx, 2.5e-4));
 
-            // 	for (int i = 0; i < 12; i++)
-            // 	{
-            // 	  cout << tpms->evaluateImplicitFunction(0.002, 0.002, i/1000., 1.)<<endl;
-            // 	}
+            //     for (int i = 0; i < 12; i++)
+            //     {
+            //       cout << tpms->evaluateImplicitFunction(0.002, 0.002, i/1000., 1.)<<endl;
+            //     }
 
             if (myid == 0)
                 GbSystem3D::writeGeoObject(tpms.get(), pathname + "/geo/tpms", WbWriterVtkXmlBinary::getInstance());
@@ -399,7 +399,7 @@ void run(string configname)
 
             //          if (refineLevel > 0)
             //          {
-            // 			 SetUndefinedNodesBlockVisitor undefNodesVisitor;
+            //              SetUndefinedNodesBlockVisitor undefNodesVisitor;
             //             grid->accept(undefNodesVisitor);
             //          }
 

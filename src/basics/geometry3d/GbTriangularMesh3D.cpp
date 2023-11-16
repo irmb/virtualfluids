@@ -655,41 +655,41 @@ double GbTriangularMesh3D::getVolumeForRectangle(const double & /*p1x1*/, const 
 
     //    for(int i=0; i<this.triangles.length; i++)
     //    {
-    //	t1min = this.triangles[i].getX1Minimum();
-    //	t1max = this.triangles[i].getX1Maximum();
-    //	if(GbSystem.less2(t1min, t1max, p1x1, p2x1))    continue;
-    //	if(GbSystem.greater2(t1min, t1max, p1x1, p2x1)) continue;
+    //    t1min = this.triangles[i].getX1Minimum();
+    //    t1max = this.triangles[i].getX1Maximum();
+    //    if(GbSystem.less2(t1min, t1max, p1x1, p2x1))    continue;
+    //    if(GbSystem.greater2(t1min, t1max, p1x1, p2x1)) continue;
 
-    //	t2min = this.triangles[i].getX2Minimum();
-    //	t2max = this.triangles[i].getX2Maximum();
-    //	if(GbSystem.less2(t2min, t2max, p1x2, p2x2))    continue;
-    //	if(GbSystem.greater2(t2min, t2max, p1x2, p2x2)) continue;
+    //    t2min = this.triangles[i].getX2Minimum();
+    //    t2max = this.triangles[i].getX2Maximum();
+    //    if(GbSystem.less2(t2min, t2max, p1x2, p2x2))    continue;
+    //    if(GbSystem.greater2(t2min, t2max, p1x2, p2x2)) continue;
 
-    //	if(GbSystem.inOpenInterval(t1min, p1x1, p2x1) && GbSystem.inOpenInterval(t1max, p1x1, p2x1) &&
-    //		GbSystem.inOpenInterval(t2min, p1x2, p2x2) && GbSystem.inOpenInterval(t2max, p1x2, p2x2))
-    //	{
-    //		volume += this.triangles[i].getVolume();
-    //		area2  += this.triangles[i].getArea();
-    //		f       = true;
-    //	}
-    //	else
-    //	{
-    //		polygon = this.triangles[i].createClippedPolygon3D(p1x1, p1x2, p2x1, p2x2);
+    //    if(GbSystem.inOpenInterval(t1min, p1x1, p2x1) && GbSystem.inOpenInterval(t1max, p1x1, p2x1) &&
+    //        GbSystem.inOpenInterval(t2min, p1x2, p2x2) && GbSystem.inOpenInterval(t2max, p1x2, p2x2))
+    //    {
+    //        volume += this.triangles[i].getVolume();
+    //        area2  += this.triangles[i].getArea();
+    //        f       = true;
+    //    }
+    //    else
+    //    {
+    //        polygon = this.triangles[i].createClippedPolygon3D(p1x1, p1x2, p2x1, p2x2);
 
-    //		if(polygon != null && polygon.size() > 2)
-    //		{
-    //			try
-    //			{
-    //				x1      = polygon.getX1Centroid();
-    //				x2      = polygon.getX2Centroid();
-    //				volume += this.triangles[i].getX3Coordinate(x1, x2) * Math.abs(polygon.getArea());
-    //				area2  += Math.abs(polygon.getArea());
-    //				f       = true;
-    //			}
-    //			catch(Exception e){}
-    //		}
-    //	}
-    //	if(GbSystem.greaterEqual(area2, area1)) break;
+    //        if(polygon != null && polygon.size() > 2)
+    //        {
+    //            try
+    //            {
+    //                x1      = polygon.getX1Centroid();
+    //                x2      = polygon.getX2Centroid();
+    //                volume += this.triangles[i].getX3Coordinate(x1, x2) * Math.abs(polygon.getArea());
+    //                area2  += Math.abs(polygon.getArea());
+    //                f       = true;
+    //            }
+    //            catch(Exception e){}
+    //        }
+    //    }
+    //    if(GbSystem.greaterEqual(area2, area1)) break;
     //}
     //    if(f) return(volume);
     //    else  throw new NullPointerException();
@@ -715,32 +715,32 @@ vector<GbTriangle3D *> *GbTriangularMesh3D::getTrianglesForRectangle(const doubl
 
     //    for(int i=0; i<this.triangles.length; i++)
     //    {
-    //	t1min = this.triangles[i].getX1Minimum();
-    //	t1max = this.triangles[i].getX1Maximum();
-    //	if(GbSystem.less2(t1min, t1max, p1x1, p2x1))    continue;
-    //	if(GbSystem.greater2(t1min, t1max, p1x1, p2x1)) continue;
+    //    t1min = this.triangles[i].getX1Minimum();
+    //    t1max = this.triangles[i].getX1Maximum();
+    //    if(GbSystem.less2(t1min, t1max, p1x1, p2x1))    continue;
+    //    if(GbSystem.greater2(t1min, t1max, p1x1, p2x1)) continue;
 
-    //	t2min = this.triangles[i].getX2Minimum();
-    //	t2max = this.triangles[i].getX2Maximum();
-    //	if(GbSystem.less2(t2min, t2max, p1x2, p2x2))    continue;
-    //	if(GbSystem.greater2(t2min, t2max, p1x2, p2x2)) continue;
+    //    t2min = this.triangles[i].getX2Minimum();
+    //    t2max = this.triangles[i].getX2Maximum();
+    //    if(GbSystem.less2(t2min, t2max, p1x2, p2x2))    continue;
+    //    if(GbSystem.greater2(t2min, t2max, p1x2, p2x2)) continue;
 
-    //	if(GbSystem.inOpenInterval(t1min, p1x1, p2x1) && GbSystem.inOpenInterval(t1max, p1x1, p2x1) &&
-    //		GbSystem.inOpenInterval(t2min, p1x2, p2x2) && GbSystem.inOpenInterval(t2max, p1x2, p2x2))
-    //	{
-    //		try { triangleList.append(this.triangles[i]); } catch(Exception e){}
-    //		area2 += this.triangles[i].getArea();
-    //	}
-    //	else
-    //	{
-    //		polygon = this.triangles[i].createClippedPolygon3D(p1x1, p1x2, p2x1, p2x2);
-    //		if(polygon != null && polygon.size() > 2)
-    //		{
-    //			try { triangleList.append(this.triangles[i]); } catch(Exception e){}
-    //			area2 += Math.abs(polygon.getArea());
-    //		}
-    //	}
-    //	if(GbSystem.greaterEqual(area2, area1)) break;
+    //    if(GbSystem.inOpenInterval(t1min, p1x1, p2x1) && GbSystem.inOpenInterval(t1max, p1x1, p2x1) &&
+    //        GbSystem.inOpenInterval(t2min, p1x2, p2x2) && GbSystem.inOpenInterval(t2max, p1x2, p2x2))
+    //    {
+    //        try { triangleList.append(this.triangles[i]); } catch(Exception e){}
+    //        area2 += this.triangles[i].getArea();
+    //    }
+    //    else
+    //    {
+    //        polygon = this.triangles[i].createClippedPolygon3D(p1x1, p1x2, p2x1, p2x2);
+    //        if(polygon != null && polygon.size() > 2)
+    //        {
+    //            try { triangleList.append(this.triangles[i]); } catch(Exception e){}
+    //            area2 += Math.abs(polygon.getArea());
+    //        }
+    //    }
+    //    if(GbSystem.greaterEqual(area2, area1)) break;
     //}
     //    return((GbTriangle3D[])triangleList.getObjectArray());
 }
@@ -763,7 +763,7 @@ vector<GbPoint3D *> *GbTriangularMesh3D::getNodesForRectangle(const double & /*p
     // if(GbSystem.inClosedInterval(this.nodes[i].getX1Coordinate(), p1x1, p2x1) &&
     // GbSystem.inClosedInterval(this.nodes[i].getX2Coordinate(), p1x2, p2x2))
     //{
-    //	try { nodeList.append(this.nodes[i]); } catch(Exception e){}
+    //    try { nodeList.append(this.nodes[i]); } catch(Exception e){}
     //}
     //   }
     //   return((GbPoint3D[])nodeList.getObjectArray());

@@ -99,9 +99,9 @@ void run(string configname)
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());
 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
       //double bulckViscosity = 3700*nuLB;
-      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
+      //dynamicPointerCast<K17CompressibleNavierStokes>(kernel)->setBulkViscosity(bulckViscosity);
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
       kernel->setBCSet(bcProc);
       kernel->setBCSet(bcProc);

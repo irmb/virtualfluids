@@ -1059,7 +1059,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVectors()
             distributeReceiveVector(fTo, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, dataOdOd, indexOdOd);
             break;
 
-            //	/////E-W-N-S
+            //    /////E-W-N-S
         case dPP0:
             lMinX1 = maxX1 - 4;
             lMaxX1 = lMinX1 + 3;
@@ -1167,7 +1167,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVectors()
             distributeReceiveVector(fTo, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, dataOdEv, indexOdEv);
 
             break;
-            //		/////T-B-E-W
+            //        /////T-B-E-W
         case dP0P:
             lMinX1 = maxX1 - 4;
             lMaxX1 = lMinX1 + 3;
@@ -1699,7 +1699,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
             maxX2 -= 2;
     }
 
-    //	////T-B-E-W
+    //    ////T-B-E-W
     if (block.lock()->hasInterpolationFlagCF(dP0P) && !block.lock()->hasInterpolationFlagCF(dP00) &&
         !block.lock()->hasInterpolationFlagCF(d00P)) {
         if (maxX1 == TmaxX1)
@@ -1841,7 +1841,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
             maxX2 -= 2;
     }
 
-    //	////T-B-E-W
+    //    ////T-B-E-W
     if (block.lock()->hasInterpolationFlagCF(dP0P) && !block.lock()->hasInterpolationFlagCF(dP00) &&
         !block.lock()->hasInterpolationFlagCF(d00P)) {
         if (maxX1 == TmaxX1)

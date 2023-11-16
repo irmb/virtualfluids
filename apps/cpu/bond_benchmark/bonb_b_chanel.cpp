@@ -167,11 +167,11 @@ void chanel(const char *cstr)
 
       if (refineLevel > 0)
       {
-         if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - start");    
          RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
          refineHelper.addGbObject(refineCube, 1);
          refineHelper.refine();
-         if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - end");    
       }
 
       

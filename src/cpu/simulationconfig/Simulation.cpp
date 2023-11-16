@@ -77,7 +77,6 @@ void CPUSimulation::addObject(const std::shared_ptr<GbObject3D> &object, const s
 void CPUSimulation::addBCAdapter(const std::shared_ptr<BC> &bcAdapter)
 {
     registeredAdapters.insert(bcAdapter);
-    this->bcVisitor.addBC(bcAdapter);
 }
 
 void CPUSimulation::setKernelConfiguration(const std::shared_ptr<LBMKernelConfiguration> &kernel)

@@ -41,7 +41,7 @@
 #include <gpu/core/Output/DataWriter.h>
 #include "gpu/core/Factories/BoundaryConditionFactory.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/core/Factories/GridScalingFactory.h"
+#include "gpu/core/GridScaling/GridScalingFactory.h"
 #include "parallel/Communicator.h"
 
 namespace simulation

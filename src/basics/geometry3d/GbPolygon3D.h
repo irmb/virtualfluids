@@ -229,7 +229,7 @@ public:
     // {
     //    try
     //    {
-    //	GbPolygon2D polygon = (GbPolygon2D) object;
+    //    GbPolygon2D polygon = (GbPolygon2D) object;
     // int         n       = this.size();
 
     // if(n != polygon.size()) return(false);

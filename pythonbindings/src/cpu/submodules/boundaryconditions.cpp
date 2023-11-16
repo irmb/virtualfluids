@@ -33,14 +33,14 @@
 #include "BCStrategy.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <BoundaryConditions/DensityBC.h>
-#include <BoundaryConditions/NonReflectingOutflowBCStrategy.h>
+#include <BoundaryConditions/PressureNonEquilibrium.h>
+#include <BoundaryConditions/OutflowNonReflecting.h>
 #include <BoundaryConditions/BC.h>
 #include <BoundaryConditions/NoSlipBC.h>
 #include <BoundaryConditions/VelocityBC.h>
-#include <BoundaryConditions/NoSlipBCStrategy.h>
-#include <BoundaryConditions/VelocityBCStrategy.h>
-#include <BoundaryConditions/HighViscosityNoSlipBCStrategy.h>
+#include <BoundaryConditions/PressureBC.h>
+#include <BoundaryConditions/NoSlipInterpolated.h>
+#include <BoundaryConditions/VelocityInterpolated.h>
 
 namespace boundaryconditions
 {
@@ -70,13 +70,10 @@ namespace boundaryconditions
 
         auto _ = py::class_<BC, std::shared_ptr<BC>>(bcModule, "BC");
 
-        bc_class<NoSlipBC, NoSlipBCStrategy>(bcModule, "NoSlipBoundaryCondition")
+        bc_class<NoSlipBC, NoSlipInterpolated>(bcModule, "NoSlipBoundaryCondition")
                 .def(py::init());
 
-        bc_class<NoSlipBC, HighViscosityNoSlipBCStrategy>(bcModule, "HighViscosityNoSlipBoundaryCondition")
-                .def(py::init());
-
-        bc_class<VelocityBC, VelocityBCStrategy>(bcModule, "VelocityBoundaryCondition")
+        bc_class<VelocityBC, VelocityInterpolated>(bcModule, "VelocityBoundaryCondition")
                 .def(py::init())
                 .def(py::init<bool &, bool &, bool &, mu::Parser &, real &, real &>(),
                      "vx1"_a, "vx2"_a, "vx3"_a,
@@ -90,7 +87,7 @@ namespace boundaryconditions
                      "vx2"_a, "vx2_start_time"_a, "vx2_end_time"_a,
                      "vx3"_a, "vx3_start_time"_a, "vx3_end_time"_a);
 
-        bc_class<DensityBC, NonReflectingOutflowBCStrategy>(bcModule, "NonReflectingOutflow")
+        bc_class<PressureBC, OutflowNonReflecting>(bcModule, "NonReflectingOutflow")
                 .def(py::init());
     }
 

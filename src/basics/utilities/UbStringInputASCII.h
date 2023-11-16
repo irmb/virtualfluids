@@ -19,34 +19,34 @@
 // class UbStringInputASCII : public UbFileInputASCII
 //{
 // public:
-//	UbStringInputASCII(std::string inputString);
+//    UbStringInputASCII(std::string inputString);
 //
-//	std::string getFileName();
-//	void	      skipLine();					   // Springt zur naechsten Zeile
+//    std::string getFileName();
+//    void          skipLine();                       // Springt zur naechsten Zeile
 //
 //   void        readLine();
 //   std::string readStringLine();
 //   std::size_t readSize_t();
-//   int		   readInteger();				   // Liest einen Int-Wert ein
-//   double	   readDouble();				   // Liest einen double-Wert ein
-//	float 	   readFloat();				   // Liest einen float-Wert ein
-//	bool  	   readBool();				      // Liest einen bool-Wert ein
+//   int           readInteger();                   // Liest einen Int-Wert ein
+//   double       readDouble();                   // Liest einen double-Wert ein
+//    float        readFloat();                   // Liest einen float-Wert ein
+//    bool         readBool();                      // Liest einen bool-Wert ein
 //   char        readChar();                // Liest einen char-Wert ein
-//   std::string	readString();				   // Liest ein Wort ein
-//	std::string	readLineTill(char stop);	// Liest gesamte Zeile ein bis zu einem bestimmten Zeichen
-//	std::string	parseString();
+//   std::string    readString();                   // Liest ein Wort ein
+//    std::string    readLineTill(char stop);    // Liest gesamte Zeile ein bis zu einem bestimmten Zeichen
+//    std::string    parseString();
 //
 //   bool        containsString(std::string var);
 //   void        setPosAfterLineWithString(std::string var);
-//   int		   readIntegerAfterString(std::string var);
-//   double	   readDoubleAfterString(std::string var);
+//   int           readIntegerAfterString(std::string var);
+//   double       readDoubleAfterString(std::string var);
 //   bool        readBoolAfterString(std::string var);
 //   std::string readStringAfterString(std::string var);
 //
 //   FILETYPE getFileType() { return ASCII; }
 //
 // private:
-//	std::istringstream instream;
+//    std::istringstream instream;
 //};
 //
 //

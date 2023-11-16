@@ -367,205 +367,205 @@ GbLine3D *GbSystem3D::createClipLine3D(GbPoint3D &pA, GbPoint3D &pB, double x1a,
 //      /*                                                                   */
 //      if(less(ps.getX2Minimum(), x12))
 //      {
-//	 ps.clear();
-//	 last = points[0];
-//	 if(less((*points)[0]->x2, x12)) flag = false;
-//	 else
-//	 {
-//	    ps.add(points[0]);
-//	    flag = true;
-//	 }
-//	 for(i=1; i<n; i++)
-//	 {
-//	    if(less((*points)[i]->x2, x12))
-//	    {
-//	       if(flag)
-//	       {
-//	          f = (x12-(*points)[i]->x2)/((*points)[i]->x2-last->x2);
-//	          ps.add(new GbPoint3D((*points)[i]->x1 + ((*points)[i]->x1-last->x1)*f, x12, (*points)[i]->x3 +
+//     ps.clear();
+//     last = points[0];
+//     if(less((*points)[0]->x2, x12)) flag = false;
+//     else
+//     {
+//        ps.add(points[0]);
+//        flag = true;
+//     }
+//     for(i=1; i<n; i++)
+//     {
+//        if(less((*points)[i]->x2, x12))
+//        {
+//           if(flag)
+//           {
+//              f = (x12-(*points)[i]->x2)/((*points)[i]->x2-last->x2);
+//              ps.add(new GbPoint3D((*points)[i]->x1 + ((*points)[i]->x1-last->x1)*f, x12, (*points)[i]->x3 +
 //((*points)[i]->x3-last->x3)*f));
-//	       }
-//	       flag = false;
-//	    }
-//	    else
-//	    {
-//	       if(!flag)
-//	       {
-//	          f = (x12-(*points)[i]->x2)/((*points)[i]->x2-last->x2);
-//	          ps.add(new GbPoint3D((*points)[i]->x1 + ((*points)[i]->x1-last->x1)*f, x12, (*points)[i]->x3 +
+//           }
+//           flag = false;
+//        }
+//        else
+//        {
+//           if(!flag)
+//           {
+//              f = (x12-(*points)[i]->x2)/((*points)[i]->x2-last->x2);
+//              ps.add(new GbPoint3D((*points)[i]->x1 + ((*points)[i]->x1-last->x1)*f, x12, (*points)[i]->x3 +
 //((*points)[i]->x3-last->x3)*f));
-//	       }
-//	       ps.add((*points)[i]);
-//	       flag = true;
-//	    }
-//	    last = points[i];
-//	 }
-//	 if(!((less(points[0].x2, x12)) ^ flag))
-//	 {
-//	    f = (x12-points[0].x2)/(points[0].x2-last->x2);
-//	    ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last->x1)*f, x12, points[0].x3 + (points[0].x3-last->x3)*f));
-//	 }
+//           }
+//           ps.add((*points)[i]);
+//           flag = true;
+//        }
+//        last = points[i];
+//     }
+//     if(!((less(points[0].x2, x12)) ^ flag))
+//     {
+//        f = (x12-points[0].x2)/(points[0].x2-last->x2);
+//        ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last->x1)*f, x12, points[0].x3 + (points[0].x3-last->x3)*f));
+//     }
 //
-//	 points = ps.getPoints();
-//	 n      = points.length;
+//     points = ps.getPoints();
+//     n      = points.length;
 //
-//	 if(n == 0) return(null);
+//     if(n == 0) return(null);
 //      }
 //      /*-------------------------------------------------------------------*/
 //      /*  Schneiden an rechter Kante                                       */
 //      /*                                                                   */
 //      if(greater(ps.getX1Maximum(), x21))
 //      {
-//	 ps.clear();
-//	 last = points[0];
-//	 if(greater(points[0].x1, x21)) flag = false;
-//	 else
-//	 {
-//	    ps.add(points[0]);
-//	    flag = true;
-//	 }
-//	 for(i=1; i<n; i++)
-//	 {
-//	    if(greater((*points)[i]->x1, x21))
-//	    {
-//	       if(flag)
-//	       {
-//	          f = (x21-(*points)[i]->x1)/((*points)[i]->x1-last->x1);
-//	          ps.add(new GbPoint3D(x21, (*points)[i]->x2 + ((*points)[i]->x2-last->x2)*f, (*points)[i]->x3 +
+//     ps.clear();
+//     last = points[0];
+//     if(greater(points[0].x1, x21)) flag = false;
+//     else
+//     {
+//        ps.add(points[0]);
+//        flag = true;
+//     }
+//     for(i=1; i<n; i++)
+//     {
+//        if(greater((*points)[i]->x1, x21))
+//        {
+//           if(flag)
+//           {
+//              f = (x21-(*points)[i]->x1)/((*points)[i]->x1-last->x1);
+//              ps.add(new GbPoint3D(x21, (*points)[i]->x2 + ((*points)[i]->x2-last->x2)*f, (*points)[i]->x3 +
 //((*points)[i]->x3-last->x3)*f));
-//	       }
-//	       flag = false;
-//	    }
-//	    else
-//	    {
-//	       if(!flag)
-//	       {
-//	          f = (x21-(*points)[i]->x1)/((*points)[i]->x1-last->x1);
-//	          ps.add(new GbPoint3D(x21, (*points)[i]->x2 + ((*points)[i]->x2-last->x2)*f, (*points)[i]->x3 +
+//           }
+//           flag = false;
+//        }
+//        else
+//        {
+//           if(!flag)
+//           {
+//              f = (x21-(*points)[i]->x1)/((*points)[i]->x1-last->x1);
+//              ps.add(new GbPoint3D(x21, (*points)[i]->x2 + ((*points)[i]->x2-last->x2)*f, (*points)[i]->x3 +
 //((*points)[i]->x3-last->x3)*f));
-//	       }
-//	       ps.add(points[i]);
-//	       flag = true;
-//	    }
-//	    last = points[i];
-//	 }
-//	 if(!((greater(points[0].x1, x21)) ^ flag))
-//	 {
-//	    f = (x21-points[0].x1)/(points[0].x1-last.x1);
-//	    ps.add(new GbPoint3D(x21, points[0].x2 + (points[0].x2-last.x2)*f, points[0].x3 + (points[0].x3-last.x3)*f));
-//	 }
+//           }
+//           ps.add(points[i]);
+//           flag = true;
+//        }
+//        last = points[i];
+//     }
+//     if(!((greater(points[0].x1, x21)) ^ flag))
+//     {
+//        f = (x21-points[0].x1)/(points[0].x1-last.x1);
+//        ps.add(new GbPoint3D(x21, points[0].x2 + (points[0].x2-last.x2)*f, points[0].x3 + (points[0].x3-last.x3)*f));
+//     }
 //
-//	 points = ps.getPoints();
-//	 n      = points.length;
+//     points = ps.getPoints();
+//     n      = points.length;
 //
-//	 if(n == 0) return(null);
+//     if(n == 0) return(null);
 //      }
 //      /*-------------------------------------------------------------------*/
 //      /*  Schneiden an oberer Kante                                        */
 //      /*                                                                   */
 //      if(greater(ps.getX2Maximum(), x22))
 //      {
-//	 ps.clear();
-//	 last = points[0];
-//	 if(greater(points[0].x2, x22)) flag = false;
-//	 else
-//	 {
-//	    ps.add(points[0]);
-//	    flag = true;
-//	 }
-//	 for(i=1; i<n; i++)
-//	 {
-//	    if(greater((*points)[i]->x2, x22))
-//	    {
-//	       if(flag)
-//	       {
-//	          f = (x22-(*points)[i]->x2)/(points[i].x2-last.x2);
-//	          ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, x22, points[i].x3 +
+//     ps.clear();
+//     last = points[0];
+//     if(greater(points[0].x2, x22)) flag = false;
+//     else
+//     {
+//        ps.add(points[0]);
+//        flag = true;
+//     }
+//     for(i=1; i<n; i++)
+//     {
+//        if(greater((*points)[i]->x2, x22))
+//        {
+//           if(flag)
+//           {
+//              f = (x22-(*points)[i]->x2)/(points[i].x2-last.x2);
+//              ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, x22, points[i].x3 +
 //(points[i].x3-last.x3)*f));
-//	       }
-//	       flag = false;
-//	    }
-//	    else
-//	    {
-//	       if(!flag)
-//	       {
-//	          f = (x22-points[i].x2)/(points[i].x2-last.x2);
-//	          ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, x22, points[i].x3 +
+//           }
+//           flag = false;
+//        }
+//        else
+//        {
+//           if(!flag)
+//           {
+//              f = (x22-points[i].x2)/(points[i].x2-last.x2);
+//              ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, x22, points[i].x3 +
 //(points[i].x3-last.x3)*f));
-//	       }
-//	       ps.add(points[i]);
-//	       flag = true;
-//	    }
-//	    last = points[i];
-//	 }
-//	 if(!((greater(points[0].x2, x22)) ^ flag))
-//	 {
-//	    f = (x22-points[0].x2)/(points[0].x2-last.x2);
-//	    ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last.x1)*f, x22, points[0].x3 + (points[0].x3-last.x3)*f));
-//	 }
+//           }
+//           ps.add(points[i]);
+//           flag = true;
+//        }
+//        last = points[i];
+//     }
+//     if(!((greater(points[0].x2, x22)) ^ flag))
+//     {
+//        f = (x22-points[0].x2)/(points[0].x2-last.x2);
+//        ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last.x1)*f, x22, points[0].x3 + (points[0].x3-last.x3)*f));
+//     }
 //
-//	 points = ps.getPoints();
-//	 n      = points.length;
+//     points = ps.getPoints();
+//     n      = points.length;
 //
-//	 if(n == 0) return(null);
+//     if(n == 0) return(null);
 //      }
 //      /*-------------------------------------------------------------------*/
 //      /*  Schneiden an linker Kante                                        */
 //      /*                                                                   */
 //      if(less(ps.getX1Minimum(), x11))
 //      {
-//	 ps.clear();
-//	 last = points[0];
-//	 if(less(points[0].x1, x11)) flag = false;
-//	 else
-//	 {
-//	    ps.add(points[0]);
-//	    flag = true;
-//	 }
-//	 for(i=1; i<n; i++)
-//	 {
-//	    if(less(points[i].x1, x11))
-//	    {
-//	       if(flag)
-//	       {
-//	          f = (x11-points[i].x1)/(points[i].x1-last.x1);
-//	          ps.add(new GbPoint3D(x11, points[i].x2 + (points[i].x2-last.x2)*f, points[i].x3 +
+//     ps.clear();
+//     last = points[0];
+//     if(less(points[0].x1, x11)) flag = false;
+//     else
+//     {
+//        ps.add(points[0]);
+//        flag = true;
+//     }
+//     for(i=1; i<n; i++)
+//     {
+//        if(less(points[i].x1, x11))
+//        {
+//           if(flag)
+//           {
+//              f = (x11-points[i].x1)/(points[i].x1-last.x1);
+//              ps.add(new GbPoint3D(x11, points[i].x2 + (points[i].x2-last.x2)*f, points[i].x3 +
 //(points[i].x3-last.x3)*f));
-//	       }
-//	       flag = false;
-//	    }
-//	    else
-//	    {
-//	       if(!flag)
-//	       {
-//	          f = (x11-points[i].x1)/(points[i].x1-last.x1);
-//	          ps.add(new GbPoint3D(x11, points[i].x2 + (points[i].x2-last.x2)*f, points[i].x3 +
+//           }
+//           flag = false;
+//        }
+//        else
+//        {
+//           if(!flag)
+//           {
+//              f = (x11-points[i].x1)/(points[i].x1-last.x1);
+//              ps.add(new GbPoint3D(x11, points[i].x2 + (points[i].x2-last.x2)*f, points[i].x3 +
 //(points[i].x3-last.x3)*f));
-//	       }
-//	       ps.add(points[i]);
-//	       flag = true;
-//	    }
-//	    last = points[i];
-//	 }
-//	 if(!((less(points[0].x1, x11)) ^ flag))
-//	 {
-//	    f = (x11-points[0].x1)/(points[0].x1-last.x1);
-//	    ps.add(new GbPoint3D(x11, points[0].x2 + (points[0].x2-last.x2)*f, points[0].x3 + (points[0].x3-last.x3)*f));
-//	 }
+//           }
+//           ps.add(points[i]);
+//           flag = true;
+//        }
+//        last = points[i];
+//     }
+//     if(!((less(points[0].x1, x11)) ^ flag))
+//     {
+//        f = (x11-points[0].x1)/(points[0].x1-last.x1);
+//        ps.add(new GbPoint3D(x11, points[0].x2 + (points[0].x2-last.x2)*f, points[0].x3 + (points[0].x3-last.x3)*f));
+//     }
 //
-//	 points = ps.getPoints();
-//	 n      = points.length;
+//     points = ps.getPoints();
+//     n      = points.length;
 //
-//	 if(n == 0) return(null);
+//     if(n == 0) return(null);
 //      }
 //      /*-------------------------------------------------------------------*/
 //      GbPolygon3D polygon = new GbPolygon3D(points);
 //
 //      if(n > 2)
 //      {
-//	 for(i=2; i<n; i++) if(zero(i_TA(points[i-2], points[i-1], points[i]))) polygon.deletePoint(points[i-1]);
-//	 if(zero(i_TA(points[n-2], points[n-1], points[0]))) polygon.deletePoint(points[n-1]);
-//	 if(zero(i_TA(points[n-1], points[0],   points[1]))) polygon.deletePoint(points[0]);
+//     for(i=2; i<n; i++) if(zero(i_TA(points[i-2], points[i-1], points[i]))) polygon.deletePoint(points[i-1]);
+//     if(zero(i_TA(points[n-2], points[n-1], points[0]))) polygon.deletePoint(points[n-1]);
+//     if(zero(i_TA(points[n-1], points[0],   points[1]))) polygon.deletePoint(points[0]);
 //      }
 //      return(polygon);
 //   }
@@ -586,98 +586,98 @@ GbLine3D *GbSystem3D::createClipLine3D(GbPoint3D &pA, GbPoint3D &pB, double x1a,
 //      /*                                                                   */
 //      if(less(ps.getX3Minimum(), x13))
 //      {
-//	 ps.clear();
-//	 last = points[0];
-//	 if(less(points[0].x3, x13)) flag = false;
-//	 else
-//	 {
-//	    ps.add(points[0]);
-//	    flag = true;
-//	 }
-//	 for(i=1; i<n; i++)
-//	 {
-//	    if(less(points[i].x3, x13))
-//	    {
-//	       if(flag)
-//	       {
-//	          f = (x13-points[i].x3)/(points[i].x3-last.x3);
-//	          ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, points[i].x2 + (points[i].x2-last.x2)*f,
+//     ps.clear();
+//     last = points[0];
+//     if(less(points[0].x3, x13)) flag = false;
+//     else
+//     {
+//        ps.add(points[0]);
+//        flag = true;
+//     }
+//     for(i=1; i<n; i++)
+//     {
+//        if(less(points[i].x3, x13))
+//        {
+//           if(flag)
+//           {
+//              f = (x13-points[i].x3)/(points[i].x3-last.x3);
+//              ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, points[i].x2 + (points[i].x2-last.x2)*f,
 //x13));
-//	       }
-//	       flag = false;
-//	    }
-//	    else
-//	    {
-//	       if(!flag)
-//	       {
-//	          f = (x13-points[i].x3)/(points[i].x3-last.x3);
-//	          ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, points[i].x2 + (points[i].x2-last.x2)*f,
+//           }
+//           flag = false;
+//        }
+//        else
+//        {
+//           if(!flag)
+//           {
+//              f = (x13-points[i].x3)/(points[i].x3-last.x3);
+//              ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, points[i].x2 + (points[i].x2-last.x2)*f,
 //x13));
-//	       }
-//	       ps.add(points[i]);
-//	       flag = true;
-//	    }
-//	    last = points[i];
-//	 }
-//	 if(!((less(points[0].x3, x13)) ^ flag))
-//	 {
-//	    f = (x13-points[0].x3)/(points[0].x3-last.x3);
-//	    ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last.x1)*f, points[0].x2 + (points[0].x2-last.x2)*f, x13));
-//	 }
+//           }
+//           ps.add(points[i]);
+//           flag = true;
+//        }
+//        last = points[i];
+//     }
+//     if(!((less(points[0].x3, x13)) ^ flag))
+//     {
+//        f = (x13-points[0].x3)/(points[0].x3-last.x3);
+//        ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last.x1)*f, points[0].x2 + (points[0].x2-last.x2)*f, x13));
+//     }
 //
-//	 points = ps.getPoints();
-//	 n      = points.length;
+//     points = ps.getPoints();
+//     n      = points.length;
 //
-//	 if(n == 0) return(null);
+//     if(n == 0) return(null);
 //      }
 //      /*-------------------------------------------------------------------*/
 //      /*  Schneiden an hinterer Kante                                      */
 //      /*                                                                   */
 //      if(greater(ps.getX3Maximum(), x23))
 //      {
-//	 ps.clear();
-//	 last = points[0];
-//	 if(greater(points[0].x3, x23)) flag = false;
-//	 else
-//	 {
-//	    ps.add(points[0]);
-//	    flag = true;
-//	 }
-//	 for(i=1; i<n; i++)
-//	 {
-//	    if(greater(points[i].x3, x23))
-//	    {
-//	       if(flag)
-//	       {
-//	          f = (x23-points[i].x3)/(points[i].x3-last.x3);
-//	          ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, points[i].x2 + (points[i].x2-last.x2)*f,
+//     ps.clear();
+//     last = points[0];
+//     if(greater(points[0].x3, x23)) flag = false;
+//     else
+//     {
+//        ps.add(points[0]);
+//        flag = true;
+//     }
+//     for(i=1; i<n; i++)
+//     {
+//        if(greater(points[i].x3, x23))
+//        {
+//           if(flag)
+//           {
+//              f = (x23-points[i].x3)/(points[i].x3-last.x3);
+//              ps.add(new GbPoint3D(points[i].x1 + (points[i].x1-last.x1)*f, points[i].x2 + (points[i].x2-last.x2)*f,
 //x23));
-//	       }
-//	       flag = false;
-//	    }
-//	    else
-//	    {
-//	       if(!flag)
-//	       {
-//	          f = (x23-points[i].x3)/(points[i].x3-last.x3);
-//	          ps.add(new GbPoint3D(points[i].x1 + ((*points)[i]->x1-last.x1)*f, (*points)[i]->x2 +
+//           }
+//           flag = false;
+//        }
+//        else
+//        {
+//           if(!flag)
+//           {
+//              f = (x23-points[i].x3)/(points[i].x3-last.x3);
+//              ps.add(new GbPoint3D(points[i].x1 + ((*points)[i]->x1-last.x1)*f, (*points)[i]->x2 +
 //((*points)[i]->x2-last.x2)*f, x23));
-//	       }
-//	       ps.add(points[i]);
-//	       flag = true;
-//	    }
-//	    last = points[i];
-//	 }
-//	 if(!((greater(points[0].x3, x23)) ^ flag))
-//	 {
-//	    f = (x23-points[0].x3)/(points[0].x3-last.x3);
-//	    ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last.x1)*f, points[0].x2 + (points[0].x2-last.x2)*f, x23));
-//	 }
+//           }
+//           ps.add(points[i]);
+//           flag = true;
+//        }
+//        last = points[i];
+//     }
+//     if(!((greater(points[0].x3, x23)) ^ flag))
+//     {
+//        f = (x23-points[0].x3)/(points[0].x3-last.x3);
+//        ps.add(new GbPoint3D(points[0].x1 + (points[0].x1-last.x1)*f, points[0].x2 + (points[0].x2-last.x2)*f, x23));
+//     }
 //
-//	 points = ps.getPoints();
-//	 n      = points.length;
+//     points = ps.getPoints();
+//     n      = points.length;
 //
-//	 if(n == 0) return(null);
+//     if(n == 0) return(null);
 //      }
 //      /*-------------------------------------------------------------------*/
 //      GbPolygon3D polygon = new GbPolygon3D(points);

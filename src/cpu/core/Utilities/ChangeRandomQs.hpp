@@ -22,8 +22,8 @@ namespace Utilities
             SPtr<BoundaryConditions> bc = bcArray->getBC(val<1>(node), val<2>(node), val<3>(node));
             if (bc)
             {
-	            for (int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
-	            {
+                for (int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
+                {
                   if (bc->hasNoSlipBoundaryFlag(fdir))
                   {
                      const int invDir = D3Q27System::INVDIR[fdir];
@@ -41,7 +41,7 @@ namespace Utilities
                      }
                      bc->setQ(q_temp, fdir);
                   }
-	            }
+                }
             }
          }
       }

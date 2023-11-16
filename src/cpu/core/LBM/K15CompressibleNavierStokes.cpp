@@ -235,7 +235,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaaa = m0;
                   m0 += c1o36 * oMdrho;
                   mfaab = m1-m0 * vvz;
-                  mfaac = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfaac = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaba+mfabc;
                   m1 = mfabc-mfaba;
@@ -243,7 +243,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaba = m0;
                   m0 += c1o9 * oMdrho;
                   mfabb = m1-m0 * vvz;
-                  mfabc = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfabc = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaca+mfacc;
                   m1 = mfacc-mfaca;
@@ -251,7 +251,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaca = m0;
                   m0 += c1o36 * oMdrho;
                   mfacb = m1-m0 * vvz;
-                  mfacc = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfacc = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfbaa+mfbac;
@@ -260,7 +260,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfbaa = m0;
                   m0 += c1o9 * oMdrho;
                   mfbab = m1-m0 * vvz;
-                  mfbac = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfbac = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfbba+mfbbc;
                   m1 = mfbbc-mfbba;
@@ -268,7 +268,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfbba = m0;
                   m0 += c4o9 * oMdrho;
                   mfbbb = m1-m0 * vvz;
-                  mfbbc = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfbbc = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfbca+mfbcc;
                   m1 = mfbcc-mfbca;
@@ -276,7 +276,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfbca = m0;
                   m0 += c1o9 * oMdrho;
                   mfbcb = m1-m0 * vvz;
-                  mfbcc = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfbcc = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfcaa+mfcac;
@@ -285,7 +285,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfcaa = m0;
                   m0 += c1o36 * oMdrho;
                   mfcab = m1-m0 * vvz;
-                  mfcac = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfcac = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfcba+mfcbc;
                   m1 = mfcbc-mfcba;
@@ -293,7 +293,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfcba = m0;
                   m0 += c1o9 * oMdrho;
                   mfcbb = m1-m0 * vvz;
-                  mfcbc = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfcbc = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfcca+mfccc;
                   m1 = mfccc-mfcca;
@@ -301,7 +301,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfcca = m0;
                   m0 += c1o36 * oMdrho;
                   mfccb = m1-m0 * vvz;
-                  mfccc = m2-c2o1*	m1 * vvz+vz2 * m0;
+                  mfccc = m2-c2o1*    m1 * vvz+vz2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   // mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -313,14 +313,14 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaaa = m0;
                   m0 += c1o6 * oMdrho;
                   mfaba = m1-m0 * vvy;
-                  mfaca = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfaca = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaab+mfacb;
                   m1 = mfacb-mfaab;
                   m0 = m2+mfabb;
                   mfaab = m0;
                   mfabb = m1-m0 * vvy;
-                  mfacb = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfacb = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaac+mfacc;
                   m1 = mfacc-mfaac;
@@ -328,7 +328,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaac = m0;
                   m0 += c1o18 * oMdrho;
                   mfabc = m1-m0 * vvy;
-                  mfacc = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfacc = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfbaa+mfbca;
@@ -337,14 +337,14 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfbaa = m0;
                   m0 += c2o3 * oMdrho;
                   mfbba = m1-m0 * vvy;
-                  mfbca = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfbca = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfbab+mfbcb;
                   m1 = mfbcb-mfbab;
                   m0 = m2+mfbbb;
                   mfbab = m0;
                   mfbbb = m1-m0 * vvy;
-                  mfbcb = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfbcb = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfbac+mfbcc;
                   m1 = mfbcc-mfbac;
@@ -352,7 +352,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfbac = m0;
                   m0 += c2o9 * oMdrho;
                   mfbbc = m1-m0 * vvy;
-                  mfbcc = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfbcc = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfcaa+mfcca;
@@ -361,14 +361,14 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfcaa = m0;
                   m0 += c1o6 * oMdrho;
                   mfcba = m1-m0 * vvy;
-                  mfcca = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfcca = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfcab+mfccb;
                   m1 = mfccb-mfcab;
                   m0 = m2+mfcbb;
                   mfcab = m0;
                   mfcbb = m1-m0 * vvy;
-                  mfccb = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfccb = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfcac+mfccc;
                   m1 = mfccc-mfcac;
@@ -376,10 +376,10 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfcac = m0;
                   m0 += c1o18 * oMdrho;
                   mfcbc = m1-m0 * vvy;
-                  mfccc = m2-c2o1*	m1 * vvy+vy2 * m0;
+                  mfccc = m2-c2o1*    m1 * vvy+vy2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
-                  // mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
+                  // mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9        Konditionieren
                   ////////////////////////////////////////////////////////////////////////////////////
                   // X - Dir
                   m2 = mfaaa+mfcaa;
@@ -388,14 +388,14 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaaa = m0;
                   m0 += c1o1* oMdrho;
                   mfbaa = m1-m0 * vvx;
-                  mfcaa = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcaa = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaba+mfcba;
                   m1 = mfcba-mfaba;
                   m0 = m2+mfbba;
                   mfaba = m0;
                   mfbba = m1-m0 * vvx;
-                  mfcba = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcba = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaca+mfcca;
                   m1 = mfcca-mfaca;
@@ -403,7 +403,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaca = m0;
                   m0 += c1o3 * oMdrho;
                   mfbca = m1-m0 * vvx;
-                  mfcca = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcca = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaab+mfcab;
@@ -411,21 +411,21 @@ void K15CompressibleNavierStokes::calculate(int step)
                   m0 = m2+mfbab;
                   mfaab = m0;
                   mfbab = m1-m0 * vvx;
-                  mfcab = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcab = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfabb+mfcbb;
                   m1 = mfcbb-mfabb;
                   m0 = m2+mfbbb;
                   mfabb = m0;
                   mfbbb = m1-m0 * vvx;
-                  mfcbb = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcbb = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfacb+mfccb;
                   m1 = mfccb-mfacb;
                   m0 = m2+mfbcb;
                   mfacb = m0;
                   mfbcb = m1-m0 * vvx;
-                  mfccb = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfccb = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfaac+mfcac;
@@ -434,14 +434,14 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfaac = m0;
                   m0 += c1o3 * oMdrho;
                   mfbac = m1-m0 * vvx;
-                  mfcac = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcac = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfabc+mfcbc;
                   m1 = mfcbc-mfabc;
                   m0 = m2+mfbbc;
                   mfabc = m0;
                   mfbbc = m1-m0 * vvx;
-                  mfcbc = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfcbc = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   m2 = mfacc+mfccc;
                   m1 = mfccc-mfacc;
@@ -449,7 +449,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   mfacc = m0;
                   m0 += c1o9 * oMdrho;
                   mfbcc = m1-m0 * vvx;
-                  mfccc = m2-c2o1*	m1 * vvx+vx2 * m0;
+                  mfccc = m2-c2o1*    m1 * vvx+vx2 * m0;
                   ////////////////////////////////////////////////////////////////////////////////////
                   ////////////////////////////////////////////////////////////////////////////////////
 
@@ -483,7 +483,7 @@ void K15CompressibleNavierStokes::calculate(int step)
 
                   //central moments to cumulants
                   //4.
-                  real CUMcbb = mfcbb-((mfcaa+c1o3) * mfabb+c2o1 * mfbba * mfbab)/rho;	//ab 15.05.2015 verwendet
+                  real CUMcbb = mfcbb-((mfcaa+c1o3) * mfabb+c2o1 * mfbba * mfbab)/rho;    //ab 15.05.2015 verwendet
                   real CUMbcb = mfbcb-((mfaca+c1o3) * mfbab+c2o1 * mfbba * mfabb)/rho; //ab 15.05.2015 verwendet
                   real CUMbbc = mfbbc-((mfaac+c1o3) * mfbba+c2o1 * mfbab * mfabb)/rho; //ab 15.05.2015 verwendet
 
@@ -522,7 +522,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   real mxxMzz = mfcaa-mfaac;
 
                   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                  //incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
+                  //incl. correction        (hat noch nicht so gut funktioniert...Optimierungsbedarf??)
                   {
                      real dxux = c1o2 * (-omega) *(mxxMyy+mxxMzz)+c1o2 *  OxxPyyPzz * (mfaaa-mxxPyyPzz);
                      real dyuy = dxux+omega * c3o2 * mxxMyy;

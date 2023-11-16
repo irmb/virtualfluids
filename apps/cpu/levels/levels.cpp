@@ -244,7 +244,7 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+         SPtr<LBMKernel> kernel(new InK15CompressibleNavierStokes(blocknx1, blocknx2, blocknx3, InK15CompressibleNavierStokes::NORMAL));
 
          SPtr<BCProcessor> bcProcessor(new BCProcessor());
 

@@ -81,7 +81,7 @@
 #include "gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h"
 #include "gpu/core/PreCollisionInteractor/PrecursorWriter.h"
 #include "gpu/core/Factories/BoundaryConditionFactory.h"
-#include "gpu/core/Factories/GridScalingFactory.h"
+#include "gpu/core/GridScaling/GridScalingFactory.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 
