@@ -5,19 +5,6 @@
 #include "GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void readPropellerCylinder(Parameter* para, CudaMemoryManager* cudaMemoryManager)
-{
-    PositionReader::readFilePropellerCylinderForAlloc(para);
-
-    cudaMemoryManager->cudaAllocVeloPropeller(para->getFine());
-
-    PositionReader::readFilePropellerCylinder(para);
-    //PositionReader::definePropellerQs(para);
-
-    cudaMemoryManager->cudaCopyVeloPropeller(para->getFine());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     //read measure points from file
