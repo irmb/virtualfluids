@@ -41,10 +41,6 @@
 #include <basics/utilities/UbSystem.h>
 #include "basics/constants/NumericConstants.h"
 
-#ifdef MC_CUBES
-#include <MarchingCubes/MarchingCubes.h>
-#endif // MC_CUBES
-
 using namespace std;
 
 const float GbVoxelMatrix3D::SOLID = 1.0f;
@@ -323,45 +319,9 @@ bool GbVoxelMatrix3D::isCellInsideOrCuttingGbObject3D(const double &x1a, const d
 vector<GbTriangle3D *> GbVoxelMatrix3D::getSurfaceTriangleSet()
 {
     vector<GbTriangle3D *> triangles;
-
-#ifdef MC_CUBES
-    // MC
-    typedef McCubes::Matrix3DWrapper<Matrix3D> McMatrixWrapper;
-    typedef McCubes::MarchingCubes<McMatrixWrapper> McMarchingCubesGenerator;
-    typedef McMarchingCubesGenerator::Vertex McVertex;
-    typedef McMarchingCubesGenerator::Triangle McTriangle;
-
-    McMatrixWrapper wrapper(
-        &voxelMatrix); //,0,0,0,voxelMatrix.getNX1()-1,voxelMatrix.getNX2()-1,voxelMatrix.getNX3()-1);
-    McMarchingCubesGenerator mc(wrapper);
-
-    mc.init_all();
-    mc.run(0.5);
-
-    // const int   nofVertices  = mc.nverts();
-    const int nofTriangles = mc.ntrigs();
-
-    McVertex *mcvertices    = mc.vertices();
-    McTriangle *mctriangles = mc.triangles();
-
-    for (int t = 0; t < nofTriangles; t++) {
-        triangles.push_back(
-            new GbTriangle3D(new GbPoint3D(minX1 + deltaX1 * (mcvertices[mctriangles[t].v1].x /*-1*/),
-                                           minX2 + deltaX2 * (mcvertices[mctriangles[t].v1].y /*-1*/),
-                                           minX3 + deltaX3 * (mcvertices[mctriangles[t].v1].z /*-1*/)),
-                             new GbPoint3D(minX1 + deltaX1 * (mcvertices[mctriangles[t].v2].x /*-1*/),
-                                           minX2 + deltaX2 * (mcvertices[mctriangles[t].v2].y /*-1*/),
-                                           minX3 + deltaX3 * (mcvertices[mctriangles[t].v2].z /*-1*/)),
-                             new GbPoint3D(minX1 + deltaX1 * (mcvertices[mctriangles[t].v3].x /*-1*/),
-                                           minX2 + deltaX2 * (mcvertices[mctriangles[t].v3].y /*-1*/),
-                                           minX3 + deltaX3 * (mcvertices[mctriangles[t].v3].z /*-1*/))));
-    }
-#else
     cerr
         << "vector<GbTriangle3D*> GbVoxelMatrix3D::getSurfaceTriangleSet() - benoetigt MARCHING_CUBE paket aus 3rdParty"
         << endl;
-#endif // MC_CUBES
-
     return triangles;
 }
 /*=======================================================*/
@@ -372,111 +332,8 @@ void GbVoxelMatrix3D::addSurfaceTriangleSet(vector<UbTupleFloat3> & /*nodes*/, v
         UBLOG(logINFO, " GbVoxelMatrix3D addSurfaceTriangleSet end without TriangleSetCreation")
         return;
     }
-#ifdef MC_CUBES
-    UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet MC defined")
 
-    typedef McCubes::Matrix3DWrapper<Matrix3D> McMatrixWrapper;
-    typedef McCubes::MarchingCubes<McMatrixWrapper> McMarchingCubesGenerator;
-    typedef McMarchingCubesGenerator::Vertex McVertex;
-    typedef McMarchingCubesGenerator::Triangle McTriangle;
-
-    // MC
-    { // standard( fuer voxelmatrix)
-        McMatrixWrapper wrapper(&voxelMatrix);
-        McMarchingCubesGenerator mc(wrapper);
-
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet McMarchingCubesGenerator")
-
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet mc.init")
-        mc.init_all();
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet mc.run")
-        mc.run(0.5);
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet mc.run done")
-
-        const int nofVertices  = mc.nverts();
-        const int nofTriangles = mc.ntrigs();
-
-        McVertex *mcvertices    = mc.vertices();
-        McTriangle *mctriangles = mc.triangles();
-
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D node tuple")
-        for (int n = 0; n < nofVertices; n++)
-            nodes.push_back(makeUbTuple(
-                (float)(minX1 + deltaX1 * (mcvertices[n].x /*-1*/)), // Anm: kein -1, da man durch manipulation der
-                                                                     // indices die dreiecke um eins versetzt bekommt
-                (float)(minX2 + deltaX2 * (mcvertices[n].y /*-1*/)),
-                (float)(minX3 + deltaX3 * (mcvertices[n].z /*-1*/))));
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D triangles tuple")
-        for (int t = 0; t < nofTriangles; t++)
-            triangles.push_back(makeUbTuple(mctriangles[t].v1, mctriangles[t].v2, mctriangles[t].v3));
-        UBLOG(logDEBUG1, " GbVoxelMatrix3D triangles tuple done")
-    }
-
-    // false - das scheint probleme bei der asphaltprobe zu machen 1500x600x100
-    // da lief es bis C - evtl. memory voll
-    if (false) // extension... um die raender koerrekt abzubilden muesste man eine dummy FLUID reihe um
-    {          // die matrix legen( lsg1: temp matrix mit 2 reihen pro richtung mehr -> zuviel speicher, 500^3 = 500MB
-      // lsg2: fuer jede flaeche eine dummy matrix -> wie folgt:
-        int nx1 = (int)voxelMatrix.getNX1();
-        int nx2 = (int)voxelMatrix.getNX2();
-        int nx3 = (int)voxelMatrix.getNX3();
-        UBLOG(logINFO, " A ")
-        Matrix3D tmpX1Min(2, nx2 + 2, nx3 + 2, FLUID);
-        Matrix3D tmpX1Max(2, nx2 + 2, nx3 + 2, FLUID);
-        for (int x3 = 0; x3 < nx3; x3++)
-            for (int x2 = 0; x2 < nx2; x2++) {
-                tmpX1Min(1, x2 + 1, x3 + 1) = voxelMatrix(0, x2, x3);
-                tmpX1Max(0, x2 + 1, x3 + 1) = voxelMatrix(nx1 - 1, x2, x3);
-            }
-        UBLOG(logINFO, " B")
-        Matrix3D tmpX2Min(nx1 + 2, 2, nx3 + 2, FLUID);
-        Matrix3D tmpX2Max(nx1 + 2, 2, nx3 + 2, FLUID);
-        for (int x3 = 0; x3 < nx3; x3++)
-            for (int x1 = 0; x1 < nx1; x1++) {
-                tmpX2Min(x1 + 1, 1, x3 + 1) = voxelMatrix(x1, 0, x3);
-                tmpX2Max(x1 + 1, 0, x3 + 1) = voxelMatrix(x1, nx2 - 1, x3);
-            }
-        UBLOG(logINFO, " C ")
-        Matrix3D tmpX3Min(nx1 + 2, nx3 + 2, 2, FLUID);
-        Matrix3D tmpX3Max(nx1 + 2, nx3 + 2, 2, FLUID);
-        for (int x2 = 0; x2 < nx2; x2++)
-            for (int x1 = 0; x1 < nx1; x1++) {
-                tmpX3Min(x1 + 1, x2 + 1, 1) = voxelMatrix(x1, x2, 0);
-                tmpX3Max(x1 + 1, x2 + 1, 0) = voxelMatrix(x1, x2, nx3 - 1);
-            }
-        UBLOG(logINFO, " D")
-        Matrix3D *matrices[] = { &tmpX1Min, &tmpX1Max, &tmpX2Min, &tmpX2Max, &tmpX3Min, &tmpX3Max };
-        int dx1[]            = { -1, nx1 - 1, -1, -1, -1, -1 };
-        int dx2[]            = { -1, -1, -1, nx2 - 1, -1, -1 };
-        int dx3[]            = { -1, -1, -1, -1, -1, nx3 - 1 };
-        UBLOG(logINFO, " E")
-        for (int i = 0; i < 6; i++) {
-            McMatrixWrapper wrapper(matrices[i]);
-            McMarchingCubesGenerator mc(wrapper);
-
-            mc.init_all();
-            mc.run(0.5);
-
-            McVertex *mcvertices    = mc.vertices();
-            McTriangle *mctriangles = mc.triangles();
-
-            int deltaNodeNr = (int)nodes.size();
-            UBLOG(logINFO, " GbVoxelMatrix3D node tuple")
-            for (int n = 0; n < mc.nverts(); n++)
-                nodes.push_back(
-                    makeUbTuple((float)(minX1 + deltaX1 * (mcvertices[n].x +
-                                                           dx1[i])), // Anm: kein -1, da man durch manipulation der
-                                                                     // indices die dreiecke um eins versetzt bekommt
-                                (float)(minX2 + deltaX2 * (mcvertices[n].y + dx2[i])),
-                                (float)(minX3 + deltaX3 * (mcvertices[n].z + dx3[i]))));
-            for (int t = 0; t < mc.ntrigs(); t++)
-                triangles.push_back(makeUbTuple(deltaNodeNr + mctriangles[t].v1, deltaNodeNr + mctriangles[t].v2,
-                                                deltaNodeNr + mctriangles[t].v3));
-        }
-    }
-#else
     cerr << "void GbVoxelMatrix3D.addSurfaceTriangleSet  - benoetigt MARCHING_CUBE paket aus 3rdParty" << endl;
-#endif // MC_CUBES
 
     UBLOG(logINFO, " GbVoxelMatrix3D addSurfaceTriangleSet end")
 }
