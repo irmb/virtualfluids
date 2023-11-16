@@ -35,7 +35,6 @@ enum PreProcessorType
 {
     InitNavierStokesIncompressible,
     InitNavierStokesCompressible,
-    InitK18K20NavierStokesCompressible,
     InitAdvectionDiffusionIncompressibleD3Q7,
     InitAdvectionDiffusionIncompressible,
     InitAdvectionDiffusionCompressibleD3Q7,
