@@ -6,9 +6,10 @@
 class Parameter;
 namespace InterfaceDebugWriter
 {
-
-void writeInterfaceLinesDebugCF(Parameter *para, uint timeStep=0);
-void writeInterfaceLinesDebugFC(Parameter *para, uint timeStep=0);
+//! \brief write lines that connect the cell centers for the interpolation from coarse to fine cells
+void writeInterfaceLinesDebugCF(Parameter* para, uint timeStep = 0);
+//! \brief write lines that connect the cell centers for the interpolation from fine to coarse cells
+void writeInterfaceLinesDebugFC(Parameter* para, uint timeStep = 0);
 
 void writeInterfaceLinesDebugCFCneighbor(Parameter *para);
 void writeInterfaceLinesDebugCFFneighbor(Parameter *para);
