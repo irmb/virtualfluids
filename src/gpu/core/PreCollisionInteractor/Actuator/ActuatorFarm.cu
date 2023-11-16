@@ -172,7 +172,7 @@ void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
     this->forceRatio = para->getForceRatio();
     this->initTurbineGeometries(cudaManager);
     this->initBladeCoords(cudaManager);
-    this->initBladeIndices(para, cudaManager);
+    this->initBladeIndices(cudaManager);
     this->initBladeVelocities(cudaManager);
     this->initBladeForces(cudaManager);
     this->initBoundingSpheres(para, cudaManager);
