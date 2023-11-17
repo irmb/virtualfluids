@@ -83,7 +83,7 @@ namespace parameter
         .def("set_max_dev", &Parameter::setMaxDev, py::arg("max_dev"))
         .def("set_is_body_force", &Parameter::setIsBodyForce, py::arg("is_body_force"))
         .def("set_use_streams", &Parameter::setUseStreams, py::arg("use_streams"))
-        .def("set_main_kernel", &Parameter::configureMainKernel, py::arg("kernel"))
+        .def("configure_main_kernel", &Parameter::configureMainKernel, py::arg("kernel"))
         .def("set_AD_kernel", &Parameter::setADKernel, py::arg("ad_kernel"))
         .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor, py::arg("has_wall_monitor"))
         .def("set_outflow_pressure_correction_factor", &Parameter::setOutflowPressureCorrectionFactor, py::arg("correction_factor"))

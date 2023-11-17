@@ -33,7 +33,8 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <gpu/core/PreCollisionInteractor/ActuatorFarm.h>
+#include <gpu/core/PreCollisionInteractor/Actuator/ActuatorFarm.h>
+#include <gpu/core/PreCollisionInteractor/Actuator/ActuatorFarmStandalone.h>
 #include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
 
 
@@ -41,9 +42,9 @@ class PyActuatorFarm : public ActuatorFarm
 {
 public:
     using ActuatorFarm::ActuatorFarm; // Inherit constructors
-    void calcBladeForces() override 
+    void updateForcesAndCoordinates() override 
     { 
-        PYBIND11_OVERRIDE_NAME(void, ActuatorFarm, "calc_blade_forces", calcBladeForces); 
+        PYBIND11_OVERRIDE_PURE_NAME(void, ActuatorFarm, "update_forces_and_coordinates", updateForcesAndCoordinates); 
     }
 };
 
@@ -62,24 +63,31 @@ namespace actuator_farm
         using arr = py::array_t<real, py::array::c_style>;
         
         py::class_<ActuatorFarm, PreCollisionInteractor, PyActuatorFarm, std::shared_ptr<ActuatorFarm>>(parentModule, "ActuatorFarm", py::dynamic_attr())
-        .def(py::init<  const uint,
+        .def(py::init<  const real,
+                        const std::vector<real>,
+                        const std::vector<real>,
+                        const std::vector<real>,
+                        const std::vector<real>,
                         const real,
-                        const uint,
                         const real,
-                        int,
+                        const int,
                         const real,
                         const real,
                         const bool>(), 
-                        py::arg("number_of_blades_per_turbine"), 
+                        py::arg("diameter"),
+                        py::arg("blade_radii"),
+                        py::arg("turbine_positions_x"),
+                        py::arg("turbine_positions_y"),
+                        py::arg("turbine_positions_z"),
                         py::arg("density"), 
-                        py::arg("number_of_nodes_per_blade"), 
-                        py::arg("epsilon"),
+                        py::arg("smearing_width"),
                         py::arg("level"), 
                         py::arg("delta_t"), 
                         py::arg("delta_x"),
                         py::arg("use_host_arrays"))
-        .def_property_readonly("number_of_turbines", &ActuatorFarm::getNumberOfTurbines)
         .def_property_readonly("number_of_nodes_per_blade", &ActuatorFarm::getNumberOfNodesPerBlade)
+        .def_property_readonly("number_of_turbines", &ActuatorFarm::getNumberOfTurbines)
+        .def_property_readonly("number_of_nodes_per_turbine", &ActuatorFarm::getNumberOfNodesPerTurbine)
         .def_property_readonly("number_of_blades_per_turbine", &ActuatorFarm::getNumberOfBladesPerTurbine)
         .def_property_readonly("number_of_grid_nodes", &ActuatorFarm::getNumberOfGridNodes)
         .def_property_readonly("number_of_indices", &ActuatorFarm::getNumberOfIndices)
@@ -87,22 +95,13 @@ namespace actuator_farm
         .def_property_readonly("delta_t", &ActuatorFarm::getDeltaT)
         .def_property_readonly("delta_x", &ActuatorFarm::getDeltaX)
 
-        .def("add_turbine", &ActuatorFarm::addTurbine, py::arg("posX"), py::arg("posY"), py::arg("posZ"), py::arg("diameter"), py::arg("omega"), py::arg("azimuth"), py::arg("yaw"), py::arg("bladeRadii"))
-
         .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ 
             real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position);
             }, py::arg("turbine"))
-        .def("get_turbine_azimuth", &ActuatorFarm::getTurbineAzimuth, py::arg("turbine"))
-        .def("get_turbine_yaw", &ActuatorFarm::getTurbineYaw, py::arg("turbine"))
-        .def("get_turbine_omega", &ActuatorFarm::getTurbineOmega, py::arg("turbine"))
-        .def("get_all_azimuths", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllAzimuths()); } )
-        .def("get_all_yaws", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllYaws()); } )
-        .def("get_all_omegas", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllOmegas()); } )
         .def("get_all_turbine_pos_x", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllTurbinePosX()); } )
         .def("get_all_turbine_pos_y", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllTurbinePosY()); } )
         .def("get_all_turbine_pos_z", [](ActuatorFarm& al){ return arr(al.getNumberOfTurbines(), al.getAllTurbinePosZ()); } )
     
-        .def("get_all_blade_radii", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfNodesPerBlade()}, al.getAllBladeRadii()); } )
         .def("get_all_blade_coords_x", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeCoordsX()); } )
         .def("get_all_blade_coords_y", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeCoordsY()); } )
         .def("get_all_blade_coords_z", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeCoordsZ()); } )        
@@ -113,7 +112,6 @@ namespace actuator_farm
         .def("get_all_blade_forces_y", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeForcesY()); } )
         .def("get_all_blade_forces_z", [](ActuatorFarm& al){ return arr({al.getNumberOfTurbines(), al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getAllBladeForcesZ()); } )
 
-        .def("get_turbine_blade_radii", [](ActuatorFarm& al, uint turbine){ return arr(al.getNumberOfNodesPerBlade(), al.getTurbineBladeRadiiDevice(turbine)); } , py::arg("turbine"))
         .def("get_turbine_blade_coords_x", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsXDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_coords_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsYDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_coords_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeCoordsZDevice(turbine)); }, py::arg("turbine") )        
@@ -124,7 +122,6 @@ namespace actuator_farm
         .def("get_turbine_blade_forces_y", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesYDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_forces_z", [](ActuatorFarm& al, uint turbine){ return arr({al.getNumberOfBladesPerTurbine(), al.getNumberOfNodesPerBlade()}, al.getTurbineBladeForcesZDevice(turbine)); }, py::arg("turbine") )
 
-        .def("get_all_blade_radii_device", [](ActuatorFarm& al) -> intptr_t { return arr_to_cp(al.getAllBladeRadiiDevice()); } )
         .def("get_all_blade_coords_x_device", [](ActuatorFarm& al) -> intptr_t { return arr_to_cp(al.getAllBladeCoordsXDevice()); } )
         .def("get_all_blade_coords_y_device", [](ActuatorFarm& al) -> intptr_t { return arr_to_cp(al.getAllBladeCoordsYDevice()); } )
         .def("get_all_blade_coords_z_device", [](ActuatorFarm& al) -> intptr_t { return arr_to_cp(al.getAllBladeCoordsZDevice()); } )        
@@ -135,7 +132,6 @@ namespace actuator_farm
         .def("get_all_blade_forces_y_device", [](ActuatorFarm& al) -> intptr_t { return arr_to_cp(al.getAllBladeForcesYDevice()); } )
         .def("get_all_blade_forces_z_device", [](ActuatorFarm& al) -> intptr_t { return arr_to_cp(al.getAllBladeForcesZDevice()); } )
 
-        .def("get_turbine_blade_radii_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeRadiiDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_coords_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeCoordsXDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_coords_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeCoordsYDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_coords_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeCoordsZDevice(turbine)); }, py::arg("turbine") )        
@@ -145,14 +141,6 @@ namespace actuator_farm
         .def("get_turbine_blade_forces_x_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeForcesXDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_forces_y_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeForcesYDevice(turbine)); }, py::arg("turbine") )
         .def("get_turbine_blade_forces_z_device", [](ActuatorFarm& al, uint turbine) -> intptr_t { return arr_to_cp(al.getTurbineBladeForcesZDevice(turbine)); }, py::arg("turbine") )
-
-        .def("set_all_azimuths", [](ActuatorFarm& al, arr azimuths){ al.setAllAzimuths(np_to_arr(azimuths)); }, py::arg("azimuths"))
-        .def("set_all_yaws", [](ActuatorFarm& al, arr yaws){ al.setAllYaws(np_to_arr(yaws)); }, py::arg("yaws"))
-        .def("set_all_omegas", [](ActuatorFarm& al, arr omegas){ al.setAllOmegas(np_to_arr(omegas)); }, py::arg("omegas"))
-
-        .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth, py::arg("turbine"), py::arg("azimuth"))
-        .def("set_turbine_yaw", &ActuatorFarm::setTurbineYaw, py::arg("turbine"), py::arg("yaw"))
-        .def("set_turbine_omega", &ActuatorFarm::setTurbineOmega, py::arg("turbine"), py::arg("omega"))
 
         .def("set_all_blade_coords", [](ActuatorFarm& al, arr coordsX, arr coordsY, arr coordsZ){ 
             al.setAllBladeCoords(np_to_arr(coordsX), np_to_arr(coordsY), np_to_arr(coordsZ)); 
@@ -172,6 +160,34 @@ namespace actuator_farm
         .def("set_turbine_blade_forces", [](ActuatorFarm& al, uint turbine, arr forcesX, arr forcesY, arr forcesZ){ 
             al.setTurbineBladeForces(turbine, np_to_arr(forcesX), np_to_arr(forcesY), np_to_arr(forcesZ)); 
         }, py::arg("turbine"), py::arg("blade_forces_x"), py::arg("blade_forces_y"), py::arg("blade_forces_z") )
-        .def("calc_blade_forces", &ActuatorFarm::calcBladeForces);
+        .def("update_forces_and_coordinates", &ActuatorFarm::updateForcesAndCoordinates)
+        .def("enable_output", &ActuatorFarm::enableOutput, py::arg("output_name"), py::arg("t_start_out"), py::arg("t_out"))
+        .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth, py::arg("turbine"), py::arg("azimuth"));
+
+        py::class_<ActuatorFarmStandalone, ActuatorFarm, std::shared_ptr<ActuatorFarmStandalone>>(parentModule, "ActuatorFarmStandalone")
+        .def(py::init<  const real,
+                        const uint,
+                        const std::vector<real>,
+                        const std::vector<real>,
+                        const std::vector<real>,
+                        const std::vector<real>,
+                        const real,
+                        const real,
+                        const int,
+                        const real,
+                        const real>(), 
+                        py::arg("diameter"),
+                        py::arg("number_of_nodes_per_blade"), 
+                        py::arg("turbine_positions_x"),
+                        py::arg("turbine_positions_y"),
+                        py::arg("turbine_positions_z"),
+                        py::arg("rotor_speeds"),
+                        py::arg("density"), 
+                        py::arg("smearing_width"),
+                        py::arg("level"), 
+                        py::arg("delta_t"), 
+                        py::arg("delta_x"));
     }
+
+
 }

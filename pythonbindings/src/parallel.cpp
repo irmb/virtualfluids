@@ -33,17 +33,21 @@
 #include <pybind11/cast.h>
 #include <pybind11/pybind11.h>
 
+#include <parallel/Communicator.h>
 #include <parallel/MPICommunicator.h>
 
-namespace communicator_bindings
+namespace parallel
 {
-    namespace py = pybind11;
+namespace py = pybind11;
 
-    PYBIND11_MODULE(communicator, m)
-    {
-        py::class_<vf::parallel::MPICommunicator, std::shared_ptr<vf::parallel::MPICommunicator>>(m, "Communicator")
-            .def_static("get_instance", &vf::parallel::MPICommunicator::getInstance)
-            .def("get_number_of_processes", &vf::parallel::MPICommunicator::getNumberOfProcesses)
-            .def("get_process_id", py::overload_cast<>(&vf::parallel::MPICommunicator::getProcessID, py::const_));
-    }
-} // namespace communicator_bindings
+PYBIND11_MODULE(parallel, m)
+{
+py::class_<vf::parallel::Communicator, std::shared_ptr<vf::parallel::Communicator>>(m, "Communicator")
+        .def_static("get_instance", &vf::parallel::Communicator::getInstance)
+        .def("get_process_id", py::overload_cast<>(&vf::parallel::Communicator::getProcessID, py::const_))
+        .def("get_number_of_processes", &vf::parallel::Communicator::getNumberOfProcesses);
+
+    py::class_<vf::parallel::MPICommunicator, vf::parallel::Communicator, std::shared_ptr<vf::parallel::MPICommunicator>>(m, "MPICommunicator")
+        .def_static("get_instance", &vf::parallel::MPICommunicator::getInstance);
+}
+} // namespace parallel
