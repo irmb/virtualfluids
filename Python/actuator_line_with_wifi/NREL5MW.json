@@ -1,0 +1,33 @@
+{
+    "generator":
+    {
+        "rated_speed": 122.9,
+        "rated_torque": 43093.55,
+        "max_torque": 44748,
+        "max_torque_rate": 15000,
+        "efficiency": 0.944,
+        "slip": 0.1
+    },
+    "gearbox":
+    {
+        "ratio": 97
+    },
+    "blade":
+    {
+        "tip_radius": 63,
+        "inertia": 11776047,
+        "mass": 17740,
+        "file_format": "standard",
+        "standard_dict": {
+            "geometry_file": "NREL5MW.geo",
+            "cl_file": "NREL5MW.cl",
+            "cd_file": "NREL5MW.cd"
+        },
+        "openfast_dict": {
+            "input_file": "OpenFASTCoupled/NREL5MW.fst"
+        },
+        "max_pitch_rate": 8,
+        "root_radius": 1.5
+    },
+    "number_of_blades_per_turbine": 3
+}

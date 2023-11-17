@@ -27,8 +27,20 @@ r"""
   You should have received a copy of the GNU General Public License along
   with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 
-! \file __init__.py
-! \ingroup pyfluids
+! \file parallel.pyi
+! \ingroup bindings
 ! \author Henry Korb
 =======================================================================================
 """
+
+from __future__ import annotations
+
+class Communicator:
+    @staticmethod
+    def get_instance() -> Communicator: ...
+    def get_number_of_processes(self) -> int: ...
+    def get_process_id(self) -> int: ...
+
+class MPICommunicator(Communicator):
+    @staticmethod
+    def get_instance() -> MPICommunicator: ...
