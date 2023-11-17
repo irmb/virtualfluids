@@ -46,6 +46,7 @@ class NullCommunicator : public Communicator
 public:
     static std::shared_ptr<Communicator> getInstance();
 
+    double Wtime() override;
     int getBundleID() const override;
     int getNumberOfBundles() const override;
     int getProcessID() const override;

@@ -49,7 +49,9 @@ option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
 option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
 option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
-option(BUILD_USE_MPI "include MPI library support" ON)
+
+# TODO: Make VirtualFluids work without MPI
+# option(BUILD_USE_MPI "include MPI library support" ON)
 
 # vf gpu
 option(BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
@@ -190,10 +192,11 @@ if(BUILD_USE_OPENMP)
     find_package(OpenMP REQUIRED)
 endif()
 
-if(BUILD_USE_MPI)
+# TODO: Make VirtualFluids work without MPI
+# if(BUILD_USE_MPI) 
     find_package(MPI REQUIRED)
     list(APPEND VF_COMPILER_DEFINITION VF_MPI)
-endif()
+# endif()
 
 # boost
 IF(BUILD_USE_BOOST)

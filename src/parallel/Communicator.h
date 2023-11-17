@@ -55,6 +55,8 @@ public:
 
     virtual ~Communicator() = default;
 
+
+    virtual double Wtime() = 0;
     virtual int getBundleID() const                      = 0;
     virtual int getNumberOfBundles() const               = 0;
     virtual int getProcessID() const                     = 0;

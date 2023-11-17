@@ -17,6 +17,11 @@ using namespace std;
 
 namespace vf::parallel
 {
+//////////////////////////////////////////////////////////////////////////
+double MPICommunicator::Wtime()
+{
+    return MPI_Wtime();
+}
 std::shared_ptr<Communicator> MPICommunicator::getInstance()
 {
     std::lock_guard<std::mutex> myLock(instantiation_mutex);
