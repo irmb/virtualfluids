@@ -27,7 +27,7 @@ endif()
 
 vf_add_tests()
 
-# TODO: Make VirtualFluids work without MPI
+# TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/139
 # if(BUILD_USE_MPI)
     target_link_libraries(${library_name} PRIVATE MPI::MPI_CXX)
 # endif()
