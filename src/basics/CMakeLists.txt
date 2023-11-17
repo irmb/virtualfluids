@@ -1,7 +1,7 @@
 
 include(buildInfo.cmake)
 
-vf_add_library(PUBLIC_LINK logger MPI::MPI_CXX EXCLUDE buildInfo.in.cpp)
+vf_add_library(PUBLIC_LINK logger PRIVATE_LINK parallel EXCLUDE buildInfo.in.cpp)
 
 vf_get_library_name (library_name)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/geometry3d)
@@ -26,3 +26,8 @@ if(BUILD_USE_BOOST)
 endif()
 
 vf_add_tests()
+
+# TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/139
+# if(BUILD_USE_MPI)
+    target_link_libraries(${library_name} PRIVATE MPI::MPI_CXX)
+# endif()
