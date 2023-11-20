@@ -453,7 +453,14 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
 
-        
+        SPtr<GbPoint3d> pointOne(new GbPoint3D(-0.00494999997317791,0.008, 0.0099));
+        SPtr<GbPoint3d> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
+
+        SPtr<GbLine3D> line(new GbLine3D(pointOne,pointTwo));
+            if (myid == 0)
+                GbSystem3D::writeGeoObject(line.get(), pathname + "/geo/line", WbWriterVtkXmlBinary::getInstance());
+        SPtr<UbScheduler> linSch(new UbScheduler(outTime/20,outTime/2/*,beginTime,endTime*/));
+        SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname, WbWriterVtkXmlBinary::getInstance(), line,refineLevel, comm));
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime/*,beginTime,endTime*/));
         SPtr<SimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
