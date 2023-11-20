@@ -88,16 +88,16 @@ private:
 
 public:
     SPtr<Object> clone() const override;
-    double getX1Centroid() override { throw "Not implemented in TriangularMesh"; }
-    double getX1Minimum() override { return minmax.minX; }
-    double getX1Maximum() override { return minmax.maxX; }
-    double getX2Centroid() override { throw "Not implemented in TriangularMesh"; }
-    double getX2Minimum() override { return minmax.minY; }
-    double getX2Maximum() override { return minmax.maxY; }
-    double getX3Centroid() override { throw "Not implemented in TriangularMesh"; }
-    double getX3Minimum() override { return minmax.minZ; }
-    double getX3Maximum() override { return minmax.maxZ; }
-    void scale(double delta) override;
+    double getX1Centroid() const override { throw "Not implemented in TriangularMesh"; }
+    double getX1Minimum() const override { return minmax.minX; }
+    double getX1Maximum() const override { return minmax.maxX; }
+    double getX2Centroid() const override { throw "Not implemented in TriangularMesh"; }
+    double getX2Minimum() const override { return minmax.minY; }
+    double getX2Maximum() const override { return minmax.maxY; }
+    double getX3Centroid() const override { throw "Not implemented in TriangularMesh"; }
+    double getX3Minimum() const override { return minmax.minZ; }
+    double getX3Maximum() const override { return minmax.maxZ; }
+    void changeSizeByDelta(double delta) override;
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
         const double& maxOffset) override {
         return false;
