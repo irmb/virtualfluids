@@ -107,7 +107,7 @@ void run(string configname)
 
          //xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy())); 
+        xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy(vx, c1o2))); 
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
          //xMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
          xMaxApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowWithRelaxationBCStrategy()));

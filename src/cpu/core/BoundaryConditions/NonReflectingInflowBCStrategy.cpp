@@ -36,10 +36,13 @@
 #include "D3Q27System.h"
 #include "DistributionArray3D.h"
 
-NonReflectingInflowBCStrategy::NonReflectingInflowBCStrategy()
+NonReflectingInflowBCStrategy::NonReflectingInflowBCStrategy(LBMReal velocity, LBMReal relaxationRate)
 {
     BCStrategy::type         = BCStrategy::NonReflectingInflowBCStrategy;
     BCStrategy::preCollision = true;
+    this->BCVeloWeight=relaxationRate;
+    this->velocity=velocity;
+
 }
 //////////////////////////////////////////////////////////////////////////
 NonReflectingInflowBCStrategy::~NonReflectingInflowBCStrategy() = default;
@@ -98,14 +101,16 @@ void NonReflectingInflowBCStrategy::applyBC()
     LBMReal rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     //vx1                  = 0.;
-    LBMReal BCVeloWeight = c1o2;
+    //LBMReal BCVeloWeight = c1o2;
+     LBMReal BCVeloWeight =this->BCVeloWeight
     // LBMReal velocity     = 0.004814077025232405; 
      // LBMReal velocity     = 0.00057735;
     //LBMReal velocity = 0.04; 
       // LBMReal velocity = 0.01; 
      // LBMReal velocity = 1./112.; 
     // LBMReal velocity = 1./126.; 
-     LBMReal velocity = c1o100/2;
+     //LBMReal velocity = c1o100/2;
+     LBMReal velocity = this->velocity;
      // LBMReal velocity = 0.005; 
     //LBMReal delf         =(-velocity+vx1)*0.5 ;
     LBMReal delf; 

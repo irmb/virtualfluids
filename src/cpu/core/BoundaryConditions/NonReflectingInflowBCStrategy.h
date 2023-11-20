@@ -41,10 +41,13 @@ class DistributionArray3D;
 class NonReflectingInflowBCStrategy : public BCStrategy
 {
 public:
-    NonReflectingInflowBCStrategy();
+    NonReflectingInflowBCStrategy(LBMReal velocity, LBMReal relaxationRate);
     ~NonReflectingInflowBCStrategy() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
+private:
+LBMReal velocity;
+LBMReal BCVeloWeight;    
 };
 #endif // NonReflectingDensityBCStrategy_h__
