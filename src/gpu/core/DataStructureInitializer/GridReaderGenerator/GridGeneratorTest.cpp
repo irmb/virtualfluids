@@ -30,7 +30,7 @@ public:
     {
         uint process = 0;
         if (direction != CommunicationDirections::MX)
-            process = INVALID_INDEX;
+            process = (uint)INVALID_INDEX;
         return process;
     }
 
