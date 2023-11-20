@@ -38,9 +38,6 @@ public:
     void setMemsizeGPU(double admem, bool reset);
     double getMemsizeGPU();
 
-    //void cudaAllocFull(int lev); //DEPRECATED: related to full matrix
-    //void cudaFreeFull(int lev);  //DEPRECATED: related to full matrix
-
     void cudaCopyPrint(int lev);
     void cudaCopyMedianPrint(int lev);
 
@@ -258,14 +255,6 @@ public:
     void cudaAllocPressX1(int lev);
     void cudaCopyPressX1(int lev);
     void cudaFreePressX1(int lev);
-
-    void cudaAllocVeloPropeller(int lev);
-    void cudaCopyVeloPropeller(int lev);
-    void cudaFreeVeloPropeller(int lev);
-
-    void cudaAllocMeasurePoints(int lev, int i);
-    void cudaCopyMeasurePoints(int lev, int i);
-    void cudaFreeMeasurePoints(int lev, int i);
 
     void cudaAllocMeasurePointsIndex(int lev);
     void cudaCopyMeasurePointsIndex(int lev);

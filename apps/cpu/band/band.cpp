@@ -265,11 +265,11 @@ void run(const char *cstr)
 
          if (refineLevel > 0)
          {
-            if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - start");    
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
             refineHelper.addGbObject(refinePlatteBox, refineLevel);
             refineHelper.refine();
-            if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - end");    
          }
 
          /////////////////////////////////////////////////
@@ -331,7 +331,7 @@ void run(const char *cstr)
 
          ////////////////////////////////////////////
          //METIS
-         Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));	
+         Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));    
 
          ////////////////////////////////////////////
          /////delete solid blocks
@@ -350,7 +350,7 @@ void run(const char *cstr)
          intHelper.addInteractor(densInteractor);
          intHelper.addInteractor(velBCInteractor);
          intHelper.selectBlocks();
-         if(myid == 0) UBLOG(logINFO,"deleteSolidBlocks - end");	 
+         if(myid == 0) UBLOG(logINFO,"deleteSolidBlocks - end");     
          //////////////////////////////////////
 
          //domain decomposition for threads

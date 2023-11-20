@@ -370,7 +370,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVectors()
             fillSendVector(fFrom, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
 
-        //	////N-S-E-W
+        //    ////N-S-E-W
         case dPP0:
             getLocalMinMax(lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3);
             getLocalMins(lMinX1, lMinX2, lMinX3, oMinX1, oMinX2, oMinX3);
@@ -958,7 +958,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVectors()
             distributeReceiveVector(fTo, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
         //
-        //	/////T-B-E-W
+        //    /////T-B-E-W
         case dP0P:
             lMinX1 = maxX1 - 4;
             lMaxX1 = lMinX1 + 3;
@@ -995,7 +995,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVectors()
             distributeReceiveVector(fTo, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
 
-        //	////////////////T-B-N-S
+        //    ////////////////T-B-N-S
         //
         case d0PP:
             lMinX2 = maxX2 - 4;
@@ -1518,16 +1518,16 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
         case dP0M:
         case dM0P:
             if (connType == OddEvenSE)
-                //		minX1 += oMinX1;
+                //        minX1 += oMinX1;
                 if (connType == OddOddNE) {
-                    //		minX1 += oMinX1;
+                    //        minX1 += oMinX1;
                     minX2 += oMinX2;
                 }
             if (connType == EvenOddNW)
                 minX2 += oMinX2;
             break;
 
-        //	//////
+        //    //////
         case d0PP:
         case d0MM:
         case d0PM:
@@ -1542,18 +1542,18 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
                 // minX3 += oMinX3;
                 break;
 
-            //	/////
-            //	case TNE: case TNW: case TSE: case TSW: case BNE: case BNW: case BSE: case BSW:
-            //	if(connType == OddEvenSE)
-            //	//	minX1 += oMinX1;
-            //	if(connType == OddOddNE)
-            //	{
-            //		//minX1 += oMinX1;
-            //		//minX3 += oMinX3;
-            //	}
-            //	if(connType == EvenOddNW)
-            //		//minX3 += oMinX3;
-            //	break;
+            //    /////
+            //    case TNE: case TNW: case TSE: case TSW: case BNE: case BNW: case BSE: case BSW:
+            //    if(connType == OddEvenSE)
+            //    //    minX1 += oMinX1;
+            //    if(connType == OddOddNE)
+            //    {
+            //        //minX1 += oMinX1;
+            //        //minX3 += oMinX3;
+            //    }
+            //    if(connType == EvenOddNW)
+            //        //minX3 += oMinX3;
+            //    break;
     }
 }
 //////////////////////////////////////////////////////////////////////////

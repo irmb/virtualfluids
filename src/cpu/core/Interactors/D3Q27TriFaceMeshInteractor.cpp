@@ -894,18 +894,18 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                         internX2 = val<2>(coords) + nodeDx2 * ix2 - c1o2 * nodeDx2;
                         for (int ix1 = indexMinX1; ix1 < indexMaxX1; ix1++) {
 
-                            //					  int blx1 =block->getX1();
-                            //					  int blx2 = block->getX2();
-                            //					  int blx3 = block->getX3();
+                            //                      int blx1 =block->getX1();
+                            //                      int blx2 = block->getX2();
+                            //                      int blx3 = block->getX3();
 
-                            //					  if (blx1==0&&blx2==1&&blx3==0)
-                            //					  {
-                            //						  //if (ix2==39&&ix3==4)
-                            //							   if (ix2==39&&ix3==4)
-                            //						  {
-                            //							 int seb=0;
-                            //						  }
-                            //					  }
+                            //                      if (blx1==0&&blx2==1&&blx3==0)
+                            //                      {
+                            //                          //if (ix2==39&&ix3==4)
+                            //                               if (ix2==39&&ix3==4)
+                            //                          {
+                            //                             int seb=0;
+                            //                          }
+                            //                      }
                             // Problem: wenn voher der punkt durch eine andere geo not active gesetzt wird und
                             // dieser nun uebersprungen wird, dann hat man spaeter beim fuellalgorithmus luecken
                             // in der front und der block wird u.U. faelschlicher weise komplett solid markiert
@@ -1208,10 +1208,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                     for (int bx2 = 0; bx2 < blocknx2; ++bx2) {
                         for (int bx1 = 0; bx1 < blocknx1; ++bx1) {
 
-                            //					  if (bx2==9&&bx3==29)
-                            //					  {
-                            //						  int ride=0;
-                            //					  }
+                            //                      if (bx2==9&&bx3==29)
+                            //                      {
+                            //                          int ride=0;
+                            //                      }
                             if (flagField(bx1, bx2, bx3) == UNDEF_FLAG) {
                                 if (mesh->isPointInGbObject3D(val<1>(coords) + bx1 * nodeDeltaX1 - c1o2 * nodeDeltaX1,
                                                               val<2>(coords) + bx2 * nodeDeltaX2 - c1o2 * nodeDeltaX2,

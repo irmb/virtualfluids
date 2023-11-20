@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "ThinWallBCSet.h"
 
-#include "ThinWallNoSlipBCStrategy.h"
+#include "ThinWallNoSlip.h"
 
 #include "LBMKernel.h"
 
@@ -50,10 +50,10 @@ void ThinWallBCSet::applyPostCollisionBC()
     BCSet::applyPostCollisionBC();
 
     for (SPtr<BCStrategy> bc : postBC) {
-        if (bc->getType() == BCStrategy::ThinWallNoSlipBCStrategy) {
-            dynamicPointerCast<ThinWallNoSlipBCStrategy>(bc)->setPass(2);
+        if (dynamicPointerCast<ThinWallNoSlip>(bc)->isThinWallNoSlipBCStrategy()) {
+            dynamicPointerCast<ThinWallNoSlip>(bc)->setPass(2);
             bc->applyBC();
-            dynamicPointerCast<ThinWallNoSlipBCStrategy>(bc)->setPass(1);
+            dynamicPointerCast<ThinWallNoSlip>(bc)->setPass(1);
         }
     }
 }

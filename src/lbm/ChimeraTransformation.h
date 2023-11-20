@@ -98,10 +98,10 @@ inline __host__ __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &
     mfa = m0;
     //m0     += K;
     mfb = (m1 - K*vv) - m0 * vv;
-    mfc = ((m2 - c2o1*	m1 * vv) + v2*K) + v2 * m0;
+    mfc = ((m2 - c2o1*    m1 * vv) + v2*K) + v2 * m0;
     //m0 += K;
     //mfb = m1 - m0 * vv;
-    //mfc = m2 - two*	m1 * vv + v2 * m0;
+    //mfc = m2 - two*    m1 * vv + v2 * m0;
 }
 
 

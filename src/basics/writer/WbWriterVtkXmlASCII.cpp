@@ -180,7 +180,7 @@ std::string WbWriterVtkXmlASCII::writeQuads(const string &filename, vector<UbTup
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "      <Points>\n";
@@ -252,7 +252,7 @@ std::string WbWriterVtkXmlASCII::writeQuadsWithNodeData(const string &filename, 
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -336,7 +336,7 @@ std::string WbWriterVtkXmlASCII::writeQuadsWithCellData(const string &filename, 
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -425,7 +425,7 @@ string WbWriterVtkXmlASCII::writeQuadsWithNodeAndCellData(const string &filename
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -521,7 +521,7 @@ std::string WbWriterVtkXmlASCII::writeLines(const string &filename, vector<UbTup
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofLines << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofLines << "\">   \n";
 
     // POINTS SECTION
     out << "      <Points>\n";
@@ -586,7 +586,7 @@ std::string WbWriterVtkXmlASCII::writeLines(const string &filename, vector<UbTup
 //   //VTK FILE
 //   out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
 //   out<<"   <UnstructuredGrid>"<<"\n";
-//   out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\"	NumberOfCells=\""<<nofLines<<"\">   \n";
+//   out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\"    NumberOfCells=\""<<nofLines<<"\">   \n";
 //
 //   //POINTS SECTION
 //   out<<"      <Points>\n";
@@ -669,7 +669,7 @@ std::string WbWriterVtkXmlASCII::writeTriangles(const string &filename, vector<U
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofTriangles << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofTriangles << "\">   \n";
 
     // POINTS SECTION
     out << "      <Points>\n";
@@ -742,7 +742,7 @@ std::string WbWriterVtkXmlASCII::writeTrianglesWithNodeData(const std::string &f
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -826,7 +826,7 @@ std::string WbWriterVtkXmlASCII::writeOctsWithCellData(const string &filename, v
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -913,7 +913,7 @@ std::string WbWriterVtkXmlASCII::writeOctsWithNodeData(const string &filename, v
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -1001,7 +1001,7 @@ std::string WbWriterVtkXmlASCII::writeOcts(const string &filename, vector<UbTupl
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofCells << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofCells << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -1070,7 +1070,7 @@ std::string WbWriterVtkXmlASCII::writeNodes(const std::string &filename, std::ve
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofNodes << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofNodes << "\">   \n";
 
     // POINTS SECTION
     out << "      <Points>\n";
@@ -1139,7 +1139,7 @@ std::string WbWriterVtkXmlASCII::writeNodesWithNodeData(const std::string &filen
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofNodes << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofNodes << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";
@@ -1227,7 +1227,7 @@ std::string WbWriterVtkXmlASCII::writeNodesWithNodeDataDouble(const std::string 
         << "\n";
     out << "   <UnstructuredGrid>"
         << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"	NumberOfCells=\"" << nofNodes << "\">   \n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\"    NumberOfCells=\"" << nofNodes << "\">   \n";
 
     // POINTS SECTION
     out << "         <Points>\n";

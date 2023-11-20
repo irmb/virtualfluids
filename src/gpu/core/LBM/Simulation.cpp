@@ -4,7 +4,7 @@
 
 #include <helper_timer.h>
 
-#include "Factories/GridScalingFactory.h"
+#include "GridScaling/GridScalingFactory.h"
 #include "LBM/LB.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
@@ -26,8 +26,8 @@
 #include "Utilities/Buffer2D.hpp"
 #include "StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Init/InitLattice.h"
-#include "Init/VfReader.h"
+#include "PreProcessor/InitLattice.h"
+#include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
 #include "FindQ/FindQ.h"
 #include "FindQ/DefineBCs.h"
@@ -158,6 +158,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     if (para->getDiffOn()) {
         VF_LOG_INFO("make AD Kernels");
         adKernels = kernelFactory->makeAdvDifKernels(para);
+        std::vector<PreProcessorType> preProADTypes = adKernels.at(0)->getPreProcessorTypes();
+        preProcessorAD = preProcessorFactory->makePreProcessor(preProADTypes, para);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -245,7 +247,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     if (para->getUseMeasurePoints()) {
         VF_LOG_INFO("read measure points");
-        readMeasurePoints(para.get(), cudaMemoryManager.get());
+        ReaderMeasurePoints::readMeasurePoints(para.get(), cudaMemoryManager.get());
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -272,7 +274,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // VF_LOG_INFO("done.");
 
     VF_LOG_INFO("init lattice...");
-    initLattice(para, preProcessor, cudaMemoryManager);
+    initLattice(para, preProcessor, preProcessorAD, cudaMemoryManager);
     VF_LOG_INFO("done");
 
     // VF_LOG_INFO("set geo for Q...\n");

@@ -61,7 +61,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
     void setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) override;
     //////////////////////////////////////////////////////////////////////////
-    real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
+    real getPostCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
     //////////////////////////////////////////////////////////////////////////
     void setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
                                         unsigned long int direction) override;

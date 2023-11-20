@@ -79,16 +79,13 @@ public:
     //! \param x1 coordinate x1
     //! \param x1 coordinate x2
     //! \param x1 coordinate x3
-    virtual void setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
-                                             unsigned long int direction)                               = 0;
+    virtual void setPostCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3, unsigned long int direction) = 0;
     virtual void setPostCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, int direction) = 0;
-    virtual real getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)      = 0;
-    virtual void setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3,
-                                                unsigned long int direction)                            = 0;
-    virtual void setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3,
-                                                unsigned long int direction)                            = 0;
-    virtual real getPreCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction)         = 0;
-    virtual void swap()                                                                                 = 0;
+    virtual real getPostCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) = 0;
+    virtual void setPreCollisionDistributionForDirection(const real *const f, size_t x1, size_t x2, size_t x3, unsigned long int direction)  = 0;
+    virtual void setPreCollisionDistributionForDirection(real f, size_t x1, size_t x2, size_t x3, unsigned long int direction) = 0;
+    virtual real getPreCollisionDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) = 0;
+    virtual void swap() = 0;
 
 protected:
 private:

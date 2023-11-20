@@ -1,0 +1,76 @@
+{
+    "filter_frequency": 0.25,
+    "regions":
+    [
+        { 
+            "name": 1,
+            "min_speed": "-Inf",
+            "max_speed": 70,
+
+            "torque":
+            {
+                "mode": "zero"
+            }            
+            
+        },
+        {   
+            "name": 1.5,
+            "min_speed": 70,
+            "max_speed": 91.3,
+
+            "torque":
+            {
+                "mode": "linear",
+                "kappa": 912.7,
+                "x_0": 70
+            }
+        },
+        {
+            "name": 2,
+            "min_speed": 91.3,
+            "max_speed": 120,
+
+            "torque":
+            {
+                "mode": "quadratic",
+                "kappa": 2.332287
+            }
+        },
+        {
+            "name": 2.5,
+            "min_speed": 120,
+            "max_speed": 122.9,
+            "min_pitch": "-Inf",
+            "max_pitch": 1,
+
+            "torque":
+            {
+                "mode": "linear",
+                "kappa": 4333,
+                "x_0": 111.3
+            }
+
+        },
+        {
+            "name": 3,
+            "min_speed": 0,
+            "max_speed": "Inf",
+            "min_pitch": 0,
+            "max_pitch": 90,
+
+            "pitch":
+            {
+                "mode": "PI",
+                "kappa_p": 0.01882681,
+                "kappa_i": 0.008068634,
+                "theta_k": 6.302336
+            },
+            "torque":
+            {
+                "mode": "inverse",
+                "kappa": 5296610
+            }
+
+        }
+    ]
+}

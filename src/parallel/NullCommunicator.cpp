@@ -47,6 +47,11 @@ std::shared_ptr<Communicator> NullCommunicator::getInstance()
     return instance;
 }
 //////////////////////////////////////////////////////////////////////////
+double NullCommunicator::Wtime()
+{
+    return 0;
+}
+//////////////////////////////////////////////////////////////////////////
 int NullCommunicator::getBundleID() const
 {
     return 0;

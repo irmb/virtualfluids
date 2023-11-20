@@ -375,7 +375,6 @@ struct LBMSimulationParameter {
     QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED BCs that are not used any more
     unsigned int kInletQread, kOutletQread;            // DEPRECATED
 
-    QforBoundaryConditions propellerBC;                                                 // DEPRECATED
     QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;     // DEPRECATED
     QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;           // DEPRECATED
     QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;        // DEPRECATED
@@ -573,9 +572,6 @@ public:
     void setwallBcValues(std::string wallBcValues);
     void setperiodicBcQs(std::string periodicBcQs);
     void setperiodicBcValues(std::string periodicBcValues);
-    void setpropellerCylinder(std::string propellerCylinder);
-    void setpropellerValues(std::string propellerValues);
-    void setpropellerQs(std::string propellerQs);
     void setmeasurePoints(std::string measurePoints);
     void setnumberNodes(std::string numberNodes);
     void setLBMvsSI(std::string LBMvsSI);
@@ -601,7 +597,6 @@ public:
     void setIsGeoNormal(bool isGeoNormal);
     void setIsInflowNormal(bool isInflowNormal);
     void setIsOutflowNormal(bool isOutflowNormal);
-    void setIsProp(bool isProp);
     void setIsCp(bool isCp);
     void setConcFile(bool concFile);
     void setUseMeasurePoints(bool useMeasurePoints);
@@ -789,9 +784,6 @@ public:
     std::string getwallBcValues();
     std::string getperiodicBcQs();
     std::string getperiodicBcValues();
-    std::string getpropellerQs();
-    std::string getpropellerCylinder();
-    std::string getpropellerValues();
     std::string getmeasurePoints();
     std::string getnumberNodes();
     std::string getLBMvsSI();
@@ -889,7 +881,6 @@ public:
     bool getIsGeoNormal();
     bool getIsInflowNormal();
     bool getIsOutflowNormal();
-    bool getIsProp();
     bool getIsCp();
     bool getIsGeometryValues();
     bool getCalc2ndOrderMoments();
@@ -1008,7 +999,6 @@ private:
     bool doCheckPoint{ false };
     bool readGeo{ false };
     bool isGeo;
-    bool isProp;
     bool isCp;
     bool GeometryValues{ false };
     bool is2ndOrderMoments{ false };
@@ -1065,7 +1055,7 @@ private:
     std::string pressBcPos, pressBcQs, pressBcValue;
     std::string geomBoundaryBcQs, velBcQs;
     std::string geomBoundaryBcValues, velBcValues, pressBcValues, noSlipBcValues;
-    std::string propellerCylinder, propellerValues, propellerQs, measurePoints;
+    std::string measurePoints;
     std::string inletBcQs, inletBcValues;
     std::string outletBcQs, outletBcValues;
     std::string topBcQs, topBcValues;

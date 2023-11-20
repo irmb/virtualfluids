@@ -177,7 +177,7 @@ void CheckpointConverter::convertBlocks(int step, int procCount)
         int maxInitLevel = this->grid->getFinestInitializedLevel();
         for (int level = minInitLevel; level <= maxInitLevel; level++) {
             grid->getBlocks(level, blocksVector[level]);
-            for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+            for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
                 grid->deleteBlock(block);
         }
     }

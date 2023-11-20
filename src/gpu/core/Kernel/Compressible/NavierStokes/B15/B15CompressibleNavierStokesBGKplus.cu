@@ -30,7 +30,7 @@ B15CompressibleNavierStokesBGKplus::B15CompressibleNavierStokesBGKplus(std::shar
     this->para = para;
     this->level = level;
 
-    myPreProcessorTypes.push_back(InitCompSP27);
+    myPreProcessorTypes.push_back(InitNavierStokesCompressible);
 
     
 }

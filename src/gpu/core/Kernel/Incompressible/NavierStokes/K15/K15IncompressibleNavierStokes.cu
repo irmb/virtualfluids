@@ -30,7 +30,7 @@ K15IncompressibleNavierStokes::K15IncompressibleNavierStokes(std::shared_ptr<Par
     this->para = para;
     this->level = level;
 
-    myPreProcessorTypes.push_back(InitSP27);
+    myPreProcessorTypes.push_back(InitNavierStokesIncompressible);
 
     
 }

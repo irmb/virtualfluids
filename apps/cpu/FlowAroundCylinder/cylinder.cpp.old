@@ -199,12 +199,12 @@ void run(const char *cstr)
 
          if (refineLevel > 0)
          {
-            if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - start");    
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
             //refineHelper.addGbObject(refineCube, refineLevel);
             refineHelper.addGbObject(refCylinder, refineLevel);
             refineHelper.refine();
-            if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - end");    
          }
 
          MetisPartitioningGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B);
@@ -570,12 +570,12 @@ void run2(const char *cstr)
 
          if (refineLevel > 0)
          {
-            if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - start");    
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
             //refineHelper.addGbObject(refineCube, refineLevel);
             refineHelper.addGbObject(refCylinder, refineLevel);
             refineHelper.refine();
-            if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - end");    
          }
 
          MetisPartitioningGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B);

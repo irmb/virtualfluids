@@ -8,7 +8,7 @@
 #include <Parameter/ParameterRotatingGrid.h>
 
 #include "Parameter/CudaStreamManager.h"
-#include "PreCollisionInteractor/ActuatorFarm.h"
+#include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
 #include "PreCollisionInteractor/Probes/Probe.h"
 #include <PreCollisionInteractor/PrecursorWriter.h>
 
@@ -1920,82 +1920,6 @@ void CudaMemoryManager::cudaFreePressX1(int lev)
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QpressX1.RhoBC  ));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QpressX1.deltaVz));
 }
-//Propeller Velocity
-void CudaMemoryManager::cudaAllocVeloPropeller(int lev)
-{
-    unsigned int mem_size_Propeller_k = sizeof(int)*parameter->getParH(lev)->propellerBC.numberOfBCnodes;
-    unsigned int mem_size_Propeller_q = sizeof(real)*parameter->getParH(lev)->propellerBC.numberOfBCnodes;
-
-    //Host
-    //checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->propellerBC.q27[0]),  parameter->getD3Qxx()*mem_size_Propeller_q ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->propellerBC.k),                  mem_size_Propeller_k ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->propellerBC.Vx),                 mem_size_Propeller_q ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->propellerBC.Vy),                 mem_size_Propeller_q ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->propellerBC.Vz),                 mem_size_Propeller_q ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->propellerBC.RhoBC),              mem_size_Propeller_q ));
-
-    //Device
-    //checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->propellerBC.q27[0]),      parameter->getD3Qxx()*mem_size_Propeller_q ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->propellerBC.k),                      mem_size_Propeller_k ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->propellerBC.Vx),                     mem_size_Propeller_q ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->propellerBC.Vy),                     mem_size_Propeller_q ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->propellerBC.Vz),                     mem_size_Propeller_q ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->propellerBC.RhoBC),                  mem_size_Propeller_q ));
-
-    //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)mem_size_Propeller_k + 4. * (double)mem_size_Propeller_q;
-    setMemsizeGPU(tmp, false);
-}
-void CudaMemoryManager::cudaCopyVeloPropeller(int lev)
-{
-    unsigned int mem_size_Propeller_k = sizeof(int)*parameter->getParH(lev)->propellerBC.numberOfBCnodes;
-    unsigned int mem_size_Propeller_q = sizeof(real)*parameter->getParH(lev)->propellerBC.numberOfBCnodes;
-
-    //checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->propellerBC.q27[0],  parameter->getParH(lev)->propellerBC.q27[0], parameter->getD3Qxx()* mem_size_Propeller_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->propellerBC.k,       parameter->getParH(lev)->propellerBC.k,                  mem_size_Propeller_k,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->propellerBC.Vx,      parameter->getParH(lev)->propellerBC.Vx,                 mem_size_Propeller_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->propellerBC.Vy,      parameter->getParH(lev)->propellerBC.Vy,                 mem_size_Propeller_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->propellerBC.Vz,      parameter->getParH(lev)->propellerBC.Vz,                 mem_size_Propeller_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->propellerBC.RhoBC,   parameter->getParH(lev)->propellerBC.RhoBC,              mem_size_Propeller_q,  cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaFreeVeloPropeller(int lev)
-{
-    //checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->propellerBC.q27[0] ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->propellerBC.k      ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->propellerBC.Vx     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->propellerBC.Vy     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->propellerBC.Vz     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->propellerBC.RhoBC  ));
-}
-//Measure Points
-//void CudaMemoryManager::cudaAllocMeasurePoints(int lev, int i)
-//{
-//    //Host
-//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->MP[i].Vx),                 parameter->getParH(lev)->memSizerealMP ));
-//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->MP[i].Vy),                 parameter->getParH(lev)->memSizerealMP ));
-//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->MP[i].Vz),                 parameter->getParH(lev)->memSizerealMP ));
-//    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->MP[i].Rho),                parameter->getParH(lev)->memSizerealMP ));
-//
-//    //Device
-//    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->MP[i].Vx),                     parameter->getParD(lev)->memSizerealMP ));
-//    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->MP[i].Vy),                     parameter->getParD(lev)->memSizerealMP ));
-//    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->MP[i].Vz),                     parameter->getParD(lev)->memSizerealMP ));
-//    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->MP[i].Rho),                    parameter->getParD(lev)->memSizerealMP ));
-//}
-//void CudaMemoryManager::cudaCopyMeasurePoints(int lev, int i)
-//{
-//    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->MP[i].Vx,      parameter->getParH(lev)->MP[i].Vx,           parameter->getParH(lev)->memSizerealMP,  cudaMemcpyHostToDevice));
-//    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->MP[i].Vy,      parameter->getParH(lev)->MP[i].Vy,           parameter->getParH(lev)->memSizerealMP,  cudaMemcpyHostToDevice));
-//    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->MP[i].Vz,      parameter->getParH(lev)->MP[i].Vz,           parameter->getParH(lev)->memSizerealMP,  cudaMemcpyHostToDevice));
-//    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->MP[i].Rho,     parameter->getParH(lev)->MP[i].Rho,          parameter->getParH(lev)->memSizerealMP,  cudaMemcpyHostToDevice));
-//}
-//void CudaMemoryManager::cudaFreeMeasurePoints(int lev, int i)
-//{
-//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->MP[i].Vx     ));
-//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->MP[i].Vy     ));
-//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->MP[i].Vz     ));
-//    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->MP[i].Rho    ));
-//}
 void CudaMemoryManager::cudaAllocMeasurePointsIndex(int lev)
 {
     //Host
@@ -3044,26 +2968,20 @@ void CudaMemoryManager::cudaFreeTaggedFluidNodeIndices(CollisionTemplate tag, in
 ///////////////////////////////////////////////////////////////////////////////
 void CudaMemoryManager::cudaAllocBladeGeometries(ActuatorFarm* actuatorFarm)
 {
-    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
-    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->bladeRadiiH, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade()) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->diametersH, sizeRealTurbine) );
+    const uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
     checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->turbinePosXH, sizeRealTurbine) );
     checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->turbinePosYH, sizeRealTurbine) );
     checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->turbinePosZH, sizeRealTurbine) );
 
-    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->bladeRadiiD, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade()) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->diametersD, sizeRealTurbine) );
     checkCudaErrors( cudaMalloc((void**) &actuatorFarm->turbinePosXD, sizeRealTurbine) );
     checkCudaErrors( cudaMalloc((void**) &actuatorFarm->turbinePosYD, sizeRealTurbine) );
     checkCudaErrors( cudaMalloc((void**) &actuatorFarm->turbinePosZD, sizeRealTurbine) );
-    setMemsizeGPU(sizeof(real)*(actuatorFarm->getNumberOfNodesPerBlade()+4)*actuatorFarm->getNumberOfTurbines(), false);
+    setMemsizeGPU(sizeof(real)*4.f*actuatorFarm->getNumberOfTurbines(), false);
 
 }
 void CudaMemoryManager::cudaCopyBladeGeometriesHtoD(ActuatorFarm* actuatorFarm)
 {
-    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
-    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeRadiiD, actuatorFarm->bladeRadiiH, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade(), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorFarm->diametersD, actuatorFarm->diametersH, sizeRealTurbine, cudaMemcpyHostToDevice) );
+    const uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
     checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosXD, actuatorFarm->turbinePosXH, sizeRealTurbine, cudaMemcpyHostToDevice) );
     checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosYD, actuatorFarm->turbinePosYH, sizeRealTurbine, cudaMemcpyHostToDevice) );
     checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosZD, actuatorFarm->turbinePosZH, sizeRealTurbine, cudaMemcpyHostToDevice) );
@@ -3072,8 +2990,6 @@ void CudaMemoryManager::cudaCopyBladeGeometriesHtoD(ActuatorFarm* actuatorFarm)
 void CudaMemoryManager::cudaCopyBladeGeometriesDtoH(ActuatorFarm* actuatorFarm)
 {
     uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
-    checkCudaErrors( cudaMemcpy(actuatorFarm->bladeRadiiH, actuatorFarm->bladeRadiiD, sizeRealTurbine*actuatorFarm->getNumberOfNodesPerBlade(), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorFarm->diametersH, actuatorFarm->diametersD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
     checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosXH, actuatorFarm->turbinePosXD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
     checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosYH, actuatorFarm->turbinePosYD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
     checkCudaErrors( cudaMemcpy(actuatorFarm->turbinePosZH, actuatorFarm->turbinePosZD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
@@ -3081,57 +2997,13 @@ void CudaMemoryManager::cudaCopyBladeGeometriesDtoH(ActuatorFarm* actuatorFarm)
 }
 void CudaMemoryManager::cudaFreeBladeGeometries(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFree(actuatorFarm->bladeRadiiD) );
-    checkCudaErrors( cudaFree(actuatorFarm->diametersD) );
     checkCudaErrors( cudaFree(actuatorFarm->turbinePosXD) );
     checkCudaErrors( cudaFree(actuatorFarm->turbinePosYD) );
     checkCudaErrors( cudaFree(actuatorFarm->turbinePosZD) );    
     
-    checkCudaErrors( cudaFreeHost(actuatorFarm->bladeRadiiH) );
-    checkCudaErrors( cudaFreeHost(actuatorFarm->diametersH) );
     checkCudaErrors( cudaFreeHost(actuatorFarm->turbinePosXH) );
     checkCudaErrors( cudaFreeHost(actuatorFarm->turbinePosYH) );
     checkCudaErrors( cudaFreeHost(actuatorFarm->turbinePosZH) );
-}
-
-void CudaMemoryManager::cudaAllocBladeOrientations(ActuatorFarm* actuatorFarm)
-{
-    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
-    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->omegasH, sizeRealTurbine) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->azimuthsH, sizeRealTurbine) );
-    checkCudaErrors( cudaMallocHost((void**) &actuatorFarm->yawsH, sizeRealTurbine) );
-
-    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->omegasD, sizeRealTurbine) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->azimuthsD, sizeRealTurbine) );
-    checkCudaErrors( cudaMalloc((void**) &actuatorFarm->yawsD, sizeRealTurbine) );
-
-    setMemsizeGPU(3*sizeRealTurbine, false);
-
-}
-void CudaMemoryManager::cudaCopyBladeOrientationsHtoD(ActuatorFarm* actuatorFarm)
-{
-    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
-    checkCudaErrors( cudaMemcpy(actuatorFarm->omegasD, actuatorFarm->omegasH, sizeRealTurbine, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorFarm->azimuthsD, actuatorFarm->azimuthsH, sizeRealTurbine, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(actuatorFarm->yawsD, actuatorFarm->yawsH, sizeRealTurbine, cudaMemcpyHostToDevice) );
-
-}
-void CudaMemoryManager::cudaCopyBladeOrientationsDtoH(ActuatorFarm* actuatorFarm)
-{
-    uint sizeRealTurbine = sizeof(real)*actuatorFarm->getNumberOfTurbines();
-    checkCudaErrors( cudaMemcpy(actuatorFarm->omegasH, actuatorFarm->omegasD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorFarm->azimuthsH, actuatorFarm->azimuthsD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(actuatorFarm->yawsH, actuatorFarm->yawsD, sizeRealTurbine, cudaMemcpyDeviceToHost) );
-}
-void CudaMemoryManager::cudaFreeBladeOrientations(ActuatorFarm* actuatorFarm)
-{
-    checkCudaErrors( cudaFree((void**) &actuatorFarm->omegasD) );
-    checkCudaErrors( cudaFree((void**) &actuatorFarm->azimuthsD) );
-    checkCudaErrors( cudaFree((void**) &actuatorFarm->yawsD) );
-
-    checkCudaErrors( cudaFreeHost((void**) &actuatorFarm->omegasH) );
-    checkCudaErrors( cudaFreeHost((void**) &actuatorFarm->azimuthsH) );
-    checkCudaErrors( cudaFreeHost((void**) &actuatorFarm->yawsH) );
 }
 
 void CudaMemoryManager::cudaAllocBladeCoords(ActuatorFarm* actuatorFarm)

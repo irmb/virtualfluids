@@ -398,7 +398,6 @@ void Parameter::initGridPaths(){
     this->setnumberNodes(gridPath + "numberNodes.dat");
     this->setLBMvsSI(gridPath + "LBMvsSI.dat");
     this->setmeasurePoints(gridPath + "measurePoints.dat");
-    this->setpropellerValues(gridPath + "propellerValues.dat");
     this->setcpTop(gridPath + "cpTop.dat");
     this->setcpBottom(gridPath + "cpBottom.dat");
     this->setcpBottom2(gridPath + "cpBottom2.dat");
@@ -958,10 +957,6 @@ void Parameter::setIsOutflowNormal(bool isOutflowNormal)
 {
     this->isOutflowNormal = isOutflowNormal;
 }
-void Parameter::setIsProp(bool isProp)
-{
-    this->isProp = isProp;
-}
 void Parameter::setIsCp(bool isCp)
 {
     this->isCp = isCp;
@@ -1289,18 +1284,6 @@ void Parameter::setperiodicBcValues(std::string periodicBcValues)
 {
     this->periodicBcValues = periodicBcValues;
 }
-void Parameter::setpropellerQs(std::string propellerQs)
-{
-    this->propellerQs = propellerQs;
-}
-void Parameter::setpropellerValues(std::string propellerValues)
-{
-    this->propellerValues = propellerValues;
-}
-void Parameter::setpropellerCylinder(std::string propellerCylinder)
-{
-    this->propellerCylinder = propellerCylinder;
-}
 void Parameter::setmeasurePoints(std::string measurePoints)
 {
     this->measurePoints = measurePoints;
@@ -1357,8 +1340,6 @@ void Parameter::setObj(std::string str, bool isObj)
 {
     if (str == "geo") {
         this->setIsGeo(isObj);
-    } else if (str == "prop") {
-        this->setIsProp(isObj);
     } else if (str == "cp") {
         this->setIsCp(isObj);
     } else if (str == "geoNormal") {
@@ -2257,18 +2238,6 @@ std::string Parameter::getperiodicBcValues()
 {
     return this->periodicBcValues;
 }
-std::string Parameter::getpropellerQs()
-{
-    return this->propellerQs;
-}
-std::string Parameter::getpropellerValues()
-{
-    return this->propellerValues;
-}
-std::string Parameter::getpropellerCylinder()
-{
-    return this->propellerCylinder;
-}
 std::string Parameter::getmeasurePoints()
 {
     return this->measurePoints;
@@ -2419,10 +2388,6 @@ bool Parameter::getCalc3rdOrderMoments()
 bool Parameter::getCalcHighOrderMoments()
 {
     return this->isHighOrderMoments;
-}
-bool Parameter::getIsProp()
-{
-    return this->isProp;
 }
 bool Parameter::overWritingRestart(uint t)
 {

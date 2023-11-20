@@ -112,11 +112,10 @@ void run()
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      SPtr<BC> outflowBC(new DensityBC(rhoLB));
-      outflowBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
+      SPtr<BC> outflowBC(new PressureBC(rhoLB));
+      outflowBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(outflowBC);
 
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());
@@ -206,10 +205,8 @@ void run()
       }
 
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(10.0*nuLB);
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
-      //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
+      //dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->setBulkOmegaToOmega(true);
       //
       SPtr<BCSet> bcSet(new BCSet());
 

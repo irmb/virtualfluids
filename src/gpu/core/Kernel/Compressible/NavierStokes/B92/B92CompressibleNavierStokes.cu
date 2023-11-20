@@ -30,7 +30,7 @@ B92CompressibleNavierStokes::B92CompressibleNavierStokes(std::shared_ptr<Paramet
     this->para = para;
     this->level = level;
 
-    myPreProcessorTypes.push_back(InitCompSP27);
+    myPreProcessorTypes.push_back(InitNavierStokesCompressible);
     
 }
 

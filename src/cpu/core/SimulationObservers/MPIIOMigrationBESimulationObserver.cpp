@@ -137,7 +137,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
             localDistributionsF    = D3Q27EsoTwist3DSplittedVectorPtrF->getLocalDistributions();
@@ -438,7 +438,7 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             switch (arrayType) 
             {
@@ -554,7 +554,7 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
-        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             switch (arrayType) 
             {
@@ -705,7 +705,7 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
                     bouCond->nx3                    = bcArr->bcvector[bc]->nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
-                    bouCond->algorithmType = bcArr->bcvector[bc]->getBCStrategyType();
+                    bouCond->bcStrategyKey = bcArr->bcvector[bc]->getBCStrategyKey();
                 }
 
                 bcVector[ic].push_back(*bouCond);
@@ -1668,7 +1668,7 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
                     bc->nx3 = bcArray[ibc].nx3;
                     for (int iq = 0; iq < 26; iq++)
                         bc->setQ(bcArray[ibc].q[iq], iq);
-                    bc->setBCStrategyType(bcArray[ibc].algorithmType);
+                    bc->setBCStrategyKey(bcArray[ibc].bcStrategyKey);
                 }
 
                 bcVector.push_back(bc);
