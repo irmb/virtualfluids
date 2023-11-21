@@ -26,23 +26,28 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Sphere.h
+//! \file Cylinder.h
 //! \ingroup geometries
-//! \author Soeren Peters, Stephan Lenz
+//! \author Anna Wellmann
 //=======================================================================================
-#ifndef SPHERE_H
-#define SPHERE_H
 
-#include "PointerDefinitions.h"
-#include "global.h"
+
+#ifndef CYLINDER_H
+#define CYLINDER_H
+
+#include <map>
+
+#include <basics/geometry3d/GbCylinder3D.h>
+#include <basics/geometry3d/Axis.h>
+
 #include "geometries/Object.h"
 
-class GRIDGENERATOR_EXPORT Sphere : public Object
+class GRIDGENERATOR_EXPORT Cylinder : public Object
 {
 public:
-    Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);
 
-    static SPtr<Sphere> makeShared(double centerX, double centerY, double centerZ, double radius);
+    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, Axis rotationalAxis);
+    Cylinder(std::array<double, 3> center, double radius, double height, Axis axis);
 
     SPtr<Object> clone() const override;
 
@@ -56,22 +61,26 @@ public:
     double getX3Minimum() const override;
     double getX3Maximum() const override;
 
-    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
+    double getRadius() const;
+    double getHeight() const;
+    Axis getRotationalAxis() const;
 
-
+    bool isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
+                         const double &maxOffset) override;
     void changeSizeByDelta(double delta) override;
-    
-    int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal) override;
 
+private:
+    double getCentroidCoordinate(Axis coordinateDirection) const;
+    double getMinimunCoordinate(Axis coordinateDirection) const;
+    double getMaximumCoordinate(Axis coordinateDirection) const;
 
-protected:
-    double centerX;
-    double centerY;
-    double centerZ;
+    bool isInCircle(double delta1, double delta2, double offset) const;
+
+    Axis rotationalAxis;
+    const std::array<double, 3> center;
 
     double radius;
+    double height;
 };
 
-
-
-#endif   
+#endif

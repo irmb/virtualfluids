@@ -40,26 +40,30 @@ class GRIDGENERATOR_EXPORT VerticalCylinder : public Object
 {
 public:
     VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height);
+    // the axis is in the z-direction
 
     static SPtr<VerticalCylinder> makeShared(double centerX, double centerY, double centerZ, double radius, double height);
 
     SPtr<Object> clone() const override;
 
-    double getX1Centroid() override;
-    double getX1Minimum() override;
-    double getX1Maximum() override;
-    double getX2Centroid() override;
-    double getX2Minimum() override;
-    double getX2Maximum() override;
-    double getX3Centroid() override;
-    double getX3Minimum() override;
-    double getX3Maximum() override;
+    double getX1Centroid() const override;
+    double getX1Minimum() const override;
+    double getX1Maximum() const override;
+    double getX2Centroid() const override;
+    double getX2Minimum() const override;
+    double getX2Maximum() const override;
+    double getX3Centroid() const override;
+    double getX3Minimum() const override;
+    double getX3Maximum() const override;
+
+    double getRadius() const;
+    double getHeight() const;
 
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
 
-    void scale(double delta) override;
-   
+    void changeSizeByDelta(double delta) override;
+
 protected:
     double centerX;
     double centerY;
