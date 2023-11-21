@@ -75,7 +75,7 @@
 #include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "gpu/core/PreCollisionInteractor/Probes/Probe.h"
-#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/GridScaling/GridScalingFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
