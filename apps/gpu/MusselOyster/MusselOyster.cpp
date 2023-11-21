@@ -43,7 +43,7 @@
 #include "gpu/core/LBM/Simulation.h"
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/Parameter/Parameter.h"
-#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/BoundaryCondtions/BoundaryConditionFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 
 //////////////////////////////////////////////////////////////////////////

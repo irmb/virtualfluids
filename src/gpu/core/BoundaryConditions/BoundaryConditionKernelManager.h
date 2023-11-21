@@ -26,12 +26,10 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BCKernelManager.h
-//! \ingroup KernelManager
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
-#ifndef BCKernelManager_H
-#define BCKernelManager_H
+#ifndef BoundaryConditionKernelManager_H
+#define BoundaryConditionKernelManager_H
 
 #include <functional>
 #include <memory>
@@ -54,13 +52,13 @@ using precursorBoundaryCondition = std::function<void(LBMSimulationParameter *, 
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
 //! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
-class BCKernelManager
+class BoundaryConditionKernelManager
 {
 public:
     //! Class constructor
     //! \param parameter shared pointer to instance of class Parameter
     //! \throws std::runtime_error when the user forgets to specify a boundary condition
-    BCKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
+    BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory);
 
     //! \brief calls the device function of the velocity boundary condition (post-collision)
     void runVelocityBCKernelPost(const int level) const;
