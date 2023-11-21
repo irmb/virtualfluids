@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
             para = std::make_shared<Parameter>();
         }
 
+        vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
@@ -219,7 +220,6 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
         // setup to copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
-        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
