@@ -457,8 +457,6 @@ void run(string configname)
         SPtr<GbPoint3D> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
 
         SPtr<GbLine3D> line(new GbLine3D(pointOne,pointTwo));
-            if (myid == 0)
-                GbSystem3D::writeGeoObject(line.get(), pathname + "/geo/line", WbWriterVtkXmlBinary::getInstance());
         SPtr<UbScheduler> linSch(new UbScheduler(outTime/20,outTime/2/*,beginTime,endTime*/));
         SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname, WbWriterVtkXmlBinary::getInstance(), line,refineLevel, comm));
 
