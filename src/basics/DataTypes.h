@@ -31,8 +31,8 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
-#include <string>
 #include <limits>
+#include <string>
 
 #ifdef VF_DOUBLE_ACCURACY
 using real = double;
