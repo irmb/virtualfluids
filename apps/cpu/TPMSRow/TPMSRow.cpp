@@ -86,8 +86,8 @@ void run(string configname)
         //SPtr<BC> funnelNoslipAdapter(new NoSlipBC(1));
 
            // SPtr<BC> xMinApr(new DensityBC(0.0000001));
-         SPtr<BC> xMinApr(new DensityBC());
-        //  SPtr<BC> xMinApr(new VelocityBC(vx, 0., BCFunction::INFCONST, 0., 0., BCFunction::INFCONST,
+         //SPtr<BC> xMinApr(new DensityBC());
+          SPtr<BC> xMinApr(new VelocityBC(vx, 0., BCFunction::INFCONST, 0., 0., BCFunction::INFCONST,
          //  0.,0., BCFunction::INFCONST));
 
         SPtr<BC> xMaxApr(new DensityBC(0.));
@@ -107,7 +107,7 @@ void run(string configname)
 
          //xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy(vx, c1o2))); 
+        xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy(c1o2))); 
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
          //xMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
          xMaxApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowWithRelaxationBCStrategy()));

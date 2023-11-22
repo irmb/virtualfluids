@@ -41,11 +41,17 @@ VelocityNonReflecting::VelocityNonReflecting()
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////
+VelocityNonReflecting::VelocityNonReflecting(real relaxationRate)
+{
+    BCStrategy::preCollision = true;
+    this->BCVeloWeight = relaxationRate;
+}
+//////////////////////////////////////////////////////////////////////////
 VelocityNonReflecting::~VelocityNonReflecting() = default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCStrategy> VelocityNonReflecting::clone()
 {
-    SPtr<BCStrategy> bc(new VelocityNonReflecting());
+    SPtr<BCStrategy> bc(new VelocityNonReflecting(this->BCVeloWeight));
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -70,24 +76,30 @@ void VelocityNonReflecting::applyBC()
     int direction = -1;
 
     // flag points in direction of fluid
-    if (bcPtr->hasDensityBoundaryFlag(dP00)) {
+    if (bcPtr->hasVelocityBoundaryFlag(dP00)) {
         nx1 += 1;
         direction = dP00;
-    } else if (bcPtr->hasDensityBoundaryFlag(dM00)) {
+        this->velocity = bcPtr->getBoundaryVelocityX1();
+    } else if (bcPtr->hasVelocityBoundaryFlag(dM00)) {
         nx1 -= 1;
         direction = dM00;
-    } else if (bcPtr->hasDensityBoundaryFlag(d0P0)) {
+        this->velocity = bcPtr->getBoundaryVelocityX1();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d0P0)) {
         nx2 += 1;
         direction = d0P0;
-    } else if (bcPtr->hasDensityBoundaryFlag(d0M0)) {
+        this->velocity = bcPtr->getBoundaryVelocityX2();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d0M0)) {
         nx2 -= 1;
         direction = d0M0;
-    } else if (bcPtr->hasDensityBoundaryFlag(d00P)) {
+        this->velocity = bcPtr->getBoundaryVelocityX2();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d00P)) {
         nx3 += 1;
         direction = d00P;
-    } else if (bcPtr->hasDensityBoundaryFlag(d00M)) {
+        this->velocity = bcPtr->getBoundaryVelocityX3();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d00M)) {
         nx3 -= 1;
         direction = d00M;
+        this->velocity = bcPtr->getBoundaryVelocityX3();
     } else
         UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
