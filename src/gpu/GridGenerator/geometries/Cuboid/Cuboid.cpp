@@ -46,47 +46,47 @@ SPtr<Object> Cuboid::clone() const
     return std::make_shared<Cuboid>(minX1, minX2, minX3, maxX1, maxX2, maxX3);
 }
 
-double Cuboid::getX1Centroid()
+double Cuboid::getX1Centroid() const
 {
    return getCenter(minX1, maxX1);
 }
 
-double Cuboid::getX1Minimum()
+double Cuboid::getX1Minimum() const
 {
     return getMinimum(minX1, maxX1);
 }
 
-double Cuboid::getX1Maximum()
+double Cuboid::getX1Maximum() const
 {
     return getMaximum(minX1, maxX1);
 }
 
-double Cuboid::getX2Centroid()
+double Cuboid::getX2Centroid() const
 {
     return getCenter(minX2, maxX2);
 }
 
-double Cuboid::getX2Minimum()
+double Cuboid::getX2Minimum() const
 {
     return getMinimum(minX2, maxX2);
 }    
 
-double Cuboid::getX2Maximum()
+double Cuboid::getX2Maximum() const
 {
     return getMaximum(minX2, maxX2);
 }
 
-double Cuboid::getX3Centroid()
+double Cuboid::getX3Centroid() const
 {
     return getCenter(minX3, maxX3);
 }
 
-double Cuboid::getX3Minimum()
-{    
+double Cuboid::getX3Minimum() const
+{
     return getMinimum(minX3, maxX3);
 }    
 
-double Cuboid::getX3Maximum()
+double Cuboid::getX3Maximum() const
 {
     return getMaximum(minX3, maxX3);
 }
@@ -131,7 +131,7 @@ bool Cuboid::isBetween(const real& coord, const real& start, const real& end)
 }
 
 
-void Cuboid::scale(double delta)
+void Cuboid::changeSizeByDelta(double delta)
 {
     this->minX1 -= delta;
     this->minX2 -= delta;

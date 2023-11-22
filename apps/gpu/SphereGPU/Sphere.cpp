@@ -66,8 +66,8 @@
 #include "gpu/core/LBM/Simulation.h"
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/Parameter/Parameter.h"
-#include "gpu/core/Factories/BoundaryConditionFactory.h"
 #include "gpu/core/GridScaling/GridScalingFactory.h"
+#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
 #include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "gpu/core/Kernel/KernelTypes.h"
@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
             para = std::make_shared<Parameter>();
         }
 
+        vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
@@ -219,7 +220,6 @@ int main(int argc, char *argv[])
         //////////////////////////////////////////////////////////////////////////
         // setup to copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
-        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 

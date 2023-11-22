@@ -26,25 +26,61 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TimerImp.cpp
-//! \ingroup Timer
-//! \author Stephan Lenz
+//! \file Cylinder.h
+//! \ingroup geometries
+//! \author Anna Wellmann
 //=======================================================================================
-#include "TimerImp.h"
 
-void TimerImp::start() { this->startTime = std::chrono::high_resolution_clock::now(); }
 
-void TimerImp::end() { this->endTime = std::chrono::high_resolution_clock::now(); }
+#ifndef CYLINDER_H
+#define CYLINDER_H
 
-real TimerImp::getTimeInSeconds() const
+#include <map>
+
+#include <basics/geometry3d/GbCylinder3D.h>
+#include <basics/geometry3d/Axis.h>
+
+#include "geometries/Object.h"
+
+class GRIDGENERATOR_EXPORT Cylinder : public Object
 {
-    return real(std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000000.0);
-}
+public:
 
-real TimerImp::getCurrentRuntimeInSeconds() const
-{
-    return real(
-        std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startTime)
-            .count() /
-        1000000.0);
-}
+    Cylinder(double centerX, double centerY, double centerZ, double radius, double height, Axis rotationalAxis);
+    Cylinder(std::array<double, 3> center, double radius, double height, Axis axis);
+
+    SPtr<Object> clone() const override;
+
+    double getX1Centroid() const override;
+    double getX1Minimum() const override;
+    double getX1Maximum() const override;
+    double getX2Centroid() const override;
+    double getX2Minimum() const override;
+    double getX2Maximum() const override;
+    double getX3Centroid() const override;
+    double getX3Minimum() const override;
+    double getX3Maximum() const override;
+
+    double getRadius() const;
+    double getHeight() const;
+    Axis getRotationalAxis() const;
+
+    bool isPointInObject(const double &x1, const double &x2, const double &x3, const double &minOffset,
+                         const double &maxOffset) override;
+    void changeSizeByDelta(double delta) override;
+
+private:
+    double getCentroidCoordinate(Axis coordinateDirection) const;
+    double getMinimunCoordinate(Axis coordinateDirection) const;
+    double getMaximumCoordinate(Axis coordinateDirection) const;
+
+    bool isInCircle(double delta1, double delta2, double offset) const;
+
+    Axis rotationalAxis;
+    const std::array<double, 3> center;
+
+    double radius;
+    double height;
+};
+
+#endif

@@ -63,7 +63,7 @@
 
 #include "gpu/core/Kernel/KernelFactory/KernelFactoryImp.h"
 #include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "gpu/core/Factories/BoundaryConditionFactory.h"
+#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 
 #include "gpu/core/GPU/CudaMemoryManager.h"
 

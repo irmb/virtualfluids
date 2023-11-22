@@ -86,7 +86,7 @@ void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject, uint level)
 {
     this->solidObject = solidObject;
     auto gridShape = solidObject->clone();
-    gridShape->scale(4.0);
+    gridShape->changeSizeByDelta(4.0);
 
     this->addGrid(gridShape, level);
 }
@@ -151,9 +151,9 @@ void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint 
         uint level = getNumberOfLevels();
         for (int i = levelDifference - 1; i >= 0; i--)
         {
-            const real scalingFactor = nodesBetweenGrids * spacings[i] * calculateDelta(levelFine);
+            const real deltaToNewSize = nodesBetweenGrids * spacings[i] * calculateDelta(levelFine);
             SPtr<Object> gridShapeClone = gridShape->clone();
-            gridShapeClone->scale(scalingFactor);
+            gridShapeClone->changeSizeByDelta(deltaToNewSize);
 
             const auto grid = makeGrid(gridShapeClone, level++, 0);
             grids.push_back(grid);
