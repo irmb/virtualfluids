@@ -1,0 +1,14 @@
+{
+    "turbine_model": {
+        "name": "NREL5MW",
+        "file": "NREL5MW.json",
+        "file_type": "json"
+    },
+    "controller": {
+        "name": "NREL5MWController",
+        "type": "Greedy",
+        "file": "GreedyController.json",
+        "file_type": "json"
+    },
+    "hub_positions": [[0,0,0]]
+}

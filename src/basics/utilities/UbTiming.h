@@ -40,10 +40,9 @@
 #include <string>
 #include <vector>
 
-#ifdef VF_MPI
-#include <basics/parallel/PbMpi.h>
-#include <mpi.h>
-#endif // VF_MPI
+#if defined(VF_MPI)
+#include <parallel/Communicator.h>
+#endif
 
 class UbTiming
 {
@@ -70,8 +69,8 @@ public:
     /*==========================================================*/
     virtual void startTiming()
     {
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->startTime = PbMpi::Wtime();
+#if defined(VF_MPI)
+        this->startTime = vf::parallel::Communicator::getInstance()->Wtime();
 #else
         this->startTime = (double)clock();
 #endif // VF_MPI
@@ -87,8 +86,8 @@ public:
     /*==========================================================*/
     virtual void stopTiming()
     {
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->deltaT = PbMpi::Wtime() - this->startTime;
+#if defined(VF_MPI)
+        this->deltaT = vf::parallel::Communicator::getInstance()->Wtime() - this->startTime;
 #else
         this->deltaT    = ((double)clock() - this->startTime) / (double)CLOCKS_PER_SEC;
 #endif // VF_MPI
@@ -106,8 +105,8 @@ public:
     {
         this->duration = 0.0;
 
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->startTime = PbMpi::Wtime();
+#if defined(VF_MPI)
+        this->startTime = vf::parallel::Communicator::getInstance()->Wtime();
 #else
         this->startTime = (double)clock();
 #endif // VF_MPI
@@ -115,8 +114,8 @@ public:
     /*==========================================================*/
     void pause()
     {
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->duration += PbMpi::Wtime() - this->startTime;
+#if defined(VF_MPI)
+        this->duration += vf::parallel::Communicator::getInstance()->Wtime() - this->startTime;
 #else
         this->duration += ((double)clock() - this->startTime) / (double)CLOCKS_PER_SEC;
 #endif // VF_MPI
@@ -124,8 +123,8 @@ public:
     /*==========================================================*/
     void unpause()
     {
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->startTime = PbMpi::Wtime();
+#if defined(VF_MPI)
+        this->startTime = vf::parallel::Communicator::getInstance()->Wtime();
 #else
         this->startTime = (double)clock();
 #endif // VF_MPI
@@ -133,19 +132,10 @@ public:
     /*==========================================================*/
     void stop()
     {
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->duration += PbMpi::Wtime() - this->startTime;
+#if defined(VF_MPI)
+        this->duration += vf::parallel::Communicator::getInstance()->Wtime() - this->startTime;
 #else
         this->duration += ((double)clock() - this->startTime) / (double)CLOCKS_PER_SEC;
-#endif // VF_MPI
-    }
-    /*==========================================================*/
-    double getTicks() const
-    {
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        return PbMpi::Wtick();
-#else
-        return double(1.0) / double(CLOCKS_PER_SEC);
 #endif // VF_MPI
     }
 
@@ -226,8 +216,8 @@ public:
     {
         this->isMeasuring = true;
 
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        this->startTime = PbMpi::Wtime();
+#if defined(VF_MPI)
+        this->startTime = vf::parallel::Communicator::getInstance()->Wtime();
 #elif defined(UBSYSTEM_APPLE)
         this->startTime = mach_absolute_time();
 #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_AIX)
@@ -253,8 +243,8 @@ public:
         if (!isMeasuring)
             return 0.0;
 
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        double actTime = PbMpi::Wtime();
+#if defined(VF_MPI)
+        double actTime = vf::parallel::Communicator::getInstance()->Wtime();
         this->lapTime  = actTime - this->startTime;
 #elif defined(UBSYSTEM_APPLE)
         double actTime  = mach_absolute_time();
@@ -296,8 +286,8 @@ public:
         if (!isMeasuring)
             return 0.0;
 
-#if defined(VF_MPI) && !defined(CAB_RUBY)
-        return PbMpi::Wtime() - this->startTime;
+#if defined(VF_MPI)
+        return vf::parallel::Communicator::getInstance()->Wtime() - this->startTime;
 #elif defined(UBSYSTEM_APPLE)
         timespec tp;
         mach_absolute_difference(mach_absolute_time(), this->startTime, &tp);

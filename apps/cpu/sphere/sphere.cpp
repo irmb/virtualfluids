@@ -44,9 +44,9 @@ void run(string configname)
 //      double rhoLBinflow = dp_LB*3.0;
 
       SPtr<BC> noSlipBC(new NoSlipBC());
-      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
       SPtr<BC> slipBC(new SlipBC());
-      slipBC->setBCStrategy(SPtr<BCStrategy>(new SimpleSlipBCStrategy()));
+      slipBC->setBCStrategy(SPtr<BCStrategy>(new SlipBounceBack()));
       
       real H = 50;
       mu::Parser fct;
@@ -57,17 +57,13 @@ void run(string configname)
       //fct.DefineConst("U", uLB);
       //fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-      velBC->setBCStrategy(SPtr<BCStrategy>(new SimpleVelocityBCStrategy()));
+      //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBounceBack()));
 
-      SPtr<BC> denBC(new DensityBC(rhoLB));
-      denBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+      SPtr<BC> denBC(new PressureBC(rhoLB));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBC);
-      bcVisitor.addBC(slipBC);
-      bcVisitor.addBC(velBC);
-      bcVisitor.addBC(denBC);
 
       real dx = 1;
 
@@ -216,8 +212,8 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel());
-         //SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
+         SPtr<LBMKernel> kernel(new K16IncompressibleNavierStokes());
+         //SPtr<LBMKernel> kernel(new K15CompressibleNavierStokes());
 
          SPtr<BCSet> bcSet(new BCSet());
 

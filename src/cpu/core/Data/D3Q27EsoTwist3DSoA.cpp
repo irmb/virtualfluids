@@ -541,7 +541,7 @@ void D3Q27EsoTwist3DSoA::setPreCollisionDistributionForDirection(real f, size_t 
     //}
 }
 //////////////////////////////////////////////////////////////////////////
-real D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/,
+real D3Q27EsoTwist3DSoA::getPostCollisionDistributionForDirection(size_t /*x1*/, size_t /*x2*/, size_t /*x3*/,
                                                            int /*direction*/)
 {
     // switch (direction)

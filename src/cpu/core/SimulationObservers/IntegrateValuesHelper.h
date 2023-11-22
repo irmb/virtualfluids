@@ -12,8 +12,8 @@
 
 // struct CalcNodes
 //{
-//	SPtr<Block3D> block;
-//	std::vector<UbTupleInt3> nodes;
+//    SPtr<Block3D> block;
+//    std::vector<UbTupleInt3> nodes;
 //};
 //
 // struct Nodes

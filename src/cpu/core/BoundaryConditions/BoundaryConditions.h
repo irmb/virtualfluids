@@ -311,8 +311,8 @@ public:
         return (((flag >> (optionDigits * direction)) & maxOptionVal) != 0);
     }
 
-    void setBCStrategyType(char alg) { algorithmType = alg; }
-    char getBCStrategyType() { return algorithmType; }
+    void setBCStrategyKey(char key) { bcStrategyKey = key; }
+    char getBCStrategyKey() { return bcStrategyKey; }
 
 public:
     static const int optionDigits = 2;   //--> 2 bits for secondary Option --> maxOptionVal = 7
@@ -327,15 +327,15 @@ protected:
     long long densityBoundaryFlags{ 0 };
     long long wallModelBoundaryFlags{ 0 };
 
-    float bcVelocityX1{ vf::basics::constant::c0o1 };
-    float bcVelocityX2{ vf::basics::constant::c0o1 };
-    float bcVelocityX3{ vf::basics::constant::c0o1 };
-    float bcDensity{ vf::basics::constant::c0o1 };
-    float bcPhaseField{ vf::basics::constant::c0o1 };
+    float bcVelocityX1{ 0.0 };
+    float bcVelocityX2{ 0.0 };
+    float bcVelocityX3{ 0.0 };
+    float bcDensity{ 0.0 };
+    float bcPhaseField{ 0.0 };
 
     float nx1{ vf::basics::constant::c0o1 }, nx2{ vf::basics::constant::c0o1 }, nx3{ vf::basics::constant::c0o1 };
 
-    char algorithmType { -1 };
+    char bcStrategyKey { -1 };
 
 private:
     friend class MPIIORestartSimulationObserver;

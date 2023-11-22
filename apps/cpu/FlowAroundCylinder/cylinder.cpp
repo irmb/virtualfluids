@@ -82,22 +82,19 @@ void run(string configname)
 
       //BC
       SPtr<BC> noSlipAdapter(new NoSlipBC());
-      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
       mu::Parser fct;
       fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithPressureInterpolated()));
 
-      SPtr<BC> denBC(new DensityBC(rhoLB));
-      denBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
+      SPtr<BC> denBC(new PressureBC(rhoLB));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
       
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipAdapter);
-      bcVisitor.addBC(velBC);
-      bcVisitor.addBC(denBC);
 
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -291,11 +288,11 @@ void run(string configname)
          grid->accept(bcVisitor);
       }
 
-	  //set connectors
-	  //InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolator());
-	  //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
+      //set connectors
+      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolator());
+      //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
-	  grid->accept(setConnsVisitor);
+      grid->accept(setConnsVisitor);
 
       SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
     //   SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor_old());
@@ -304,7 +301,7 @@ void run(string configname)
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
-	  SPtr<SimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      SPtr<SimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       real area = (2.0*radius*H)/(dx*dx);
       real v    = 4.0*uLB/9.0;
@@ -312,18 +309,18 @@ void run(string configname)
       SPtr<CalculateForcesSimulationObserver> fp = make_shared<CalculateForcesSimulationObserver>(grid, forceSch, pathOut + "/results/forces.txt", comm, v, area);
       fp->addInteractor(cylinderInt);
 
-	  SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
-	  std::shared_ptr<SimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
+      std::shared_ptr<SimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
-	  omp_set_num_threads(numOfThreads);
-	  SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-	  SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
-	  simulation->addSimulationObserver(nupsSimulationObserver);
+      omp_set_num_threads(numOfThreads);
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+      SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
+      simulation->addSimulationObserver(nupsSimulationObserver);
      simulation->addSimulationObserver(fp);
      simulation->addSimulationObserver(writeMQSimulationObserver);
 
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
-	  simulation->run();
+      simulation->run();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");
    }
    catch(std::exception& e)

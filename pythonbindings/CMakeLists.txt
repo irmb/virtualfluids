@@ -41,15 +41,15 @@ target_include_directories(lbm_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
 target_include_directories(lbm_bindings PRIVATE ${CMAKE_BINARY_DIR})
 add_dependencies(python_bindings lbm_bindings)
 
-pybind11_add_module(communicator_bindings MODULE src/communicator.cpp)
-set_target_properties(  communicator_bindings PROPERTIES
+pybind11_add_module(parallel_bindings MODULE src/parallel.cpp)
+set_target_properties(  parallel_bindings PROPERTIES
                         LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
-                        OUTPUT_NAME "communicator")
-target_link_libraries(communicator_bindings PRIVATE parallel)
-target_include_directories(communicator_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
-target_include_directories(communicator_bindings PRIVATE ${CMAKE_BINARY_DIR})
-target_compile_definitions(communicator_bindings PRIVATE VF_MPI)
-add_dependencies(python_bindings communicator_bindings)
+                        OUTPUT_NAME "parallel")
+target_link_libraries(parallel_bindings PRIVATE parallel)
+target_include_directories(parallel_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
+target_include_directories(parallel_bindings PRIVATE ${CMAKE_BINARY_DIR})
+target_compile_definitions(parallel_bindings PRIVATE VF_MPI)
+add_dependencies(python_bindings parallel_bindings)
 
 
 IF(BUILD_VF_GPU)
@@ -105,5 +105,5 @@ endif()
     IF(BUILD_VF_GPU)
     target_compile_definitions(gpu_bindings PRIVATE VF_DOUBLE_ACCURACY)
     endif()
-    target_compile_definitions(communicator_bindings PRIVATE VF_DOUBLE_ACCURACY)
+    target_compile_definitions(parallel_bindings PRIVATE VF_DOUBLE_ACCURACY)
 endif()

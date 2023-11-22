@@ -44,6 +44,7 @@
 #include "submodules/transient_bc_setter.cpp"
 #include "submodules/actuator_farm.cpp"
 #include "submodules/grid_scaling_factory.cpp"
+#include "submodules/kernel.cpp"
 
 namespace gpu_bindings
 {
@@ -62,5 +63,6 @@ PYBIND11_MODULE(gpu, m)
     grid_provider::makeModule(m);
     turbulence_model::makeModule(m);
     grid_scaling_factory::makeModule(m);
+    kernel::makeModule(m);
 }
 } // namespace gpu_bindings

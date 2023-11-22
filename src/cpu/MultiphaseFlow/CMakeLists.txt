@@ -1,1 +1,0 @@
-vf_add_library(PUBLIC_LINK cpu_core)

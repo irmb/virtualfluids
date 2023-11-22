@@ -185,7 +185,7 @@ bool intersectPlane(const Vertex &normal, const Vertex &pointOnPlane, const Vert
     return false;
 }
 
-void TriangularMesh::scale(double offset)
+void TriangularMesh::changeSizeByDelta(double offset)
 {
     std::vector<Triangle> triangles = this->triangleVec;
 

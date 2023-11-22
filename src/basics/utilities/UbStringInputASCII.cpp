@@ -6,10 +6,10 @@
 //
 // UbStringInputASCII::UbStringInputASCII(string inputString) : UbFileInputASCII("")
 //{
-//	instream.str(inputString);
+//    instream.str(inputString);
 //
 //
-////	this->filename         = filename;
+////    this->filename         = filename;
 ////   this->commentindicator = 'C';
 ////
 ////   infile.open(filename.c_str());
@@ -18,9 +18,9 @@
 ///*==========================================================*/
 // int UbStringInputASCII::readInteger()
 //{
-//	int dummy;
-//	instream>>dummy;
-//	return dummy;
+//    int dummy;
+//    instream>>dummy;
+//    return dummy;
 //}
 ///*==========================================================*/
 // std::size_t UbStringInputASCII::readSize_t()
@@ -32,20 +32,20 @@
 ///*==========================================================*/
 // string UbStringInputASCII::getFileName()
 //{
-//	return this->filename;
+//    return this->filename;
 //}
 //
 ///*==========================================================*/
 // void UbStringInputASCII::skipLine()
 //{
-//	string dummy;
-//	getline(instream, dummy);
+//    string dummy;
+//    getline(instream, dummy);
 //}
 ///*==========================================================*/
 // void UbStringInputASCII::readLine()
 //{
-//	string dummy;
-//	getline(instream, dummy);
+//    string dummy;
+//    getline(instream, dummy);
 //}
 ///*==========================================================*/
 // string UbStringInputASCII::readStringLine()
@@ -57,16 +57,16 @@
 ///*==========================================================*/
 // string UbStringInputASCII::readLineTill(char stop)
 //{
-//	string dummy;
-//	getline(instream, dummy, stop);
-//	return dummy;
+//    string dummy;
+//    getline(instream, dummy, stop);
+//    return dummy;
 //}
 ///*==========================================================*/
 // string UbStringInputASCII::parseString()
 //{
-//	string dummy;
-//	getline(instream, dummy, ' ');
-//	return dummy;
+//    string dummy;
+//    getline(instream, dummy, ' ');
+//    return dummy;
 //}
 ///*==========================================================*/
 // double UbStringInputASCII::readDouble()
@@ -92,9 +92,9 @@
 ///*==========================================================*/
 // string UbStringInputASCII::readString()
 //{
-//	string dummy;
-//	instream>>dummy;
-//	return dummy;
+//    string dummy;
+//    instream>>dummy;
+//    return dummy;
 //}
 ///*==========================================================*/
 // bool UbStringInputASCII::containsString(string var)
@@ -105,7 +105,7 @@
 //   {
 //      instream.getline(line,512);
 //      if(instream.eof()) return false;
-//   }while (strstr(line,var.c_str()) != line);		// Ende Schleife, wenn varname ganz in zeile vorkommt
+//   }while (strstr(line,var.c_str()) != line);        // Ende Schleife, wenn varname ganz in zeile vorkommt
 //
 //   return true;
 //}
@@ -118,7 +118,7 @@
 //   {
 //      instream.getline(line,512);
 //      if(instream.eof()) UB_THROW( UbException(UB_EXARGS,var+" wasn't found in "+this->filename) );
-//   }while (strstr(line,var.c_str()) != line);		// Ende Schleife, wenn varname ganz in zeile vorkommt
+//   }while (strstr(line,var.c_str()) != line);        // Ende Schleife, wenn varname ganz in zeile vorkommt
 //}
 ///*==========================================================*/
 // int UbStringInputASCII::readIntegerAfterString(string var)
@@ -134,12 +134,12 @@
 //   {
 //      instream.getline(line,512);
 //      if(instream.eof()) UB_THROW( UbException(UB_EXARGS,var+" wasn't found in "+this->filename) );
-//   }while (strstr(line,var.c_str()) != line);		// Ende Schleife, wenn varname ganz in zeile vorkommt
+//   }while (strstr(line,var.c_str()) != line);        // Ende Schleife, wenn varname ganz in zeile vorkommt
 //
-//   strcpy (line, (line+strlen(var.c_str())));	    // zeile um "varname" kuerzen
-//   while ((line[0] == ' ') || (line[0] == '\t')) strcpy (line, (line+1));	// Whitespaces entfernen
+//   strcpy (line, (line+strlen(var.c_str())));        // zeile um "varname" kuerzen
+//   while ((line[0] == ' ') || (line[0] == '\t')) strcpy (line, (line+1));    // Whitespaces entfernen
 //
-//   return(atoi(line));						// Umwandlung in int
+//   return(atoi(line));                        // Umwandlung in int
 //}
 ///*==========================================================*/
 //// last change [10.3.2004] at [9:46]
@@ -155,14 +155,14 @@
 //   {
 //      instream.getline(line,512);
 //      if(instream.eof()) UB_THROW( UbException(UB_EXARGS,var+" wasn't found in "+this->filename) );
-//   }while (/*!strncmp(varname,line,sizeof(varname))==0*/strstr(line,var.c_str()) != line);		// Ende Schleife, wenn
+//   }while (/*!strncmp(varname,line,sizeof(varname))==0*/strstr(line,var.c_str()) != line);        // Ende Schleife, wenn
 //   varname ganz in zeile vorkommt
 //
 //
-//   strcpy (line, (line+strlen(var.c_str())));	    // zeile um "varname" kuerzen
-//   while ((line[0] == ' ') || (line[0] == '\t')) strcpy (line, (line+1));	// Whitespaces entfernen
+//   strcpy (line, (line+strlen(var.c_str())));        // zeile um "varname" kuerzen
+//   while ((line[0] == ' ') || (line[0] == '\t')) strcpy (line, (line+1));    // Whitespaces entfernen
 //
-//   return (atof(line));			// Umwandlung in double
+//   return (atof(line));            // Umwandlung in double
 //}
 ///*==========================================================*/
 ////  [9.9.2002]
@@ -178,16 +178,16 @@
 //   do{
 //      instream.getline(line,512);
 //      if(instream.eof()) UB_THROW( UbException(UB_EXARGS,var+" wasn't found in "+this->filename) );
-//   }while (strstr(line,var.c_str()) != line);		// Ende Schleife, wenn varname ganz in zeile vorkommt
+//   }while (strstr(line,var.c_str()) != line);        // Ende Schleife, wenn varname ganz in zeile vorkommt
 //
-//   strcpy (line, (line+strlen(var.c_str())));										// zeile um "varname" kuerzen
-//   while ((line[0] == ' ') || (line[0] == '\t')) strcpy (line, (line+1));	// Whitespaces entfernen
+//   strcpy (line, (line+strlen(var.c_str())));                                        // zeile um "varname" kuerzen
+//   while ((line[0] == ' ') || (line[0] == '\t')) strcpy (line, (line+1));    // Whitespaces entfernen
 //
 //   char *p;
 //   p=strtok(line," "); //schneidet alles "ab und inklusive space " nach namen ab
 //   p=strtok(line,"\t");//schneidet alles "ab und inklusive tab   " nach namen ab
 //
-//   return (string)p;			// Umwandlung in string
+//   return (string)p;            // Umwandlung in string
 //}
 ///*==========================================================*/
 //// last change [10.3.2004] at [9:46]

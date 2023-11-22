@@ -164,7 +164,7 @@ void MPIIOSimulationObserver::writeBlocks(int step)
     Block3d *block3dArray = new Block3d[blocksCount];
     int ic                = 0;
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
-        for (SPtr<Block3D> block : blocksVector[level]) //	all the blocks of the current level
+        for (SPtr<Block3D> block : blocksVector[level]) //    all the blocks of the current level
         {
             // save data describing the block
             block3dArray[ic].x1                  = block->getX1();

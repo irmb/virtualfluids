@@ -31,8 +31,8 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BOUNDARYCONDITIONS_H
-#define BOUNDARYCONDITIONS_H
+#ifndef BCStrategy_H
+#define BCStrategy_H
 
 #include <PointerDefinitions.h>
 
@@ -43,81 +43,37 @@ class BCArray3D;
 class BoundaryConditions;
 class Block3D;
 
-//! \brief Abstract class of baundary conditions algorithm
+//! \brief Abstract class of baundary conditions strategy
 //! \details  BCStrategy provides interface for implementation of diferent boundary conditions
 class BCStrategy
 {
-public:
-    static const char VelocityBCStrategy                           = 0;
-    static const char EqDensityBCStrategy                          = 1;
-    static const char NonEqDensityBCStrategy                       = 2;
-    static const char NoSlipBCStrategy                             = 3;
-    static const char SlipBCStrategy                               = 4;
-    static const char HighViscosityNoSlipBCStrategy                = 5;
-    static const char ThinWallNoSlipBCStrategy                     = 6;
-    static const char VelocityWithDensityBCStrategy                = 7;
-    static const char NonReflectingOutflowBCStrategy               = 8;
-    static const char ThixotropyVelocityBCStrategy                 = 9;
-    static const char ThixotropyDensityBCStrategy                  = 10;
-    static const char ThixotropyNoSlipBCStrategy                   = 11;
-    static const char ThixotropyNonReflectingOutflowBCStrategy     = 12;
-    static const char ThixotropyVelocityWithDensityBCStrategy      = 13;
-    static const char RheologyBinghamModelNoSlipBCStrategy         = 14;
-    static const char RheologyHerschelBulkleyModelNoSlipBCStrategy = 15;
-    static const char SimpleVelocityBCStrategy                     = 16;
-    static const char SimpleSlipBCStrategy                         = 17;
-    static const char RheologyPowellEyringModelNoSlipBCStrategy    = 18;
-    static const char RheologyBinghamModelVelocityBCStrategy       = 19;
-    static const char MultiphaseNoSlipBCStrategy                   = 20;
-    static const char MultiphaseVelocityBCStrategy                 = 21;
-    static const char NonReflectingInflowBCStrategy                = 22;
-    static const char NonReflectingOutflowWithRelaxationBCStrategy = 23;
-    static const char MultiphasePressureBCStrategy                 = 24;
-
 public:
     BCStrategy() = default;
     virtual ~BCStrategy() = default;
 
     virtual void addDistributions(SPtr<DistributionArray3D> distributions)   = 0;
-    virtual void addDistributionsH(SPtr<DistributionArray3D> distributionsH) {}
-    virtual void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) {}
     void setBlock(SPtr<Block3D> block);
     void setNodeIndex(int x1, int x2, int x3);
     void setBcPointer(SPtr<BoundaryConditions> bcPtr);
     void setCompressible(bool c);
     void setCollFactor(real cf);
 
-    void setCollFactorL(real cf);
-    void setCollFactorG(real cf);
-    void setCollFactorPh(real cf);
-    void setDensityRatio(real dr);
-    void setPhiBound(real phiL, real phiH);
-
-    char getType();
     bool isPreCollision();
     virtual SPtr<BCStrategy> clone() = 0;
     SPtr<BCArray3D> getBcArray();
     void setBcArray(SPtr<BCArray3D> bcarray);
     virtual void applyBC() = 0;
-    bool getThixotropy(){ return thixotropy; };
 
 protected:
     bool compressible { false };
-    char type;
     bool preCollision;
-    bool thixotropy { false };
 
     SPtr<BoundaryConditions> bcPtr;
     SPtr<DistributionArray3D> distributions;
-    SPtr<DistributionArray3D> distributionsH;
-    SPtr<DistributionArray3D> distributionsH2;
     SPtr<BCArray3D> bcArray;
     SPtr<Block3D> block;
 
     real collFactor;
-    real collFactorL, collFactorG, collFactorPh;
-    real densityRatio;
-    real phiL, phiH;
     int x1, x2, x3;
 
     real compressibleFactor;

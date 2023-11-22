@@ -15,7 +15,7 @@ namespace vf::parallel
 class Communicator;
 }
 
-class BCKernelManager;
+class BoundaryConditionKernelManager;
 class ADKernelManager;
 class GridScalingKernelManager;
 class Kernel;
@@ -82,7 +82,7 @@ private:
     SPtr<CudaMemoryManager> cudaMemoryManager;
     std::vector<SPtr<Kernel>> kernels;
     //! \property lbKernelManager is a shared pointer to an object of LBKernelManager
-    std::shared_ptr<BCKernelManager> bcKernelManager;
+    std::shared_ptr<BoundaryConditionKernelManager> bcKernelManager;
     //! \property adKernelManager is a shared pointer to an object of ADKernelManager
     std::shared_ptr<ADKernelManager> adKernelManager;
     //! \property gridScalingKernelManager is a shared pointer to an object of GridScalingKernelManager

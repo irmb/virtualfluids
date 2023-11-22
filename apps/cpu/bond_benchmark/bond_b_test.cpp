@@ -44,7 +44,7 @@ int agent_main()
    MPI_Initialized(&_mpiInitialized);
    if(!_mpiInitialized)
    {
-      MPI_Init(0, 0);	
+      MPI_Init(0, 0);    
       _mpiInitialized = true;
    }
 

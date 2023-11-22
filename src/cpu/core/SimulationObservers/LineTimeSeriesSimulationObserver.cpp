@@ -4,7 +4,7 @@
 
 #include "Block3D.h"
 #include <parallel/Communicator.h>
-#include "CompressibleCumulantLBMKernel.h"
+#include "K15CompressibleNavierStokes.h"
 #include "CoordinateTransformation3D.h"
 #include "DataSet3D.h"
 #include "GbLine3D.h"
