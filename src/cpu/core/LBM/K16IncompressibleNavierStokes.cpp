@@ -1,7 +1,7 @@
 #include "K16IncompressibleNavierStokes.h"
 #include "D3Q27System.h"
 #include "Interpolator.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "DataSet3D.h"
 #include <cmath>
 #include "Block3D.h"
@@ -24,7 +24,7 @@ K16IncompressibleNavierStokes::~K16IncompressibleNavierStokes(void)
 //////////////////////////////////////////////////////////////////////////
 void K16IncompressibleNavierStokes::initDataSet()
 {
-   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
+   SPtr<DistributionArray3D> d(new EsoSplit(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -59,6 +59,7 @@ void K16IncompressibleNavierStokes::calculate(int step)
 {
    using namespace D3Q27System;
    using namespace std;
+   using namespace vf::lbm::dir;
 
    //timer.resetAndStart();
 
@@ -87,9 +88,9 @@ void K16IncompressibleNavierStokes::calculate(int step)
    }
    /////////////////////////////////////
 
-   localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+   localDistributions = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getLocalDistributions();
+   nonLocalDistributions = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getNonLocalDistributions();
+   zeroDistributions = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
 
    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
@@ -136,33 +137,33 @@ void K16IncompressibleNavierStokes::calculate(int step)
                // a b c
                //-1 0 1
 
-               real mfcbb = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-               real mfbcb = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-               real mfbbc = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-               real mfccb = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-               real mfacb = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
-               real mfcbc = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-               real mfabc = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
-               real mfbcc = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-               real mfbac = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
-               real mfccc = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-               real mfacc = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
-               real mfcac = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
-               real mfaac = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
+               real mfcbb = (*this->localDistributions)(eP00, x1, x2, x3);
+               real mfbcb = (*this->localDistributions)(e0P0, x1, x2, x3);
+               real mfbbc = (*this->localDistributions)(e00P, x1, x2, x3);
+               real mfccb = (*this->localDistributions)(ePP0, x1, x2, x3);
+               real mfacb = (*this->localDistributions)(eMP0, x1p, x2, x3);
+               real mfcbc = (*this->localDistributions)(eP0P, x1, x2, x3);
+               real mfabc = (*this->localDistributions)(eM0P, x1p, x2, x3);
+               real mfbcc = (*this->localDistributions)(e0PP, x1, x2, x3);
+               real mfbac = (*this->localDistributions)(e0MP, x1, x2p, x3);
+               real mfccc = (*this->localDistributions)(ePPP, x1, x2, x3);
+               real mfacc = (*this->localDistributions)(eMPP, x1p, x2, x3);
+               real mfcac = (*this->localDistributions)(ePMP, x1, x2p, x3);
+               real mfaac = (*this->localDistributions)(eMMP, x1p, x2p, x3);
 
-               real mfabb = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
-               real mfbab = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
-               real mfbba = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
-               real mfaab = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
-               real mfcab = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
-               real mfaba = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
-               real mfcba = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
-               real mfbaa = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
-               real mfbca = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
-               real mfaaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-               real mfcaa = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
-               real mfaca = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
-               real mfcca = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
+               real mfabb = (*this->nonLocalDistributions)(eM00, x1p, x2, x3);
+               real mfbab = (*this->nonLocalDistributions)(e0M0, x1, x2p, x3);
+               real mfbba = (*this->nonLocalDistributions)(e00M, x1, x2, x3p);
+               real mfaab = (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3);
+               real mfcab = (*this->nonLocalDistributions)(ePM0, x1, x2p, x3);
+               real mfaba = (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p);
+               real mfcba = (*this->nonLocalDistributions)(eP0M, x1, x2, x3p);
+               real mfbaa = (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p);
+               real mfbca = (*this->nonLocalDistributions)(e0PM, x1, x2, x3p);
+               real mfaaa = (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p);
+               real mfcaa = (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p);
+               real mfaca = (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p);
+               real mfcca = (*this->nonLocalDistributions)(ePPM, x1, x2, x3p);
 
                real mfbbb = (*this->zeroDistributions)(x1, x2, x3);
 
@@ -852,33 +853,33 @@ void K16IncompressibleNavierStokes::calculate(int step)
                //////////////////////////////////////////////////////////////////////////
                //write distribution
                //////////////////////////////////////////////////////////////////////////
-               (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)    = mfabb;
-               (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)    = mfbab;
-               (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)    = mfbba;
-               (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)   = mfaab;
-               (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)   = mfcab;
-               (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)   = mfaba;
-               (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)   = mfcba;
-               (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)   = mfbaa;
-               (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)   = mfbca;
-               (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)  = mfaaa;
-               (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)  = mfcaa;
-               (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)  = mfaca;
-               (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3)  = mfcca;
+               (*this->localDistributions)(eP00, x1, x2, x3)    = mfabb;
+               (*this->localDistributions)(e0P0, x1, x2, x3)    = mfbab;
+               (*this->localDistributions)(e00P, x1, x2, x3)    = mfbba;
+               (*this->localDistributions)(ePP0, x1, x2, x3)   = mfaab;
+               (*this->localDistributions)(eMP0, x1p, x2, x3)   = mfcab;
+               (*this->localDistributions)(eP0P, x1, x2, x3)   = mfaba;
+               (*this->localDistributions)(eM0P, x1p, x2, x3)   = mfcba;
+               (*this->localDistributions)(e0PP, x1, x2, x3)   = mfbaa;
+               (*this->localDistributions)(e0MP, x1, x2p, x3)   = mfbca;
+               (*this->localDistributions)(ePPP, x1, x2, x3)  = mfaaa;
+               (*this->localDistributions)(eMPP, x1p, x2, x3)  = mfcaa;
+               (*this->localDistributions)(ePMP, x1, x2p, x3)  = mfaca;
+               (*this->localDistributions)(eMMP, x1p, x2p, x3)  = mfcca;
 
-               (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3) = mfcbb;
-               (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3) = mfbcb;
-               (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p) = mfbbc;
-               (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3) = mfccb;
-               (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3) = mfacb;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p) = mfcbc;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p) = mfabc;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p) = mfbcc;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p) = mfbac;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p) = mfacc;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac;
-               (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac;
+               (*this->nonLocalDistributions)(eM00, x1p, x2, x3) = mfcbb;
+               (*this->nonLocalDistributions)(e0M0, x1, x2p, x3) = mfbcb;
+               (*this->nonLocalDistributions)(e00M, x1, x2, x3p) = mfbbc;
+               (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3) = mfccb;
+               (*this->nonLocalDistributions)(ePM0, x1, x2p, x3) = mfacb;
+               (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p) = mfcbc;
+               (*this->nonLocalDistributions)(eP0M, x1, x2, x3p) = mfabc;
+               (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p) = mfbcc;
+               (*this->nonLocalDistributions)(e0PM, x1, x2, x3p) = mfbac;
+               (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p) = mfccc;
+               (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p) = mfacc;
+               (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p) = mfcac;
+               (*this->nonLocalDistributions)(ePPM, x1, x2, x3p) = mfaac;
 
                (*this->zeroDistributions)(x1, x2, x3) = mfbbb;
                //////////////////////////////////////////////////////////////////////////

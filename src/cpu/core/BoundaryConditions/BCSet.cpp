@@ -34,7 +34,7 @@
 #include "BCSet.h"
 #include "BCStrategy.h"
 #include "BCArray3D.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "DataSet3D.h"
 #include "ILBMKernel.h"
 

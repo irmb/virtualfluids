@@ -38,7 +38,7 @@
 
 #include "FullVectorConnector.h"
 #include "D3Q27System.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
 
@@ -84,203 +84,207 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline void ThreeDistributionsFullVectorConnector::updatePointers()
 {
-    localDistributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
-    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
-    zeroDistributions     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getZeroDistributions();
+    localDistributions    = dynamicPointerCast<EsoSplit>(this->fDis)->getLocalDistributions();
+    nonLocalDistributions = dynamicPointerCast<EsoSplit>(this->fDis)->getNonLocalDistributions();
+    zeroDistributions     = dynamicPointerCast<EsoSplit>(this->fDis)->getZeroDistributions();
 
-    localHdistributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hDis)->getLocalDistributions();
-    nonLocalHdistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hDis)->getNonLocalDistributions();
-    zeroHdistributions     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hDis)->getZeroDistributions();
+    localHdistributions    = dynamicPointerCast<EsoSplit>(this->hDis)->getLocalDistributions();
+    nonLocalHdistributions = dynamicPointerCast<EsoSplit>(this->hDis)->getNonLocalDistributions();
+    zeroHdistributions     = dynamicPointerCast<EsoSplit>(this->hDis)->getZeroDistributions();
 
-    localH2distributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->h2Dis)->getLocalDistributions();
-    nonLocalH2distributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->h2Dis)->getNonLocalDistributions();
-    zeroH2distributions     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->h2Dis)->getZeroDistributions();
+    localH2distributions    = dynamicPointerCast<EsoSplit>(this->h2Dis)->getLocalDistributions();
+    nonLocalH2distributions = dynamicPointerCast<EsoSplit>(this->h2Dis)->getNonLocalDistributions();
+    zeroH2distributions     = dynamicPointerCast<EsoSplit>(this->h2Dis)->getZeroDistributions();
 }
 //////////////////////////////////////////////////////////////////////////
 inline void ThreeDistributionsFullVectorConnector::fillData(vector_type& sdata, int& index, int x1, int x2, int x3)
 {
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_NW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
+   using namespace vf::lbm::dir;
 
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
+   sdata[index++] = (*this->localDistributions)(eP00, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(e0P0, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(e00P, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(ePP0, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(eMP0, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(eP0P, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(eM0P, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(e0PP, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(e0MP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localDistributions)(ePPP, x1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(eMPP, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localDistributions)(ePMP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localDistributions)(eMMP, x1 + 1, x2 + 1, x3);
+
+   sdata[index++] = (*this->nonLocalDistributions)(eM00, x1 + 1, x2, x3);
+   sdata[index++] = (*this->nonLocalDistributions)(e0M0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalDistributions)(e00M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(eMM0, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalDistributions)(ePM0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalDistributions)(eM0M, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(eP0M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(e0MM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(e0PM, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(eMMM, x1 + 1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(ePMM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(eMPM, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalDistributions)(ePPM, x1, x2, x3 + 1);
 
    sdata[index++] = (*this->zeroDistributions)(x1, x2, x3);
 
 
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_E, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_N, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_T, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_NE, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_NW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TE, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TN, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TS, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localHdistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->localHdistributions)(eP00, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(e0P0, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(e00P, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(ePP0, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(eMP0, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(eP0P, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(eM0P, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(e0PP, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(e0MP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localHdistributions)(ePPP, x1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(eMPP, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localHdistributions)(ePMP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localHdistributions)(eMMP, x1 + 1, x2 + 1, x3);
 
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_W, x1 + 1, x2, x3);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_S, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_B, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_SE, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BE, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BN, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalHdistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(eM00, x1 + 1, x2, x3);
+   sdata[index++] = (*this->nonLocalHdistributions)(e0M0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalHdistributions)(e00M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(eMM0, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalHdistributions)(ePM0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalHdistributions)(eM0M, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(eP0M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(e0MM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(e0PM, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(eMMM, x1 + 1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(ePMM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(eMPM, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalHdistributions)(ePPM, x1, x2, x3 + 1);
 
    sdata[index++] = (*this->zeroHdistributions)(x1, x2, x3);
 
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_E, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_N, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_T, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_NE, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_NW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TE, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TN, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TS, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TNE, x1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->localH2distributions)(eP00, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(e0P0, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(e00P, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(ePP0, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(eMP0, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(eP0P, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(eM0P, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(e0PP, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(e0MP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localH2distributions)(ePPP, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(eMPP, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(ePMP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localH2distributions)(eMMP, x1 + 1, x2 + 1, x3);
 
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_W, x1 + 1, x2, x3);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_S, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_B, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_SE, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BE, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BN, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(eM00, x1 + 1, x2, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(e0M0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(e00M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(eMM0, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(ePM0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(eM0M, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(eP0M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(e0MM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(e0PM, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(eMMM, x1 + 1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(ePMM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(eMPM, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(ePPM, x1, x2, x3 + 1);
 
    sdata[index++] = (*this->zeroH2distributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 inline void ThreeDistributionsFullVectorConnector::distributeData(vector_type& rdata, int& index, int x1, int x2, int x3)
 {
-   (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_NW, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TW, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TS, x1, x2 + 1, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3) = rdata[index++];
-   (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = rdata[index++];
+   using namespace vf::lbm::dir;
 
-   (*this->nonLocalDistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = rdata[index++];
+   (*this->localDistributions)(eP00, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(e0P0, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(e00P, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(ePP0, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(eMP0, x1 + 1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(eP0P, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(eM0P, x1 + 1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(e0PP, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(e0MP, x1, x2 + 1, x3) = rdata[index++];
+   (*this->localDistributions)(ePPP, x1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(eMPP, x1 + 1, x2, x3) = rdata[index++];
+   (*this->localDistributions)(ePMP, x1, x2 + 1, x3) = rdata[index++];
+   (*this->localDistributions)(eMMP, x1 + 1, x2 + 1, x3) = rdata[index++];
+
+   (*this->nonLocalDistributions)(eM00, x1 + 1, x2, x3) = rdata[index++];
+   (*this->nonLocalDistributions)(e0M0, x1, x2 + 1, x3) = rdata[index++];
+   (*this->nonLocalDistributions)(e00M, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(eMM0, x1 + 1, x2 + 1, x3) = rdata[index++];
+   (*this->nonLocalDistributions)(ePM0, x1, x2 + 1, x3) = rdata[index++];
+   (*this->nonLocalDistributions)(eM0M, x1 + 1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(eP0M, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(e0MM, x1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(e0PM, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(eMMM, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(ePMM, x1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(eMPM, x1 + 1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalDistributions)(ePPM, x1, x2, x3 + 1) = rdata[index++];
 
    (*this->zeroDistributions)(x1, x2, x3) = rdata[index++];
 
    
-   (*this->localHdistributions)(D3Q27System::ET_E, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_N, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_T, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_NE, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_NW, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TE, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TW, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TN, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TS, x1, x2 + 1, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TNE, x1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3) = rdata[index++];
-   (*this->localHdistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = rdata[index++];
+   (*this->localHdistributions)(eP00, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(e0P0, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(e00P, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(ePP0, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(eMP0, x1 + 1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(eP0P, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(eM0P, x1 + 1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(e0PP, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(e0MP, x1, x2 + 1, x3) = rdata[index++];
+   (*this->localHdistributions)(ePPP, x1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(eMPP, x1 + 1, x2, x3) = rdata[index++];
+   (*this->localHdistributions)(ePMP, x1, x2 + 1, x3) = rdata[index++];
+   (*this->localHdistributions)(eMMP, x1 + 1, x2 + 1, x3) = rdata[index++];
 
-   (*this->nonLocalHdistributions)(D3Q27System::ET_W, x1 + 1, x2, x3) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_S, x1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_B, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_SE, x1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BE, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BN, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalHdistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(eM00, x1 + 1, x2, x3) = rdata[index++];
+   (*this->nonLocalHdistributions)(e0M0, x1, x2 + 1, x3) = rdata[index++];
+   (*this->nonLocalHdistributions)(e00M, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(eMM0, x1 + 1, x2 + 1, x3) = rdata[index++];
+   (*this->nonLocalHdistributions)(ePM0, x1, x2 + 1, x3) = rdata[index++];
+   (*this->nonLocalHdistributions)(eM0M, x1 + 1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(eP0M, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(e0MM, x1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(e0PM, x1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(eMMM, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(ePMM, x1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(eMPM, x1 + 1, x2, x3 + 1) = rdata[index++];
+   (*this->nonLocalHdistributions)(ePPM, x1, x2, x3 + 1) = rdata[index++];
 
    (*this->zeroHdistributions)(x1, x2, x3) = rdata[index++];
 
-   (*this->localH2distributions)(D3Q27System::ET_E, x1, x2, x3)           = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_N, x1, x2, x3)           = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_T, x1, x2, x3)           = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_NE, x1, x2, x3)          = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_NW, x1 + 1, x2, x3)      = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TE, x1, x2, x3)          = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TW, x1 + 1, x2, x3)      = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TN, x1, x2, x3)          = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TS, x1, x2 + 1, x3)      = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TNE, x1, x2, x3)         = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3)     = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3)     = rdata[index++];
-   (*this->localH2distributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = rdata[index++];
+   (*this->localH2distributions)(eP00, x1, x2, x3)           = rdata[index++];
+   (*this->localH2distributions)(e0P0, x1, x2, x3)           = rdata[index++];
+   (*this->localH2distributions)(e00P, x1, x2, x3)           = rdata[index++];
+   (*this->localH2distributions)(ePP0, x1, x2, x3)          = rdata[index++];
+   (*this->localH2distributions)(eMP0, x1 + 1, x2, x3)      = rdata[index++];
+   (*this->localH2distributions)(eP0P, x1, x2, x3)          = rdata[index++];
+   (*this->localH2distributions)(eM0P, x1 + 1, x2, x3)      = rdata[index++];
+   (*this->localH2distributions)(e0PP, x1, x2, x3)          = rdata[index++];
+   (*this->localH2distributions)(e0MP, x1, x2 + 1, x3)      = rdata[index++];
+   (*this->localH2distributions)(ePPP, x1, x2, x3)         = rdata[index++];
+   (*this->localH2distributions)(eMPP, x1 + 1, x2, x3)     = rdata[index++];
+   (*this->localH2distributions)(ePMP, x1, x2 + 1, x3)     = rdata[index++];
+   (*this->localH2distributions)(eMMP, x1 + 1, x2 + 1, x3) = rdata[index++];
 
-   (*this->nonLocalH2distributions)(D3Q27System::ET_W, x1 + 1, x2, x3)           = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_S, x1, x2 + 1, x3)           = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_B, x1, x2, x3 + 1)           = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3)      = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_SE, x1, x2 + 1, x3)          = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1)      = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BE, x1, x2, x3 + 1)          = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1)      = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BN, x1, x2, x3 + 1)          = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1)     = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1)     = rdata[index++];
-   (*this->nonLocalH2distributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1)         = rdata[index++];
+   (*this->nonLocalH2distributions)(eM00, x1 + 1, x2, x3)           = rdata[index++];
+   (*this->nonLocalH2distributions)(e0M0, x1, x2 + 1, x3)           = rdata[index++];
+   (*this->nonLocalH2distributions)(e00M, x1, x2, x3 + 1)           = rdata[index++];
+   (*this->nonLocalH2distributions)(eMM0, x1 + 1, x2 + 1, x3)      = rdata[index++];
+   (*this->nonLocalH2distributions)(ePM0, x1, x2 + 1, x3)          = rdata[index++];
+   (*this->nonLocalH2distributions)(eM0M, x1 + 1, x2, x3 + 1)      = rdata[index++];
+   (*this->nonLocalH2distributions)(eP0M, x1, x2, x3 + 1)          = rdata[index++];
+   (*this->nonLocalH2distributions)(e0MM, x1, x2 + 1, x3 + 1)      = rdata[index++];
+   (*this->nonLocalH2distributions)(e0PM, x1, x2, x3 + 1)          = rdata[index++];
+   (*this->nonLocalH2distributions)(eMMM, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalH2distributions)(ePMM, x1, x2 + 1, x3 + 1)     = rdata[index++];
+   (*this->nonLocalH2distributions)(eMPM, x1 + 1, x2, x3 + 1)     = rdata[index++];
+   (*this->nonLocalH2distributions)(ePPM, x1, x2, x3 + 1)         = rdata[index++];
 
    (*this->zeroH2distributions)(x1, x2, x3) = rdata[index++];
 }
