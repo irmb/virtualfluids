@@ -71,7 +71,7 @@ void K15CompressibleNavierStokes::calculate(int step)
    using namespace std;
    using namespace vf::lbm::dir;
 
-   //timer.resetAndStart();
+   //timer.start();
 
    //initializing of forcing stuff 
    if (withForcing)
@@ -909,13 +909,12 @@ void K15CompressibleNavierStokes::calculate(int step)
 
 
 
-   //timer.stop();
+   //timer.end();
 }
 //////////////////////////////////////////////////////////////////////////
 real K15CompressibleNavierStokes::getCalculationTime()
 {
-   //return timer.getDuration();
-   return timer.getTotalTime();
+   return timer.getTimeInSeconds();
 }
 //////////////////////////////////////////////////////////////////////////
 void K15CompressibleNavierStokes::setBulkOmegaToOmega(bool value)

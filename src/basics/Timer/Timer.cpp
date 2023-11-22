@@ -26,18 +26,36 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Timer.cpp
-//! \ingroup Timer
-//! \author Stephan Lenz
+//! \author Soeren Peters
 //=======================================================================================
 #include "Timer.h"
-#include "TimerImp.h"
 
-#include <memory>
-
-SPtr<Timer> Timer::makeStart()
+namespace vf::basics
 {
-    SPtr<Timer> t = std::make_shared<TimerImp>();
-    t->start();
-    return t;
+
+void Timer::start()
+{
+    this->startTime = std::chrono::high_resolution_clock::now();
 }
+
+void Timer::end()
+{
+    this->endTime = std::chrono::high_resolution_clock::now();
+}
+
+double timeInSeconds(Timer::timePoint end, Timer::timePoint start)
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000000.0;
+}
+
+double Timer::getTimeInSeconds() const
+{
+    return timeInSeconds(endTime, startTime);
+}
+
+double Timer::getCurrentRuntimeInSeconds() const
+{
+    return timeInSeconds(std::chrono::high_resolution_clock::now(), startTime);
+}
+
+} // namespace vf::basics
