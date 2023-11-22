@@ -33,7 +33,7 @@
 #include "ThinWallNoSlip.h"
 
 #include "BoundaryConditions.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 
 ThinWallNoSlip::ThinWallNoSlip()
 {

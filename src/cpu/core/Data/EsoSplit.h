@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file D3Q27EsoTwist3DSplittedVector.h
+//! \file EsoSplit.h
 //! \ingroup Data
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef D3Q27EsoTwist3DSplittedVector_h
-#define D3Q27EsoTwist3DSplittedVector_h
+#ifndef EsoSplit_h
+#define EsoSplit_h
 
 #include "D3Q27System.h"
 #include "EsoTwist3D.h"
@@ -40,18 +40,18 @@
 #include "basics/container/CbArray4D.h"
 
 //! \brief Class implements EsoTwist3D
-//! \details D3Q27EsoTwist3DSplittedVector uses three vectors to implement Esoteric Twist method
-class D3Q27EsoTwist3DSplittedVector : public EsoTwist3D
+//! \details EsoSplit uses three vectors to implement Esoteric Twist method
+class EsoSplit : public EsoTwist3D
 {
 public:
-    D3Q27EsoTwist3DSplittedVector();
+    EsoSplit();
     //! \param nx1 number of nodes in x1 direction
     //! \param nx2 number of nodes in x2 direction
     //! \param nx3 number of nodes in x3 direction
     //! \param value initialisation value
-    D3Q27EsoTwist3DSplittedVector(size_t nx1, size_t nx2, size_t nx3, real value);
+    EsoSplit(size_t nx1, size_t nx2, size_t nx3, real value);
     //////////////////////////////////////////////////////////////////////////
-    ~D3Q27EsoTwist3DSplittedVector() override;
+    ~EsoSplit() override;
     //////////////////////////////////////////////////////////////////////////
     void swap() override;
     //////////////////////////////////////////////////////////////////////////

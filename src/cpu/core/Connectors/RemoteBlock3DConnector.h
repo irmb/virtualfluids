@@ -38,7 +38,6 @@
 #include "Block3D.h"
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
-#include "EsoTwistD3Q27System.h"
 #include "LBMKernel.h"
 #include "TransmitterType.h"
 

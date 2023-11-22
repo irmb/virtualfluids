@@ -36,7 +36,7 @@
 #include "BCArray3D.h"
 #include "BCSet.h"
 #include "Block3D.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"

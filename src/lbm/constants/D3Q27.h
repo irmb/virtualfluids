@@ -64,5 +64,61 @@ static constexpr size_t iMPM = dPMP;
 static constexpr size_t iPMM = dMPP;
 static constexpr size_t iMMM = dPPP;
 
+static constexpr size_t eP00 = 0;
+static constexpr size_t eM00 = 0;
+static constexpr size_t e0P0 = 1;
+static constexpr size_t e0M0 = 1;
+static constexpr size_t e00P = 2;
+static constexpr size_t e00M = 2;
+static constexpr size_t ePP0 = 3;
+static constexpr size_t eMM0 = 3;
+static constexpr size_t ePM0 = 4;
+static constexpr size_t eMP0 = 4;
+static constexpr size_t eP0P = 5;
+static constexpr size_t eM0M = 5;
+static constexpr size_t eP0M = 6;
+static constexpr size_t eM0P = 6;
+static constexpr size_t e0PP = 7;
+static constexpr size_t e0MM = 7;
+static constexpr size_t e0PM = 8;
+static constexpr size_t e0MP = 8;
+static constexpr size_t ePPP = 9;
+static constexpr size_t eMMM = 9;
+static constexpr size_t eMPP = 10;
+static constexpr size_t ePMM = 10;
+static constexpr size_t ePMP = 11;
+static constexpr size_t eMPM = 11;
+static constexpr size_t eMMP = 12;
+static constexpr size_t ePPM = 12;
+
+static constexpr unsigned long int et000 = 1;
+static constexpr unsigned long int etP00 = 2;      
+static constexpr unsigned long int etM00 = 4;      
+static constexpr unsigned long int et0P0 = 8;      
+static constexpr unsigned long int et0M0 = 16;     
+static constexpr unsigned long int et00P = 32;     
+static constexpr unsigned long int et00M = 64;     
+static constexpr unsigned long int etPP0 = 128;    
+static constexpr unsigned long int etMM0 = 256;    
+static constexpr unsigned long int etPM0 = 512;    
+static constexpr unsigned long int etMP0 = 1024;   
+static constexpr unsigned long int etP0P = 2048;   
+static constexpr unsigned long int etM0M = 4096;   
+static constexpr unsigned long int etP0M = 8192;   
+static constexpr unsigned long int etM0P = 16384;  
+static constexpr unsigned long int et0PP = 32768;  
+static constexpr unsigned long int et0MM = 65536;  
+static constexpr unsigned long int et0PM = 131072; 
+static constexpr unsigned long int et0MP = 262144; 
+static constexpr unsigned long int etPPP = 524288;
+static constexpr unsigned long int etMPP = 1048576;
+static constexpr unsigned long int etPMP = 2097152;
+static constexpr unsigned long int etMMP = 4194304;
+static constexpr unsigned long int etPPM = 8388608;
+static constexpr unsigned long int etMPM = 16777216;
+static constexpr unsigned long int etPMM = 33554432;
+static constexpr unsigned long int etMMM = 67108864;
+ 
+
 } // namespace vf::lbm::dir
 #endif

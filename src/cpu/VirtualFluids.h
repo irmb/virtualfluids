@@ -74,14 +74,12 @@
 #include <basics/utilities/UbLimits.h>
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbMath.h>
-#include <basics/utilities/UbNupsTimer.h>
 #include <basics/utilities/UbObservable.h>
 #include <basics/utilities/UbObserver.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/utilities/UbScheduler.h>
 #include <basics/utilities/UbStringInputASCII.h>
 #include <basics/utilities/UbSystem.h>
-#include <basics/utilities/UbTiming.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/writer/WbWriter.h>
 #include <basics/writer/WbWriterAvsASCII.h>
@@ -152,13 +150,12 @@
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
 
 
-#include <Data/D3Q27EsoTwist3DSplittedVector.h>
-#include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
+#include <Data/EsoSplit.h>
+
 #include <Data/DataSet3D.h>
 #include <Data/DistributionArray3D.h>
 #include <Data/EsoTwist3D.h>
-#include <Data/EsoTwistD3Q27System.h>
-#include <Data/VoidData3D.h>
+
 
 #include <Simulation/Block3D.h>
 #include <Simulation/Simulation.h>

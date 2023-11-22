@@ -49,7 +49,10 @@
 #define OMP_SCHEDULE guided
 
 // #define TIMING
-// #include "UbTiming.h"
+#ifdef TIMING
+#include <basics/Timer/Timer.h>
+using namespace vf::basics;
+#endif
 
 #include <basics/utilities/UbException.h>
 
@@ -254,7 +257,7 @@ void Simulation::run()
         int threshold;
 
 #ifdef TIMING
-        UbTimer timer;
+        Timer timer;
         real time[6];
 #endif
 
@@ -272,8 +275,8 @@ void Simulation::run()
                     for (straightStartLevel = maxInitLevel, threshold = 1; (staggeredStep & threshold) != threshold; straightStartLevel--, threshold <<= 1)
                         ;
                 }
-#ifdef TIMING
-                timer.resetAndStart();
+#ifdef TIMING   
+                timer.start();
 #endif
                 //////////////////////////////////////////////////////////////////////////
                 applyPreCollisionBC(straightStartLevel, maxInitLevel);
@@ -282,8 +285,9 @@ void Simulation::run()
                 calculateBlocks(straightStartLevel, maxInitLevel, calcStep);
                 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-                time[0] = timer.stop();
+                time[0] = timer.getCurrentRuntimeInSeconds();
                 UBLOG(logINFO, "calculateBlocks time = " << time[0]);
+                timer.start();
 #endif
                 //////////////////////////////////////////////////////////////////////////
                 //////////////////////////////////////////////////////////////////////////
@@ -291,31 +295,35 @@ void Simulation::run()
                 exchangeBlockData(straightStartLevel, maxInitLevel);
                 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-                time[1] = timer.stop();
+                time[1] = timer.getCurrentRuntimeInSeconds();
                 UBLOG(logINFO, "exchangeBlockData time = " << time[1]);
+                timer.start();
 #endif
                 //////////////////////////////////////////////////////////////////////////
                 applyPostCollisionBC(straightStartLevel, maxInitLevel);
                 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-                time[2] = timer.stop();
+                time[2] = timer.getCurrentRuntimeInSeconds();
                 UBLOG(logINFO, "applyBCs time = " << time[2]);
+                timer.start();
 #endif
                 //////////////////////////////////////////////////////////////////////////
                 // swap distributions in kernel
                 swapDistributions(straightStartLevel, maxInitLevel);
                 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-                time[3] = timer.stop();
+                time[3] = timer.getCurrentRuntimeInSeconds();
                 UBLOG(logINFO, "swapDistributions time = " << time[3]);
+                timer.start();
 #endif
                 //////////////////////////////////////////////////////////////////////////
                 if (refinement) {
                     if (straightStartLevel < maxInitLevel) exchangeBlockData(straightStartLevel, maxInitLevel);
                         //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-                    time[4] = timer.stop();
+                    time[4] = timer.getCurrentRuntimeInSeconds();
                     UBLOG(logINFO, "refinement exchangeBlockData time = " << time[4]);
+                    timer.start();
 #endif
                     //////////////////////////////////////////////////////////////////////////
                     // now ghost nodes have actual values
@@ -323,8 +331,9 @@ void Simulation::run()
                     interpolation(straightStartLevel, maxInitLevel);
                     //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-                    time[5] = timer.stop();
+                    time[5] = timer.getCurrentRuntimeInSeconds();
                     UBLOG(logINFO, "refinement interpolation time = " << time[5]);
+                    timer.start();
 #endif
                     //////////////////////////////////////////////////////////////////////////
                 }
@@ -362,7 +371,10 @@ void Simulation::calculateBlocks(int startLevel, int maxInitLevel, int calcStep)
         SPtr<Block3D> blockTemp;
         // startLevel bis maxInitLevel
         for (int level = startLevel; level <= maxInitLevel; level++) {
-            // timer.resetAndStart();
+#ifdef TIMING
+            Timer timer;
+            timer.start();
+#endif
             // call LBM kernel
             int size = (int)blocks[level].size();
 #ifdef _OPENMP
@@ -378,9 +390,11 @@ void Simulation::calculateBlocks(int startLevel, int maxInitLevel, int calcStep)
                     std::exit(EXIT_FAILURE);
                 }
             }
-            // timer.stop();
-            // UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size() << " collision time = " <<
-            // timer.getTotalTime());
+#ifdef TIMING
+            timer.end();
+            UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size()
+                                      << " collision time = " << timer.getTimeInSeconds());
+#endif
         }
     }
 }
