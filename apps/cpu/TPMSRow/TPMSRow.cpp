@@ -26,15 +26,15 @@ void run(string configname)
         double dx                   = config.getValue<double>("dx");
         double UnitEdgeLength       = config.getValue<double>("UnitEdgeLength");
         double Re                   = config.getValue<double>("Re");
-        double Re0                  = config.getValue<double>("Re0");
+        //double Re0                  = config.getValue<double>("Re0");
         //double rhoIn                = config.getValue<double>("rhoIn");
         //string geometry             = config.getValue<string>("geometry");
         vector<double> length       = config.getVector<double>("length");
         //vector<double> FunnelL      = config.getVector<double>("FunnelL");
         //vector<double> FunnelOrigin = config.getVector<double>("FunnelOrigin");
         
-        double          timeAvStart       = config.getValue<double>("timeAvStart");
-        double          timeAvStop        = config.getValue<double>("timeAvStop");
+        //double          timeAvStart       = config.getValue<double>("timeAvStart");
+        //double          timeAvStop        = config.getValue<double>("timeAvStop");
 
         vector<double> TPMSL        = config.getVector<double>("TPMSL");
         vector<double> TPMSOrigin   = config.getVector<double>("TPMSOrigin");
@@ -456,27 +456,27 @@ void run(string configname)
         SPtr<GbPoint3D> pointOne(new GbPoint3D(-0.00494999997317791,0.008, 0.0099));
         SPtr<GbPoint3D> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
 
-        SPtr<GbLine3D> line(new GbLine3D(pointOne,pointTwo));
+        SPtr<GbLine3D> line(new GbLine3D(pointOne.get(),pointTwo.get()));
         SPtr<UbScheduler> linSch(new UbScheduler(outTime/20,outTime/2/*,beginTime,endTime*/));
-        SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname, WbWriterVtkXmlBinary::getInstance(), line,refineLevel, comm));
+        SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname + "line",  line,refineLevel, comm));
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime/*,beginTime,endTime*/));
         SPtr<SimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         
-        SPtr<UbScheduler> tavSch(new UbScheduler(100, timeAvStart, timeAvStop));
-        SPtr<TimeAveragedValuesSimulationObserver> tav(new TimeAveragedValuesSimulationObserver(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-        TimeAveragedValuesSimulationObserver::Density | TimeAveragedValuesSimulationObserver::Velocity | TimeAveragedValuesSimulationObserver::Fluctuations));
-        tav->setWithGhostLayer(true);        
+        //SPtr<UbScheduler> tavSch(new UbScheduler(100, timeAvStart, timeAvStop));
+        //SPtr<TimeAveragedValuesSimulationObserver> tav(new TimeAveragedValuesSimulationObserver(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+        //TimeAveragedValuesSimulationObserver::Density | TimeAveragedValuesSimulationObserver::Velocity | TimeAveragedValuesSimulationObserver::Fluctuations));
+        //tav->setWithGhostLayer(true);        
         
-        SPtr<UbScheduler> nuSch(new UbScheduler(100, 0, endTime / 2));
-        mu::Parser fnu;
-        fnu.SetExpr("(L*u/T)*(((T-2*t)/Re0)+(2*t/Re))");
-        fnu.DefineConst("Re0", Re0);
-        fnu.DefineConst("Re", Re);
-        fnu.DefineConst("T", endTime);
-        fnu.DefineConst("L", (UnitEdgeLength / dx));
-        fnu.DefineConst("u", vx);
-        SPtr<SimulationObserver> nupr(new DecreaseViscositySimulationObserver(grid, nuSch, &fnu, comm));
+        //SPtr<UbScheduler> nuSch(new UbScheduler(100, 0, endTime / 2));
+        //mu::Parser fnu;
+        //fnu.SetExpr("(L*u/T)*(((T-2*t)/Re0)+(2*t/Re))");
+        //fnu.DefineConst("Re0", Re0);
+        //fnu.DefineConst("Re", Re);
+        //fnu.DefineConst("T", endTime);
+        //fnu.DefineConst("L", (UnitEdgeLength / dx));
+        //fnu.DefineConst("u", vx);
+        //SPtr<SimulationObserver> nupr(new DecreaseViscositySimulationObserver(grid, nuSch, &fnu, comm));
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
         SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
@@ -490,7 +490,7 @@ void run(string configname)
         calculator->addSimulationObserver(npr);
         calculator->addSimulationObserver(pp);
         calculator->addSimulationObserver(migSimulationObserver);
-        calculator->addSimulationObserver(tav);
+        //calculator->addSimulationObserver(tav);
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
