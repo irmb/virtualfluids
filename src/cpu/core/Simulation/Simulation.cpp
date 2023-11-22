@@ -51,6 +51,7 @@
 // #define TIMING
 #ifdef TIMING
 #include <basics/Timer/Timer.h>
+using namespace vf::basics;
 #endif
 
 #include <basics/utilities/UbException.h>
