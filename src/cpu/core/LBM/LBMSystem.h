@@ -83,8 +83,4 @@ static real calcOmega2(real viscosity, int level)
 static real calcOmega2(real viscosity, real deltaT) { return REAL_CAST(1.0 / (4.5 * viscosity / deltaT + 0.5)); }
 } // namespace LBMSystem
 
-// some typedefs for global namespace
-//using LBMReal = LBMSystem::real;
-using LBMReal = real;
-
 #endif

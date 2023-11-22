@@ -67,10 +67,10 @@ void run(string configname)
 
       }
 
-      LBMReal uLB = 0.05;
-      LBMReal Re = 20.0;
-      LBMReal rhoLB = 0.0;
-      LBMReal nueLB = 0.05842;
+      real uLB = 0.05;
+      real Re = 20.0;
+      real rhoLB = 0.0;
+      real nueLB = 0.05842;
       
       SPtr<Grid3D> grid(new Grid3D(comm));
       

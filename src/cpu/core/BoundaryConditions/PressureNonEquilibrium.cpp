@@ -81,7 +81,7 @@ void PressureNonEquilibrium::applyBC()
 
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
-    // LBMReal vlimit=0.01;
+    // real vlimit=0.01;
     // vx1=(fabs(vx1)>vlimit) ? vx1/fabs(vx1)*vlimit : vx1;
     // vx2=(fabs(vx2)>vlimit) ? vx2/fabs(vx2)*vlimit : vx2;
     // vx3=(fabs(vx3)>vlimit) ? vx3/fabs(vx3)*vlimit : vx3;

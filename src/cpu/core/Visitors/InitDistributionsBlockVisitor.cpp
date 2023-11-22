@@ -101,25 +101,25 @@ void InitDistributionsBlockVisitor::setRho(const std::string &muParserString)
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx1(real vx1)
 {
-    this->muVx1.SetExpr(UbSystem::toString(vx1, D3Q27RealLim::digits10));
+    this->muVx1.SetExpr(UbSystem::toString(vx1, realLim::digits10));
     this->checkFunction(muVx1);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx2(real vx2)
 {
-    this->muVx2.SetExpr(UbSystem::toString(vx2, D3Q27RealLim::digits10));
+    this->muVx2.SetExpr(UbSystem::toString(vx2, realLim::digits10));
     this->checkFunction(muVx2);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx3(real vx3)
 {
-    this->muVx3.SetExpr(UbSystem::toString(vx3, D3Q27RealLim::digits10));
+    this->muVx3.SetExpr(UbSystem::toString(vx3, realLim::digits10));
     this->checkFunction(muVx3);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setRho(real rho)
 {
-    this->muRho.SetExpr(UbSystem::toString(rho, D3Q27RealLim::digits10));
+    this->muRho.SetExpr(UbSystem::toString(rho, realLim::digits10));
     this->checkFunction(muRho);
 }
 //////////////////////////////////////////////////////////////////////////

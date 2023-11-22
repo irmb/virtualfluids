@@ -62,8 +62,8 @@ void OutflowNonReflectingWithPressure::applyBC()
  //   using namespace UbMath;
     using namespace vf::basics::constant;
 
-    LBMReal f[ENDF + 1];
-    LBMReal ftemp[ENDF + 1];
+    real f[ENDF + 1];
+    real ftemp[ENDF + 1];
 
     int nx1       = x1;
     int nx2       = x2;
@@ -95,9 +95,9 @@ void OutflowNonReflectingWithPressure::applyBC()
     distributions->getPreCollisionDistribution(f, x1, x2, x3);
     distributions->getPreCollisionDistribution(ftemp, nx1, nx2, nx3);
 
-    LBMReal rho, vx1, vx2, vx3;
+    real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
-    LBMReal delf = rho* c1o100;
+    real delf = rho* c1o100;
     switch (direction) {
         case dP00:
             f[dP00]   = ftemp[dP00] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP00] - delf* WEIGTH[dP00];

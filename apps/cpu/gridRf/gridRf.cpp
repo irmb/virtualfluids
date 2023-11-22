@@ -70,11 +70,11 @@ void run(const char *cstr)
 
       CommunicatorPtr comm(new MPICommunicator());
 
-      LBMReal uLB = 0.01;
-      LBMReal Re = 20.0;
-      LBMReal rhoLB = 1.0;
-      LBMReal l = blockLentghX2 / dx;
-      LBMReal nueLB = (uLB*l)/Re;
+      real uLB = 0.01;
+      real Re = 20.0;
+      real rhoLB = 1.0;
+      real l = blockLentghX2 / dx;
+      real nueLB = (uLB*l)/Re;
 
       SimulationParametersPtr param = SimulationParameters::getInstanz();
       param->setCollisionModelType(SimulationParameters::COMPRESSIBLE);

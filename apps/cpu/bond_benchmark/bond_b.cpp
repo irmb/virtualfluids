@@ -108,10 +108,10 @@ void periodic(const char *cstr1, const char *cstr2)
       double L2, L3, H;
       L2 = L3 = H = gridNx2*blocknx1;
 
-      LBMReal uLB = 0.05;
-      LBMReal Re = 20.0;
-      LBMReal rhoLB = 0.0;
-      LBMReal nueLB = 0.05842;
+      real uLB = 0.05;
+      real Re = 20.0;
+      real rhoLB = 0.0;
+      real nueLB = 0.05842;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
