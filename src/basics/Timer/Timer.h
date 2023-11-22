@@ -26,29 +26,27 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Timer.h
-//! \ingroup Timer
-//! \author Stephan Lenz
+//! \author Sören Peters
 //=======================================================================================
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef BASICS_TIMER_H
+#define BASICS_TIMER_H
 
-#include "basics_export.h"
+#include <chrono>
 
-#include "DataTypes.h"
-#include "PointerDefinitions.h"
-
-class BASICS_EXPORT Timer
+class Timer
 {
 public:
-    virtual ~Timer() = default;
-    static SPtr<Timer> makeStart();
+    using timePoint = std::chrono::high_resolution_clock::time_point;
 
-    virtual void start() = 0;
-    virtual void end()   = 0;
+    void start();
+    void end();
 
-    virtual real getTimeInSeconds() const           = 0;
-    virtual real getCurrentRuntimeInSeconds() const = 0;
+    double getTimeInSeconds() const;
+    double getCurrentRuntimeInSeconds() const;
+
+private:
+    timePoint startTime;
+    timePoint endTime;
 };
 
 #endif

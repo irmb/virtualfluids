@@ -70,7 +70,7 @@ void K15CompressibleNavierStokes::calculate(int step)
    using namespace D3Q27System;
    using namespace std;
 
-   //timer.resetAndStart();
+   //timer.start();
 
    //initializing of forcing stuff 
    if (withForcing)
@@ -908,13 +908,12 @@ void K15CompressibleNavierStokes::calculate(int step)
 
 
 
-   //timer.stop();
+   //timer.end();
 }
 //////////////////////////////////////////////////////////////////////////
 real K15CompressibleNavierStokes::getCalculationTime()
 {
-   //return timer.getDuration();
-   return timer.getTotalTime();
+   return timer.getTimeInSeconds();
 }
 //////////////////////////////////////////////////////////////////////////
 void K15CompressibleNavierStokes::setBulkOmegaToOmega(bool value)

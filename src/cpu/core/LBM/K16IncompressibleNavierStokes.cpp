@@ -60,7 +60,7 @@ void K16IncompressibleNavierStokes::calculate(int step)
    using namespace D3Q27System;
    using namespace std;
 
-   //timer.resetAndStart();
+   //timer.start();
 
    //initializing of forcing stuff 
    if (withForcing)
@@ -892,8 +892,7 @@ void K16IncompressibleNavierStokes::calculate(int step)
 //////////////////////////////////////////////////////////////////////////
 real K16IncompressibleNavierStokes::getCalculationTime()
 {
-   //return timer.getDuration();
-   return timer.getTotalTime();
+   return timer.getTimeInSeconds();
 }
 //////////////////////////////////////////////////////////////////////////
 void K16IncompressibleNavierStokes::setRelaxationParameter(Parameter p)

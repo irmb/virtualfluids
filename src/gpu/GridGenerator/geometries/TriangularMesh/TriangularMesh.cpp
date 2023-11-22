@@ -97,13 +97,14 @@ void TriangularMesh::findNeighbors()
 {
     VF_LOG_INFO("start finding neighbors ...");
 
-    auto t = Timer::makeStart();
+    Timer t;
+    t.start();
 
     TriangleNeighborFinder finder(triangles, size);
     finder.fillWithNeighborAngles(this);
 
-    t->end();
-    VF_LOG_INFO("time finding neighbors = {}", t->getTimeInSeconds());
+    t.end();
+    VF_LOG_INFO("time finding neighbors = {}", t.getTimeInSeconds());
 }
 
 void TriangularMesh::setTriangles(std::vector<Triangle> triangles)

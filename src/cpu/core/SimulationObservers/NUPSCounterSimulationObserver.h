@@ -37,7 +37,8 @@
 #include <PointerDefinitions.h>
 
 #include "SimulationObserver.h"
-#include "basics/utilities/UbTiming.h"
+
+#include <basics/Timer/Timer.h>
 
 namespace vf::parallel {class Communicator;}
 class Grid3D;
@@ -63,7 +64,7 @@ protected:
     //! Collect data for calculation of NUPS
     //! \param step is a time step
     void collectData(real step);
-    UbTimer timer;
+    Timer timer;
     int numOfThreads;
     real numberOfNodes;
     real numberOfBlocks;

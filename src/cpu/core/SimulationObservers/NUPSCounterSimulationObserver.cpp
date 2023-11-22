@@ -42,7 +42,7 @@ NUPSCounterSimulationObserver::NUPSCounterSimulationObserver(SPtr<Grid3D> grid, 
     : SimulationObserver(grid, s), numOfThreads(numOfThreads), nup(0), nup_t(0), nupsStep(0.0), comm(comm)
 {
     if (comm->getProcessID() == comm->getRoot()) {
-        timer.resetAndStart();
+        timer.start();
 
         real nop          = comm->getNumberOfProcesses();
         int minInitLevel    = grid->getCoarsestInitializedLevel();
@@ -70,16 +70,17 @@ void NUPSCounterSimulationObserver::update(real step)
 void NUPSCounterSimulationObserver::collectData(real step)
 {
     if (comm->getProcessID() == comm->getRoot()) {
-        real time   = timer.stop();
-        real nups_t = nup_t * (step - nupsStep) / time;
-        real nups   = nup * (step - nupsStep) / time;
-        real tnups  = nups / (real)numOfThreads;
+        timer.end();
+        double time = timer.getCurrentRuntimeInSeconds();
+        double nups_t = nup_t * (step - nupsStep) / time;
+        double nups = nup * (step - nupsStep) / time;
+        double tnups = nups / (double)numOfThreads;
         UBLOG(logINFO, "Calculation step = " << step);
         UBLOG(logINFO, "Total performance = " << nups_t << " NUPS");
         UBLOG(logINFO, "Performance per update = " << nups << " NUPS");
         UBLOG(logINFO, "Performance per thread = " << tnups << " NUPS");
         UBLOG(logINFO, "Time for " << step - nupsStep << " steps = " << time << " s");
         nupsStep = step;
-        timer.resetAndStart();
+        timer.start();
     }
 }

@@ -1,10 +1,11 @@
 #ifndef K15CompressibleNavierStokes_h__
 #define K15CompressibleNavierStokes_h__
 
+#include <basics/Timer/Timer.h>
+
 #include "LBMKernel.h"
 #include "BCSet.h"
 #include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 
@@ -28,7 +29,7 @@ protected:
    virtual void initDataSet();
    real f[D3Q27System::ENDF+1];
 
-   UbTimer timer;
+   Timer timer;
 
    real OxyyMxzz;
    Parameter parameter;
