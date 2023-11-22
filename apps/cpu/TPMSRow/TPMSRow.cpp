@@ -90,7 +90,7 @@ void run(string configname)
           SPtr<BC> xMinApr(new VelocityBC(vx, 0., BCFunction::INFCONST, 0., 0., BCFunction::INFCONST,
            0.,0., BCFunction::INFCONST));
 
-        SPtr<BC> xMaxApr(new DensityBC(0.));
+        SPtr<BC> xMaxApr(new PressureBC(0.));
         //SPtr<BC> yMinApr(new NoSlipBC(1));
         //SPtr<BC> yMaxApr(new NoSlipBC(1));
         SPtr<BC> zMinApr(new NoSlipBC());
@@ -102,7 +102,7 @@ void run(string configname)
          //tpmsNoslipAdapter->setBcAlgorithm(BCStrategyPtr(new NoSlipBCStrategy()));
          //tpmsNoslipAdapter->setBcAlgorithm(SPtr<BCStrategy>(new ThinWallNoSlipBCStrategy()));
 
-        tpmsNoslipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        tpmsNoslipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
         //funnelNoslipAdapter->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
          //xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
@@ -113,8 +113,8 @@ void run(string configname)
          xMaxApr->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflectingWithPressure()));
         //yMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //yMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-         zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-         zMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+         zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+         zMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
         //zMinFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //zMaxFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
