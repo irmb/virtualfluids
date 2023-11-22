@@ -26,12 +26,10 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TbTransmitterMpiPool.h
-//! \ingroup transmitter
 //! \author Soeren Freudiger, Sebastian Geller
 //=======================================================================================
-#ifndef TBTRANSMITTERMPIPOOL_H
-#define TBTRANSMITTERMPIPOOL_H
+#ifndef PARALLEL_TBTRANSMITTERMPIPOOL_H
+#define PARALLEL_TBTRANSMITTERMPIPOOL_H
 
 #ifdef VF_MPI
 
@@ -43,11 +41,12 @@
 
 #include <mpi.h>
 
+#include <basics/PointerDefinitions.h>
 #include <basics/container/CbVector.h>
 #include <basics/container/CbVectorPool.h>
-#include <basics/transmitter/TbTransmitter.h>
 
-#include <PointerDefinitions.h>
+#include "parallel/transmitter/TbTransmitter.h"
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // TbCbVectorMpiPoolSender/Receiver

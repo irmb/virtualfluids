@@ -37,9 +37,10 @@
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
 #include "D3Q27System.h"
-#include <basics/transmitter/TbTransmitterLocal.h>
 
 #include <parallel/Communicator.h>
+#include <parallel/transmitter/TbTransmitterLocal.h>
+
 #include "Interpolator.h"
 
 SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm, real nue, SPtr<Interpolator> iProcessor) :
