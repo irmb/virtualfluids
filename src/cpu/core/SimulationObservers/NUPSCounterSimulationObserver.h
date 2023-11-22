@@ -64,7 +64,7 @@ protected:
     //! Collect data for calculation of NUPS
     //! \param step is a time step
     void collectData(real step);
-    Timer timer;
+    vf::basics::Timer timer;
     int numOfThreads;
     real numberOfNodes;
     real numberOfBlocks;

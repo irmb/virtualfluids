@@ -97,7 +97,7 @@ void TriangularMesh::findNeighbors()
 {
     VF_LOG_INFO("start finding neighbors ...");
 
-    Timer t;
+    vf::basics::Timer t;
     t.start();
 
     TriangleNeighborFinder finder(triangles, size);

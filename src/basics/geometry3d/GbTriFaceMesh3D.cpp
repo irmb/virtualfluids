@@ -652,7 +652,7 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //      if( !kdTree)
 //      {
 //         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-//         Timer timer; timer.start();
+//         vf::basics::Timer timer; timer.start();
 //         if(kdtreeSplitAlg == KDTREE_SAHPLIT     )
 //         {
 //            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -739,7 +739,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // Baum erstellen, wen noch keiner vorhanden
         if (!kdTree) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-            Timer timer;
+            vf::basics::Timer timer;
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -821,7 +821,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // Baum erstellen, wen noch keiner vorhanden
         if (!kdTree) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-            Timer timer;
+            vf::basics::Timer timer;
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -906,7 +906,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // Baum erstellen, wen noch keiner vorhanden
         if (!kdTree) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-            Timer timer;
+            vf::basics::Timer timer;
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -952,7 +952,7 @@ bool GbTriFaceMesh3D::intersectLine(const double &p1_x1, const double &p1_x2, co
     // Baum erstellen, wen noch keiner vorhanden
     if (!kdTree) {
         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-        Timer timer;
+        vf::basics::Timer timer;
         timer.start();
         if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");

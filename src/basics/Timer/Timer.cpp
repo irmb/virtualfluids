@@ -26,9 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Sören Peters
+//! \author Soeren Peters
 //=======================================================================================
 #include "Timer.h"
+
+namespace vf::basics
+{
 
 void Timer::start()
 {
@@ -54,3 +57,5 @@ double Timer::getCurrentRuntimeInSeconds() const
 {
     return timeInSeconds(std::chrono::high_resolution_clock::now(), startTime);
 }
+
+} // namespace vf::basics

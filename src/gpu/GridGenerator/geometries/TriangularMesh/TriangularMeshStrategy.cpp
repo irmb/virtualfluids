@@ -61,7 +61,7 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
     // trigger the GbTriFaceMesh3D to generate a kd-tree
     triangularMesh->getGbTriFaceMesh3D()->isPointInGbObject3D(0.0, 0.0, 0.0);
 
-    Timer timer;
+    vf::basics::Timer timer;
     timer.start();
 
     real outputTime = 60.0;

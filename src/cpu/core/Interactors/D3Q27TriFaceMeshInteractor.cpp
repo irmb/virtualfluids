@@ -242,7 +242,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
-    Timer setQTimer;
+    vf::basics::Timer setQTimer;
     setQTimer.start();
     UBLOG(logDEBUG3, " - setQs for " << (int)triangles.size() << " triangles");
 
@@ -747,7 +747,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
-    Timer setQTimer;
+    vf::basics::Timer setQTimer;
     setQTimer.start();
     UBLOG(logDEBUG3, " - setQs for " << (int)triangles.size() << " triangles");
 
@@ -1136,8 +1136,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 
         UBLOG(logDEBUG1, " - setSolids for " << blocksForSolidCheck.size() << " blocks");
 
-        Timer scanLineTimer;
-        Timer solidTimer;
+        vf::basics::Timer scanLineTimer;
+        vf::basics::Timer solidTimer;
         solidTimer.start();
 
         for (BlockSolidCheckMethodIterator pos = blocksForSolidCheck.begin(); pos != blocksForSolidCheck.end(); ++pos) {

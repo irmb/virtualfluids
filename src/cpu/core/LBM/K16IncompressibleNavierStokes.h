@@ -30,7 +30,7 @@ protected:
    virtual void initDataSet();
    real f[D3Q27System::ENDF+1];
 
-   Timer timer;
+   vf::basics::Timer timer;
 
    real OxyyMxzz;
    Parameter parameter;

@@ -26,12 +26,15 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Sören Peters
+//! \author Soeren Peters
 //=======================================================================================
 #ifndef BASICS_TIMER_H
 #define BASICS_TIMER_H
 
 #include <chrono>
+
+namespace vf::basics
+{
 
 class Timer
 {
@@ -48,5 +51,7 @@ private:
     timePoint startTime;
     timePoint endTime;
 };
+
+} // namespace vf::basics
 
 #endif
