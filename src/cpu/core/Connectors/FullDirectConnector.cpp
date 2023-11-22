@@ -32,7 +32,7 @@
 //=======================================================================================
 
 #include "FullDirectConnector.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 

@@ -152,13 +152,12 @@
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
 
 
-#include <Data/D3Q27EsoTwist3DSplittedVector.h>
-#include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
+#include <Data/EsoSplit.h>
+
 #include <Data/DataSet3D.h>
 #include <Data/DistributionArray3D.h>
 #include <Data/EsoTwist3D.h>
-#include <Data/EsoTwistD3Q27System.h>
-#include <Data/VoidData3D.h>
+
 
 #include <Simulation/Block3D.h>
 #include <Simulation/Simulation.h>

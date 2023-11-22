@@ -1,8 +1,7 @@
 #include "B92IncompressibleNavierStokes.h"
 #include "BCArray3D.h"
 #include "BCSet.h"
-#include "D3Q27EsoTwist3DSoA.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "Block3D.h"
@@ -17,7 +16,7 @@ B92IncompressibleNavierStokes::~B92IncompressibleNavierStokes(void) = default;
 //////////////////////////////////////////////////////////////////////////
 void B92IncompressibleNavierStokes::initDataSet()
 {
-    SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
+    SPtr<DistributionArray3D> d(new EsoSplit(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
     dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -63,11 +62,11 @@ void B92IncompressibleNavierStokes::calculate(int step)
     /////////////////////////////////////
 
     localDistributions =
-        std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-    nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())
+        std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getLocalDistributions();
+    nonLocalDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())
                                 ->getNonLocalDistributions();
     zeroDistributions =
-        std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+        std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
     real f[D3Q27System::ENDF + 1];
@@ -96,33 +95,33 @@ void B92IncompressibleNavierStokes::calculate(int step)
                     ////////////////////////////////////////////////////////////////////////////
                     f[d000] = (*this->zeroDistributions)(x1, x2, x3);
 
-                    f[dP00]   = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
-                    f[d0P0]   = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
-                    f[d00P]   = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
-                    f[dPP0]  = (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3);
-                    f[dMP0]  = (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3);
-                    f[dP0P]  = (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3);
-                    f[dM0P]  = (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3);
-                    f[d0PP]  = (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3);
-                    f[d0MP]  = (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3);
-                    f[dPPP] = (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3);
-                    f[dMPP] = (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3);
-                    f[dPMP] = (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3);
-                    f[dMMP] = (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                    f[dP00]   = (*this->localDistributions)(eP00, x1, x2, x3);
+                    f[d0P0]   = (*this->localDistributions)(e0P0, x1, x2, x3);
+                    f[d00P]   = (*this->localDistributions)(e00P, x1, x2, x3);
+                    f[dPP0]  = (*this->localDistributions)(ePP0, x1, x2, x3);
+                    f[dMP0]  = (*this->localDistributions)(eMP0, x1p, x2, x3);
+                    f[dP0P]  = (*this->localDistributions)(eP0P, x1, x2, x3);
+                    f[dM0P]  = (*this->localDistributions)(eM0P, x1p, x2, x3);
+                    f[d0PP]  = (*this->localDistributions)(e0PP, x1, x2, x3);
+                    f[d0MP]  = (*this->localDistributions)(e0MP, x1, x2p, x3);
+                    f[dPPP] = (*this->localDistributions)(ePPP, x1, x2, x3);
+                    f[dMPP] = (*this->localDistributions)(eMPP, x1p, x2, x3);
+                    f[dPMP] = (*this->localDistributions)(ePMP, x1, x2p, x3);
+                    f[dMMP] = (*this->localDistributions)(eMMP, x1p, x2p, x3);
 
-                    f[dM00]   = (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3);
-                    f[d0M0]   = (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3);
-                    f[d00M]   = (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p);
-                    f[dMM0]  = (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3);
-                    f[dPM0]  = (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3);
-                    f[dM0M]  = (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p);
-                    f[dP0M]  = (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p);
-                    f[d0MM]  = (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p);
-                    f[d0PM]  = (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p);
-                    f[dMMM] = (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                    f[dPMM] = (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                    f[dMPM] = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                    f[dPPM] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p);
+                    f[dM00]   = (*this->nonLocalDistributions)(eM00, x1p, x2, x3);
+                    f[d0M0]   = (*this->nonLocalDistributions)(e0M0, x1, x2p, x3);
+                    f[d00M]   = (*this->nonLocalDistributions)(e00M, x1, x2, x3p);
+                    f[dMM0]  = (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3);
+                    f[dPM0]  = (*this->nonLocalDistributions)(ePM0, x1, x2p, x3);
+                    f[dM0M]  = (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p);
+                    f[dP0M]  = (*this->nonLocalDistributions)(eP0M, x1, x2, x3p);
+                    f[d0MM]  = (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p);
+                    f[d0PM]  = (*this->nonLocalDistributions)(e0PM, x1, x2, x3p);
+                    f[dMMM] = (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p);
+                    f[dPMM] = (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p);
+                    f[dMPM] = (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p);
+                    f[dPPM] = (*this->nonLocalDistributions)(ePPM, x1, x2, x3p);
                     //////////////////////////////////////////////////////////////////////////
 
                     drho = f[d000] + f[dP00] + f[dM00] + f[d0P0] + f[d0M0] + f[d00P] + f[d00M] + f[dPP0] + f[dMM0] + f[dPM0] + f[dMP0] + f[dP0P] +
@@ -266,33 +265,33 @@ void B92IncompressibleNavierStokes::calculate(int step)
                     //////////////////////////////////////////////////////////////////////////
                     // write distribution
                     //////////////////////////////////////////////////////////////////////////
-                    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)     = f[iP00];
-                    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)     = f[i0P0];
-                    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3)     = f[i00P];
-                    (*this->localDistributions)(D3Q27System::ET_NE, x1, x2, x3)    = f[iPP0];
-                    (*this->localDistributions)(D3Q27System::ET_NW, x1p, x2, x3)   = f[iMP0];
-                    (*this->localDistributions)(D3Q27System::ET_TE, x1, x2, x3)    = f[iP0P];
-                    (*this->localDistributions)(D3Q27System::ET_TW, x1p, x2, x3)   = f[iM0P];
-                    (*this->localDistributions)(D3Q27System::ET_TN, x1, x2, x3)    = f[i0PP];
-                    (*this->localDistributions)(D3Q27System::ET_TS, x1, x2p, x3)   = f[i0MP];
-                    (*this->localDistributions)(D3Q27System::ET_TNE, x1, x2, x3)   = f[iPPP];
-                    (*this->localDistributions)(D3Q27System::ET_TNW, x1p, x2, x3)  = f[iMPP];
-                    (*this->localDistributions)(D3Q27System::ET_TSE, x1, x2p, x3)  = f[iPMP];
-                    (*this->localDistributions)(D3Q27System::ET_TSW, x1p, x2p, x3) = f[iMMP];
+                    (*this->localDistributions)(eP00, x1, x2, x3)     = f[iP00];
+                    (*this->localDistributions)(e0P0, x1, x2, x3)     = f[i0P0];
+                    (*this->localDistributions)(e00P, x1, x2, x3)     = f[i00P];
+                    (*this->localDistributions)(ePP0, x1, x2, x3)    = f[iPP0];
+                    (*this->localDistributions)(eMP0, x1p, x2, x3)   = f[iMP0];
+                    (*this->localDistributions)(eP0P, x1, x2, x3)    = f[iP0P];
+                    (*this->localDistributions)(eM0P, x1p, x2, x3)   = f[iM0P];
+                    (*this->localDistributions)(e0PP, x1, x2, x3)    = f[i0PP];
+                    (*this->localDistributions)(e0MP, x1, x2p, x3)   = f[i0MP];
+                    (*this->localDistributions)(ePPP, x1, x2, x3)   = f[iPPP];
+                    (*this->localDistributions)(eMPP, x1p, x2, x3)  = f[iMPP];
+                    (*this->localDistributions)(ePMP, x1, x2p, x3)  = f[iPMP];
+                    (*this->localDistributions)(eMMP, x1p, x2p, x3) = f[iMMP];
 
-                    (*this->nonLocalDistributions)(D3Q27System::ET_W, x1p, x2, x3)     = f[iM00];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_S, x1, x2p, x3)     = f[i0M0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_B, x1, x2, x3p)     = f[i00M];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SW, x1p, x2p, x3)   = f[iMM0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_SE, x1, x2p, x3)    = f[iPM0];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BW, x1p, x2, x3p)   = f[iM0M];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BE, x1, x2, x3p)    = f[iP0M];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BS, x1, x2p, x3p)   = f[i0MM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BN, x1, x2, x3p)    = f[i0PM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSW, x1p, x2p, x3p) = f[iMMM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BSE, x1, x2p, x3p)  = f[iPMM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p)  = f[iMPM];
-                    (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p)   = f[iPPM];
+                    (*this->nonLocalDistributions)(eM00, x1p, x2, x3)     = f[iM00];
+                    (*this->nonLocalDistributions)(e0M0, x1, x2p, x3)     = f[i0M0];
+                    (*this->nonLocalDistributions)(e00M, x1, x2, x3p)     = f[i00M];
+                    (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3)   = f[iMM0];
+                    (*this->nonLocalDistributions)(ePM0, x1, x2p, x3)    = f[iPM0];
+                    (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p)   = f[iM0M];
+                    (*this->nonLocalDistributions)(eP0M, x1, x2, x3p)    = f[iP0M];
+                    (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p)   = f[i0MM];
+                    (*this->nonLocalDistributions)(e0PM, x1, x2, x3p)    = f[i0PM];
+                    (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p) = f[iMMM];
+                    (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p)  = f[iPMM];
+                    (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p)  = f[iMPM];
+                    (*this->nonLocalDistributions)(ePPM, x1, x2, x3p)   = f[iPPM];
 
                     (*this->zeroDistributions)(x1, x2, x3) = f[d000];
                     //////////////////////////////////////////////////////////////////////////
