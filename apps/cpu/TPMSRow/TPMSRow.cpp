@@ -119,7 +119,7 @@ void run(string configname)
         //zMinFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //zMaxFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
-        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////234
         // BC visitor
         BoundaryConditionsBlockVisitor bcVisitor;
         // bcVisitor.addBC(cubeNoslipAdapter);
