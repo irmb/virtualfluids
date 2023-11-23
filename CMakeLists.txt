@@ -184,6 +184,10 @@ if(BUILD_VF_UNIT_TESTS)
     groupTarget(gtest ${thirdFolder}/googletest)
     groupTarget(gtest_main ${thirdFolder}/googletest)
 
+    if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+        target_compile_options(gtest PRIVATE "-Wno-implicit-int-float-conversion")
+    endif()
+
     include(GoogleTest)
     enable_testing()
 endif()
