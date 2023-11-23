@@ -49,9 +49,6 @@ class Block3D;
 class LBMKernel : public ILBMKernel, public enableSharedFromThis<LBMKernel>
 {
 public:
-    using LBMRealLim = std::numeric_limits<real>;
-
-public:
     LBMKernel();
 
     virtual SPtr<LBMKernel> clone() = 0;

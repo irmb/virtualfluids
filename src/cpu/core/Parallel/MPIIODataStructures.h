@@ -109,7 +109,7 @@ struct DataSetSmallMigration {
 //! \details The structure is used to write data describing boundary conditions of the blocks when saving the grid
 //! and to read it when restoring the grid
 struct BoundaryCondition {
-    long long noslipBoundaryFlags; //	MPI_LONG_LONG
+    long long noslipBoundaryFlags; //    MPI_LONG_LONG
     long long slipBoundaryFlags;
     long long velocityBoundaryFlags;
     long long densityBoundaryFlags;
@@ -124,7 +124,7 @@ struct BoundaryCondition {
     float nx1, nx2, nx3;    //  not double!!!
     float  q[26];           //  not double!!!
 
-    char algorithmType;
+    char bcStrategyKey;
 };
 
 //! \struct boundCondParam
@@ -141,11 +141,11 @@ struct boundCondParam {
 //! \brief Structure describes parameters of the BCAdd in MPIIORestartSimulationObserver format
 //! \details The structure is used when reading from the file
 struct BCAddRestart {
-    int x1; //	to find the right block
+    int x1; //    to find the right block
     int x2;
     int x3;
     int level;
-    int boundCond_count;      //	how many BoundaryCondition-structures are in this block
+    int boundCond_count;      //    how many BoundaryCondition-structures are in this block
     int indexContainer_count; // how many indexContainer-values are in this block
 };
 
@@ -156,7 +156,7 @@ struct BCAddRestart {
 //! and to set common parameters
 struct BCAddMigration {
     int globalID;
-    int boundCond_count;      //	how many BoundaryCondition-structures are in this block
+    int boundCond_count;      //    how many BoundaryCondition-structures are in this block
     int indexContainer_count; // how many indexContainer-values are in this block
 };
 

@@ -4,9 +4,9 @@
 
 #include "Communication/ExchangeData27.h"
 #include "Parameter/CudaStreamManager.h"
-#include "KernelManager/BCKernelManager.h"
-#include "KernelManager/ADKernelManager.h"
-#include "KernelManager/GridScalingKernelManager.h"
+#include "Kernel/ADKernelManager.h"
+#include "GridScaling/GridScalingKernelManager.h"
+#include "BoundaryConditions/BoundaryConditionKernelManager.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "Kernel/Kernel.h"
 
@@ -355,7 +355,7 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
 
-    this->bcKernelManager = std::make_shared<BCKernelManager>(para, bcFactory);
+    this->bcKernelManager = std::make_shared<BoundaryConditionKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para, adkernels);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
 }

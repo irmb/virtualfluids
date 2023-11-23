@@ -68,13 +68,13 @@ void block_test_incompressible(const char *cstr1, const char *cstr2)
       double L2, L3, H;
       L2 = L3 = H = gridNx2*blocknx1*dx;
 
-      LBMReal radius = 3.0*dx;
-      LBMReal uLB = 0.01;
-      LBMReal Re = 0.5;
-      LBMReal rhoLB = 0.0;
-      LBMReal l = L2 / dx;
-      LBMReal nuLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
-      //LBMReal nueLB = 0.005842;
+      real radius = 3.0*dx;
+      real uLB = 0.01;
+      real Re = 0.5;
+      real rhoLB = 0.0;
+      real l = L2 / dx;
+      real nuLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
+      //real nueLB = 0.005842;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
@@ -198,11 +198,11 @@ void block_test_incompressible(const char *cstr1, const char *cstr2)
 
          if (refineLevel > 0)
          {
-            if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - start");    
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
             refineHelper.addGbObject(refineCube, refineLevel);
             refineHelper.refine();
-            if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+            if(myid == 0) UBLOG(logINFO,"Refinement - end");    
          }
 
 

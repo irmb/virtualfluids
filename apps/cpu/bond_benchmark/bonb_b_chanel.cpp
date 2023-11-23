@@ -77,12 +77,12 @@ void chanel(const char *cstr)
       double L2, L3, H;
       L2 = L3 = H = gridNx2*blocknx1;
 
-      LBMReal radius = 7;
-      LBMReal uLB = 0.05;
-      LBMReal Re = 300.0;
-      LBMReal rhoLB = 1.0;
-      LBMReal l = L2 / dx;
-      LBMReal nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
+      real radius = 7;
+      real uLB = 0.05;
+      real Re = 300.0;
+      real rhoLB = 1.0;
+      real l = L2 / dx;
+      real nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
 
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
@@ -167,11 +167,11 @@ void chanel(const char *cstr)
 
       if (refineLevel > 0)
       {
-         if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - start");    
          RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
          refineHelper.addGbObject(refineCube, 1);
          refineHelper.refine();
-         if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - end");    
       }
 
       

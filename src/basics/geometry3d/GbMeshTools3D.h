@@ -342,27 +342,27 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
 //   if(x2<min) min=x2;
 //   if(x2>max) max=x2;
 //
-// int planeBoxOverlap(float normal[3], float vert[3], float maxbox[3])	// -NJMP-
+// int planeBoxOverlap(float normal[3], float vert[3], float maxbox[3])    // -NJMP-
 //{
 //   int q;
 //   float vmin[3],vmax[3],v;
 //
 //   for(q=X;q<=Z;q++)
 //   {
-//      v=vert[q];					// -NJMP-
+//      v=vert[q];                    // -NJMP-
 //      if(normal[q]>0.0f)
 //      {
-//         vmin[q]=-maxbox[q] - v;	// -NJMP-
-//         vmax[q]= maxbox[q] - v;	// -NJMP-
+//         vmin[q]=-maxbox[q] - v;    // -NJMP-
+//         vmax[q]= maxbox[q] - v;    // -NJMP-
 //      }
 //      else
 //      {
-//         vmin[q]= maxbox[q] - v;	// -NJMP-
-//         vmax[q]=-maxbox[q] - v;	// -NJMP-
+//         vmin[q]= maxbox[q] - v;    // -NJMP-
+//         vmax[q]=-maxbox[q] - v;    // -NJMP-
 //      }
 //   }
-//   if(DOT(normal,vmin)>0.0f) return 0;	// -NJMP-
-//   if(DOT(normal,vmax)>=0.0f) return 1;	// -NJMP-
+//   if(DOT(normal,vmin)>0.0f) return 0;    // -NJMP-
+//   if(DOT(normal,vmax)>=0.0f) return 1;    // -NJMP-
 //   return 0;
 //}
 //
@@ -430,7 +430,7 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
 //
 //   //   float axis[3];
 //
-//   float min,max,p0,p1,p2,rad,fex,fey,fez;		// -NJMP- "d" local variable removed
+//   float min,max,p0,p1,p2,rad,fex,fey,fez;        // -NJMP- "d" local variable removed
 //   float normal[3],e0[3],e1[3],e2[3];
 //
 //   /* This is the fastest branch on Sun */
@@ -491,6 +491,6 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
 //   CROSS(normal,e0,e1);
 //
 //   // -NJMP- (line removed here)
-//   if(!planeBoxOverlap(normal,v0,boxhalfsize)) return 0;	// -NJMP-
+//   if(!planeBoxOverlap(normal,v0,boxhalfsize)) return 0;    // -NJMP-
 //   return 1;   /* box and triangle overlaps */
 //}

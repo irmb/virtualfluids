@@ -36,7 +36,7 @@ r"""
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
-from pyfluids import basics, gpu, logger, communicator
+from pyfluids import basics, gpu, logger, parallel
 #%%
 sim_name = "ABL"
 config_file = Path(__file__).parent/"configBoundaryLayer.txt"
@@ -49,13 +49,16 @@ logger.Logger.initialize_logger()
 
 #%%
 grid_builder = gpu.grid_generator.MultipleGridBuilder()
-communicator = communicator.Communicator.get_instance()
+communicator = parallel.MPICommunicator.get_instance()
 
 config = basics.ConfigurationFile()
 config.load(str(config_file))
 
 para = gpu.Parameter(communicator.get_number_of_processes(), communicator.get_process_id(), config)
 bc_factory = gpu.BoundaryConditionFactory()
+
+grid_scaling_factory = gpu.GridScalingFactory()
+grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
 #%%
 boundary_layer_height = config.get_float_value("boundaryLayerHeight", 1000)
@@ -129,14 +132,14 @@ para.set_velocity_ratio(dx/dt)
 para.set_viscosity_ratio(dx*dx/dt)
 para.set_density_ratio(1.0)
 
-para.set_main_kernel("CumulantK17")
+para.configure_main_kernel(gpu.kernel.compressible.K17CompressibleNavierStokes)
 
 para.set_timestep_start_out(int(t_start_out/dt))
 para.set_timestep_out(int(t_out/dt))
 para.set_timestep_end(int(t_end/dt))
 para.set_is_body_force(config.get_bool_value("bodyForce"))
 para.set_devices(np.arange(10))
-para.set_max_dev(communicator.get_number_of_process())
+para.set_max_dev(communicator.get_number_of_processes())
 #%%
 tm_factory = gpu.TurbulenceModelFactory(para)
 tm_factory.read_config_file(config)
@@ -158,7 +161,7 @@ if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
     bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
     bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
-    
+
 bc_factory.set_stress_boundary_condition(gpu.StressBC.StressPressureBounceBack)
 bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipBounceBack) 
 para.set_outflow_pressure_correction_factor(0.0); 
@@ -197,7 +200,7 @@ cuda_memory_manager = gpu.CudaMemoryManager(para)
 grid_generator = gpu.GridProvider.make_grid_generator(grid_builder, para, cuda_memory_manager, communicator)
 #%%
 #%%
-sim = gpu.Simulation(para, cuda_memory_manager, communicator, grid_generator, bc_factory, tm_factory)
+sim = gpu.Simulation(para, cuda_memory_manager, communicator, grid_generator, bc_factory, tm_factory, grid_scaling_factory)
 #%%
 sim.run()
 MPI.Finalize()

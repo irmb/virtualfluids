@@ -59,13 +59,13 @@ void block_test_periodic(const char *cstr1, const char *cstr2)
       double L2, L3, H;
       L2 = L3 = H = gridNx2*blocknx1;
 
-      LBMReal radius = 3;
-      LBMReal uLB = 0.05;
-      LBMReal Re = 20.0;
-      LBMReal rhoLB = 0.0;
-      LBMReal l = L2 / dx;
-      //LBMReal nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
-      LBMReal nueLB = 0.05842;
+      real radius = 3;
+      real uLB = 0.05;
+      real Re = 20.0;
+      real rhoLB = 0.0;
+      real l = L2 / dx;
+      //real nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
+      real nueLB = 0.05842;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
@@ -189,7 +189,7 @@ void block_test_periodic(const char *cstr1, const char *cstr2)
 
       if (refineLevel > 0)
       {
-         if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - start");    
          RefineCrossAndInsideGbObjectBlockVisitor refVisitor(refineCube, refineLevel);
          grid->accept(refVisitor);
 
@@ -206,7 +206,7 @@ void block_test_periodic(const char *cstr1, const char *cstr2)
          D3Q27System::getLBMDirections(dirs);
          SetInterpolationDirsBlockVisitor interDirsVisitor(dirs);
          grid->accept(interDirsVisitor);
-         if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+         if(myid == 0) UBLOG(logINFO,"Refinement - end");    
       }
 
       MetisPartitioningGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, true, numOfThreads);

@@ -59,18 +59,18 @@ real LBMKernel::getCollisionFactor() const { return collFactor; }
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::setForcingX1(real forcingX1)
 {
-    this->muForcingX1.SetExpr(UbSystem::toString(forcingX1, LBMRealLim::digits10));
+    this->muForcingX1.SetExpr(UbSystem::toString(forcingX1, realLim::digits10));
     this->checkFunction(muForcingX1);
 }
 //////////////////////////////////////////////////////////////////////////
 void LBMKernel::setForcingX2(real forcingX2)
 {
-    this->muForcingX2.SetExpr(UbSystem::toString(forcingX2, LBMRealLim::digits10));
+    this->muForcingX2.SetExpr(UbSystem::toString(forcingX2, realLim::digits10));
     this->checkFunction(muForcingX2);
 }
 void LBMKernel::setForcingX3(real forcingX3)
 {
-    this->muForcingX3.SetExpr(UbSystem::toString(forcingX3, LBMRealLim::digits10));
+    this->muForcingX3.SetExpr(UbSystem::toString(forcingX3, realLim::digits10));
     this->checkFunction(muForcingX3);
 }
 //////////////////////////////////////////////////////////////////////////

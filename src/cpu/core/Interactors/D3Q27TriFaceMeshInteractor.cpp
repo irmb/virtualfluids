@@ -2,10 +2,12 @@
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbMath.h>
 
-#include "basics/writer/WbWriterVtkXmlASCII.h"
+#include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/writer/WbWriterVtkASCII.h>
 #include <basics/writer/WbWriterVtkBinary.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
+
+#include <basics/Timer/Timer.h>
 
 #include "BCArray3D.h"
 #include "BCSet.h"
@@ -14,7 +16,6 @@
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "VelocityBC.h"
-#include "basics/utilities/UbTiming.h"
 #include <geometry3d/GbCuboid3D.h>
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/GbMeshTools3D.h>
@@ -241,7 +242,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
-    UbTimer setQTimer;
+    vf::basics::Timer setQTimer;
     setQTimer.start();
     UBLOG(logDEBUG3, " - setQs for " << (int)triangles.size() << " triangles");
 
@@ -746,7 +747,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
     int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
-    UbTimer setQTimer;
+    vf::basics::Timer setQTimer;
     setQTimer.start();
     UBLOG(logDEBUG3, " - setQs for " << (int)triangles.size() << " triangles");
 
@@ -894,18 +895,18 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                         internX2 = val<2>(coords) + nodeDx2 * ix2 - c1o2 * nodeDx2;
                         for (int ix1 = indexMinX1; ix1 < indexMaxX1; ix1++) {
 
-                            //					  int blx1 =block->getX1();
-                            //					  int blx2 = block->getX2();
-                            //					  int blx3 = block->getX3();
+                            //                      int blx1 =block->getX1();
+                            //                      int blx2 = block->getX2();
+                            //                      int blx3 = block->getX3();
 
-                            //					  if (blx1==0&&blx2==1&&blx3==0)
-                            //					  {
-                            //						  //if (ix2==39&&ix3==4)
-                            //							   if (ix2==39&&ix3==4)
-                            //						  {
-                            //							 int seb=0;
-                            //						  }
-                            //					  }
+                            //                      if (blx1==0&&blx2==1&&blx3==0)
+                            //                      {
+                            //                          //if (ix2==39&&ix3==4)
+                            //                               if (ix2==39&&ix3==4)
+                            //                          {
+                            //                             int seb=0;
+                            //                          }
+                            //                      }
                             // Problem: wenn voher der punkt durch eine andere geo not active gesetzt wird und
                             // dieser nun uebersprungen wird, dann hat man spaeter beim fuellalgorithmus luecken
                             // in der front und der block wird u.U. faelschlicher weise komplett solid markiert
@@ -1106,10 +1107,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
             boundingCubeTriangle.finalize();
         }
     }
-    setQTimer.stop();
+    setQTimer.end();
 
     UBLOG(logDEBUG1, " - setQs for " /*<< this->getName()*/ << " - " << (int)triangles.size()
-                                                            << " triangles: 100% done in " << setQTimer.getTotalTime()
+                                                            << " triangles: 100% done in " << setQTimer.getTimeInSeconds()
                                                             << "sec");
     UBLOG(logDEBUG1, "       * rejected blocks with tribox overlap test : " << counterTriBoxOverlap);
     UBLOG(logDEBUG1, "       * rejected nodes  with AABB           test : " << counterAABBTriFace);
@@ -1135,8 +1136,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 
         UBLOG(logDEBUG1, " - setSolids for " << blocksForSolidCheck.size() << " blocks");
 
-        UbTimer scanLineTimer;
-        UbTimer solidTimer;
+        vf::basics::Timer scanLineTimer;
+        vf::basics::Timer solidTimer;
         solidTimer.start();
 
         for (BlockSolidCheckMethodIterator pos = blocksForSolidCheck.begin(); pos != blocksForSolidCheck.end(); ++pos) {
@@ -1208,10 +1209,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
                     for (int bx2 = 0; bx2 < blocknx2; ++bx2) {
                         for (int bx1 = 0; bx1 < blocknx1; ++bx1) {
 
-                            //					  if (bx2==9&&bx3==29)
-                            //					  {
-                            //						  int ride=0;
-                            //					  }
+                            //                      if (bx2==9&&bx3==29)
+                            //                      {
+                            //                          int ride=0;
+                            //                      }
                             if (flagField(bx1, bx2, bx3) == UNDEF_FLAG) {
                                 if (mesh->isPointInGbObject3D(val<1>(coords) + bx1 * nodeDeltaX1 - c1o2 * nodeDeltaX1,
                                                               val<2>(coords) + bx2 * nodeDeltaX2 - c1o2 * nodeDeltaX2,
@@ -1244,24 +1245,24 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const real &timeStep)
 
                 // block hat  in initInteractor mind eine BC erhalten -> transBlock
                 this->bcBlocks.push_back(block);
-                scanLineTimer.stop();
+                scanLineTimer.end();
 
                 //            bvd->getTimer().stop();
             } else
                 throw UbException(UB_EXARGS, "unknown option for in object test");
         }
 
-        solidTimer.stop();
+        solidTimer.end();
 
         UBLOG(logDEBUG1, " - setSolids for " << blocksForSolidCheck.size() << " blocks: 100% done in "
-                                             << solidTimer.getTotalTime() << "s");
+                                             << solidTimer.getTimeInSeconds() << "s");
         UBLOG(logDEBUG1, "       * pointInObject for " << pointInObjectCounter << " blocks in "
-                                                       << solidTimer.getTotalTime() - scanLineTimer.getTotalTime()
+                                                       << solidTimer.getTimeInSeconds() - scanLineTimer.getTimeInSeconds()
                                                        << "s");
         UBLOG(logDEBUG1, "       * flood fill    for " << scanlineCounter << " blocks in "
-                                                       << scanLineTimer.getTotalTime() << " secs");
+                                                       << scanLineTimer.getTimeInSeconds() << " secs");
         UBLOG(logDEBUG1, "LBMTriFaceMeshInteractor::initInteractor for \""
-                             << mesh->getName() << "\" done in " << setQTimer.getTotalTime() + solidTimer.getTotalTime()
+                             << mesh->getName() << "\" done in " << setQTimer.getTimeInSeconds() + solidTimer.getTimeInSeconds()
                              << "s");
     }
 

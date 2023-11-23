@@ -43,6 +43,9 @@
 #include <parallel/Communicator.h>
 #include <parallel/MPICommunicator.h>
 #include <parallel/NullCommunicator.h>
+#include <parallel/transmitter/TbTransmitter.h>
+#include <parallel/transmitter/TbTransmitterLocal.h>
+#include <parallel/transmitter/TbTransmitterMpiPool.h>
 
 #include <basics/PointerDefinitions.h>
 
@@ -57,9 +60,6 @@
 #include <basics/memory/MbSmartPtr.h>
 #include <basics/memory/MbSmartPtrBase.h>
 #include <basics/objects/ObObject.h>
-#include <basics/transmitter/TbTransmitter.h>
-#include <basics/transmitter/TbTransmitterLocal.h>
-#include <basics/transmitter/TbTransmitterMpiPool.h>
 #include <basics/utilities/UbComparators.h>
 #include <basics/utilities/UbEqual.h>
 #include <basics/utilities/UbException.h>
@@ -74,14 +74,12 @@
 #include <basics/utilities/UbLimits.h>
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbMath.h>
-#include <basics/utilities/UbNupsTimer.h>
 #include <basics/utilities/UbObservable.h>
 #include <basics/utilities/UbObserver.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/utilities/UbScheduler.h>
 #include <basics/utilities/UbStringInputASCII.h>
 #include <basics/utilities/UbSystem.h>
-#include <basics/utilities/UbTiming.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/writer/WbWriter.h>
 #include <basics/writer/WbWriterAvsASCII.h>
@@ -114,24 +112,22 @@
 #include <BoundaryConditions/BCFunction.h>
 #include <BoundaryConditions/BCSet.h>
 #include <BoundaryConditions/BoundaryConditions.h>
-#include <BoundaryConditions/DensityBC.h>
-#include <BoundaryConditions/EqDensityBCStrategy.h>
-#include <BoundaryConditions/HighViscosityNoSlipBCStrategy.h>
+#include <BoundaryConditions/PressureBC.h>
 #include <BoundaryConditions/NoSlipBC.h>
-#include <BoundaryConditions/NoSlipBCStrategy.h>
-#include <BoundaryConditions/NonEqDensityBCStrategy.h>
-#include <BoundaryConditions/NonReflectingOutflowBCStrategy.h>
-#include <BoundaryConditions/NonReflectingOutflowWithRelaxationBCStrategy.h>
-#include <BoundaryConditions/NonReflectingInflowBCStrategy.h>
+#include <BoundaryConditions/NoSlipInterpolated.h>
+#include <BoundaryConditions/PressureNonEquilibrium.h>
+#include <BoundaryConditions/OutflowNonReflecting.h>
+#include <BoundaryConditions/OutflowNonReflectingWithPressure.h>
+#include <BoundaryConditions/VelocityNonReflecting.h>
 #include <BoundaryConditions/SlipBC.h>
-#include <BoundaryConditions/SlipBCStrategy.h>
+#include <BoundaryConditions/SlipInterpolated.h>
 #include <BoundaryConditions/ThinWallBCSet.h>
-#include <BoundaryConditions/ThinWallNoSlipBCStrategy.h>
+#include <BoundaryConditions/ThinWallNoSlip.h>
 #include <BoundaryConditions/VelocityBC.h>
-#include <BoundaryConditions/VelocityBCStrategy.h>
-#include <BoundaryConditions/VelocityWithDensityBCStrategy.h>
-#include <BoundaryConditions/SimpleVelocityBCStrategy.h>
-#include <BoundaryConditions/SimpleSlipBCStrategy.h>
+#include <BoundaryConditions/VelocityInterpolated.h>
+#include <BoundaryConditions/VelocityWithPressureInterpolated.h>
+#include <BoundaryConditions/VelocityBounceBack.h>
+#include <BoundaryConditions/SlipBounceBack.h>
 
 
 
@@ -154,13 +150,12 @@
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
 
 
-#include <Data/D3Q27EsoTwist3DSplittedVector.h>
-#include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
+#include <Data/EsoSplit.h>
+
 #include <Data/DataSet3D.h>
 #include <Data/DistributionArray3D.h>
 #include <Data/EsoTwist3D.h>
-#include <Data/EsoTwistD3Q27System.h>
-#include <Data/VoidData3D.h>
+
 
 #include <Simulation/Block3D.h>
 #include <Simulation/Simulation.h>
@@ -208,26 +203,20 @@
 #include <TimeDependentBCSimulationObserver.h>
 
 #include <IntegrateValuesHelper.h>
-#include <LBM/Interpolation/CompressibleOffsetInterpolator.h>
 #include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
-#include <LBM/Interpolation/CompressibleOffsetSquarePressureInterpolator.h>
 #include <LBM/Interpolation/IncompressibleOffsetInterpolator.h>
 #include <LBM/Interpolation/Interpolator.h>
-#include <IncompressibleCumulantWithSpongeLayerLBMKernel.h>
-#include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
-#include <LBM/CompressibleCumulantLBMKernel.h>
 #include <LBM/D3Q27System.h>
-#include <LBM/ICell.h>
-#include <LBM/IncompressibleCumulantLBMKernel.h>
-#include <LBM/InitDensityLBMKernel.h>
+#include <LBM/Interpolation/ICell.h>
 #include <LBM/LBMKernel.h>
-#include <LBM/LBMKernelETD3Q27BGK.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
-#include <LBM/BGKLBMKernel.h>
 
-#include <LBM/CumulantLBMKernel.h>
-#include <LBM/CumulantK17LBMKernel.h>
+
+#include <LBM/B92IncompressibleNavierStokes.h>
+#include <LBM/K15CompressibleNavierStokes.h>
+#include <LBM/K16IncompressibleNavierStokes.h>
+#include <LBM/K17CompressibleNavierStokes.h>
 
 
 #include <geometry3d/CoordinateTransformation3D.h>
@@ -278,7 +267,6 @@
 #include <Utilities/VoxelMatrixUtil.hpp>
 
 #include <CheckRatioBlockVisitor.h>
-#include <InitDistributionsFromFileBlockVisitor.h>
 #include <InitDistributionsWithInterpolationGridVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 #include <Visitors/Block3DVisitor.h>
@@ -310,7 +298,6 @@
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
-#include <InitDistributionsFromFileBlockVisitor.h>
 #include <InitDistributionsWithInterpolationGridVisitor.h>
 #include <InitThixotropyBlockVisitor.h>
 #include <CheckRatioBlockVisitor.h>

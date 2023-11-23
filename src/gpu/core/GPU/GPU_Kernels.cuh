@@ -1264,21 +1264,6 @@ __global__ void QADPressIncomp27(   real* DD,
                                                unsigned long long numberOfLBnodes,
                                                bool isEvenTimestep);
 
-//Propeller BC
-__global__ void PropellerBC(unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       real* rho,
-                                       real* ux,
-                                       real* uy,
-                                       real* uz,
-                                       int* k_Q,
-                                       unsigned int size_Prop,
-                                       unsigned long long numberOfLBnodes,
-                                       unsigned int* bcMatD,
-                                       real* DD,
-                                       bool EvenOrOdd);
-
 
 
 //coarse to fine

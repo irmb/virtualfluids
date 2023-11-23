@@ -33,13 +33,13 @@ void run(string configname)
       vector<int> blockNx = config.getVector<int>("blockNx");
       double radius = config.getValue<double>("radius");
 
-      //LBMReal radius = 4;
-      LBMReal uLB = 0.1;
-      LBMReal Re = 1;
-      LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = (uLB*2.0*radius)/Re;
-      //LBMReal nuLB = (uLB*L2)/Re;
-      LBMReal nuLB = 0.168666666667/100;
+      //real radius = 4;
+      real uLB = 0.1;
+      real Re = 1;
+      real rhoLB = 0.0;
+      //real nuLB = (uLB*2.0*radius)/Re;
+      //real nuLB = (uLB*L2)/Re;
+      real nuLB = 0.168666666667/100;
 
       double dp_LB = 1e-6;
       double rhoLBinflow = dp_LB*3.0;
@@ -244,7 +244,7 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+         SPtr<LBMKernel> kernel(new InK15CompressibleNavierStokes(blocknx1, blocknx2, blocknx3, InK15CompressibleNavierStokes::NORMAL));
 
          SPtr<BCProcessor> bcProcessor(new BCProcessor());
 

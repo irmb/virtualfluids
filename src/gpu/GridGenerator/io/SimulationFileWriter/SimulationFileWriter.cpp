@@ -60,11 +60,12 @@ void SimulationFileWriter::write(const std::string& folder, SPtr<GridBuilder> bu
     SimulationFileWriter::folder = folder;
 
     VF_LOG_INFO("Start writing simulation files to {}", folder);
-    auto timer = Timer::makeStart();
+    vf::basics::Timer timer;
+    timer.start();
 
     write(builder, format);
 
-    VF_LOG_INFO("    Time writing files: {} sec", timer->getCurrentRuntimeInSeconds());
+    VF_LOG_INFO("    Time writing files: {} sec", timer.getCurrentRuntimeInSeconds());
     VF_LOG_INFO("Done writing simulation Files!");
 }
 

@@ -36,7 +36,7 @@
 #include "BCArray3D.h"
 #include "BCSet.h"
 #include "Block3D.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"
@@ -88,8 +88,8 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                 for (int x1 = minX1; x1 < maxX1; x1++) {
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
                         if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL) {
-                            char alg              = bcPtr->getBCStrategyType();
-                            SPtr<BCStrategy> bca = bcMap[alg];
+                            char bcStrategyKey = bcPtr->getBCStrategyKey();
+                            SPtr<BCStrategy> bca = BCStrategyRegistry::getInstance()->getBCStrategy(bcStrategyKey);
 
                             if (bca) {
                                 bca = bca->clone();
@@ -109,8 +109,4 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
         }
     }
 }
-//////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitor::addBC(SPtr<BC> bc)
-{
-    bcMap.insert(std::make_pair(bc->getBCStrategyType(), bc->getAlgorithm()));
-}
+

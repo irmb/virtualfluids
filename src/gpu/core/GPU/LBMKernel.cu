@@ -2688,41 +2688,6 @@ void QPrecursorDevDistributions( LBMSimulationParameter* parameterDevice,
 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void PropVelo(
-    unsigned int numberOfThreads,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    real* rho,
-    real* ux,
-    real* uy,
-    real* uz,
-    int* k_Q,
-    unsigned int size_Prop,
-    unsigned long long numberOfLBnodes,
-    unsigned int* bcMatD,
-    real* DD,
-    bool EvenOrOdd)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, size_Prop);
-
-    PropellerBC<<< grid.grid, grid.threads >>>(
-        neighborX,
-        neighborY,
-        neighborZ,
-        rho,
-        ux,
-        uy,
-        uz,
-        k_Q,
-        size_Prop,
-        numberOfLBnodes,
-        bcMatD,
-        DD,
-        EvenOrOdd);
-    getLastCudaError("PropellerBC execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void ScaleCF27(
     real* DC,
     real* DF,

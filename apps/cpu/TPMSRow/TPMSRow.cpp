@@ -18,7 +18,7 @@ void run(string configname)
         string pathname             = config.getValue<string>("pathname");
         int numOfThreads            = config.getValue<int>("numOfThreads");
         vector<int> blocknx         = config.getVector<int>("blocknx");
-        double beginTime            = config.getValue<double>("beginTime");
+        //double beginTime            = config.getValue<double>("beginTime");
         double endTime              = config.getValue<double>("endTime");
         double outTime              = config.getValue<double>("outTime");
         double availMem             = config.getValue<double>("availMem");
@@ -26,15 +26,15 @@ void run(string configname)
         double dx                   = config.getValue<double>("dx");
         double UnitEdgeLength       = config.getValue<double>("UnitEdgeLength");
         double Re                   = config.getValue<double>("Re");
-        double Re0                  = config.getValue<double>("Re0");
+        //double Re0                  = config.getValue<double>("Re0");
         //double rhoIn                = config.getValue<double>("rhoIn");
         //string geometry             = config.getValue<string>("geometry");
         vector<double> length       = config.getVector<double>("length");
         //vector<double> FunnelL      = config.getVector<double>("FunnelL");
         //vector<double> FunnelOrigin = config.getVector<double>("FunnelOrigin");
         
-        double          timeAvStart       = config.getValue<double>("timeAvStart");
-        double          timeAvStop        = config.getValue<double>("timeAvStop");
+        //double          timeAvStart       = config.getValue<double>("timeAvStart");
+        //double          timeAvStop        = config.getValue<double>("timeAvStop");
 
         vector<double> TPMSL        = config.getVector<double>("TPMSL");
         vector<double> TPMSOrigin   = config.getVector<double>("TPMSOrigin");
@@ -86,11 +86,11 @@ void run(string configname)
         //SPtr<BC> funnelNoslipAdapter(new NoSlipBC(1));
 
            // SPtr<BC> xMinApr(new DensityBC(0.0000001));
-         SPtr<BC> xMinApr(new DensityBC());
-        //  SPtr<BC> xMinApr(new VelocityBC(vx, 0., BCFunction::INFCONST, 0., 0., BCFunction::INFCONST,
-         //  0.,0., BCFunction::INFCONST));
+         //SPtr<BC> xMinApr(new DensityBC());
+          SPtr<BC> xMinApr(new VelocityBC(vx, 0., BCFunction::INFCONST, 0., 0., BCFunction::INFCONST,
+           0.,0., BCFunction::INFCONST));
 
-        SPtr<BC> xMaxApr(new DensityBC(0.));
+        SPtr<BC> xMaxApr(new PressureBC(0.));
         //SPtr<BC> yMinApr(new NoSlipBC(1));
         //SPtr<BC> yMaxApr(new NoSlipBC(1));
         SPtr<BC> zMinApr(new NoSlipBC());
@@ -102,35 +102,35 @@ void run(string configname)
          //tpmsNoslipAdapter->setBcAlgorithm(BCStrategyPtr(new NoSlipBCStrategy()));
          //tpmsNoslipAdapter->setBcAlgorithm(SPtr<BCStrategy>(new ThinWallNoSlipBCStrategy()));
 
-        tpmsNoslipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+        tpmsNoslipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
         //funnelNoslipAdapter->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
          //xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityBCStrategy()));
-        xMinApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingInflowBCStrategy(vx, c1o2))); 
+        xMinApr->setBCStrategy(SPtr<BCStrategy>(new VelocityNonReflecting(c1o2))); 
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
          //xMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
-         xMaxApr->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowWithRelaxationBCStrategy()));
+         xMaxApr->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflectingWithPressure()));
         //yMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //yMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-         zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
-         zMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+         zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+         zMaxApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
         //zMinFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //zMaxFunnelApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
 
-        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////234
         // BC visitor
         BoundaryConditionsBlockVisitor bcVisitor;
         // bcVisitor.addBC(cubeNoslipAdapter);
-        bcVisitor.addBC(tpmsNoslipAdapter);
+        //bcVisitor.addBC(tpmsNoslipAdapter);
         //bcVisitor.addBC(funnelNoslipAdapter);
-        bcVisitor.addBC(xMinApr);
-        bcVisitor.addBC(xMaxApr);
+        //bcVisitor.addBC(xMinApr);
+        //bcVisitor.addBC(xMaxApr);
         //bcVisitor.addBC(yMinApr);
         //bcVisitor.addBC(yMaxApr);
-        bcVisitor.addBC(zMinApr);
-        bcVisitor.addBC(zMaxApr);
+        //bcVisitor.addBC(zMinApr);
+        //bcVisitor.addBC(zMaxApr);
         //bcVisitor.addBC(zMinFunnelApr);
         //bcVisitor.addBC(zMaxFunnelApr);
 
@@ -146,18 +146,18 @@ void run(string configname)
         // grid, kernel and BCProcessor
         SPtr<Grid3D> grid(new Grid3D(comm));
         SPtr<LBMKernel> kernel;
-        //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-         kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
+         kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantWithSpongeLayerLBMKernel());       
         //kernel->setWithSpongeLayer(true);
         //kernel->setSpongeLayer(spongeLayer);
         // kernel = ;
          // kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
-        // 		 mu::Parser fctForcingX1;
-        // 		 fctForcingX1.SetExpr("Fx2");
-        // 		 fctForcingX1.DefineConst("Fx2", 5e-4);
-        // 		 kernel->setForcingX1(fctForcingX1);
-        // 		 kernel->setWithForcing(true);
+        //          mu::Parser fctForcingX1;
+        //          fctForcingX1.SetExpr("Fx2");
+        //          fctForcingX1.DefineConst("Fx2", 5e-4);
+        //          kernel->setForcingX1(fctForcingX1);
+        //          kernel->setWithForcing(true);
         //
         // SPtr<ThinWallBCProcessor> bcProc(new ThinWallBCProcessor());
          SPtr<BCSet> bcProc(new BCSet());
@@ -186,10 +186,10 @@ void run(string configname)
                                                               TPMSOrigin[2] + TPMSL[2],
                                                               UnitEdgeLength, dx, 2.5e-4));
 
-            // 	for (int i = 0; i < 12; i++)
-            // 	{
-            // 	  cout << tpms->evaluateImplicitFunction(0.002, 0.002, i/1000., 1.)<<endl;
-            // 	}
+            //     for (int i = 0; i < 12; i++)
+            //     {
+            //       cout << tpms->evaluateImplicitFunction(0.002, 0.002, i/1000., 1.)<<endl;
+            //     }
 
             if (myid == 0)
                 GbSystem3D::writeGeoObject(tpms.get(), pathname + "/geo/tpms", WbWriterVtkXmlBinary::getInstance());
@@ -399,7 +399,7 @@ void run(string configname)
 
             //          if (refineLevel > 0)
             //          {
-            // 			 SetUndefinedNodesBlockVisitor undefNodesVisitor;
+            //              SetUndefinedNodesBlockVisitor undefNodesVisitor;
             //             grid->accept(undefNodesVisitor);
             //          }
 
@@ -447,38 +447,37 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
         // set connectors
-        SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
+        //SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
+        SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
         //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu, iProcessor);
         OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
 
-        SPtr<GbPoint3D> pointOne(new GbPoint3D(-0.00494999997317791,0.008, 0.0099));
-        SPtr<GbPoint3D> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
+        //SPtr<GbPoint3D> pointOne(new GbPoint3D(-0.00494999997317791,0.008, 0.0099));
+       // SPtr<GbPoint3D> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
 
-        SPtr<GbLine3D> line(new GbLine3D(pointOne.get(),pointTwo.get()));
-            if (myid == 0)
-                GbSystem3D::writeGeoObject(line.get(), pathname + "/geo/line", WbWriterVtkXmlBinary::getInstance());
-        SPtr<UbScheduler> linSch(new UbScheduler(outTime/20,outTime/2/*,beginTime,endTime*/));
-        SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname, line,refineLevel, comm));
+        //SPtr<GbLine3D> line(new GbLine3D(pointOne.get(),pointTwo.get()));
+        //SPtr<UbScheduler> linSch(new UbScheduler(endTime/20,endTime/2/*,beginTime,endTime*/));
+        //SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname + "_line",  line,refineLevel, comm));
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime/*,beginTime,endTime*/));
         SPtr<SimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         
-        SPtr<UbScheduler> tavSch(new UbScheduler(100, timeAvStart, timeAvStop));
-        SPtr<TimeAveragedValuesSimulationObserver> tav(new TimeAveragedValuesSimulationObserver(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-        TimeAveragedValuesSimulationObserver::Density | TimeAveragedValuesSimulationObserver::Velocity | TimeAveragedValuesSimulationObserver::Fluctuations));
-        tav->setWithGhostLayer(true);        
+        //SPtr<UbScheduler> tavSch(new UbScheduler(100, timeAvStart, timeAvStop));
+        //SPtr<TimeAveragedValuesSimulationObserver> tav(new TimeAveragedValuesSimulationObserver(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+        //TimeAveragedValuesSimulationObserver::Density | TimeAveragedValuesSimulationObserver::Velocity | TimeAveragedValuesSimulationObserver::Fluctuations));
+        //tav->setWithGhostLayer(true);        
         
-        SPtr<UbScheduler> nuSch(new UbScheduler(100, 0, endTime / 2));
-        mu::Parser fnu;
-        fnu.SetExpr("(L*u/T)*(((T-2*t)/Re0)+(2*t/Re))");
-        fnu.DefineConst("Re0", Re0);
-        fnu.DefineConst("Re", Re);
-        fnu.DefineConst("T", endTime);
-        fnu.DefineConst("L", (UnitEdgeLength / dx));
-        fnu.DefineConst("u", vx);
-        SPtr<SimulationObserver> nupr(new DecreaseViscositySimulationObserver(grid, nuSch, &fnu, comm));
+        //SPtr<UbScheduler> nuSch(new UbScheduler(100, 0, endTime / 2));
+        //mu::Parser fnu;
+        //fnu.SetExpr("(L*u/T)*(((T-2*t)/Re0)+(2*t/Re))");
+        //fnu.DefineConst("Re0", Re0);
+        //fnu.DefineConst("Re", Re);
+        //fnu.DefineConst("T", endTime);
+        //fnu.DefineConst("L", (UnitEdgeLength / dx));
+        //fnu.DefineConst("u", vx);
+        //SPtr<SimulationObserver> nupr(new DecreaseViscositySimulationObserver(grid, nuSch, &fnu, comm));
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
         SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
@@ -492,7 +491,9 @@ void run(string configname)
         calculator->addSimulationObserver(npr);
         calculator->addSimulationObserver(pp);
         calculator->addSimulationObserver(migSimulationObserver);
-        calculator->addSimulationObserver(tav);
+        //calculator->addSimulationObserver(lp);
+
+        //calculator->addSimulationObserver(tav);
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");

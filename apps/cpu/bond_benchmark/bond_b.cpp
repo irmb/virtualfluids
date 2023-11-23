@@ -108,10 +108,10 @@ void periodic(const char *cstr1, const char *cstr2)
       double L2, L3, H;
       L2 = L3 = H = gridNx2*blocknx1;
 
-      LBMReal uLB = 0.05;
-      LBMReal Re = 20.0;
-      LBMReal rhoLB = 0.0;
-      LBMReal nueLB = 0.05842;
+      real uLB = 0.05;
+      real Re = 20.0;
+      real rhoLB = 0.0;
+      real nueLB = 0.05842;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
@@ -172,11 +172,11 @@ void periodic(const char *cstr1, const char *cstr2)
 
       //if (refineLevel > 0)
       //{
-      //   if(myid == 0) UBLOG(logINFO,"Refinement - start");	
+      //   if(myid == 0) UBLOG(logINFO,"Refinement - start");    
       //   RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
       //   refineHelper.addGbObject(refineCube, 1);
       //   refineHelper.refine();
-      //   if(myid == 0) UBLOG(logINFO,"Refinement - end");	
+      //   if(myid == 0) UBLOG(logINFO,"Refinement - end");    
       //}
 
       D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
@@ -191,7 +191,7 @@ void periodic(const char *cstr1, const char *cstr2)
       else if(comm_type == "BOND")
       {
          //MetisPartitioningWithBundlesGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, true, numOfThreads);
-	 MetisPartitioningGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, true, numOfThreads);
+     MetisPartitioningGridVisitor metisVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, true, numOfThreads);
          grid->accept( metisVisitor );
          D3Q27BondSetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
          grid->accept( setConnsVisitor );

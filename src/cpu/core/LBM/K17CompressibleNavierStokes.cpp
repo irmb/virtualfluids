@@ -39,7 +39,7 @@
 #include "BCArray3D.h"
 #include "BCSet.h"
 #include "Block3D.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "LBMKernel.h"
@@ -51,7 +51,7 @@ K17CompressibleNavierStokes::K17CompressibleNavierStokes()
 
 void K17CompressibleNavierStokes::initDataSet()
 {
-    SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
+    SPtr<DistributionArray3D> d(new EsoSplit(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
     dataSet->setFdistributions(d);
 }
 
@@ -99,9 +99,9 @@ void K17CompressibleNavierStokes::calculate(int step)
         muForcingX3.DefineVar("nu", &muNu);
     }
 
-    auto localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-    auto nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-    auto restDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+    auto localDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getLocalDistributions();
+    auto nonLocalDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getNonLocalDistributions();
+    auto restDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 

@@ -191,7 +191,7 @@ void InSituVTKSimulationObserver::addData(SPtr<Block3D> block)
 
                     nodeNumbers(ix1, ix2, ix3) = nr++;
 
-                    distributions->getDistribution(f, ix1, ix2, ix3);
+                    distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
                     real press = D3Q27System::calcPress(f, rho, vx1, vx2, vx3);
 

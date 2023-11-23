@@ -4,7 +4,7 @@
 
 #include "BCSet.h"
 #include "Block3D.h"
-#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "EsoSplit.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "D3Q27System.h"
@@ -120,11 +120,11 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
         CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
 
         MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
                  (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
@@ -142,11 +142,11 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
             dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getLocalDistributions();
+            dynamicPointerCast<EsoSplit>(newDistributions)->getLocalDistributions();
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getNonLocalDistributions();
+            dynamicPointerCast<EsoSplit>(newDistributions)->getNonLocalDistributions();
         CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getZeroDistributions();
+            dynamicPointerCast<EsoSplit>(newDistributions)->getZeroDistributions();
 
         MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
                  (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
@@ -270,11 +270,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
         CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
 
         MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
                  (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
@@ -315,14 +315,14 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         int bMaxX2 = (int)newDistributions->getNX2();
         int bMaxX3 = (int)newDistributions->getNX3();
 
-        SPtr<EsoTwist3D> oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
+        SPtr<EsoTwist3D> oldDistributions(new EsoSplit(bMaxX1, bMaxX2, bMaxX3, 0));
 
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
         CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
 
         MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
                  (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
@@ -505,11 +505,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
         CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
 
         MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
                  (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
@@ -550,14 +550,14 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         int bMaxX2 = (int)newDistributions->getNX2();
         int bMaxX3 = (int)newDistributions->getNX3();
 
-        SPtr<EsoTwist3D> oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
+        SPtr<EsoTwist3D> oldDistributions(new EsoSplit(bMaxX1, bMaxX2, bMaxX3, 0));
 
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
         CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
         CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
 
         MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
                  (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,

@@ -35,14 +35,11 @@
 #define BoundaryConditionBlockVisitor_h__
 
 #include <PointerDefinitions.h>
-#include <map>
-
 #include "Block3DVisitor.h"
 
 class Grid3D;
 class Block3D;
-class BCStrategy;
-class BC;
+
 
 //! \brief set boundary conditions
 class BoundaryConditionsBlockVisitor : public Block3DVisitor
@@ -52,10 +49,6 @@ public:
     ~BoundaryConditionsBlockVisitor() override;
 
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
-    void addBC(SPtr<BC> bc);
 
-protected:
-private:
-    std::map<char, SPtr<BCStrategy>> bcMap;
 };
 #endif // BoundaryConditionBlockVisitor_h__

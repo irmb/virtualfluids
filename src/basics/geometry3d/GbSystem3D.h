@@ -244,33 +244,33 @@ public:
             (this->points)[u++] = (p)[b];
         // u = this->sizet;
         // for(int b=0; b<(int)p->size(); b++)
-        //	cout<<(this->points)[u++].toString()<<endl;
+        //    cout<<(this->points)[u++].toString()<<endl;
         this->consistent = false;
         this->sizet += (int)p.size();
     };
-    //		void insert(GbPoint3D *point, int index)
+    //        void insert(GbPoint3D *point, int index)
     //      {
-    //	 if(this.size == this.points.length)
-    //	 {
-    //	    GbPoint3D a[] = new GbPoint3D[1+(this.size<<1)];
-    //	    System.arraycopy(this.points, 0, a, 0, this.size);
-    //	    this.points = a;
-    //	 }
-    //	 System.arraycopy(this.points, index, this.points, index+1, this.size-index);
-    //	 this.points[index] = point;
-    //	 this.consistent    = false;
-    //	 this.size++;
+    //     if(this.size == this.points.length)
+    //     {
+    //        GbPoint3D a[] = new GbPoint3D[1+(this.size<<1)];
+    //        System.arraycopy(this.points, 0, a, 0, this.size);
+    //        this.points = a;
+    //     }
+    //     System.arraycopy(this.points, index, this.points, index+1, this.size-index);
+    //     this.points[index] = point;
+    //     this.consistent    = false;
+    //     this.size++;
     //      }
     //      void delete(GbPoint3D point)
     //      {
-    //	 for(int i=this.size-1; i>=0; i--) if(this.points[i] == point) this.delete(i);
+    //     for(int i=this.size-1; i>=0; i--) if(this.points[i] == point) this.delete(i);
     //      }
     //      void delete(int index)
     //      {
-    //	 int j = this.size - index - 1;
-    //	 if(j > 0) System.arraycopy(this.points, index + 1, this.points, index, j);
-    //	 this.consistent = false;
-    //	 this.size--;
+    //     int j = this.size - index - 1;
+    //     if(j > 0) System.arraycopy(this.points, index + 1, this.points, index, j);
+    //     this.consistent = false;
+    //     this.size--;
     //      }
     void clear()
     {
@@ -397,25 +397,25 @@ public:
     };
     //      boolean containsEqualLine(GbPoint2D point1, GbPoint2D point2)
     //      {
-    //	 for(int i=this.size-1; i>=0; i--) if(this.points[i].equals(point1))
-    //	 {
-    //	    if(i == 0)
-    //	    {
-    //	       if(this.points[i+1].equals(point2))         return(true);
-    //	       if(this.points[this.size-1].equals(point2)) return(true);
-    //	    }
-    //	    else if(i == this.size-1)
-    //	    {
-    //	       if(this.points[0].equals(point2))   return(true);
-    //	       if(this.points[i-1].equals(point2)) return(true);
-    //	    }
-    //	    else
-    //	    {
-    //	       if(this.points[i+1].equals(point2)) return(true);
-    //	       if(this.points[i-1].equals(point2)) return(true);
-    //	    }
-    //	 }
-    //	 return(false);
+    //     for(int i=this.size-1; i>=0; i--) if(this.points[i].equals(point1))
+    //     {
+    //        if(i == 0)
+    //        {
+    //           if(this.points[i+1].equals(point2))         return(true);
+    //           if(this.points[this.size-1].equals(point2)) return(true);
+    //        }
+    //        else if(i == this.size-1)
+    //        {
+    //           if(this.points[0].equals(point2))   return(true);
+    //           if(this.points[i-1].equals(point2)) return(true);
+    //        }
+    //        else
+    //        {
+    //           if(this.points[i+1].equals(point2)) return(true);
+    //           if(this.points[i-1].equals(point2)) return(true);
+    //        }
+    //     }
+    //     return(false);
     //      }
     GbPoint3D *getPoint(int index) { return (&(this->points)[index]); }
     GbPoint3D *getFirstPoint() { return (&(this->points)[0]); }
@@ -430,7 +430,7 @@ public:
 
         // vector<GbPoint3D*> *a = new vector<GbPoint3D*>;
         // a->resize(l, NULL);
-        // for(int u=0; u<l; u++)  { (*a)[u] = &((points)[u]);	}
+        // for(int u=0; u<l; u++)  { (*a)[u] = &((points)[u]);    }
         // return(a);
     }
 };

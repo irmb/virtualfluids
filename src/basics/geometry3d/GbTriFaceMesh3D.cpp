@@ -32,11 +32,12 @@
 //=======================================================================================
 #include <geometry3d/GbTriFaceMesh3D.h>
 
+#include <basics/Timer/Timer.h>
 #include <basics/utilities/UbFileInputASCII.h>
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbRandom.h>
-#include <basics/utilities/UbTiming.h>
 #include <basics/writer/WbWriter.h>
+
 #include <geometry3d/CoordinateTransformation3D.h>
 #include <geometry3d/GbCuboid3D.h>
 #include <geometry3d/GbHalfSpace3D.h>
@@ -651,7 +652,7 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //      if( !kdTree)
 //      {
 //         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-//         UbTimer timer; timer.start();
+//         vf::basics::Timer timer; timer.start();
 //         if(kdtreeSplitAlg == KDTREE_SAHPLIT     )
 //         {
 //            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -663,7 +664,7 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //            this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() );
 //         }
 //         else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
-//         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
+//         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.getCurrentRuntimeInSeconds()<<"seconds");
 //      }
 //
 //      //eigentlicher PIO-Test
@@ -738,7 +739,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // Baum erstellen, wen noch keiner vorhanden
         if (!kdTree) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-            UbTimer timer;
+            vf::basics::Timer timer;
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -748,7 +749,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
                 this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds");
+            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
         }
 
         // eigentlicher PIO-Test
@@ -820,7 +821,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // Baum erstellen, wen noch keiner vorhanden
         if (!kdTree) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-            UbTimer timer;
+            vf::basics::Timer timer;
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -831,7 +832,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
                 this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds");
+            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
             //cout << "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds" << std::endl;
         }
 
@@ -905,7 +906,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // Baum erstellen, wen noch keiner vorhanden
         if (!kdTree) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-            UbTimer timer;
+            vf::basics::Timer timer;
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -915,7 +916,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
                 this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds");
+            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
         }
 
         // eigentlicher PIO-Test
@@ -951,7 +952,7 @@ bool GbTriFaceMesh3D::intersectLine(const double &p1_x1, const double &p1_x2, co
     // Baum erstellen, wen noch keiner vorhanden
     if (!kdTree) {
         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-        UbTimer timer;
+        vf::basics::Timer timer;
         timer.start();
         if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
@@ -961,7 +962,7 @@ bool GbTriFaceMesh3D::intersectLine(const double &p1_x1, const double &p1_x2, co
             this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
         } else
             throw UbException(UB_EXARGS, "unknown kdtree split option)");
-        UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds");
+        UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
     }
 
     int iSec = kdTree->intersectLine(UbTupleDouble3(p1_x1, p1_x2, p1_x3), UbTupleDouble3(p2_x1, p2_x2, p2_x3),

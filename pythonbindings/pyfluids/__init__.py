@@ -32,27 +32,3 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
-try:
-    from . import basics
-except ImportError:
-    print("Basics bindings not included")
-try:
-    from . import logger
-except ImportError:
-    print("Logger bindings not included")
-try:
-    from . import lbm
-except ImportError:
-    print("LBM bindings not included")
-try:
-    from . import communicator
-except ImportError:
-    print("communicator bindings not included")
-try:
-    from . import gpu
-except ImportError:
-    print("GPU bindings not included")
-try:
-    from . import cpu
-except ImportError:
-    print("CPU bindings not included")

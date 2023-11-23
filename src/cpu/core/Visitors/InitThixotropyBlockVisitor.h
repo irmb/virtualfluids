@@ -41,86 +41,76 @@
 
 #include <muParser.h>
 
-/*================================================================================*/
-/*  D3Q27ETInitThixotropyBlockVisitor                                             */
-/*                                                                                */
-
-
-
-
 class InitThixotropyBlockVisitor : public Block3DVisitor
 {
 public:
-	typedef std::numeric_limits<real> D3Q27RealLim;
+    InitThixotropyBlockVisitor();
+    //D3Q27ETInitThixotropyBlockVisitor(real rho, real vx1=0.0, real vx2=0.0, real vx3=0.0);
+    //! Constructor
+    //! \param nu - viscosity
+    //! \param rho - density
+    //! \param vx1 - velocity in x
+    //! \param vx2 - velocity in y
+    //! \param vx3 - velocity in z
+    //InitThixotropyBlockVisitor(real lambda /*real nu, real D, real rho, real vx1 = 0.0, real vx2 = 0.0, real vx3 = 0.0, real c=0.0, real f1 = 0.0, real f2 = 0.0, real f3 = 0.0*/);
+    //////////////////////////////////////////////////////////////////////////
+    //automatic vars are: x1,x2, x3
+    //ussage example: setVx1("x1*0.01+x2*0.003")
+    //////////////////////////////////////////////////////////////////////////
+    //void setVx1(const mu::Parser& parser);
+    //void setVx2(const mu::Parser& parser);
+    //void setVx3(const mu::Parser& parser);
+    //void setRho(const mu::Parser& parser);
 
-public:
-	InitThixotropyBlockVisitor();
-	//D3Q27ETInitThixotropyBlockVisitor(LBMReal rho, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
-	//! Constructor
-	//! \param nu - viscosity
-	//! \param rho - density
-	//! \param vx1 - velocity in x
-	//! \param vx2 - velocity in y
-	//! \param vx3 - velocity in z
-	//InitThixotropyBlockVisitor(LBMReal lambda /*LBMReal nu, LBMReal D, LBMReal rho, LBMReal vx1 = 0.0, LBMReal vx2 = 0.0, LBMReal vx3 = 0.0, LBMReal c=0.0, LBMReal f1 = 0.0, LBMReal f2 = 0.0, LBMReal f3 = 0.0*/);
-	//////////////////////////////////////////////////////////////////////////
-	//automatic vars are: x1,x2, x3
-	//ussage example: setVx1("x1*0.01+x2*0.003")
-	//////////////////////////////////////////////////////////////////////////
-	//void setVx1(const mu::Parser& parser);
-	//void setVx2(const mu::Parser& parser);
-	//void setVx3(const mu::Parser& parser);
-	//void setRho(const mu::Parser& parser);
+    //void setVx1(const std::string& muParserString);
+    //void setVx2(const std::string& muParserString);
+    //void setVx3(const std::string& muParserString);
+    //void setRho(const std::string& muParserString);
+    ////////////////////////////////////////////////////////////////////////////
+    //void setVx1(real vx1);
+    //void setVx2(real vx2);
+    //void setVx3(real vx3);
+    //void setRho(real rho);
+    //void setNu(real nu);
 
-	//void setVx1(const std::string& muParserString);
-	//void setVx2(const std::string& muParserString);
-	//void setVx3(const std::string& muParserString);
-	//void setRho(const std::string& muParserString);
-	////////////////////////////////////////////////////////////////////////////
-	//void setVx1(LBMReal vx1);
-	//void setVx2(LBMReal vx2);
-	//void setVx3(LBMReal vx3);
-	//void setRho(LBMReal rho);
-	//void setNu(LBMReal nu);
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //void setf1(const mu::Parser& parser);
+    //void setf2(const mu::Parser& parser);
+    //void setf3(const mu::Parser& parser);
+    void setLambda(const mu::Parser& parser);
 
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-	//void setf1(const mu::Parser& parser);
-	//void setf2(const mu::Parser& parser);
-	//void setf3(const mu::Parser& parser);
-	void setLambda(const mu::Parser& parser);
+    //void setf1(const std::string& muParserString);
+    //void setf2(const std::string& muParserString);
+    //void setf3(const std::string& muParserString);
+    void setLambda(const std::string& muParserString);
+    //////////////////////////////////////////////////////////////////////////
+    //void setf1(real f1);
+    //void setf2(real f2);
+    //void setf3(real f3);
+    void setLambda(real lambda);
+    //void setD(real D);
 
-	//void setf1(const std::string& muParserString);
-	//void setf2(const std::string& muParserString);
-	//void setf3(const std::string& muParserString);
-	void setLambda(const std::string& muParserString);
-	//////////////////////////////////////////////////////////////////////////
-	//void setf1(LBMReal f1);
-	//void setf2(LBMReal f2);
-	//void setf3(LBMReal f3);
-	void setLambda(real lambda);
-	//void setD(LBMReal D);
+    //void initialize(double* f, double x1, double x2, double x3, double vx1, double vx2, double vx3, double rho, UbTupleDouble3 coords, double dx, double o, bool NSE);
 
-	//void initialize(double* f, double x1, double x2, double x3, double vx1, double vx2, double vx3, double rho, UbTupleDouble3 coords, double dx, double o, bool NSE);
-
-	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 protected:
-	void checkFunction(mu::Parser fct);
-	typedef void(*CalcFeqsFct)(real* const& /*feq[27]*/, const real& /*(d)rho*/, const real& /*vx1*/, const real& /*vx2*/, const real& /*vx3*/);
+    void checkFunction(mu::Parser fct);
+    typedef void(*CalcFeqsFct)(real* const& /*feq[27]*/, const real& /*(d)rho*/, const real& /*vx1*/, const real& /*vx2*/, const real& /*vx3*/);
 
 private:
-	mu::Parser muVx1;
-	mu::Parser muVx2;
-	mu::Parser muVx3;
-	//mu::Parser muRho;
-	//LBMReal nu;
+    mu::Parser muVx1;
+    mu::Parser muVx2;
+    mu::Parser muVx3;
+    //mu::Parser muRho;
+    //real nu;
 
-	//mu::Parser muf1;
-	//mu::Parser muf2;
-	//mu::Parser muf3;
-	mu::Parser muLambda;
-	//LBMReal D;
+    //mu::Parser muf1;
+    //mu::Parser muf2;
+    //mu::Parser muf3;
+    mu::Parser muLambda;
+    //real D;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

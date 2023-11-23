@@ -20,25 +20,25 @@ void run()
       //string  pathname = "d:/temp/AcousticPulse40Cube2y_test";
       //double  endTime = 20;
       //double  outTime = 20;
-      //LBMReal dx =  0.05;
+      //real dx =  0.05;
 
       //80
       //string  pathname = "d:/temp/AcousticPulse80Cube2y";
       //double  endTime = 40;
       //double  outTime = 40;
-      //LBMReal dx = 0.025;
+      //real dx = 0.025;
 
       //160
       //string  pathname = "d:/temp/AcousticPulse160Cube2y";
       //double  endTime = 80;
       //double  outTime = 80;
-      //LBMReal dx = 0.0125;
+      //real dx = 0.0125;
 
-      //LBMReal dx = 0.1; 
-      //LBMReal dx = 1.66666666667e-2; //120
+      //real dx = 0.1; 
+      //real dx = 1.66666666667e-2; //120
       
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 3.97e-7;
+      //real rhoLB = 0.0;
+      //real nuLB = 3.97e-7;
 
       //////////////////////////////////////////////////////////////////////////
       //DLR-F16 test
@@ -46,25 +46,25 @@ void run()
       string  pathname = "d:/temp/AcousticPulseXZ-4th-0.003";
       int     endTime = 20;
       double  outTime = 20;
-      LBMReal dx =  0.003;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 8.66025e-6;
+      real dx =  0.003;
+      real rhoLB = 0.0;
+      real nuLB = 8.66025e-6;
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.0015 mm
       //string  pathname = "d:/temp/AcousticPulseXZ-4th-0.0015";
       //double  endTime = 40;
       //double  outTime = 40;
-      //LBMReal dx =  0.0015;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*2.0;
+      //real dx =  0.0015;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6*2.0;
       ////////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.00075 mm
       //string  pathname = "d:/temp/AcousticPulseXZ-4th-0.00075";
       //double  endTime = 80;
       //double  outTime = 80;
-      //LBMReal dx =  0.00075;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*4.0;
+      //real dx =  0.00075;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6*4.0;
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
@@ -160,10 +160,10 @@ void run()
       }
 
       double bulckViscosity = 10.0*nuLB;
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
-      //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
+      //dynamicPointerCast<K17CompressibleNavierStokes>(kernel)->setBulkViscosity(bulckViscosity);
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
+      //dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->setBulkOmegaToOmega(true);
       //
       SPtr<BCProcessor> bcProcessor(new BCProcessor());
 

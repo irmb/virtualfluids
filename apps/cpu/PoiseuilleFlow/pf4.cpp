@@ -137,7 +137,7 @@
 //
 //   //LBM kernel definition
 //   SPtr<LBMKernel> kernel;
-//   kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+//   kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes(blocknx[0], blocknx[1], blocknx[2], InK15CompressibleNavierStokes::NORMAL));
 //   SPtr<BCProcessor> bcProc(new BCProcessor());
 //   kernel->setBCProcessor(bcProc);
 //

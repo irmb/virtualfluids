@@ -203,7 +203,7 @@ void ShearStressSimulationObserver::calculateShearStress(real timeStep)
                                      ((((f[dPP0] + f[dMM0]) + (f[dPM0] + f[dMP0])) - ((f[d0PM] + f[d0MP]) + (f[d0PP] + f[d0MM]))) +
                                       ((f[dP00] + f[dM00]) - (f[d00P] + f[d00M])) - vx * vx + vz * vz);
 
-                    // LBMReal dyyMzz =3.0/2.0 *collFactor/(collFactor-1.0)*((((f[NE] + f[SW]) + (f[SE] +
+                    // real dyyMzz =3.0/2.0 *collFactor/(collFactor-1.0)*((((f[NE] + f[SW]) + (f[SE] +
                     // f[NW]))-((f[TE] + f[BW])+(f[BE]+ f[TW])))
                     //    +((f[N] + f[S])-(f[T] + f[B])) -vy*vy +vz*vz);
 

@@ -72,12 +72,12 @@ SPtr<Object> Conglomerate::clone() const
     return conglomerate;
 }
 
-double Conglomerate::getX1Centroid()
+double Conglomerate::getX1Centroid() const
 {
     return (getX1Minimum() + getX1Maximum()) * 0.5;
 }
 
-double Conglomerate::getX1Minimum()
+double Conglomerate::getX1Minimum() const
 {
     double minimum = addObjects[0]->getX1Minimum();
     for(uint i = 1; i < numberOfAddObjects; i++)
@@ -85,7 +85,7 @@ double Conglomerate::getX1Minimum()
     return minimum;
 }
 
-double Conglomerate::getX1Maximum()
+double Conglomerate::getX1Maximum() const
 {
     double maximum = addObjects[0]->getX1Maximum();
     for (uint i = 1; i < numberOfAddObjects; i++)
@@ -93,12 +93,12 @@ double Conglomerate::getX1Maximum()
     return maximum;
 }
 
-double Conglomerate::getX2Centroid()
+double Conglomerate::getX2Centroid() const
 {
     return (getX2Minimum() + getX2Maximum()) * 0.5;
 }
 
-double Conglomerate::getX2Minimum()
+double Conglomerate::getX2Minimum() const
 {
     double minimum = addObjects[0]->getX2Minimum();
     for (uint i = 1; i < numberOfAddObjects; i++)
@@ -106,7 +106,7 @@ double Conglomerate::getX2Minimum()
     return minimum;
 }    
 
-double Conglomerate::getX2Maximum()
+double Conglomerate::getX2Maximum() const
 {
     double maximum = addObjects[0]->getX2Maximum();
     for (uint i = 1; i < numberOfAddObjects; i++)
@@ -114,12 +114,12 @@ double Conglomerate::getX2Maximum()
     return maximum;
 }
 
-double Conglomerate::getX3Centroid()
+double Conglomerate::getX3Centroid() const
 {
     return (getX3Minimum() + getX3Maximum()) * 0.5;
 }
 
-double Conglomerate::getX3Minimum()
+double Conglomerate::getX3Minimum() const
 {
     double minimum = addObjects[0]->getX3Minimum();
     for (uint i = 1; i < numberOfAddObjects; i++)
@@ -127,7 +127,7 @@ double Conglomerate::getX3Minimum()
     return minimum;
 }    
 
-double Conglomerate::getX3Maximum()
+double Conglomerate::getX3Maximum() const
 {
     double maximum = addObjects[0]->getX3Maximum();
     for (uint i = 1; i < numberOfAddObjects; i++)
@@ -162,13 +162,13 @@ bool Conglomerate::isPointInObject(const double& x1, const double& x2, const dou
     return false;
 }
 
-void Conglomerate::scale(double delta)
+void Conglomerate::changeSizeByDelta(double delta)
 {
     for (uint i = 0; i < numberOfAddObjects; i++)
-        addObjects[i]->scale(delta);
+        addObjects[i]->changeSizeByDelta(delta);
 
     for (uint i = 0; i < numberOfSubtractObjects; i++)
-        subtractObjects[i]->scale(delta);
+        subtractObjects[i]->changeSizeByDelta(delta);
 }
 
 void Conglomerate::findInnerNodes(SPtr<GridImp> grid)

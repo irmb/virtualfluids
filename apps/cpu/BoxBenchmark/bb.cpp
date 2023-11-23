@@ -58,9 +58,9 @@ void run(string configname)
          }
 }
 
-      LBMReal dLB = length[1] / dx;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = (uLB*dLB) / Re;
+      real dLB = length[1] / dx;
+      real rhoLB = 0.0;
+      real nuLB = (uLB*dLB) / Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -160,8 +160,8 @@ void run(string configname)
          }
 
          SPtr<LBMKernel> kernel;
-         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-         kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+         //kernel = SPtr<LBMKernel>(new InK15CompressibleNavierStokes());
+         kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
          SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
          kernel->setForcingX1(0.1);

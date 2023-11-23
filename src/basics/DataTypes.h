@@ -26,13 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file DataTypes.h
-//! \ingroup Core
 //! \author Soeren Peters
 //=======================================================================================
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <limits>
 #include <string>
 
 #ifdef VF_DOUBLE_ACCURACY
@@ -40,6 +39,8 @@ using real = double;
 #else
 using real = float;
 #endif
+
+using realLim = std::numeric_limits<real>;
 
 using uint = unsigned int;
 #define INVALID_INDEX 4294967295 // max uint

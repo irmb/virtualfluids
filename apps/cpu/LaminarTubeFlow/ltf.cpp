@@ -67,23 +67,23 @@ void run(string configname)
       //BC Adapter
       //////////////////////////////////////////////////////////////////////////////
       SPtr<BC> noSlipBC(new NoSlipBC());
-      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new ThinWallNoSlipBCStrategy()));
-      //SPtr<BC> denBC(new DensityBC(rhoLB));
+      //noSlipBC->setBCStrategy(SPtr<BCStrategy>(new ThinWallNoSlip()));
+      //SPtr<BC> denBC(new PressureBC(rhoLB));
       //denBC->setBCStrategy(SPtr<BCStrategy>(new EqDensityBCStrategy()));
 
-      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipBCStrategy()));
+      noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
-      SPtr<BC> denBC(new DensityBC(rhoLB));
-      denBC->setBCStrategy(SPtr<BCStrategy>(new NonReflectingOutflowBCStrategy()));
-      //denBC->setBCStrategy(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
+      SPtr<BC> denBC(new PressureBC(rhoLB));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
+      //denBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
 
       //double startTime = 5;
       mu::Parser fct1;
       fct1.SetExpr("U");
       fct1.DefineConst("U", uLB);
       SPtr<BC> velBC1(new VelocityBC(true, false, false, fct1, 0, BCFunction::INFCONST));
-      //velBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-      velBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+      //velBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
+      velBC1->setBCStrategy(SPtr<BCStrategy>(new VelocityWithPressureInterpolated()));
 
       //mu::Parser fct2;
       //fct2.SetExpr("U");
@@ -93,19 +93,16 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBC);
-      bcVisitor.addBC(denBC);
-      //bcVisitor.addBC(velBC1);
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
       SPtr<BCSet> bcProc;
       bcProc = SPtr<BCSet>(new BCSet());
 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
       //double bulckViscosity = 3700*nuLB;
-      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
+      //dynamicPointerCast<K17CompressibleNavierStokes>(kernel)->setBulkViscosity(bulckViscosity);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
       kernel->setBCSet(bcProc);
       kernel->setBCSet(bcProc);
 
@@ -212,8 +209,8 @@ void run(string configname)
          ////fct.DefineConst("z0", cx3);
          ////fct.DefineConst("nue", nuLB);
          //SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-         //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBCStrategy()));
-         //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
+         //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
+         //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithPressureInterpolated()));
          
          inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBC1, Interactor3D::SOLID));
          //inflowInt->addBC(velBC2);
@@ -268,7 +265,7 @@ void run(string configname)
 
          intHelper.setBC();
 
-         bcVisitor.addBC(velBC1);
+         //bcVisitor.addBC(velBC1);
          grid->accept(bcVisitor);
 
          //initialization of distributions

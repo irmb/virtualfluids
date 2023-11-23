@@ -64,9 +64,9 @@ CoordinateTransformation3D::CoordinateTransformation3D(CoordinateTransformation3
 /*======================================================*/
 // void CoordinateTransformation3D::init()
 // {
-//    this->Tx1   = 0.0;      this->Tx2   = 0.0;	this->Tx3   = 0.0;
-//    this->Sx1   = 1.0;      this->Sx2   = 1.0;	this->Sx3   = 1.0;
-//    this->alpha = 0.0;		this->beta = 0.0;		this->gamma = 0.0;
+//    this->Tx1   = 0.0;      this->Tx2   = 0.0;    this->Tx3   = 0.0;
+//    this->Sx1   = 1.0;      this->Sx2   = 1.0;    this->Sx3   = 1.0;
+//    this->alpha = 0.0;        this->beta = 0.0;        this->gamma = 0.0;
 //
 //    this->toX1factorX1   = 1.0; this->toX1factorX2   = 0.0; this->toX1factorX3   = 0.0;
 //    this->toX2factorX1   = 0.0; this->toX2factorX2   = 1.0; this->toX2factorX3   = 0.0;

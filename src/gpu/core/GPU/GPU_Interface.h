@@ -933,21 +933,6 @@ void QADPressIncompDev27(  unsigned int numberOfThreads,
                                       unsigned long long numberOfLBnodes, 
                                       bool isEvenTimestep);
 
-void PropVelo(   unsigned int numberOfThreads,
-                            unsigned int* neighborX,
-                            unsigned int* neighborY,
-                            unsigned int* neighborZ,
-                            real* rho,
-                            real* ux,
-                            real* uy,
-                            real* uz,
-                            int* k_Q, 
-                            unsigned int size_Prop,
-                            unsigned long long numberOfLBnodes,
-                            unsigned int* bcMatD,
-                            real* DD,
-                            bool EvenOrOdd);
-
 void ScaleCF27( real* DC, 
                            real* DF, 
                            unsigned int* neighborCX,
