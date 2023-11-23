@@ -63,7 +63,7 @@ class Block3D;
 class InitDistributionsBlockVisitor : public Block3DVisitor
 {
 public:
-    using D3Q27RealLim = std::numeric_limits<real>;
+    using realLim = std::numeric_limits<real>;
 
 public:
     InitDistributionsBlockVisitor();

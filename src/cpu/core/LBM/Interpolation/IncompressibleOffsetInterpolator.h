@@ -43,7 +43,7 @@ private:
 
    real kxyAverage, kyzAverage, kxzAverage, kxxMyyAverage, kxxMzzAverage; 
 
-//   LBMReal a,b,c;
+//   real a,b,c;
 
    void setOffsets(real xoff, real yoff, real zoff) override;
    void calcMoments(const real* const f, real omega, real& rho, real& vx1, real& vx2, real& vx3, 

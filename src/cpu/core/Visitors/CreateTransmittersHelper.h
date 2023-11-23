@@ -40,8 +40,9 @@
 #include "LBMSystem.h"
 
 #include <basics/container/CbVector.h>
-#include <basics/transmitter/TbTransmitter.h>
-#include <basics/transmitter/TbTransmitterMpiPool.h>
+
+#include <parallel/transmitter/TbTransmitter.h>
+#include <parallel/transmitter/TbTransmitterMpiPool.h>
 
 //! \brief The class helps to create Transmitters.
 //! \details It is created two types of Transmitters: MPI and BOND

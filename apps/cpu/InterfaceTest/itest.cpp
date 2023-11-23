@@ -21,10 +21,10 @@ void run()
       string  pathname = "d:/temp/InterfaceTest";
       int  endTime = 2000;
       double  outTime = 100;
-      LBMReal dx =  0.05;
+      real dx =  0.05;
       
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 3.97e-7;
+      real rhoLB = 0.0;
+      real nuLB = 3.97e-7;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 

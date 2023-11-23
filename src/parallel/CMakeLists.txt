@@ -1,5 +1,5 @@
 
-vf_add_library(PUBLIC_LINK logger)
+vf_add_library(PUBLIC_LINK logger basics)
 
 if(MSVC)
     target_link_libraries(parallel PRIVATE ws2_32)

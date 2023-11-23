@@ -26,28 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TbTransmitter.h
-//! \ingroup transmitter
 //! \author Soeren Freudiger, Sebastian Geller
 //=======================================================================================
-#ifndef TBTRANSMITTER_H
-#define TBTRANSMITTER_H
+#ifndef PARALLEL_TBTRANSMITTER_H
+#define PARALLEL_TBTRANSMITTER_H
 
 #include <string>
-
-/*================================================================================*/
-/*  TbTransmitter                                                                 */
-/*                                                                                */
-/**
-This Class provides the base for sending and receiving of data.
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0 - 08.11.07
-*/
-
-/*
-usage: ...
-*/
 
 //////////////////////////////////////////////////////////////////////////
 // Transmitter

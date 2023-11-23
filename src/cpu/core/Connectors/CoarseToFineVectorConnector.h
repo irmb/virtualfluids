@@ -44,8 +44,8 @@
 #include "LBMKernel.h"
 #include "MathUtil.hpp"
 #include "basics/container/CbVector.h"
-#include "basics/transmitter/TbTransmitter.h"
-#include "basics/transmitter/TbTransmitterLocal.h"
+#include "parallel/transmitter/TbTransmitter.h"
+#include "parallel/transmitter/TbTransmitterLocal.h"
 #include <PointerDefinitions.h>
 #include "basics/constants/NumericConstants.h"
 

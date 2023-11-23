@@ -41,28 +41,18 @@
 
 #include <muParser.h>
 
-/*================================================================================*/
-/*  D3Q27ETInitThixotropyBlockVisitor                                             */
-/*                                                                                */
-
-
-
-
 class InitThixotropyBlockVisitor : public Block3DVisitor
 {
 public:
-    typedef std::numeric_limits<real> D3Q27RealLim;
-
-public:
     InitThixotropyBlockVisitor();
-    //D3Q27ETInitThixotropyBlockVisitor(LBMReal rho, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
+    //D3Q27ETInitThixotropyBlockVisitor(real rho, real vx1=0.0, real vx2=0.0, real vx3=0.0);
     //! Constructor
     //! \param nu - viscosity
     //! \param rho - density
     //! \param vx1 - velocity in x
     //! \param vx2 - velocity in y
     //! \param vx3 - velocity in z
-    //InitThixotropyBlockVisitor(LBMReal lambda /*LBMReal nu, LBMReal D, LBMReal rho, LBMReal vx1 = 0.0, LBMReal vx2 = 0.0, LBMReal vx3 = 0.0, LBMReal c=0.0, LBMReal f1 = 0.0, LBMReal f2 = 0.0, LBMReal f3 = 0.0*/);
+    //InitThixotropyBlockVisitor(real lambda /*real nu, real D, real rho, real vx1 = 0.0, real vx2 = 0.0, real vx3 = 0.0, real c=0.0, real f1 = 0.0, real f2 = 0.0, real f3 = 0.0*/);
     //////////////////////////////////////////////////////////////////////////
     //automatic vars are: x1,x2, x3
     //ussage example: setVx1("x1*0.01+x2*0.003")
@@ -77,11 +67,11 @@ public:
     //void setVx3(const std::string& muParserString);
     //void setRho(const std::string& muParserString);
     ////////////////////////////////////////////////////////////////////////////
-    //void setVx1(LBMReal vx1);
-    //void setVx2(LBMReal vx2);
-    //void setVx3(LBMReal vx3);
-    //void setRho(LBMReal rho);
-    //void setNu(LBMReal nu);
+    //void setVx1(real vx1);
+    //void setVx2(real vx2);
+    //void setVx3(real vx3);
+    //void setRho(real rho);
+    //void setNu(real nu);
 
     //////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
@@ -95,11 +85,11 @@ public:
     //void setf3(const std::string& muParserString);
     void setLambda(const std::string& muParserString);
     //////////////////////////////////////////////////////////////////////////
-    //void setf1(LBMReal f1);
-    //void setf2(LBMReal f2);
-    //void setf3(LBMReal f3);
+    //void setf1(real f1);
+    //void setf2(real f2);
+    //void setf3(real f3);
     void setLambda(real lambda);
-    //void setD(LBMReal D);
+    //void setD(real D);
 
     //void initialize(double* f, double x1, double x2, double x3, double vx1, double vx2, double vx3, double rho, UbTupleDouble3 coords, double dx, double o, bool NSE);
 
@@ -114,13 +104,13 @@ private:
     mu::Parser muVx2;
     mu::Parser muVx3;
     //mu::Parser muRho;
-    //LBMReal nu;
+    //real nu;
 
     //mu::Parser muf1;
     //mu::Parser muf2;
     //mu::Parser muf3;
     mu::Parser muLambda;
-    //LBMReal D;
+    //real D;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

@@ -34,10 +34,12 @@
 #define TransmitterType_h__
 
 #include "D3Q27System.h"
-#include "basics/container/CbVector.h"
-#include "basics/transmitter/TbTransmitter.h"
-#include "basics/transmitter/TbTransmitterLocal.h"
-#include <PointerDefinitions.h>
+
+#include <basics/PointerDefinitions.h>
+#include <basics/container/CbVector.h>
+
+#include <parallel/transmitter/TbTransmitter.h>
+#include <parallel/transmitter/TbTransmitterLocal.h>
 
 using VectorTransmitter    = TbTransmitter<CbVector<real>>;
 using vector_type          = VectorTransmitter::value_type;
