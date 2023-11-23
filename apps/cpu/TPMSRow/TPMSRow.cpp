@@ -18,7 +18,7 @@ void run(string configname)
         string pathname             = config.getValue<string>("pathname");
         int numOfThreads            = config.getValue<int>("numOfThreads");
         vector<int> blocknx         = config.getVector<int>("blocknx");
-        double beginTime            = config.getValue<double>("beginTime");
+        //double beginTime            = config.getValue<double>("beginTime");
         double endTime              = config.getValue<double>("endTime");
         double outTime              = config.getValue<double>("outTime");
         double availMem             = config.getValue<double>("availMem");
@@ -454,12 +454,12 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
 
-        SPtr<GbPoint3D> pointOne(new GbPoint3D(-0.00494999997317791,0.008, 0.0099));
-        SPtr<GbPoint3D> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
+        //SPtr<GbPoint3D> pointOne(new GbPoint3D(-0.00494999997317791,0.008, 0.0099));
+       // SPtr<GbPoint3D> pointTwo(new GbPoint3D(0.14994999766349792, 0.008, 0.0099));
 
-        SPtr<GbLine3D> line(new GbLine3D(pointOne.get(),pointTwo.get()));
-        SPtr<UbScheduler> linSch(new UbScheduler(outTime/20,outTime/2/*,beginTime,endTime*/));
-        SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname + "line",  line,refineLevel, comm));
+        //SPtr<GbLine3D> line(new GbLine3D(pointOne.get(),pointTwo.get()));
+        //SPtr<UbScheduler> linSch(new UbScheduler(endTime/20,endTime/2/*,beginTime,endTime*/));
+        //SPtr<SimulationObserver> lp(new LineTimeSeriesSimulationObserver(grid, linSch, pathname + "_line",  line,refineLevel, comm));
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime/*,beginTime,endTime*/));
         SPtr<SimulationObserver> pp(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
@@ -491,6 +491,8 @@ void run(string configname)
         calculator->addSimulationObserver(npr);
         calculator->addSimulationObserver(pp);
         calculator->addSimulationObserver(migSimulationObserver);
+        //calculator->addSimulationObserver(lp);
+
         //calculator->addSimulationObserver(tav);
 
         if (myid == 0)
