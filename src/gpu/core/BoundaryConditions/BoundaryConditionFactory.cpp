@@ -1,8 +1,12 @@
 #include "BoundaryConditionFactory.h"
-#include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "grid/BoundaryConditions/BoundaryCondition.h"
 #include <variant>
+
+#include "BoundaryConditions/Outflow/Outflow.h"
+#include "BoundaryConditions/Pressure/Pressure.h"
+#include "GPU/GPU_Interface.h"
+
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
 {
@@ -129,16 +133,16 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
             return QPressDevEQZ27;
             break;
         case PressureBC::PressureNonEquilibriumIncompressible:
-            return QPressDevIncompNEQ27;
+            return PressureNonEquilibriumIncompressible;
             break;
         case PressureBC::PressureNonEquilibriumCompressible:
-            return QPressDevNEQ27;
+            return PressureNonEquilibriumCompressible;
             break;
         case PressureBC::OutflowNonReflective:
-            return QPressNoRhoDev27;
+            return OutflowNonReflecting;
             break;
         case PressureBC::OutflowNonReflectivePressureCorrection:
-            return QPressZeroRhoOutflowDev27;
+            return OutflowNonReflectingPressureCorrection;
         default:
             return nullptr;
     }

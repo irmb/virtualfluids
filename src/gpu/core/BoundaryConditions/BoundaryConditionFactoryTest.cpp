@@ -2,8 +2,11 @@
 #include <typeindex>
 
 #include "BoundaryConditionFactory.h"
-#include "GPU/GPU_Interface.h"
 #include "gpu/GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+
+#include "BoundaryConditions/Outflow/Outflow.h"
+#include "BoundaryConditions/Pressure/Pressure.h"
+#include "GPU/GPU_Interface.h"
 
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionParamter = void (*)(Parameter *, QforBoundaryConditions *, const int level);
@@ -165,16 +168,16 @@ TEST(BoundaryConditionFactoryTest, pressureBC)
         << "The returned boundary condition is not the expected function QPressDevEQZ27.";
 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumIncompressible);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressDevIncompNEQ27)
-        << "The returned boundary condition is not the expected function QPressDevIncompNEQ27.";
+    EXPECT_TRUE(*(getPressureBcTarget(bcFactory)) == PressureNonEquilibriumIncompressible)
+        << "The returned boundary condition is not the expected function PressureNonEquilibriumIncompressible.";
 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressDevNEQ27)
-        << "The returned boundary condition is not the expected function QPressDevNEQ27.";
+    EXPECT_TRUE(*(getPressureBcTarget(bcFactory)) == PressureNonEquilibriumCompressible)
+        << "The returned boundary condition is not the expected function PressureNonEquilibriumCompressible.";
 
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressNoRhoDev27)
-        << "The returned boundary condition is not the expected function QPressNoRhoDev27.";
+    EXPECT_TRUE(*(getPressureBcTarget(bcFactory)) == OutflowNonReflecting)
+        << "The returned boundary condition is not the expected function OutflowNonReflecting_Device.";
 }
 
 bcFunction getGeometryBcTarget(BoundaryConditionFactory &bcFactory)
