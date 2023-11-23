@@ -1,44 +1,9 @@
-#workaround for machine with mpi compiler wrapper
-#it most define before project
-
-#MPI
-#set(CMAKE_C_COMPILER mpicc)
-#set(CMAKE_CXX_COMPILER mpicxx)
-
-#Intel MPI
-#set(CMAKE_C_COMPILER mpiicc)
-#set(CMAKE_CXX_COMPILER mpiicpc)
-
-#Cray
-#set(CMAKE_C_COMPILER cc)
-#set(CMAKE_CXX_COMPILER CC)
-
-#SuperMUC
-#set(CMAKE_C_COMPILER mpicc)
-#set(CMAKE_CXX_COMPILER mpiCC)
-
-#debug build for unix
-#IF(UNIX)
-#SET(CMAKE_BUILD_TYPE DEBUG)
-#ENDIF()
-
-SET(VFCPU_USE_METIS ON CACHE BOOL "include METIS library support")
+#############################################################
+###                  Options                              ###
+#############################################################
 SET(VFCPU_USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(VFCPU_USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
-SET(VFCPU_USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 
-if(BUILD_VF_ALL_SAMPLES)
-    set(VFCPU_ENABLE_NonNewtonianFluids ON)
-    set(VFCPU_ENABLE_MultiphaseFlow ON)
-endif() 
-
-#MPI
-IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
-    FIND_PACKAGE(MPI REQUIRED)
-ENDIF()
-#SET(MPI_CXX_LINK_FLAGS -mpe=mpilog)
-
-#VTK
 IF(${VFCPU_USE_VTK})
     FIND_PACKAGE(VTK REQUIRED)
     INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
@@ -49,9 +14,8 @@ IF(${VFCPU_USE_CATALYST})
     include("${PARAVIEW_USE_FILE}")
 ENDIF()
 
-IF(${VFCPU_USE_METIS})
-    list(APPEND VF_COMPILER_DEFINITION VF_METIS)
-ENDIF()
+list(APPEND VF_COMPILER_DEFINITION VF_METIS)
+
 IF(${VFCPU_USE_VTK})
     list(APPEND VF_COMPILER_DEFINITION VF_VTK)
 ENDIF()
@@ -59,24 +23,12 @@ IF(${VFCPU_USE_CATALYST})
     list(APPEND VF_COMPILER_DEFINITION VF_CATALYST)
 ENDIF()
 
-IF(${VFCPU_USE_BOOST})
-    list(APPEND VF_COMPILER_DEFINITION VF_BOOST)
-ENDIF()
-
-IF(${VFCPU_USE_HLRN_LUSTRE})
-    list(APPEND VF_COMPILER_DEFINITION HLRN_LUSTRE)
-ENDIF()
-
-# workaround itanium processoren
-IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ia64")
-    LIST(APPEND VF_COMPILER_DEFINITION _M_IA64)
-ENDIF()
-
-if(${VFCPU_USE_METIS} AND NOT METIS_INCLUDEDIR)
-    add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.0)
-endif()
+#############################################################
+###                  Libraries                            ###
+#############################################################
 
 add_subdirectory(${VF_THIRD_DIR}/MuParser)
+add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.0)
 
 add_subdirectory(src/cpu/core)
 
@@ -84,5 +36,16 @@ if(BUILD_VF_PYTHON_BINDINGS)
     add_subdirectory(src/cpu/simulationconfig)
 endif()
 
-set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")
-include(${APPS_ROOT_CPU}/Applications.cmake)
+#############################################################
+###                  Apps                                 ###
+#############################################################
+
+add_subdirectory(apps/cpu/PoiseuilleFlow)
+add_subdirectory(apps/cpu/sphere)
+add_subdirectory(apps/cpu/FlowAroundCylinder)
+add_subdirectory(apps/cpu/LaminarTubeFlow)
+add_subdirectory(apps/cpu/ConvectionOfVortex)
+
+if(BUILD_USE_BOOST)
+    add_subdirectory(apps/cpu/TPMSRow)
+endif()

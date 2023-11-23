@@ -1,7 +1,7 @@
 
 set(VF_LIBRARIES)
 
-IF(${VFCPU_USE_METIS} AND METIS_RELEASE_LIBRARY AND METIS_DEBUG_LIBRARY)
+IF(METIS_RELEASE_LIBRARY AND METIS_DEBUG_LIBRARY)
    list(APPEND VF_LIBRARIES optimized ${METIS_RELEASE_LIBRARY} debug ${METIS_DEBUG_LIBRARY})
 ELSE()
    list(APPEND VF_LIBRARIES metis)
@@ -38,11 +38,6 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Vi
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/SimulationObservers)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
 
-IF(${VFCPU_USE_METIS} AND METIS_INCLUDEDIR)
-   target_include_directories(${library_name} PUBLIC ${METIS_INCLUDEDIR})
-ENDIF()
-
-target_include_directories(${library_name} PRIVATE ${ZOLTAN_INCLUDEDIR})
 
 IF(${VFCPU_USE_VTK})
    target_include_directories(${library_name} PRIVATE ${VTK_INCLUDE_DIRS})
@@ -52,5 +47,3 @@ ENDIF()
 # if(BUILD_USE_MPI)
     target_link_libraries(${library_name} PRIVATE MPI::MPI_CXX)
 # endif()
-
-
