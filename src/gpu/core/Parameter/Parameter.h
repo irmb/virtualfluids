@@ -51,7 +51,7 @@
 
 struct curandStateXORWOW;
 using curandState = struct curandStateXORWOW;
-namespace vf:: basics
+namespace vf::basics
 {
 class ConfigurationFile;
 }

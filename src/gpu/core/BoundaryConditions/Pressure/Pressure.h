@@ -20,55 +20,23 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
 //
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityFactory.h
-//! \ingroup TurbulentViscosity
-//! \author Henrik Asmuth
-//=======================================================================================
-#ifndef TurbulenceModelFactory_H
-#define TurbulenceModelFactory_H
-
-#include <functional>
-#include <map>
-#include <string>
-#include <variant>
-#include <memory>
+//! \author Martin Schoenherr, Anna Wellmann
+//======================================================================================
+#ifndef Pressure_H
+#define Pressure_H
 
 #include "LBM/LB.h"
 
-namespace vf::basics
-{
-class ConfigurationFile;
-}
+struct LBMSimulationParameter;
 
-#include <lbm/collision/TurbulentViscosity.h>
+void PressureNonEquilibriumIncompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-class Parameter;
-
-using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
-
-class TurbulenceModelFactory
-{
-public:
-    TurbulenceModelFactory(std::shared_ptr<Parameter> parameter): para(parameter) {}
-
-    void setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel);
-
-    void setModelConstant(real modelConstant);
-
-    void readConfigFile(const vf::basics::ConfigurationFile &configData);
-
-    void runTurbulenceModelKernel(const int level) const;
-
-private:
-    vf::lbm::TurbulenceModel turbulenceModel = vf::lbm::TurbulenceModel::None;
-    TurbulenceModelKernel turbulenceModelKernel = nullptr;
-    std::shared_ptr<Parameter> para;
-};
+void PressureNonEquilibriumCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 #endif
