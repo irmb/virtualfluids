@@ -1,20 +1,22 @@
 #include "UpdateGrid27.h"
+
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include "Communication/ExchangeData27.h"
-#include "Logger.h"
-#include "Parameter/CudaStreamManager.h"
-#include "Kernel/ADKernelManager.h"
-#include "GridScaling/GridScalingKernelManager.h"
+#include <logger/Logger.h>
+
+#include <parallel/Communicator.h>
+
 #include "BoundaryConditions/BoundaryConditionKernelManager.h"
-#include "TurbulenceModels/TurbulenceModelFactory.h"
+#include "Communication/ExchangeData27.h"
+#include "GridScaling/GridScalingKernelManager.h"
+#include "Kernel/ADKernelManager.h"
 #include "Kernel/Kernel.h"
+#include "Parameter/CudaStreamManager.h"
+#include "TurbulenceModels/TurbulenceModelFactory.h"
 
 #include "CollisionStrategy.h"
 #include "RefinementStrategy.h"
-
-#include <parallel/Communicator.h>
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
