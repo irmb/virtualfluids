@@ -74,11 +74,12 @@ int main(int argc, char* argv[])
         const real length = 1.0;
         const real reynoldsNumber = 1000.0;
         const real velocity = 1.0;
-        real velocityLB = 0.05; // LB units
         const uint numberOfNodesX = 64;
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
+
+        real velocityLB = 0.05; // LB units
 
         vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv);
 
