@@ -92,9 +92,9 @@ void K15CompressibleNavierStokes::calculate(int step)
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
 
-//      LBMReal forcingX1 = 0;
-//      LBMReal forcingX2 = 0;
-//      LBMReal forcingX3 = 0;
+//      real forcingX1 = 0;
+//      real forcingX2 = 0;
+//      real forcingX3 = 0;
    }
    /////////////////////////////////////
 
@@ -459,7 +459,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   // Cumulants
                   ////////////////////////////////////////////////////////////////////////////////////
  
-                  //LBMReal OxxPyyPzz = one; // bulk viscosity
+                  //real OxxPyyPzz = one; // bulk viscosity
 
                   ////////////////////////////////////////////////////////////
                   //3.
@@ -854,7 +854,7 @@ void K15CompressibleNavierStokes::calculate(int step)
                   real drho_post = (mfaaa+mfaac+mfaca+mfcaa+mfacc+mfcac+mfccc+mfcca)
                      +(mfaab+mfacb+mfcab+mfccb)+(mfaba+mfabc+mfcba+mfcbc)+(mfbaa+mfbac+mfbca+mfbcc)
                      +(mfabb+mfcbb)+(mfbab+mfbcb)+(mfbba+mfbbc)+mfbbb;
-                  //LBMReal dif = fabs(rho - rho_post);
+                  //real dif = fabs(rho - rho_post);
                   real dif = drho - drho_post;
 #ifdef SINGLEPRECISION
                   if (dif > 10.0E-7 || dif < -10.0E-7)

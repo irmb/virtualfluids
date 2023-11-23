@@ -82,9 +82,9 @@ void K16IncompressibleNavierStokes::calculate(int step)
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
 
-//      LBMReal forcingX1 = 0;
-//      LBMReal forcingX2 = 0;
-//      LBMReal forcingX3 = 0;
+//      real forcingX1 = 0;
+//      real forcingX2 = 0;
+//      real forcingX3 = 0;
    }
    /////////////////////////////////////
 
@@ -475,9 +475,9 @@ void K16IncompressibleNavierStokes::calculate(int step)
                real O6        = c1o1;
 
                //Cum 4.
-               //LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
-               //LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
-               //LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
+               //real CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
+               //real CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
+               //real CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
                real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab);
                real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb);

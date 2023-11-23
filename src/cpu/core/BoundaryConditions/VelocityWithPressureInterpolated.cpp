@@ -83,15 +83,15 @@ void VelocityWithPressureInterpolated::applyBC()
         if (minX1 <= nX1 && maxX1 > nX1 && minX2 <= nX2 && maxX2 > nX2 && minX3 <= nX3 && maxX3 > nX3) {
             if (bcArray->isSolid(nX1, nX2, nX3)) {
                 const int invDir = D3Q27System::INVDIR[fdir];
-                //LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
+                //real q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
                 real velocity = bcPtr->getBoundaryVelocity(fdir);
                 
-                //LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 -
+                //real fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 -
                 //collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
                 //q))-drho*D3Q27System::WEIGTH[invDir];
 
                 // if q=1
-                // LBMReal fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
+                // real fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
                 // q))-drho*D3Q27System::WEIGTH[invDir];
                 real fReturn = (f[fdir] + f[invDir] - velocity * rho) / vf::basics::constant::c2o1 - drho * D3Q27System::WEIGTH[invDir];
 

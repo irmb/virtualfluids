@@ -35,44 +35,44 @@ void run()
       //string  pathname = "d:/temp/ConvectionOfVortex_0.003_square";
       //int     endTime = 20;
       //double  outTime = 10;
-      //LBMReal dx =  0.003;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6;
+      //real dx =  0.003;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6;
 
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.0015 mm
       //string  pathname = "d:/temp/ConvectionOfVortex_0.0015";
       //double  endTime = 40;
       //double  outTime = 40;
-      //LBMReal dx =  0.0015;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*2.0;
+      //real dx =  0.0015;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6*2.0;
       ////////////////////////////////////////////////////////////////////////////
       //dx_coarse = 0.00075 mm
 
       //string  pathname = "d:/temp/ConvectionOfVortex_0.00075_4th_moments";
       //double  endTime = 2000;
       //double  outTime = 10;
-      //LBMReal dx =  0.00075;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*4.0;
+      //real dx =  0.00075;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6*4.0;
       //double yFactor = 4.0;
 
       //string  pathname = "d:/temp/ConvectionOfVortex_0.00075_moments";
       //double  endTime = 160;
       //double  outTime = 160;
-      //LBMReal dx =  0.00075;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*4.0;
+      //real dx =  0.00075;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6*4.0;
 
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.000375 mm
       //string  pathname = "d:/temp/ConvectionOfVortex_0.000375";
       //double  endTime = 80;
       //double  outTime = 80;
-      //LBMReal dx =  0.00075;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*8.0;
+      //real dx =  0.00075;
+      //real rhoLB = 0.0;
+      //real nuLB = 8.66025e-6*8.0;
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());

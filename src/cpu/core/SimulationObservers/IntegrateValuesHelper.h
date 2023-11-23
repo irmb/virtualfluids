@@ -51,8 +51,8 @@ public:
     real getVx2() { return sVx2; }
     real getVx3() { return sVx3; }
     real getCellsVolume() { return sCellVolume; }
-    //  LBMReal getVm() { return sVm; }
-    // LBMReal getPress() {return sPress;}
+    //  real getVm() { return sVm; }
+    // real getPress() {return sPress;}
     real getAvVx1() { return sAvVx1; }
     real getAvVx2() { return sAvVx2; }
     real getAvVx3() { return sAvVx3; }

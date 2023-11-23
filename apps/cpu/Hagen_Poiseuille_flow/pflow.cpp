@@ -56,7 +56,7 @@ using namespace std;
 //      const int blocknx2 = blocknx[1];
 //      const int blocknx3 = blocknx[2];
 //
-//      LBMReal rhoLB = 0.0;
+//      real rhoLB = 0.0;
 //
 //      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 //
@@ -325,7 +325,7 @@ void pflowdp(string configname)
       SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
-      LBMReal rhoLB = 0.0;
+      real rhoLB = 0.0;
       double rhoLBinflow = dpLB * 3.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
@@ -349,7 +349,7 @@ void pflowdp(string configname)
       double Re = (4 * h * Umax) / (3 * nuLB);
 
       //bc
-      LBMReal uLB = 0.01;
+      real uLB = 0.01;
       mu::Parser fct;
       fct.SetExpr("U");
       fct.DefineConst("U", uLB);

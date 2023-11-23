@@ -58,9 +58,9 @@ void run(string configname)
          }
 }
 
-      LBMReal dLB = length[1] / dx;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = (uLB*dLB) / Re;
+      real dLB = length[1] / dx;
+      real rhoLB = 0.0;
+      real nuLB = (uLB*dLB) / Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
