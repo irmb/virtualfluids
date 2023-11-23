@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LBKernelManager.cpp
-//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #include <cuda_runtime.h>
@@ -44,6 +42,7 @@
 #include "Parameter/Parameter.h"
 
 #include "BoundaryConditions/Outflow/Outflow.h"
+#include "BoundaryConditions/Pressure/Pressure.h"
 #include "GPU/GPU_Interface.h"
 
 BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)

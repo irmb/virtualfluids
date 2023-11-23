@@ -591,10 +591,6 @@ void QPressDevOld27(unsigned int numberOfThreads,
                                unsigned long long numberOfLBnodes, 
                                bool isEvenTimestep);
 
-void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
 void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QPressDevZero27(unsigned int numberOfThreads,

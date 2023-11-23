@@ -4,6 +4,7 @@
 #include <variant>
 
 #include "BoundaryConditions/Outflow/Outflow.h"
+#include "BoundaryConditions/Pressure/Pressure.h"
 #include "GPU/GPU_Interface.h"
 
 
@@ -132,10 +133,10 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
             return QPressDevEQZ27;
             break;
         case PressureBC::PressureNonEquilibriumIncompressible:
-            return QPressDevIncompNEQ27;
+            return PressureNonEquilibriumIncompressible;
             break;
         case PressureBC::PressureNonEquilibriumCompressible:
-            return QPressDevNEQ27;
+            return PressureNonEquilibriumCompressible;
             break;
         case PressureBC::OutflowNonReflective:
             return OutflowNonReflecting;

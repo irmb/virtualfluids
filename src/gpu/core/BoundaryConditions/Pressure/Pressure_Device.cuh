@@ -28,55 +28,38 @@
 //
 //! \author Martin Schoenherr, Anna Wellmann
 //======================================================================================
+#ifndef Pressure_Device_H
+#define Pressure_Device_H
+
+#include <cuda.h>
 #include <cuda_runtime.h>
-#include <helper_functions.h>
-#include <helper_cuda.h>
 
 #include "LBM/LB.h"
-#include <cuda_helper/CudaGrid.h>
 
-#include "BoundaryConditions/Outflow/Outflow_Device.cuh"
-#include "Parameter/Parameter.h"
+__global__ void PressureNonEquilibriumIncompressible_Device( 
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
-void OutflowNonReflecting(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+__global__ void PressureNonEquilibriumCompressible_Device(
+    real* rhoBC,
+    real* distribution,
+    int* bcNodeIndices,
+    int* bcNeighborIndices,
+    int numberOfBCnodes,
+    real omega1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
-    OutflowNonReflecting_Device<<< grid, threads >>> (
-        boundaryCondition->RhoBC,
-        parameterDevice->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep,
-        vf::lbm::dir::dP00);
-    getLastCudaError("OutflowNonReflecting_Device execution failed");
-}
-
-void OutflowNonReflectingPressureCorrection(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
-    OutflowNonReflectingPressureCorrection_Device<<< grid, threads >>> (
-        boundaryCondition->RhoBC,
-        parameterDevice->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep,
-        vf::lbm::dir::dP00,
-        parameterDevice->outflowPressureCorrectionFactor);
-    getLastCudaError("OutflowNonReflectingPressureCorrection_Device execution failed");
-}
+#endif

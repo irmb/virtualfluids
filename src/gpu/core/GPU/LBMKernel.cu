@@ -2259,46 +2259,6 @@ void QPressDevOld27(
     getLastCudaError("QPressDeviceOld27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
-    QPressDeviceIncompNEQ27<<< grid, threads >>> (
-        boundaryCondition->RhoBC,
-        parameterDevice->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep);
-    getLastCudaError("QPressDeviceIncompNEQ27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
-    QPressDeviceNEQ27<<< grid, threads >>> (
-        boundaryCondition->RhoBC,
-        parameterDevice->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep);
-    getLastCudaError("QPressDevNEQ27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
