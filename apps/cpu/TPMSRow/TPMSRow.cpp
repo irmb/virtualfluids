@@ -447,7 +447,8 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
         // set connectors
-        SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
+        //SPtr<Interpolator> iProcessor(new CompressibleOffsetInterpolator());
+        SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
         //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu, iProcessor);
         OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
