@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
         const real length = 1.0;
         const real reynoldsNumber = 1000.0;
         const real velocity = 1.0;
-        const real velocityLB = 0.05; // LB units
+        real velocityLB = 0.05; // LB units
         const uint numberOfNodesX = 64;
 
         const uint timeStepOut = 1000;
@@ -88,6 +88,9 @@ int main(int argc, char* argv[])
 
         if (config.contains("output_path"))
             path = config.getValue<std::string>("output_path");
+
+        if (config.contains("velocityLB"))
+            velocityLB = config.getValue<real>("velocityLB");
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
