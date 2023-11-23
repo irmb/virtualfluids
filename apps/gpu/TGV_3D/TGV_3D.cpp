@@ -31,6 +31,9 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #define _USE_MATH_DEFINES
+
+#include <basics/config/ConfigurationFile.h>
+
 #include <exception>
 #include <filesystem>
 #include <fstream>
