@@ -9,7 +9,7 @@ REFERENCE_DATA_DIR=regression_tests/gpu/DrivenCavity_2Levels
 CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75"
 
 # 3. define the application to be executed
-APPLICATION=./build/bin/DrivenCavity
+APPLICATION="./build/bin/DrivenCavity ./apps/gpu/DrivenCavity/drivencavity_2level.cfg"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/DrivenCavity

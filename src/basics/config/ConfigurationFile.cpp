@@ -1,126 +1,106 @@
 #include "ConfigurationFile.h"
 
-
+#include <filesystem>
+#include <fstream>
 #include <map>
-#include <vector>
 #include <sstream>
 #include <string>
-#include <fstream>
-#include <iostream>
-#include <stdlib.h>
-#include <filesystem>
+#include <vector>
 
 #include <basics/utilities/UbException.h>
-
 
 namespace vf::basics
 {
 
 void ConfigurationFile::clear()
 {
-   data.clear();
+    data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
 bool ConfigurationFile::load(const std::string& file)
 {
-   std::ifstream inFile(file.c_str());
+    std::ifstream inFile(file.c_str());
 
-   if (!inFile.good())
-   {
-      UB_THROW(UbException(UB_EXARGS, "Cannot read configuration file " + file + "! Your current directory is " + std::filesystem::current_path().string() + "."));
-   }
+    if (!inFile.good()) {
+        UB_THROW(UbException(UB_EXARGS, "Cannot read configuration file " + file + "! Your current directory is " +
+                                            std::filesystem::current_path().string() + "."));
+    }
 
-   while (inFile.good() && ! inFile.eof())
-   {
-      std::string line;
-      getline(inFile, line);
+    while (inFile.good() && !inFile.eof()) {
+        std::string line;
+        getline(inFile, line);
 
-      // filter out comments
-      if (!line.empty())
-      {
-         size_t pos = line.find('#');
+        // filter out comments
+        if (!line.empty()) {
+            size_t pos = line.find('#');
 
-         if (pos != std::string::npos)
-         {
-            line = line.substr(0, pos);
-         }
-      }
-
-      // split line into key and value
-      if (!line.empty())
-      {
-         size_t pos = line.find('=');
-
-         if (pos != std::string::npos)
-         {
-            std::string key = trim(line.substr(0, pos));
-            std::string value = trim(line.substr(pos + 1));
-
-            if (!key.empty() && !value.empty())
-            {
-               data[key] = value;
+            if (pos != std::string::npos) {
+                line = line.substr(0, pos);
             }
-         }
-      }
-   }
+        }
 
-   return true;
+        // split line into key and value
+        if (!line.empty()) {
+            size_t pos = line.find('=');
+
+            if (pos != std::string::npos) {
+                std::string key = trim(line.substr(0, pos));
+                std::string value = trim(line.substr(pos + 1));
+
+                if (!key.empty() && !value.empty()) {
+                    data[key] = value;
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
 bool ConfigurationFile::contains(const std::string& key) const
 {
-   return data.find(key) != data.end();
+    return data.find(key) != data.end();
 }
 //////////////////////////////////////////////////////////////////////////
 std::string ConfigurationFile::getValue(const std::string& key) const
 {
-   std::map<std::string, std::string>::const_iterator iter = data.find(key);
+    std::map<std::string, std::string>::const_iterator iter = data.find(key);
 
-   if (iter != data.end())
-   {
-      return iter->second;
-   }
-   else
-   {
-      UB_THROW(UbException(UB_EXARGS, "The parameter \"" + key + "\" is missing!"));
-   }
+    if (iter != data.end()) {
+        return iter->second;
+    }
+    UB_THROW(UbException(UB_EXARGS, "The parameter \"" + key + "\" is missing!"));
 }
 //////////////////////////////////////////////////////////////////////////
 std::string ConfigurationFile::trim(const std::string& str)
 {
-   size_t first = str.find_first_not_of(" \t\n\r");
+    size_t first = str.find_first_not_of(" \t\n\r");
 
-   if (first != std::string::npos)
-   {
-      size_t last = str.find_last_not_of(" \t\n\r");
+    if (first != std::string::npos) {
+        size_t last = str.find_last_not_of(" \t\n\r");
 
-      return str.substr(first, last - first + 1);
-   }
-   else
-   {
-      return "";
-   }
+        return str.substr(first, last - first + 1);
+    }
+    return "";
 }
 //////////////////////////////////////////////////////////////////////////
-void ConfigurationFile::split(std::vector<std::string>& lst, const std::string& input, const std::string& separators, bool remove_empty) const
+void ConfigurationFile::split(std::vector<std::string>& lst, const std::string& input, const std::string& separators,
+                              bool remove_empty) const
 {
-   std::ostringstream word;
-   for (size_t n = 0; n < input.size(); ++n)
-   {
-      if (std::string::npos == separators.find(input[n]))
-         word << input[n];
-      else
-      {
-         if (!word.str().empty() || !remove_empty)
-            lst.push_back(word.str());
-         word.str("");
-      }
-   }
-   if (!word.str().empty() || !remove_empty)
-      lst.push_back(word.str());
+    std::ostringstream word;
+    for (size_t n = 0; n < input.size(); ++n) {
+        if (std::string::npos == separators.find(input[n]))
+            word << input[n];
+        else {
+            if (!word.str().empty() || !remove_empty)
+                lst.push_back(word.str());
+            word.str("");
+        }
+    }
+    if (!word.str().empty() || !remove_empty)
+        lst.push_back(word.str());
 }
 //////////////////////////////////////////////////////////////////////////
 
-
-}
+} // namespace vf::basics

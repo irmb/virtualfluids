@@ -1,10 +1,15 @@
-#include <basics/writer/WbWriterVtkXmlBinary.h>
-#include <lbm/constants/D3Q27.h>
 #include "DistributionDebugWriter.h"
-#include "Parameter/Parameter.h"
-#include "WriterUtilities.h"
+
+#include <basics/writer/WbWriterVtkXmlBinary.h>
+
+#include <logger/Logger.h>
+
+#include <lbm/constants/D3Q27.h>
+
 #include "FilePartCalculator.h"
 #include "GPU/CudaMemoryManager.h"
+#include "Parameter/Parameter.h"
+#include "WriterUtilities.h"
 
 using namespace vf::lbm::dir;
 

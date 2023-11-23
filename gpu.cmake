@@ -11,7 +11,6 @@ add_subdirectory(src/gpu/core)
 
 if(BUILD_VF_ALL_SAMPLES)
     list(APPEND USER_APPS
-    "apps/gpu/DrivenCavityUniform"
     "apps/gpu/DrivenCavityMultiGPU"
     "apps/gpu/ActuatorLine"
     "apps/gpu/SphereScaling" 

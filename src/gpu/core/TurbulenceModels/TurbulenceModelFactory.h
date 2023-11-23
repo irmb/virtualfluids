@@ -40,7 +40,11 @@
 #include <memory>
 
 #include "LBM/LB.h"
-#include <basics/config/ConfigurationFile.h>
+
+namespace vf::basics
+{
+class ConfigurationFile;
+}
 
 #include <lbm/collision/TurbulentViscosity.h>
 
@@ -51,7 +55,6 @@ using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
 class TurbulenceModelFactory
 {
 public:
-    
     TurbulenceModelFactory(std::shared_ptr<Parameter> parameter): para(parameter) {}
 
     void setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel);
@@ -66,7 +69,6 @@ private:
     vf::lbm::TurbulenceModel turbulenceModel = vf::lbm::TurbulenceModel::None;
     TurbulenceModelKernel turbulenceModelKernel = nullptr;
     std::shared_ptr<Parameter> para;
-
 };
 
 #endif
