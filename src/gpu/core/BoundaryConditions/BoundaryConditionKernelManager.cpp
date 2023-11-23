@@ -41,8 +41,10 @@
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
-#include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+
+#include "BoundaryConditions/Outflow/Outflow.h"
+#include "GPU/GPU_Interface.h"
 
 BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {
@@ -321,7 +323,7 @@ void BoundaryConditionKernelManager::runGeoBCKernelPost(const int level) const
 void BoundaryConditionKernelManager::runOutflowBCKernelPre(const int level) const{
     if (para->getParD(level)->outflowBC.numberOfBCnodes > 0)
     {
-        QPressNoRhoDev27(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
+        OutflowNonReflecting(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
 
         // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
         // if (  myid == numprocs - 1)

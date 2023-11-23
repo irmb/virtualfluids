@@ -781,33 +781,6 @@ __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      unsigned long long numberOfLBnodes,
                                                      bool isEvenTimestep);
 
-__global__ void QPressNoRhoDevice27(  real* rhoBC,
-                                                 real* distributions,
-                                                 int* k_Q,
-                                                 int* k_N,
-                                                 int numberOfBCnodes,
-                                                 real om1,
-                                                 unsigned int* neighborX,
-                                                 unsigned int* neighborY,
-                                                 unsigned int* neighborZ,
-                                                 unsigned long long numberOfLBnodes,
-                                                 bool isEvenTimestep,
-                                                 int direction);
-
-__global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
-                                            real* distributions,
-                                            int* k_Q,
-                                            int* k_N,
-                                            int numberOfBCnodes,
-                                            real om1,
-                                            unsigned int* neighborX,
-                                            unsigned int* neighborY,
-                                            unsigned int* neighborZ,
-                                            unsigned long long numberOfLBnodes,
-                                            bool isEvenTimestep,
-                                            int direction,
-                                            real densityCorrectionFactor);
-
 __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
                                                          real* DD,
                                                          int* k_Q,

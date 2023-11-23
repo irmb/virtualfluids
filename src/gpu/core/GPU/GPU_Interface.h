@@ -576,10 +576,6 @@ void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      unsigned long long numberOfLBnodes, 
                                      bool isEvenTimestep);
 
-void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
 void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QPressDevOld27(unsigned int numberOfThreads,

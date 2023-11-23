@@ -2208,49 +2208,6 @@ void QPressDevDirDepBot27(
     getLastCudaError("QPressDeviceDirDepBot27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
-    QPressNoRhoDevice27<<< grid, threads >>> (
-        boundaryCondition->RhoBC,
-        parameterDevice->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep,
-        vf::lbm::dir::dP00);
-    getLastCudaError("QPressNoRhoDevice27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
-
-    QPressZeroRhoOutflowDevice27<<< grid, threads >>> (
-        boundaryCondition->RhoBC,
-        parameterDevice->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep,
-        vf::lbm::dir::dP00,
-        parameterDevice->outflowPressureCorrectionFactor);
-    getLastCudaError("QPressZeroRhoOutflowDevice27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
