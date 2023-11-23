@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LBKernelManager.cpp
-//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #include <cuda_runtime.h>
@@ -41,8 +39,11 @@
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
-#include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+
+#include "BoundaryConditions/Outflow/Outflow.h"
+#include "BoundaryConditions/Pressure/Pressure.h"
+#include "GPU/GPU_Interface.h"
 
 BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {
@@ -321,7 +322,7 @@ void BoundaryConditionKernelManager::runGeoBCKernelPost(const int level) const
 void BoundaryConditionKernelManager::runOutflowBCKernelPre(const int level) const{
     if (para->getParD(level)->outflowBC.numberOfBCnodes > 0)
     {
-        QPressNoRhoDev27(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
+        OutflowNonReflecting(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
 
         // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
         // if (  myid == numprocs - 1)
