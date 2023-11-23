@@ -123,14 +123,14 @@ void run(string configname)
         // BC visitor
         BoundaryConditionsBlockVisitor bcVisitor;
         // bcVisitor.addBC(cubeNoslipAdapter);
-        bcVisitor.addBC(tpmsNoslipAdapter);
+        //bcVisitor.addBC(tpmsNoslipAdapter);
         //bcVisitor.addBC(funnelNoslipAdapter);
-        bcVisitor.addBC(xMinApr);
-        bcVisitor.addBC(xMaxApr);
+        //bcVisitor.addBC(xMinApr);
+        //bcVisitor.addBC(xMaxApr);
         //bcVisitor.addBC(yMinApr);
         //bcVisitor.addBC(yMaxApr);
-        bcVisitor.addBC(zMinApr);
-        bcVisitor.addBC(zMaxApr);
+        //bcVisitor.addBC(zMinApr);
+        //bcVisitor.addBC(zMaxApr);
         //bcVisitor.addBC(zMinFunnelApr);
         //bcVisitor.addBC(zMaxFunnelApr);
 
