@@ -61,8 +61,8 @@ void VelocityNonReflecting::applyBC()
  //   using namespace UbMath;
     using namespace vf::basics::constant;
 
-    LBMReal f[ENDF + 1];
-    LBMReal ftemp[ENDF + 1];
+    real f[ENDF + 1];
+    real ftemp[ENDF + 1];
 
     int nx1       = x1;
     int nx2       = x2;
@@ -94,20 +94,20 @@ void VelocityNonReflecting::applyBC()
     distributions->getPreCollisionDistribution(f, x1, x2, x3);
     distributions->getPreCollisionDistribution(ftemp, nx1, nx2, nx3);
 
-    LBMReal rho, vx1, vx2, vx3;
+    real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     //vx1                  = 0.;
-    LBMReal BCVeloWeight = c1o2;
-    // LBMReal velocity     = 0.004814077025232405; 
-     // LBMReal velocity     = 0.00057735;
-    //LBMReal velocity = 0.04; 
-      // LBMReal velocity = 0.01; 
-     // LBMReal velocity = 1./112.; 
-    // LBMReal velocity = 1./126.; 
-     LBMReal velocity = c1o100/2;
-     // LBMReal velocity = 0.005; 
-    //LBMReal delf         =(-velocity+vx1)*0.5 ;
-    LBMReal delf; 
+    real BCVeloWeight = c1o2;
+    // real velocity     = 0.004814077025232405; 
+     // real velocity     = 0.00057735;
+    //real velocity = 0.04; 
+      // real velocity = 0.01; 
+     // real velocity = 1./112.; 
+    // real velocity = 1./126.; 
+     real velocity = c1o100/2;
+     // real velocity = 0.005; 
+    //real delf         =(-velocity+vx1)*0.5 ;
+    real delf; 
 
     switch (direction) {
         case dP00:

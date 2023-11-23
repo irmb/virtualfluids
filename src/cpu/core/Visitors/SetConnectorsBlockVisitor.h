@@ -52,7 +52,8 @@
 #include "ThreeDistributionsFullVectorConnector.h"
 #include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "ThreeDistributionsDoubleGhostLayerFullVectorConnector.h"
-#include <basics/transmitter/TbTransmitterLocal.h>
+
+#include <parallel/transmitter/TbTransmitterLocal.h>
 
 //! \brief  A class sets connectors between blocks.
 template <class T1, class T2>

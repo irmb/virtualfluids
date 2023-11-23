@@ -26,30 +26,15 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TbTransmitterLocal.h
-//! \ingroup transmitter
 //! \author Soeren Freudiger, Sebastian Geller
 //=======================================================================================
-#ifndef TOTRANSMITTERLOCAL_H
-#define TOTRANSMITTERLOCAL_H
+#ifndef PARALLEL_TOTRANSMITTERLOCAL_H
+#define PARALLEL_TOTRANSMITTERLOCAL_H
 
-#include <PointerDefinitions.h>
-#include <basics/transmitter/TbTransmitter.h>
+#include <basics/PointerDefinitions.h>
 #include <basics/utilities/UbException.h>
 
-/*================================================================================*/
-/*   TbLocalTransmitter, TbVectorSenderLocal, TbVectorReceiverLocal               */
-/*                                                                                */
-/**
-This Class provides the base for exception handling.
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0 - 08.11.07
-*/
-
-/*
-usage: ...
-*/
+#include "parallel/transmitter/TbTransmitter.h"
 
 //////////////////////////////////////////////////////////////////////////
 // LocalTransmitter lokalen Datenaustausch

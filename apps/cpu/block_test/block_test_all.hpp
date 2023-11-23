@@ -106,12 +106,12 @@ void block_test_all(const char *cstr)
       double L2, L3, H;
       L2 = L3 = H = gridNx2*blocknx1;
 
-      LBMReal radius = 3;
-      LBMReal uLB = 0.05;
-      LBMReal Re = 300.0;
-      LBMReal rhoLB = 1.0;
-      LBMReal l = L2 / dx;
-      LBMReal nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
+      real radius = 3;
+      real uLB = 0.05;
+      real Re = 300.0;
+      real rhoLB = 1.0;
+      real l = L2 / dx;
+      real nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
 
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());

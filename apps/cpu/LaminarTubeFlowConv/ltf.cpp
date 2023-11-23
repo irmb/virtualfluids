@@ -68,9 +68,9 @@ void run(int tn)
       double L2 = y[tn];
       double L3 = z[tn];
 
-      LBMReal dLB = L2;
-      LBMReal rhoLB = 0.0;
-      LBMReal l = L2 / dx;
+      real dLB = L2;
+      real rhoLB = 0.0;
+      real l = L2 / dx;
 
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());

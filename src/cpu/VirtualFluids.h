@@ -43,6 +43,9 @@
 #include <parallel/Communicator.h>
 #include <parallel/MPICommunicator.h>
 #include <parallel/NullCommunicator.h>
+#include <parallel/transmitter/TbTransmitter.h>
+#include <parallel/transmitter/TbTransmitterLocal.h>
+#include <parallel/transmitter/TbTransmitterMpiPool.h>
 
 #include <basics/PointerDefinitions.h>
 
@@ -57,9 +60,6 @@
 #include <basics/memory/MbSmartPtr.h>
 #include <basics/memory/MbSmartPtrBase.h>
 #include <basics/objects/ObObject.h>
-#include <basics/transmitter/TbTransmitter.h>
-#include <basics/transmitter/TbTransmitterLocal.h>
-#include <basics/transmitter/TbTransmitterMpiPool.h>
 #include <basics/utilities/UbComparators.h>
 #include <basics/utilities/UbEqual.h>
 #include <basics/utilities/UbException.h>
