@@ -3,6 +3,7 @@
 #include <helper_cuda.h>
 
 #include "Communication/ExchangeData27.h"
+#include "Logger.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Kernel/ADKernelManager.h"
 #include "GridScaling/GridScalingKernelManager.h"
@@ -75,10 +76,7 @@ void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *tagged
     if (taggedFluidNodeIndices != nullptr && numberOfTaggedFluidNodes != 0)
         kernels.at(level)->runOnIndices(taggedFluidNodeIndices, numberOfTaggedFluidNodes, collisionTemplate, stream);
     else
-        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not defined"
-                      << std::endl;
-
-    //////////////////////////////////////////////////////////////////////////
+        VF_LOG_WARNING("In collision: fluidNodeIndices or numberOfFluidNodes not defined");
 
     if (para->getDiffOn())
         collisionAdvectionDiffusion(level);
@@ -119,7 +117,7 @@ void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
     // 3D domain decomposition convection diffusion
     if (para->getDiffOn()) {
         if (para->getUseStreams())
-            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+            VF_LOG_WARNING("Cuda streams not yet implemented for convection diffusion");
         exchangePostCollDataADXGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADYGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
@@ -169,7 +167,7 @@ void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useRed
     // 3D domain decomposition convection diffusion
     if (para->getDiffOn()) {
         if (para->getUseStreams())
-            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+            VF_LOG_WARNING("Warning: Cuda streams not yet implemented for convection diffusion");
         exchangePostCollDataADXGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADYGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
@@ -191,7 +189,7 @@ void UpdateGrid27::exchangeMultiGPUAfterFtoC(int level, CudaStreamIndex streamIn
     // 3D domain decomposition convection diffusion
     if (para->getDiffOn()) {
         if (para->getUseStreams())
-            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+            VF_LOG_WARNING("Warning: Cuda streams not yet implemented for convection diffusion");
         exchangePostCollDataADXGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADYGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);

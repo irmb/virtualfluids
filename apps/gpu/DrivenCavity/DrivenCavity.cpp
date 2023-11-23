@@ -26,11 +26,8 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LidDrivenCavity.cpp
-//! \ingroup Applications
-//! \author Martin Schoenherr, Stephan Lenz
+//! \author Martin Schoenherr
 //=======================================================================================
-#define _USE_MATH_DEFINES
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -39,75 +36,81 @@
 #include <stdexcept>
 #include <string>
 
-//////////////////////////////////////////////////////////////////////////
-
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
+#include <basics/config/ConfigurationFile.h>
 
 #include <logger/Logger.h>
 
 #include <parallel/MPICommunicator.h>
 
-//////////////////////////////////////////////////////////////////////////
+#include <GridGenerator/geometries/Cuboid/Cuboid.h>
+#include <GridGenerator/grid/BoundaryConditions/Side.h>
+#include <GridGenerator/grid/GridBuilder/LevelGridBuilder.h>
+#include <GridGenerator/grid/GridBuilder/MultipleGridBuilder.h>
 
-#include "GridGenerator/grid/BoundaryConditions/Side.h"
-#include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
-#include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include <gpu/core/BoundaryConditions/BoundaryConditionFactory.h>
+#include <gpu/core/DataStructureInitializer/GridProvider.h>
+#include <gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h>
+#include <gpu/core/GPU/CudaMemoryManager.h>
+#include <gpu/core/GridScaling/GridScalingFactory.h>
+#include <gpu/core/Kernel/KernelTypes.h>
+#include <gpu/core/LBM/Simulation.h>
+#include <gpu/core/Output/FileWriter.h>
+#include <gpu/core/Parameter/Parameter.h>
 
-//////////////////////////////////////////////////////////////////////////
-
-#include "gpu/core/GridScaling/GridScalingFactory.h"
-#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/core/DataStructureInitializer/GridProvider.h"
-#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "gpu/core/GPU/CudaMemoryManager.h"
-#include "gpu/core/LBM/Simulation.h"
-#include "gpu/core/Output/FileWriter.h"
-#include "gpu/core/Parameter/Parameter.h"
-#include "gpu/core/Kernel/KernelTypes.h"
-
-//////////////////////////////////////////////////////////////////////////
-
-int main()
+int main(int argc, char* argv[])
 {
     try {
-         vf::logging::Logger::initializeLogger();
+        vf::logging::Logger::initializeLogger();
+
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
+
         std::string path("./output/DrivenCavity");
         std::string simulationName("LidDrivenCavity");
 
-        const real L = 1.0;
-        const real Re = 1000.0;
+        const real length = 1.0;
+        const real reynoldsNumber = 1000.0;
         const real velocity = 1.0;
         const real velocityLB = 0.05; // LB units
-        const uint nx = 64;
+        const uint numberOfNodesX = 64;
 
         const uint timeStepOut = 1000;
         const uint timeStepEnd = 10000;
+
+        vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv);
+
+        bool refine = false;
+        if (config.contains("refine"))
+            refine = config.getValue<bool>("refine");
+
+        if (config.contains("output_path"))
+            path = config.getValue<std::string>("output_path");
 
         //////////////////////////////////////////////////////////////////////////
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
-        const real dx = L / real(nx);
-        const real dt  = velocityLB / velocity * dx;
+        const real deltaX = length / real(numberOfNodesX);
+        const real deltaT = velocityLB / velocity * deltaX;
 
         const real vxLB = velocityLB / sqrt(2.0); // LB units
         const real vyLB = velocityLB / sqrt(2.0); // LB units
 
-        const real viscosityLB = nx * velocityLB / Re; // LB units
+        const real viscosityLB = numberOfNodesX * velocityLB / reynoldsNumber; // LB units
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
         //////////////////////////////////////////////////////////////////////////
+
         auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L, 0.5 * L, 0.5 * L, 0.5 * L, dx);
+        gridBuilder->addCoarseGrid(-0.5 * length, -0.5 * length, -0.5 * length, 0.5 * length, 0.5 * length, 0.5 * length, deltaX);
+        if (refine)
+            gridBuilder->addGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1);
 
-        gridBuilder->addGrid(std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25), 1); // add fine grid
         GridScalingFactory scalingFactory = GridScalingFactory();
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
@@ -118,7 +121,7 @@ int main()
         //////////////////////////////////////////////////////////////////////////
         // set parameters
         //////////////////////////////////////////////////////////////////////////
-        SPtr<Parameter> para = std::make_shared<Parameter>();
+        auto para = std::make_shared<Parameter>();
 
         para->setOutputPath(path);
         para->setOutputPrefix(simulationName);
@@ -156,12 +159,11 @@ int main()
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
-        vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
+        vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
         auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
         SPtr<GridProvider> gridGenerator =
             GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
-
 
         //////////////////////////////////////////////////////////////////////////
         // run simulation
@@ -171,14 +173,14 @@ int main()
         printf("\n");
         VF_LOG_INFO("world parameter:");
         VF_LOG_INFO("--------------");
-        VF_LOG_INFO("dt [s]                 = {}", dt);
-        VF_LOG_INFO("world_length   [m]     = {}", L);
+        VF_LOG_INFO("dt [s]                 = {}", deltaT);
+        VF_LOG_INFO("world_length   [m]     = {}", length);
         VF_LOG_INFO("world_velocity [m/s]   = {}", velocity);
-        VF_LOG_INFO("dx [m]                 = {}", dx);
+        VF_LOG_INFO("dx [m]                 = {}", deltaX);
         printf("\n");
         VF_LOG_INFO("LB parameter:");
         VF_LOG_INFO("--------------");
-        VF_LOG_INFO("Re                     = {}", Re);
+        VF_LOG_INFO("Re                     = {}", reynoldsNumber);
         VF_LOG_INFO("lb_velocity [dx/dt]    = {}", velocityLB);
         VF_LOG_INFO("lb_viscosity [dx^2/dt] = {}", viscosityLB);
         VF_LOG_INFO("lb_vx [dx/dt] (lb_velocity/sqrt(2)) = {}", vxLB);
@@ -186,10 +188,10 @@ int main()
         printf("\n");
         VF_LOG_INFO("simulation parameter:");
         VF_LOG_INFO("--------------");
-        VF_LOG_INFO("nx                     = {}", nx);
-        VF_LOG_INFO("ny                     = {}", nx);
-        VF_LOG_INFO("nz                     = {}", nx);
-        VF_LOG_INFO("number of nodes        = {}", nx * nx * nx);
+        VF_LOG_INFO("nx                     = {}", numberOfNodesX);
+        VF_LOG_INFO("ny                     = {}", numberOfNodesX);
+        VF_LOG_INFO("nz                     = {}", numberOfNodesX);
+        VF_LOG_INFO("number of nodes        = {}", numberOfNodesX * numberOfNodesX * numberOfNodesX);
         VF_LOG_INFO("n timesteps            = {}", timeStepOut);
         VF_LOG_INFO("write_nth_timestep     = {}", timeStepEnd);
         VF_LOG_INFO("output_path            = {}", path);
@@ -197,11 +199,11 @@ int main()
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
         sim.run();
 
-    } catch (const spdlog::spdlog_ex &ex) {
+    } catch (const spdlog::spdlog_ex& ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;
-    } catch (const std::bad_alloc &e) {
+    } catch (const std::bad_alloc& e) {
         VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         VF_LOG_CRITICAL("exception: {}", e.what());
     } catch (...) {
         VF_LOG_CRITICAL("Unknown exception!");

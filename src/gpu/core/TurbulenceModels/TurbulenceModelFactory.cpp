@@ -31,6 +31,9 @@
 //! \author Henrik Asmuth
 //=======================================================================================
 #include "LBM/LB.h"
+
+#include <basics/config/ConfigurationFile.h>
+
 #include "TurbulenceModelFactory.h"
 #include "GPU/TurbulentViscosityKernels.h"
 #include "Parameter/Parameter.h"
