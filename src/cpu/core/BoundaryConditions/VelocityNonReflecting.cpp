@@ -101,7 +101,7 @@ void VelocityNonReflecting::applyBC()
         direction = d00M;
         this->velocity = bcPtr->getBoundaryVelocityX3();
     } else
-        UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
+        UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
     distributions->getPreCollisionDistribution(f, x1, x2, x3);
     distributions->getPreCollisionDistribution(ftemp, nx1, nx2, nx3);
