@@ -7,10 +7,10 @@ source ./regression-tests/__regression_test_executer.sh
 REFERENCE_DATA_DIR=regression_tests/gpu/DrivenCavity_uniform
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75 -DUSER_APPS="apps/gpu/DrivenCavityUniform""
+CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75"
 
 # 3. define the application to be executed
-APPLICATION=./build/bin/DrivenCavityUniform
+APPLICATION="./build/bin/DrivenCavity ./apps/gpu/DrivenCavity/drivencavity_1level.cfg"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/DrivenCavity_uniform

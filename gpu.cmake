@@ -1,17 +1,17 @@
 #############################################################
-###                  Core                                 ###
+###                  Libraries                            ###
 #############################################################
 
+add_subdirectory(src/gpu/cuda_helper)
 add_subdirectory(src/gpu/GridGenerator)
 add_subdirectory(src/gpu/core)
 
 #############################################################
-###                  Apps                                 ###
+###                      Apps                             ###
 #############################################################
 
 if(BUILD_VF_ALL_SAMPLES)
     list(APPEND USER_APPS
-    "apps/gpu/DrivenCavityUniform"
     "apps/gpu/DrivenCavityMultiGPU"
     "apps/gpu/ActuatorLine"
     "apps/gpu/SphereScaling" 
