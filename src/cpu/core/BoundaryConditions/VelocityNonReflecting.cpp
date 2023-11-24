@@ -109,14 +109,14 @@ void VelocityNonReflecting::applyBC()
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     //vx1                  = 0.;
-    real BCVeloWeight = c1o2;
+    //real BCVeloWeight = c1o2;
     // real velocity     = 0.004814077025232405; 
      // real velocity     = 0.00057735;
     //real velocity = 0.04; 
       // real velocity = 0.01; 
      // real velocity = 1./112.; 
     // real velocity = 1./126.; 
-     real velocity = c1o100/2;
+     //real velocity = c1o100/2;
      // real velocity = 0.005; 
     //real delf         =(-velocity+vx1)*0.5 ;
     real delf; 
