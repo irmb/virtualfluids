@@ -365,7 +365,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
     VF_LOG_INFO("... done.");
 
-    VF_LOG_INFO("Write vtk files for debugging...");
+    // VF_LOG_INFO("Write vtk files for debugging...");
     // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
     // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
@@ -386,7 +386,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     DistributionDebugWriter::allocateDistributionsOnHost(*cudaMemoryManager);
 #endif
 
-    VF_LOG_INFO("...done");
+    // VF_LOG_INFO("...done");
 
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);

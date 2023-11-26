@@ -10,47 +10,42 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "basics/DataTypes.h"
-#include "basics/PointerDefinitions.h"
-
-#include "basics/StringUtilities/StringUtil.h"
-#include "basics/config/ConfigurationFile.h"
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/StringUtilities/StringUtil.h>
+#include <basics/config/ConfigurationFile.h>
 #include <logger/Logger.h>
+#include <parallel/MPICommunicator.h>
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-
-#include "geometries/Cuboid/Cuboid.h"
-#include "geometries/TriangularMesh/TriangularMesh.h"
-
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
 #include "GridGenerator/io/STLReaderWriter/STLReader.h"
 #include "GridGenerator/io/STLReaderWriter/STLWriter.h"
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
+#include "GridGenerator/utilities/communication.h"
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
 #include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/GridScaling/GridScalingFactory.h"
+#include "gpu/core/Kernel/KernelFactory/KernelFactoryImp.h"
+#include "gpu/core/Kernel/KernelTypes.h"
 #include "gpu/core/LBM/Simulation.h"
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/Parameter/Parameter.h"
-
-#include "gpu/core/Kernel/KernelFactory/KernelFactoryImp.h"
 #include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "gpu/core/GridScaling/GridScalingFactory.h"
-#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/core/Kernel/KernelTypes.h"
-
-#include "gpu/core/GPU/CudaMemoryManager.h"
 
 //////////////////////////////////////////////////////////////////////////
-#include <parallel/MPICommunicator.h>
-#include "utilities/communication.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,22 +53,20 @@
 
 void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
-    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
+    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
+    const auto processID = communicator.getProcessID();
+    const auto numberOfProcesses = communicator.getNumberOfProcesses();
+    SPtr<Parameter> para = std::make_shared<Parameter>(numberOfProcesses, processID, &config);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     GridScalingFactory scalingFactory = GridScalingFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = true;
-    bool useLevels        = true;
-
-    if (para->getNumprocs() == 1) {
-        para->useReducedCommunicationAfterFtoC = false;
-    }
+    const bool useGridGenerator = true;
+    const bool useLevels = true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,67 +74,65 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     const std::string gridPath = "output/";
     std::string simulationName("DrivenCavityMultiGPU");
 
-    const real L = 1.0;
-    const real Re = 1000.0;
+    para->useReducedCommunicationAfterFtoC = para->getNumprocs() != 1;
+
+    const real length = 1.0;
+    const real reynoldsNumber = 1000.0;
     const real velocity = 1.0;
     const real velocityLB = 0.05; // LB units
-    const uint nx = 64;
+    const uint numberOfNodesX = 64;
 
-    // para->setTimestepOut(10000);   // set in config
-    // para->setTimestepEnd(10000);   // set in config
-
-    const real dxGrid      = L / real(nx);
-    const real dt  = velocityLB / velocity * dxGrid;
-    const real vxLB        = velocityLB / (real)sqrt(2.0); // LB units
-    const real vyLB        = velocityLB / (real)sqrt(2.0); // LB units
-    const real viscosityLB = nx * velocityLB / Re;         // LB units
+    const real dxGrid = length / real(numberOfNodesX);
+    const real deltaT = velocityLB / velocity * dxGrid;
+    const real vxLB = velocityLB / (real)sqrt(2.0); // LB units
+    const real viscosityLB = numberOfNodesX * velocityLB / reynoldsNumber;  // LB units
 
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(velocity / velocityLB);
     para->setDensityRatio((real)1.0);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    if (para->getOutputPath() == "output/") {para->setOutputPath(outPath);}
+    para->setOutputPath(outPath);
     para->setOutputPrefix(simulationName);
-
     para->setPrintFiles(true);
-    std::cout << "Write result files to " << para->getFName() << std::endl;
 
     para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
+    vf::logging::Logger::changeLogPath("output/DrivenCavity_Results/vflog_process" + std::to_string(processID) );
+    vf::logging::Logger::initializeLogger();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vf::logging::Logger::changeLogPath(para->getOutputPath());
     VF_LOG_INFO("LB parameters:");
-    VF_LOG_INFO("velocity LB [dx/dt]              = {}", vxLB);
+    VF_LOG_INFO("velocity LB [dx/dt]              = {}", velocityLB);
+    VF_LOG_INFO("vxLB [dx/dt]                     = {}", vxLB);
     VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
     VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
-    VF_LOG_INFO("dt [s]                           = {}", dt);
+    VF_LOG_INFO("dt [s]                           = {}", deltaT);
     VF_LOG_INFO("simulation parameters:");
     VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (useGridGenerator) {
-        const real xGridMin = -0.5 * L;
-        const real xGridMax = 0.5 * L;
-        const real yGridMin = -0.5 * L;
-        const real yGridMax = 0.5 * L;
-        const real zGridMin = -0.5 * L;
-        const real zGridMax = 0.5 * L;
+        const real xGridMin = -0.5 * length;
+        const real xGridMax = 0.5 * length;
+        const real yGridMin = -0.5 * length;
+        const real yGridMax = 0.5 * length;
+        const real zGridMin = -0.5 * length;
+        const real zGridMax = 0.5 * length;
 
-        SPtr<Cuboid> level1 = nullptr;
-        if (useLevels)
-            level1 = std::make_shared<Cuboid>(-0.25 * L, -0.25 * L, -0.25 * L, 0.25 * L, 0.25 * L, 0.25 * L);
+
+        std::shared_ptr<Object> level1 = nullptr;
+        if (useLevels) {
+            level1 = std::make_shared<Cuboid>(-0.25 * length, -0.25 * length, -0.25 * length, 0.25 * length, 0.25 * length, 0.25 * length);
+        }
 
         if (para->getNumprocs() > 1) {
 
             const uint generatePart = communicator.getProcessID();
-            real overlap            = (real)8.0 * dxGrid;
-            gridBuilder->setNumberOfLayers(10, 8);
+            real overlapBetweenSubdomains = (real)8.0 * dxGrid;
 
             const real xSplit = 0.0;
             const real ySplit = 0.0;
@@ -150,11 +141,11 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
             if (communicator.getNumberOfProcesses() == 2) {
 
                 if (generatePart == 0) {
-                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zSplit + overlap,
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zSplit + overlapBetweenSubdomains,
                                                dxGrid);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zSplit - overlap, xGridMax, yGridMax, zGridMax,
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zSplit - overlapBetweenSubdomains, xGridMax, yGridMax, zGridMax,
                                                dxGrid);
                 }
 
@@ -188,7 +179,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                 if (generatePart == 0)
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
                 if (generatePart == 1)
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
@@ -197,19 +188,19 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
             } else if (communicator.getNumberOfProcesses() == 4) {
 
                 if (generatePart == 0) {
-                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, yGridMax,
-                                               zSplit + overlap, dxGrid);
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlapBetweenSubdomains, yGridMax,
+                                               zSplit + overlapBetweenSubdomains, dxGrid);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->addCoarseGrid(xSplit - overlap, yGridMin, zGridMin, xGridMax, yGridMax,
-                                               zSplit + overlap, dxGrid);
+                    gridBuilder->addCoarseGrid(xSplit - overlapBetweenSubdomains, yGridMin, zGridMin, xGridMax, yGridMax,
+                                               zSplit + overlapBetweenSubdomains, dxGrid);
                 }
                 if (generatePart == 2) {
-                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zSplit - overlap, xSplit + overlap, yGridMax,
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zSplit - overlapBetweenSubdomains, xSplit + overlapBetweenSubdomains, yGridMax,
                                                zGridMax, dxGrid);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->addCoarseGrid(xSplit - overlap, yGridMin, zSplit - overlap, xGridMax, yGridMax,
+                    gridBuilder->addCoarseGrid(xSplit - overlapBetweenSubdomains, yGridMin, zSplit - overlapBetweenSubdomains, xGridMax, yGridMax,
                                                zGridMax, dxGrid);
                 }
 
@@ -265,13 +256,13 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                 }
                 if (generatePart == 2) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 }
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                 if (generatePart == 3) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 }
                 if (generatePart == 1) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
@@ -281,35 +272,35 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
             } else if (communicator.getNumberOfProcesses() == 8) {
 
                 if (generatePart == 0) {
-                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
-                                               zSplit + overlap, dxGrid);
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlapBetweenSubdomains, ySplit + overlapBetweenSubdomains,
+                                               zSplit + overlapBetweenSubdomains, dxGrid);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->addCoarseGrid(xGridMin, ySplit - overlap, zGridMin, xSplit + overlap, yGridMax,
-                                               zSplit + overlap, dxGrid);
+                    gridBuilder->addCoarseGrid(xGridMin, ySplit - overlapBetweenSubdomains, zGridMin, xSplit + overlapBetweenSubdomains, yGridMax,
+                                               zSplit + overlapBetweenSubdomains, dxGrid);
                 }
                 if (generatePart == 2) {
-                    gridBuilder->addCoarseGrid(xSplit - overlap, yGridMin, zGridMin, xGridMax, ySplit + overlap,
-                                               zSplit + overlap, dxGrid);
+                    gridBuilder->addCoarseGrid(xSplit - overlapBetweenSubdomains, yGridMin, zGridMin, xGridMax, ySplit + overlapBetweenSubdomains,
+                                               zSplit + overlapBetweenSubdomains, dxGrid);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->addCoarseGrid(xSplit - overlap, ySplit - overlap, zGridMin, xGridMax, yGridMax,
-                                               zSplit + overlap, dxGrid);
+                    gridBuilder->addCoarseGrid(xSplit - overlapBetweenSubdomains, ySplit - overlapBetweenSubdomains, zGridMin, xGridMax, yGridMax,
+                                               zSplit + overlapBetweenSubdomains, dxGrid);
                 }
                 if (generatePart == 4) {
-                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zSplit - overlap, xSplit + overlap, ySplit + overlap,
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zSplit - overlapBetweenSubdomains, xSplit + overlapBetweenSubdomains, ySplit + overlapBetweenSubdomains,
                                                zGridMax, dxGrid);
                 }
                 if (generatePart == 5) {
-                    gridBuilder->addCoarseGrid(xGridMin, ySplit - overlap, zSplit - overlap, xSplit + overlap, yGridMax,
+                    gridBuilder->addCoarseGrid(xGridMin, ySplit - overlapBetweenSubdomains, zSplit - overlapBetweenSubdomains, xSplit + overlapBetweenSubdomains, yGridMax,
                                                zGridMax, dxGrid);
                 }
                 if (generatePart == 6) {
-                    gridBuilder->addCoarseGrid(xSplit - overlap, yGridMin, zSplit - overlap, xGridMax, ySplit + overlap,
+                    gridBuilder->addCoarseGrid(xSplit - overlapBetweenSubdomains, yGridMin, zSplit - overlapBetweenSubdomains, xGridMax, ySplit + overlapBetweenSubdomains,
                                                zGridMax, dxGrid);
                 }
                 if (generatePart == 7) {
-                    gridBuilder->addCoarseGrid(xSplit - overlap, ySplit - overlap, zSplit - overlap, xGridMax, yGridMax,
+                    gridBuilder->addCoarseGrid(xSplit - overlapBetweenSubdomains, ySplit - overlapBetweenSubdomains, zSplit - overlapBetweenSubdomains, xGridMax, yGridMax,
                                                zGridMax, dxGrid);
                 }
 
@@ -434,28 +425,25 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
                 if (generatePart == 4) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 }
                 if (generatePart == 5) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 }
                 if (generatePart == 6) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 }
                 if (generatePart == 7) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
                 }
                 //////////////////////////////////////////////////////////////////////////
             }
-
-            // gridBuilder->writeGridsToVtk(outPath +  "/grid/part" + std::to_string(generatePart) + "_");
-            // gridBuilder->writeArrows(outPath + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
         } else {
@@ -475,11 +463,9 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vyLB, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, vxLB, 0.0);
 
             //////////////////////////////////////////////////////////////////////////
-            gridBuilder->writeGridsToVtk(outPath + "/grid/");
-            // gridBuilder->writeArrows(outPath + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
