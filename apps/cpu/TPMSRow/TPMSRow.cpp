@@ -360,8 +360,8 @@ void run(string configname)
 
             
             // domain decomposition for threads
-            PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-            grid->accept(pqPartVisitor);
+            //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+            //grid->accept(pqPartVisitor);
 
             ppblocks->update(0);
             ppblocks.reset();

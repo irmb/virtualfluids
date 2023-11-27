@@ -304,7 +304,9 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       std::shared_ptr<SimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
+#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
+#endif
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
       simulation->addSimulationObserver(nupsSimulationObserver);
