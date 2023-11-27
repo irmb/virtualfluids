@@ -299,12 +299,6 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
 
     MPI_Info info = MPI_INFO_NULL;
 
-#ifdef HLRN_LUSTRE
-    MPI_Info_create(&info);
-    MPI_Info_set(info, "striping_factor", "40");
-    MPI_Info_set(info, "striping_unit", "4M");
-#endif
-
     // write to the file
     MPI_File file_handler;
     std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";

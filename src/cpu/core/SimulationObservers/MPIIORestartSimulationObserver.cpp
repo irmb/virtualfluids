@@ -365,12 +365,6 @@ void MPIIORestartSimulationObserver::writeDataSet(int step)
 
     MPI_Info info = MPI_INFO_NULL;
 
-#ifdef HLRN_LUSTRE
-    MPI_Info_create(&info);
-    MPI_Info_set(info, "striping_factor", "40");
-    MPI_Info_set(info, "striping_unit", "4M");
-#endif
-
     MPI_File file_handler;
     std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -595,12 +589,6 @@ void MPIIORestartSimulationObserver::write4DArray(int step, Arrays arrayType, st
 
     MPI_Info info = MPI_INFO_NULL;
 
-#ifdef HLRN_LUSTRE
-    MPI_Info_create(&info);
-    MPI_Info_set(info, "striping_factor", "40");
-    MPI_Info_set(info, "striping_unit", "4M");
-#endif
-
     MPI_File file_handler;
     std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -749,12 +737,6 @@ void MPIIORestartSimulationObserver::write3DArray(int step, Arrays arrayType, st
         start = MPI_Wtime();
 
     MPI_Info info = MPI_INFO_NULL;
-
-#ifdef HLRN_LUSTRE
-    MPI_Info_create(&info);
-    MPI_Info_set(info, "striping_factor", "40");
-    MPI_Info_set(info, "striping_unit", "4M");
-#endif
 
     MPI_File file_handler;
     std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
@@ -940,12 +922,6 @@ void MPIIORestartSimulationObserver::writeBoundaryConds(int step)
         start = MPI_Wtime();
 
     MPI_Info info = MPI_INFO_NULL;
-
-#ifdef HLRN_LUSTRE
-    MPI_Info_create(&info);
-    MPI_Info_set(info, "striping_factor", "40");
-    MPI_Info_set(info, "striping_unit", "4M");
-#endif
 
     MPI_File file_handler;
     std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";

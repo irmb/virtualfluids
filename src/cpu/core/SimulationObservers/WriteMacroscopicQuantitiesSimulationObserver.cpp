@@ -145,17 +145,13 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
 {
     real level   = (real)block->getLevel();
 
-    // Diese Daten werden geschrieben:
+    // This data is written:
     datanames.resize(0);
     datanames.push_back("Rho");
     datanames.push_back("Vx");
     datanames.push_back("Vy");
     datanames.push_back("Vz");
-    // datanames.push_back("Press");
     datanames.push_back("Level");
-    // datanames.push_back("BlockID");
-    // datanames.push_back("gamma");
-    // datanames.push_back("collFactor");
 
     data.resize(datanames.size());
 
@@ -165,7 +161,7 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
     real f[D3Q27System::ENDF + 1];
     real vx1, vx2, vx3, rho;
 
-    // knotennummerierung faengt immer bei 0 an!
+    // Node numbering always starts at 0!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
     if (block->getKernel()->getCompressible()) {
@@ -182,27 +178,18 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
     int maxX2 = (int)(distributions->getNX2());
     int maxX3 = (int)(distributions->getNX3());
 
-     //int minX1 = 1;
-     //int minX2 = 1;
-     //int minX3 = 1;
-
-     //int maxX1 = (int)(distributions->getNX1());
-     //int maxX2 = (int)(distributions->getNX2());
-     //int maxX3 = (int)(distributions->getNX3());
-
-    // nummern vergeben und node vector erstellen + daten sammeln
+    // Assign numbers and create node vector + collect data
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
     maxX1 -= 2;
     maxX2 -= 2;
     maxX3 -= 2;
 
-    // D3Q27BoundaryConditionPtr bcPtr;
     int nr = (int)nodes.size();
 
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
-                if (/* !bcArray->isUndefined(ix1, ix2, ix3) &&*/ !bcArray->isSolid(ix1, ix2, ix3)) {
+                if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
                     int index                  = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
                     Vector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);
@@ -211,47 +198,22 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
 
                     distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
-                    //double press = D3Q27System::getPressure(f); // D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
                          UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+",node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        //rho = 999.0;
-                    //if (UbMath::isNaN(press) || UbMath::isInfinity(press))
-                        // UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number
-                        // -1.#INF in block="+block->toString()+",
-                        // node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        //press = 999.0;
                     if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1))
                          UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        //vx1 = 999.0;
                     if (UbMath::isNaN(vx2) || UbMath::isInfinity(vx2))
                          UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        //vx2 = 999.0;
                     if (UbMath::isNaN(vx3) || UbMath::isInfinity(vx3))
                          UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        //vx3 = 999.0;
 
                     data[index++].push_back(rho);
                     data[index++].push_back(vx1);
                     data[index++].push_back(vx2);
                     data[index++].push_back(vx3);
 
-                    // shearRate = D3Q27System::getShearRate(f, collFactor);
-
-                    // real collFactorF = RheologyBinghamModelLBMKernel::getBinghamCollFactor(collFactor, yieldStress,
-                    // shearRate, rho);
-
-                    // data[index++].push_back(shearRate);
-                    // data[index++].push_back(collFactorF);
-
-                    // data[index++].push_back((rho+1.0) * conv->getFactorDensityLbToW() );
-                    // data[index++].push_back(vx1 * conv->getFactorVelocityLbToW());
-                    // data[index++].push_back(vx2 * conv->getFactorVelocityLbToW());
-                    // data[index++].push_back(vx3 * conv->getFactorVelocityLbToW());
-                    // data[index++].push_back((press * conv->getFactorPressureLbToW()) / ((rho+1.0) *
-                    // conv->getFactorDensityLbToW()));
                     data[index++].push_back(level);
-                    // data[index++].push_back(blockID);
                 }
             }
         }
@@ -259,7 +221,7 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
     maxX1 -= 1;
     maxX2 -= 1;
     maxX3 -= 1;
-    // cell vector erstellen
+    // create cell vector 
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {

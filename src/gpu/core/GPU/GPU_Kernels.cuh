@@ -8,12 +8,6 @@
 #ifndef D3Q27_KERNELS_H
 #define D3Q27_KERNELS_H
 
-//random numbers
-#include <curand.h>
-#include <curand_kernel.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
-
 #include "LBM/LB.h"
 
 
@@ -781,33 +775,6 @@ __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
                                                      unsigned long long numberOfLBnodes,
                                                      bool isEvenTimestep);
 
-__global__ void QPressNoRhoDevice27(  real* rhoBC,
-                                                 real* distributions,
-                                                 int* k_Q,
-                                                 int* k_N,
-                                                 int numberOfBCnodes,
-                                                 real om1,
-                                                 unsigned int* neighborX,
-                                                 unsigned int* neighborY,
-                                                 unsigned int* neighborZ,
-                                                 unsigned long long numberOfLBnodes,
-                                                 bool isEvenTimestep,
-                                                 int direction);
-
-__global__ void QPressZeroRhoOutflowDevice27(  real* rhoBC,
-                                            real* distributions,
-                                            int* k_Q,
-                                            int* k_N,
-                                            int numberOfBCnodes,
-                                            real om1,
-                                            unsigned int* neighborX,
-                                            unsigned int* neighborY,
-                                            unsigned int* neighborZ,
-                                            unsigned long long numberOfLBnodes,
-                                            bool isEvenTimestep,
-                                            int direction,
-                                            real densityCorrectionFactor);
-
 __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
                                                          real* DD,
                                                          int* k_Q,
@@ -826,30 +793,6 @@ __global__ void QPressDeviceOld27(real* rhoBC,
                                              int* k_N,
                                              int numberOfBCnodes,
                                              real om1,
-                                             unsigned int* neighborX,
-                                             unsigned int* neighborY,
-                                             unsigned int* neighborZ,
-                                             unsigned long long numberOfLBnodes,
-                                             bool isEvenTimestep);
-
-__global__ void QPressDeviceIncompNEQ27( real* rhoBC,
-                                                    real* DD,
-                                                    int* k_Q,
-                                                    int* k_N,
-                                                    int numberOfBCnodes,
-                                                    real om1,
-                                                    unsigned int* neighborX,
-                                                    unsigned int* neighborY,
-                                                    unsigned int* neighborZ,
-                                                    unsigned long long numberOfLBnodes,
-                                                    bool isEvenTimestep);
-
-__global__ void QPressDeviceNEQ27(real* rhoBC,
-                                             real* distribution,
-                                             int* bcNodeIndices,
-                                             int* bcNeighborIndices,
-                                             int numberOfBCnodes,
-                                             real omega1,
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
@@ -911,39 +854,6 @@ __global__ void QPressDevice27_IntBB(real* rho,
                                                 unsigned int* neighborZ,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
-
-// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-//Schlaffer BCs
-__global__ void PressSchlaff27(real* rhoBC,
-                                          real* DD,
-                                          real* vx0,
-                                          real* vy0,
-                                          real* vz0,
-                                          real* deltaVz0,
-                                          int* k_Q,
-                                          int* k_N,
-                                          int numberOfBCnodes,
-                                          real om1,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
-// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-__global__ void VelSchlaff27(  int t,
-                                          real* DD,
-                                          real* vz0,
-                                          real* deltaVz0,
-                                          int* k_Q,
-                                          int* k_N,
-                                          int numberOfBCnodes,
-                                          real om1,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
 
 __global__ void QPrecursorDeviceCompZeroPress(     int* subgridDistanceIndices,
                                                 int numberOfBCnodes,
@@ -2217,91 +2127,6 @@ __global__ void GetVeloforForcing27( real* DD,
                                                 unsigned int* neighborZ,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
-
-__global__ void InitParticles( real* coordX,
-                                          real* coordY,
-                                          real* coordZ,
-                                          real* coordParticleXlocal,
-                                          real* coordParticleYlocal,
-                                          real* coordParticleZlocal,
-                                          real* coordParticleXglobal,
-                                          real* coordParticleYglobal,
-                                          real* coordParticleZglobal,
-                                          real* veloParticleX,
-                                          real* veloParticleY,
-                                          real* veloParticleZ,
-                                          real* randArray,
-                                          unsigned int* particleID,
-                                          unsigned int* cellBaseID,
-                                          unsigned int* bcMatD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned int* neighborWSB,
-                                          int level,
-                                          unsigned int numberOfParticles,
-                                          unsigned long long numberOfLBnodes);
-
-__global__ void MoveParticles( real* coordX,
-                                          real* coordY,
-                                          real* coordZ,
-                                          real* coordParticleXlocal,
-                                          real* coordParticleYlocal,
-                                          real* coordParticleZlocal,
-                                          real* coordParticleXglobal,
-                                          real* coordParticleYglobal,
-                                          real* coordParticleZglobal,
-                                          real* veloParticleX,
-                                          real* veloParticleY,
-                                          real* veloParticleZ,
-                                          real* DD,
-                                          real  omega,
-                                          unsigned int* particleID,
-                                          unsigned int* cellBaseID,
-                                          unsigned int* bcMatD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned int* neighborWSB,
-                                          int level,
-                                          unsigned int timestep,
-                                          unsigned int numberOfTimesteps,
-                                          unsigned int numberOfParticles,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
-__global__ void MoveParticlesWithoutBCs(   real* coordX,
-                                                      real* coordY,
-                                                      real* coordZ,
-                                                      real* coordParticleXlocal,
-                                                      real* coordParticleYlocal,
-                                                      real* coordParticleZlocal,
-                                                      real* coordParticleXglobal,
-                                                      real* coordParticleYglobal,
-                                                      real* coordParticleZglobal,
-                                                      real* veloParticleX,
-                                                      real* veloParticleY,
-                                                      real* veloParticleZ,
-                                                      real* DD,
-                                                      real  omega,
-                                                      unsigned int* particleID,
-                                                      unsigned int* cellBaseID,
-                                                      unsigned int* bcMatD,
-                                                      unsigned int* neighborX,
-                                                      unsigned int* neighborY,
-                                                      unsigned int* neighborZ,
-                                                      unsigned int* neighborWSB,
-                                                      int level,
-                                                      unsigned int timestep,
-                                                      unsigned int numberOfTimesteps,
-                                                      unsigned int numberOfParticles,
-                                                      unsigned long long numberOfLBnodes,
-                                                      bool isEvenTimestep);
-
-__global__ void initRandom(curandState* state);
-
-__global__ void generateRandomValues(curandState* state,
-                                                real* randArray);
 
 __global__ void CalcTurbulenceIntensity(
    real* vxx,

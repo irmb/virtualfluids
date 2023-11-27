@@ -20,55 +20,46 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
 //
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityFactory.h
-//! \ingroup TurbulentViscosity
-//! \author Henrik Asmuth
-//=======================================================================================
-#ifndef TurbulenceModelFactory_H
-#define TurbulenceModelFactory_H
+//! \author Martin Schoenherr, Anna Wellmann
+//======================================================================================
+#ifndef Pressure_Device_H
+#define Pressure_Device_H
 
-#include <functional>
-#include <map>
-#include <string>
-#include <variant>
-#include <memory>
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 #include "LBM/LB.h"
 
-namespace vf::basics
-{
-class ConfigurationFile;
-}
+__global__ void PressureNonEquilibriumIncompressible_Device( 
+    real* rhoBC,
+    real* DD,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
-#include <lbm/collision/TurbulentViscosity.h>
-
-class Parameter;
-
-using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
-
-class TurbulenceModelFactory
-{
-public:
-    TurbulenceModelFactory(std::shared_ptr<Parameter> parameter): para(parameter) {}
-
-    void setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel);
-
-    void setModelConstant(real modelConstant);
-
-    void readConfigFile(const vf::basics::ConfigurationFile &configData);
-
-    void runTurbulenceModelKernel(const int level) const;
-
-private:
-    vf::lbm::TurbulenceModel turbulenceModel = vf::lbm::TurbulenceModel::None;
-    TurbulenceModelKernel turbulenceModelKernel = nullptr;
-    std::shared_ptr<Parameter> para;
-};
+__global__ void PressureNonEquilibriumCompressible_Device(
+    real* rhoBC,
+    real* distribution,
+    int* bcNodeIndices,
+    int* bcNeighborIndices,
+    int numberOfBCnodes,
+    real omega1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
 #endif

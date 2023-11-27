@@ -576,10 +576,6 @@ void QPressDevDirDepBot27(unsigned int numberOfThreads,
                                      unsigned long long numberOfLBnodes, 
                                      bool isEvenTimestep);
 
-void QPressNoRhoDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QPressZeroRhoOutflowDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
 void QInflowScaleByPressDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QPressDevOld27(unsigned int numberOfThreads,
@@ -594,10 +590,6 @@ void QPressDevOld27(unsigned int numberOfThreads,
                                unsigned int* neighborZ,
                                unsigned long long numberOfLBnodes, 
                                bool isEvenTimestep);
-
-void QPressDevIncompNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QPressDevNEQ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void QPressDevEQZ27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
@@ -654,38 +646,6 @@ void QPressDevAntiBB27(  unsigned int numberOfThreads,
                                   unsigned int* neighborZ,
                                   unsigned long long numberOfLBnodes, 
                                   bool isEvenTimestep);
-
-void PressSchlaffer27(unsigned int numberOfThreads,
-                                 real* rhoBC,
-                                 real* DD,
-                                 real* vx0,
-                                 real* vy0,
-                                 real* vz0,
-                                 real* deltaVz0,
-                                 int* k_Q, 
-                                 int* k_N, 
-                                 int numberOfBCnodes, 
-                                 real om1, 
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes, 
-                                 bool isEvenTimestep);
-
-void VelSchlaffer27(  unsigned int numberOfThreads,
-                                 int t,
-                                 real* DD,
-                                 real* vz0,
-                                 real* deltaVz0,
-                                 int* k_Q, 
-                                 int* k_N, 
-                                 int numberOfBCnodes, 
-                                 real om1, 
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes, 
-                                 bool isEvenTimestep);
 
 void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
@@ -1866,69 +1826,6 @@ void GetVelotoForce27(unsigned int numberOfThreads,
                                  unsigned int* neighborZ,
                                  unsigned long long numberOfLBnodes, 
                                  bool isEvenTimestep);
-
-void InitParticlesDevice(real* coordX,
-                                    real* coordY,
-                                    real* coordZ, 
-                                    real* coordParticleXlocal,
-                                    real* coordParticleYlocal,
-                                    real* coordParticleZlocal, 
-                                    real* coordParticleXglobal,
-                                    real* coordParticleYglobal,
-                                    real* coordParticleZglobal,
-                                    real* veloParticleX,
-                                    real* veloParticleY,
-                                    real* veloParticleZ,
-                                    real* randArray,
-                                    unsigned int* particleID,
-                                    unsigned int* cellBaseID,
-                                    unsigned int* bcMatD,
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned int* neighborWSB,
-                                    int level,
-                                    unsigned int numberOfParticles, 
-                                    unsigned long long numberOfLBnodes,
-                                    unsigned int numberOfThreads);
-
-void MoveParticlesDevice(real* coordX,
-                                    real* coordY,
-                                    real* coordZ, 
-                                    real* coordParticleXlocal,
-                                    real* coordParticleYlocal,
-                                    real* coordParticleZlocal, 
-                                    real* coordParticleXglobal,
-                                    real* coordParticleYglobal,
-                                    real* coordParticleZglobal,
-                                    real* veloParticleX,
-                                    real* veloParticleY,
-                                    real* veloParticleZ,
-                                    real* DD,
-                                    real  omega,
-                                    unsigned int* particleID,
-                                    unsigned int* cellBaseID,
-                                    unsigned int* bcMatD,
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned int* neighborWSB,
-                                    int level,
-                                    unsigned int timestep, 
-                                    unsigned int numberOfTimesteps, 
-                                    unsigned int numberOfParticles, 
-                                    unsigned long long numberOfLBnodes,
-                                    unsigned int numberOfThreads,
-                                    bool isEvenTimestep);
-
-void initRandomDevice(curandState* state,
-                                 unsigned long long numberOfLBnodes,
-                                 unsigned int numberOfThreads);
-
-void generateRandomValuesDevice(curandState* state,
-                                           unsigned long long numberOfLBnodes,
-                                           real* randArray,
-                                           unsigned int numberOfThreads);
 
 void CalcTurbulenceIntensityDevice(
    real* vxx,

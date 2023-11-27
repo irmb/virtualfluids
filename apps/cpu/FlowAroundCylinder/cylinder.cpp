@@ -20,7 +20,7 @@ void run(string configname)
       vf::basics::ConfigurationFile   config;
       config.load(configname);
 
-      string          pathOut = config.getValue<string>("pathOut");
+      string        pathOut = config.getValue<string>("pathOut");
       real          uLB = config.getValue<real>("uLB");
       real          restartStep = config.getValue<real>("restartStep");
       real          cpStart = config.getValue<real>("cpStart");
@@ -28,12 +28,12 @@ void run(string configname)
       real          endTime = config.getValue<real>("endTime");
       real          outTime = config.getValue<real>("outTime");
       real          availMem = config.getValue<real>("availMem");
-      int             refineLevel = config.getValue<int>("refineLevel");
-      bool            logToFile = config.getValue<bool>("logToFile");
+      int           refineLevel = config.getValue<int>("refineLevel");
+      bool          logToFile = config.getValue<bool>("logToFile");
       vector<real>  nupsStep = config.getVector<real>("nupsStep");
-      bool            newStart = config.getValue<bool>("newStart");
-      int             numOfThreads = config.getValue<int>("numOfThreads");
-      vector<int>     blockNx = config.getVector<int>("blockNx");
+      bool          newStart = config.getValue<bool>("newStart");
+      int           numOfThreads = config.getValue<int>("numOfThreads");
+      vector<int>   blockNx = config.getVector<int>("blockNx");
       real          dx = config.getValue<real>("dx");
 
       SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
@@ -99,7 +99,6 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-      //RestartSimulationObserver rp(grid, rSch, comm, pathOut, RestartSimulationObserver::BINARY);
       MPIIORestartSimulationObserver rcp(grid, rSch, pathOut, comm);
       //////////////////////////////////////////////////////////////////////////
 
@@ -259,10 +258,6 @@ void run(string configname)
 
          intHelper.setBC();
 
-         ////domain decomposition
-         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         //grid->accept(pqPartVisitor);
-
          //initialization of distributions
          InitDistributionsBlockVisitor initVisitor;
          initVisitor.setVx1(fct);
@@ -289,13 +284,10 @@ void run(string configname)
       }
 
       //set connectors
-      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolator());
-      //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
       SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
-    //   SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor_old());
       SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nueLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 
@@ -312,12 +304,14 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       std::shared_ptr<SimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
+#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
+#endif
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
       simulation->addSimulationObserver(nupsSimulationObserver);
-     simulation->addSimulationObserver(fp);
-     simulation->addSimulationObserver(writeMQSimulationObserver);
+      simulation->addSimulationObserver(fp);
+      simulation->addSimulationObserver(writeMQSimulationObserver);
 
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
       simulation->run();

@@ -101,7 +101,7 @@ void VelocityNonReflecting::applyBC()
         direction = d00M;
         this->velocity = bcPtr->getBoundaryVelocityX3();
     } else
-        UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
+        UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
     distributions->getPreCollisionDistribution(f, x1, x2, x3);
     distributions->getPreCollisionDistribution(ftemp, nx1, nx2, nx3);
@@ -109,14 +109,14 @@ void VelocityNonReflecting::applyBC()
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
     //vx1                  = 0.;
-    real BCVeloWeight = c1o2;
+    //real BCVeloWeight = c1o2;
     // real velocity     = 0.004814077025232405; 
      // real velocity     = 0.00057735;
     //real velocity = 0.04; 
       // real velocity = 0.01; 
      // real velocity = 1./112.; 
     // real velocity = 1./126.; 
-     real velocity = c1o100/2;
+     //real velocity = c1o100/2;
      // real velocity = 0.005; 
     //real delf         =(-velocity+vx1)*0.5 ;
     real delf; 

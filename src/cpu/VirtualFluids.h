@@ -256,9 +256,6 @@
 
 #include <Parallel/BlocksDistributor.h>
 #include <Parallel/MetisPartitioner.h>
-#include <Parallel/PriorityQueueDecompositor.h>
-#include <Parallel/SimpleGeometricPartitioner.h>
-#include <Parallel/ZoltanPartitioner.h>
 
 #include <Utilities/ChangeRandomQs.hpp>
 #include <Utilities/CheckpointConverter.h>
@@ -280,7 +277,6 @@
 #include <Visitors/InitDistributionsBlockVisitor.h>
 #include <Visitors/MetisPartitioningGridVisitor.h>
 #include <Visitors/OverlapBlockVisitor.h>
-#include <Visitors/PQueuePartitioningGridVisitor.h>
 #include <Visitors/RatioBlockVisitor.h>
 #include <Visitors/RatioSmoothBlockVisitor.h>
 #include <Visitors/RefineCrossAndInsideGbObjectBlockVisitor.h>
@@ -292,7 +288,6 @@
 #include <Visitors/SetInterpolationDirsBlockVisitor.h>
 #include <Visitors/SetKernelBlockVisitor.h>
 #include <Visitors/SetSolidBlocksBlockVisitor.h>
-#include <Visitors/SetSpongeLayerBlockVisitor.h>
 #include <Visitors/SetUndefinedNodesBlockVisitor.h>
 #include <Visitors/ViscosityBlockVisitor.h>
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
@@ -302,7 +297,6 @@
 #include <InitThixotropyBlockVisitor.h>
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
-#include <ZoltanPartitioningGridVisitor.h>
 
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
