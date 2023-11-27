@@ -159,14 +159,6 @@ TEST(BoundaryConditionFactoryTest, pressureBC)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureEquilibrium);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressDev27)
-        << "The returned boundary condition is not the expected function QPressDev27.";
-
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureEquilibrium2);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressDevEQZ27)
-        << "The returned boundary condition is not the expected function QPressDevEQZ27.";
-
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumIncompressible);
     EXPECT_TRUE(*(getPressureBcTarget(bcFactory)) == PressureNonEquilibriumIncompressible)
         << "The returned boundary condition is not the expected function PressureNonEquilibriumIncompressible.";

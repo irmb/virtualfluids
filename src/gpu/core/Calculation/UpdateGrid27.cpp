@@ -226,10 +226,6 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
     this->bcKernelManager->runOutflowBCKernelPre(level);
 
     //////////////////////////////////////////////////////////////////////////
-    // P R E S S U R E
-    this->bcKernelManager->runPressureBCKernelPost(level);
-
-    //////////////////////////////////////////////////////////////////////////
     // P R E C U R S O R
     this->bcKernelManager->runPrecursorBCKernelPost(level, t, cudaMemoryManager.get());
 

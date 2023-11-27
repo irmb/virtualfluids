@@ -101,10 +101,6 @@ public:
 
     //! \brief An enumeration for selecting a pressure boundary condition
     enum class PressureBC {
-        //! - PressureEquilibrium = pressure boundary condition based on equilibrium
-        PressureEquilibrium, // incorrect pressure :(
-        //! - PressureEquilibrium2 = pressure boundary condition based on equilibrium (potentially better?! than PressureEquilibrium)
-        PressureEquilibrium2, // is broken --> nan :(
         //! - PressureNonEquilibriumIncompressible = pressure boundary condition based on non-equilibrium
         PressureNonEquilibriumIncompressible,
         //! - PressureNonEquilibriumCompressible = pressure boundary condition based on non-equilibrium
