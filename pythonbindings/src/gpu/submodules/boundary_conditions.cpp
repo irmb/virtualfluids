@@ -83,8 +83,6 @@ namespace boundary_conditions
         .value("NotSpecified", BoundaryConditionFactory::SlipBC::NotSpecified);
 
         py::enum_<BoundaryConditionFactory::PressureBC>(parentModule, "PressureBC")
-        .value("PressureEquilibrium", BoundaryConditionFactory::PressureBC::PressureEquilibrium)
-        .value("PressureEquilibrium2", BoundaryConditionFactory::PressureBC::PressureEquilibrium2)
         .value("PressureNonEquilibriumIncompressible", BoundaryConditionFactory::PressureBC::PressureNonEquilibriumIncompressible)
         .value("PressureNonEquilibriumCompressible", BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible)
         .value("OutflowNonReflective", BoundaryConditionFactory::PressureBC::OutflowNonReflective)
