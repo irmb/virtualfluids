@@ -9,7 +9,7 @@ REFERENCE_DATA_DIR=regression_tests/gpu/ActuatorLine
 CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75 -DUSER_APPS=apps/gpu/ActuatorLineRegression"
 
 # 3. define the application to be executed
-APPLICATION=./build/bin/ActuatorLineRegression
+APPLICATION="./build/bin/ActuatorLineRegression ./apps/gpu/ActuatorLineRegression/configActuatorLineRegression.txt"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/ActuatorLine
