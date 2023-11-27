@@ -83,6 +83,7 @@ void run(vf::basics::ConfigurationFile& config)
 
     const real viscosity = 1.56e-5;
     const real machNumber = 0.1;
+    const uint timeStepAverageTimeSeriesProbe = 1; // 
 
     const real rotorDiameter = config.getValue<real>("RotorDiameter");
     const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
@@ -218,8 +219,7 @@ void run(vf::basics::ConfigurationFile& config)
         SPtr<PlaneProbe> planeProbe =
             std::make_shared<PlaneProbe>(name, para->getOutputPath(), timeStepStartTemporalAveraging,
                                          numberOfAvergingTimeSteps, timeStepStartOutProbe, timeStepOutProbe);
-        planeProbe->setProbePlane(turbinePositionsX[0] + planePositions[i], -0.5 * lengthY, -0.5 * lengthZ, deltaX, lengthY,
-                                  lengthZ);
+        planeProbe->setProbePlane(turbinePositionsX[0] + planePositions[i], -0.5 * lengthY, -0.5 * lengthZ, deltaX, lengthY, lengthZ);
         planeProbe->addStatistic(Statistic::Means);
         planeProbe->addStatistic(Statistic::Variances);
         planeProbe->addStatistic(Statistic::Instantaneous);
@@ -244,12 +244,15 @@ void run(vf::basics::ConfigurationFile& config)
     planeProbeHorizontal->addStatistic(Statistic::Instantaneous);
     para->addProbe(planeProbeHorizontal);
 
-    SPtr<PointProbe> timeseriesProbe =
-        std::make_shared<PointProbe>("timeProbe", para->getOutputPath(), 100, 1, 500, 100, true);
-    timeseriesProbe->addProbePointsFromList(probePositionsX, probePositionsY, probePositionsZ);
-    timeseriesProbe->addStatistic(Statistic::Instantaneous);
-    timeseriesProbe->addStatistic(Statistic::Means);
-    para->addProbe(timeseriesProbe);
+    if (probePositionsX.size() > 0) {
+        SPtr<PointProbe> timeseriesProbe =
+            std::make_shared<PointProbe>("timeProbe", para->getOutputPath(), timeStepStartTemporalAveraging,
+                                         timeStepAverageTimeSeriesProbe, timeStepStartOutProbe, timeStepOutProbe, true);
+        timeseriesProbe->addProbePointsFromList(probePositionsX, probePositionsY, probePositionsZ);
+        timeseriesProbe->addStatistic(Statistic::Instantaneous);
+        timeseriesProbe->addStatistic(Statistic::Means);
+        para->addProbe(timeseriesProbe);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // set copy mesh to simulation

@@ -7,7 +7,7 @@ Path = ./output/
 ##################################################
 GridPath=.
 ##################################################
-ReferenceDiameter=126
+RotorDiameter=126
 NodesPerDiameter=32
 Velocity=9
 LengthXinDiameter = 24
