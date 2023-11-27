@@ -40,11 +40,11 @@ endif()
 ###                  Apps                                 ###
 #############################################################
 
-add_subdirectory(apps/cpu/PoiseuilleFlow)
-add_subdirectory(apps/cpu/sphere)
 add_subdirectory(apps/cpu/FlowAroundCylinder)
-add_subdirectory(apps/cpu/LaminarTubeFlow)
-add_subdirectory(apps/cpu/ConvectionOfVortex)
+#add_subdirectory(apps/cpu/LidDrivenCavity)
+#add_subdirectory(apps/cpu/LaminarPlaneFlow)
+#add_subdirectory(apps/cpu/LaminarPipeFlow)
+#add_subdirectory(apps/cpu/AcousticPulse)
 
 if(BUILD_USE_BOOST)
     add_subdirectory(apps/cpu/TPMSRow)

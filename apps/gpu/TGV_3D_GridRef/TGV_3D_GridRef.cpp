@@ -45,10 +45,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
-#include <logger/Logger.h>
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/config/ConfigurationFile.h>
 
-#include "PointerDefinitions.h"
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 

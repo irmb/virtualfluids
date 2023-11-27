@@ -74,7 +74,6 @@ private:
     Buffer2D <int> geo_sbuf_b;
     Buffer2D <int> geo_rbuf_b;
 
-
     vf::parallel::Communicator& communicator;
     SPtr<Parameter> para;
     std::shared_ptr<DataWriter> dataWriter;
@@ -92,28 +91,9 @@ private:
     uint previousTimestepForAveraging;
     uint previousTimestepForTurbulenceIntensityCalculation;
     uint timestepForMeasuringPoints;
-    
 
     //Forcing Calculation
     std::shared_ptr<ForceCalculations> forceCalculator;
-
-
-    // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-    //KQ - Schlaff
-    // unsigned int            kNQ, kSQ, kEQ, kWQ;
-    // QforBoundaryConditions  QnH, QnD;
-    // QforBoundaryConditions  QsH, QsD;
-    // QforBoundaryConditions  QeH, QeD;
-    // QforBoundaryConditions  QwH, QwD;
-    // real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
-    // real *VxND,          *VyND,       *VzND,       *deltaVND;
-    // real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
-    // real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
-    // real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
-    // real *VxED,          *VyED,       *VzED,       *deltaVED;
-    // real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
-    // real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
-
 
     std::unique_ptr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;
     std::unique_ptr<EnstrophyAnalyzer> enstrophyAnalyzer;

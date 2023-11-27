@@ -75,18 +75,6 @@ void BoundaryConditionKernelManager::runVelocityBCKernelPre(const int level) con
 {
     if (para->getParD(level)->velocityBC.numberOfBCnodes > 0)
     {
-        // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-        // if ( myid == 0)
-        // {
-        //    VelSchlaffer27(para->getParD(level)->numberofthreads, t,
-        //                   para->getParD(level)->distributions.f[0],       para->getParD(level)->velocityBC.Vz,
-        //                   para->getParD(level)->velocityBC.deltaVz, para->getParD(level)->velocityBC.k,
-        //                   para->getParD(level)->velocityBC.kN,      para->getParD(level)->velocityBC.numberOfBCnodes,
-        //                   para->getParD(level)->omega,           para->getParD(level)->neighborX,
-        //                   para->getParD(level)->neighborY,    para->getParD(level)->neighborZ,
-        //                   para->getParD(level)->numberOfNodes,     para->getParD(level)->isEvenTimestep);
-        //    getLastCudaError("VelSchlaffer27 execution failed");
-        // }
         ////////////////////////////////////////////////////////////////////////////
         // high viscosity incompressible
         // QVelDevIncompHighNu27(
@@ -321,29 +309,7 @@ void BoundaryConditionKernelManager::runGeoBCKernelPost(const int level) const
 
 void BoundaryConditionKernelManager::runOutflowBCKernelPre(const int level) const{
     if (para->getParD(level)->outflowBC.numberOfBCnodes > 0)
-    {
         OutflowNonReflecting(para->getParD(level).get(), &(para->getParD(level)->outflowBC));
-
-        // TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-        // if (  myid == numprocs - 1)
-        // PressSchlaffer27(
-        //     para->getParD(level)->numberofthreads,
-        //     para->getParD(level)->outflowBC.RhoBC,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->outflowBC.Vx,
-        //     para->getParD(level)->outflowBC.Vy,
-        //     para->getParD(level)->outflowBC.Vz,
-        //     para->getParD(level)->outflowBC.deltaVz,
-        //     para->getParD(level)->outflowBC.k,
-        //     para->getParD(level)->outflowBC.kN,
-        //     para->getParD(level)->outflowBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-    }
 }
 
 void BoundaryConditionKernelManager::runPressureBCKernelPre(const int level) const{
