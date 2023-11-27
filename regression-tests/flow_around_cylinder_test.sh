@@ -17,3 +17,19 @@ RESULT_DATA_DIR=output/FlowAroundCylinder
 
 
 run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
+
+
+# compare forces file manually
+file1="$RESULT_DATA_DIR/results/forces.txt"
+file2="reference_data/$REFERENCE_DATA_DIR/results/forces.txt"
+
+if cmp -s "$file1" "$file2"; then
+    printf 'The file "%s" is the same as "%s"\n' "$file1" "$file2"
+else
+    printf 'The file "%s" is different from "%s"\n' "$file1" "$file2"
+    printf $file1
+    cat $file1
+    printf $file2
+    cat $file2
+    exit 1
+fi
