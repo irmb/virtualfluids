@@ -314,28 +314,7 @@ void BoundaryConditionKernelManager::runOutflowBCKernelPre(const int level) cons
 
 void BoundaryConditionKernelManager::runPressureBCKernelPre(const int level) const{
     if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
-    {
         this->pressureBoundaryConditionPre(para->getParD(level).get(), &(para->getParD(level)->pressureBC));
-    }
-}
-
-void BoundaryConditionKernelManager::runPressureBCKernelPost(const int level) const{
-    if (para->getParD(level)->pressureBC.numberOfBCnodes > 0)
-    {
-        // QPressDev27_IntBB(
-        //     para->getParD(level)->numberofthreads, 
-        //     para->getParD(level)->pressureBC.RhoBC,
-        //     para->getParD(level)->distributions.f[0],
-        //     para->getParD(level)->pressureBC.k,
-        //     para->getParD(level)->pressureBC.q27[0],
-        //     para->getParD(level)->pressureBC.numberOfBCnodes,
-        //     para->getParD(level)->omega,
-        //     para->getParD(level)->neighborX,
-        //     para->getParD(level)->neighborY,
-        //     para->getParD(level)->neighborZ,
-        //     para->getParD(level)->numberOfNodes,
-        //     para->getParD(level)->isEvenTimestep);
-    }
 }
 
 void BoundaryConditionKernelManager::runStressWallModelKernelPost(const int level) const{
