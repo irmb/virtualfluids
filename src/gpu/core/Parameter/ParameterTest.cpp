@@ -114,13 +114,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
         EXPECT_THAT((real)limiters_actual[i], RealEq(limiters[i]));
     }
 
-    EXPECT_THAT(para.getCalcParticles(), testing::Eq(true));
-    EXPECT_THAT(para.getParticleBasicLevel(), testing::Eq(1));
-    EXPECT_THAT(para.getParticleInitLevel(), testing::Eq(2));
-    EXPECT_THAT(para.getNumberOfParticles(), testing::Eq(1111));
-    EXPECT_THAT(para.getStartXHotWall(), RealEq(4.1));
-    EXPECT_THAT(para.getEndXHotWall(), RealEq(4.2));
-
     EXPECT_THAT(para.getTimeDoCheckPoint(), testing::Eq(33));
     EXPECT_THAT(para.getTimeDoRestart(), testing::Eq(44));
     EXPECT_THAT(para.getDoCheckPoint(), testing::Eq(true));
