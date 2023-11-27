@@ -1,0 +1,48 @@
+13:55:15.444 INFO    : nu = 0.000152358
+13:55:15.444 INFO    : Re = 6563.49
+13:55:15.444 INFO    : vx = 0.005
+13:55:15.444 INFO    : dx = 5e-05
+13:55:15.444 INFO    : Preprocess - start
+[2023-02-14 13:55:15.544] [[32minfo[m] WriteBlocksCoProcessor step: 0
+[2023-02-14 13:55:15.682] [[32minfo[m] WriteBlocksCoProcessor step: 0
+13:55:15.682 INFO    : Number of blocks = 992
+13:55:15.682 INFO    : Number of nodes  = 124000000
+13:55:15.682 INFO    : Number of blocks for level 0 = 992
+13:55:15.682 INFO    : Number of nodes for level 0 = 124000000
+13:55:15.682 INFO    : Necessary memory  = 3.48539e+10 bytes
+13:55:15.682 INFO    : Necessary memory per process = 1.74269e+08 bytes
+13:55:15.682 INFO    : Available memory per process = 1.5e+11 bytes
+[2023-02-14 13:57:18.488] [[32minfo[m] WriteBoundaryConditionsCoProcessor step: 0
+13:57:18.489 INFO    : Preprocess - end
+13:57:18.528 INFO    : Simulation-start
+13:58:27.311 INFO    : Calculation step = 100
+13:58:27.311 INFO    : Total performance = 1.8025e+08 NUPS
+13:58:27.311 INFO    : Performance per process = 901251 NUPS
+13:58:27.311 INFO    : Performance per thread = 901251 NUPS
+13:58:27.311 INFO    : Time for 100 steps = 68.7932 s
+13:59:38.979 INFO    : Calculation step = 200
+13:59:38.979 INFO    : Total performance = 1.73021e+08 NUPS
+13:59:38.979 INFO    : Performance per process = 865103 NUPS
+13:59:38.979 INFO    : Performance per thread = 865103 NUPS
+13:59:38.979 INFO    : Time for 100 steps = 71.6677 s
+14:00:50.118 INFO    : Calculation step = 300
+14:00:50.118 INFO    : Total performance = 1.74306e+08 NUPS
+14:00:50.118 INFO    : Performance per process = 871531 NUPS
+14:00:50.118 INFO    : Performance per thread = 871531 NUPS
+14:00:50.118 INFO    : Time for 100 steps = 71.1392 s
+14:02:01.657 INFO    : Calculation step = 400
+14:02:01.657 INFO    : Total performance = 1.73334e+08 NUPS
+14:02:01.657 INFO    : Performance per process = 866671 NUPS
+14:02:01.657 INFO    : Performance per thread = 866671 NUPS
+14:02:01.657 INFO    : Time for 100 steps = 71.5381 s
+14:03:13.678 INFO    : Calculation step = 500
+14:03:13.678 INFO    : Total performance = 1.72171e+08 NUPS
+14:03:13.678 INFO    : Performance per process = 860854 NUPS
+14:03:13.678 INFO    : Performance per thread = 860854 NUPS
+14:03:13.678 INFO    : Time for 100 steps = 72.0215 s
+14:04:32.949 INFO    : Calculation step = 600
+14:04:32.949 INFO    : Total performance = 1.56427e+08 NUPS
+14:04:32.949 INFO    : Performance per process = 782134 NUPS
+14:04:32.949 INFO    : Performance per thread = 782134 NUPS
+14:04:32.949 INFO    : Time for 100 steps = 79.2703 s
+slurmstepd: error: *** JOB 2067707 ON node094 CANCELLED AT 2023-02-14T14:05:06 ***

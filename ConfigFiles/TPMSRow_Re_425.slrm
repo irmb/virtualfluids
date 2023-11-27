@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH -J TPMSRow
+#SBATCH --nodes=10
+#SBATCH --ntasks-per-node=20
+#SBATCH --mem-per-cpu=3000
+#SBATCH --time=7-00:00:00
+#SBATCH --partition=standard
+#SBATCH --exclusive
+
+APP=/home/husalihu/projects/VirtualFluids_dev/VirtualFluids_dev/build/bin/TPMSRow
+CONF=./TPMSRow_Re_425_u_001_N_100_compressible.cfg
+
+
+mpiexec $APP $CONF
