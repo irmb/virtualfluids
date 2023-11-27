@@ -861,39 +861,6 @@ __global__ void QPressDevice27_IntBB(real* rho,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
 
-// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-//Schlaffer BCs
-__global__ void PressSchlaff27(real* rhoBC,
-                                          real* DD,
-                                          real* vx0,
-                                          real* vy0,
-                                          real* vz0,
-                                          real* deltaVz0,
-                                          int* k_Q,
-                                          int* k_N,
-                                          int numberOfBCnodes,
-                                          real om1,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
-// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-__global__ void VelSchlaff27(  int t,
-                                          real* DD,
-                                          real* vz0,
-                                          real* deltaVz0,
-                                          int* k_Q,
-                                          int* k_N,
-                                          int numberOfBCnodes,
-                                          real om1,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
 __global__ void QPrecursorDeviceCompZeroPress(     int* subgridDistanceIndices,
                                                 int numberOfBCnodes,
                                                 int numberOfPrecursorNodes,
