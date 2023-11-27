@@ -111,17 +111,13 @@ void WriteMQFromSelectionSimulationObserver::clearData()
 void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
 {
     real level = (real)block->getLevel();
-    //   double blockID = (double)block->getGlobalID();
 
-    // Diese Daten werden geschrieben:
     datanames.resize(0);
     datanames.emplace_back("Rho");
     datanames.emplace_back("Vx");
     datanames.emplace_back("Vy");
     datanames.emplace_back("Vz");
-    // datanames.push_back("Press");
     datanames.emplace_back("Level");
-    // datanames.push_back("BlockID");
 
     data.resize(datanames.size());
 
@@ -145,21 +141,12 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
     int maxX2 = (int)(distributions->getNX2());
     int maxX3 = (int)(distributions->getNX3());
 
-    // int minX1 = 1;
-    // int minX2 = 1;
-    // int minX3 = 1;
-
-    // int maxX1 = (int)(distributions->getNX1());
-    // int maxX2 = (int)(distributions->getNX2());
-    // int maxX3 = (int)(distributions->getNX3());
-
-    // nummern vergeben und node vector erstellen + daten sammeln
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
     maxX1 -= 2;
     maxX2 -= 2;
     maxX3 -= 2;
 
-    // D3Q27BoundaryConditionPtr bcPtr;
+
     int nr = (int)nodes.size();
 
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {

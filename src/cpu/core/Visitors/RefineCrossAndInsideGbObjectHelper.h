@@ -10,7 +10,7 @@ class GbObject3D;
 
 //! \brief Refine blocks on base of bounding boxes.
 //! \details You need to use <i>addGbObject()</i> to add corresponding bounding boxes. Then call <i>refine()</i>.
-//! \author K. Kucher
+//! \author K. Kutscher
 class RefineCrossAndInsideGbObjectHelper
 {
 public:

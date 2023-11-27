@@ -225,7 +225,7 @@ void K16IncompressibleNavierStokes::calculate(int step)
                m1=mfbab+mfbcb;
                m2=mfbba+mfbbc;
                m0+=m1+m2;
-               m0+=mfbbb; //hat gefehlt
+               m0+=mfbbb; 
                oMdrho = c1o1 - (oMdrho + m0);
 
                real vx2;
