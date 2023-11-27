@@ -647,38 +647,6 @@ void QPressDevAntiBB27(  unsigned int numberOfThreads,
                                   unsigned long long numberOfLBnodes, 
                                   bool isEvenTimestep);
 
-void PressSchlaffer27(unsigned int numberOfThreads,
-                                 real* rhoBC,
-                                 real* DD,
-                                 real* vx0,
-                                 real* vy0,
-                                 real* vz0,
-                                 real* deltaVz0,
-                                 int* k_Q, 
-                                 int* k_N, 
-                                 int numberOfBCnodes, 
-                                 real om1, 
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes, 
-                                 bool isEvenTimestep);
-
-void VelSchlaffer27(  unsigned int numberOfThreads,
-                                 int t,
-                                 real* DD,
-                                 real* vz0,
-                                 real* deltaVz0,
-                                 int* k_Q, 
-                                 int* k_N, 
-                                 int numberOfBCnodes, 
-                                 real om1, 
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes, 
-                                 bool isEvenTimestep);
-
 void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
 void PrecursorDevEQ27(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);

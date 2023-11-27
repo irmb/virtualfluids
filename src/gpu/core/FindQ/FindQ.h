@@ -25,16 +25,6 @@ void findQOutflow(Parameter* para);
 
 void findKforQOutflow(Parameter* para);
 
-// TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/29
-//void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk,
-//                              unsigned int sizeQN, real* vxN, real* vyN, real* vzN, real*deltaVN, real* QQN, QforBoundaryConditions &QNin,
-//                              unsigned int sizeQS, real* vxS, real* vyS, real* vzS, real*deltaVS, real* QQS, QforBoundaryConditions &QSin,
-//                              unsigned int sizeQE, real* vxE, real* vyE, real* vzE, real*deltaVE, real* QQE, QforBoundaryConditions &QEin,
-//                              unsigned int sizeQW, real* vxW, real* vyW, real* vzW, real*deltaVW, real* QQW, QforBoundaryConditions &QWin);
-//
-//void findKforQSchlaff(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, QforBoundaryConditions &QN, QforBoundaryConditions &QS, QforBoundaryConditions &QE, QforBoundaryConditions &QW);
-
-
 void findKforQPressX1(Parameter* para, int lev);
 
 void findQPressX1(Parameter* para, int lev);
