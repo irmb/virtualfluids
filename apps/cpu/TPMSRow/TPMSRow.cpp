@@ -110,7 +110,7 @@ void run(string configname)
         xMinApr->setBCStrategy(SPtr<BCStrategy>(new VelocityNonReflecting(c1o2))); 
         // xMinApr->setBcAlgorithm(SPtr<BCStrategy>(new VelocityWithDensityBCStrategy()));
          //xMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NonEqDensityBCStrategy()));
-         xMaxApr->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflectingWithPressure()));
+         xMaxApr->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflectingWithPressure(c1o100)));
         //yMinApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
         //yMaxApr->setBcAlgorithm(SPtr<BCStrategy>(new NoSlipBCStrategy()));
          zMinApr->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
