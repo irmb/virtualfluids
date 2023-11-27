@@ -287,13 +287,6 @@ public:
     void cudaCopy2ndOrderDerivitivesIsoTestHD(int lev);
     void cudaFree2ndOrderDerivitivesIsoTest(int lev);
 
-
-    void cudaAllocParticles(int lev);
-    void cudaCopyParticles(int lev);
-    void cudaFreeParticles(int lev);
-
-    void cudaAllocRandomValues();
-
     void cudaAllocConcentration(int lev);
     void cudaCopyConcentrationDeviceToHost(int lev);
     void cudaCopyConcentrationHostToDevice(int lev);

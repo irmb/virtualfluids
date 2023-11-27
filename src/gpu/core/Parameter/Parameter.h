@@ -429,9 +429,6 @@ struct LBMSimulationParameter {
     // deltaPhi
     real deltaPhi;
 
-    // particles
-    PathLineParticles plp;
-
     ////////////////////////////////////////////////////////////////////////////
     // 1D domain decomposition
     std::vector<ProcessNeighbor27> sendProcessNeighbor;
@@ -490,12 +487,6 @@ public:
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
     void setMaxLevel(int numberOfLevels);
-    void setParticleBasicLevel(int pbl);
-    void setParticleInitLevel(int pil);
-    void setNumberOfParticles(int nop);
-    void setCalcParticles(bool calcParticles);
-    void setStartXHotWall(real startXHotWall);
-    void setEndXHotWall(real endXHotWall);
     void setTimestepEnd(unsigned int tend);
     void setTimestepOut(unsigned int tout);
     void setTimestepStartOut(unsigned int tStartOut);
@@ -692,8 +683,6 @@ public:
     real *getQuadricLimitersDev();
     real getPhi();
     real getAngularVelocity();
-    real getStartXHotWall();
-    real getEndXHotWall();
     unsigned int getStepEnsight();
     unsigned int getOutputCount();
     unsigned int getStartTurn();
@@ -706,16 +695,12 @@ public:
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
-    bool getCalcParticles();
     bool getWriteVeloASCIIfiles();
     bool getCalcPlaneConc();
     //! \returns index of finest level
     int getFine() const;
     //! \returns index of coarsest level
     int getCoarse() const;
-    int getParticleBasicLevel();
-    int getParticleInitLevel();
-    int getNumberOfParticles();
     int getFactorNZ();
     int getD3Qxx();
     //! \returns the maximum level of grid refinement
@@ -917,8 +902,6 @@ public:
     std::string getOutflowBoundaryNormalY();
     std::string getOutflowBoundaryNormalZ();
     real getOutflowPressureCorrectionFactor();
-    // CUDA random number
-    curandState *getRandomState();
     // Kernel
     std::string getMainKernel();
     bool getMultiKernelOn();
@@ -1074,19 +1057,6 @@ private:
     std::vector<std::string> multiKernel;
     bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
-
-    //////////////////////////////////////////////////////////////////////////
-    // particles
-    int particleBasicLevel{ 0 };
-    int particleInitLevel{ 0 };
-    int numberOfParticles{ 0 };
-    bool calcParticles{ false };
-    real startXHotWall{ (real)0.0 };
-    real endXHotWall{ (real)0.0 };
-    //////////////////////////////////////////////////////////////////////////
-    // CUDA random number generation
-    curandState *devState;
-    //////////////////////////////////////////////////////////////////////////
 
     // Temperature
     TempforBoundaryConditions *TempH, *TempD;

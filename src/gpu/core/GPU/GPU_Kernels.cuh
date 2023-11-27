@@ -8,12 +8,6 @@
 #ifndef D3Q27_KERNELS_H
 #define D3Q27_KERNELS_H
 
-//random numbers
-#include <curand.h>
-#include <curand_kernel.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
-
 #include "LBM/LB.h"
 
 
@@ -2133,91 +2127,6 @@ __global__ void GetVeloforForcing27( real* DD,
                                                 unsigned int* neighborZ,
                                                 unsigned long long numberOfLBnodes,
                                                 bool isEvenTimestep);
-
-__global__ void InitParticles( real* coordX,
-                                          real* coordY,
-                                          real* coordZ,
-                                          real* coordParticleXlocal,
-                                          real* coordParticleYlocal,
-                                          real* coordParticleZlocal,
-                                          real* coordParticleXglobal,
-                                          real* coordParticleYglobal,
-                                          real* coordParticleZglobal,
-                                          real* veloParticleX,
-                                          real* veloParticleY,
-                                          real* veloParticleZ,
-                                          real* randArray,
-                                          unsigned int* particleID,
-                                          unsigned int* cellBaseID,
-                                          unsigned int* bcMatD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned int* neighborWSB,
-                                          int level,
-                                          unsigned int numberOfParticles,
-                                          unsigned long long numberOfLBnodes);
-
-__global__ void MoveParticles( real* coordX,
-                                          real* coordY,
-                                          real* coordZ,
-                                          real* coordParticleXlocal,
-                                          real* coordParticleYlocal,
-                                          real* coordParticleZlocal,
-                                          real* coordParticleXglobal,
-                                          real* coordParticleYglobal,
-                                          real* coordParticleZglobal,
-                                          real* veloParticleX,
-                                          real* veloParticleY,
-                                          real* veloParticleZ,
-                                          real* DD,
-                                          real  omega,
-                                          unsigned int* particleID,
-                                          unsigned int* cellBaseID,
-                                          unsigned int* bcMatD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned int* neighborWSB,
-                                          int level,
-                                          unsigned int timestep,
-                                          unsigned int numberOfTimesteps,
-                                          unsigned int numberOfParticles,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
-__global__ void MoveParticlesWithoutBCs(   real* coordX,
-                                                      real* coordY,
-                                                      real* coordZ,
-                                                      real* coordParticleXlocal,
-                                                      real* coordParticleYlocal,
-                                                      real* coordParticleZlocal,
-                                                      real* coordParticleXglobal,
-                                                      real* coordParticleYglobal,
-                                                      real* coordParticleZglobal,
-                                                      real* veloParticleX,
-                                                      real* veloParticleY,
-                                                      real* veloParticleZ,
-                                                      real* DD,
-                                                      real  omega,
-                                                      unsigned int* particleID,
-                                                      unsigned int* cellBaseID,
-                                                      unsigned int* bcMatD,
-                                                      unsigned int* neighborX,
-                                                      unsigned int* neighborY,
-                                                      unsigned int* neighborZ,
-                                                      unsigned int* neighborWSB,
-                                                      int level,
-                                                      unsigned int timestep,
-                                                      unsigned int numberOfTimesteps,
-                                                      unsigned int numberOfParticles,
-                                                      unsigned long long numberOfLBnodes,
-                                                      bool isEvenTimestep);
-
-__global__ void initRandom(curandState* state);
-
-__global__ void generateRandomValues(curandState* state,
-                                                real* randArray);
 
 __global__ void CalcTurbulenceIntensity(
    real* vxx,

@@ -257,21 +257,6 @@ struct ProcessNeighborF3
    int numberOfGs;
 };
 
-// DEPRECATED
-struct PathLineParticles
-{
-   bool *stuck, *hot;
-   real *coordXabsolut, *coordYabsolut, *coordZabsolut;
-   real *coordXlocal,   *coordYlocal,   *coordZlocal;
-   real *veloX,         *veloY,         *veloZ;
-   real *randomLocationInit;
-   uint *timestep;
-   uint *ID;
-   uint *cellBaseID;
-   uint numberOfParticles, numberOfTimestepsParticles;
-   uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
-};
-
 //////////////////////////////////////////////////////////////////////////
 // DEPRECATED
 inline int vectorPosition(int i, int j, int k, int Lx, int Ly)
