@@ -110,7 +110,9 @@ void run(const vf::basics::ConfigurationFile& config)
     const bool writePrecursor = config.getValue("writePrecursor", false);
 
     const bool useDistributionsForPrecursor = config.getValue<bool>("useDistributions", false);
-    const std::string precursorDirectory = config.getValue<std::string>("precursorDirectory", "precursor");
+    std::string precursorDirectory = config.getValue<std::string>("precursorDirectory", "precursor/");
+    if(precursorDirectory.back() != '/')
+        precursorDirectory += '/';
     const int timeStepsWritePrecursor = config.getValue<int>("nTimestepsWritePrecursor", 10);
     const real timeStartPrecursor = config.getValue<real>("tStartPrecursor", 36000.);
     const real positionXPrecursorSamplingPlane = config.getValue<real>("posXPrecursor", c1o2 * lengthX);
@@ -319,7 +321,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     if (usePrecursorInflow) {
         if (!isMultiGPU || isFirstSubDomain) {
-            auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
+            auto precursor = createFileCollection(precursorDirectory + "precursor", TransientBCFileType::VTK);
             gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
         }
 
