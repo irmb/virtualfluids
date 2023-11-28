@@ -33,19 +33,16 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <exception>
-#include <fstream>
 #include <iostream>
 #include <memory>
 #include <numeric>
-#include <sstream>
-#include <stdexcept>
 #include <string>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////
 
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
-#include <basics/StringUtilities/StringUtil.h>
 #include <basics/config/ConfigurationFile.h>
 #include <basics/constants/NumericConstants.h>
 
@@ -55,423 +52,417 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+#include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/BoundaryConditions/Side.h"
-#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
-
-#include "geometries/Cuboid/Cuboid.h"
-#include "geometries/TriangularMesh/TriangularMesh.h"
-
-#include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
-#include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
+#include "GridGenerator/geometries/BoundingBox/BoundingBox.h"
+#include "GridGenerator/utilities/communication.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "gpu/core/LBM/Simulation.h"
-#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
 #include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "gpu/core/Parameter/Parameter.h"
-#include "gpu/core/Output/FileWriter.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
-#include "gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h"
-#include "gpu/core/PreCollisionInteractor/PrecursorWriter.h"
-#include "gpu/core/GridScaling/GridScalingFactory.h"
-#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/core/Kernel/KernelTypes.h"
-
+#include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "gpu/core/GPU/CudaMemoryManager.h"
-
-#include "utilities/communication.h"
+#include "gpu/core/GridScaling/GridScalingFactory.h"
+#include "gpu/core/Kernel/KernelTypes.h"
+#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/Output/FileWriter.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/PreCollisionInteractor/PrecursorWriter.h"
+#include "gpu/core/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
+#include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h"
+#include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string path(".");
-
-std::string simulationName("BoundaryLayer");
 
 using namespace vf::basics::constant;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(const std::string& configPath)
+void run(const vf::basics::ConfigurationFile& config)
 {
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    vf::parallel::Communicator &communicator = *vf::parallel::MPICommunicator::getInstance();
+    const std::string simulationName("AtmosphericBoundaryLayer");
 
-    vf::basics::ConfigurationFile config;
-    config.load(configPath);
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
-    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
-    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    GridScalingFactory scalingFactory  = GridScalingFactory();
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    const int nProcs = communicator.getNumberOfProcesses();
-    const uint procID = communicator.getProcessID();
-    std::vector<uint> devices(10);
-    std::iota(devices.begin(), devices.end(), 0);
-    para->setDevices(devices);
-    para->setMaxDev(nProcs);
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //          U s e r    s e t t i n g s
-    //
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const uint samplingOffsetWallModel = 2;
+    const uint averagingTimestepsPlaneProbes = 10;
+    const uint maximumNumberOfTimestepsPerPrecursorFile = 1000;
 
-    const real H = config.getValue("boundaryLayerHeight", 1000.0); // boundary layer height in m
+    const real boundaryLayerHeight = config.getValue("boundaryLayerHeight", 1000.0);
 
-    const real L_x = 6*H;
-    const real L_y = 4*H;
+    const real lengthX = 6 * boundaryLayerHeight;
+    const real lengthY = 4 * boundaryLayerHeight;
+    const real lengthZ = boundaryLayerHeight;
 
-    const real L_z = H;
+    const real roughnessLength = config.getValue("z0", c1o10);
+    const real frictionVelocity = config.getValue("u_star", c4o10);
+    const real vonKarmanConstant = config.getValue("vonKarmanConstant", c4o10);
 
-    const real z0  = config.getValue("z0", 0.1f); // roughness length in m
-    const real u_star = config.getValue("u_star", 0.4f); //friction velocity in m/s
-    const real kappa = config.getValue("vonKarmanConstant", 0.4f); // von Karman constant
+    const real viscosity = config.getValue("viscosity", 1.56e-5);
 
-    const real viscosity = config.getValue("viscosity", 1.56e-5f);
+    const real machNumber = config.getValue<real>("Ma", 0.1);
 
-    const real velocity  = 0.5f*u_star/kappa*log(H/z0+1.f); //0.5 times max mean velocity at the top in m/s
+    const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("nodesPerBoundaryLayerHeight", 64);
 
-    const real mach = config.getValue<real>("Ma", 0.1);
-
-    const uint nodes_per_H = config.getValue<uint>("nz", 64);
-
-    const float periodicShift = config.getValue<float>("periodicShift", 0.0f);
+    const float periodicShift = config.getValue<float>("periodicShift", c0o1);
 
     const bool writePrecursor = config.getValue("writePrecursor", false);
-    bool useDistributions;
-    std::string precursorDirectory;
-    int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
-    if(writePrecursor)
-    {
-        nTWritePrecursor     = config.getValue<int>("nTimestepsWritePrecursor");
-        tStartPrecursor      = config.getValue<real>("tStartPrecursor");
-        posXPrecursor        = config.getValue<real>("posXPrecursor");
-        useDistributions     = config.getValue<bool>("useDistributions", false);
-        precursorDirectory   = config.getValue<std::string>("precursorDirectory");
-    }
 
-    const bool readPrecursor = config.getValue("readPrecursor", false);
-    int timestepsBetweenReadsPrecursor;
-    if(readPrecursor)
-    {
-        timestepsBetweenReadsPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
-        precursorDirectory = config.getValue<std::string>("precursorDirectory");
-        useDistributions     = config.getValue<bool>("useDistributions", false);
-    }
+    const bool useDistributionsForPrecursor = config.getValue<bool>("useDistributions", false);
+    const std::string precursorDirectory = config.getValue<std::string>("precursorDirectory", "precursor");
+    const int timeStepsWritePrecursor = config.getValue<int>("nTimestepsWritePrecursor", 10);
+    const real timeStartPrecursor = config.getValue<real>("tStartPrecursor", 36000.);
+    const real positionXPrecursorSamplingPlane = config.getValue<real>("posXPrecursor", c1o2 * lengthX);
+
+    const bool usePrecursorInflow = config.getValue("readPrecursor", false);
+    const int timestepsBetweenReadsPrecursor = config.getValue<int>("nTimestepsReadPrecursor", 10);
 
     const bool useRefinement = config.getValue<bool>("refinement", false);
 
     // all in s
-    const float tStartOut   = config.getValue<real>("tStartOut");
-    const float tOut        = config.getValue<real>("tOut");
-    const float tEnd        = config.getValue<real>("tEnd"); // total time of simulation
+    const float timeStartOut = config.getValue<real>("tStartOut");
+    const float timeOut = config.getValue<real>("tOut");
+    const float timeEnd = config.getValue<real>("tEnd");
 
-    const float tStartAveraging     =  config.getValue<real>("tStartAveraging");
-    const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
-    const float tAveraging          =  config.getValue<real>("tAveraging");
-    const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
-    const float tOutProbe           =  config.getValue<real>("tOutProbe");
+    const float timeStartAveraging = config.getValue<real>("tStartAveraging");
+    const float timeStartTemporalAveraging = config.getValue<real>("tStartTmpAveraging");
+    const float timeAveraging = config.getValue<real>("tAveraging");
+    const float timeStartOutProbe = config.getValue<real>("tStartOutProbe");
+    const float timeOutProbe = config.getValue<real>("tOutProbe");
 
+    //////////////////////////////////////////////////////////////////////////
+    // compute parameters in lattice units
+    //////////////////////////////////////////////////////////////////////////
+    const auto velocityProfile = [&](real coordZ) {
+        return frictionVelocity / vonKarmanConstant * log(coordZ / roughnessLength + c1o1);
+    };
+    const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
-    const real dx = H/real(nodes_per_H);
+    const real deltaX = boundaryLayerHeight / real(nodesPerBoundaryLyerHeight);
 
-    const real dt = dx * mach / (sqrt(3) * velocity);
+    const real deltaT = c1oSqrt3 * deltaX * machNumber / velocity;
 
-    const real velocityLB = velocity * dt / dx; // LB units
+    const real velocityLB = velocity * deltaT / deltaX;
 
-    const real viscosityLB = viscosity * dt / (dx * dx); // LB units
+    const real viscosityLB = viscosity * deltaT / (deltaX * deltaX);
 
-    const real pressureGradient = u_star * u_star / H ;
-    const real pressureGradientLB = pressureGradient * (dt*dt)/dx; // LB units
+    const real pressureGradient = frictionVelocity * frictionVelocity / boundaryLayerHeight;
+    const real pressureGradientLB = pressureGradient * (deltaT * deltaT) / deltaX;
 
-    VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
-    VF_LOG_INFO("dt   = {}", dt);
-    VF_LOG_INFO("dx   = {}", dx);
-    VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
-    VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
-    VF_LOG_INFO("dpdx  = {}", pressureGradient);
-    VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
+    const uint timeStepStartOut = uint(timeStartOut / deltaT);
+    const uint timeStepOut = uint(timeOut / deltaT);
+    const uint timeStepEnd = uint(timeEnd / deltaT);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const uint timeStepStartAveraging = uint(timeStartAveraging / deltaT);
+    const uint timeStepStartTemporalAveraging = uint(timeStartTemporalAveraging / deltaT);
+    const uint timeStepAveraging = uint(timeAveraging / deltaT);
+    const uint timeStepStartOutProbe = uint(timeStartOutProbe / deltaT);
+    const uint timeStepOutProbe = uint(timeOutProbe / deltaT);
 
-    para->setOutputPrefix( simulationName );
+    const uint timeStepStartPrecursor = uint(timeStartPrecursor / deltaT);
 
-    para->setPrintFiles(true);
+    //////////////////////////////////////////////////////////////////////////
+    // create grid
+    //////////////////////////////////////////////////////////////////////////
 
-    if(!readPrecursor) para->setForcing(pressureGradientLB, 0, 0);
-    para->setVelocityLB(velocityLB);
-    para->setViscosityLB(viscosityLB);
-    para->setVelocityRatio( dx / dt );
-    para->setViscosityRatio( dx*dx/dt );
-    para->setDensityRatio( 1.0 );
+    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
-    bool useStreams = (nProcs > 1 ? true: false);
-    // useStreams=false;
-    para->setUseStreams(useStreams);
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
-    para->setIsBodyForce( config.getValue<bool>("bodyForce") );
+    const int numberOfProcesses = communicator.getNumberOfProcesses();
+    const int processID = communicator.getProcessID();
+    const bool isMultiGPU = numberOfProcesses > 1;
 
-    para->setTimestepStartOut(uint(tStartOut/dt) );
-    para->setTimestepOut( uint(tOut/dt) );
-    para->setTimestepEnd( uint(tEnd/dt) );
+    const real lengthXPerProcess = lengthX / numberOfProcesses;
+    const real overlap = 8.0 * deltaX;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const real xMin = processID * lengthXPerProcess;
+    const real xMax = (processID + 1) * lengthXPerProcess;
+    real xGridMin = processID * lengthXPerProcess;
+    real xGridMax = (processID + 1) * lengthXPerProcess;
 
-    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
-    tmFactory->readConfigFile( config );
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const real yMin = c0o1;
+    const real yMax = lengthY;
+    const real zMin = c0o1;
+    const real zMax = lengthZ;
 
-    const real xSplit = L_x/nProcs;
-    const real overlap = 8.0*dx;
+    const bool isFirstSubDomain = isMultiGPU && (processID == 0);
+    const bool isLastSubDomain = isMultiGPU && (processID == numberOfProcesses - 1);
+    const bool isMidSubDomain = isMultiGPU && !(isFirstSubDomain || isLastSubDomain);
 
-    real xMin      =  procID    * xSplit;
-    real xMax      = (procID+1) * xSplit;
-    real xGridMin  =  procID    * xSplit;
-    real xGridMax  = (procID+1) * xSplit;
-
-    real yMin      = 0.0;
-    real yMax      = L_y;
-    real zMin      = 0.0;
-    real zMax      = L_z; 
-
-    bool isFirstSubDomain = (procID == 0        && nProcs > 1)?                    true: false;
-    bool isLastSubDomain  = (procID == nProcs-1 && nProcs > 1)?                    true: false;
-    bool isMidSubDomain   = (!isFirstSubDomain && !isLastSubDomain && nProcs > 1)? true: false;
-    
-    if(isFirstSubDomain)
-    {
+    if (isFirstSubDomain){
         xGridMax += overlap;
-        if(!readPrecursor) xGridMin -= overlap;
     }
-    if(isLastSubDomain)
-    {
+    if (isFirstSubDomain && !usePrecursorInflow){
         xGridMin -= overlap;
-        if(!readPrecursor) xGridMax += overlap;
     }
-    if(isMidSubDomain)
-    {
+
+    if (isLastSubDomain){
+        xGridMin -= overlap;
+    }
+
+    if (isLastSubDomain && !usePrecursorInflow){
+        xGridMax += overlap;
+    }
+
+    if (isMidSubDomain) {
         xGridMax += overlap;
         xGridMin -= overlap;
     }
+
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
+    auto scalingFactory = GridScalingFactory();
 
-    gridBuilder->addCoarseGrid( xGridMin,  0.0,  0.0,
-                                xGridMax,  L_y,  L_z, dx);
+    gridBuilder->addCoarseGrid(xGridMin, c0o1, c0o1, xGridMax, lengthY, lengthZ, deltaX);
 
-
-    if(useRefinement)// Add refinement
-    {
-        gridBuilder->setNumberOfLayers(4,0);
-        real xMaxRefinement = readPrecursor? xGridMax-H: xGridMax;   //Stop refinement some distance before outlet if domain ist not periodic
-        gridBuilder->addGrid( std::make_shared<Cuboid>( xGridMin, 0.f, 0.f, xMaxRefinement, L_y,  0.5*L_z) , 1 );
-        para->setMaxLevel(2);
+    if (useRefinement) {
+        gridBuilder->setNumberOfLayers(4, 0);
+        real xMaxRefinement = xGridMax;
+        if (usePrecursorInflow) {
+            xMaxRefinement = xGridMax - boundaryLayerHeight;
+        }
+        gridBuilder->addGrid(std::make_shared<Cuboid>(xGridMin, c0o1, c0o1, xMaxRefinement, lengthY, c1o2 * lengthZ), 1);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
 
-    if(nProcs > 1)
-    {
-            gridBuilder->setSubDomainBox(
-                        std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));        
-            gridBuilder->setPeriodicBoundaryCondition(false, true, false);
-    }
-    else         
-    { 
-        gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
+    if (numberOfProcesses > 1) {
+        gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));
+        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+    } else {
+        gridBuilder->setPeriodicBoundaryCondition(!usePrecursorInflow, true, false);
     }
 
-    if(!readPrecursor)
-    {
+    if (!usePrecursorInflow) {
         gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
     }
 
     gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
 
-    VF_LOG_INFO("Number of Processes {}, Process ID {} is first subdomain {}, is last subdomain {}, is mid subdomain {}", nProcs, procID, isFirstSubDomain, isLastSubDomain, isMidSubDomain);
-    
-    if(nProcs > 1){
+    //////////////////////////////////////////////////////////////////////////
+    // set parameters
+    //////////////////////////////////////////////////////////////////////////
+    auto para = std::make_shared<Parameter>(numberOfProcesses, communicator.getProcessID(), &config);
+
+    para->setOutputPrefix(simulationName);
+
+    para->setPrintFiles(true);
+
+    if (!usePrecursorInflow)
+        para->setForcing(pressureGradientLB, 0, 0);
+    para->setVelocityLB(velocityLB);
+    para->setViscosityLB(viscosityLB);
+    para->setVelocityRatio(deltaX / deltaT);
+    para->setViscosityRatio(deltaX * deltaX / deltaT);
+    para->setDensityRatio(c1o1);
+
+    para->setUseStreams(numberOfProcesses > 1);
+    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->setIsBodyForce(config.getValue<bool>("bodyForce"));
+
+    para->setTimestepStartOut(uint(timeStartOut / deltaT));
+    para->setTimestepOut(uint(timeOut / deltaT));
+    para->setTimestepEnd(uint(timeEnd / deltaT));
+
+    std::vector<uint> devices(10);
+    std::iota(devices.begin(), devices.end(), 0);
+    para->setDevices(devices);
+    para->setMaxDev(numberOfProcesses);
+    if (usePrecursorInflow) {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+            rho = c0o1;
+            vx = velocityProfile(coordZ) * deltaT / deltaX;
+            vy = c0o1;
+            vz = c0o1;
+        });
+    } else {
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+            const real relativeX = coordX / lengthX;
+            const real relativeY = coordY / lengthY;
+            const real relativeZ = coordZ / lengthZ;
+
+            const real horizontalPerturbation = sin(cPi * c16o1 * relativeX);
+            const real verticalPerturbation = sin(cPi * c8o1 * relativeZ) / (pow(relativeZ, c2o1) + c1o1);
+            const real perturbation = c2o1 * horizontalPerturbation * verticalPerturbation;
+
+            rho = c0o1;
+            vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * abs(relativeY - c1o2)) * deltaT / deltaX;
+            vy = perturbation * deltaT / deltaX;
+            vz = c8o1 * frictionVelocity / vonKarmanConstant *
+                 (sin(cPi * c8o1 * coordY / boundaryLayerHeight) * sin(cPi * c8o1 * relativeZ) +
+                  sin(cPi * c8o1 * relativeX)) /
+                 (pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;
+        });
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (numberOfProcesses > 1) {
         if (isFirstSubDomain || isMidSubDomain) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, procID+1);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, processID + 1);
         }
 
         if (isLastSubDomain || isMidSubDomain) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::MX, true);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, procID-1);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, processID - 1);
         }
 
-        if (isFirstSubDomain && !readPrecursor) {
+        if (isFirstSubDomain && !usePrecursorInflow) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, nProcs-1);
+            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, numberOfProcesses - 1);
         }
 
-        if (isLastSubDomain && !readPrecursor) {
+        if (isLastSubDomain && !usePrecursorInflow) {
             gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
             gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
         }
     }
 
-    
-    
-    if(readPrecursor)
-    {
-        VF_LOG_INFO("Precursor directory {}", precursorDirectory);
-        if(isFirstSubDomain || nProcs == 1)
-        {   
+    if (usePrecursorInflow) {
+        if (!isMultiGPU || isFirstSubDomain) {
             auto precursor = createFileCollection(precursorDirectory + "/precursor", FileType::VTK);
             gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
         }
 
-        if(isLastSubDomain || nProcs == 1)
-        {
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
-        }     
-    } 
+        if (!isMultiGPU || isLastSubDomain) {
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, c0o1);
+        }
+    }
 
-    uint samplingOffset = 2;
-    gridBuilder->setStressBoundaryCondition(SideType::MZ,
-                                            0.0, 0.0, 1.0,              // wall normals
-                                            samplingOffset, z0, dx);    // wall model settinng
+    gridBuilder->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffsetWallModel, roughnessLength,
+                                            deltaX);
 
-    para->setHasWallModelMonitor(true);   
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0f,  0.0f, -1.0f); 
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
 
+    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity); 
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
-    bcFactory.setPrecursorBoundaryCondition(useDistributions ? BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor : BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
-    para->setOutflowPressureCorrectionFactor(0.0); 
-
-    if(readPrecursor)
-    {
-        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-        rho = c0o1;
-        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1)) * dt/dx; 
-        vy  = c0o1; 
-        vz  = c0o1;
-        });
-    }
-    else
-    {
-        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-        rho = c0o1;
-        vx  = (u_star/c4o10 * log(coordZ/z0+c1o1) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))*(c1o1-0.1f*abs(coordY/L_y-0.5)) * dt/dx; 
-        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1) * dt/dx;
-        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/H)*sin(cPi*c8o1*coordZ/H)+sin(cPi*c8o1*coordX/L_x))/(pow(c1o2*L_z-coordZ, c2o1)+c1o1) * dt/dx;
-        });
+    if (useDistributionsForPrecursor) {
+        bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor);
+    } else {
+        bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
     }
 
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if(!readPrecursor && (isFirstSubDomain || nProcs == 1))
-    {
-        SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    //////////////////////////////////////////////////////////////////////////
+    // add probes
+    //////////////////////////////////////////////////////////////////////////
+    if (!usePrecursorInflow && (isFirstSubDomain || !isMultiGPU)) {
+        const auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
+            "planeProbe", para->getOutputPath(), timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,
+            timeStepStartOutProbe, timeStepOutProbe, 'z');
         planarAverageProbe->addAllAvailableStatistics();
         planarAverageProbe->setFileNameToNOut();
-        para->addProbe( planarAverageProbe );
+        para->addProbe(planarAverageProbe);
 
-        para->setHasWallModelMonitor(true);
-        SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
+        const auto wallModelProbe = std::make_shared<WallModelProbe>(
+            "wallModelProbe", para->getOutputPath(), timeStepStartAveraging, timeStepStartTemporalAveraging,
+            timeStepAveraging / 4, timeStepStartOutProbe, timeStepOutProbe);
+
         wallModelProbe->addAllAvailableStatistics();
         wallModelProbe->setFileNameToNOut();
         wallModelProbe->setForceOutputToStress(true);
-        if(para->getIsBodyForce())
+        if (para->getIsBodyForce())
             wallModelProbe->setEvaluatePressureGradient(true);
-        para->addProbe( wallModelProbe );
+        para->addProbe(wallModelProbe);
+
+        para->setHasWallModelMonitor(true);
     }
 
-    for(int i=0; i<3; i++)
-    {
-        SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("horizontalProbe"+std::to_string(i), para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe->setProbePlane(0, 0, i*L_z/4., L_x, L_y, dx);
-        planeProbe->addAllAvailableStatistics();
-        para->addProbe( planeProbe );
+    for (int iPlane = 0; iPlane < 3; iPlane++) {
+        const std::string name = "pointProbe" + std::to_string(iPlane);
+        const auto horizontalProbe =
+            std::make_shared<PlaneProbe>(name, para->getOutputPath(), timeStepStartAveraging, averagingTimestepsPlaneProbes,
+                                         timeStepStartOutProbe, timeStepOutProbe);
+        horizontalProbe->setProbePlane(c0o1, c0o1, iPlane * lengthZ / c4o1, lengthX, lengthY, deltaX);
+        horizontalProbe->addAllAvailableStatistics();
+        para->addProbe(horizontalProbe);
     }
 
-    SPtr<PlaneProbe> planeProbe1 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_1", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-    planeProbe1->setProbePlane(c1o2*L_x, 0.0, 0, dx, L_y, L_z);
-    planeProbe1->addAllAvailableStatistics();
-    para->addProbe( planeProbe1 );
+    auto crossStreamPlane =
+        std::make_shared<PlaneProbe>("crossStreamPlane", para->getOutputPath(), timeStartAveraging / deltaT,
+                                     averagingTimestepsPlaneProbes, timeStepStartOutProbe, timeOutProbe / deltaT);
+    crossStreamPlane->setProbePlane(c1o2 * lengthX, c0o1, c0o1, deltaX, lengthY, lengthZ);
+    crossStreamPlane->addAllAvailableStatistics();
+    para->addProbe(crossStreamPlane);
 
-    if(readPrecursor)
-    {
-        SPtr<PlaneProbe> planeProbe2 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_2", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe2->setProbePlane(1000.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe2->addAllAvailableStatistics();
-        para->addProbe( planeProbe2 );
-
-        SPtr<PlaneProbe> planeProbe3 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_3", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe3->setProbePlane(1500.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe3->addAllAvailableStatistics();
-        para->addProbe( planeProbe3 );
-
-        SPtr<PlaneProbe> planeProbe4 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_4", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe4->setProbePlane(2000.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe4->addAllAvailableStatistics();
-        para->addProbe( planeProbe4 );
-
-        SPtr<PlaneProbe> planeProbe5 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_5", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe5->setProbePlane(2500.0, 0.0, 0, dx, L_y, L_z);
-        planeProbe5->addAllAvailableStatistics();
-        para->addProbe( planeProbe5 );
-
-        SPtr<PlaneProbe> planeProbe6 = SPtr<PlaneProbe>( new PlaneProbe("planeProbe_6", para->getOutputPath(), tStartAveraging/dt, 10, tStartOutProbe/dt, tOutProbe/dt) );
-        planeProbe6->setProbePlane(0.0, L_y/2.0, 0, L_x, dx, L_z);
-        planeProbe6->addAllAvailableStatistics();
-        para->addProbe( planeProbe6 );
+    if (usePrecursorInflow) {
+        auto streamwisePlane =
+            std::make_shared<PlaneProbe>("streamwisePlane", para->getOutputPath(), timeStartAveraging / deltaT,
+                                         averagingTimestepsPlaneProbes, timeStepStartOutProbe, timeOutProbe / deltaT);
+        streamwisePlane->setProbePlane(c0o1, c1o2 * lengthY, c0o1, lengthX, deltaX, lengthZ);
+        streamwisePlane->addAllAvailableStatistics();
+        para->addProbe(streamwisePlane);
     }
 
-    if(writePrecursor)
-    {
-        SPtr<PrecursorWriter> precursorWriter = std::make_shared<PrecursorWriter>("precursor", para->getOutputPath()+precursorDirectory, posXPrecursor, 0, L_y, 0, L_z, tStartPrecursor/dt, nTWritePrecursor, useDistributions? OutputVariable::Distributions: OutputVariable::Velocities, 1000);
+    if (writePrecursor) {
+        const std::string fullPrecursorDirectory = para->getOutputPath() + precursorDirectory;
+        const auto outputVariable =
+            useDistributionsForPrecursor ? OutputVariable::Distributions : OutputVariable::Velocities;
+        auto precursorWriter = std::make_shared<PrecursorWriter>(
+            "precursor", fullPrecursorDirectory, positionXPrecursorSamplingPlane, c0o1, lengthY, c0o1, lengthZ,
+            timeStepStartPrecursor, timeStepsWritePrecursor, outputVariable, maximumNumberOfTimestepsPerPrecursorFile);
         para->addProbe(precursorWriter);
     }
+
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     auto gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
+    auto tmFactory = std::make_shared<TurbulenceModelFactory>(para);
+    tmFactory->readConfigFile(config);
+
+    VF_LOG_INFO("Start Running ActuatorLine Showcase...\n");
+
+    VF_LOG_INFO("world parameter:");
+    VF_LOG_INFO("--------------");
+    VF_LOG_INFO("dt [s]                 = {}", deltaT);
+    VF_LOG_INFO("world_domain   [m]     = {},{},{}", lengthX, lengthY, lengthZ);
+    VF_LOG_INFO("geostrophic wind [m/s] = {}", velocityProfile(boundaryLayerHeight));
+    VF_LOG_INFO("dx [m]                 = {}", deltaX);
+    VF_LOG_INFO("");
+
+    VF_LOG_INFO("LB parameter:");
+    VF_LOG_INFO("--------------");
+    VF_LOG_INFO("lb_velocity [dx/dt]    = {}", velocityLB);
+    VF_LOG_INFO("lb_viscosity [dx^2/dt] = {}", viscosityLB);
+    VF_LOG_INFO("");
+
+    VF_LOG_INFO("simulation parameter:");
+    VF_LOG_INFO("--------------");
+    VF_LOG_INFO("n timesteps            = {}", timeStepOut);
+    VF_LOG_INFO("write_nth_timestep     = {}", timeStepEnd);
+    VF_LOG_INFO("output_path            = {}", para->getOutputPath());
+    VF_LOG_INFO("");
+
+    VF_LOG_INFO("process parameter:");
+    VF_LOG_INFO("Number of Processes {} process ID {}", numberOfProcesses, processID);
+    if (isFirstSubDomain)
+        VF_LOG_INFO("Process ID {} is the first subdomain");
+    if (isLastSubDomain)
+        VF_LOG_INFO("Process ID {} is the last subdomain");
+    if (isMidSubDomain)
+        VF_LOG_INFO("Process ID {} is a mid subdomain");
 
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory, &scalingFactory);
     sim.run();
 }
 
-int main( int argc, char* argv[])
+int main(int argc, char* argv[])
 {
-    if ( argv != NULL )
-    {
-        try
-        {
-            vf::logging::Logger::initializeLogger();
-
-            if( argc > 1){ path = argv[1]; }
-
-            multipleLevel(path + "/configBoundaryLayer.txt");
-        }
-        catch (const spdlog::spdlog_ex &ex) {
-            std::cout << "Log initialization failed: " << ex.what() << std::endl;
-        }
-
-        catch (const std::bad_alloc& e)
-        {
-            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
-        }
-        catch (const std::exception& e)
-        {
-            VF_LOG_CRITICAL("exception: {}", e.what());
-        }
-        catch (...)
-        {
-            VF_LOG_CRITICAL("Unknown exception!");
-        }
+    try {
+        vf::logging::Logger::initializeLogger();
+        auto config = vf::basics::loadConfig(argc, argv, "./configBoundaryLayer.txt");
+        run(config);
+    } catch (const spdlog::spdlog_ex& ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    } catch (const std::bad_alloc& e) {
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
+    } catch (const std::exception& e) {
+        VF_LOG_CRITICAL("exception: {}", e.what());
+    } catch (...) {
+        VF_LOG_CRITICAL("Unknown exception!");
     }
+
     return 0;
 }
