@@ -13,6 +13,7 @@ add_subdirectory(src/gpu/core)
 if(BUILD_VF_ALL_SAMPLES)
     list(APPEND USER_APPS
     "apps/gpu/DrivenCavityMultiGPU"
+    "apps/gpu/AtmosphericBoundaryLayer"
     "apps/gpu/ActuatorLine"
     "apps/gpu/SphereScaling" 
     "apps/gpu/TGV_3D"
@@ -21,7 +22,6 @@ endif()
 
 add_subdirectory(apps/gpu/DrivenCavity)
 add_subdirectory(apps/gpu/SphereInChannel)
-add_subdirectory(apps/gpu/AtmosphericBoundaryLayer)
 
 #############################################################
 ###                   Numeric Tests                       ###
