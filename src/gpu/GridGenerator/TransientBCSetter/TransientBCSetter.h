@@ -1,23 +1,23 @@
 #ifndef TRANSIENTBCSETTER_H_
 #define TRANSIENTBCSETTER_H_
 
-#include "DataTypes.h"
-#include <StringUtilities/StringUtil.h>
-#include "PointerDefinitions.h"
-
+#include <cmath>
+#include <future>
 #include <string>
 #include <vector>
-#include <math.h>
-#include <sstream>
-#include <future>
+
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <StringUtilities/StringUtil.h>
+
+
 class Grid;
 namespace gg
 {
     class BoundaryCondition;
 }
 
-
-enum class FileType
+enum class TransientBCFileType
 {
     VTK
 };
@@ -32,8 +32,8 @@ struct Quantity
 class VTKFile
 {
 public: 
-    explicit VTKFile(std::string _fileName): 
-    fileName(_fileName)
+    explicit VTKFile(std::string fileName): 
+    fileName(fileName)
     {
         readHeader();
         this->loaded = false;
@@ -42,39 +42,39 @@ public:
 
     void getData(real* data, uint numberOfNodes, const std::vector<uint>& readIndices, const std::vector<uint>& writeIndices, uint offsetRead, uint offsetWrite);
     bool markNANs(const std::vector<uint>& readIndices) const;
-    bool inBoundingBox(real posX, real posY, real posZ){return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
-    bool inXBounds(real posX){ return posX<=maxX && posX>=minX; };
-    bool inYBounds(real posY){ return posY<=maxY && posY>=minY; };
-    bool inZBounds(real posZ){ return posZ<=maxZ && posZ>=minZ; };
-    int findNeighborMMM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)  , getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborMMP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)  , getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborMPM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)+1, getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborMPP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)+1, getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborPMM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)  , getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborPMP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)  , getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborPPM(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)+1, getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int findNeighborPPP(real posX, real posY, real posZ){ int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)+1, getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
-    int getIdxX(int linearIdx){ return linearIdx%nx;};
-    int getIdxY(int linearIdx){ return (linearIdx/nx)%ny;};
-    int getIdxZ(int linearIdx){ return linearIdx/(nx*ny); };
-    real getX(int linearIdx){ return getIdxX(linearIdx)*deltaX+minX; };
-    real getY(int linearIdx){ return getIdxY(linearIdx)*deltaY+minY; };
-    real getZ(int linearIdx){ return getIdxZ(linearIdx)*deltaZ+minZ; };
-    int getIdxM00(real posX){ return (posX-minX)/deltaX; };
-    int getIdx0M0(real posY){ return (posY-minY)/deltaY; };
-    int getIdx00M(real posZ){ return (posZ-minZ)/deltaZ; };
-    int getClosestIdxX(real posX){ int x = round((posX-minX)/deltaX); return x>nx ? nx : (x<0 ? 0 : x);};
-    int getClosestIdxY(real posY){ int y = round((posY-minY)/deltaY); return y>ny ? ny : (y<0 ? 0 : y);};
-    int getClosestIdxZ(real posZ){ int z = round((posZ-minZ)/deltaZ); return z>nz ? nz : (z<0 ? 0 : z);};
-    int getLinearIndex(int idxX, int idxY, int idxZ){ return idxX + nx*(idxY+ny*idxZ); };
-    int getNumberOfPointsInXYPlane(){ return nx*ny; }
-    int getNumberOfPointsInYZPlane(){ return ny*nz; }
-    int getNumberOfPointsInXZPlane(){ return nx*nz; }
-    int getNumberOfPoints(){ return nx*ny*nz; }
+    bool inBoundingBox(real posX, real posY, real posZ) const{return  inXBounds(posX) && inYBounds(posY) && inZBounds(posZ); };
+    bool inXBounds(real posX) const{ return posX<=maxX && posX>=minX; };
+    bool inYBounds(real posY) const{ return posY<=maxY && posY>=minY; };
+    bool inZBounds(real posZ) const{ return posZ<=maxZ && posZ>=minZ; };
+    int findNeighborMMM(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)  , getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMMP(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)  , getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMPM(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)+1, getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborMPP(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)  , getIdx0M0(posY)+1, getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPMM(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)  , getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPMP(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)  , getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPPM(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)+1, getIdx00M(posZ)  ); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int findNeighborPPP(real posX, real posY, real posZ) const{ const int idx = getLinearIndex(getIdxM00(posX)+1, getIdx0M0(posY)+1, getIdx00M(posZ)+1); return (idx>=0) && (idx<nx*ny*nz) ? idx : -1; };
+    int getIdxX(int linearIdx) const{ return linearIdx%nx;};
+    int getIdxY(int linearIdx) const{ return (linearIdx/nx)%ny;};
+    int getIdxZ(int linearIdx) const{ return linearIdx/(nx*ny); };
+    real getX(int linearIdx) const{ return getIdxX(linearIdx)*deltaX+minX; };
+    real getY(int linearIdx) const{ return getIdxY(linearIdx)*deltaY+minY; };
+    real getZ(int linearIdx) const{ return getIdxZ(linearIdx)*deltaZ+minZ; };
+    int getIdxM00(real posX) const{ return (posX-minX)/deltaX; };
+    int getIdx0M0(real posY) const{ return (posY-minY)/deltaY; };
+    int getIdx00M(real posZ) const{ return (posZ-minZ)/deltaZ; };
+    int getClosestIdxX(real posX) const{ const int x = round((posX-minX)/deltaX); return x>nx ? nx : (x<0 ? 0 : x);};
+    int getClosestIdxY(real posY) const{ const int y = round((posY-minY)/deltaY); return y>ny ? ny : (y<0 ? 0 : y);};
+    int getClosestIdxZ(real posZ) const{ const int z = round((posZ-minZ)/deltaZ); return z>nz ? nz : (z<0 ? 0 : z);};
+    int getLinearIndex(int idxX, int idxY, int idxZ) const{ return idxX + nx*(idxY+ny*idxZ); };
+    int getNumberOfPointsInXYPlane() const{ return nx*ny; }
+    int getNumberOfPointsInYZPlane() const{ return ny*nz; }
+    int getNumberOfPointsInXZPlane() const{ return nx*nz; }
+    int getNumberOfPoints() const{ return nx*ny*nz; }
     size_t getNumberOfQuantities(){ return quantities.size(); }
     void loadFile();
     void unloadFile();
-    bool isLoaded(){return loaded;};
+    bool isLoaded() const{return loaded;};
 
 
 private:
@@ -95,14 +95,14 @@ private:
 class FileCollection
 {
 public:
-    FileCollection(std::string _prefix): 
-    prefix(_prefix){};
+    FileCollection(std::string prefix): 
+    prefix(prefix){};
 
     virtual ~FileCollection() = default;
 
     virtual size_t getNumberOfQuantities() = 0;
 
-    virtual FileType getFileType() = 0;
+    virtual TransientBCFileType getFileType() = 0;
 
 protected:
     std::string prefix;
@@ -112,13 +112,13 @@ protected:
 class VTKFileCollection : public FileCollection
 {
 public:
-    VTKFileCollection(std::string _prefix): 
-    FileCollection(_prefix)
+    VTKFileCollection(std::string prefix): 
+    FileCollection(prefix)
     {
         findFiles();
     };
 
-    FileType getFileType() override{ return FileType::VTK; };
+    TransientBCFileType getFileType() override{ return TransientBCFileType::VTK; };
     size_t getNumberOfQuantities() override{ return files[0][0][0].getNumberOfQuantities(); }
     
 
@@ -152,9 +152,9 @@ public:
 
     virtual void getNextData(real* data, uint numberOfNodes, real time)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
-    uint getNPoints(){return nPoints; };
-    uint getNPointsRead(){return nPointsRead; };
-    size_t getNumberOfQuantities(){ return nQuantities; };
+    uint getNPoints() const{return nPoints; };
+    uint getNPointsRead() const{return nPointsRead; };
+    size_t getNumberOfQuantities() const{ return nQuantities; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
     void getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM);
     void getWeights(real* _weights0PP, real* _weights0PM, real* _weights0MP, real* _weights0MM);
@@ -173,9 +173,9 @@ protected:
 class VTKReader : public TransientBCInputFileReader
 {
 public:
-    VTKReader(SPtr<VTKFileCollection> _fileCollection, uint _readLevel):
-    fileCollection(_fileCollection), 
-    readLevel(_readLevel)
+    VTKReader(SPtr<VTKFileCollection> fileCollection, uint readLevel):
+    fileCollection(fileCollection), 
+    readLevel(readLevel)
     {
         this->nQuantities = fileCollection->getNumberOfQuantities();
         read = std::async([](){});
@@ -195,7 +195,7 @@ private:
 };
 
 
-SPtr<FileCollection> createFileCollection(std::string prefix, FileType type);
+SPtr<FileCollection> createFileCollection(std::string prefix, TransientBCFileType type);
 SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel);
 
 #endif //TRANSIENTBCSETTER_H_
