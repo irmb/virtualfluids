@@ -20,7 +20,7 @@ if(BUILD_VF_ALL_SAMPLES)
 endif()
 
 add_subdirectory(apps/gpu/DrivenCavity)
-add_subdirectory(apps/gpu/SphereGPU)
+add_subdirectory(apps/gpu/SphereInChannel)
 add_subdirectory(apps/gpu/BoundaryLayer)
 
 #############################################################
