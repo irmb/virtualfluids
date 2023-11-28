@@ -21,7 +21,7 @@ endif()
 
 add_subdirectory(apps/gpu/DrivenCavity)
 add_subdirectory(apps/gpu/SphereInChannel)
-add_subdirectory(apps/gpu/BoundaryLayer)
+add_subdirectory(apps/gpu/AtmosphericBoundaryLayer)
 
 #############################################################
 ###                   Numeric Tests                       ###

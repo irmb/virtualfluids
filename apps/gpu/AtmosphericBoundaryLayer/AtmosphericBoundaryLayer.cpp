@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BoundaryLayer.cpp
-//! \ingroup BoundaryLayer
 //! \author Henry Korb, Henrik Asmuth
 //=======================================================================================
 #define _USE_MATH_DEFINES
@@ -455,7 +453,7 @@ int main(int argc, char* argv[])
         auto config = vf::basics::loadConfig(argc, argv, "./configBoundaryLayer.txt");
         run(config);
     } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+        std::cout << "Log initialization failed: " << ex.what() << '\n';
     } catch (const std::bad_alloc& e) {
         VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     } catch (const std::exception& e) {

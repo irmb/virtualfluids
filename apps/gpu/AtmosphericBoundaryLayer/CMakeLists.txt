@@ -1,0 +1,7 @@
+PROJECT(AtmosphericBoundaryLayer LANGUAGES CUDA CXX)
+
+vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES AtmosphericBoundaryLayer.cpp)
+
+set_source_files_properties(AtmosphericBoundaryLayer.cpp PROPERTIES LANGUAGE CUDA)
+
+set_target_properties(AtmosphericBoundaryLayer PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
