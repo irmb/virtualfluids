@@ -14,7 +14,7 @@ tOut                = 100000
 tEnd                = 1202
 ##################################################
 tStartAveraging     = 600
-tStartTmpAveraging  = 6000
+tStartTmpAveraging  = 600
 tAveraging          = 600
 tStartOutProbe      = 600
 tOutProbe           = 600
