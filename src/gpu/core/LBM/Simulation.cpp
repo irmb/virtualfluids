@@ -28,9 +28,6 @@
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
-#include "FindQ/FindQ.h"
-#include "FindQ/DefineBCs.h"
-//////////////////////////////////////////////////////////////////////////
 #include "Calculation/UpdateGrid27.h"
 #include "Calculation/PlaneCalculations.h"
 #include "Calculation/DragLift.h"
