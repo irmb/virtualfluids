@@ -40,8 +40,6 @@
 #ifndef PlanarAverageProbe_H
 #define PlanarAverageProbe_H
 
-#include <iostream>
-
 #include "Probe.h"
 
 __global__ void moveIndicesInNegNormalDir( uint* pointIndices, uint nPoints, uint* neighborWSB, uint* neighborInplane1, uint* neighborInplane2, real* coordsX, real* coordsY, real* coordsZ ); 
@@ -52,33 +50,16 @@ __global__ void moveIndicesInPosNormalDir( uint* pointIndices, uint nPoints, uin
 
 class PlanarAverageProbe : public Probe
 {
-public: 
-    PlanarAverageProbe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        uint _tStartAvg,
-        uint _tStartTmpAvg,
-        uint _tAvg,
-        uint _tStartOut,
-        uint _tOut,
-        char _planeNormal
-    ):  Probe(_probeName, 
-             _outputPath,
-             _tStartAvg,
-             _tStartTmpAvg,
-             _tAvg,
-             _tStartOut, 
-             _tOut,
-             false,
-             false),
-        planeNormal(_planeNormal)
-
-    {   
+public:
+    PlanarAverageProbe(const std::string _probeName, const std::string _outputPath, uint _tStartAvg, uint _tStartTmpAvg,
+                       uint _tAvg, uint _tStartOut, uint _tOut, char _planeNormal)
+        : Probe(_probeName, _outputPath, _tStartAvg, _tStartTmpAvg, _tAvg, _tStartOut, _tOut, false, false),
+          planeNormal(_planeNormal)
+    {
         if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
         if(!(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z')) 
             throw std::runtime_error("PlanarAverageProbe: planeNormal must be 'x', 'y' or 'z'!");
     }
-
 
 private:
     bool isAvailableStatistic(Statistic _variable) override;
