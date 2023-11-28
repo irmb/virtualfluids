@@ -1,7 +1,7 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path = .
+Path = ./output/
 ##################################################
 #informations for reading
 ##################################################
@@ -15,17 +15,16 @@ tEnd                = 300000
 ##################################################
 tStartAveraging     = 0
 tStartTmpAveraging  = 100000
-tAveraging          = 200
+tAveraging          = 1000
 tStartOutProbe      = 0
 tOutProbe           = 1000
 ##################################################
-Ma = 0.1
-nz = 96
+NodesPerBoundaryLayerHeight = 96
 
-periodicShift = 1100
-refinement = false
+PeriodicShift = 1100
+Refinement = false
 
-bodyForce = true
+##################################################
 TurbulenceModel = QR
 SGSconstant = 0.333333
 QuadricLimiterP = 100000.0
@@ -33,12 +32,12 @@ QuadricLimiterM = 100000.0
 QuadricLimiterD = 100000.0
 
 ##################################################
-readPrecursor = false
+ReadPrecursor = false
 nTimestepsReadPrecursor = 10
-precursorFile = precursor/Precursor
+PrecursorFile = precursor/Precursor
 
 ##################################################
-writePrecursor = false
+WritePrecursor = false
 nTimestepsWritePrecursor = 10
 
 tStartPrecursor = 100

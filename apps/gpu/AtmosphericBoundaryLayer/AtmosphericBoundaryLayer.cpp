@@ -88,6 +88,8 @@ void run(const vf::basics::ConfigurationFile& config)
     const uint samplingOffsetWallModel = 2;
     const uint averagingTimestepsPlaneProbes = 10;
     const uint maximumNumberOfTimestepsPerPrecursorFile = 1000;
+    const real viscosity = 1.56e-5;
+    const real machNumber = 0.1;
 
     const real boundaryLayerHeight = config.getValue("boundaryLayerHeight", 1000.0);
 
@@ -99,28 +101,24 @@ void run(const vf::basics::ConfigurationFile& config)
     const real frictionVelocity = config.getValue("u_star", c4o10);
     const real vonKarmanConstant = config.getValue("vonKarmanConstant", c4o10);
 
-    const real viscosity = config.getValue("viscosity", 1.56e-5);
+    const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
 
-    const real machNumber = config.getValue<real>("Ma", 0.1);
+    const float periodicShift = config.getValue<float>("PeriodicShift", c0o1);
 
-    const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("nodesPerBoundaryLayerHeight", 64);
+    const bool writePrecursor = config.getValue("WritePrecursor", false);
 
-    const float periodicShift = config.getValue<float>("periodicShift", c0o1);
-
-    const bool writePrecursor = config.getValue("writePrecursor", false);
-
-    const bool useDistributionsForPrecursor = config.getValue<bool>("useDistributions", false);
-    std::string precursorDirectory = config.getValue<std::string>("precursorDirectory", "precursor/");
+    const bool useDistributionsForPrecursor = config.getValue<bool>("UseDistributions", false);
+    std::string precursorDirectory = config.getValue<std::string>("PrecursorDirectory", "precursor/");
     if(precursorDirectory.back() != '/')
         precursorDirectory += '/';
     const int timeStepsWritePrecursor = config.getValue<int>("nTimestepsWritePrecursor", 10);
     const real timeStartPrecursor = config.getValue<real>("tStartPrecursor", 36000.);
     const real positionXPrecursorSamplingPlane = config.getValue<real>("posXPrecursor", c1o2 * lengthX);
 
-    const bool usePrecursorInflow = config.getValue("readPrecursor", false);
+    const bool usePrecursorInflow = config.getValue("ReadPrecursor", false);
     const int timestepsBetweenReadsPrecursor = config.getValue<int>("nTimestepsReadPrecursor", 10);
 
-    const bool useRefinement = config.getValue<bool>("refinement", false);
+    const bool useRefinement = config.getValue<bool>("Refinement", false);
 
     // all in s
     const float timeStartOut = config.getValue<real>("tStartOut");
@@ -442,6 +440,7 @@ void run(const vf::basics::ConfigurationFile& config)
         VF_LOG_INFO("Process ID {} is the last subdomain");
     if (isMidSubDomain)
         VF_LOG_INFO("Process ID {} is a mid subdomain");
+    printf("\n");
 
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, tmFactory, &scalingFactory);
     sim.run();

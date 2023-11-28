@@ -19,7 +19,7 @@ tAveraging          = 600
 tStartOutProbe      = 600
 tOutProbe           = 600
 ##################################################
-NodesPerBoundaryLayerHeight = 24
+NodesPerBoundaryLayerHeight = 48
 
 ##################################################
 PeriodicShift = 1100
