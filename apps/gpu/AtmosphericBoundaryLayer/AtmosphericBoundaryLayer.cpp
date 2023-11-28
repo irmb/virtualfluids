@@ -348,7 +348,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
     if (!usePrecursorInflow && (isFirstSubDomain || !isMultiGPU)) {
         const auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
-            "planeProbe", para->getOutputPath(), timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,
+            "planarAverageProbe", para->getOutputPath(), timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,
             timeStepStartOutProbe, timeStepOutProbe, 'z');
         planarAverageProbe->addAllAvailableStatistics();
         planarAverageProbe->setFileNameToNOut();
