@@ -9,12 +9,10 @@ REFERENCE_DATA_DIR=regression_tests/gpu/SphereInChannel
 CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75"
 
 # 3. define the application to be executed
-APPLICATION=./build/bin/SphereGPU
+APPLICATION="./build/bin/SphereInChannel ./apps/gpu/SphereInChannel/sphere_1level.cfg"
 
 # 4. set the path to the produced data
-RESULT_DATA_DIR=output/Sphere
+RESULT_DATA_DIR=output/SphereInChannel_1Level
 
 
 run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
-
-# fieldcompare dir output/Sphere reference_data/regression_tests/gpu/SphereInChannel --include-files "*.vtu"

@@ -6,15 +6,15 @@ source ./regression-tests/__regression_test_executer.sh
 REFERENCE_DATA_DIR=regression_tests/gpu/SphereInChannel_3Levels
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75 -DUSER_APPS=apps/gpu/SphereRefined"
+CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75"
 
 # 3. define the application to be executed
-APPLICATION=./build/bin/SphereRefined
+APPLICATION="./build/bin/SphereInChannel ./apps/gpu/SphereInChannel/sphere_3level.cfg"
 
 # 4. set the path to the produced data
-RESULT_DATA_DIR=output/SphereRefined
+RESULT_DATA_DIR=output/SphereInChannel_3Level
 
 
 run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
 
-# fieldcompare dir output/Sphere reference_data/regression_tests/gpu/SphereInChannel --include-files "*.vtu"
+# fieldcompare dir output/SphereInChannel_3Level reference_data/regression_tests/gpu/SphereInChannelSphereInChannel_3Levels --include-files "*.vtu"
