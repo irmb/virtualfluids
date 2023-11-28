@@ -479,7 +479,7 @@ void run(string configname)
         //fnu.DefineConst("u", vx);
         //SPtr<SimulationObserver> nupr(new DecreaseViscositySimulationObserver(grid, nuSch, &fnu, comm));
 
-        SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
+        SPtr<UbScheduler> nupsSch(new UbScheduler(500, 1000, 3000));
         SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
         //omp_set_num_threads(numOfThreads);
