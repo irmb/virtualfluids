@@ -258,7 +258,6 @@ void run(const vf::basics::ConfigurationFile& config)
 
     para->setUseStreams(numberOfProcesses > 1);
     para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
-    para->setIsBodyForce(config.getValue<bool>("bodyForce"));
 
     para->setTimestepStartOut(uint(timeStartOut / deltaT));
     para->setTimestepOut(uint(timeOut / deltaT));
@@ -372,7 +371,7 @@ void run(const vf::basics::ConfigurationFile& config)
     }
 
     for (int iPlane = 0; iPlane < 3; iPlane++) {
-        const std::string name = "pointProbe" + std::to_string(iPlane);
+        const std::string name = "planeProbe" + std::to_string(iPlane);
         const auto horizontalProbe =
             std::make_shared<PlaneProbe>(name, para->getOutputPath(), timeStepStartAveraging, averagingTimestepsPlaneProbes,
                                          timeStepStartOutProbe, timeStepOutProbe);
