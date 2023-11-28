@@ -1,15 +1,25 @@
 ##################################################
-#informations for Writing
+#information for Writing
 ##################################################
 Path = ./output/ActuatorLine/
+
 ##################################################
-#informations for reading
+#information for reading
 ##################################################
 GridPath=.
+
 ##################################################
-ReferenceDiameter = 126
+RotorDiameter = 126
 NodesPerDiameter = 24
 Velocity = 9
+LengthXinDiameter = 10
+LengthYinDiameter = 4
+LengthZinDiameter = 4
+
+##################################################
+TurbinePositionsX = 378
+TurbinePositionsY = 0
+TurbinePositionsZ = 0
 
 ##################################################
 tStartOut=1000000
@@ -31,5 +41,6 @@ SGSconstant = 0.3333333
 QuadricLimiterP = 1.0
 QuadricLimiterM = 1.0
 QuadricLimiterD = 1.0
+
 ##################################################
 
