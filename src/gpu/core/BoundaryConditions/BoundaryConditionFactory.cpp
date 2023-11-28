@@ -126,12 +126,6 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
 {
     // for descriptions of the boundary conditions refer to the header
     switch (this->pressureBoundaryCondition) {
-        case PressureBC::PressureEquilibrium:
-            return QPressDev27;
-            break;
-        case PressureBC::PressureEquilibrium2:
-            return QPressDevEQZ27;
-            break;
         case PressureBC::PressureNonEquilibriumIncompressible:
             return PressureNonEquilibriumIncompressible;
             break;
