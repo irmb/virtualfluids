@@ -34,6 +34,7 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <filesystem>
 #include <helper_cuda.h>
 
 #include "gpu/core/GPU/GeometryUtils.h"
@@ -514,6 +515,7 @@ t0 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 */
     auto probeStruct = this->getProbeStruct(level);
+    std::filesystem::create_directories(this->outputPath);
     std::string fname = this->outputPath + this->makeTimeseriesFileName(level, para->getMyProcessID());
     std::ofstream out(fname.c_str(), std::ios::out | std::ios::binary);
 
