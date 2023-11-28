@@ -300,7 +300,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
             if(idx!=-1)
             {
                 // Filter for exact matches
-                if(abs(posY-file.getX(idx)) < max_diff && abs(posZ-file.getY(idx)) < max_diff) 
+                if(std::abs(posY-file.getX(idx)) < max_diff && std::abs(posZ-file.getY(idx)) < max_diff) 
                 {
                     this->weights0PP.emplace_back(1e6f);
                     this->weights0PM.emplace_back(c0o1);

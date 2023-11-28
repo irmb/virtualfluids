@@ -39,8 +39,8 @@ namespace transient_bc_setter
 
     void makeModule(py::module_ &parentModule)
     {
-        py::enum_<FileType>(parentModule, "FileType")
-        .value("VTK", FileType::VTK);
+        py::enum_<TransientBCFileType>(parentModule, "TransientBCFileType")
+        .value("VTK", TransientBCFileType::VTK);
 
         parentModule.def("create_file_collection", &createFileCollection, py::arg("prefix"), py::arg("type"));
 
