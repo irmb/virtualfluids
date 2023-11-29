@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
@@ -46,7 +47,7 @@
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
-void runVirtualFluids(const vf::basics::ConfigurationFile &config)
+void runVirtualFluids(const vf::basics::ConfigurationFile& config)
 {
     vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
     const auto numberOfProcesses = communicator.getNumberOfProcesses();
@@ -61,7 +62,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
     const std::string outPath("output/" + std::to_string(para->getNumprocs()) + "GPU/");
     const std::string gridPath = "output/";
-    std::string simulationName("DrivenCavityMultiGPU");
+    std::string simulationName("SphereMultiGPU");
 
     para->useReducedCommunicationAfterFtoC = para->getNumprocs() != 1;
 
@@ -69,13 +70,12 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
     const real reynoldsNumber = 1000.0;
     const real velocity = 1.0;
     const real velocityLB = 0.05;
-    const uint numberOfNodesX = 64;
+    const uint numberOfNodesX = 80;
 
     // compute  parameters in lattcie units
 
     const real dxGrid = length / real(numberOfNodesX);
     const real deltaT = velocityLB / velocity * dxGrid;
-    const real velocityLBinXandY = velocityLB / (real)sqrt(2.0);
     const real viscosityLB = numberOfNodesX * velocityLB / reynoldsNumber;
 
     // set parameters
@@ -98,13 +98,12 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
     // log simulation parameters
 
     VF_LOG_INFO("LB parameters:");
-    VF_LOG_INFO("total velocity LB [dx/dt]               = {}", velocityLB);
-    VF_LOG_INFO("velocityLB in x and y direction [dx/dt] = {}", velocityLBinXandY);
-    VF_LOG_INFO("viscosity LB [dx/dt]                    = {}", viscosityLB);
-    VF_LOG_INFO("dxGrid [-]                              = {}\n", dxGrid);
-    VF_LOG_INFO("deltaT [s]                              = {}", deltaT);
+    VF_LOG_INFO("velocity LB [dx/dt]              = {}", velocityLB);
+    VF_LOG_INFO("viscosity LB [dx/dt]             = {}", viscosityLB);
+    VF_LOG_INFO("dxGrid [-]                       = {}\n", dxGrid);
+    VF_LOG_INFO("deltaT [s]                       = {}", deltaT);
     VF_LOG_INFO("simulation parameters:");
-    VF_LOG_INFO("mainKernel                              = {}\n", para->getMainKernel());
+    VF_LOG_INFO("mainKernel                       = {}\n", para->getMainKernel());
 
     // configure simulation grid
 
@@ -121,10 +120,12 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
     gridBuilderFacade = std::make_unique<MultipleGridBuilderFacade>(std::move(domainDimensions), 8. * dxGrid);
 
+    gridBuilderFacade->addGeometry(std::make_shared<Sphere>(0.0, 0.0, 0.0, 0.1 * length));
+
     std::shared_ptr<Object> level1 = nullptr;
     if (useLevels) {
         gridBuilderFacade->setNumberOfLayersForRefinement(10, 8);
-        level1 = std::make_shared<Cuboid>(-0.25 * length, -0.25 * length, -0.25 * length, 0.25 * length, 0.25 * length, 0.25 * length);
+        level1 = std::make_shared<Sphere>(0.0, 0.0, 0.0, 0.25 * length);
         gridBuilderFacade->addFineGrid(level1, 1);
     }
 
@@ -137,7 +138,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
     if (numberOfProcesses == 2) {
         gridBuilderFacade->addDomainSplit(zSplit, MultipleGridBuilderFacade::CoordDirection::z);
     } else if (numberOfProcesses == 4) {
-        gridBuilderFacade->addDomainSplit(xSplit, MultipleGridBuilderFacade::CoordDirection::x);
+        gridBuilderFacade->addDomainSplit(xSplit, MultipleGridBuilderFacade::CoordDirection::y);
         gridBuilderFacade->addDomainSplit(zSplit, MultipleGridBuilderFacade::CoordDirection::z);
     } else if (numberOfProcesses == 8) {
         gridBuilderFacade->addDomainSplit(xSplit, MultipleGridBuilderFacade::CoordDirection::x);
@@ -152,17 +153,15 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
 
     // call after createGrids()
     gridBuilderFacade->setPeriodicBoundaryCondition(false, false, false);
-    gridBuilderFacade->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-    gridBuilderFacade->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-    gridBuilderFacade->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-    gridBuilderFacade->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-    gridBuilderFacade->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilderFacade->setVelocityBoundaryCondition(SideType::PZ, velocityLBinXandY, velocityLBinXandY, 0.0);
+    gridBuilderFacade->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+    gridBuilderFacade->setVelocityBoundaryCondition(SideType::MY, velocityLB, 0.0, 0.0);
+    gridBuilderFacade->setVelocityBoundaryCondition(SideType::PY, velocityLB, 0.0, 0.0);
+    gridBuilderFacade->setVelocityBoundaryCondition(SideType::MZ, velocityLB, 0.0, 0.0);
+    gridBuilderFacade->setVelocityBoundaryCondition(SideType::PZ, velocityLB, 0.0, 0.0);
+    gridBuilderFacade->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
-
-    // gridBuilder->writeGridsToVtk(outPath +  "/grid/part" + std::to_string(generatePart) + "_");
-    // SimulationFileWriter::write(gridPath + std::to_string(processID) + "/", gridBuilderFacade->getGridBuilder(), FILEFORMAT::BINARY);
+    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
 
     // move grid from grid generator to simulation
 
@@ -183,7 +182,7 @@ int main(int argc, char *argv[])
 
         try {
             VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/DrivenCavityMultiGPU/drivencavity_1gpu.cfg");
+            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/SphereMultiGPU/sphere_1gpu.cfg");
             runVirtualFluids(config);
 
             //////////////////////////////////////////////////////////////////////////

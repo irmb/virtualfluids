@@ -5,6 +5,7 @@
 #include "geometries/BoundingBox/BoundingBox.h"
 #include "geometries/Vertex/Vertex.h"
 
+
 using namespace testing;
 
 TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
@@ -19,7 +20,7 @@ TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
     real maxY = 50.0f;
     real maxZ = 12122.23f;
     Vertex v1 = Vertex(maxX, maxY - 10, minZ + 2);
-    Vertex v2 =  Vertex(minX, maxY, maxZ);
+    Vertex v2 = Vertex(minX, maxY, maxZ);
     Vertex v3 = Vertex(minX + 3, minY, minZ);
     Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
     Triangle t = Triangle(v1, v2, v3, normal);
@@ -29,7 +30,7 @@ TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
     EXPECT_THAT(box.minX, RealEq(minX));
     EXPECT_THAT(box.minY, RealEq(minY));
     EXPECT_THAT(box.minZ, RealEq(minZ));
-    
+
     EXPECT_THAT(box.maxX, RealEq(maxX));
     EXPECT_THAT(box.maxY, RealEq(maxY));
     EXPECT_THAT(box.maxZ, RealEq(maxZ));
@@ -47,9 +48,9 @@ TEST(BoundingBoxTest, isInside_true)
     box.maxY = 10.0f;
     box.maxZ = 10.0f;
 
-    Vertex v1 = Vertex(1,1,1);
-    Vertex v2 =  Vertex(2,2,2);
-    Vertex v3 = Vertex(3,3,3);
+    Vertex v1 = Vertex(1, 1, 1);
+    Vertex v2 = Vertex(2, 2, 2);
+    Vertex v3 = Vertex(3, 3, 3);
     Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
     Triangle t = Triangle(v1, v2, v3, normal);
 
@@ -68,9 +69,9 @@ TEST(BoundingBoxTest, isInside_false)
     box.maxY = 10.0f;
     box.maxZ = 10.0f;
 
-    Vertex v1 = Vertex(1,1,1);
-    Vertex v2 =  Vertex(2,2,2);
-    Vertex v3 = Vertex(3,3,11);
+    Vertex v1 = Vertex(1, 1, 1);
+    Vertex v2 = Vertex(2, 2, 2);
+    Vertex v3 = Vertex(3, 3, 11);
     Vertex normal = Vertex(0.0f, 0.0f, 0.0f);
     Triangle t = Triangle(v1, v2, v3, normal);
 

@@ -234,10 +234,10 @@ regression_test_4gpu:
     - cat output/4GPU/slurm4GPU.out
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereScaling_4GPU_2Levels
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereMultiGPU_4GPU_2Levels
     - cd ..
     - fieldcompare dir output/4GPU test_data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
-    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereScaling_4GPU_2Levels --include-files "SphereScaling*.vtu"
+    - fieldcompare dir output/4GPU test_data/regression_tests/gpu/SphereMultiGPU_4GPU_2Levels --include-files "SphereMultiGPU*.vtu"
 
   after_script:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket4GPU.yml --read-jobid-from hpcrocket4GPU.log
@@ -269,10 +269,10 @@ regression_test_8gpu:
     - cat output/8GPU/slurm8GPU.out
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereScaling_8GPU_2Levels
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereMultiGPU_8GPU_2Levels
     - cd ..
     - fieldcompare dir output/8GPU test_data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
-    - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereScaling_8GPU_2Levels --include-files "SphereScaling*.vtu"
+    - fieldcompare dir output/8GPU test_data/regression_tests/gpu/SphereMultiGPU_8GPU_2Levels --include-files "SphereMultiGPU*.vtu"
   
   after_script:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket8GPU.yml --read-jobid-from hpcrocket8GPU.log

@@ -15,20 +15,15 @@
 namespace NeighborDebugWriter
 {
 
-inline void writeNeighborLinkLines(LBMSimulationParameter *parH, int direction, const std::string &name,
-                                   WbWriter *writer)
+inline void writeNeighborLinkLines(LBMSimulationParameter *parH, int direction, const std::string &name, WbWriter *writer)
 {
     VF_LOG_INFO("Write node links in direction {}.", direction);
 
-    const unsigned long long numberOfNodes = parH->numberOfNodes;
     std::vector<UbTupleFloat3> nodes;
-    nodes.reserve(numberOfNodes);
     std::vector<UbTupleInt2> cells;
-    cells.reserve(numberOfNodes/2);
 
-    for (size_t position = 0; position < numberOfNodes; position++) {
-        if (parH->typeOfGridNode[position] != GEO_FLUID)
-            continue;
+    for (size_t position = 0; position < parH->numberOfNodes; position++) {
+        if (parH->typeOfGridNode[position] != GEO_FLUID) continue;
 
         const double x1 = parH->coordinateX[position];
         const double x2 = parH->coordinateY[position];
@@ -54,7 +49,8 @@ inline void writeNeighborLinkLinesDebug(Parameter *para)
         for (size_t direction = vf::lbm::dir::STARTDIR; direction <= vf::lbm::dir::ENDDIR; direction++) {
             const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_Link_" +
                                          std::to_string(direction) + "_Debug.vtk";
-            writeNeighborLinkLines(para->getParH(level).get(), (int)direction, fileName, WbWriterVtkXmlBinary::getInstance());
+            writeNeighborLinkLines(para->getParH(level).get(), (int)direction, fileName,
+                                   WbWriterVtkXmlBinary::getInstance());
         }
     }
 }

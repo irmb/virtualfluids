@@ -15,7 +15,7 @@ if(BUILD_VF_ALL_SAMPLES)
     "apps/gpu/DrivenCavityMultiGPU"
     "apps/gpu/AtmosphericBoundaryLayer"
     "apps/gpu/ActuatorLine"
-    "apps/gpu/SphereScaling" 
+    "apps/gpu/SphereMultiGPU" 
     "apps/gpu/TGV_3D"
     "apps/gpu/gridGeneratorTest")
 endif()

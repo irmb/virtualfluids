@@ -71,6 +71,12 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
     addGridToList(grid);
 }
 
+void MultipleGridBuilder::addCoarseGrid(const GridDimensions &gridDimensions)
+{
+    this->addCoarseGrid(gridDimensions.minX, gridDimensions.minY, gridDimensions.minZ, gridDimensions.maxX,
+                        gridDimensions.maxY, gridDimensions.maxZ, gridDimensions.delta);
+}
+
 void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject)
 {
     this->solidObject = solidObject;

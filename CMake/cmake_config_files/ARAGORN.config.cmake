@@ -10,6 +10,7 @@ set(CMAKE_CUDA_ARCHITECTURES 86)     # Nvidia GeForce RTX 3060
 set(GPU_APP "apps/gpu/")
 list(APPEND USER_APPS 
     "${GPU_APP}DrivenCavityMultiGPU"
-    "${GPU_APP}SphereScaling"
+    "${GPU_APP}SphereMultiGPU"
+    # "${GPU_APP}ChannelFlow"
     # "${GPU_APP}MusselOyster"
     )

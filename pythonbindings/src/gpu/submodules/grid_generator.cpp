@@ -41,6 +41,7 @@
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "gpu/GridGenerator/grid/GridDimensions.h"
 #include "basics/constants/NumericConstants.h"
 
 using namespace vf::basics::constant;
@@ -82,6 +83,9 @@ namespace grid_generator
         py::class_<TriangularMesh, Object, std::shared_ptr<TriangularMesh>>(gridGeneratorModule, "TriangularMesh")
         .def_static("make", &TriangularMesh::make, py::return_value_policy::reference);
 
+        py::class_<GridDimensions, std::shared_ptr<GridDimensions>>(gridGeneratorModule, "GridDimension")
+        .def(py::init<real, real, real, real, real, real, real>(), py::arg("min_x"), py::arg("max_x"), py::arg("min_y"), py::arg("max_y"), py::arg("min_z"), py::arg("max_z"), py::arg("delta"));
+
         py::class_<GridBuilder, std::shared_ptr<GridBuilder>>(gridGeneratorModule, "GridBuilder")
         .def("get_number_of_grid_levels", &GridBuilder::getNumberOfGridLevels);
 
@@ -103,7 +107,8 @@ namespace grid_generator
 
         py::class_<MultipleGridBuilder, LevelGridBuilder, std::shared_ptr<MultipleGridBuilder>>(gridGeneratorModule, "MultipleGridBuilder")
         .def(py::init())
-        .def("add_coarse_grid", &MultipleGridBuilder::addCoarseGrid, py::arg("start_x"), py::arg("start_y"), py::arg("start_z"), py::arg("end_x"), py::arg("end_y"), py::arg("end_z"), py::arg("delta"))
+        .def("add_coarse_grid", py::overload_cast<real, real, real, real, real, real, real>(&MultipleGridBuilder::addCoarseGrid), py::arg("start_x"), py::arg("start_y"), py::arg("start_z"), py::arg("end_x"), py::arg("end_y"), py::arg("end_z"), py::arg("delta"))
+        .def("add_coarse_grid", py::overload_cast<const GridDimensions&>(&MultipleGridBuilder::addCoarseGrid), py::arg("gridDimensions"))
         .def("add_grid", py::overload_cast<SPtr<Object>>(&MultipleGridBuilder::addGrid), py::arg("grid_shape"))
         .def("add_grid", py::overload_cast<SPtr<Object>, uint>(&MultipleGridBuilder::addGrid), py::arg("grid_shape"), py::arg("level_fine"))
         .def("add_geometry", py::overload_cast<SPtr<Object>>(&MultipleGridBuilder::addGeometry), py::arg("solid_object"))
