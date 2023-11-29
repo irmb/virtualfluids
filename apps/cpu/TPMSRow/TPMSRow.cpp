@@ -26,6 +26,7 @@ void run(string configname)
         double dx                   = config.getValue<double>("dx");
         double UnitEdgeLength       = config.getValue<double>("UnitEdgeLength");
         double Re                   = config.getValue<double>("Re");
+        double vx                   = config.getValue<double>("vx");
         //double Re0                  = config.getValue<double>("Re0");
         //double rhoIn                = config.getValue<double>("rhoIn");
         //string geometry             = config.getValue<string>("geometry");
@@ -66,7 +67,7 @@ void run(string configname)
             }
         }
         //dx = 1. / 100. / 112.;
-        double vx = Re * nu / (UnitEdgeLength / dx);
+        //double vx = Re * nu / (UnitEdgeLength / dx);
 
         SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
