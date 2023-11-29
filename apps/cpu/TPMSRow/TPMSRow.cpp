@@ -177,15 +177,21 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
-            GbGyroidThirdOrderPtr tpms;
+            //GbGyroidThirdOrderPtr tpms;
             // tpms = GbImplicitSurfacePtr(new GbImplicitSurface(0, 0, 0, TPMSL[0], TPMSL[1], TPMSL[2], UnitEdgeLength,
             // dx));
-            tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
+            
+            // tpms = GbGyroidThirdOrderPtr(new GbGyroidThirdOrder(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
+            //                                                   TPMSOrigin[0] + TPMSL[0],
+            //                                                   TPMSOrigin[1] + TPMSL[1],
+            //                                                   TPMSOrigin[2] + TPMSL[2],
+            //                                                   UnitEdgeLength, dx, 2.5e-4));
+            GbGyroidThirdOrderLongPtr tpms;
+            tpms = GbGyroidThirdOrderLongPtr(new GbGyroidThirdOrderLong(TPMSOrigin[0], TPMSOrigin[1], TPMSOrigin[2],
                                                               TPMSOrigin[0] + TPMSL[0],
                                                               TPMSOrigin[1] + TPMSL[1],
                                                               TPMSOrigin[2] + TPMSL[2],
                                                               UnitEdgeLength, dx, 2.5e-4));
-
             //     for (int i = 0; i < 12; i++)
             //     {
             //       cout << tpms->evaluateImplicitFunction(0.002, 0.002, i/1000., 1.)<<endl;
