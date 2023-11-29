@@ -110,9 +110,6 @@ void run(string configname)
                                                               TPMSOrigin[1] + TPMSL[1],
                                                               TPMSOrigin[2] + TPMSL[2],
                                                               UnitEdgeLength, dx, 2.5e-4));
-            if (myid == 0)
-                GbSystem3D::writeGeoObject(tpms.get(), pathname + "/geo/tpms", WbWriterVtkXmlBinary::getInstance());
-
 
             double g_minX1 = gridCubeOrigin[0];
             double g_minX2 = gridCubeOrigin[1];
@@ -127,7 +124,7 @@ void run(string configname)
                 GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube",
                                            WbWriterVtkXmlBinary::getInstance());
 
-            
+                
             SPtr<GbCuboid3D> spongecube(new GbCuboid3D(TPMSOrigin[0] + TPMSL[0], g_minX2 - dx, g_minX3 - dx,
                                                        g_maxX1 + dx, g_maxX2 + dx, g_maxX3 + dx));
             if (myid == 0)

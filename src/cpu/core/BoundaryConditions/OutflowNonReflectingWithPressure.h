@@ -48,6 +48,6 @@ public:
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
 private:
-real relaxationRate;
+    real relaxationRate;
 };
 #endif // NonReflectingDensityBCStrategy_h__

@@ -48,7 +48,7 @@ public:
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
 private:
-real velocity;
-real BCVeloWeight;    
+    real velocity;
+    real BCVeloWeight;    
 };
 #endif // NonReflectingDensityBCStrategy_h__
