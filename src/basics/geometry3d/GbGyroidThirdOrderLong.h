@@ -56,38 +56,38 @@ using GbGyroidThirdOrderLongPtr = SPtr<GbGyroidThirdOrderLong>;
 class GbGyroidThirdOrderLong : public GbObject3D, public UbObserver
 {
 public:
-	GbGyroidThirdOrderLong();
-	GbGyroidThirdOrderLong(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& edgeLength, const double& dx, const double& thickness=0);
-	GbGyroidThirdOrderLong(const double & x1a, const double & x2a, const double & x3a, const double & x1b, const double & x2b, const double & x3b, const double & x1c, const double & x2c, const double & x3c, const double & x1d, const double & x2d, const double & x3d, const double & edgeLength, const double & dx);
-	GbGyroidThirdOrderLong(GbGyroidThirdOrderLong *imp);
-	~GbGyroidThirdOrderLong();
+    GbGyroidThirdOrderLong();
+    GbGyroidThirdOrderLong(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& edgeLength, const double& dx, const double& thickness=0);
+    GbGyroidThirdOrderLong(const double & x1a, const double & x2a, const double & x3a, const double & x1b, const double & x2b, const double & x3b, const double & x1c, const double & x2c, const double & x3c, const double & x1d, const double & x2d, const double & x3d, const double & edgeLength, const double & dx);
+    GbGyroidThirdOrderLong(GbGyroidThirdOrderLong *imp);
+    ~GbGyroidThirdOrderLong();
 
-	GbGyroidThirdOrderLong* clone() override { return new GbGyroidThirdOrderLong(this); }
-	void finalize() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    GbGyroidThirdOrderLong* clone() override { return new GbGyroidThirdOrderLong(this); }
+    void finalize() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
 
 
-	double getX1Centroid() override;
-	double getX1Minimum() override;
-	double getX1Maximum() override;
-	double getX2Centroid()override;
-	double getX2Minimum() override;
-	double getX2Maximum() override;
-	double getX3Centroid()override;
-	double getX3Minimum() override;
-	double getX3Maximum() override;
+    double getX1Centroid() override;
+    double getX1Minimum() override;
+    double getX1Maximum() override;
+    double getX2Centroid()override;
+    double getX2Minimum() override;
+    double getX2Maximum() override;
+    double getX3Centroid()override;
+    double getX3Minimum() override;
+    double getX3Maximum() override;
     void setCenterCoordinates(const double &x1, const double &x2, const double &x3) override {throw UbException(UB_EXARGS, "finalize() - not implemented");
     }
 
-	void translate(const double& x1, const double& x2, const double& x3) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
-	void rotate(const double& rx1, const double& rx2, const double& rx3) override{ throw UbException(UB_EXARGS, "finalize() - not implemented"); }
-	void scale(const double& sx1, const double& sx2, const double& sx3) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void translate(const double& x1, const double& x2, const double& x3) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void rotate(const double& rx1, const double& rx2, const double& rx3) override{ throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void scale(const double& sx1, const double& sx2, const double& sx3) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-	double getLengthX1();
-	double getLengthX2();
-	double getLengthX3();
-	
-	bool isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p, bool &pointinboundary) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    double getLengthX1();
+    double getLengthX2();
+    double getLengthX3();
+    
+    bool isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p, bool &pointinboundary) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
     bool isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p) override;
     bool isCellInsideGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
                                 const double &x2b, const double &x3b) override;
@@ -98,36 +98,36 @@ public:
     double getCellVolumeInsideGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
                                          const double &x2b, const double &x3b) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-	GbPoint3D *calculateInterSectionPoint3D(GbPoint3D &point1, GbPoint3D &point2);
+    GbPoint3D *calculateInterSectionPoint3D(GbPoint3D &point1, GbPoint3D &point2);
     GbLine3D *createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-	std::vector<GbTriangle3D *> getSurfaceTriangleSet() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    std::vector<GbTriangle3D *> getSurfaceTriangleSet() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-	 void addSurfaceTriangleSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt3> &triangles) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+     void addSurfaceTriangleSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt3> &triangles) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-	bool hasRaytracing() override { return true;  }
+    bool hasRaytracing() override { return true;  }
 
-	double getIntersectionRaytraceFactor (const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
+    double getIntersectionRaytraceFactor (const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
 
-	double evaluateImplicitFunction(const double & x1, const double & x2, const double & x3, const double & position);
+    double evaluateImplicitFunction(const double & x1, const double & x2, const double & x3, const double & position);
 
-	double getDistance(const double& x1p, const double& x2p, const double& x3p)  { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    double getDistance(const double& x1p, const double& x2p, const double& x3p)  { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-	std::string toString() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    std::string toString() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
     void objectChanged(UbObservable *changedObject) override;
     void objectWillBeDeleted(UbObservable *objectForDeletion) override;
 
-	using GbObject3D::isPointInGbObject3D; 
+    using GbObject3D::isPointInGbObject3D; 
 
 protected:
-	GbPoint3D* p1;
-	GbPoint3D* p2;
-	GbPoint3D* p3;
-	GbPoint3D* p4;
-	double edgeLength;
-	double dx;
-	double thickness;
+    GbPoint3D* p1;
+    GbPoint3D* p2;
+    GbPoint3D* p3;
+    GbPoint3D* p4;
+    double edgeLength;
+    double dx;
+    double thickness;
 private:
 };
 

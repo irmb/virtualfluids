@@ -46,15 +46,9 @@
 using namespace std;
 using boost::math::tools::bisect;
 
+
 /*=======================================================*/
-// ObObjectCreator* GbGyroidThirdOrder::getCreator()
-// {
-//      GbObject3DCreator instance;
-//     return &instance;
-// }
-/*=======================================================*/
-// Konstruktor
-GbGyroidThirdOrder::GbGyroidThirdOrder() //: GbObject3D()
+GbGyroidThirdOrder::GbGyroidThirdOrder() 
 {
 
 }
@@ -77,25 +71,6 @@ GbGyroidThirdOrder::GbGyroidThirdOrder(const double& x1a, const double& x2a, con
     this->thickness = thickness;
 }
 /*=======================================================*/
-// Konstruktor
-//GbGyroidThirdOrder::GbGyroidThirdOrder(
-//	const double& x1a, const double& x2a, const double& x3a,
-//	const double& x1b, const double& x2b, const double& x3b,
-//
-//    const double& x1c, const double& x2c, const double& x3c,
-//    const double& x1d, const double& x2d, const double& x3d,
-//
-//    const double& edgeLength, const double& dx) :GbObject3D()
-//{
-//    this->p1 = new GbPoint3D(x1a, x2a, x3a);
-//    this->p2 = new GbPoint3D(x1b, x2b, x3b);
-//
-//    this->p3 = new GbPoint3D(x1c, x2c, x3c);
-//    this->p4 = new GbPoint3D(x1d, x2d, x3d);
-//
-//    this->edgeLength = edgeLength;
-//    this->dx = dx;
-//}
 GbGyroidThirdOrder::GbGyroidThirdOrder(GbGyroidThirdOrder * imp)
 {
 }
@@ -128,56 +103,56 @@ struct FunctionToApproximate {
 };
 /*=======================================================*/
 struct FunctionGyroidThirdOrder {
-	double x, y, z;
-	double dir1, dir2, dir3, L;
-	double h;
-	
+    double x, y, z;
+    double dir1, dir2, dir3, L;
+    double h;
+    
 
-	double operator() (double q) {
-	double t17, t3, t2, t18, t20, t8, t13, t5, t9, t6, t11, t14;
-	double f300, f210, f201, f120, f102, f030, f021, f012, f003, f200, f110, f101, f020, f011, f002, f100, f010, f001, f000;
+    double operator() (double q) {
+    double t17, t3, t2, t18, t20, t8, t13, t5, t9, t6, t11, t14;
+    double f300, f210, f201, f120, f102, f030, f021, f012, f003, f200, f110, f101, f020, f011, f002, f100, f010, f001, f000;
 
-	double L_cubed, PI_cubed, L_squared, PI_squared, repeatedTermPsquared;
+    double L_cubed, PI_cubed, L_squared, PI_squared, repeatedTermPsquared;
 
-	double repeatedTerm, repeatedTermRoot, repeatedTermRoot2, repeatedTermPowerOneandHalf;
-	double T1, T2, T3, T4, T5, T6, T7, T8, T9, Gyroidh;
-		
-	//sins and cosines combinations 
-	 t2  = sin((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
-	 t3  = sin((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
-	 t5  = cos((2. * M_PI*(y+q*dir2)) / L)*sin((2. * M_PI*(x+q*dir1)) / L);
-	 t6  = cos((2. * M_PI*(z+q*dir3)) / L)*sin((2. * M_PI*(x+q*dir1)) / L);
-	 t8  = sin((2. * M_PI*(y+q*dir2)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
-	 t9  = cos((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
-	 t11 = cos((2. * M_PI*(z+q*dir3)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
-	 t13 = cos((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
-	 t14 = cos((2. * M_PI*(y+q*dir2)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
-	 t17 = cos((2. * M_PI*(x+q*dir1)) / L)*cos((2. * M_PI*(y+q*dir2)) / L);
-	 t18 = cos((2. * M_PI*(x+q*dir1)) / L)*cos((2. * M_PI*(z+q*dir3)) / L);
-	 t20 = cos((2. * M_PI*(y+q*dir2)) / L)*cos((2. * M_PI*(z+q*dir3)) / L);
+    double repeatedTerm, repeatedTermRoot, repeatedTermRoot2, repeatedTermPowerOneandHalf;
+    double T1, T2, T3, T4, T5, T6, T7, T8, T9, Gyroidh;
+        
+    //sins and cosines combinations 
+     t2  = sin((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
+     t3  = sin((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
+     t5  = cos((2. * M_PI*(y+q*dir2)) / L)*sin((2. * M_PI*(x+q*dir1)) / L);
+     t6  = cos((2. * M_PI*(z+q*dir3)) / L)*sin((2. * M_PI*(x+q*dir1)) / L);
+     t8  = sin((2. * M_PI*(y+q*dir2)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
+     t9  = cos((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
+     t11 = cos((2. * M_PI*(z+q*dir3)) / L)*sin((2. * M_PI*(y+q*dir2)) / L);
+     t13 = cos((2. * M_PI*(x+q*dir1)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
+     t14 = cos((2. * M_PI*(y+q*dir2)) / L)*sin((2. * M_PI*(z+q*dir3)) / L);
+     t17 = cos((2. * M_PI*(x+q*dir1)) / L)*cos((2. * M_PI*(y+q*dir2)) / L);
+     t18 = cos((2. * M_PI*(x+q*dir1)) / L)*cos((2. * M_PI*(z+q*dir3)) / L);
+     t20 = cos((2. * M_PI*(y+q*dir2)) / L)*cos((2. * M_PI*(z+q*dir3)) / L);
 
-	//Gyroid third order derivatives
-	 L_cubed = pow(L, 3.);
-	 PI_cubed =  pow(M_PI, 3.);
-	 f300 = (8. * PI_cubed*(-t17 + t3)) / L_cubed;
-	 f210 = (8. * PI_cubed*t2) / L_cubed;
-	 f201 = (-8. * PI_cubed*t18) / L_cubed;
-	 f120 = (-8. * PI_cubed*t17) / L_cubed;
-	 f102 = (8. * PI_cubed*t3) / L_cubed;
-	 f030 = (8. * PI_cubed*(t2 - t20)) / L_cubed;
-	 f021 = (8. * PI_cubed*t8) / L_cubed;
-	 f012 = (-8. * PI_cubed*t20) / L_cubed;
-	 f003 = (8. * PI_cubed*(-t18 + t8)) / L_cubed;
+    //Gyroid third order derivatives
+     L_cubed = pow(L, 3.);
+     PI_cubed =  pow(M_PI, 3.);
+     f300 = (8. * PI_cubed*(-t17 + t3)) / L_cubed;
+     f210 = (8. * PI_cubed*t2) / L_cubed;
+     f201 = (-8. * PI_cubed*t18) / L_cubed;
+     f120 = (-8. * PI_cubed*t17) / L_cubed;
+     f102 = (8. * PI_cubed*t3) / L_cubed;
+     f030 = (8. * PI_cubed*(t2 - t20)) / L_cubed;
+     f021 = (8. * PI_cubed*t8) / L_cubed;
+     f012 = (-8. * PI_cubed*t20) / L_cubed;
+     f003 = (8. * PI_cubed*(-t18 + t8)) / L_cubed;
 
-	//Gyroid second order derivatives		
-	 L_squared = pow(L, 2.);
-	 PI_squared =  pow(M_PI, 2.);
-	 f200 = (-4. * PI_squared*(t13 + t5)) / L_squared;
-	 f110 = (-4. * PI_squared*t9) / L_squared;
-	 f101 = (-4. * PI_squared*t6) / L_squared;
-	 f020 = (-4. * PI_squared*(t11 + t5)) / L_squared;
-	 f011 = (-4. * PI_squared*t14) / L_squared;
-	 f002 = (-4. * PI_squared*(t11 + t13)) / L_squared;
+    //Gyroid second order derivatives        
+     L_squared = pow(L, 2.);
+     PI_squared =  pow(M_PI, 2.);
+     f200 = (-4. * PI_squared*(t13 + t5)) / L_squared;
+     f110 = (-4. * PI_squared*t9) / L_squared;
+     f101 = (-4. * PI_squared*t6) / L_squared;
+     f020 = (-4. * PI_squared*(t11 + t5)) / L_squared;
+     f011 = (-4. * PI_squared*t14) / L_squared;
+     f002 = (-4. * PI_squared*(t11 + t13)) / L_squared;
 
     //Gyroid first order derivatives
      f100 = (2. * M_PI*(t17 - t3)) / L;
@@ -200,31 +175,31 @@ struct FunctionGyroidThirdOrder {
      T8 = f001*f011*h + f010*f020*h + f100*f110*h;
      T9 = f001*f101*h + f010*f110*h + f100*f200*h;
 
-	repeatedTermRoot2 = sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2));
-	repeatedTermPowerOneandHalf = pow(repeatedTerm, 1.5);
-	repeatedTermPsquared = pow(repeatedTerm, 2.);
+    repeatedTermRoot2 = sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot), 2));
+    repeatedTermPowerOneandHalf = pow(repeatedTerm, 1.5);
+    repeatedTermPsquared = pow(repeatedTerm, 2.);
 
-	 Gyroidh = 2 * h*sqrt(pow(f001 - (T1*h) / (2.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (2.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (2.*repeatedTermRoot), 2))
-		- (3 * h*repeatedTermRoot2) / 2.
-		- (3 * h*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot) + (h*((T7 - 3 * f001*repeatedTermRoot)*
-		(4 * pow(T1, 2)*h - 4 * (pow(f002, 2) + f001*f003 + pow(f011, 2) + f010*f012 + pow(f101, 2) + f100*f102)*h*repeatedTerm + 12 * f002*repeatedTermPowerOneandHalf) +
-			(T8 - 3 * f010*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*repeatedTermPowerOneandHalf) +
-			(T9 - 3 * f100*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*repeatedTermPowerOneandHalf))) /
-			(108.*repeatedTermRoot2*
-				repeatedTermPsquared), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot) +
-				(h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*repeatedTermPowerOneandHalf) +
-					(T8 - 3 * f010*repeatedTermRoot)*(4 * pow(T2, 2)*h - 4 * (pow(f011, 2) + pow(f020, 2) + f001*f021 + f010*f030 + pow(f110, 2) + f100*f120)*h*repeatedTerm + 12 * f020*repeatedTermPowerOneandHalf) +
-					(T9 - 3 * f100*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*repeatedTermPowerOneandHalf))) /
-					(108.*repeatedTermRoot2*
-						repeatedTermPsquared), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot) +
-						(h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*repeatedTermPowerOneandHalf) +
-							(T8 - 3 * f010*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*repeatedTermPowerOneandHalf) +
-							(T9 - 3 * f100*repeatedTermRoot)*(4 * pow(T3, 2)*h - 4 * (pow(f101, 2) + pow(f110, 2) + pow(f200, 2) + f001*f201 + f010*f210 + f100*f300)*h*repeatedTerm + 12 * f200*repeatedTermPowerOneandHalf))) /
-							(108.*repeatedTermRoot2*
-								repeatedTermPsquared), 2))) / 2. + f000;
-	
-		return Gyroidh;
-	}
+     Gyroidh = 2 * h*sqrt(pow(f001 - (T1*h) / (2.*repeatedTermRoot), 2) + pow(f010 - (T2*h) / (2.*repeatedTermRoot), 2) + pow(f100 - (T3*h) / (2.*repeatedTermRoot), 2))
+        - (3 * h*repeatedTermRoot2) / 2.
+        - (3 * h*sqrt(pow(f001 - (T1*h) / (3.*repeatedTermRoot) + (h*((T7 - 3 * f001*repeatedTermRoot)*
+        (4 * pow(T1, 2)*h - 4 * (pow(f002, 2) + f001*f003 + pow(f011, 2) + f010*f012 + pow(f101, 2) + f100*f102)*h*repeatedTerm + 12 * f002*repeatedTermPowerOneandHalf) +
+            (T8 - 3 * f010*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*repeatedTermPowerOneandHalf) +
+            (T9 - 3 * f100*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*repeatedTermPowerOneandHalf))) /
+            (108.*repeatedTermRoot2*
+                repeatedTermPsquared), 2) + pow(f010 - (T2*h) / (3.*repeatedTermRoot) +
+                (h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T2*h - 4 * (T4)*h*repeatedTerm + 12 * f011*repeatedTermPowerOneandHalf) +
+                    (T8 - 3 * f010*repeatedTermRoot)*(4 * pow(T2, 2)*h - 4 * (pow(f011, 2) + pow(f020, 2) + f001*f021 + f010*f030 + pow(f110, 2) + f100*f120)*h*repeatedTerm + 12 * f020*repeatedTermPowerOneandHalf) +
+                    (T9 - 3 * f100*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*repeatedTermPowerOneandHalf))) /
+                    (108.*repeatedTermRoot2*
+                        repeatedTermPsquared), 2) + pow(f100 - (T3*h) / (3.*repeatedTermRoot) +
+                        (h*((T7 - 3 * f001*repeatedTermRoot)*(4 * T1*T3*h - 4 * (T5)*h*repeatedTerm + 12 * f101*repeatedTermPowerOneandHalf) +
+                            (T8 - 3 * f010*repeatedTermRoot)*(4 * T2*T3*h - 4 * (T6)*h*repeatedTerm + 12 * f110*repeatedTermPowerOneandHalf) +
+                            (T9 - 3 * f100*repeatedTermRoot)*(4 * pow(T3, 2)*h - 4 * (pow(f101, 2) + pow(f110, 2) + pow(f200, 2) + f001*f201 + f010*f210 + f100*f300)*h*repeatedTerm + 12 * f200*repeatedTermPowerOneandHalf))) /
+                            (108.*repeatedTermRoot2*
+                                repeatedTermPsquared), 2))) / 2. + f000;
+    
+        return Gyroidh;
+    }
 };
 /*==========================================================*/
 bool GbGyroidThirdOrder::isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
@@ -233,17 +208,8 @@ bool GbGyroidThirdOrder::isPointInGbObject3D(const double& x1, const double& x2,
     //evaluateImplicitFunction(x1,x2,x3, 0., 0., 0.)
     double f1 = evaluateImplicitFunction(x1, x2, x3, 1.);
     double f2 = evaluateImplicitFunction(x1, x2, x3, -1.);
-    //     if (f < 10.0E-15 && f > -10.0E-15)
-        //if (fabs(f) <= 10e-15)
-     //if (f <= 0)
-    if (f1 <= 0. && f2 >= 0.)
-{
-    return true;
-}
-else
-{
-    return false;
-}
+    return UbMath::lessEqual(f1,0.) && UbMath::greaterEqual(f2,0.);
+
 }
 
 /*==========================================================*/
@@ -381,38 +347,6 @@ bool GbGyroidThirdOrder::isCellCuttingGbObject3D(const double& x1a, const double
         return true;
     }
     return false;
-}
-/*=======================================================*/
-void GbGyroidThirdOrder::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector<UbTupleInt3>& triangles)
-{
-    /*0*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Minimum(), (float)getX3Minimum()));
-    /*1*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Minimum(), (float)getX3Minimum()));
-    /*2*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Maximum(), (float)getX3Minimum()));
-    /*3.*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Maximum(), (float)getX3Minimum()));
-
-    /*4*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Minimum(), (float)getX3Maximum()));
-    /*5*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Minimum(), (float)getX3Maximum()));
-    /*6*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Maximum(), (float)getX3Maximum()));
-    /*7*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Maximum(), (float)getX3Maximum()));
-
-    //"unten"
-    triangles.push_back(makeUbTuple(0, 1, 2));
-    triangles.push_back(makeUbTuple(0, 2, 3));
-    //"oben"
-    triangles.push_back(makeUbTuple(4, 5, 6));
-    triangles.push_back(makeUbTuple(4, 6, 7));
-    //"links"
-    triangles.push_back(makeUbTuple(0, 3, 7));
-    triangles.push_back(makeUbTuple(0, 7, 4));
-    //"rechts"                                                               
-    triangles.push_back(makeUbTuple(1, 2, 6));
-    triangles.push_back(makeUbTuple(1, 6, 5));
-    //"hinten"                                                                       
-    triangles.push_back(makeUbTuple(3, 2, 7));
-    triangles.push_back(makeUbTuple(2, 7, 6));
-    //"vorne"                                                                        
-    triangles.push_back(makeUbTuple(0, 1, 5));
-    triangles.push_back(makeUbTuple(0, 5, 4));
 }
 /*==========================================================*/
 void GbGyroidThirdOrder::objectChanged(UbObservable *changedObject)
