@@ -1,0 +1,32 @@
+##################################################
+#informations for Writing
+##################################################
+Path = ./output/AtmosphericBoundaryLayer/
+##################################################
+#informations for reading
+##################################################
+GridPath = .
+##################################################
+Devices = 0 
+##################################################
+tStartOut           = 0
+tOut                = 100000
+tEnd                = 7802
+##################################################
+tStartAveraging     = 7200
+tStartTmpAveraging  = 7200
+tAveraging          = 600
+tStartOutProbe      = 7200
+tOutProbe           = 600
+##################################################
+NodesPerBoundaryLayerHeight = 48
+
+##################################################
+PeriodicShift = 1100
+
+##################################################
+TurbulenceModel = QR
+SGSconstant = 0.333333
+QuadricLimiterP = 100000.0
+QuadricLimiterM = 100000.0
+QuadricLimiterD = 100000.0
