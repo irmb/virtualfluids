@@ -47,5 +47,5 @@ add_subdirectory(apps/cpu/FlowAroundCylinder)
 #add_subdirectory(apps/cpu/AcousticPulse)
 
 if(BUILD_USE_BOOST)
-    add_subdirectory(apps/cpu/TPMSRow)
+    add_subdirectory(apps/cpu/GyroidsRow)
 endif()
