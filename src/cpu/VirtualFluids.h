@@ -226,7 +226,6 @@
 #include <geometry3d/GbHalfSpaceKrischan3D.h>
 #include <geometry3d/GbGyroidThirdOrder.h>
 #include <geometry3d/GbGyroidThirdOrderLong.h>
-#include <geometry3d/GbGeneralThirdOrderImplicitSurface.h>
 #include <geometry3d/GbLine3D.h>
 #include <geometry3d/GbMeshTools3D.h>
 #include <geometry3d/GbObject3D.h>
