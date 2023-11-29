@@ -80,25 +80,27 @@ public:
 
     GRIDGENERATOR_EXPORT  ~LevelGridBuilder() override;
 
-    GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
-    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx);
-    GRIDGENERATOR_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
-    GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
-    GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+    GRIDGENERATOR_EXPORT virtual void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
+    GRIDGENERATOR_EXPORT virtual void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ,
+                                                                 uint samplingOffset, real z0, real dx);
+    GRIDGENERATOR_EXPORT virtual void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
+    GRIDGENERATOR_EXPORT virtual void setPressureBoundaryCondition(SideType sideType, real rho);
+    GRIDGENERATOR_EXPORT virtual void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     GRIDGENERATOR_EXPORT void setPeriodicShiftOnXBoundaryInYDirection(real shift);
     GRIDGENERATOR_EXPORT void setPeriodicShiftOnXBoundaryInZDirection(real shift);
     GRIDGENERATOR_EXPORT void setPeriodicShiftOnYBoundaryInXDirection(real shift);
     GRIDGENERATOR_EXPORT void setPeriodicShiftOnYBoundaryInZDirection(real shift);
     GRIDGENERATOR_EXPORT void setPeriodicShiftOnZBoundaryInXDirection(real shift);
     GRIDGENERATOR_EXPORT void setPeriodicShiftOnZBoundaryInYDirection(real shift);
-    GRIDGENERATOR_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
-    GRIDGENERATOR_EXPORT void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
-                                                            real velocityX=c0o1, real velocityY=c0o1, real velocityZ=c0o1,
-                                                            std::vector<uint> fileLevelToGridLevelMap = {});
+    GRIDGENERATOR_EXPORT virtual void setNoSlipBoundaryCondition(SideType sideType);
+    GRIDGENERATOR_EXPORT virtual void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
+                                                                    int timeStepsBetweenReads, real velocityX = c0o1,
+                                                                    real velocityY = c0o1, real velocityZ = c0o1,
+                                                                    std::vector<uint> fileLevelToGridLevelMap = {});
 
     GRIDGENERATOR_EXPORT void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
-    GRIDGENERATOR_EXPORT void setCommunicationProcess(int direction, uint process);
+    GRIDGENERATOR_EXPORT virtual void setCommunicationProcess(int direction, uint process);
 
     GRIDGENERATOR_EXPORT virtual uint getCommunicationProcess(int direction) override;
 

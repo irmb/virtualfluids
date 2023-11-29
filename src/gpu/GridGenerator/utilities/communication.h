@@ -33,14 +33,17 @@
 #ifndef Communication_H
 #define Communication_H
 
+#include "grid/BoundaryConditions/Side.h"
+
+// has to have the same order as SideType in Side.h
 namespace CommunicationDirections {
-    enum {
-        MX = 0,
-        PX = 1,
-        MY = 2,
-        PY = 3,
-        MZ = 4,
-        PZ = 5
+    enum CommunicationDirection{
+        MX = static_cast<int>(SideType::MX),
+        PX = static_cast<int>(SideType::PX),
+        MY = static_cast<int>(SideType::MY),
+        PY = static_cast<int>(SideType::PY),
+        MZ = static_cast<int>(SideType::MZ),
+        PZ = static_cast<int>(SideType::PZ)
     };
 }
 
