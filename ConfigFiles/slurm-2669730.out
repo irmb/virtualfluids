@@ -15500,3 +15500,8 @@
 08:24:59.777 INFO    : Performance per update = 306382 NUPS
 08:24:59.777 INFO    : Performance per thread = 306382 NUPS
 08:24:59.777 INFO    : Time for 100 steps = 25.2952 s
+08:25:24.355 INFO    : Calculation step = 306000
+08:25:24.355 INFO    : Total performance = 6.30634e+07 NUPS
+08:25:24.355 INFO    : Performance per update = 315317 NUPS
+08:25:24.355 INFO    : Performance per thread = 315317 NUPS
+08:25:24.355 INFO    : Time for 100 steps = 24.5784 s
