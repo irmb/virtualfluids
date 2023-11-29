@@ -104,8 +104,7 @@ void OutflowNonReflectingWithPressure::applyBC()
 
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
-    //real delf = rho* c1o100;
-     real delf = rho*(this->relaxationRate);
+    real delf = rho*(this->relaxationRate);
     switch (direction) {
         case dP00:
             f[dP00]   = ftemp[dP00] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP00] - delf* WEIGTH[dP00];
