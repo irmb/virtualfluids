@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file GbImplicitSurface.cpp
+//! \file GbGyroidThirdOrderLong.cpp
 //! \ingroup geometry3d
 //! \author Hussein Alihussein
 //=======================================================================================
-#ifndef GbImplicitSurface_H
-#define GbImplicitSurface_H
+#ifndef GbGyroidThirdOrderLong_H
+#define GbGyroidThirdOrderLong_H
 
 #ifdef BUILD_USE_BOOST
 
@@ -49,22 +49,20 @@ class GbLine3D;
 class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
-class GbImplicitSurface;
-using GbImplicitSurfacePtr = SPtr<GbImplicitSurface>;
+class GbGyroidThirdOrderLong;
+using GbGyroidThirdOrderLongPtr = SPtr<GbGyroidThirdOrderLong>;
 
 
-class GbImplicitSurface : public GbObject3D, public UbObserver
+class GbGyroidThirdOrderLong : public GbObject3D, public UbObserver
 {
 public:
-    GbImplicitSurface();
-    GbImplicitSurface(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& edgeLength, const double& dx, const double& thickness=0);
+    GbGyroidThirdOrderLong();
+    GbGyroidThirdOrderLong(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& edgeLength, const double& dx, const double& thickness=0);
+    GbGyroidThirdOrderLong(const double & x1a, const double & x2a, const double & x3a, const double & x1b, const double & x2b, const double & x3b, const double & x1c, const double & x2c, const double & x3c, const double & x1d, const double & x2d, const double & x3d, const double & edgeLength, const double & dx);
+    GbGyroidThirdOrderLong(GbGyroidThirdOrderLong *imp);
+    ~GbGyroidThirdOrderLong();
 
-    GbImplicitSurface(const double & x1a, const double & x2a, const double & x3a, const double & x1b, const double & x2b, const double & x3b, const double & x1c, const double & x2c, const double & x3c, const double & x1d, const double & x2d, const double & x3d, const double & edgeLength, const double & dx);
-    //GbImplicitSurface(const double& minX1, const double& minX2, const double& minX3, const double& maxX1, const double& maxX2, const double& maxX3);
-    GbImplicitSurface(GbImplicitSurface *imp);
-    ~GbImplicitSurface();
-
-    GbImplicitSurface* clone() override { return new GbImplicitSurface(this); }
+    GbGyroidThirdOrderLong* clone() override { return new GbGyroidThirdOrderLong(this); }
     void finalize() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
 
@@ -101,48 +99,26 @@ public:
                                          const double &x2b, const double &x3b) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
     GbPoint3D *calculateInterSectionPoint3D(GbPoint3D &point1, GbPoint3D &point2);
-    //GbImplicitSurface* createClippedRectangle3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
     GbLine3D *createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
     std::vector<GbTriangle3D *> getSurfaceTriangleSet() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-     void addSurfaceTriangleSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt3> &triangles) override;
+     void addSurfaceTriangleSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt3> &triangles) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
     bool hasRaytracing() override { return true;  }
 
-    /*|r| must be 1! einheitsvector!!*/
     double getIntersectionRaytraceFactor (const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
 
     double evaluateImplicitFunction(const double & x1, const double & x2, const double & x3, const double & position);
 
-    double getDistance(const double& x1p, const double& x2p, const double& x3p)
-    {
-        throw UbException(UB_EXARGS, "not implemented");
-
-        // falls punkt innerhalt ist: minimalen abstand ausrechnen
-        if (this->isPointInGbObject3D(x1p, x2p, x3p))
-        {
-            double x1Dist = UbMath::min(std::abs(x1p - this->getX1Minimum()), std::abs(x1p - this->getX1Maximum()));
-            double x2Dist = UbMath::min(std::abs(x2p - this->getX2Minimum()), std::abs(x2p - this->getX2Maximum()));
-            double x3Dist = UbMath::min(std::abs(x3p - this->getX3Minimum()), std::abs(x3p - this->getX3Maximum()));
-
-            return UbMath::min(x1Dist, x2Dist, x3Dist);
-        }
-        else
-        {
-
-        }
-    }
+    double getDistance(const double& x1p, const double& x2p, const double& x3p)  { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
     std::string toString() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
 
-
- // virtuelle Methoden von UbObserver
     void objectChanged(UbObservable *changedObject) override;
     void objectWillBeDeleted(UbObservable *objectForDeletion) override;
 
-    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
-
+    using GbObject3D::isPointInGbObject3D; 
 
 protected:
     GbPoint3D* p1;

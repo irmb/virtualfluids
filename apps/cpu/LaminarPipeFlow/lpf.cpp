@@ -321,8 +321,9 @@ void run(string configname)
       //SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
       //auto timeDepBC = make_shared<TimeDependentBCSimulationObserver>(TimeDependentBCSimulationObserver(grid, timeBCSch));
       //timeDepBC->addInteractor(inflowInt);
-
+#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
+#endif
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
       SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, int(endTime)));

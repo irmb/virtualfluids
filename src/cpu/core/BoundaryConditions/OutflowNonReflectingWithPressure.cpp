@@ -34,6 +34,7 @@
 
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
+#include "DataTypes.h"
 #include "DistributionArray3D.h"
 
 OutflowNonReflectingWithPressure::OutflowNonReflectingWithPressure()
@@ -41,11 +42,17 @@ OutflowNonReflectingWithPressure::OutflowNonReflectingWithPressure()
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////
+OutflowNonReflectingWithPressure::OutflowNonReflectingWithPressure(real relaxationRate)
+{
+    BCStrategy::preCollision = true;
+    this->relaxationRate = relaxationRate;
+}
+//////////////////////////////////////////////////////////////////////////
 OutflowNonReflectingWithPressure::~OutflowNonReflectingWithPressure() = default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCStrategy> OutflowNonReflectingWithPressure::clone()
 {
-    SPtr<BCStrategy> bc(new OutflowNonReflectingWithPressure());
+    SPtr<BCStrategy> bc(new OutflowNonReflectingWithPressure(this->relaxationRate));
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -97,7 +104,7 @@ void OutflowNonReflectingWithPressure::applyBC()
 
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
-    real delf = rho* c1o100;
+    real delf = rho*(this->relaxationRate);
     switch (direction) {
         case dP00:
             f[dP00]   = ftemp[dP00] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP00] - delf* WEIGTH[dP00];

@@ -41,11 +41,17 @@ VelocityNonReflecting::VelocityNonReflecting()
     BCStrategy::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////
+VelocityNonReflecting::VelocityNonReflecting(real relaxationRate)
+{
+    BCStrategy::preCollision = true;
+    this->BCVeloWeight = relaxationRate;
+}
+//////////////////////////////////////////////////////////////////////////
 VelocityNonReflecting::~VelocityNonReflecting() = default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCStrategy> VelocityNonReflecting::clone()
 {
-    SPtr<BCStrategy> bc(new VelocityNonReflecting());
+    SPtr<BCStrategy> bc(new VelocityNonReflecting(this->BCVeloWeight));
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -70,49 +76,43 @@ void VelocityNonReflecting::applyBC()
     int direction = -1;
 
     // flag points in direction of fluid
-    if (bcPtr->hasDensityBoundaryFlag(dP00)) {
+    if (bcPtr->hasVelocityBoundaryFlag(dP00)) {
         nx1 += 1;
         direction = dP00;
-    } else if (bcPtr->hasDensityBoundaryFlag(dM00)) {
+        this->velocity = bcPtr->getBoundaryVelocityX1();
+    } else if (bcPtr->hasVelocityBoundaryFlag(dM00)) {
         nx1 -= 1;
         direction = dM00;
-    } else if (bcPtr->hasDensityBoundaryFlag(d0P0)) {
+        this->velocity = bcPtr->getBoundaryVelocityX1();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d0P0)) {
         nx2 += 1;
         direction = d0P0;
-    } else if (bcPtr->hasDensityBoundaryFlag(d0M0)) {
+        this->velocity = bcPtr->getBoundaryVelocityX2();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d0M0)) {
         nx2 -= 1;
         direction = d0M0;
-    } else if (bcPtr->hasDensityBoundaryFlag(d00P)) {
+        this->velocity = bcPtr->getBoundaryVelocityX2();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d00P)) {
         nx3 += 1;
         direction = d00P;
-    } else if (bcPtr->hasDensityBoundaryFlag(d00M)) {
+        this->velocity = bcPtr->getBoundaryVelocityX3();
+    } else if (bcPtr->hasVelocityBoundaryFlag(d00M)) {
         nx3 -= 1;
         direction = d00M;
+        this->velocity = bcPtr->getBoundaryVelocityX3();
     } else
-        UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
+        UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
     distributions->getPreCollisionDistribution(f, x1, x2, x3);
     distributions->getPreCollisionDistribution(ftemp, nx1, nx2, nx3);
 
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
-    //vx1                  = 0.;
-    real BCVeloWeight = c1o2;
-    // real velocity     = 0.004814077025232405; 
-     // real velocity     = 0.00057735;
-    //real velocity = 0.04; 
-      // real velocity = 0.01; 
-     // real velocity = 1./112.; 
-    // real velocity = 1./126.; 
-     real velocity = c1o100/2;
-     // real velocity = 0.005; 
-    //real delf         =(-velocity+vx1)*0.5 ;
     real delf; 
 
     switch (direction) {
         case dP00:
             delf = (-velocity + vx1) * BCVeloWeight; 
-            // delf = (-velocity ) * BCVeloWeight;
             f[dP00]   = ftemp[dP00] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dP00] - delf* WEIGTH[dP00];
             f[dPP0]  = ftemp[dPP0] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPP0]- delf* WEIGTH[dPP0];
             f[dPM0]  = ftemp[dPM0] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPM0]- delf* WEIGTH[dPM0];
@@ -122,52 +122,7 @@ void VelocityNonReflecting::applyBC()
             f[dPMP] = ftemp[dPMP] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPMP]- delf* WEIGTH[dPMP];
             f[dPPM] = ftemp[dPPM] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPPM]- delf* WEIGTH[dPPM];
             f[dPMM] = ftemp[dPMM] * (c1oSqrt3 + vx1) + (c1o1 - c1oSqrt3 - vx1) * f[dPMM]- delf* WEIGTH[dPMM];
-            //f[dP00] = (ftemp[dP00] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dP00]) *
-            //           (1 - BCVeloWeight) +
-            //       (ftemp[dM00] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dM00] +
-            //       velocity*(6)*WEIGTH[dP00]/* bcPtr->getBoundaryVelocity(INVDIR[dM00])*/) *
-            //           (BCVeloWeight)  ;
-            //f[dPP0] = (ftemp[dPP0] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dPP0]) *
-            //            (1 - BCVeloWeight) +
-            //        (ftemp[dMM0] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dMM0] +
-            //         velocity * (6) * WEIGTH[dPP0] /*bcPtr->getBoundaryVelocity(INVDIR[dMM0])*/) *
-            //            (BCVeloWeight); 
-            //f[dPM0] = (ftemp[dPM0] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dPM0]) *
-            //            (1 - BCVeloWeight) +
-            //        (ftemp[dMP0] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dMP0] +
-            //        velocity*(6)*WEIGTH[dPP0]/* bcPtr->getBoundaryVelocity(INVDIR[dMP0])*/) *
-            //            (BCVeloWeight); 
-            //f[dP0P] = (ftemp[dP0P] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dP0P]) *
-            //            (1 - BCVeloWeight) +
-            //        (ftemp[dM0M] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dM0M] +
-            //        velocity*(6)*WEIGTH[dP0P]/* bcPtr->getBoundaryVelocity(INVDIR[dM0M])*/) *
-            //            (BCVeloWeight); 
-            //f[dP0M] = (ftemp[dP0M] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dP0M])*
-            //            (1 - BCVeloWeight) +
-            //        (ftemp[dM0P] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dM0P] +
-            //        velocity*(6)*WEIGTH[dP0M]/* bcPtr->getBoundaryVelocity(INVDIR[dM0P])*/) *
-            //            (BCVeloWeight); 
-            //f[dPPP] = (ftemp[dPPP] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dPPP])*
-            //            (1 - BCVeloWeight) +
-            //        (ftemp[dMMM] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dMMM] +
-            //     velocity * (6) * WEIGTH[dPPP] /* bcPtr->getBoundaryVelocity(INVDIR[dMMM])*/) *
-            //            (BCVeloWeight); 
-            //f[dPMP] = (ftemp[dPMP] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dPMP]) *
-            //             (1 - BCVeloWeight) +
-            //         (ftemp[dMPM] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dMPM] +
-            //     velocity * (6) * WEIGTH[dPPP] /*bcPtr->getBoundaryVelocity(INVDIR[dMPM])*/) *
-            //             (BCVeloWeight); 
-            //f[dPPM] = (ftemp[dPPM] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dPPM]) *
-            //             (1 - BCVeloWeight) +
-            //         (ftemp[dMMP] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dMMP] +
-            //     velocity * (6) * WEIGTH[dPPP] /* bcPtr->getBoundaryVelocity(INVDIR[dMMP])*/) *
-            //             (BCVeloWeight); 
-            //f[dPMM] = (ftemp[dPMM] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dPMM]) *
-            //             (1 - BCVeloWeight) +
-            //         (ftemp[dMPP] * (c1oSqrt3 + vx1) + (1.0 - c1oSqrt3 - vx1) * f[dMPP] +
-            //     velocity * (6) * WEIGTH[dPPP] /* bcPtr->getBoundaryVelocity(INVDIR[dMPP])*/) *
-            //             (BCVeloWeight); 
-
+            
             distributions->setPreCollisionDistributionForDirection(f[dP00], x1 + DX1[dM00], x2 + DX2[dM00], x3 + DX3[dM00], dM00);
             distributions->setPreCollisionDistributionForDirection(f[dPP0], x1 + DX1[dMM0], x2 + DX2[dMM0], x3 + DX3[dMM0], dMM0);
             distributions->setPreCollisionDistributionForDirection(f[dPM0], x1 + DX1[dMP0], x2 + DX2[dMP0], x3 + DX3[dMP0], dMP0);

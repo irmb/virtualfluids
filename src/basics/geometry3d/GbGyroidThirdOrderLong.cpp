@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file GbImplicitSurface.cpp
+//! \file GbGyroidThirdOrderLong.cpp
 //! \ingroup geometry3d
 //! \author Hussein Alihussein
 //=======================================================================================
 
-#include <GbImplicitSurface.h>
+#include <GbGyroidThirdOrderLong.h>
 
 #ifdef BUILD_USE_BOOST
 
@@ -46,21 +46,14 @@
 using namespace std;
 using boost::math::tools::bisect;
 
-/*=======================================================*/
-// ObObjectCreator* GbImplicitSurface::getCreator()
-// {
-//      GbObject3DCreator instance;
-//     return &instance;
-// }
-/*=======================================================*/
 // Konstruktor
-GbImplicitSurface::GbImplicitSurface() //: GbObject3D()
+GbGyroidThirdOrderLong::GbGyroidThirdOrderLong() //: GbObject3D()
 {
 
 }
 /*=======================================================*/
 // Konstruktor
-GbImplicitSurface::GbImplicitSurface(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& edgeLength, const double& dx, const double& thickness) :GbObject3D()
+GbGyroidThirdOrderLong::GbGyroidThirdOrderLong(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& edgeLength, const double& dx, const double& thickness) :GbObject3D()
 {
     this->p1 = new GbPoint3D(x1a, x2a, x3a);
     this->p2 = new GbPoint3D(x1b, x2b, x3b);
@@ -77,31 +70,12 @@ GbImplicitSurface::GbImplicitSurface(const double& x1a, const double& x2a, const
     this->thickness = thickness;
 }
 /*=======================================================*/
-// Konstruktor
-//GbImplicitSurface::GbImplicitSurface(
-//    const double& x1a, const double& x2a, const double& x3a,
-//    const double& x1b, const double& x2b, const double& x3b,
-//
-//    const double& x1c, const double& x2c, const double& x3c,
-//    const double& x1d, const double& x2d, const double& x3d,
-//
-//    const double& edgeLength, const double& dx) :GbObject3D()
-//{
-//    this->p1 = new GbPoint3D(x1a, x2a, x3a);
-//    this->p2 = new GbPoint3D(x1b, x2b, x3b);
-//
-//    this->p3 = new GbPoint3D(x1c, x2c, x3c);
-//    this->p4 = new GbPoint3D(x1d, x2d, x3d);
-//
-//    this->edgeLength = edgeLength;
-//    this->dx = dx;
-//}
-GbImplicitSurface::GbImplicitSurface(GbImplicitSurface * imp)
+GbGyroidThirdOrderLong::GbGyroidThirdOrderLong(GbGyroidThirdOrderLong * imp)
 {
 }
 /*=======================================================*/
 // Destruktor
-GbImplicitSurface::~GbImplicitSurface()
+GbGyroidThirdOrderLong::~GbGyroidThirdOrderLong()
 {
     if (this->p1)
         this->p1->removeObserver(this);
@@ -217,32 +191,21 @@ struct FunctionGyroidThirdOrder {
     }
 };
 /*==========================================================*/
-bool GbImplicitSurface::isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
+bool GbGyroidThirdOrderLong::isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
 {
     //double f = sin(2.*M_PI*x1/edgeLength)*cos(2.*M_PI*x2 / edgeLength) + sin(2.*M_PI*x2 / edgeLength)*cos(2.*M_PI*x3 / edgeLength) + sin(2.*M_PI*x3 / edgeLength)*cos(2.*M_PI*x1 / edgeLength);
     //evaluateImplicitFunction(x1,x2,x3, 0., 0., 0.)
     double f1 = evaluateImplicitFunction(x1, x2, x3, 1.);
     double f2 = evaluateImplicitFunction(x1, x2, x3, -1.);
-    //     if (f < 10.0E-15 && f > -10.0E-15)
-        //if (fabs(f) <= 10e-15)
-     //if (f <= 0)
-    if (f1 <= 0. && f2 >= 0.)
-{
-    return true;
-}
-else
-{
-    return false;
-}
+    return UbMath::lessEqual(f1,0.) && UbMath::greaterEqual(f2,0.);
 }
 
 /*==========================================================*/
-double GbImplicitSurface::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
+double GbGyroidThirdOrderLong::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
 {
     double from = 0;  // The solution must lie in the interval [from, to], additionally f(from) <= 0 && f(to) >= 0
     double to = dx*sqrt(rx1*rx1+ rx2*rx2+ rx3*rx3);
     FunctionGyroidThirdOrder f;
-    //FunctionToApproximate f;
     f.x =x1 ;
     f.y =x2 ;
     f.z =x3 ;
@@ -271,7 +234,7 @@ double GbImplicitSurface::getIntersectionRaytraceFactor(const double& x1, const 
     
 }
 /*=======================================================*/
-double GbImplicitSurface::evaluateImplicitFunction(const double& x1, const double& x2, const double& x3, const double& position)
+double GbGyroidThirdOrderLong::evaluateImplicitFunction(const double& x1, const double& x2, const double& x3, const double& position)
 {
     double to = 0.;
     FunctionGyroidThirdOrder f;
@@ -286,52 +249,52 @@ double GbImplicitSurface::evaluateImplicitFunction(const double& x1, const doubl
     return f(to);
 }
 /*=======================================================*/
-double GbImplicitSurface::getX1Centroid()
+double GbGyroidThirdOrderLong::getX1Centroid()
 {
     return (0.5*(p1->x1 + p2->x1));
 }
 /*=======================================================*/
-double GbImplicitSurface::getX1Minimum()
+double GbGyroidThirdOrderLong::getX1Minimum()
 {
     return (this->p1->x1 < this->p2->x1 ? this->p1->x1 : this->p2->x1);
 }
 /*=======================================================*/
-double GbImplicitSurface::getX1Maximum()
+double GbGyroidThirdOrderLong::getX1Maximum()
 {
     return (this->p1->x1 > this->p2->x1 ? this->p1->x1 : this->p2->x1);
 }
 /*=======================================================*/
-double GbImplicitSurface::getX2Centroid()
+double GbGyroidThirdOrderLong::getX2Centroid()
 {
     return (0.5*(p1->x2 + p2->x2));
 }
 /*=======================================================*/
-double GbImplicitSurface::getX2Minimum()
+double GbGyroidThirdOrderLong::getX2Minimum()
 {
     return (this->p1->x2 < this->p2->x2 ? this->p1->x2 : this->p2->x2);
 }
 /*=======================================================*/
-double GbImplicitSurface::getX2Maximum()
+double GbGyroidThirdOrderLong::getX2Maximum()
 {
     return (this->p1->x2 > this->p2->x2 ? this->p1->x2 : this->p2->x2);
 }
 /*=======================================================*/
-double GbImplicitSurface::getX3Centroid()
+double GbGyroidThirdOrderLong::getX3Centroid()
 {
     return (0.5*(p1->x3 + p2->x3));
 }
 /*=======================================================*/
-double GbImplicitSurface::getX3Minimum()
+double GbGyroidThirdOrderLong::getX3Minimum()
 {
     return (this->p1->x3 < this->p2->x3 ? this->p1->x3 : this->p2->x3);
 }
 /*=======================================================*/
-double GbImplicitSurface::getX3Maximum()
+double GbGyroidThirdOrderLong::getX3Maximum()
 {
     return (this->p1->x3 > this->p2->x3 ? this->p1->x3 : this->p2->x3);
 }
 /*=======================================================*/
-bool GbImplicitSurface::isCellInsideGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
+bool GbGyroidThirdOrderLong::isCellInsideGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
 {
     if (this->isPointInGbObject3D(x1a, x2a, x3a)
         && this->isPointInGbObject3D(x1b, x2a, x3a)
@@ -347,7 +310,7 @@ bool GbImplicitSurface::isCellInsideGbObject3D(const double& x1a, const double& 
     return false;
 }
 /*=======================================================*/
-bool GbImplicitSurface::isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
+bool GbGyroidThirdOrderLong::isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
 {
     if ((this->isPointInGbObject3D(x1a, x2a, x3a) == false)
         && (this->isPointInGbObject3D(x1b, x2a, x3a) == false)
@@ -363,7 +326,7 @@ bool GbImplicitSurface::isCellInsideOrCuttingGbObject3D(const double& x1a, const
     return true;
 }
 /*=======================================================*/
-bool GbImplicitSurface::isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
+bool GbGyroidThirdOrderLong::isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
 {
     if (!this->isCellInsideGbObject3D(x1a, x2a, x3a, x1b, x2b, x3b)
         && this->isCellInsideOrCuttingGbObject3D(x1a, x2a, x3a, x1b, x2b, x3b))
@@ -372,40 +335,8 @@ bool GbImplicitSurface::isCellCuttingGbObject3D(const double& x1a, const double&
     }
     return false;
 }
-/*=======================================================*/
-void GbImplicitSurface::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector<UbTupleInt3>& triangles)
-{
-    /*0*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Minimum(), (float)getX3Minimum()));
-    /*1*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Minimum(), (float)getX3Minimum()));
-    /*2*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Maximum(), (float)getX3Minimum()));
-    /*3.*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Maximum(), (float)getX3Minimum()));
-
-    /*4*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Minimum(), (float)getX3Maximum()));
-    /*5*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Minimum(), (float)getX3Maximum()));
-    /*6*/nodes.push_back(makeUbTuple((float)getX1Maximum(), (float)getX2Maximum(), (float)getX3Maximum()));
-    /*7*/nodes.push_back(makeUbTuple((float)getX1Minimum(), (float)getX2Maximum(), (float)getX3Maximum()));
-
-    //"unten"
-    triangles.push_back(makeUbTuple(0, 1, 2));
-    triangles.push_back(makeUbTuple(0, 2, 3));
-    //"oben"
-    triangles.push_back(makeUbTuple(4, 5, 6));
-    triangles.push_back(makeUbTuple(4, 6, 7));
-    //"links"
-    triangles.push_back(makeUbTuple(0, 3, 7));
-    triangles.push_back(makeUbTuple(0, 7, 4));
-    //"rechts"                                                               
-    triangles.push_back(makeUbTuple(1, 2, 6));
-    triangles.push_back(makeUbTuple(1, 6, 5));
-    //"hinten"                                                                       
-    triangles.push_back(makeUbTuple(3, 2, 7));
-    triangles.push_back(makeUbTuple(2, 7, 6));
-    //"vorne"                                                                        
-    triangles.push_back(makeUbTuple(0, 1, 5));
-    triangles.push_back(makeUbTuple(0, 5, 4));
-}
 /*==========================================================*/
-void GbImplicitSurface::objectChanged(UbObservable *changedObject)
+void GbGyroidThirdOrderLong::objectChanged(UbObservable *changedObject)
 {
     GbPoint3D *point = dynamic_cast<GbPoint3D *>(changedObject);
     if (!point || (this->p1 != point && this->p2 != point && this->p3 != point && this->p4 != point))
@@ -414,7 +345,7 @@ void GbImplicitSurface::objectChanged(UbObservable *changedObject)
     this->notifyObserversObjectChanged();
 }
 /*==========================================================*/
-void GbImplicitSurface::objectWillBeDeleted(UbObservable *objectForDeletion)
+void GbGyroidThirdOrderLong::objectWillBeDeleted(UbObservable *objectForDeletion)
 {
     if (this->p1) {
         UbObservable *observedObj = dynamic_cast<UbObservable *>(this->p1);
@@ -440,7 +371,6 @@ void GbImplicitSurface::objectWillBeDeleted(UbObservable *objectForDeletion)
             this->p4 = NULL;
         }
     }
-    // ACHTUNG: eigentlich muessten in allen methoden von GbLine if abfragen fuer NULL pointer hin... toDo
 }
 
 #endif
