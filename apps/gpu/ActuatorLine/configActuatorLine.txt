@@ -1,16 +1,25 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path = .
+Path = ./output/
 ##################################################
 #informations for reading
 ##################################################
 GridPath=.
 ##################################################
-ReferenceDiameter=126
+RotorDiameter=126
 NodesPerDiameter=32
 Velocity=9
+LengthXinDiameter = 24
+LengthYinDiameter = 8
+LengthZinDiameter = 8
+
 ##################################################
+TurbinePositionsX = 378
+TurbinePositionsY = 0
+TurbinePositionsZ = 0
+##################################################
+
 tStartOut=100
 tOut=100
 tEnd=1000

@@ -2546,7 +2546,7 @@ void Parameter::setUseStreams(bool useStreams)
             this->useStreams = useStreams;
             return; 
         } else {
-            std::cout << "Can't use streams with only one process!" << std::endl;
+            VF_LOG_INFO( "Can't use streams with only one process!");
         }
     }
     this->useStreams = false;
