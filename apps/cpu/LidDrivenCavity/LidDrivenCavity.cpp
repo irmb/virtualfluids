@@ -47,7 +47,7 @@ int main(int  /*argc*/, char*  /*argv*/[])
       //////////////////////////////////////////////////////////////////////////
 
       // set your output path here
-      string path = "./LidDrivenCavity";
+      string path = "./output/LidDrivenCavity";
 
       const double L = 1.0;
       const double Re = 1000.0;
