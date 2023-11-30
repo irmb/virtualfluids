@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file LidDrivenCavity.cpp
-//! \ingroup Applications
+//! \ingroup apps
 //! \author Konstantin Kutscher
 //=======================================================================================
 
@@ -39,6 +39,7 @@ using namespace std;
 
 int main(int  /*argc*/, char*  /*argv*/[])
 {
+    using namespace vf::lbm::dir;
    try
    {
       //////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,7 @@ int main(int  /*argc*/, char*  /*argv*/[])
       //////////////////////////////////////////////////////////////////////////
 
       // set your output path here
-      string path = "./output";
+      string path = "./LidDrivenCavity";
 
       const double L = 1.0;
       const double Re = 1000.0;
@@ -55,10 +56,10 @@ int main(int  /*argc*/, char*  /*argv*/[])
       const unsigned int nx = 64;
 
       const double timeStepOut = 1000;
-      const double timeStepEnd = 25000;
+      const double timeStepEnd = 1000;
 
       // Number of OpenMP threads
-      int numOfThreads = 4;
+      int numOfThreads = 1;
 
       //////////////////////////////////////////////////////////////////////////
 
@@ -79,8 +80,9 @@ int main(int  /*argc*/, char*  /*argv*/[])
       double g_maxX2 = 0.5;
       double g_maxX3 = 0.5;
 
-      // NullCommunicator is a place-holder for interprocess communication
-      SPtr<vf::parallel::Communicator> comm = NullCommunicator::getInstance();
+      SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
+      int myid = comm->getProcessID();
+
       // new grid object
       SPtr<Grid3D> grid(new Grid3D(comm));
       // set grid spacing
@@ -110,37 +112,35 @@ int main(int  /*argc*/, char*  /*argv*/[])
       grid->accept(genBlocks);
 
       // Write block grid to VTK-file
-      auto ppblocks = std::make_shared<WriteBlocksCoProcessor>(grid, SPtr<UbScheduler>(new UbScheduler(1)), path, WbWriterVtkXmlBinary::getInstance(), comm);
-      ppblocks->process(0);
+      auto ppblocks = std::make_shared<WriteBlocksSimulationObserver>(grid, SPtr<UbScheduler>(new UbScheduler(1)), path, WbWriterVtkXmlBinary::getInstance(), comm);
+      ppblocks->update(0);
       ppblocks.reset();
 
       // Create LBM kernel
-      auto kernel = std::make_shared<LBMKernelETD3Q27BGK>();
-      // auto kernel = std::make_shared<CumulantK17LBMKernel>();
+      auto kernel = std::make_shared<K17CompressibleNavierStokes>();
 
       //////////////////////////////////////////////////////////////////////////
       // Create boundary conditions (BC)
       //////////////////////////////////////////////////////////////////////////     
       // Create no-slip BC
-      auto noSlipBCAdapter = std::make_shared<NoSlipBCAdapter>();
-      noSlipBCAdapter->setBcAlgorithm(std::make_shared<NoSlipBCAlgorithm>());
+      auto noSlipBC = std::make_shared<NoSlipBC>();
+      noSlipBC->setBCStrategy(std::make_shared<NoSlipInterpolated>());
       
       // Velocity BC
       mu::Parser fct;
       fct.SetExpr("u");
       fct.DefineConst("u", u);
       // Set the same velocity in x and y-direction
-      auto velBCAdapter = std::make_shared<VelocityBCAdapter>(true, true, false, fct, 0, BCFunction::INFCONST);
-      velBCAdapter->setBcAlgorithm(std::make_shared<VelocityBCAlgorithm>());
+      auto velBC = std::make_shared<VelocityBC>(true, true, false, fct, 0, BCFunction::INFCONST);
+      velBC->setBCStrategy(std::make_shared<VelocityInterpolated>());
 
       // Add velocity boundary condition to visitor. No-slip boundary   
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(velBCAdapter);
 
-      // Create boundary conditions processor
-      SPtr<BCProcessor> bcProc;
-      bcProc = std::make_shared<BCProcessor>();
-      kernel->setBCProcessor(bcProc);
+      // Create boundary conditions
+      SPtr<BCSet> bcProc;
+      bcProc = std::make_shared<BCSet>();
+      kernel->setBCSet(bcProc);
 
       // Create boundary conditions geometry
       GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_minX3 - dx, g_minX1, g_maxX2 + dx, g_maxX3));
@@ -157,14 +157,15 @@ int main(int  /*argc*/, char*  /*argv*/[])
       GbSystem3D::writeGeoObject(wallZmax.get(), path + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
 
       // Add boundary conditions to grid generator
-      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, velBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBC, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, velBC, Interactor3D::SOLID));
 
-      InteractorsHelper intHelper(grid);
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
+      InteractorsHelper intHelper(grid, metisVisitor);
       intHelper.addInteractor(wallZmaxInt);
       intHelper.addInteractor(wallXminInt);
       intHelper.addInteractor(wallXmaxInt);
@@ -173,6 +174,8 @@ int main(int  /*argc*/, char*  /*argv*/[])
       intHelper.addInteractor(wallYmaxInt);
 
       intHelper.selectBlocks();
+
+      if (myid == 0) VF_LOG_INFO("{}",Utilities::toString(grid, comm->getNumberOfProcesses()));
 
       // Generate grid
       SetKernelBlockVisitor kernelVisitor(kernel, viscosityLB);
@@ -185,7 +188,7 @@ int main(int  /*argc*/, char*  /*argv*/[])
       grid->accept(initVisitor);
 
       // Set connectivity between blocks
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, viscosityLB);
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
       // Create lists of boundary nodes
@@ -193,8 +196,8 @@ int main(int  /*argc*/, char*  /*argv*/[])
 
       // Write grid with boundary conditions information to VTK-file
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, path, WbWriterVtkXmlBinary::getInstance(), comm);
-      ppgeo.process(0);
+      WriteBoundaryConditionsSimulationObserver ppgeo(grid, geoSch, path, WbWriterVtkXmlBinary::getInstance(), comm);
+      ppgeo.update(0);
 
       UBLOG(logINFO, "Preprocess - end");
       
@@ -204,29 +207,28 @@ int main(int  /*argc*/, char*  /*argv*/[])
 
       // Create coprocessor object for writing macroscopic quantities to VTK-file
       SPtr<UbScheduler> visSch(new UbScheduler(timeStepOut));
-      SPtr<CoProcessor> mqCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, path, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter(L, velocity, 1.0, nx, velocityLB)), comm));
-      mqCoProcessor->process(0);
+      SPtr<SimulationObserver> mqSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, visSch, path, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter(L, velocity, 1.0, nx, velocityLB)), comm));
+      mqSimulationObserver->update(0);
 
       // Create coprocessor object for writing NUPS
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100));
-      SPtr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      SPtr<SimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
       // OpenMP threads control
 #ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
 #endif
       // Create simulation
-      SPtr<Calculator> calculator(new BasicCalculator(grid, visSch, (int)timeStepEnd));
-      // Add coprocessors objects to simulation
-      calculator->addCoProcessor(nupsCoProcessor);
-      calculator->addCoProcessor(mqCoProcessor);
+      SPtr<Simulation> simulation(new Simulation(grid, visSch, timeStepEnd));
+      simulation->addSimulationObserver(nupsSimulationObserver);
+      simulation->addSimulationObserver(mqSimulationObserver);
     
       //////////////////////////////////////////////////////////////////////////
       // Run simulation
       //////////////////////////////////////////////////////////////////////////
 
       UBLOG(logINFO, "Simulation-start");
-      calculator->calculate();
+      simulation->run();
       UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

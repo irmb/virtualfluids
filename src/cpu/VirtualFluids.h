@@ -253,7 +253,6 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
-#include <Parallel/BlocksDistributor.h>
 #include <Parallel/MetisPartitioner.h>
 
 #include <Utilities/ChangeRandomQs.hpp>

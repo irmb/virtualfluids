@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file FlowAroundCylinder.cpp
+//! \ingroup apps
+//! \author Konstantin Kutscher
+//=======================================================================================
+
 #include <iostream>
 #include <string>
 
@@ -14,9 +47,6 @@ void run(string configname)
 
    try
    {
-      //DEBUG///////////////////////////////////////
-      //Sleep(30000);
-      /////////////////////////////////////////////
       vf::basics::ConfigurationFile   config;
       config.load(configname);
 
@@ -69,10 +99,10 @@ void run(string configname)
       real radius = 0.05;
       real rhoReal = 1.0; //kg/m^3
       real uReal = 0.45;//m/s
-      real nueReal = (uReal*radius*2.0)/Re;
+      real nuReal = (uReal*radius*2.0)/Re;
       
       real rhoLB = 0.0;
-      real nueLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
+      real nuLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -96,10 +126,19 @@ void run(string configname)
       
       BoundaryConditionsBlockVisitor bcVisitor;
 
+      SPtr<LBMKernel> kernel(new K17CompressibleNavierStokes());
+
+      SPtr<BCSet> bcProc(new BCSet());
+      kernel->setBCSet(bcProc);
+
       //////////////////////////////////////////////////////////////////////////
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
       //restart
-      SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-      MPIIORestartSimulationObserver rcp(grid, rSch, pathOut, comm);
+      SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
+      SPtr<MPIIOMigrationSimulationObserver> restart(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, pathOut, comm));
+      //SPtr<MPIIORestartSimulationObserver> restart = make_shared<MPIIORestartSimulationObserver>(grid, mSch, pathOut, comm);
+      restart->setLBMKernel(kernel);
+      restart->setBCSet(bcProc);
       //////////////////////////////////////////////////////////////////////////
 
       ////cylinder
@@ -119,10 +158,10 @@ void run(string configname)
             UBLOG(logINFO, "H = "<<H/dx);
             UBLOG(logINFO, "uReal = "<<uReal<<" m/s");
             UBLOG(logINFO, "rhoReal = "<<rhoReal<<" kg/m^3");
-            UBLOG(logINFO, "nueReal = "<<nueReal<<" m^2/s");
+            UBLOG(logINFO, "nuReal = "<<nuReal<<" m^2/s");
             UBLOG(logINFO, "uLB = "<<uLB);
             UBLOG(logINFO, "rhoLB = "<<rhoLB);
-            UBLOG(logINFO, "nueLB = "<<nueLB);
+            UBLOG(logINFO, "nuLB = "<<nuLB);
             UBLOG(logINFO, "Re = "<<Re);
             UBLOG(logINFO, "dx coarse= "<<dx);
             UBLOG(logINFO, "dx fine = "<<dx/(1<<refineLevel) );
@@ -217,37 +256,9 @@ void run(string configname)
          ppblocks->update(0);
          ppblocks.reset();
 
-         unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
-         int ghostLayer = 3;
-         unsigned long long numberOfNodesPerBlock = (unsigned long long)(blockNx[0])* (unsigned long long)(blockNx[1])* (unsigned long long)(blockNx[2]);
-         unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
-         unsigned long long numberOfNodesPerBlockWithGhostLayer = numberOfBlocks * (blockNx[0]+ghostLayer) * (blockNx[1]+ghostLayer) * (blockNx[2]+ghostLayer);
-         real needMemAll = real(numberOfNodesPerBlockWithGhostLayer*(27*sizeof(real)+sizeof(int)+sizeof(float)*4));
-         real needMem = needMemAll/real(comm->getNumberOfProcesses());
+         if (myid == 0) VF_LOG_INFO("{}",Utilities::toString(grid, comm->getNumberOfProcesses()));
 
-         if (myid==0)
-         {
-            UBLOG(logINFO, "Number of blocks = "<<numberOfBlocks);
-            UBLOG(logINFO, "Number of nodes  = "<<numberOfNodes);
-            int minInitLevel = grid->getCoarsestInitializedLevel();
-            int maxInitLevel = grid->getFinestInitializedLevel();
-            for (int level = minInitLevel; level<=maxInitLevel; level++)
-            {
-               int nobl = grid->getNumberOfBlocks(level);
-               UBLOG(logINFO, "Number of blocks for level "<<level<<" = "<<nobl);
-               UBLOG(logINFO, "Number of nodes for level "<<level<<" = "<<nobl*numberOfNodesPerBlock);
-            }
-            UBLOG(logINFO, "Necessary memory  = "<<needMemAll<<" bytes");
-            UBLOG(logINFO, "Necessary memory per process = "<<needMem<<" bytes");
-            UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
-         }
-
-         SPtr<LBMKernel> kernel(new K17CompressibleNavierStokes());
-
-         SPtr<BCSet> bcProc(new BCSet());
-         kernel->setBCSet(bcProc);
-
-         SetKernelBlockVisitor kernelVisitor(kernel, nueLB, availMem, needMem);
+         SetKernelBlockVisitor kernelVisitor(kernel, nuLB);
          grid->accept(kernelVisitor);
 
          if (refineLevel>0)
@@ -263,9 +274,6 @@ void run(string configname)
          initVisitor.setVx1(fct);
          grid->accept(initVisitor);
 
-;
-         grid->accept(bcVisitor);
-
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
          SPtr<SimulationObserver> ppgeo(
@@ -273,22 +281,22 @@ void run(string configname)
          ppgeo->update(0);
          ppgeo.reset();
 
-         if (myid==0) UBLOG(logINFO, "Preprozess - end");
+         if (myid==0) UBLOG(logINFO, "Preprocess - end");
       }
       else
       {
-         rcp.restart((int)restartStep);
+         restart->restart((int)restartStep);
          grid->setTimeStep(restartStep);
-
-         grid->accept(bcVisitor);
       }
+
+      grid->accept(bcVisitor);
 
       //set connectors
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
       SPtr<Interpolator> iProcessor(new CompressibleOffsetMomentsInterpolator());
-      SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nueLB, iProcessor);
+      SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
       grid->accept(setInterConnsVisitor);
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
@@ -297,19 +305,23 @@ void run(string configname)
 
       real area = (2.0*radius*H)/(dx*dx);
       real v    = 4.0*uLB/9.0;
-      SPtr<UbScheduler> forceSch(new UbScheduler(100));
+      SPtr<UbScheduler> forceSch(new UbScheduler(1000));
       SPtr<CalculateForcesSimulationObserver> fp = make_shared<CalculateForcesSimulationObserver>(grid, forceSch, pathOut + "/results/forces.txt", comm, v, area);
       fp->addInteractor(cylinderInt);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       std::shared_ptr<SimulationObserver> nupsSimulationObserver(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
+#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
+#endif
+
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Simulation> simulation(new Simulation(grid, stepGhostLayer, endTime));
       simulation->addSimulationObserver(nupsSimulationObserver);
       simulation->addSimulationObserver(fp);
       simulation->addSimulationObserver(writeMQSimulationObserver);
+      simulation->addSimulationObserver(restart);
 
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
       simulation->run();
