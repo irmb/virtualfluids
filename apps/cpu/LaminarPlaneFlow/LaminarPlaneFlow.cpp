@@ -76,8 +76,6 @@ void pflowdp(string configname)
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      const int baseLevel = 0;
-
       //bounding box
       real g_minX1 = 0;
       real g_minX2 = 0;
