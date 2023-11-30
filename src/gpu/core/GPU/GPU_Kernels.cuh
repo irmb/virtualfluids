@@ -287,74 +287,6 @@ __global__ void LB_BC_Vel_West_27( int nx,
                                               unsigned int grid_ny,
                                               real om);
 
-//no Slip BCs
-__global__ void QDevice27(real* distributions,
-                                     int* subgridDistanceIndices,
-                                     real* subgridDistances,
-                                     unsigned int numberOfBCnodes,
-                                     real omega,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     bool isEvenTimestep);
-
-__global__ void QDeviceComp27(
-                                         real* distributions,
-                                         int* subgridDistanceIndices,
-                                         real* subgridDistances,
-                                         unsigned int numberOfBCnodes,
-                                         real omega,
-                                         unsigned int* neighborX,
-                                         unsigned int* neighborY,
-                                         unsigned int* neighborZ,
-                                         unsigned long long numberOfLBnodes,
-                                         bool isEvenTimestep);
-
-__global__ void QDeviceCompThinWallsPartOne27(real* DD,
-                                                         int* k_Q,
-                                                         real* QQ,
-                                                         unsigned int numberOfBCnodes,
-                                                         real om1,
-                                                         unsigned int* neighborX,
-                                                         unsigned int* neighborY,
-                                                         unsigned int* neighborZ,
-                                                         unsigned long long numberOfLBnodes,
-                                                         bool isEvenTimestep);
-
-__global__ void QDevice3rdMomentsComp27(     real* distributions,
-                                                     int* subgridDistanceIndices,
-                                                     real* subgridDistances,
-                                                     unsigned int numberOfBCnodes,
-                                                     real omega,
-                                                     unsigned int* neighborX,
-                                                     unsigned int* neighborY,
-                                                     unsigned int* neighborZ,
-                                                     unsigned long long numberOfLBnodes,
-                                                     bool isEvenTimestep);
-
-__global__ void QDeviceIncompHighNu27(real* DD,
-                                                 int* k_Q,
-                                                 real* QQ,
-                                                 unsigned int numberOfBCnodes,
-                                                 real om1,
-                                                 unsigned int* neighborX,
-                                                 unsigned int* neighborY,
-                                                 unsigned int* neighborZ,
-                                                 unsigned long long numberOfLBnodes,
-                                                 bool isEvenTimestep);
-
-__global__ void QDeviceCompHighNu27(     real* DD,
-                                                 int* k_Q,
-                                                 real* QQ,
-                                                 unsigned int numberOfBCnodes,
-                                                 real om1,
-                                                 unsigned int* neighborX,
-                                                 unsigned int* neighborY,
-                                                 unsigned int* neighborZ,
-                                                 unsigned long long numberOfLBnodes,
-                                                 bool isEvenTimestep);
-
 //Velocity BCs
 __global__ void QVelDevPlainBB27(
     real* velocityX,
@@ -713,17 +645,6 @@ __global__ void BBStressPressureDevice27( real* DD,
                                              unsigned int* neighborZ,
                                              unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep);
-
-
-__global__ void BBDevice27(real* distributions,
-                                     int* subgridDistanceIndices,
-                                     real* subgridDistances,
-                                     unsigned int numberOfBCnodes,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     bool isEvenTimestep);
 
 __global__ void QPrecursorDeviceCompZeroPress(     int* subgridDistanceIndices,
                                                 int numberOfBCnodes,

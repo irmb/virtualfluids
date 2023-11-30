@@ -319,23 +319,17 @@ void BoundaryConditionKernelManager::runPressureBCKernelPre(const int level) con
 
 void BoundaryConditionKernelManager::runStressWallModelKernelPost(const int level) const{
     if (para->getParD(level)->stressBC.numberOfBCnodes > 0)
-    {
         stressBoundaryConditionPost(para.get(), &(para->getParD(level)->stressBC), level);
-    }
 }
 
 void BoundaryConditionKernelManager::runSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 0)
-    {
         slipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->slipBC));
-    }
 }
 
 void BoundaryConditionKernelManager::runNoSlipBCKernelPost(const int level) const{
     if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
-    {
         noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));
-    }
 }
 
 void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
