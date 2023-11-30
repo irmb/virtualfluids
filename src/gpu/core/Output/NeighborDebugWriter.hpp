@@ -1,14 +1,17 @@
 #ifndef NEIGHBORDEBUG_HPP
 #define NEIGHBORDEBUG_HPP
 
-#include "LBM/LB.h"
 #include <logger/Logger.h>
-#include "Parameter/Parameter.h"
-#include "basics/utilities/UbSystem.h"
-#include "gpu/GridGenerator/grid/NodeValues.h"
-#include "lbm/constants/D3Q27.h"
+
+#include <basics/utilities/UbSystem.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
+#include <GridGenerator/grid/NodeValues.h>
+
+#include <lbm/constants/D3Q27.h>
+
+#include "LBM/LB.h"
+#include "Parameter/Parameter.h"
 #include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"
 

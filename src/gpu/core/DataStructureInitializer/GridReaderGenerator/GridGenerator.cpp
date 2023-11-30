@@ -1,25 +1,24 @@
 #include "GridGenerator.h"
 
-#include "LBM/LB.h"
-#include "Parameter/Parameter.h"
-#include "GridGenerator/grid/GridBuilder/GridBuilder.h"
-#include "GPU/CudaMemoryManager.h"
-#include "Parameter/CudaStreamManager.h"
-#include "IndexRearrangementForStreams.h"
-#include "InterpolationCellGrouper.h"
-#include "GridGenerator/grid/Grid.h"
-
-#include <iostream>
 #include <algorithm>
-#include "GridGenerator/utilities/math/Math.h"
-#include "Output/QDebugWriter.hpp"
-#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
-#include "utilities/communication.h"
+#include <GridGenerator/TransientBCSetter/TransientBCSetter.h>
+#include <GridGenerator/grid/Grid.h>
+#include <GridGenerator/grid/GridBuilder/GridBuilder.h>
+#include <GridGenerator/utilities/math/Math.h>
 
 #include <parallel/Communicator.h>
 
 #include <logger/Logger.h>
+
+#include "GPU/CudaMemoryManager.h"
+#include "IndexRearrangementForStreams.h"
+#include "InterpolationCellGrouper.h"
+#include "LBM/LB.h"
+#include "Output/QDebugWriter.hpp"
+#include "Parameter/CudaStreamManager.h"
+#include "Parameter/Parameter.h"
+#include "utilities/communication.h"
 
 using namespace vf::lbm::dir;
 

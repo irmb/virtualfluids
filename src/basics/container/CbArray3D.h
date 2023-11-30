@@ -33,13 +33,13 @@
 #ifndef CBARRAY3D_H
 #define CBARRAY3D_H
 
+#include <algorithm>
 #include <iomanip>
+#include <typeinfo>
 
 #include <basics/PointerDefinitions.h>
-#include <algorithm>
 #include <basics/utilities/UbEqual.h>
 #include <basics/utilities/UbException.h>
-#include <typeinfo>
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

@@ -38,10 +38,10 @@
 #include <string>
 #include <variant>
 
+#include <GridGenerator/grid/BoundaryConditions/Side.h>
+
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
-#include "gpu/GridGenerator/grid/BoundaryConditions/Side.h"
-
 
 struct LBMSimulationParameter;
 class Parameter;

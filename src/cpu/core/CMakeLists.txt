@@ -49,30 +49,16 @@ ENDIF()
 # endif()
 
 ## WARNINGS
-# TODO: Remove this and fix those warnings
+# TODO: Remove this and fix those warnings: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/163
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     # Using CMakes De-Duplication of Flags "Hack" (https://cmake.org/cmake/help/latest/prop_tgt/COMPILE_OPTIONS.html#option-de-duplication)
-    # target_compile_options(${library_name} PUBLIC "-Wold-style-cast;-Wno-old-style-cast")
-    # target_compile_options(${library_name} PUBLIC "-Wsign-conversion;-Wno-sign-conversion")
-    # target_compile_options(${library_name} PUBLIC "-Wdouble-promotion;-Wno-double-promotion")
-    # target_compile_options(${library_name} PUBLIC "-Wshadow;-Wno-shadow")
-
     target_compile_options(${library_name} PUBLIC "-Wextra") # Wno-unused-parameter comes with -Wextra
     target_compile_options(${library_name} PUBLIC "-Wall") # Wno-unused-function comes with -Wall
     target_compile_options(${library_name} PUBLIC "-Wunused") # -Wno-unused-function comes with -Wunused
     target_compile_options(${library_name} PUBLIC "-Wno-unused-parameter")
     target_compile_options(${library_name} PUBLIC "-Wno-unused-function")
-    # target_compile_options(${library_name} PRIVATE "-Wno-implicit-float-conversion")
-    # target_compile_options(${library_name} PRIVATE "-Wno-comment")
-    # target_compile_options(${library_name} PRIVATE "-Wno-reorder-ctor")
-    # target_compile_options(${library_name} PRIVATE "-Wno-uninitialized")
     target_compile_options(${library_name} PUBLIC "-Wno-reorder")
-    # target_compile_options(${library_name} PRIVATE "-Wno-strict-aliasing")
 endif()
-
-# if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#     target_compile_options(${library_name} PUBLIC "-Wuseless-cast;-Wno-useless-cast")
-# endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${library_name} PUBLIC "/wd4244") # conversion

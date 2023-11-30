@@ -10,7 +10,7 @@ endif()
 
 
 ## WARNINGS
-# TODO: Remove this and fix those warnings
+# TODO: Remove this and fix those warnings: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/163
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     # Using CMakes De-Duplication of Flags "Hack" (https://cmake.org/cmake/help/latest/prop_tgt/COMPILE_OPTIONS.html#option-de-duplication)
     target_compile_options(GridGenerator PUBLIC "-Wold-style-cast;-Wno-old-style-cast")

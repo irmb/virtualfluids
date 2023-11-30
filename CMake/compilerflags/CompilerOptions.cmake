@@ -31,7 +31,7 @@ function(set_project_options project_name)
         set(PROJECT_OPTIONS_RELEASE ${PROJECT_OPTIONS_CLANG_RELEASE})
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # gcov: According to https://gcovr.com/en/stable/cookbook.html#out-of-source-builds-with-cmake
-        # This flags are used if cmake is called with -DCMAKE_BUILD_TYPE=PROFILE
+        # These flags are used if cmake is called with -DCMAKE_BUILD_TYPE=PROFILE
         set(CMAKE_C_FLAGS_PROFILE --coverage)
         set(CMAKE_CXX_FLAGS_PROFILE --coverage)
 
@@ -41,7 +41,8 @@ function(set_project_options project_name)
     else()
     message(AUTHOR_WARNING "No compiler options set for CXX compiler: '${CMAKE_CXX_COMPILER_ID}'")
 
-    # TODO support Intel compiler
+    # TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/71
+    # support Intel compiler
     endif()
 
     message(DEBUG "${project_name} debug: ${PROJECT_OPTIONS_DEBUG}")
@@ -74,10 +75,10 @@ function(set_project_options project_name)
         target_compile_definitions(${project_name} INTERFACE __WIN__)
     ELSEIF(UNIX)
         target_compile_definitions(${project_name} INTERFACE __unix__)
+        IF(APPLE)
+            target_compile_definitions(${project_name} INTERFACE __APPLE__)
+        endif()
     ENDIF()
-    IF(APPLE)
-        target_compile_definitions(${project_name} INTERFACE __APPLE__)
-    endif()
 
     if(VF_ENABLE_DOUBLE_ACCURACY)
         target_compile_definitions(${project_name} INTERFACE VF_DOUBLE_ACCURACY)

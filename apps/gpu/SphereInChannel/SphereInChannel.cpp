@@ -109,9 +109,6 @@ int main(int argc, char* argv[])
         const real deltaX = length / real(numberOfNodesX);
         const real deltaT = velocityLB / velocity * deltaX;
 
-        // const real vxLB = velocityLB / sqrt(2.0); // LB units
-        // const real vyLB = velocityLB / sqrt(2.0); // LB units
-
         const real viscosityLB = numberOfNodesX * velocityLB / reynoldsNumber; // LB units
 
         //////////////////////////////////////////////////////////////////////////
