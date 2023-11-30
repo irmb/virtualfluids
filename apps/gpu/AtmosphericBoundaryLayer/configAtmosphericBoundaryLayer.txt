@@ -1,0 +1,44 @@
+##################################################
+#informations for Writing
+##################################################
+Path = ./output/
+##################################################
+#informations for reading
+##################################################
+GridPath = .
+##################################################
+Devices = 0 
+##################################################
+tStartOut           = 0
+tOut                = 100000
+tEnd                = 300000
+##################################################
+tStartAveraging     = 0
+tStartTmpAveraging  = 100000
+tAveraging          = 1000
+tStartOutProbe      = 0
+tOutProbe           = 1000
+##################################################
+NodesPerBoundaryLayerHeight = 96
+
+PeriodicShift = 1100
+Refinement = false
+
+##################################################
+TurbulenceModel = QR
+SGSconstant = 0.333333
+QuadricLimiterP = 100000.0
+QuadricLimiterM = 100000.0
+QuadricLimiterD = 100000.0
+
+##################################################
+ReadPrecursor = false
+nTimestepsReadPrecursor = 10
+PrecursorFile = precursor/Precursor
+
+##################################################
+WritePrecursor = false
+nTimestepsWritePrecursor = 10
+
+tStartPrecursor = 100
+posXPrecursor = 3000

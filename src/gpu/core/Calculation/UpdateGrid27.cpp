@@ -78,7 +78,9 @@ void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *tagged
     if (taggedFluidNodeIndices != nullptr && numberOfTaggedFluidNodes != 0)
         kernels.at(level)->runOnIndices(taggedFluidNodeIndices, numberOfTaggedFluidNodes, collisionTemplate, stream);
     else
-        VF_LOG_WARNING("In collision: fluidNodeIndices or numberOfFluidNodes not defined");
+        VF_LOG_CRITICAL("In collision: fluidNodeIndices or numberOfFluidNodes not defined (level = {})", level);
+
+    //////////////////////////////////////////////////////////////////////////
 
     if (para->getDiffOn())
         collisionAdvectionDiffusion(level);
@@ -119,7 +121,7 @@ void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
     // 3D domain decomposition convection diffusion
     if (para->getDiffOn()) {
         if (para->getUseStreams())
-            VF_LOG_WARNING("Cuda streams not yet implemented for convection diffusion");
+            VF_LOG_WARNING("Warning: Cuda streams not yet implemented for convection diffusion");
         exchangePostCollDataADXGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADYGPU27(para.get(), comm, cudaMemoryManager.get(), level);
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
@@ -224,10 +226,6 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
     //////////////////////////////////////////////////////////////////////////
     // O U T F L O W
     this->bcKernelManager->runOutflowBCKernelPre(level);
-
-    //////////////////////////////////////////////////////////////////////////
-    // P R E S S U R E
-    this->bcKernelManager->runPressureBCKernelPost(level);
 
     //////////////////////////////////////////////////////////////////////////
     // P R E C U R S O R

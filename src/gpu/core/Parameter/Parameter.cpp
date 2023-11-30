@@ -279,26 +279,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         quadricLimiterD = configData.getValue<real>("QuadricLimiterD");
 
     this->setQuadricLimiters(quadricLimiterP, quadricLimiterM, quadricLimiterD);
-    //////////////////////////////////////////////////////////////////////////
-    // Particles
-    if (configData.contains("calcParticles"))
-        this->setCalcParticles(configData.getValue<bool>("calcParticles"));
-
-    if (configData.contains("baseLevel"))
-        this->setParticleBasicLevel(configData.getValue<int>("baseLevel"));
-
-    if (configData.contains("initLevel"))
-        this->setParticleInitLevel(configData.getValue<int>("initLevel"));
-
-    if (configData.contains("numberOfParticles"))
-        this->setNumberOfParticles(configData.getValue<int>("numberOfParticles"));
-
-    if (configData.contains("startXHotWall"))
-        this->setStartXHotWall(configData.getValue<real>("startXHotWall"));
-
-    if (configData.contains("endXHotWall"))
-        this->setEndXHotWall(configData.getValue<real>("endXHotWall"));
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Restart
     if (configData.contains("TimeDoCheckPoint"))
@@ -676,30 +656,6 @@ void Parameter::setMaxLevel(int numberOfLevels)
     this->fine = this->maxlevel;
     parH.resize(this->maxlevel + 1);
     parD.resize(this->maxlevel + 1);
-}
-void Parameter::setParticleBasicLevel(int pbl)
-{
-    this->particleBasicLevel = pbl;
-}
-void Parameter::setParticleInitLevel(int pil)
-{
-    this->particleInitLevel = pil;
-}
-void Parameter::setNumberOfParticles(int nop)
-{
-    this->numberOfParticles = nop;
-}
-void Parameter::setCalcParticles(bool calcParticles)
-{
-    this->calcParticles = calcParticles;
-}
-void Parameter::setStartXHotWall(real startXHotWall)
-{
-    this->startXHotWall = startXHotWall;
-}
-void Parameter::setEndXHotWall(real endXHotWall)
-{
-    this->endXHotWall = endXHotWall;
 }
 void Parameter::setTimestepEnd(unsigned int tend)
 {
@@ -1659,14 +1615,6 @@ real Parameter::getAngularVelocity()
 {
     return angularVelocity;
 }
-real Parameter::getStartXHotWall()
-{
-    return this->startXHotWall;
-}
-real Parameter::getEndXHotWall()
-{
-    return this->endXHotWall;
-}
 unsigned int Parameter::getStepEnsight()
 {
     return this->stepEnsight;
@@ -1735,18 +1683,6 @@ int Parameter::getCoarse() const
 {
     return coarse;
 }
-int Parameter::getParticleBasicLevel()
-{
-    return this->particleBasicLevel;
-}
-int Parameter::getParticleInitLevel()
-{
-    return this->particleInitLevel;
-}
-int Parameter::getNumberOfParticles()
-{
-    return this->numberOfParticles;
-}
 bool Parameter::getEvenOrOdd(int level)
 {
     return parD[level]->isEvenTimestep;
@@ -1810,10 +1746,6 @@ bool Parameter::getCalcDragLift()
 bool Parameter::getCalcCp()
 {
     return this->calcCp;
-}
-bool Parameter::getCalcParticles()
-{
-    return this->calcParticles;
 }
 bool Parameter::getWriteVeloASCIIfiles()
 {
@@ -2521,10 +2453,6 @@ std::string Parameter::getOutflowBoundaryNormalZ()
 {
     return this->outflowNormalZ;
 }
-curandState *Parameter::getRandomState()
-{
-    return this->devState;
-}
 
 std::string Parameter::getMainKernel()
 {
@@ -2618,7 +2546,7 @@ void Parameter::setUseStreams(bool useStreams)
             this->useStreams = useStreams;
             return; 
         } else {
-            std::cout << "Can't use streams with only one process!" << std::endl;
+            VF_LOG_INFO( "Can't use streams with only one process!");
         }
     }
     this->useStreams = false;

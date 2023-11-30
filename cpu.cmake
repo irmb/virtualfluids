@@ -47,5 +47,5 @@ add_subdirectory(apps/cpu/LaminarPipeFlow)
 
 
 if(BUILD_USE_BOOST)
-    add_subdirectory(apps/cpu/TPMSRow)
+    add_subdirectory(apps/cpu/GyroidsRow)
 endif()

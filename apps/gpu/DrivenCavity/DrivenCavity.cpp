@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
         BoundaryConditionFactory bcFactory;
 
         bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
-        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityBounceBack);
 
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation
@@ -177,10 +177,10 @@ int main(int argc, char* argv[])
         printf("\n");
         VF_LOG_INFO("world parameter:");
         VF_LOG_INFO("--------------");
-        VF_LOG_INFO("dt [s]                 = {}", deltaT);
+        VF_LOG_INFO("delta t [s]            = {}", deltaT);
         VF_LOG_INFO("world_length   [m]     = {}", length);
         VF_LOG_INFO("world_velocity [m/s]   = {}", velocity);
-        VF_LOG_INFO("dx [m]                 = {}", deltaX);
+        VF_LOG_INFO("delta x [m]            = {}", deltaX);
         printf("\n");
         VF_LOG_INFO("LB parameter:");
         VF_LOG_INFO("--------------");
@@ -192,12 +192,10 @@ int main(int argc, char* argv[])
         printf("\n");
         VF_LOG_INFO("simulation parameter:");
         VF_LOG_INFO("--------------");
-        VF_LOG_INFO("nx                     = {}", numberOfNodesX);
-        VF_LOG_INFO("ny                     = {}", numberOfNodesX);
-        VF_LOG_INFO("nz                     = {}", numberOfNodesX);
+        VF_LOG_INFO("number of nodes in x   = {}", numberOfNodesX);
         VF_LOG_INFO("number of nodes        = {}", numberOfNodesX * numberOfNodesX * numberOfNodesX);
-        VF_LOG_INFO("n timesteps            = {}", timeStepOut);
-        VF_LOG_INFO("write_nth_timestep     = {}", timeStepEnd);
+        VF_LOG_INFO("write_nth_timestep     = {}", timeStepOut);
+        VF_LOG_INFO("last timestep          = {}", timeStepEnd);
         VF_LOG_INFO("output_path            = {}", path);
 
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);

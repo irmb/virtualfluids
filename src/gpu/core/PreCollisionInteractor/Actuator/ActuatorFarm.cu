@@ -437,7 +437,7 @@ void ActuatorFarm::swapDeviceArrays()
 
 std::string ActuatorFarm::getFilename(Parameter* para, uint t) const
 {
-    return para->getOutputPath() + this->outputName + "_t_" + std::to_string(t);
+    return para->getOutputPath() + this->outputName + "_ID_" + std::to_string(para->getMyProcessID()) + "_t_" + std::to_string(t);
 }
 
 void ActuatorFarm::write(const std::string& filename) const

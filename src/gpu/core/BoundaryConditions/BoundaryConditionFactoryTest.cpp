@@ -6,6 +6,8 @@
 
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
+#include "BoundaryConditions/NoSlip/NoSlip.h"
+#include "BoundaryConditions/Velocity/Velocity.h"
 #include "GPU/GPU_Interface.h"
 
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
@@ -72,21 +74,21 @@ TEST(BoundaryConditionFactoryTest, velocityBC)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
-    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == QVelDevicePlainBB27)
-        << "The returned boundary condition is not the expected function QVelDevicePlainBB27.";
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityBounceBack);
+    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == VelocityBounceBack)
+        << "The returned boundary condition is not the expected function VelocityBounceBack.";
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityIncompressible);
-    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == QVelDev27)
-        << "The returned boundary condition is not the expected function QVelDev27.";
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedIncompressible);
+    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == VelocityInterpolatedIncompressible)
+        << "The returned boundary condition is not the expected function VelocityInterpolatedIncompressible.";
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
-    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == QVelDevComp27)
-        << "The returned boundary condition is not the expected function QVelDevComp27.";
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
+    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == VelocityInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function VelocityInterpolatedCompressible.";
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == QVelDevCompZeroPress27)
-        << "The returned boundary condition is not the expected function QVelDevCompZeroPress27.";
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityWithPressureInterpolatedCompressible);
+    EXPECT_TRUE(*(getVelocityBcTarget(bcFactory)) == VelocityWithPressureInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function VelocityWithPressureInterpolatedCompressible.";
 }
 
 bcFunction getNoSlipBcTarget(BoundaryConditionFactory &bcFactory)
@@ -101,25 +103,21 @@ TEST(BoundaryConditionFactoryTest, noSlipBC)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipImplicitBounceBack);
+    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack);
     auto bc = bcFactory.getNoSlipBoundaryConditionPost();
     EXPECT_NO_THROW(bc(nullptr, nullptr)); // empty lambda function should not throw
 
     bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
-    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == BBDev27)
-        << "The returned boundary condition is not the expected function BBDev27.";
+    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == NoSlipBounceBack)
+        << "The returned boundary condition is not the expected function NoSlipBounceBack.";
 
-    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipIncompressible);
-    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == QDev27)
-        << "The returned boundary condition is not the expected function QDev27.";
+    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedIncompressible);
+    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == NoSlipInterpolatedIncompressible)
+        << "The returned boundary condition is not the expected function NoSlipInterpolatedIncompressible.";
 
-    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
-    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == QDevComp27)
-        << "The returned boundary condition is not the expected function QDevComp27.";
-
-    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlip3rdMomentsCompressible);
-    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == QDev3rdMomentsComp27)
-        << "The returned boundary condition is not the expected function BBDev27.";
+    bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedCompressible);
+    EXPECT_TRUE( *(getNoSlipBcTarget(bcFactory)) == NoSlipInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function NoSlipInterpolatedCompressible.";
 }
 
 bcFunction getSlipBcTarget(BoundaryConditionFactory &bcFactory)
@@ -159,14 +157,6 @@ TEST(BoundaryConditionFactoryTest, pressureBC)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureEquilibrium);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressDev27)
-        << "The returned boundary condition is not the expected function QPressDev27.";
-
-    bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureEquilibrium2);
-    EXPECT_TRUE( *(getPressureBcTarget(bcFactory)) == QPressDevEQZ27)
-        << "The returned boundary condition is not the expected function QPressDevEQZ27.";
-
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumIncompressible);
     EXPECT_TRUE(*(getPressureBcTarget(bcFactory)) == PressureNonEquilibriumIncompressible)
         << "The returned boundary condition is not the expected function PressureNonEquilibriumIncompressible.";
@@ -193,34 +183,30 @@ TEST(BoundaryConditionFactoryTest, geometryBC)
     auto bcFactory = BoundaryConditionFactory();
 
     // velocity
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityIncompressible);
-    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == QVelDev27)
-        << "The returned boundary condition is not the expected function QVelDev27.";
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedIncompressible);
+    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == VelocityInterpolatedIncompressible)
+        << "The returned boundary condition is not the expected function VelocityInterpolatedIncompressible.";
 
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
-    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == QVelDevComp27)
-        << "The returned boundary condition is not the expected function QVelDevComp27.";
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
+    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == VelocityInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function VelocityInterpolatedCompressible.";
 
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
-    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == QVelDevCompZeroPress27)
-        << "The returned boundary condition is not the expected function QVelDevCompZeroPress27.";
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityWithPressureInterpolatedCompressible);
+    EXPECT_TRUE(*(getGeometryBcTarget(bcFactory)) == VelocityWithPressureInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function VelocityWithPressureInterpolatedCompressible.";
 
     // no slip
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipImplicitBounceBack);
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack);
     auto bc = bcFactory.getGeometryBoundaryConditionPost();
     EXPECT_NO_THROW(bc(nullptr, nullptr)); // empty lambda function should not throw
 
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipIncompressible);
-    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == QDev27)
-        << "The returned boundary condition is not the expected function QDev27.";
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedIncompressible);
+    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == NoSlipInterpolatedIncompressible)
+        << "The returned boundary condition is not the expected function NoSlipInterpolatedIncompressible.";
 
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipCompressible);
-    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == QDevComp27)
-        << "The returned boundary condition is not the expected function QDevComp27.";
-
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlip3rdMomentsCompressible);
-    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == QDev3rdMomentsComp27)
-        << "The returned boundary condition is not the expected function QDev3rdMomentsComp27.";
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedCompressible);
+    EXPECT_TRUE( *(getGeometryBcTarget(bcFactory)) == NoSlipInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function NoSlipInterpolatedCompressible.";
 }
 
 TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)

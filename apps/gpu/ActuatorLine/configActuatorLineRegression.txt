@@ -1,0 +1,46 @@
+##################################################
+#information for Writing
+##################################################
+Path = ./output/ActuatorLine/
+
+##################################################
+#information for reading
+##################################################
+GridPath=.
+
+##################################################
+RotorDiameter = 126
+NodesPerDiameter = 24
+Velocity = 9
+LengthXinDiameter = 10
+LengthYinDiameter = 4
+LengthZinDiameter = 4
+
+##################################################
+TurbinePositionsX = 378
+TurbinePositionsY = 0
+TurbinePositionsZ = 0
+
+##################################################
+tStartOut=1000000
+tOut=100
+tEnd=402
+
+##################################################
+tStartTmpAveraging=100
+tStartAveraging=100
+tAveraging=100
+tTmpAveraging=100
+tStartOutProbe=100
+tOutProbe=100        
+              
+##################################################
+TurbulenceModel = QR
+SGSconstant = 0.3333333
+
+QuadricLimiterP = 1.0
+QuadricLimiterM = 1.0
+QuadricLimiterD = 1.0
+
+##################################################
+

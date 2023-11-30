@@ -1,7 +1,0 @@
-PROJECT(ActuatorLineRegression LANGUAGES CUDA CXX)
-
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES ActuatorLineRegression.cpp)
-
-set_source_files_properties(ActuatorLineRegression.cpp PROPERTIES LANGUAGE CUDA)
-
-set_target_properties(ActuatorLineRegression PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

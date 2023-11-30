@@ -43,13 +43,12 @@
 #ifndef Probe_H
 #define Probe_H
 
-#include <iostream>
-
 #include <cuda.h>
 
-#include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include <basics/PointerDefinitions.h>
-#include "WbWriterVtkXmlBinary.h"
+#include "basics/writer/WbWriterVtkXmlBinary.h"
+
+#include "gpu/core/PreCollisionInteractor/PreCollisionInteractor.h"
 
 //=======================================================================================
 //! \note How to add new Statistics 
@@ -114,6 +113,7 @@ struct ProbeStruct{
     uint *arrayOffsetsH, *arrayOffsetsD;
     bool isEvenTAvg = true;
 };
+
 __host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int array);
 
 __global__ void calcQuantitiesKernel(   uint* pointIndices,

@@ -12,7 +12,7 @@ list(APPEND VF_COMPILER_DEFINITION "PATH_NUMERICAL_TESTS=${PATH_NUMERICAL_TESTS}
 
 set(GPU_APP "apps/gpu/")
 list(APPEND USER_APPS 
-    # "${GPU_APP}DrivenCavityMultiGPU"
-    # "${GPU_APP}SphereScaling"
+    "${GPU_APP}DrivenCavityMultiGPU"
+    "${GPU_APP}SphereMultiGPU"
     # "${GPU_APP}MusselOyster"
     )

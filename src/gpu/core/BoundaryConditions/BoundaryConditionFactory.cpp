@@ -1,3 +1,33 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #include "BoundaryConditionFactory.h"
 #include "Parameter/Parameter.h"
 #include "grid/BoundaryConditions/BoundaryCondition.h"
@@ -5,6 +35,8 @@
 
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
+#include "BoundaryConditions/NoSlip/NoSlip.h"
+#include "BoundaryConditions/Velocity/Velocity.h"
 #include "GPU/GPU_Interface.h"
 
 
@@ -51,17 +83,17 @@ boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(boo
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
-        case VelocityBC::VelocitySimpleBounceBackCompressible:
-            return QVelDevicePlainBB27;
+        case VelocityBC::VelocityBounceBack:
+            return VelocityBounceBack;
             break;
-        case VelocityBC::VelocityIncompressible:
-            return QVelDev27;
+        case VelocityBC::VelocityInterpolatedIncompressible:
+            return VelocityInterpolatedIncompressible;
             break;
-        case VelocityBC::VelocityCompressible:
-            return QVelDevComp27;
+        case VelocityBC::VelocityInterpolatedCompressible:
+            return VelocityInterpolatedCompressible;
             break;
-        case VelocityBC::VelocityAndPressureCompressible:
-            return QVelDevCompZeroPress27;
+        case VelocityBC::VelocityWithPressureInterpolatedCompressible:
+            return VelocityWithPressureInterpolatedCompressible;
             break;
         default:
             return nullptr;
@@ -75,20 +107,17 @@ boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool 
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
-        case NoSlipBC::NoSlipImplicitBounceBack:
+        case NoSlipBC::NoSlipDelayBounceBack:
             return [](LBMSimulationParameter *, QforBoundaryConditions *) {};
             break;
         case NoSlipBC::NoSlipBounceBack:
-            return BBDev27;
+            return NoSlipBounceBack;
             break;
-        case NoSlipBC::NoSlipIncompressible:
-            return QDev27;
+        case NoSlipBC::NoSlipInterpolatedIncompressible:
+            return NoSlipInterpolatedIncompressible;
             break;
-        case NoSlipBC::NoSlipCompressible:
-            return QDevComp27;
-            break;
-        case NoSlipBC::NoSlip3rdMomentsCompressible:
-            return QDev3rdMomentsComp27;
+        case NoSlipBC::NoSlipInterpolatedCompressible:
+            return NoSlipInterpolatedCompressible;
             break;
         default:
             return nullptr;
@@ -126,12 +155,6 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
 {
     // for descriptions of the boundary conditions refer to the header
     switch (this->pressureBoundaryCondition) {
-        case PressureBC::PressureEquilibrium:
-            return QPressDev27;
-            break;
-        case PressureBC::PressureEquilibrium2:
-            return QPressDevEQZ27;
-            break;
         case PressureBC::PressureNonEquilibriumIncompressible:
             return PressureNonEquilibriumIncompressible;
             break;

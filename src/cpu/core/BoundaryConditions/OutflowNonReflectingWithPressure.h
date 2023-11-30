@@ -42,9 +42,12 @@ class OutflowNonReflectingWithPressure : public BCStrategy
 {
 public:
     OutflowNonReflectingWithPressure();
+    OutflowNonReflectingWithPressure(real relaxationRate);
     ~OutflowNonReflectingWithPressure() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
+private:
+    real relaxationRate;
 };
 #endif // NonReflectingDensityBCStrategy_h__

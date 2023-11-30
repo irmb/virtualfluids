@@ -28,11 +28,6 @@
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
-#include "FindQ/FindQ.h"
-#include "FindQ/DefineBCs.h"
-//////////////////////////////////////////////////////////////////////////
-#include "Particles/Particles.h"
-//////////////////////////////////////////////////////////////////////////
 #include "Calculation/UpdateGrid27.h"
 #include "Calculation/PlaneCalculations.h"
 #include "Calculation/DragLift.h"
@@ -166,33 +161,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     VF_LOG_INFO("make Preprocessors");
     std::vector<PreProcessorType> preProTypes = kernels.at(0)->getPreProcessorTypes();
     preProcessor = preProcessorFactory->makePreProcessor(preProTypes, para);
-
-    //////////////////////////////////////////////////////////////////////////
-    // Particles preprocessing
-    //////////////////////////////////////////////////////////////////////////
-    if (para->getCalcParticles()) {
-        rearrangeGeometry(para.get(), cudaMemoryManager.get());
-        //////////////////////////////////////////////////////////////////////////
-        allocParticles(para.get(), cudaMemoryManager.get());
-        //////////////////////////////////////////////////////////////////////////
-        ////CUDA random number generation
-        // para->cudaAllocRandomValues();
-
-        ////init
-        // initRandomDevice(para->getRandomState(),
-        // para->getParD(0)->plp.numberOfParticles,
-        // para->getParD(0)->numberofthreads);
-
-        ////generate random values
-        // generateRandomValuesDevice(  para->getRandomState(),
-        // para->getParD(0)->plp.numberOfParticles,
-        // para->getParD(0)->plp.randomLocationInit,
-        // para->getParD(0)->numberofthreads);
-
-        //////////////////////////////////////////////////////////////////////////////
-        initParticles(para.get());
-    }
-    ////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
     // Allocate Memory for Drag Lift Calculation
@@ -361,11 +329,9 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("Write initialized Files ...");
     dataWriter->writeInit(para, cudaMemoryManager);
-    if (para->getCalcParticles())
-        copyAndPrintParticles(para.get(), cudaMemoryManager.get(), 0, true);
     VF_LOG_INFO("... done.");
 
-    VF_LOG_INFO("Write vtk files for debugging...");
+    // VF_LOG_INFO("Write vtk files for debugging...");
     // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
 
     // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
@@ -386,7 +352,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     DistributionDebugWriter::allocateDistributionsOnHost(*cudaMemoryManager);
 #endif
 
-    VF_LOG_INFO("...done");
+    // VF_LOG_INFO("...done");
 
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
@@ -508,11 +474,6 @@ void Simulation::run()
 void Simulation::calculateTimestep(uint timestep)
 {
     this->updateGrid27->updateGrid(0, timestep);
-    ////////////////////////////////////////////////////////////////////////////////
-    //Particles
-    ////////////////////////////////////////////////////////////////////////////////
-    if (para->getCalcParticles()) propagateParticles(para.get(), timestep);
-    ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
     // run Analyzers for kinetic energy and enstrophy for TGV in 3D
     // these analyzers only work on level 0
@@ -961,7 +922,6 @@ void Simulation::readAndWriteFiles(uint timestep)
         printDragLift(para.get(), cudaMemoryManager.get(), timestep);
     }
     ////////////////////////////////////////////////////////////////////////
-    if (para->getCalcParticles()) copyAndPrintParticles(para.get(), cudaMemoryManager.get(), timestep, false);
 
 #if DEBUG_FS
     // Write distributions (f's) for debugging purposes.

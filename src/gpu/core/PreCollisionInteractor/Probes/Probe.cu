@@ -32,19 +32,24 @@
 
 #include "Probe.h"
 
-#include <cuda.h>
+
+#include <cmath>
 #include <cuda_runtime.h>
+#include <cuda.h>
+#include <filesystem>
 #include <helper_cuda.h>
+#include <memory>
 
-#include "gpu/core/GPU/GeometryUtils.h"
 #include <basics/constants/NumericConstants.h>
-#include "basics/writer/WbWriterVtkXmlBinary.h"
-#include <StringUtilities/StringUtil.h>
+#include <basics/writer/WbWriterVtkXmlBinary.h>
+#include <basics/StringUtilities/StringUtil.h>
 
-#include "Parameter/Parameter.h"
-#include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
-#include "Output/FilePartCalculator.h"
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/GPU/GeometryUtils.h"
+#include "gpu/core/LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "gpu/core/Output/FilePartCalculator.h"
+#include "gpu/core/Parameter/Parameter.h"
 
 using namespace vf::basics::constant;
 
@@ -58,20 +63,10 @@ uint calcOldTimestep(uint currentTimestep, uint lastTimestepInOldSeries)
     return currentTimestep > 0 ? currentTimestep - 1 : lastTimestepInOldSeries; 
 }
 
-__device__ void calculatePointwiseQuantities(
-    uint oldTimestepInTimeseries,
-    uint timestepInTimeseries,
-    uint timestepInAverage,
-    uint nTimesteps,
-    real* quantityArray,
-    bool* quantities,
-    uint* quantityArrayOffsets,
-    uint nPoints,
-    uint node,
-    real vx,
-    real vy,
-    real vz,
-    real rho)
+__device__ void calculatePointwiseQuantities(uint oldTimestepInTimeseries, uint timestepInTimeseries, uint timestepInAverage,
+                                             uint nTimesteps, real* quantityArray, bool* quantities,
+                                             uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz,
+                                             real rho)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
@@ -127,22 +122,12 @@ __device__ void calculatePointwiseQuantities(
     }
 }
 
-__global__ void calcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint oldTimestepInTimeseries, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
-                                    real* vx, real* vy, real* vz, real* rho,            
-                                    uint* neighborX, uint* neighborY, uint* neighborZ,
-                                    bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
-                                    )
+__global__ void calcQuantitiesKernel(uint* pointIndices, uint nPoints, uint oldTimestepInTimeseries,
+                                     uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps, real* vx, real* vy,
+                                     real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ,
+                                     bool* quantities, uint* quantityArrayOffsets, real* quantityArray)
 {
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x;
-    const uint z = blockIdx.y;
-
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint node = nx*(ny*z + y) + x;
+    const uint node = vf::gpu::getNodeIndex();
 
     if(node>=nPoints) return;
 
@@ -157,26 +142,15 @@ __global__ void calcQuantitiesKernel(   uint* pointIndices,
     rho_interp = rho[k];
 
     calculatePointwiseQuantities(oldTimestepInTimeseries, timestepInTimeseries, timestepInAverage, nTimesteps, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
-
 }
 
-__global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
-                                    uint nPoints, uint oldTimestepInTimeseries, uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
-                                    real* distX, real* distY, real* distZ,
-                                    real* vx, real* vy, real* vz, real* rho,            
-                                    uint* neighborX, uint* neighborY, uint* neighborZ,
-                                    bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
-                                )
+__global__ void interpAndCalcQuantitiesKernel(uint* pointIndices, uint nPoints, uint oldTimestepInTimeseries,
+                                              uint timestepInTimeseries, uint timestepInAverage, uint nTimesteps,
+                                              real* distX, real* distY, real* distZ, real* vx, real* vy, real* vz, real* rho,
+                                              uint* neighborX, uint* neighborY, uint* neighborZ, bool* quantities,
+                                              uint* quantityArrayOffsets, real* quantityArray)
 {
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x;
-    const uint z = blockIdx.y;
-
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint node = nx*(ny*z + y) + x;
+    const uint node = vf::gpu::getNodeIndex();
 
     if(node>=nPoints) return;
 
@@ -245,7 +219,7 @@ void Probe::addProbeStruct( Parameter* para, CudaMemoryManager* cudaMemoryManage
                             std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                             int level)
 {
-    probeParams[level] = SPtr<ProbeStruct>(new ProbeStruct);
+    probeParams[level] = std::make_shared<ProbeStruct>();
     probeParams[level]->nTimesteps = this->getNumberOfTimestepsInTimeseries(para, level);
     probeParams[level]->nPoints  = uint(pointCoordsX.size()); // Note, need to have both nPoints and nIndices because they differ in PlanarAverage
     probeParams[level]->nIndices = uint(probeIndices.size());
@@ -259,7 +233,7 @@ void Probe::addProbeStruct( Parameter* para, CudaMemoryManager* cudaMemoryManage
     std::copy(pointCoordsZ.begin(), pointCoordsZ.end(), probeParams[level]->pointCoordsZ);
 
     // Note, dist only needed for kernels that do interpolate
-    if( distX.size()>0 && distY.size()>0 && distZ.size()>0 )
+    if( !distX.empty() && !distY.empty() && !distZ.empty() )
     {
         probeParams[level]->hasDistances=true;
         cudaMemoryManager->cudaAllocProbeDistances(this, level);
@@ -455,7 +429,7 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
     uint startpos = (part-1) * FilePartCalculator::limitOfNodesForVTK;
-    uint sizeOfNodes = min(FilePartCalculator::limitOfNodesForVTK, probeStruct->nPoints - startpos);
+    uint sizeOfNodes = std::min(FilePartCalculator::limitOfNodesForVTK, probeStruct->nPoints - startpos);
     uint endpos = startpos + sizeOfNodes;
 
     //////////////////////////////////////////////////////////////////////////
@@ -514,6 +488,7 @@ t0 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 */
     auto probeStruct = this->getProbeStruct(level);
+    std::filesystem::create_directories(this->outputPath);
     std::string fname = this->outputPath + this->makeTimeseriesFileName(level, para->getMyProcessID());
     std::ofstream out(fname.c_str(), std::ios::out | std::ios::binary);
 
@@ -521,7 +496,7 @@ t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
 
     out << "TimeseriesOutput \n";
     out << "Quantities: ";
-    for(std::string name : getVarNames())
+    for(const std::string& name : getVarNames())
         out << name << ", ";
     out << "\n";
     out << "Number of points in this file: \n";

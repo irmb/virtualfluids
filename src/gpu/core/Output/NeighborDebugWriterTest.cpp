@@ -2,7 +2,7 @@
 #include "NeighborDebugWriter.hpp"
 #include "gpu/core/Utilities/testUtilitiesGPU.h"
 
-class WbWriterSpy : public WbWriter
+class WbWriterVtkXmlBinarySpy : public WbWriter
 {
 public:
     std::string writeLines(const std::string & /*filename*/, std::vector<UbTupleFloat3> &nodes,
@@ -40,7 +40,7 @@ protected:
     const unsigned long long numberOfNodes = 3;
     const uint direction = vf::lbm::dir::dP00; // x
     std::unique_ptr<LBMSimulationParameter> parH = std::make_unique<LBMSimulationParameter>();
-    WbWriterSpy writerSpy;
+    WbWriterVtkXmlBinarySpy writerSpy;
     std::vector<uint> typeOfGridNode;
     std::vector<uint> neighbors;
     std::vector<real> coordinates;

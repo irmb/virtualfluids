@@ -1,24 +1,24 @@
+#include "LBM/GPUHelperFunctions/KernelUtilities.h"
 #include "Probe.h"
 #include "PlanarAverageProbe.h"
 
-#include <cuda_helper/CudaGrid.h>
-
+#include <algorithm>
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-
 #include <thrust/device_vector.h>
 #include <thrust/reduce.h>
 #include <thrust/device_ptr.h>
 #include <thrust/inner_product.h>
 
-#include "Parameter/Parameter.h"
-#include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
-#include "GPU/GPU_Interface.h"
-#include "basics/constants/NumericConstants.h"
+#include <basics/constants/NumericConstants.h>
 
-#include <algorithm>
+#include "gpu/core/DataStructureInitializer/GridProvider.h"
+#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/GPU/GPU_Interface.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include "gpu/cuda_helper/CudaGrid.h"
+
 
 using namespace vf::basics::constant;
 ///////////////////////////////////////////////////////////////////////////////////
@@ -75,38 +75,20 @@ struct nth_moment
 
 __global__ void moveIndicesInPosNormalDir( uint* pointIndices, uint nPoints, uint* neighborNormal, real* coordsX, real* coordsY, real* coordsZ )
 {
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x;
-    const uint z = blockIdx.y;
+    const uint nodeIndex = vf::gpu::getNodeIndex();
 
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
+    if(nodeIndex>=nPoints) return;
 
-    const uint node = nx*(ny*z + y) + x;
-
-    if(node>=nPoints) return;
-
-    uint k = pointIndices[node];
-
-    pointIndices[node] = neighborNormal[k];
+    pointIndices[nodeIndex] = neighborNormal[pointIndices[nodeIndex]];
 }
 
 __global__ void moveIndicesInNegNormalDir( uint* pointIndices, uint nPoints, uint* neighborWSB, uint* neighborInplane1, uint* neighborInplane2, real* coordsX, real* coordsY, real* coordsZ )
 {
-    const uint x = threadIdx.x; 
-    const uint y = blockIdx.x;
-    const uint z = blockIdx.y;
-
-    const uint nx = blockDim.x;
-    const uint ny = gridDim.x;
-
-    const uint node = nx*(ny*z + y) + x;
+    const uint node = vf::gpu::getNodeIndex();
 
     if(node>=nPoints) return;
 
-    uint k = pointIndices[node];
-
-    pointIndices[node] = neighborWSB[neighborInplane1[neighborInplane2[k]]];
+    pointIndices[node] = neighborWSB[neighborInplane1[neighborInplane2[pointIndices[node]]]];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -145,52 +127,52 @@ std::vector<PostProcessingVariable> PlanarAverageProbe::getPostProcessingVariabl
     switch (statistic)
     {
     case Statistic::SpatialMeans:
-        postProcessingVariables.push_back( PostProcessingVariable("vx_spatMean",  this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vy_spatMean",  this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vz_spatMean",  this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("nut_spatMean", this->viscosityRatio) );
+        postProcessingVariables.emplace_back("vx_spatialMean",  this->velocityRatio);
+        postProcessingVariables.emplace_back("vy_spatialMean",  this->velocityRatio);
+        postProcessingVariables.emplace_back("vz_spatialMean",  this->velocityRatio);
+        postProcessingVariables.emplace_back("EddyViscosity_spatialMean", this->viscosityRatio);
         break;
     case Statistic::SpatioTemporalMeans:
-        postProcessingVariables.push_back( PostProcessingVariable("vx_spatTmpMean",  this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vy_spatTmpMean",  this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vz_spatTmpMean",  this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("nut_spatTmpMean", this->viscosityRatio) );
+        postProcessingVariables.emplace_back("vx_spatioTemporalMean",  this->velocityRatio);
+        postProcessingVariables.emplace_back("vy_spatioTemporalMean",  this->velocityRatio);
+        postProcessingVariables.emplace_back("vz_spatioTemporalMean",  this->velocityRatio);
+        postProcessingVariables.emplace_back("EddyViscosity_spatioTemporalMean", this->viscosityRatio);
         break;
     case Statistic::SpatialCovariances:
-        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatMean",  this->stressRatio) );
+        postProcessingVariables.emplace_back("vxvx_spatialMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vyvy_spatialMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vzvz_spatialMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vxvy_spatialMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vxvz_spatialMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vyvz_spatialMean",  this->stressRatio);
         break;
     case Statistic::SpatioTemporalCovariances:
-        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatTmpMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatTmpMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatTmpMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatTmpMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatTmpMean",  this->stressRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatTmpMean",  this->stressRatio) );
+        postProcessingVariables.emplace_back("vxvx_spatioTemporalMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vyvy_spatioTemporalMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vzvz_spatioTemporalMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vxvy_spatioTemporalMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vxvz_spatioTemporalMean",  this->stressRatio);
+        postProcessingVariables.emplace_back("vyvz_spatioTemporalMean",  this->stressRatio);
         break;
     case Statistic::SpatialSkewness:
-        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatMean",  this->nondimensional) );
+        postProcessingVariables.emplace_back("SkewnessX_spatialMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("SkewnessY_spatialMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("SkewnessZ_spatialMean",  this->nondimensional);
         break;
     case Statistic::SpatioTemporalSkewness:
-        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatTmpMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatTmpMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.emplace_back("SkewnessX_spatioTemporalMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("SkewnessY_spatioTemporalMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("SkewnessZ_spatioTemporalMean",  this->nondimensional);
         break;
     case Statistic::SpatialFlatness:
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",  this->nondimensional) );
+        postProcessingVariables.emplace_back("FlatnessX_spatialMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("FlatnessY_spatialMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("FlatnessZ_spatialMean",  this->nondimensional);
         break;
     case Statistic::SpatioTemporalFlatness:
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",  this->nondimensional) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",  this->nondimensional) );
+        postProcessingVariables.emplace_back("FlatnessX_spatioTemporalMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("FlatnessY_spatioTemporalMean",  this->nondimensional);
+        postProcessingVariables.emplace_back("FlatnessZ_spatioTemporalMean",  this->nondimensional);
         break;
 
     default:
@@ -211,31 +193,31 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
     
     real /* *pointCoordsInplane1_par, *pointCoordsInplane2_par,*/ *pointCoordsNormal_par;
     std::vector<real> *pointCoordsInplane1, *pointCoordsInplane2, *pointCoordsNormal;
-    
-    if(this->planeNormal == 'x'){  
-                                    pointCoordsNormal       = &pointCoordsX_level; 
-                                    pointCoordsInplane1     = &pointCoordsY_level; 
-                                    pointCoordsInplane2     = &pointCoordsZ_level;
-                                    pointCoordsNormal_par   = para->getParH(level)->coordinateX; 
-                                    // pointCoordsInplane1_par = para->getParH(level)->coordY_SP; 
-                                    // pointCoordsInplane2_par = para->getParH(level)->coordZ_SP;
-                                }
-    if(this->planeNormal == 'y'){  
-                                    pointCoordsNormal       = &pointCoordsY_level; 
-                                    pointCoordsInplane1     = &pointCoordsX_level; 
-                                    pointCoordsInplane2     = &pointCoordsZ_level;
-                                    pointCoordsNormal_par   = para->getParH(level)->coordinateY; 
-                                    // pointCoordsInplane1_par = para->getParH(level)->coordX_SP; 
-                                    // pointCoordsInplane2_par = para->getParH(level)->coordZ_SP;
-                                }
-    if(this->planeNormal == 'z'){  
-                                    pointCoordsNormal       = &pointCoordsZ_level; 
-                                    pointCoordsInplane1     = &pointCoordsX_level; 
-                                    pointCoordsInplane2     = &pointCoordsY_level;
-                                    pointCoordsNormal_par   = para->getParH(level)->coordinateZ; 
-                                    // pointCoordsInplane1_par = para->getParH(level)->coordX_SP; 
-                                    // pointCoordsInplane2_par = para->getParH(level)->coordY_SP;
-                                }
+
+    if (this->planeNormal == 'x') {
+        pointCoordsNormal = &pointCoordsX_level;
+        pointCoordsInplane1 = &pointCoordsY_level;
+        pointCoordsInplane2 = &pointCoordsZ_level;
+        pointCoordsNormal_par = para->getParH(level)->coordinateX;
+        // pointCoordsInplane1_par = para->getParH(level)->coordY_SP;
+        // pointCoordsInplane2_par = para->getParH(level)->coordZ_SP;
+    }
+    if (this->planeNormal == 'y') {
+        pointCoordsNormal = &pointCoordsY_level;
+        pointCoordsInplane1 = &pointCoordsX_level;
+        pointCoordsInplane2 = &pointCoordsZ_level;
+        pointCoordsNormal_par = para->getParH(level)->coordinateY;
+        // pointCoordsInplane1_par = para->getParH(level)->coordX_SP;
+        // pointCoordsInplane2_par = para->getParH(level)->coordZ_SP;
+    }
+    if (this->planeNormal == 'z') {
+        pointCoordsNormal = &pointCoordsZ_level;
+        pointCoordsInplane1 = &pointCoordsX_level;
+        pointCoordsInplane2 = &pointCoordsY_level;
+        pointCoordsNormal_par = para->getParH(level)->coordinateZ;
+        // pointCoordsInplane1_par = para->getParH(level)->coordX_SP;
+        // pointCoordsInplane2_par = para->getParH(level)->coordY_SP;
+    }
 
     // Find all points along the normal direction
     for(size_t j = 1; j < para->getParH(level)->numberOfNodes; j++ )

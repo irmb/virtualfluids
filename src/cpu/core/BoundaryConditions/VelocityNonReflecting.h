@@ -42,9 +42,13 @@ class VelocityNonReflecting : public BCStrategy
 {
 public:
     VelocityNonReflecting();
+    VelocityNonReflecting(real relaxationRate);
     ~VelocityNonReflecting() override;
     SPtr<BCStrategy> clone() override;
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
+private:
+    real velocity;
+    real BCVeloWeight;    
 };
 #endif // NonReflectingDensityBCStrategy_h__

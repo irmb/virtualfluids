@@ -41,6 +41,7 @@
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridFactory.h"
 #include "grid/distributions/Distribution.h"
+#include "grid/GridDimensions.h" 
 
 class Object;
 class BoundingBox;
@@ -50,11 +51,13 @@ class MultipleGridBuilder : public LevelGridBuilder
 public:
     MultipleGridBuilder();
 
-    GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
-    GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape);
-    GRIDGENERATOR_EXPORT void addGrid(SPtr<Object> gridShape, uint levelFine);
+    GRIDGENERATOR_EXPORT virtual void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ,
+                                                    real delta);
+    GRIDGENERATOR_EXPORT virtual void addCoarseGrid(const GridDimensions& gridDimensions);
+    GRIDGENERATOR_EXPORT virtual void addGrid(SPtr<Object> gridShape);
+    GRIDGENERATOR_EXPORT virtual void addGrid(SPtr<Object> gridShape, uint levelFine);
 
-    GRIDGENERATOR_EXPORT void addGeometry(SPtr<Object> gridShape);
+    GRIDGENERATOR_EXPORT virtual void addGeometry(SPtr<Object> gridShape);
     GRIDGENERATOR_EXPORT void addGeometry(SPtr<Object> solidObject, uint level);
 
     GRIDGENERATOR_EXPORT uint getNumberOfLevels() const;
@@ -69,13 +72,13 @@ public:
     GRIDGENERATOR_EXPORT real getEndZ(uint level) const;
 
     GRIDGENERATOR_EXPORT std::vector<SPtr<Grid> > getGrids() const;
-    GRIDGENERATOR_EXPORT void buildGrids(bool enableThinWalls = false);
+    GRIDGENERATOR_EXPORT virtual void buildGrids(bool enableThinWalls = false);
 
-    GRIDGENERATOR_EXPORT void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
+    GRIDGENERATOR_EXPORT virtual void setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels);
 
-    GRIDGENERATOR_EXPORT void writeGridsToVtk(const std::string &path) const;
+    GRIDGENERATOR_EXPORT void writeGridsToVtk(const std::string& path) const;
 
-    GRIDGENERATOR_EXPORT void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
+    GRIDGENERATOR_EXPORT virtual void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
 
 private:
     void addGridToList(SPtr<Grid> grid);
@@ -108,7 +111,7 @@ private:
     SPtr<BoundingBox> subDomainBox;
 
 public:
-    GRIDGENERATOR_EXPORT void findCommunicationIndices(int direction, bool doShift=false);
+    GRIDGENERATOR_EXPORT virtual void findCommunicationIndices(int direction, bool doShift=false);
 };
 
 #endif

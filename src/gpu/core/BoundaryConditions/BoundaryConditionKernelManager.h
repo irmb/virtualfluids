@@ -35,10 +35,9 @@
 #include <memory>
 #include <string>
 
-#include "LBM/LB.h"
 #include <basics/PointerDefinitions.h>
 
-
+#include "core/LBM/LB.h"
 
 class CudaMemoryManager;
 class BoundaryConditionFactory;
@@ -80,9 +79,6 @@ public:
 
     //! \brief calls the device function of the pressure boundary condition (pre-collision)
     void runPressureBCKernelPre(const int level) const;
-
-    //! \brief calls the device function of the pressure boundary condition (post-collision)
-    void runPressureBCKernelPost(const int level) const;
 
     //! \brief calls the device function of the precursor boundary condition
     void runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager);

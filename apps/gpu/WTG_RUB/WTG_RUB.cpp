@@ -43,8 +43,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "DataTypes.h"
-#include "PointerDefinitions.h"
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/config/ConfigurationFile.h>
 
 #include <logger/Logger.h>
 
@@ -266,9 +267,9 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible);
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityWithPressureInterpolatedCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
-    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+    bcFactory.setGeometryBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

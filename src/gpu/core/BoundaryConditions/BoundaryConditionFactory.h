@@ -56,31 +56,28 @@ public:
     //! \brief An enumeration for selecting a velocity boundary condition
     enum class VelocityBC {
         //! - VelocitySimpleBounceBackCompressible = plain bounce back velocity boundary condition
-        VelocitySimpleBounceBackCompressible,
+        VelocityBounceBack,
         //! - VelocityIncompressible = interpolated velocity boundary condition, based on subgrid distances
-        VelocityIncompressible,
+        VelocityInterpolatedIncompressible,
         //! - VelocityCompressible = interpolated velocity boundary condition, based on subgrid distances
-        VelocityCompressible,
+        VelocityInterpolatedCompressible,
         //! - VelocityAndPressureCompressible = interpolated velocity boundary condition, based on subgrid distances.
         //! Also sets the pressure to the bulk pressure. Can be combined with OutflowNonReflective
-        VelocityAndPressureCompressible,
+        VelocityWithPressureInterpolatedCompressible,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
 
     //! \brief An enumeration for selecting a no-slip boundary condition
     enum class NoSlipBC {
-        //! - NoSlipImplicitBounceBack = implicit bounce back by Esoteric Twist
-        NoSlipImplicitBounceBack,
-        //! - NoSlipBounceBack = bounce back no-slip boundary condition
+        //! - NoSlipDelayBounceBack = implicit bounce back by Esoteric Twist
+        NoSlipDelayBounceBack,
+        //! - NoSlipBounceBack = explicit bounce back
         NoSlipBounceBack,
-        //! - NoSlipIncompressible = interpolated no-slip boundary condition, based on subgrid distances
-        NoSlipIncompressible,
-        //! - NoSlipCompressible = interpolated no-slip boundary condition, based on subgrid distances
-        NoSlipCompressible,
-        //! - NoSlipCompressible = interpolated no-slip boundary condition, based on subgrid distances
-        //! Also uses the third order moments.
-        NoSlip3rdMomentsCompressible
+        //! - NoSlipInterpolatedIncompressible = interpolated no-slip boundary condition, based on subgrid distances
+        NoSlipInterpolatedIncompressible,
+        //! - NoSlipInterpolatedCompressible = interpolated no-slip boundary condition, based on subgrid distances
+        NoSlipInterpolatedCompressible,
     };
 
     //! \brief An enumeration for selecting a slip boundary condition
@@ -101,10 +98,6 @@ public:
 
     //! \brief An enumeration for selecting a pressure boundary condition
     enum class PressureBC {
-        //! - PressureEquilibrium = pressure boundary condition based on equilibrium
-        PressureEquilibrium, // incorrect pressure :(
-        //! - PressureEquilibrium2 = pressure boundary condition based on equilibrium (potentially better?! than PressureEquilibrium)
-        PressureEquilibrium2, // is broken --> nan :(
         //! - PressureNonEquilibriumIncompressible = pressure boundary condition based on non-equilibrium
         PressureNonEquilibriumIncompressible,
         //! - PressureNonEquilibriumCompressible = pressure boundary condition based on non-equilibrium
@@ -172,10 +165,10 @@ public:
 
 private:
     VelocityBC velocityBoundaryCondition = VelocityBC::NotSpecified;
-    NoSlipBC noSlipBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
+    NoSlipBC noSlipBoundaryCondition = NoSlipBC::NoSlipDelayBounceBack;
     SlipBC slipBoundaryCondition = SlipBC::NotSpecified;
     PressureBC pressureBoundaryCondition = PressureBC::NotSpecified;
-    std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipImplicitBounceBack;
+    std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipDelayBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
     PrecursorBC precursorBoundaryCondition = PrecursorBC::NotSpecified;
 
