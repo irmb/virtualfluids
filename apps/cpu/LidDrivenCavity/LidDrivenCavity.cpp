@@ -55,8 +55,8 @@ int main(int  /*argc*/, char*  /*argv*/[])
       const double dt = 0.5e-3;
       const unsigned int nx = 64;
 
-      const double timeStepOut = 1000;
-      const double timeStepEnd = 1000;
+      const double timeStepOut = 10;
+      const double timeStepEnd = 10;
 
       // Number of OpenMP threads
       int numOfThreads = 1;

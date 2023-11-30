@@ -57,7 +57,6 @@ void run(string configname)
       real          cpStep = config.getValue<real>("cpStep");
       real          endTime = config.getValue<real>("endTime");
       real          outTime = config.getValue<real>("outTime");
-      real          availMem = config.getValue<real>("availMem");
       int           refineLevel = config.getValue<int>("refineLevel");
       bool          logToFile = config.getValue<bool>("logToFile");
       vector<real>  nupsStep = config.getVector<real>("nupsStep");
