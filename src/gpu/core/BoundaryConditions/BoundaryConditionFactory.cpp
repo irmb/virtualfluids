@@ -36,6 +36,7 @@
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
 #include "BoundaryConditions/NoSlip/NoSlip.h"
+#include "BoundaryConditions/Velocity/Velocity.h"
 #include "GPU/GPU_Interface.h"
 
 
@@ -82,17 +83,17 @@ boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(boo
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
-        case VelocityBC::VelocitySimpleBounceBackCompressible:
-            return QVelDevicePlainBB27;
+        case VelocityBC::VelocityBounceBack:
+            return VelocityBounceBack;
             break;
-        case VelocityBC::VelocityIncompressible:
-            return QVelDev27;
+        case VelocityBC::VelocityInterpolatedIncompressible:
+            return VelocityInterpolatedIncompressible;
             break;
-        case VelocityBC::VelocityCompressible:
-            return QVelDevComp27;
+        case VelocityBC::VelocityInterpolatedCompressible:
+            return VelocityInterpolatedCompressible;
             break;
-        case VelocityBC::VelocityAndPressureCompressible:
-            return QVelDevCompZeroPress27;
+        case VelocityBC::VelocityWithPressureInterpolatedCompressible:
+            return VelocityWithPressureInterpolatedCompressible;
             break;
         default:
             return nullptr;

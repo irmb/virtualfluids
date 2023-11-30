@@ -56,14 +56,14 @@ public:
     //! \brief An enumeration for selecting a velocity boundary condition
     enum class VelocityBC {
         //! - VelocitySimpleBounceBackCompressible = plain bounce back velocity boundary condition
-        VelocitySimpleBounceBackCompressible,
+        VelocityBounceBack,
         //! - VelocityIncompressible = interpolated velocity boundary condition, based on subgrid distances
-        VelocityIncompressible,
+        VelocityInterpolatedIncompressible,
         //! - VelocityCompressible = interpolated velocity boundary condition, based on subgrid distances
-        VelocityCompressible,
+        VelocityInterpolatedCompressible,
         //! - VelocityAndPressureCompressible = interpolated velocity boundary condition, based on subgrid distances.
         //! Also sets the pressure to the bulk pressure. Can be combined with OutflowNonReflective
-        VelocityAndPressureCompressible,
+        VelocityWithPressureInterpolatedCompressible,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
