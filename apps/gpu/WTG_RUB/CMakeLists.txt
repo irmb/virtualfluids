@@ -1,7 +1,0 @@
-PROJECT(WTG_RUB LANGUAGES CUDA CXX)
-
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES WTG_RUB.cpp)
-
-set_source_files_properties(WTG_RUB.cpp PROPERTIES LANGUAGE CUDA)
-
-set_target_properties(WTG_RUB PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
