@@ -6,7 +6,7 @@ source ./regression-tests/__regression_test_executer.sh
 REFERENCE_DATA_DIR=regression_tests/cpu/GyroidsRow
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_cpu -DBUILD_USE_BOOST=ON -DCMAKE_BUILD_TYPE=Release"
+CMAKE_FLAGS="--preset=make_cpu -DVF_ENABLE_BOOST=ON -DCMAKE_BUILD_TYPE=Release"
 
 # 3. define the application to be executed
 APPLICATION="mpiexec -np 8 --allow-run-as-root ./build/bin/GyroidsRow ./apps/cpu/GyroidsRow/GyroidsRow_Re_425_u_001_N_100_compressible_regression.cfg"
