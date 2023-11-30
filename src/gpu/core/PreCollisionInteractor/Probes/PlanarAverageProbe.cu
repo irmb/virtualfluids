@@ -189,8 +189,6 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
 {
-    // real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-    
     real /* *pointCoordsInplane1_par, *pointCoordsInplane2_par,*/ *pointCoordsNormal_par;
     std::vector<real> *pointCoordsInplane1, *pointCoordsInplane2, *pointCoordsNormal;
 
