@@ -68,11 +68,10 @@ namespace boundary_conditions
 
 
         py::enum_<BoundaryConditionFactory::NoSlipBC>(parentModule, "NoSlipBC")
-        .value("NoSlipImplicitBounceBack", BoundaryConditionFactory::NoSlipBC::NoSlipImplicitBounceBack)
+        .value("NoSlipDelayBounceBack", BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack)
         .value("NoSlipBounceBack", BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack)
-        .value("NoSlipIncompressible", BoundaryConditionFactory::NoSlipBC::NoSlipIncompressible)
-        .value("NoSlipCompressible", BoundaryConditionFactory::NoSlipBC::NoSlipCompressible)
-        .value("NoSlip3rdMomentsCompressible", BoundaryConditionFactory::NoSlipBC::NoSlip3rdMomentsCompressible);
+        .value("NoSlipInterpolatedIncompressible", BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedIncompressible)
+        .value("NoSlipInterpolatedCompressible", BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedCompressible);
 
         py::enum_<BoundaryConditionFactory::SlipBC>(parentModule, "SlipBC")
         .value("SlipIncompressible", BoundaryConditionFactory::SlipBC::SlipIncompressible)
