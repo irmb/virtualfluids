@@ -111,11 +111,11 @@ bool cmdOptionExists(char** begin, char** end, const std::string& option)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
-real Re =  1600.0;
+real reynoldsNumber =  1600.0;
 
 uint dtPerL = 250;
 
-uint nx = 64;
+uint numberOfNodesX = 64;
 uint gpuIndex = 0;
 
 bool useLimiter = false;
@@ -143,22 +143,22 @@ void multipleLevel(const std::string& configPath)
 
     const real PI = 3.141592653589793238462643383279;
 
-    real L = nx / ( 2.0 * PI );
+    real length = numberOfNodesX / ( 2.0 * PI );
 
-    const real velocity = 64.0 / ( dtPerL * 2.0 * PI );
+    const real velocityLB = 64.0 / ( dtPerL * 2.0 * PI );
 
-    const real viscosity = nx / ( 2.0 * PI ) * velocity / Re;
+    const real viscosityLB = numberOfNodesX / ( 2.0 * PI ) * velocityLB / reynoldsNumber;
 
-    VF_LOG_INFO("velocity = {}", velocity);
-    VF_LOG_INFO("viscosity = {}", viscosity);
+    VF_LOG_INFO("velocity = {}", velocityLB);
+    VF_LOG_INFO("viscosity = {}", viscosityLB);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 2.0 * PI / real(nx);
+    real deltaX = 2.0 * PI / real(numberOfNodesX);
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
     gridBuilder->addCoarseGrid(-PI, -PI, -PI,
-                                PI,  PI,  PI, dx);
+                                PI,  PI,  PI, deltaX);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
@@ -205,7 +205,7 @@ void multipleLevel(const std::string& configPath)
         std::stringstream _simulationName;
 
         _simulationName << simulationName;
-        _simulationName << "_nx_" << nx;
+        _simulationName << "_nx_" << numberOfNodesX;
         _simulationName << "_dtPerL_" << dtPerL << "_";
 
         simulationName = _simulationName.str();
@@ -222,14 +222,14 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setTimestepEnd( 40 * lround(L/velocity) );
-    para->setTimestepOut(  5 * lround(L/velocity) );
+    para->setTimestepEnd( 40 * lround(length/velocityLB) );
+    para->setTimestepOut(  5 * lround(length/velocityLB) );
 
-    para->setVelocityLB( velocity );
+    para->setVelocityLB( velocityLB );
 
-    para->setViscosityLB( viscosity );
+    para->setViscosityLB( viscosityLB );
 
-    para->setVelocityRatio( 1.0 / velocity );
+    para->setVelocityRatio( 1.0 / velocityLB );
 
     para->setInitialCondition( [&]( real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz){
 
@@ -237,9 +237,9 @@ void multipleLevel(const std::string& configPath)
         real b = 1.0;
         real c = 1.0;
 
-        rho = 3.0 * ((velocity * velocity) / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 ) );
-        vx  =  velocity * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
-        vy  = -velocity * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
+        rho = 3.0 * ((velocityLB * velocityLB) / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 ) );
+        vx  =  velocityLB * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
+        vy  = -velocityLB * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
         vz  = 0.0;
 
     } );
@@ -292,10 +292,10 @@ int main( int argc, char* argv[])
             //////////////////////////////////////////////////////////////////////////
 
             if( cmdOptionExists( argv, argv+argc, "--Re" ) )
-                Re = atof( getCmdOption( argv, argv+argc, "--Re" ) );
+                reynoldsNumber = atof( getCmdOption( argv, argv+argc, "--Re" ) );
 
             if( cmdOptionExists( argv, argv+argc, "--nx" ) )
-                nx = atoi( getCmdOption( argv, argv+argc, "--nx" ) );
+                numberOfNodesX = atoi( getCmdOption( argv, argv+argc, "--nx" ) );
 
             if( cmdOptionExists( argv, argv+argc, "--dtPerL" ) )
                 dtPerL = atoi( getCmdOption( argv, argv+argc, "--dtPerL" ) );
@@ -309,7 +309,7 @@ int main( int argc, char* argv[])
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
 
-            multipleLevel(targetPath + "config.txt");
+            multipleLevel(targetPath + "tgv3d.cfg");
 
             //////////////////////////////////////////////////////////////////////////
         }
