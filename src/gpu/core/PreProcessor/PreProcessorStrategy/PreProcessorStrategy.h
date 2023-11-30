@@ -31,17 +31,18 @@
 #ifndef PREPROCESSOR_STRATEGY_H
 #define PREPROCESSOR_STRATEGY_H
 
-#include <DataTypes.h>
+#include <basics/DataTypes.h>
 
 #include <cuda_runtime.h>
-#include <helper_functions.h>
 #include <helper_cuda.h>
-
+#include <helper_functions.h>
 
 class PreProcessorStrategy
 {
 public:
+    virtual ~PreProcessorStrategy() = default;
     virtual void init(int level) = 0;
     virtual bool checkParameter() = 0;
 };
+
 #endif

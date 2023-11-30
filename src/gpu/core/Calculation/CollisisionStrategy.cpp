@@ -29,7 +29,6 @@ getFunctionForCollisionAndExchange(const bool useStreams, const int numberOfMpiP
     }
 
     throw std::runtime_error("Invalid Configuration for collision and exchange");
-    return nullptr;
 }
 
 void CollisionAndExchange_noStreams_indexKernel::operator()(UpdateGrid27 *updateGrid, Parameter *para, int level,

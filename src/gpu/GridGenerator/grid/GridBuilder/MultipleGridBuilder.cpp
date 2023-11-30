@@ -169,6 +169,8 @@ void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint 
 
 std::vector<uint> MultipleGridBuilder::getSpacingFactors(uint levelDifference) const
 {
+    if (levelDifference == 0) return {};
+
     std::vector<uint> spacings(levelDifference);
 
     spacings[0] = uint(std::pow(2, 1));
@@ -596,7 +598,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
     //////////////////////////////////////////////////////////////////////////
 }
 
-GRIDGENERATOR_EXPORT void MultipleGridBuilder::setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels)
+void MultipleGridBuilder::setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels)
 {
     this->numberOfLayersFine = numberOfLayersFine;
     this->numberOfLayersBetweenLevels = numberOfLayersBetweenLevels;
@@ -636,7 +638,7 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
     }
 }
 
-GRIDGENERATOR_EXPORT void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
+void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
 {
     this->subDomainBox = subDomainBox;
 }

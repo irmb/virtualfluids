@@ -40,7 +40,7 @@
 class GridImp;
 struct Vertex;
 
-class GRIDGENERATOR_EXPORT Object
+class Object
 {
 public:
     virtual ~Object() = default;

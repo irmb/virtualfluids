@@ -291,7 +291,7 @@ public:
         }
     }
 
-    GRIDGENERATOR_EXPORT void setTangentialVelocityForPatch( SPtr<Grid> grid, uint patch,
+    void setTangentialVelocityForPatch( SPtr<Grid> grid, uint patch,
                                                   real p1x, real p1y, real p1z, 
                                                   real p2x, real p2y, real p2z, 
                                                   real v, real r );

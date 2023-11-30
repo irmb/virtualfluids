@@ -4,23 +4,19 @@ function(enable_sanitizers project_name)
 
     set(SANITIZERS "")
 
-    option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" FALSE)
-    if(ENABLE_SANITIZER_ADDRESS)
+    if(VF_ENABLE_SANITIZER_ADDRESS)
       list(APPEND SANITIZERS "address")
     endif()
 
-    option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" FALSE)
-    if(ENABLE_SANITIZER_LEAK)
+    if(VF_ENABLE_SANITIZER_LEAK)
       list(APPEND SANITIZERS "leak")
     endif()
 
-    option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" FALSE)
-    if(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
+    if(VF_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
       list(APPEND SANITIZERS "undefined")
     endif()
 
-    option(ENABLE_SANITIZER_THREAD "Enable thread sanitizer" FALSE)
-    if(ENABLE_SANITIZER_THREAD)
+    if(VF_ENABLE_SANITIZER_THREAD)
       if("address" IN_LIST SANITIZERS OR "leak" IN_LIST SANITIZERS)
         message(WARNING "Thread sanitizer does not work with Address and Leak sanitizer enabled")
       else()
@@ -28,8 +24,7 @@ function(enable_sanitizers project_name)
       endif()
     endif()
 
-    option(ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" FALSE)
-    if(ENABLE_SANITIZER_MEMORY AND CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    if(VF_ENABLE_SANITIZER_MEMORY AND CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
       if("address" IN_LIST SANITIZERS
          OR "thread" IN_LIST SANITIZERS
          OR "leak" IN_LIST SANITIZERS)

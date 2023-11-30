@@ -53,14 +53,14 @@ struct IntegerPtr2D {
 class TriangleNeighborFinder
 {
 public:
-    GRIDGENERATOR_EXPORT TriangleNeighborFinder(Triangle *triangles, int size);
-    GRIDGENERATOR_EXPORT ~TriangleNeighborFinder();
+    TriangleNeighborFinder(Triangle *triangles, int size);
+    ~TriangleNeighborFinder();
     
     std::vector<int> getTriangleIDsWithCommonVertex(int vertexID) const;
     std::vector< std::vector<Triangle> > getTrianglesPerVertex() const;
 
-    void GRIDGENERATOR_EXPORT fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
-    void GRIDGENERATOR_EXPORT fillWithNeighborAngles(TriangularMesh *geom) const;
+    void fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
+    void fillWithNeighborAngles(TriangularMesh *geom) const;
 
     void printSortedToTriangles() const;
     void printSortedInSpace() const;

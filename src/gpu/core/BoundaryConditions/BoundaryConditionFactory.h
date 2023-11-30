@@ -53,6 +53,7 @@ using precursorBoundaryConditionFunc = std::function<void(LBMSimulationParameter
 class BoundaryConditionFactory
 {
 public:
+    virtual ~BoundaryConditionFactory() = default;
     //! \brief An enumeration for selecting a velocity boundary condition
     enum class VelocityBC {
         //! - VelocitySimpleBounceBackCompressible = plain bounce back velocity boundary condition

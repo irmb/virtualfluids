@@ -5,7 +5,7 @@
 ## After function call the files are stored in: MY_SRCS
 #################################################################################
 
-macro(includeAllFiles folderName targetName file_path)
+macro(includeAllFiles folderName file_path)
 	if(NOT DEFINED collectTestFiles)
 	    set(collectTestFiles ON)
 	endif()
@@ -14,11 +14,11 @@ macro(includeAllFiles folderName targetName file_path)
         set(collectProductionFiles ON)
     endif()
 
-	includeFiles(${folderName} ${targetName} "${file_path}")
+	includeFiles(${folderName} "${file_path}")
 endmacro(includeAllFiles)
 
 
-macro(includeProductionFiles folderName targetName file_path)
+macro(includeProductionFiles folderName file_path)
 	if(NOT DEFINED collectTestFiles)
 	    set(collectTestFiles OFF)
 	endif()
@@ -27,7 +27,7 @@ macro(includeProductionFiles folderName targetName file_path)
         set(collectProductionFiles ON)
     endif()
 
-	includeFiles(${folderName}  ${targetName} "${file_path}")
+	includeFiles(${folderName} "${file_path}")
 endmacro(includeProductionFiles)
 
 
@@ -41,13 +41,13 @@ macro(includeTestFiles folderName file_paths)
 		set(collectProductionFiles OFF)
 	endif()
 
-	includeFiles(${folderName} ${folderName} "${file_paths}")
+	includeFiles(${folderName} "${file_paths}")
 endmacro(includeTestFiles)
 
 
 
 
-macro(includeFiles folderName targetName file_paths)
+macro(includeFiles folderName file_paths)
 
 	foreach(file ${file_paths})
 
@@ -57,7 +57,7 @@ macro(includeFiles folderName targetName file_paths)
 
 		collectFilesFrom(${file})
 		if (package_dir)
-		   setSourceGroupForFilesIn(${file} ${package_dir} ${targetName} ${folderName})
+		   setSourceGroupForFilesIn(${file} ${package_dir} ${folderName})
 		endif()
 
 	endforeach()
@@ -90,15 +90,10 @@ endmacro()
 
 
 
-macro(setSourceGroupForFilesIn file package_dir targetName folderName)
+macro(setSourceGroupForFilesIn file package_dir folderName)
 #input: target_name PACKAGE_SRCS
 	buildSourceGroup(${folderName} ${package_dir})
-
-	if(isAllTestSuite)
-		source_group(${targetName}\\${SOURCE_GROUP} FILES ${file})
-	else()
-		source_group(${SOURCE_GROUP} FILES ${file})
-	endif()
+	source_group(${SOURCE_GROUP} FILES ${file})
 #output: -
 endmacro(setSourceGroupForFilesIn)
 
@@ -130,21 +125,6 @@ macro(buildSourceGroup folderName path)
 
 #output: SOURCE_GROUP
 endmacro(buildSourceGroup)
-
-
-include (GenerateExportHeader)
-macro(generateExportHeader libName)
-	#if(${BUILD_SHARED_LIBS})
-		GENERATE_EXPORT_HEADER	(${libName}
-				#BASE_NAME ${libName}
-				#EXPORT_MACRO_NAME ${libName}_EXPORT
-				EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/${libName}_export.h
-				#STATIC_DEFINE ${libName}_BUILT_AS_STATIC
-				)
-	#endif()
-endmacro(generateExportHeader)
-
-
 
 
 function(collectFiles source_files ARG_FILES ARG_FOLDER ARG_EXCLUDE)

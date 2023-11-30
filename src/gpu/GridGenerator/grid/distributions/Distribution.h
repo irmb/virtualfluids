@@ -92,7 +92,7 @@ struct Distribution
 
 class Grid;
 
-class GRIDGENERATOR_EXPORT DistributionHelper
+class DistributionHelper
 {
 public:
     static Distribution getDistribution27();

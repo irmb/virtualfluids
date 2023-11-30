@@ -41,7 +41,7 @@ format:
 markup:
   bullet_char: '*'
   enum_char: .
-  first_comment_is_literal: false
+  first_comment_is_literal: true
   literal_comment_pattern: null
   fence_pattern: ^\s*([`~]{3}[`~]*)(.*)$
   ruler_pattern: ^\s*[^\w\s]{3}.*[^\w\s]{3}$
@@ -51,7 +51,7 @@ markup:
   enable_markup: true
 
 lint:
-  disabled_codes: []
+  disabled_codes: [C0103]
   function_pattern: '[0-9a-z_]+'
   macro_pattern: '[0-9A-Z_]+'
   global_var_pattern: '[A-Z][0-9A-Z_]+'

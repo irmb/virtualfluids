@@ -1,219 +1,80 @@
-#################################################################################
-#  _    ___      __              __________      _     __
-# | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-# | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-# | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-# |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+# #######################################################################################
+# ____          ____    __    ______     __________   __      __       __        __
+# \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+#  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+#   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+#    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+#     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+#      \    \  |    |   ________________________________________________________________
+#       \    \ |    |  |  ______________________________________________________________|
+#        \    \|    |  |  |         __          __     __     __     ______      _______
+#         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+#          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+#           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+#            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 #
-#################################################################################
-cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
+#  This file is part of VirtualFluids. VirtualFluids is free software: you can
+#  redistribute it and/or modify it under the terms of the GNU General Public
+#  License as published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#  for more details.
+#
+#  You should have received a copy of the GNU General Public License along
+#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+# #######################################################################################
 
-project(VirtualFluids
-        VERSION 0.1.0
-        DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
-        HOMEPAGE_URL "https://www.tu-braunschweig.de/irmb/forschung/virtualfluids"
-        LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+# https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/154
+cmake_policy(SET CMP0105 OLD)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(
+    VirtualFluids
+    VERSION 0.1.0
+    DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
+    HOMEPAGE_URL "https://www.tu-braunschweig.de/irmb/forschung/virtualfluids"
+    LANGUAGES CXX)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+#############################################################
+###                    Options                            ###
+#############################################################
+option(BUILD_SHARED_LIBS "Building VirtualFluids with static libs. Shared libs are not supported." OFF)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
-set(libraryFolder "libs")
-set(testFolder    "tests")
-set(appFolder     "apps")
-set(thirdFolder   "3rd")
+option(VF_ENABLE_CPU "Build VirtualFluids cpu variant" OFF)
+option(VF_ENABLE_GPU "Build VirtualFluids gpu variant" OFF)
+option(VF_ENABLE_ALL_APPS "Build All example applications" OFF)
+option(VF_ENABLE_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
+option(VF_ENABLE_PYTHON_BINDINGS "Build the python bindings" OFF)
+option(VF_ENABLE_DOUBLE_ACCURACY "Use double accuracy" OFF)
 
-set (VF_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
-set (VF_THIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
-set (VF_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+# --- TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/139 ---
+# option(VF_ENABLE_MPI "include MPI library support" ON)
+option(VF_ENABLE_OPENMP "Build VirtualFluids with openmp" ON)
+option(VF_ENABLE_BOOST "Build VirtualFluids with boost" OFF)
 
-if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-  message(FATAL_ERROR "In-source builds are prohibited. "
-    "Create a new directory and build there.")
-endif ()
+# analyzer
+option(VF_ENABLE_WARNINGS_AS_ERRORS "Make warnings to errors to identify problems fast" OFF)
+option(VF_ENABLE_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
+option(VF_ENABLE_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
+option(VF_ENABLE_CPPCHECK "Add cppcheck to the targets" OFF)
+option(VF_ENABLE_CACHE "Enable ccache" ON)
 
-#################################################################################
-#  OPTIONS
-#################################################################################
-option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
-option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
+option(VF_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
+option(VF_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)
+option(VF_ENABLE_SANITIZER_LEAK "Enable leak sanitizer" OFF)
+option(VF_ENABLE_SANITIZER_THREAD "Enable thread sanitizer" OFF)
+option(VF_ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" OFF)
 
-option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
-option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
+#############################################################
+###                  Libraries                            ###
+#############################################################
+include(CMake/ProjectSettings.cmake)
+include(CMake/Packages.cmake)
 
-# TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/139
-# option(BUILD_USE_MPI "include MPI library support" ON)
-
-# vf gpu
-option(BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
-
-option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
-option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
-option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
-option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
-
-option(BUILD_CUDA_LTO "Enables the cuda link optimization." OFF)
-
-option(BUILD_SHARED_LIBS "" OFF)
-option(BUILD_WARNINGS_AS_ERRORS "" OFF)
-
-# windows: use multi-threaded dynamically-linked runtime library
-if(BUILD_SHARED_LIBS)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-else()
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif()
-
-option(BUILD_VF_PYTHON_BINDINGS "" OFF)
-
-option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
-option(BUILD_VF_ALL_SAMPLES "Build All Samples" OFF)
-
-#################################################################################
-#  MACROS
-#################################################################################
-add_library(project_warnings INTERFACE)
-
-# standard compiler warnings - Link this 'library' to use the warnings specified in CompilerWarnings.cmake
-include(${VF_CMAKE_DIR}/CompilerWarnings.cmake)
-set_project_warnings(project_warnings)
-
-# enable cache system
-include(${VF_CMAKE_DIR}/Cache.cmake)
-
-include(CMakePrintHelpers)
-include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
-
-if(BUILD_VF_DOUBLE_ACCURACY)
-    list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
-    message(STATUS "Configure VirtualFluids with double precision")
-else()
-    message(STATUS "Configure VirtualFluids with single precision")
-endif()
-
-# set gpu features
-if(BUILD_VF_GPU)
-    include(CheckLanguage)
-    check_language(CUDA)
-
-    if(NOT CMAKE_CUDA_COMPILER)
-        message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
-    endif()
-
-    set(CMAKE_CUDA_STANDARD 17)
-    set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
-
-    enable_language(CUDA)
-
-    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-        message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
-        set(CMAKE_CUDA_ARCHITECTURES 30)
-    endif()
-
-
-    if(BUILD_CUDA_LTO)
-       if(CMAKE_CUDA_ARCHITECTURES LESS 50)
-            message(FATAL_ERROR "CUDA Link time optimization requires CUDA 11.2 and CC 5.0.")
-       else()
-
-        set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_${CMAKE_CUDA_ARCHITECTURES}")
-        set(CMAKE_CUDA_ARCHITECTURES OFF)
-
-        list(APPEND VF_COMPILER_DEFINITION BUILD_CUDA_LTO)
-
-       endif()
-    endif()
-
-    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
-
-    message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-    message(STATUS "CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
-    set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}" CACHE STRING "Cuda Architecture (compute capabilitiy)")
-
-    set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
-
-    # we disable the usage of cuda response files here
-    # usually CUDA_INCLUDES.rsp is genereated by cmake containing all include paths and is passed in compile_commands.json via the --options-file flag
-    # this .rsp file can not be parsed by clangd and therefore we disable it
-    set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_INCLUDES 0)
-endif()
-
-
-#################################################################################
-#  COMMON LIBRARIES
-#################################################################################
-include(FetchContent)
-
-# spdlog
-set(spdlog_version "v1.9.1")
-set(spdlog_url "https://github.com/gabime/spdlog")
-message(STATUS "Fetching spdlog: ${spdlog_version}")
-FetchContent_Declare(
-        spdlog
-        GIT_REPOSITORY ${spdlog_url}
-        GIT_TAG        ${spdlog_version}
-)
-
-FetchContent_MakeAvailable(spdlog)
-target_compile_options(spdlog PRIVATE "-fPIC")
-groupTarget(spdlog ${thirdFolder})
-
-# googletest
-if(BUILD_VF_UNIT_TESTS)
-    FetchContent_Declare(
-        googletest
-        DOWNLOAD_EXTRACT_TIMESTAMP FALSE # https://cmake.org/cmake/help/latest/policy/CMP0135.html
-        URL https://github.com/google/googletest/archive/1f643f71d4151c3b364c0e9302042f7a6debd439.zip # 30.11.2022
-    )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-    FetchContent_MakeAvailable(googletest)
-
-    groupTarget(gmock ${thirdFolder}/googletest)
-    groupTarget(gmock_main ${thirdFolder}/googletest)
-    groupTarget(gtest ${thirdFolder}/googletest)
-    groupTarget(gtest_main ${thirdFolder}/googletest)
-
-    if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-        target_compile_options(gtest PRIVATE "-Wno-implicit-int-float-conversion")
-    endif()
-
-    include(GoogleTest)
-    enable_testing()
-endif()
-
-if(BUILD_USE_OPENMP)
-    find_package(OpenMP REQUIRED)
-endif()
-
-# TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/139
-# if(BUILD_USE_MPI) 
-    find_package(MPI REQUIRED)
-    list(APPEND VF_COMPILER_DEFINITION VF_MPI)
-# endif()
-
-# boost
-IF(BUILD_USE_BOOST)
-    list(APPEND VF_COMPILER_DEFINITION BUILD_USE_BOOST)
-
-    set(Boost_USE_STATIC_LIBS ON)
-    set(Boost_USE_MULTITHREADED ON)
-    set(Boost_USE_STATIC_RUNTIME ON)
-
-    # minimum boost version: 1.60
-    # no packages specfied - only headeronly libraries
-    find_package(Boost 1.60 REQUIRED)
-ENDIF()
 
 add_subdirectory(src/logger)
 add_subdirectory(src/basics)
@@ -221,29 +82,16 @@ add_subdirectory(src/parallel)
 add_subdirectory(src/lbm)
 
 
-#################################################################################
-#  VIRTUAL FLUIDS CPU / GPU
-#################################################################################
-if (BUILD_VF_CPU)
+if(VF_ENABLE_CPU)
     include(cpu.cmake)
 endif()
-if(BUILD_VF_GPU)
+
+if(VF_ENABLE_GPU)
     include(gpu.cmake)
 endif()
 
-if (BUILD_VF_PYTHON_BINDINGS)
-    set(pybind_version "v2.10.4")
-    set(pybind_url "https://github.com/pybind/pybind11")
-    message(STATUS "Fetching pybind: ${pybind_version}")
-    FetchContent_Declare(
-            pybind11
-            GIT_REPOSITORY ${pybind_url}
-            GIT_TAG        ${pybind_version}
-    )
-
-    FetchContent_MakeAvailable(pybind11)
+if(VF_ENABLE_PYTHON_BINDINGS)
     add_subdirectory(pythonbindings)
 endif()
-
 
 vf_load_user_apps()

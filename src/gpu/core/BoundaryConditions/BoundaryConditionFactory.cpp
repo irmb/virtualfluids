@@ -30,7 +30,7 @@
 //=======================================================================================
 #include "BoundaryConditionFactory.h"
 #include "Parameter/Parameter.h"
-#include "grid/BoundaryConditions/BoundaryCondition.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include <variant>
 
 #include "BoundaryConditions/Outflow/Outflow.h"

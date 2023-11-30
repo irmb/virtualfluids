@@ -21,3 +21,5 @@ uint FilePartCalculator::calculateStartingPostionOfPart(uint indexOfPart)
 {
     return indexOfPart * FilePartCalculator::limitOfNodesForVTK;
 }
+
+const uint FilePartCalculator::limitOfNodesForVTK;

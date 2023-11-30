@@ -51,24 +51,7 @@ class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
-
-#ifdef __GNUC__
-    #ifndef __clang__
-        #pragma push
-        #pragma nv_diag_suppress = 3156
-    #endif
-#endif
-
-// GCC:  warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
-extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
-
-#ifdef __GNUC__
-    #ifndef __clang__
-        #pragma pop
-    #endif
-#endif
-
-class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
+class GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 protected:
     GridImp() = default;

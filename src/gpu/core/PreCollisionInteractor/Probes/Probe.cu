@@ -514,7 +514,7 @@ void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
 {
     std::ofstream out(this->timeseriesFileNames[level], std::ios::app | std::ios::binary);
 
-    uint t_level = para->getTimeStep(level, t, false);
+    // uint t_level = para->getTimeStep(level, t, false);
     uint tAvg_level = this->tAvg==1 ? this->tAvg: this->tAvg*exp2(-level);
 
     real dt = para->getTimeRatio()*tAvg_level;
@@ -568,7 +568,7 @@ std::vector<std::string> Probe::getVarNames()
         if(this->quantities[statistic])
         {
             std::vector<PostProcessingVariable> postProcessingVariables = this->getPostProcessingVariables(static_cast<Statistic>(statistic));            
-            for(int i = 0; i<postProcessingVariables.size(); i++) 
+            for(size_t i = 0; i<postProcessingVariables.size(); i++) 
                 varNames.push_back(postProcessingVariables[i].name);
         }
     }

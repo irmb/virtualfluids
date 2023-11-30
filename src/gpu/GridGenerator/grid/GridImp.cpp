@@ -34,7 +34,7 @@
 
 #include <iostream>
 #include <sstream>
-# include <algorithm>
+#include <algorithm>
 #include <cmath>
 #include <vector>
 #include <stdexcept>

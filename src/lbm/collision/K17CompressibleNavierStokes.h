@@ -46,11 +46,11 @@
 
 #include "lbm/constants/D3Q27.h"
 
-#include "ChimeraTransformation.h"
+#include "lbm/ChimeraTransformation.h"
 
 #include "TurbulentViscosity.h"
 
-#include "MacroscopicQuantities.h"
+#include "lbm/MacroscopicQuantities.h"
 
 #include "CollisionParameter.h"
 

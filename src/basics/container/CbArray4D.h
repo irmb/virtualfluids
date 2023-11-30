@@ -33,7 +33,7 @@
 #ifndef CBARRAY4D_H
 #define CBARRAY4D_H
 
-#include "PointerDefinitions.h"
+#include <basics/PointerDefinitions.h>
 #include <algorithm>
 #include <basics/utilities/UbEqual.h>
 #include <basics/utilities/UbException.h>

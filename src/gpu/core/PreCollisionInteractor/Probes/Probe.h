@@ -206,7 +206,7 @@ private:
     std::string makeParallelFileName(int id, int t);
     std::string makeTimeseriesFileName(int leve, int id);
 
-    virtual uint getNumberOfTimestepsInTimeseries(Parameter* para, int level){ return 1; }
+    virtual uint getNumberOfTimestepsInTimeseries(Parameter* para, int level){ (void)para; (void)level; return 1; }
 
 protected:
     const std::string probeName;

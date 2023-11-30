@@ -37,7 +37,7 @@
 
 #include "global.h"
 
-struct GRIDGENERATOR_EXPORT simulationFileNames
+struct simulationFileNames
 {
     static const std::string coordX;
     static const std::string coordY;

@@ -39,7 +39,7 @@
 
 #include "gpu/GridGenerator/global.h"
 
-struct GRIDGENERATOR_EXPORT Vertex
+struct Vertex
 {
 public:
     real x, y, z;

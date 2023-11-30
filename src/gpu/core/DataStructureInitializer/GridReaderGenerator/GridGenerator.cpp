@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <algorithm>
-#include "utilities/math/Math.h"
+#include "GridGenerator/utilities/math/Math.h"
 #include "Output/QDebugWriter.hpp"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 

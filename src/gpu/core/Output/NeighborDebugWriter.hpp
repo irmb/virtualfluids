@@ -2,7 +2,7 @@
 #define NEIGHBORDEBUG_HPP
 
 #include "LBM/LB.h"
-#include "Logger.h"
+#include <logger/Logger.h>
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"

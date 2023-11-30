@@ -40,7 +40,7 @@
 
 class TriangleMemento;
 
-struct GRIDGENERATOR_EXPORT Triangle
+struct Triangle
 {
     Vertex v1, v2, v3, normal;
     real alphaAngles[3];

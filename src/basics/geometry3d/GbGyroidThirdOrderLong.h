@@ -33,7 +33,7 @@
 #ifndef GbGyroidThirdOrderLong_H
 #define GbGyroidThirdOrderLong_H
 
-#ifdef BUILD_USE_BOOST
+#ifdef VF_BOOST
 
 #include <vector>
 
