@@ -9,7 +9,7 @@ REFERENCE_DATA_DIR=regression_tests/cpu/GyroidsRow
 CMAKE_FLAGS="--preset=make_cpu -DBUILD_USE_BOOST=ON -DCMAKE_BUILD_TYPE=Release"
 
 # 3. define the application to be executed
-APPLICATION="./build/bin/GyroidsRow ./apps/cpu/GyroidsRow/GyroidsRow_Re_425_u_001_N_100_compressible_regression.cfg"
+APPLICATION="mpiexec -np 8 --allow-run-as-root ./build/bin/GyroidsRow ./apps/cpu/GyroidsRow/GyroidsRow_Re_425_u_001_N_100_compressible_regression.cfg"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/GyroidsRow
