@@ -160,7 +160,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::PZ, velocityLB, 0.0, 0.0);
     gridBuilderFacade->setPressureBoundaryCondition(SideType::PX, 0.0);
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::PressureNonEquilibriumCompressible);
 
     // move grid from grid generator to simulation

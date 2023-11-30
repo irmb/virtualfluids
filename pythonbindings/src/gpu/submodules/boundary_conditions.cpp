@@ -60,10 +60,10 @@ namespace boundary_conditions
         .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"));
 
         py::enum_<BoundaryConditionFactory::VelocityBC>(parentModule, "VelocityBC")
-        .value("VelocitySimpleBounceBackCompressible", BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible)
-        .value("VelocityIncompressible", BoundaryConditionFactory::VelocityBC::VelocityIncompressible)
-        .value("VelocityCompressible", BoundaryConditionFactory::VelocityBC::VelocityCompressible)
-        .value("VelocityAndPressureCompressible", BoundaryConditionFactory::VelocityBC::VelocityAndPressureCompressible)
+        .value("VelocityBounceBack", BoundaryConditionFactory::VelocityBC::VelocityBounceBack)
+        .value("VelocityInterpolatedIncompressible", BoundaryConditionFactory::VelocityBC::VelocityInterpolatedIncompressible)
+        .value("VelocityInterpolatedCompressible", BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible)
+        .value("VelocityWithPressureInterpolatedCompressible", BoundaryConditionFactory::VelocityBC::VelocityWithPressureInterpolatedCompressible)
         .value("NotSpecified", BoundaryConditionFactory::VelocityBC::NotSpecified);
 
 

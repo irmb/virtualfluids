@@ -159,7 +159,7 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::PZ, velocityLBinXandY, velocityLBinXandY, 0.0);
 
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
 
     // gridBuilder->writeGridsToVtk(outPath +  "/grid/part" + std::to_string(generatePart) + "_");
     // SimulationFileWriter::write(gridPath + std::to_string(processID) + "/", gridBuilderFacade->getGridBuilder(), FILEFORMAT::BINARY);

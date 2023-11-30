@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
         BoundaryConditionFactory bcFactory;
 
         bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipBounceBack);
-        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocitySimpleBounceBackCompressible);
+        bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityBounceBack);
 
         //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation

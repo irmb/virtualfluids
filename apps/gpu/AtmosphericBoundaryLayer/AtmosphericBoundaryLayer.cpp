@@ -333,7 +333,7 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
 
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityCompressible);
+    bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
