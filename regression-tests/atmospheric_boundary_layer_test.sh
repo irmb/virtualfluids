@@ -9,7 +9,7 @@ REFERENCE_DATA_DIR=regression_tests/gpu/AtmosphericBoundaryLayer
 CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75 -DUSER_APPS=apps/gpu/AtmosphericBoundaryLayer"
 
 # 3. define the application to be executed
-APPLICATION="./build/bin/AtmosphericBoundaryLayer ./apps/gpu/AtmosphericBoundaryLayer/configAtmosphericBoundaryLayerRegression.txt"
+APPLICATION="./build/bin/AtmosphericBoundaryLayer ./apps/gpu/AtmosphericBoundaryLayer/abl_regressiontest.cfg"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/AtmosphericBoundaryLayer
