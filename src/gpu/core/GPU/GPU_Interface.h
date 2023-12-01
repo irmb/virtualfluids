@@ -310,59 +310,6 @@ void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int numberOfThreads, 
                                       bool isEvenTimestep);
 
-void BcPress27(int nx, 
-                          int ny, 
-                          int tz, 
-                          unsigned int grid_nx, 
-                          unsigned int grid_ny, 
-                          unsigned int* bcMatD, 
-                          unsigned int* neighborX,
-                          unsigned int* neighborY,
-                          unsigned int* neighborZ,
-                          real* DD, 
-                          unsigned long long numberOfLBnodes, 
-                          bool isEvenTimestep);
-
-void QSlipDev27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void BBSlipDevComp27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QSlipDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QSlipPressureDevCompTurbulentViscosity27(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
-void QSlipGeomDevComp27( unsigned int numberOfThreads,
-                                    real* DD, 
-                                    int* k_Q, 
-                                    real* QQ,
-                                    unsigned int numberOfBCnodes,
-                                    real om1, 
-                                    real* NormalX,
-                                    real* NormalY,
-                                    real* NormalZ,
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned long long numberOfLBnodes, 
-                                    bool isEvenTimestep);
-
-void QSlipNormDevComp27(unsigned int numberOfThreads,
-                                   real* DD, 
-                                   int* k_Q, 
-                                   real* QQ,
-                                   unsigned int numberOfBCnodes,
-                                   real om1, 
-                                   real* NormalX,
-                                   real* NormalY,
-                                   real* NormalZ,
-                                   unsigned int* neighborX,
-                                   unsigned int* neighborY,
-                                   unsigned int* neighborZ,
-                                   unsigned long long numberOfLBnodes, 
-                                   bool isEvenTimestep);
-
 void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);
 
 void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level);

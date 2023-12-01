@@ -37,6 +37,7 @@
 #include "BoundaryConditions/Pressure/Pressure.h"
 #include "BoundaryConditions/NoSlip/NoSlip.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
+#include "BoundaryConditions/Slip/Slip.h"
 #include "GPU/GPU_Interface.h"
 
 
@@ -131,20 +132,11 @@ boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool is
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
-        case SlipBC::SlipIncompressible:
-            return QSlipDev27;
-            break;
         case SlipBC::SlipCompressible:
-            return QSlipDevComp27;
+            return SlipCompressible;
             break;
-        case SlipBC::SlipBounceBack:
-            return BBSlipDevComp27;
-            break;
-        case SlipBC::SlipCompressibleTurbulentViscosity:
-            return QSlipDevCompTurbulentViscosity27;
-            break;
-        case SlipBC::SlipPressureCompressibleTurbulentViscosity:
-            return QSlipPressureDevCompTurbulentViscosity27;
+        case SlipBC::SlipTurbulentViscosityCompressible:
+            return SlipTurbulentViscosityCompressible;
             break;
         default:
             return nullptr;
