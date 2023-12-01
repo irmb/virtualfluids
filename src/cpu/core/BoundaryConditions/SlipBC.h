@@ -35,29 +35,6 @@
 
 #include "BC.h"
 
-/*=======================================================*/
-// D3Q27SlipBCCreator
-// class D3Q27SlipBCCreator : public ObObjectCreator
-//{
-// public:
-//   static D3Q27SlipBCCreator* getInstance()
-//   {
-//      static D3Q27SlipBCCreator instance;
-//      return &instance;
-//   }
-//
-//   ObObject* createObObject();
-//
-//   std::string getTypeID() { return "D3Q27SlipBC";}
-//   std::string toString()  { return "D3Q27SlipBCCreator"; }
-//
-// private:
-//   D3Q27SlipBCCreator( const D3Q27SlipBCCreator& );                  //no copy allowed
-//   const D3Q27SlipBCCreator& operator=( const D3Q27SlipBCCreator& ); //no copy allowed
-//   D3Q27SlipBCCreator() : ObObjectCreator() {}
-//};
-//
-
 class SlipBC : public BC
 {
 public:

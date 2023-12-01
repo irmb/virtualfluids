@@ -143,13 +143,10 @@ void run(string configname)
          SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
          if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
-         real blockLength = blocknx[0] * dx;
-
-
+         real blockLength = 3. * dx;
 
          grid->setDeltaX(dx);
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
-
          grid->setPeriodicX1(false);
          grid->setPeriodicX2(false);
          grid->setPeriodicX3(false);
@@ -159,6 +156,30 @@ void run(string configname)
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
+         SPtr<GbObject3D> refineCube1_1(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_minX2 + blockLength, g_maxX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineCube1_1.get(), pathname + "/geo/refineCube1_1", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineCube1_2(new GbCuboid3D(g_minX1, g_maxX2 - blockLength, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineCube1_2.get(), pathname + "/geo/refineCube1_2", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineCube1_3(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_minX3 + blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineCube1_3.get(), pathname + "/geo/refineCube1_3", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineCube1_4(new GbCuboid3D(g_minX1, g_minX2, g_maxX3 - blockLength, g_maxX1, g_maxX2, g_maxX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineCube1_4.get(), pathname + "/geo/refineCube1_4", WbWriterVtkXmlBinary::getInstance());
+
+         if (refineLevel > 0)
+         {
+            if (myid == 0) UBLOG(logINFO, "Refinement - start");
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
+            refineHelper.addGbObject(refineCube1_1, 1);
+            refineHelper.addGbObject(refineCube1_2, 1);
+            refineHelper.addGbObject(refineCube1_3, 1);
+            refineHelper.addGbObject(refineCube1_4, 1);
+            refineHelper.refine();
+            if (myid == 0) UBLOG(logINFO, "Refinement - end");
+         }
+
          //inflow
          GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname+"/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
@@ -166,10 +187,6 @@ void run(string configname)
          //outflow
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
-
-         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-
-         ppblocks->update(0);
 
          SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBC, Interactor3D::INVERSESOLID));
          
@@ -183,6 +200,7 @@ void run(string configname)
          intHelper.addInteractor(outflowInt);
          intHelper.selectBlocks();
 
+         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
          ppblocks->update(0);
          ppblocks.reset();
 

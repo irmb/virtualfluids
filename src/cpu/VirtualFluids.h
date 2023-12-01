@@ -293,7 +293,7 @@
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
 #include <InitDistributionsWithInterpolationGridVisitor.h>
-#include <InitThixotropyBlockVisitor.h>
+
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 

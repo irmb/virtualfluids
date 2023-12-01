@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file Grid.cpp
-//! \ingroup Grid
+//! \ingroup Simulation
 //! \author Konstantin Kutscher
 //=======================================================================================
 

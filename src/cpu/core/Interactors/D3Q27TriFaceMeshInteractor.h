@@ -1,3 +1,39 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file D3Q27TriFaceMeshInteractor.h
+//! \ingroup Interactor
+//! \author Sören Freudiger
+//! \author Sebastian Geller
+//! \author Ehsan Kian Far
+//! \author Konstantin Kutscher
+//=======================================================================================
+
 #ifndef D3Q19AMRTRIFACEMESHINTERACTOR_H
 #define D3Q19AMRTRIFACEMESHINTERACTOR_H
 
@@ -18,26 +54,16 @@ class Block3D;
 class D3Q27TriFaceMeshInteractor : public D3Q27Interactor
 {
 public:
-    static const int STRESSNORMAL     = 0;
-    static const int STRESSALTERNATIV = 1;
-
     D3Q27TriFaceMeshInteractor();
     D3Q27TriFaceMeshInteractor(SPtr<Grid3D> grid, std::string name = "D3Q27TriFaceMeshInteractor");
     D3Q27TriFaceMeshInteractor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type);
-    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BC> BC,
-                               int type);
-    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BC> BC,
-                               int type, Interactor3D::Accuracy a);
-    // D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, D3Q27BoundaryConditionAdapterPtr BC, int
-    // type, std::string name="D3Q27TriFaceMeshInteractor");
+    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BC> BC, int type);
+    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BC> BC, int type, Interactor3D::Accuracy a);
 
     ~D3Q27TriFaceMeshInteractor() override;
 
     void initInteractor(const real &timeStep = 0) override;
-    virtual void initInteractor2(const real &timeStep = 0);
-
     void updateInteractor(const real &timestep = 0) override;
-
     void updateMovedGeometry(const real &timeStep = 0);
     void setQs(const real &timeStep);
     void refineBlockGridToLevel(int level, real startDistance, real stopDistance);
@@ -48,73 +74,21 @@ public:
 
     ObObject *clone() { throw UbException(UB_EXARGS, "not implemented"); }
 
-    UbTupleDouble3 getForces() override;
-    UbTupleDouble3 getForcesTriangle();
-
-    void setStressMode(int stressMode) { this->stressMode = stressMode; }
-    void setUseHalfSpaceCheck(bool useHalfSpace) { this->useHalfSpace = useHalfSpace; }
-    // void setReinitWithStoredQs(bool reinitWithStoredQsFlag) { this->reinitWithStoredQsFlag = reinitWithStoredQsFlag;
-    // }
-
-    void calculateForces();
-    void calculateStresses();
-    void calculateStressesAlternativ();
-
-    void calcStressesLine(UbTupleDouble6 &stresses, const real &weight, const UbTupleDouble6 &stvW,
-                          const UbTupleDouble6 &stvE);
-    void calcStressesFace(UbTupleDouble6 &stresses, const real &weightX, const real &weightY,
-                          const UbTupleDouble6 &stvSW, const UbTupleDouble6 &stvSE, const UbTupleDouble6 &stvNE,
-                          const UbTupleDouble6 &stvNW);
-    void calcStressesCube(UbTupleDouble6 &stresses, const real &weightX, const real &weightY, const real &weightZ,
-                          const UbTupleDouble6 &stvBSW, const UbTupleDouble6 &stvBSE, const UbTupleDouble6 &stvBNE,
-                          const UbTupleDouble6 &stvBNW, const UbTupleDouble6 &stvTSW, const UbTupleDouble6 &stvTSE,
-                          const UbTupleDouble6 &stvTNE, const UbTupleDouble6 &stvTNW);
-
-    void calculatePressure();
-    void calcPressureLine(real &p, const real &weight, const real &pW, const real &pE);
-    void calcPressureFace(real &p, const real &weightX, const real &weightY, const real &pSW, const real &pSE,
-                          const real &pNE, const real &pNW);
-    void calcPressureCube(real &p, const real &weightX, const real &weightY, const real &weightZ,
-                          const real &pBSW, const real &pBSE, const real &pBNE, const real &pBNW,
-                          const real &pTSW, const real &pTSE, const real &pTNE, const real &pTNW);
-
-    void setForceShift(real forceshift)
-    {
-        this->forceshift       = forceshift;
-        this->forceshiftpolicy = true;
-    }
-    void setVelocityShift(real velocityshift)
-    {
-        this->velocityshift       = velocityshift;
-        this->velocityshiftpolicy = true;
-    }
-    real getForceShift() { return this->forceshift; }
-    real getVelocityShift() { return this->velocityshift; }
-    bool getForceShiftPolicy() { return forceshiftpolicy; }
-    bool getVelocityShiftPolicy() { return velocityshiftpolicy; }
-
     void clearBcNodeIndicesAndQsMap() { this->bcNodeIndicesAndQsMap.clear(); }
 
     virtual std::string toString();
 
 protected:
-    int stressMode;
-
-    double forceshift{ 0.0 };
-    double velocityshift{ 0.0 };
-    bool forceshiftpolicy{ false };
-    bool velocityshiftpolicy{ false };
     bool useHalfSpace{ true };
     bool regardPIOTest{ true };
 
     void reinitWithStoredQs(const real &timeStep);
     //   bool reinitWithStoredQsFlag;
-    std::map<SPtr<Block3D>, std::map<UbTupleInt3, std::vector<float>>>
-        bcNodeIndicesAndQsMap; //!!! es kann sein, dass in diesem interactor
-    // an eine rpos eine BC gesetzt wurde, aber derselbe node in
-    // in einem anderen in einen anderen Typ (z.B. Solid) geaendert
-    // wurde --> es ist keine BC mehr an der stelle!
-
+    std::map<SPtr<Block3D>, std::map<UbTupleInt3, std::vector<float>>> bcNodeIndicesAndQsMap; 
+    //!!! it may be that in this interactor
+    // a BC was set to an rpos, but the same node in
+    // changed to another type (e.g. Solid) in another
+    // became --> there is no longer any BC in the place!
     enum SolidCheckMethod { ScanLine, PointInObject };
 
     enum FLAGS { BC_FLAG, UNDEF_FLAG, FLUID_FLAG, SOLID_FLAG, OLDSOLID_FLAG };

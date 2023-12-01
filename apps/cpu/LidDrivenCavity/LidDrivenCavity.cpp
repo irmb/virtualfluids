@@ -49,36 +49,36 @@ int main(int  /*argc*/, char*  /*argv*/[])
       // set your output path here
       string path = "./output/LidDrivenCavity";
 
-      const double L = 1.0;
-      const double Re = 1000.0;
-      const double velocity = 1.0;
-      const double dt = 0.5e-3;
+      const real L = 1.0;
+      const real Re = 1000.0;
+      const real velocity = 1.0;
+      const real dt = 0.5e-3;
       const unsigned int nx = 64;
 
-      const double timeStepOut = 10;
-      const double timeStepEnd = 10;
+      const real timeStepOut = 10;
+      const real timeStepEnd = 10;
 
       // Number of OpenMP threads
       int numOfThreads = 1;
 
       //////////////////////////////////////////////////////////////////////////
 
-      double dx = L / double(nx);
-      const double velocityLB = velocity * dt / dx; // LB units
-      const double u = velocityLB / sqrt(2.0); // LB units
-      const double viscosityLB = nx * velocityLB / Re; // LB unit
+      real dx = L / real(nx);
+      const real velocityLB = velocity * dt / dx; // LB units
+      const real u = velocityLB / sqrt(2.0); // LB units
+      const real viscosityLB = nx * velocityLB / Re; // LB unit
 
       //////////////////////////////////////////////////////////////////////////
       // create grid
       //////////////////////////////////////////////////////////////////////////
       // bounding box
-      double g_minX1 = -0.5;
-      double g_minX2 = -0.5;
-      double g_minX3 = -0.5;
+      real g_minX1 = -0.5;
+      real g_minX2 = -0.5;
+      real g_minX3 = -0.5;
 
-      double g_maxX1 = 0.5;
-      double g_maxX2 = 0.5;
-      double g_maxX3 = 0.5;
+      real g_maxX1 = 0.5;
+      real g_maxX2 = 0.5;
+      real g_maxX3 = 0.5;
 
       SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
       int myid = comm->getProcessID();

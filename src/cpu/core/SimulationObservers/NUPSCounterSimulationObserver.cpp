@@ -33,9 +33,14 @@
 
 #include "NUPSCounterSimulationObserver.h"
 
-#include <parallel/Communicator.h>
+#include "parallel/Communicator.h"
+#include "logger/Logger.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 NUPSCounterSimulationObserver::NUPSCounterSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads,
                                                std::shared_ptr<vf::parallel::Communicator> comm)
@@ -71,15 +76,16 @@ void NUPSCounterSimulationObserver::collectData(real step)
 {
     if (comm->getProcessID() == comm->getRoot()) {
         timer.end();
-        double time = timer.getCurrentRuntimeInSeconds();
-        double nups_t = nup_t * (step - nupsStep) / time;
-        double nups = nup * (step - nupsStep) / time;
-        double tnups = nups / (double)numOfThreads;
-        UBLOG(logINFO, "Calculation step = " << step);
-        UBLOG(logINFO, "Total performance = " << nups_t << " NUPS");
-        UBLOG(logINFO, "Performance per update = " << nups << " NUPS");
-        UBLOG(logINFO, "Performance per thread = " << tnups << " NUPS");
-        UBLOG(logINFO, "Time for " << step - nupsStep << " steps = " << time << " s");
+        real time = timer.getCurrentRuntimeInSeconds();
+        real nups_t = nup_t * (step - nupsStep) / time;
+        real nups = nup * (step - nupsStep) / time;
+        real tnups = nups / numOfThreads;
+        VF_LOG_INFO("Calculation step = {}", step);
+        VF_LOG_INFO("Number of threads = {}", numOfThreads);
+        VF_LOG_INFO("Total performance       = {:03.2e} NUPS", nups_t);
+        VF_LOG_INFO("Performance per process = {:03.2e} NUPS", nups);
+        VF_LOG_INFO("Performance per thread  = {:03.2e} NUPS", tnups);
+        VF_LOG_INFO("Time for {} steps = {} s",  step - nupsStep, time );
         nupsStep = step;
         timer.start();
     }
