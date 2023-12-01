@@ -29,9 +29,6 @@
 
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-# https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/154
-cmake_policy(SET CMP0105 OLD)
-
 project(
     VirtualFluids
     VERSION 0.1.0
