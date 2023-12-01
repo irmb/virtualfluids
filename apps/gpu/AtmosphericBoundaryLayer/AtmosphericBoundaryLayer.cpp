@@ -450,7 +450,7 @@ int main(int argc, char* argv[])
 {
     try {
         vf::logging::Logger::initializeLogger();
-        auto config = vf::basics::loadConfig(argc, argv, "./configBoundaryLayer.txt");
+        auto config = vf::basics::loadConfig(argc, argv, "./abl.cfg");
         run(config);
     } catch (const spdlog::spdlog_ex& ex) {
         std::cout << "Log initialization failed: " << ex.what() << '\n';
