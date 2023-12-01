@@ -83,7 +83,7 @@ void run(string configname)
       pressureBC2->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
 
       //////////////////////////////////////////////////////////////////////////////////
-      //BS visitor
+      //BC visitor
       BoundaryConditionsBlockVisitor bcVisitor;
 
       SPtr<Grid3D> grid(new Grid3D(comm));
