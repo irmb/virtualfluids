@@ -15,7 +15,6 @@ namespace vf::basics
 template <>
 bool convert_to<bool>(const std::string& value)
 {
-    printf("convert to bool \n");
     return value == "true";
 }
 
