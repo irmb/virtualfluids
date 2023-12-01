@@ -308,7 +308,7 @@ int main(int argc, char* argv[])
         return 0;
 
     try {
-        auto config = vf::basics::loadConfig(argc, argv, "./configActuatorLine.txt");
+        auto config = vf::basics::loadConfig(argc, argv, "./actuatorline.cfg");
         run(config);
     } catch (const spdlog::spdlog_ex& ex) {
         std::cout << "Log initialization failed: " << ex.what() << std::endl;

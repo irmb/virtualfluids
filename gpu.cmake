@@ -17,7 +17,7 @@ if(BUILD_VF_ALL_SAMPLES)
     "apps/gpu/ActuatorLine"
     "apps/gpu/SphereMultiGPU" 
     "apps/gpu/TGV_3D"
-    "apps/gpu/gridGeneratorTest")
+    )
 endif()
 
 add_subdirectory(apps/gpu/DrivenCavity)

@@ -11,6 +11,4 @@ set(GPU_APP "apps/gpu/")
 list(APPEND USER_APPS 
     "${GPU_APP}DrivenCavityMultiGPU"
     "${GPU_APP}SphereMultiGPU"
-    # "${GPU_APP}ChannelFlow"
-    # "${GPU_APP}MusselOyster"
     )

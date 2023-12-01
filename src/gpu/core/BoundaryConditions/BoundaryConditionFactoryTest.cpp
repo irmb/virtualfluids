@@ -8,6 +8,7 @@
 #include "BoundaryConditions/Pressure/Pressure.h"
 #include "BoundaryConditions/NoSlip/NoSlip.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
+#include "BoundaryConditions/Slip/Slip.h"
 #include "GPU/GPU_Interface.h"
 
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
@@ -132,16 +133,12 @@ TEST(BoundaryConditionFactoryTest, slipBC)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipIncompressible);
-    EXPECT_TRUE( *(getSlipBcTarget(bcFactory)) == QSlipDev27)
-        << "The returned boundary condition is not the expected function QSlipDev27.";
-
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressible);
-    EXPECT_TRUE( *(getSlipBcTarget(bcFactory)) == QSlipDevComp27)
-        << "The returned boundary condition is not the expected function QSlipDevComp27.";
+    EXPECT_TRUE( *(getSlipBcTarget(bcFactory)) == SlipCompressible)
+        << "The returned boundary condition is not the expected function SlipCompressible.";
 
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity);
-    EXPECT_TRUE( *(getSlipBcTarget(bcFactory)) == QSlipDevCompTurbulentViscosity27)
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipTurbulentViscosityCompressible);
+    EXPECT_TRUE( *(getSlipBcTarget(bcFactory)) == SlipTurbulentViscosityCompressible)
         << "The returned boundary condition is not the expected function QSlipDevCompTurbulentViscosity27.";
 }
 

@@ -74,11 +74,8 @@ namespace boundary_conditions
         .value("NoSlipInterpolatedCompressible", BoundaryConditionFactory::NoSlipBC::NoSlipInterpolatedCompressible);
 
         py::enum_<BoundaryConditionFactory::SlipBC>(parentModule, "SlipBC")
-        .value("SlipIncompressible", BoundaryConditionFactory::SlipBC::SlipIncompressible)
         .value("SlipCompressible", BoundaryConditionFactory::SlipBC::SlipCompressible)
-        .value("SlipBounceBack", BoundaryConditionFactory::SlipBC::SlipBounceBack)
-        .value("SlipCompressibleTurbulentViscosity", BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity)
-        .value("SlipPressureCompressibleTurbulentViscosity", BoundaryConditionFactory::SlipBC::SlipPressureCompressibleTurbulentViscosity)
+        .value("SlipTurbulentViscosityCompressible", BoundaryConditionFactory::SlipBC::SlipTurbulentViscosityCompressible)
         .value("NotSpecified", BoundaryConditionFactory::SlipBC::NotSpecified);
 
         py::enum_<BoundaryConditionFactory::PressureBC>(parentModule, "PressureBC")
