@@ -335,7 +335,7 @@ void run(const vf::basics::ConfigurationFile& config)
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressPressureBounceBack);
-    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipCompressibleTurbulentViscosity);
+    bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipTurbulentViscosityCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     if (useDistributionsForPrecursor) {
         bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor);
