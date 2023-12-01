@@ -173,24 +173,23 @@ void WriteBoundaryConditionsSimulationObserver::addDataGeo(SPtr<Block3D> block)
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3)) {
-                    auto bc = bcArray->getBC(ix1, ix2, ix3);
-                    if (!bc)
-                        continue;
+
                     // int index = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
                     nodes.push_back(makeUbTuple(float(val<1>(org) - val<1>(nodeOffset) + ix1 * dx),
                                                 float(val<2>(org) - val<2>(nodeOffset) + ix2 * dx),
                                                 float(val<3>(org) - val<3>(nodeOffset) + ix3 * dx)));
 
+                    auto bc = bcArray->getBC(ix1, ix2, ix3);
                     if (!bcArray->hasBC(ix1, ix2, ix3)) {
                         data[0].push_back(c0o1);
-                    } else if (bc->hasNoSlipBoundary())
+                    } else if (bc && bc->hasNoSlipBoundary())
                         data[0].push_back(c1o1);
-                    else if (bc->hasVelocityBoundary())
+                    else if (bc && bc->hasVelocityBoundary())
                         data[0].push_back(c2o1);
-                    else if (bc->hasDensityBoundary())
+                    else if (bc && bc->hasDensityBoundary())
                         data[0].push_back(c3o1);
-                    else if (bc->hasSlipBoundary())
+                    else if (bc && bc->hasSlipBoundary())
                         data[0].push_back(c4o1);
                     // else
                     //   data[0].push_back(5.0);
