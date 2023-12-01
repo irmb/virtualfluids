@@ -53,7 +53,10 @@ function(enable_sanitizers project_name)
       # From cmake 3.18 the LINK_OPTIONS and INTERFACE_LINK_OPTIONS target properties are now used for the device link step
       # https://cmake.org/cmake/help/latest/release/3.18.html
       # Thats why we are using a generator expression to only add the sanitizers to the host link step.
-      target_link_options(${project_name} INTERFACE "$<HOST_LINK:-fsanitize=$<JOIN:${LIST_OF_SANITIZERS},;>>")
+      foreach(sanitizer ${SANITIZERS})
+        target_link_options(${project_name} INTERFACE "$<HOST_LINK:-fsanitize=${sanitizer}>")
+      endforeach()
+
     endif()
   endif()
 
