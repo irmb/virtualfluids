@@ -30,7 +30,9 @@
 //! \ingroup io
 //! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
+#ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
+#endif
 #include "GridVTKWriter.h"
 
 #include <iostream>

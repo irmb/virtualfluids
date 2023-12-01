@@ -30,9 +30,9 @@ void K16IncompressibleNavierStokes::initDataSet()
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> K16IncompressibleNavierStokes::clone()
 {
-   SPtr<LBMKernel> kernel(new K16IncompressibleNavierStokes());
+   SPtr<K16IncompressibleNavierStokes> kernel(new K16IncompressibleNavierStokes());
    kernel->setNX(nx);
-   dynamicPointerCast<K16IncompressibleNavierStokes>(kernel)->initDataSet();
+   kernel->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -46,10 +46,10 @@ SPtr<LBMKernel> K16IncompressibleNavierStokes::clone()
    switch (parameter)
    {
    case NORMAL:
-      dynamicPointerCast<K16IncompressibleNavierStokes>(kernel)->OxyyMxzz = c1o1;
+      kernel->OxyyMxzz = c1o1;
       break;
    case MAGIC:
-      dynamicPointerCast<K16IncompressibleNavierStokes>(kernel)->OxyyMxzz = c2o1 +(-collFactor);
+      kernel->OxyyMxzz = c2o1 +(-collFactor);
       break;
    }
    return kernel;

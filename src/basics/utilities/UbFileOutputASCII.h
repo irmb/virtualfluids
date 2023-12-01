@@ -37,7 +37,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "basics_export.h"
+
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbFileOutput.h>
@@ -56,7 +56,7 @@
 usage: ...
 */
 
-class BASICS_EXPORT UbFileOutputASCII : public UbFileOutput
+class UbFileOutputASCII : public UbFileOutput
 {
 public:
     UbFileOutputASCII() : UbFileOutput() {}

@@ -49,7 +49,7 @@ class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
 
-#include "basics_export.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 //!
@@ -59,9 +59,10 @@ class GbObject3DCreator;
 //!
 //////////////////////////////////////////////////////////////////////////
 
-class BASICS_EXPORT GbObject3D : public ObObject
+class GbObject3D : public ObObject
 {
 public:
+    virtual ~GbObject3D() = default;
     // abstract Methods
     virtual void finalize() = 0; // destroys also all dynamic objects (e.g. GbPoints in GbLine)
     /**

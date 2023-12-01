@@ -12,58 +12,8 @@ function(status msg)
 endfunction()
 
 function(status_lib msg)
-    message(STATUS "    ${msg}")
+    message(DEBUG "    ${msg}")
 endfunction()
-
-#################################################################################
-## include intern macros
-#################################################################################
-include(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
-include(${VF_CMAKE_DIR}/FileUtilities.cmake)
-include(${VF_CMAKE_DIR}/3rd/boost.cmake)
-include(${VF_CMAKE_DIR}/Sanitizers.cmake)
-
-###############################################################################################################
-# Reset the compiler and linker flags
-###############################################################################################################
-SET(VF_COMPILER_DEFINITION)
-SET(VF_LINK_OPTIONS)
-SET(CAB_ADDITIONAL_LINK_LIBRARIES)
-LIST(APPEND VF_COMPILER_DEFINITION SOURCE_ROOT=${VF_ROOT_DIR} )
-
-#################################################################
-###   OS DEFINES                                              ###
-#################################################################
-IF(WIN32)
-    list(APPEND VF_COMPILER_DEFINITION __WIN__)
-ELSEIF(UNIX)
-    list(APPEND VF_COMPILER_DEFINITION __unix__)
-ENDIF()
-
-IF(APPLE)
-    list(APPEND VF_COMPILER_DEFINITION __APPLE__)
-endif()
-
-list(APPEND VF_COMPILER_DEFINITION ${CMAKE_CXX_COMPILER_ID})
-
-#################################################################
-### load compiler and machine file                          ###
-#################################################################
-loadMachineFile()
-loadCompilerFlags()
-
-#################################################################################
-## set global project file endings
-#################################################################################
-set (VIRTUAL_FLUIDS_GLOB_FILES
-        *.cpp
-        *.c
-        *.h
-        *.cu
-        *.cuh
-        *.hpp
-        CACHE INTERNAL "File endings to glob for source files" )
-
 
 #################################################################################
 ## Sets the library name to the current folder name.
@@ -74,7 +24,6 @@ function (vf_get_library_name library_name)
     set(${library_name} ${library_name_out} PARENT_SCOPE)
 endfunction()
 
-
 #################################################################################
 ## Sets the library test name to the current folder name + Tests.
 ## output parameter: library_test_name
@@ -83,7 +32,6 @@ function (vf_get_library_test_name library_test_name)
     vf_get_library_name (folder_name)
     set (${library_test_name} ${folder_name}Tests PARENT_SCOPE)
 endfunction()
-
 
 #################################################################################
 ## Add a target, link the libraries and add the compiler flags to the target
@@ -101,6 +49,7 @@ endfunction()
 ##       CMakeLists.txt are added recursively.
 ##
 #################################################################################
+include(CMake/FileUtilities.cmake)
 function(vf_add_library)
 
     set( options )
@@ -127,99 +76,36 @@ function(vf_add_library)
         set(folder_name ${ARG_MODULEFOLDER})
     endif()
 
-    status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
+    # status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
 
-
+    #################################################################
+    ###   FIND FILES                                              ###
+    #################################################################
     collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
-
-    includeProductionFiles (${folder_name} ${library_name} "${sourceFiles}")
+    includeProductionFiles (${folder_name} "${sourceFiles}")
 
     #################################################################
     ###   ADD TARGET                                              ###
     #################################################################
     if(${ARG_BUILDTYPE} MATCHES binary)
         add_executable(${library_name} ${MY_SRCS} )
-        groupTarget(${library_name} ${appFolder})
+        group_target(${library_name} ${appFolder})
     elseif(${ARG_BUILDTYPE} MATCHES shared)
         add_library(${library_name} SHARED ${MY_SRCS} )
-        groupTarget(${library_name} ${libraryFolder})
+        group_target(${library_name} ${libraryFolder})
         elseif(${ARG_BUILDTYPE} MATCHES static)
         add_library(${library_name} STATIC ${MY_SRCS} )
-        groupTarget(${library_name} ${libraryFolder})
+        group_target(${library_name} ${libraryFolder})
     else()
         message(FATAL_ERROR "build_type=${ARG_BUILDTYPE} doesn't match BINARY, SHARED or STATIC")
     endif()
 
-    # Set the output directory for build artifacts
-    set_target_properties(${library_name}
-            PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-            PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-    # sanitizers
-    enable_sanitizers(${library_name})
-
-    # link time optimization
-    if(BUILD_VF_LTO)
-        if(NOT ${ARG_BUILDTYPE} MATCHES binary)
-            include(CheckIPOSupported)
-            check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES CXX)
-
-            if( ipo_supported )
-                status_lib("IPO / LTO enabled")
-                set_target_properties(${library_name} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-            else()
-                status_lib("IPO / LTO not supported: <${ipo_error}>")
-            endif()
-        endif()
-    endif()
-
-    # clang-tidy
-    if(BUILD_VF_CLANG_TIDY)
-        find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy)
-
-        if(NOT CLANG_TIDY_PROGRAM)
-            message(FATAL_ERROR "Could not find the program clang-tidy.")
-        endif()
-
-        set_target_properties(${library_name}
-                PROPERTIES
-                CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
-
-        status_lib("clang-tidy enabled")
-    endif()
-
-    # include-what-you-use
-    if(BUILD_VF_INCLUDE_WHAT_YOU_USE)
-        find_program(IWYU_PROGRAM NAMES include-what-you-use iwyu)
-
-        if(NOT IWYU_PROGRAM)
-            message(FATAL_ERROR "Could not find the program include-what-you-use")
-        endif()
-
-        set_target_properties(${library_name}
-                PROPERTIES
-                CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PROGRAM})
-
-        status_lib("include-what-you-use enabled")
-    endif()
-
-    # cppcheck
-    if(BUILD_VF_CPPCHECK)
-        find_program(CPPCHECK_PROGRAM NAMES cppcheck)
-
-        if(NOT CPPCHECK_PROGRAM)
-            message(FATAL_ERROR "Could not find the program cppcheck")
-        endif()
-
-        set_target_properties(${library_name}
-                PROPERTIES
-                CXX_CPPCHECK "${CPPCHECK_PROGRAM};--enable=all")
-
-        status_lib("cppcheck enabled")
-    endif()
+    set_target_properties(${library_name} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
 
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
@@ -233,44 +119,19 @@ function(vf_add_library)
         target_link_libraries(${library_name} PRIVATE ${ARG_PRIVATE_LINK})
     endif()
 
-    #################################################################
-    ###   COMPILER Flags                                          ###
-    #################################################################
-    addAdditionalFlags(${library_name})
-
-
-    if (NOT ${ARG_BUILDTYPE} MATCHES binary)
-      generateExportHeader (${library_name})
-    endif()
-
-    target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(${library_name} PRIVATE ${CMAKE_BINARY_DIR})
-    target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR})
-    target_include_directories(${library_name} PUBLIC ${VF_SRC_DIR}/gpu)
-    target_include_directories(${library_name} PUBLIC ${VF_SRC_DIR}/cpu)
-
-    if(BUILD_VF_GPU)
-        target_include_directories(${library_name} PRIVATE "${VF_THIRD_DIR}/cuda_samples/")
-        target_include_directories(${library_name} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    endif()
-
-    status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
-
-    unset(CMAKE_CXX_CLANG_TIDY)
+    status("Target: ${library_name} (type=${ARG_BUILDTYPE}) configured.")
 endfunction()
-
-
 
 #################################################################################
 ## Add a test executable corresponding to the added target.
 ## Must be called after vf_add_library().
 ## The name of the test executable is: vf_get_library_name()Tests
 ##
-## Precondition: BUILD_VF_UNIT_TESTS needs to be ON
+## Precondition: VF_ENABLE_UNIT_TESTS needs to be ON
 #################################################################################
 function(vf_add_tests)
 
-    if (NOT BUILD_VF_UNIT_TESTS)
+    if (NOT VF_ENABLE_UNIT_TESTS)
         return()
     endif()
 
@@ -297,37 +158,21 @@ function(vf_add_tests)
 
     # add the target
     add_executable(${library_test_name} ${MY_SRCS})
-    groupTarget (${library_test_name} ${testFolder})
+    group_target (${library_test_name} ${testFolder})
 
-    # Set the output directory for build artifacts
-    set_target_properties(${library_test_name}
-            PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-            PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+    set_target_properties(${library_test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
 
     # link tested library
-    target_link_libraries(${library_test_name} PRIVATE ${library_name})
+    target_link_libraries(${library_test_name} PRIVATE ${library_name} project_options)
 
     # link tested library
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_BINARY_DIR})
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(${library_test_name} PRIVATE ${VF_SRC_DIR})
 
-    # flags
-    addAdditionalFlags(${library_test_name})
-
     # link googlemock
     target_link_libraries(${library_test_name} PRIVATE GTest::gmock_main)
-
-    if(BUILD_SHARED_LIBS)
-        # add compile option according to
-        # https://github.com/google/googletest/blob/master/googletest/README.md#as-a-shared-library-dll
-        set_target_properties(${library_test_name}
-                PROPERTIES
-                COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-    endif()
 
     # add the target to ctest
     gtest_add_tests(TARGET ${library_test_name})
@@ -337,10 +182,9 @@ endfunction()
 #################################################################################
 ## group target for VisualStudio
 #################################################################################
-function(groupTarget targetName folderName)
+function(group_target targetName folderName)
     set_property( TARGET  ${targetName}  PROPERTY  FOLDER  ${folderName} )
-endfunction(groupTarget)
-
+endfunction(group_target)
 
 #################################################################################
 ## load user apps, which are specified in the machine file

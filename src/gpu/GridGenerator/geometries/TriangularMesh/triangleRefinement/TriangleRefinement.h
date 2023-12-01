@@ -46,17 +46,17 @@ struct IntegerPtr2D;
 class  TriangleRefinement
 {
 public:
-    GRIDGENERATOR_EXPORT TriangleRefinement(std::vector<Triangle> *triangles);
-    GRIDGENERATOR_EXPORT ~TriangleRefinement();
+    TriangleRefinement(std::vector<Triangle> *triangles);
+    ~TriangleRefinement();
 
-    void GRIDGENERATOR_EXPORT refine(int iTriangle);
-    static void GRIDGENERATOR_EXPORT refine(Triangle t, Triangle &firstNewTriangle, Triangle &secondNewTriangle);
+    void refine(int iTriangle);
+    static void refine(Triangle t, Triangle &firstNewTriangle, Triangle &secondNewTriangle);
     
-    void GRIDGENERATOR_EXPORT refineUntilMinDistance(double d_min);
-    void GRIDGENERATOR_EXPORT refineUntilcountTriangle(int countTri);
-    void GRIDGENERATOR_EXPORT redoubleTriangles();
+    void refineUntilMinDistance(double d_min);
+    void refineUntilcountTriangle(int countTri);
+    void redoubleTriangles();
 
-    static GRIDGENERATOR_EXPORT Vertex getHalfVertex(const Vertex &v, const Vertex &w);
+    static Vertex getHalfVertex(const Vertex &v, const Vertex &w);
 
 private:
     std::vector<Triangle> *triangles;
@@ -71,8 +71,8 @@ private:
     int findCommonEdgeFromTriangles(int indexNeighbor, int iTriangle);
 
 public:
-    static int GRIDGENERATOR_EXPORT getEdgeWithLongestDistance(Triangle &t);
-    static real GRIDGENERATOR_EXPORT getLongestEdgeDistance(Triangle &t);
+    static int getEdgeWithLongestDistance(Triangle &t);
+    static real getLongestEdgeDistance(Triangle &t);
 };
 
 

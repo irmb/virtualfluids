@@ -41,7 +41,7 @@
 
 namespace vf 
 {
-    class GRIDGENERATOR_EXPORT Math
+    class Math
     {
     public:
         static bool equal(const real& val1, const real& val2, real maxRelDiff = EPSILON);

@@ -1,4 +1,10 @@
 #############################################################
+###                  Options                              ###
+#############################################################
+
+option(VF_GPU_ENABLE_NUMERIC_TESTS "Build numeric tests" OFF)
+
+#############################################################
 ###                  Libraries                            ###
 #############################################################
 
@@ -10,7 +16,7 @@ add_subdirectory(src/gpu/core)
 ###                      Apps                             ###
 #############################################################
 
-if(BUILD_VF_ALL_SAMPLES)
+if(VF_ENABLE_ALL_APPS)
     list(APPEND USER_APPS
     "apps/gpu/DrivenCavityMultiGPU"
     "apps/gpu/AtmosphericBoundaryLayer"
@@ -27,8 +33,8 @@ add_subdirectory(apps/gpu/SphereInChannel)
 ###                   Numeric Tests                       ###
 #############################################################
 
-if(BUILD_NUMERIC_TESTS)
-    if(NOT BUILD_VF_UNIT_TESTS) # in this case googletest is already included.
+if(VF_GPU_ENABLE_NUMERIC_TESTS)
+    if(NOT VF_ENABLE_UNIT_TESTS) # in this case googletest is already included.
         add_subdirectory(${VF_THIRD_DIR}/googletest)
     endif()
 

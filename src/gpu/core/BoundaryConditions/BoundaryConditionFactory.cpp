@@ -29,9 +29,10 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "BoundaryConditionFactory.h"
-#include "Parameter/Parameter.h"
-#include "grid/BoundaryConditions/BoundaryCondition.h"
+
 #include <variant>
+
+#include <GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
 
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
@@ -39,7 +40,7 @@
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/Slip/Slip.h"
 #include "GPU/GPU_Interface.h"
-
+#include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
 {

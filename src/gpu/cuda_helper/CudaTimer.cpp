@@ -29,7 +29,7 @@ void CudaTimer::stopSdkTimer(float &timeSinceLastStop,double &totalTime)
     sdkStopTimer(&sdkTimer);
     timeSinceLastStop = sdkGetTimerValue(&sdkTimer);
     sdkResetTimer(&sdkTimer);
-    ftimeS += timeSinceLastStop;
+    ftimeS += static_cast<double>(timeSinceLastStop);
     totalTime = ftimeS;
 }
 
@@ -38,7 +38,7 @@ void CudaTimer::stopEventTimer(float &timeSinceLastStop,double &totalTime)
     checkCudaErrors(cudaEventRecord(stop_t));
     checkCudaErrors(cudaEventSynchronize(stop_t));
     checkCudaErrors(cudaEventElapsedTime(&timeSinceLastStop, start_t, stop_t));
-    ftimeE += timeSinceLastStop;
+    ftimeE += static_cast<double>(timeSinceLastStop);
     totalTime = ftimeE;
 }
 
@@ -53,4 +53,4 @@ void CudaTimer::deleteEventTimer()
     checkCudaErrors(cudaEventDestroy(stop_t));
 }
 
-}
+} // namespace vf::cuda

@@ -39,7 +39,7 @@ class GridImp;
 class TriangularMesh;
 struct Triangle;
 
-class GRIDGENERATOR_EXPORT TriangularMeshDiscretizationStrategy
+class TriangularMeshDiscretizationStrategy
 {
 public:
     TriangularMeshDiscretizationStrategy() {}
@@ -58,7 +58,7 @@ private:
 
 
 
-class GRIDGENERATOR_EXPORT PointInObjectDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
+class PointInObjectDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     PointInObjectDiscretizationStrategy() {}
@@ -67,7 +67,7 @@ public:
     virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
-class GRIDGENERATOR_EXPORT RayCastingDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
+class RayCastingDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     RayCastingDiscretizationStrategy() {}
@@ -76,7 +76,7 @@ public:
     virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
-class GRIDGENERATOR_EXPORT PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy
+class PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     PointUnderTriangleStrategy() {}

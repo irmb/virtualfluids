@@ -37,7 +37,7 @@
 #include "global.h"
 #include "geometries/Object.h"
 
-class GRIDGENERATOR_EXPORT Sphere : public Object
+class Sphere : public Object
 {
 public:
     Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);

@@ -270,7 +270,7 @@ void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridI
     findSparseIndex(fc.fine, fineGrid, index);
 }
 
-void GRIDGENERATOR_EXPORT GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
+void GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
 {
     {
         std::vector<uint> tmpCFC;

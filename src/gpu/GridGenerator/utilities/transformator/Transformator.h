@@ -46,7 +46,7 @@ struct Vertex;
 class Transformator
 {
 public:
-    static GRIDGENERATOR_EXPORT std::shared_ptr<Transformator> makeTransformator(real delta, real dx, real dy, real dz);
+    static std::shared_ptr<Transformator> makeTransformator(real delta, real dx, real dy, real dz);
     virtual ~Transformator() {}
 
 protected:

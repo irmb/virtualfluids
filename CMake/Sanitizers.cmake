@@ -4,23 +4,19 @@ function(enable_sanitizers project_name)
 
     set(SANITIZERS "")
 
-    option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" FALSE)
-    if(ENABLE_SANITIZER_ADDRESS)
+    if(VF_ENABLE_SANITIZER_ADDRESS)
       list(APPEND SANITIZERS "address")
     endif()
 
-    option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" FALSE)
-    if(ENABLE_SANITIZER_LEAK)
+    if(VF_ENABLE_SANITIZER_LEAK)
       list(APPEND SANITIZERS "leak")
     endif()
 
-    option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" FALSE)
-    if(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
+    if(VF_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
       list(APPEND SANITIZERS "undefined")
     endif()
 
-    option(ENABLE_SANITIZER_THREAD "Enable thread sanitizer" FALSE)
-    if(ENABLE_SANITIZER_THREAD)
+    if(VF_ENABLE_SANITIZER_THREAD)
       if("address" IN_LIST SANITIZERS OR "leak" IN_LIST SANITIZERS)
         message(WARNING "Thread sanitizer does not work with Address and Leak sanitizer enabled")
       else()
@@ -28,8 +24,7 @@ function(enable_sanitizers project_name)
       endif()
     endif()
 
-    option(ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" FALSE)
-    if(ENABLE_SANITIZER_MEMORY AND CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    if(VF_ENABLE_SANITIZER_MEMORY AND CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
       if("address" IN_LIST SANITIZERS
          OR "thread" IN_LIST SANITIZERS
          OR "leak" IN_LIST SANITIZERS)
@@ -54,7 +49,14 @@ function(enable_sanitizers project_name)
        "")
       message(STATUS "Enabling sanitizers: ${LIST_OF_SANITIZERS}")
       target_compile_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
-      target_link_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
+      
+      # From cmake 3.18 the LINK_OPTIONS and INTERFACE_LINK_OPTIONS target properties are now used for the device link step
+      # https://cmake.org/cmake/help/latest/release/3.18.html
+      # Thats why we are using a generator expression to only add the sanitizers to the host link step.
+      foreach(sanitizer ${SANITIZERS})
+        target_link_options(${project_name} INTERFACE "$<HOST_LINK:-fsanitize=${sanitizer}>")
+      endforeach()
+
     endif()
   endif()
 

@@ -41,7 +41,7 @@ struct Vertex;
 struct Triangle;
 
 
-class GRIDGENERATOR_EXPORT BoundingBox
+class BoundingBox
 {
 public:
     real minX;

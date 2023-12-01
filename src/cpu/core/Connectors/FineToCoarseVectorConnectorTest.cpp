@@ -1,9 +1,14 @@
 #include <gmock/gmock.h>
 
-#include "FineToCoarseVectorConnector.h"
+#include <memory>
+
+#include <basics/container/CbVector.h>
+
+#include <parallel/transmitter/TbTransmitter.h>
+
 #include "Block3D.h"
-#include "CbVector.h"
 #include "CreateTransmittersHelper.h"
+#include "FineToCoarseVectorConnector.h"
 
 class FineToCoarseVectorConnectorTest : public testing::Test
 {
@@ -11,11 +16,6 @@ class FineToCoarseVectorConnectorTest : public testing::Test
     void SetUp() override
     {
         block = std::make_shared<Block3D>();
-    }
-
-    void TearDown() override
-    {
-    
     }
 
 public:
@@ -29,17 +29,17 @@ TEST_F(FineToCoarseVectorConnectorTest, getLocalMinMax)
 
     int sendDir = dP00;
     block->setInterpolationFlagFC(sendDir);
-    //FineToCoarseVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
-                                //int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
+    // FineToCoarseVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
+    // int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
     InterpolationProcessorPtr iprocessor;
-    auto sut = FineToCoarseVectorConnector<TbTransmitter<CbVector<real>>>(block, senderFCevenEvenSW, receiverFCevenEvenSW, sendDir, iprocessor, EvenOddNW);
-
+    auto sut = FineToCoarseVectorConnector<TbTransmitter<CbVector<real>>>(block, senderFCevenEvenSW, receiverFCevenEvenSW,
+                                                                          sendDir, iprocessor, EvenOddNW);
 
     //(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
-    //SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
+    // SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
     int maxX1 = 5; //(int)fFrom->getNX1();
     int maxX2 = 5; //(int)fFrom->getNX2();
-    int maxX3 = 5;//(int)fFrom->getNX3();
+    int maxX3 = 5; //(int)fFrom->getNX3();
     int minX1 = 0;
     int minX2 = 0;
     int minX3 = 0;

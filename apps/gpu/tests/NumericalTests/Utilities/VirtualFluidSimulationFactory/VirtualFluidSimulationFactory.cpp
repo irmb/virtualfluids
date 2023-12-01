@@ -72,7 +72,6 @@ std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<Simulat
     para->setscaleFCF(gridPath + "scaleFCF.dat");
     para->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
     para->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
-    para->setCalcParticles(false);
     para->setDiffOn(false);
     para->setDoCheckPoint(false);
     para->setDoRestart(false);

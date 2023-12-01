@@ -148,7 +148,7 @@ GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
     return this->VF_GbTriFaceMesh3D.get();
 }
 
-GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
+void TriangularMesh::generateGbTriFaceMesh3D()
 {
     if( this->VF_GbTriFaceMesh3D ) return;
 

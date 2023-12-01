@@ -83,7 +83,7 @@ void run(vf::basics::ConfigurationFile& config)
 
     const real viscosity = 1.56e-5;
     const real machNumber = 0.1;
-    const uint timeStepAverageTimeSeriesProbe = 1; // 
+    const uint timeStepAverageTimeSeriesProbe = 1;
 
     const real rotorDiameter = config.getValue<real>("RotorDiameter");
     const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
@@ -93,7 +93,7 @@ void run(vf::basics::ConfigurationFile& config)
     const float timeOut = config.getValue<real>("tOut");
     const float timeEnd = config.getValue<real>("tEnd");
 
-    const float timeStartAveraging = config.getValue<real>("tStartAveraging");
+    // const float timeStartAveraging = config.getValue<real>("tStartAveraging");
     const float timeStartTemporalAveraging = config.getValue<real>("tStartTmpAveraging");
     const float timeAveraging = config.getValue<real>("tAveraging");
     const float timeStartOutProbe = config.getValue<real>("tStartOutProbe");
@@ -214,7 +214,7 @@ void run(vf::basics::ConfigurationFile& config)
 
     std::vector<real> planePositions = { -1 * rotorDiameter, 1 * rotorDiameter, 3 * rotorDiameter };
 
-    for (int i = 0; i < planePositions.size(); i++) {
+    for (size_t i = 0; i < planePositions.size(); i++) {
         const std::string name = "planeProbe_" + std::to_string(i);
         SPtr<PlaneProbe> planeProbe =
             std::make_shared<PlaneProbe>(name, para->getOutputPath(), timeStepStartTemporalAveraging,

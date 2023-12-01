@@ -39,14 +39,17 @@
 #ifndef PRECURSORPROBE_H_
 #define PRECURSORPROBE_H_
 
-#include "PreCollisionInteractor.h"
-#include "WbWriterVtkXmlImageBinary.h"
-#include "LBM/LB.h"
+#include <future>
 #include <string>
 #include <vector>
-#include <future>
+
 #include <basics/PointerDefinitions.h>
-#include "Logger.h"
+
+#include <logger/Logger.h>
+
+#include "LBM/LB.h"
+#include "PreCollisionInteractor.h"
+#include "WbWriterVtkXmlImageBinary.h"
 
 class Parameter;
 class CudaMemoryManager;
@@ -56,7 +59,7 @@ enum class OutputVariable {
    //! - Velocities
     Velocities,
     //! - Distributions
-    Distributions    
+    Distributions
 };
 
 static constexpr uint PrecP00 = 0;

@@ -36,7 +36,7 @@
 #include "global.h"
 #include "geometries/Object.h"
 
-class GRIDGENERATOR_EXPORT VerticalCylinder : public Object
+class VerticalCylinder : public Object
 {
 public:
     VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height);

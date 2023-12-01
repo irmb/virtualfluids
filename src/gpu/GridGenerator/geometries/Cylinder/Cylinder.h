@@ -42,7 +42,7 @@
 
 #include "geometries/Object.h"
 
-class GRIDGENERATOR_EXPORT Cylinder : public Object
+class Cylinder : public Object
 {
 public:
 

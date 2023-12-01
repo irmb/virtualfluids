@@ -35,10 +35,10 @@ verbose = true
 build-type = "Release"
 
 [tool.scikit-build.cmake.define]
-BUILD_VF_PYTHON_BINDINGS = "ON"
+VF_ENABLE_PYTHON_BINDINGS = "ON"
 BUILD_SHARED_LIBS = "OFF"
-BUILD_VF_UNIT_TESTS = "OFF"
-BUILD_WARNINGS_AS_ERRORS = "OFF"
+VF_ENABLE_UNIT_TESTS = "OFF"
+VF_ENABLE_WARNINGS_AS_ERRORS = "OFF"
 
 
 [mypy]

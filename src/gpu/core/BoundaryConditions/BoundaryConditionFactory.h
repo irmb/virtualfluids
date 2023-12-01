@@ -38,10 +38,10 @@
 #include <string>
 #include <variant>
 
+#include <GridGenerator/grid/BoundaryConditions/Side.h>
+
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
-#include "gpu/GridGenerator/grid/BoundaryConditions/Side.h"
-
 
 struct LBMSimulationParameter;
 class Parameter;
@@ -53,6 +53,7 @@ using precursorBoundaryConditionFunc = std::function<void(LBMSimulationParameter
 class BoundaryConditionFactory
 {
 public:
+    virtual ~BoundaryConditionFactory() = default;
     //! \brief An enumeration for selecting a velocity boundary condition
     enum class VelocityBC {
         //! - VelocitySimpleBounceBackCompressible = plain bounce back velocity boundary condition

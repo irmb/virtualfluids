@@ -32,7 +32,7 @@
 //=======================================================================================
 
 #include "CreateTransmittersHelper.h"
-#include <Communicator.h>
+#include <parallel/Communicator.h>
 #include <D3Q27System.h>
 #include <string>
 

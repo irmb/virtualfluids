@@ -331,18 +331,18 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<Fil
     }
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
+void LevelGridBuilder::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
 {
     for (uint level = 0; level < this->grids.size(); level++)
         grids[level]->setEnableFixRefinementIntoTheWall(enableFixRefinementIntoTheWall);
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
+void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
 {
     this->communicationProcesses[direction] = process;
 }
 
-GRIDGENERATOR_EXPORT uint LevelGridBuilder::getCommunicationProcess(int direction)
+uint LevelGridBuilder::getCommunicationProcess(int direction)
 {
     return this->communicationProcesses[direction];
 }
@@ -420,17 +420,17 @@ void LevelGridBuilder::getOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, 
     }
 }
 
-GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfSendIndices(int direction, uint level)
+uint LevelGridBuilder::getNumberOfSendIndices(int direction, uint level)
 {
     return this->grids[level]->getNumberOfSendNodes(direction);
 }
 
-GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfReceiveIndices(int direction, uint level)
+uint LevelGridBuilder::getNumberOfReceiveIndices(int direction, uint level)
 {
     return this->grids[level]->getNumberOfReceiveNodes(direction);
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int level)
+void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int level)
 {
     SPtr<Grid> grid = this->grids[level];
     for( uint i = 0; i < getNumberOfSendIndices(direction, level); i++ )
@@ -439,7 +439,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getSendIndices(int * sendIndices, in
     }
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::getReceiveIndices(int * receiveIndices, int direction, int level)
+void LevelGridBuilder::getReceiveIndices(int * receiveIndices, int direction, int level)
 {
     SPtr<Grid> grid = this->grids[level];
     for( uint i = 0; i < getNumberOfReceiveIndices(direction, level); i++ )
@@ -482,12 +482,12 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
 }
 
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const
+void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const
 {
     grids[level]->getFluidNodeIndices(fluidNodeIndices);
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const
+void LevelGridBuilder::getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const
 {
     grids[level]->getFluidNodeIndicesBorder(fluidNodeIndices);
 }
@@ -497,7 +497,7 @@ uint LevelGridBuilder::getNumberOfFluidNodes(unsigned int level) const
     return grids[level]->getNumberOfFluidNodes();
 }
 
-GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned int level) const
+uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned int level) const
 {
     return grids[level]->getNumberOfFluidNodesBorder();
 }
@@ -809,7 +809,7 @@ void LevelGridBuilder::writeArrows(std::string fileName) const
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
 
-GRIDGENERATOR_EXPORT SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
+SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
 {
     for (auto bc : this->boundaryConditions[level]->slipBoundaryConditions)
         if (bc->isSide(side))
@@ -831,7 +831,7 @@ GRIDGENERATOR_EXPORT SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCo
     return nullptr;
 }
 
-GRIDGENERATOR_EXPORT SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeometryBoundaryCondition(uint level) const
+SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeometryBoundaryCondition(uint level) const
 {
     return this->boundaryConditions[level]->geometryBoundaryCondition;
 }

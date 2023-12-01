@@ -12,6 +12,12 @@
 namespace vf::basics
 {
 
+template <>
+bool convert_to<bool>(const std::string& value)
+{
+    return value == "true";
+}
+
 void ConfigurationFile::clear()
 {
     data.clear();
@@ -101,6 +107,22 @@ void ConfigurationFile::split(std::vector<std::string>& lst, const std::string& 
     if (!word.str().empty() || !remove_empty)
         lst.push_back(word.str());
 }
+
 //////////////////////////////////////////////////////////////////////////
 
+ConfigurationFile loadConfig(int argc, char* argv[], std::string configPath)
+{
+    // the config file's default path can be replaced by passing a command line argument
+
+    if (argc > 1) {
+        configPath = argv[1];
+        VF_LOG_INFO("Using command line argument for config path: {}", configPath);
+    } else {
+        VF_LOG_INFO("Using default config path: {}", configPath);
+    }
+
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+    return config;
+}
 } // namespace vf::basics

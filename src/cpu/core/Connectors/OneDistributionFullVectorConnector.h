@@ -25,6 +25,16 @@ public:
 
     void init() override;
 
+    void fillData() override
+    {
+        FullVectorConnector::fillData();
+    }
+
+    void distributeData() override
+    {
+        FullVectorConnector::distributeData();
+    }
+
 protected:
     inline void updatePointers() override;
     inline void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) override;
