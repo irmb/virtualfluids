@@ -1,10 +1,33 @@
-//  _    ___      __              __________      _     __        ______________   __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ /
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//////////////////////////////////////////////////////////////////////////
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 // includes, cuda
 #include <cuda_runtime.h>
 #include <helper_functions.h>
@@ -1214,124 +1237,6 @@ void QADPressIncompDev27(
         numberOfLBnodes,
         isEvenTimestep);
     getLastCudaError("QADPressIncomp27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void QStressDevComp27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
-{
-    dim3 grid = vf::cuda::getCudaGrid(  para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
-    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
-
-    QStressDeviceComp27<<< grid, threads >>> (
-        para->getParD(level)->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->q27[0],
-        boundaryCondition->numberOfBCnodes,
-        para->getParD(level)->omega,
-        para->getParD(level)->turbViscosity,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityY,
-        boundaryCondition->normalX,
-        boundaryCondition->normalY,
-        boundaryCondition->normalZ,
-        boundaryCondition->Vx,
-        boundaryCondition->Vy,
-        boundaryCondition->Vz,
-        boundaryCondition->Vx1,
-        boundaryCondition->Vy1,
-        boundaryCondition->Vz1,
-        para->getParD(level)->wallModel.samplingOffset,
-        para->getParD(level)->wallModel.z0,
-        para->getHasWallModelMonitor(),
-        para->getParD(level)->wallModel.u_star,
-        para->getParD(level)->wallModel.Fx,
-        para->getParD(level)->wallModel.Fy,
-        para->getParD(level)->wallModel.Fz,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("QStressDeviceComp27 execution failed");
-}
-
-//////////////////////////////////////////////////////////////////////////
-void BBStressDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
-{
-    dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
-    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
-
-    BBStressDevice27<<< grid, threads >>> (
-        para->getParD(level)->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->q27[0],
-        boundaryCondition->numberOfBCnodes,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityY,
-        boundaryCondition->normalX,
-        boundaryCondition->normalY,
-        boundaryCondition->normalZ,
-        boundaryCondition->Vx,
-        boundaryCondition->Vy,
-        boundaryCondition->Vz,
-        boundaryCondition->Vx1,
-        boundaryCondition->Vy1,
-        boundaryCondition->Vz1,
-        para->getParD(level)->wallModel.samplingOffset,
-        para->getParD(level)->wallModel.z0,
-        para->getHasWallModelMonitor(),
-        para->getParD(level)->wallModel.u_star,
-        para->getParD(level)->wallModel.Fx,
-        para->getParD(level)->wallModel.Fy,
-        para->getParD(level)->wallModel.Fz,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("BBStressDevice27 execution failed");
-}
-
-//////////////////////////////////////////////////////////////////////////
-void BBStressPressureDev27(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
-{
-    dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
-    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
-
-    BBStressPressureDevice27<<< grid, threads >>> (
-        para->getParD(level)->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->q27[0],
-        boundaryCondition->numberOfBCnodes,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityY,
-        boundaryCondition->normalX,
-        boundaryCondition->normalY,
-        boundaryCondition->normalZ,
-        boundaryCondition->Vx,
-        boundaryCondition->Vy,
-        boundaryCondition->Vz,
-        boundaryCondition->Vx1,
-        boundaryCondition->Vy1,
-        boundaryCondition->Vz1,
-        para->getParD(level)->wallModel.samplingOffset,
-        para->getParD(level)->wallModel.z0,
-        para->getHasWallModelMonitor(),
-        para->getParD(level)->wallModel.u_star,
-        para->getParD(level)->wallModel.Fx,
-        para->getParD(level)->wallModel.Fy,
-        para->getParD(level)->wallModel.Fz,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("BBStressPressureDevice27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice,

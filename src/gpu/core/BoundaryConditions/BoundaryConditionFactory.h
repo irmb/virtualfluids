@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BoundaryConditionFactory.h
-//! \ingroup Factories
 //! \author Anna Wellmann
 //=======================================================================================
 #ifndef BC_FACTORY
@@ -110,9 +108,9 @@ public:
         //! - StressCompressible
         StressCompressible,
         //! - StressBounceBack
-        StressBounceBack,
+        StressBounceBackCompressible,
         //! - StressPressureBounceBack
-        StressPressureBounceBack,
+        StressBounceBackPressureCompressible,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };

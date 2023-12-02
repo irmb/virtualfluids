@@ -39,6 +39,7 @@
 #include "BoundaryConditions/NoSlip/NoSlip.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/Slip/Slip.h"
+#include "BoundaryConditions/Stress/Stress.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 
@@ -181,14 +182,14 @@ precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryCon
 boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
-        case StressBC::StressBounceBack:
-            return BBStressDev27;
+        case StressBC::StressBounceBackCompressible:
+            return StressBounceBackCompressible;
             break;
-        case StressBC::StressPressureBounceBack:
-            return BBStressPressureDev27;
+        case StressBC::StressBounceBackPressureCompressible:
+            return StressBounceBackPressureCompressible;
             break;
         case StressBC::StressCompressible:
-            return QStressDevComp27;
+            return StressCompressible;
             break;
         default:
             return nullptr;

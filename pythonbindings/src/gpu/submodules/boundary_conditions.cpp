@@ -87,8 +87,8 @@ namespace boundary_conditions
 
         py::enum_<BoundaryConditionFactory::StressBC>(parentModule, "StressBC")
         .value("StressCompressible", BoundaryConditionFactory::StressBC::StressCompressible)
-        .value("StressBounceBack", BoundaryConditionFactory::StressBC::StressBounceBack)
-        .value("StressPressureBounceBack", BoundaryConditionFactory::StressBC::StressPressureBounceBack)
+        .value("StressBounceBackCompressible", BoundaryConditionFactory::StressBC::StressBounceBackCompressible)
+        .value("StressBounceBackPressureCompressible", BoundaryConditionFactory::StressBC::StressBounceBackPressureCompressible)
         .value("NotSpecified", BoundaryConditionFactory::StressBC::NotSpecified);
 
         py::enum_<BoundaryConditionFactory::PrecursorBC>(parentModule, "PrecursorBC")
