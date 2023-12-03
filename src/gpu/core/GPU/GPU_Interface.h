@@ -333,14 +333,6 @@ void LBCalcMeasurePoints27(real* vxMP,
                                       unsigned int numberOfThreads, 
                                       bool isEvenTimestep);
 
-void QPrecursorDevCompZeroPress(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
-
-void PrecursorDevEQ27(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
-
-void PrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
-
-void QPrecursorDevDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
-
 void QADDev7(unsigned int numberOfThreads,
                         real* DD, 
                         real* DD7,

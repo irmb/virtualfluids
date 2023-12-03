@@ -120,9 +120,9 @@ public:
 
     enum class PrecursorBC {
         //! - VelocityPrecursor
-        VelocityPrecursor,
+        PrecursorNonReflectiveCompressible,
         //! - DisitributionsPrecursor
-        DistributionsPrecursor,
+        PrecursorDistributions,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };

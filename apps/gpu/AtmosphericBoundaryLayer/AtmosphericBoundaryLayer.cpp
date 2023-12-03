@@ -338,9 +338,9 @@ void run(const vf::basics::ConfigurationFile& config)
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipTurbulentViscosityCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     if (useDistributionsForPrecursor) {
-        bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor);
+        bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::PrecursorDistributions);
     } else {
-        bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::VelocityPrecursor);
+        bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::PrecursorNonReflectiveCompressible);
     }
 
     //////////////////////////////////////////////////////////////////////////

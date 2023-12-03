@@ -40,7 +40,7 @@
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/Slip/Slip.h"
 #include "BoundaryConditions/Stress/Stress.h"
-#include "GPU/GPU_Interface.h"
+#include "BoundaryConditions/Precursor/Precursor.h"
 #include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
@@ -168,11 +168,11 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
 precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryConditionPost() const
 {
     switch (this->precursorBoundaryCondition) {
-        case PrecursorBC::VelocityPrecursor:
-            return QPrecursorDevCompZeroPress;
+        case PrecursorBC::PrecursorNonReflectiveCompressible:
+            return PrecursorNonReflectiveCompressible;
             break;
-        case PrecursorBC::DistributionsPrecursor:
-            return PrecursorDevDistributions;
+        case PrecursorBC::PrecursorDistributions:
+            return PrecursorDistributions;
             break;
         default:
             return nullptr;

@@ -92,8 +92,8 @@ namespace boundary_conditions
         .value("NotSpecified", BoundaryConditionFactory::StressBC::NotSpecified);
 
         py::enum_<BoundaryConditionFactory::PrecursorBC>(parentModule, "PrecursorBC")
-        .value("VelocityPrecursor", BoundaryConditionFactory::PrecursorBC::VelocityPrecursor)
-        .value("DistributionsPrecursor", BoundaryConditionFactory::PrecursorBC::DistributionsPrecursor)
+        .value("PrecursorNonReflectiveCompressible", BoundaryConditionFactory::PrecursorBC::PrecursorNonReflectiveCompressible)
+        .value("PrecursorDistributions", BoundaryConditionFactory::PrecursorBC::PrecursorDistributions)
         .value("NotSpecified", BoundaryConditionFactory::PrecursorBC::NotSpecified);
     }
 }
