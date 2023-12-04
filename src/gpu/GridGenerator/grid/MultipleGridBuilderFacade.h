@@ -45,6 +45,7 @@
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/Axis.h>
 
 #include "grid/BoundaryConditions/Side.h"
 #include "utilities/communication.h"
@@ -85,8 +86,6 @@ using namespace vf::basics::constant;
 class MultipleGridBuilderFacade
 {
 public:
-    enum CoordDirection { x, y, z };
-
     MultipleGridBuilderFacade(SPtr<MultipleGridBuilder> gridBuilder, SPtr<GridDimensions> gridDimensions,
                               std::optional<real> overlapOfSubdomains = std::nullopt);
 
@@ -94,7 +93,7 @@ public:
 
     //! \brief split the domain in the passed direction at the passed coordinate
     //! \details multiple splits can be added to a domain
-    void addDomainSplit(real coordinate, MultipleGridBuilderFacade::CoordDirection direction);
+    void addDomainSplit(real coordinate, Axis direction);
 
     //! \brief set the overlap of the subdomains
     void setOverlapOfSubdomains(real overlap);
@@ -116,18 +115,19 @@ public:
     void createGrids(uint generatePart);
 
     // Boundary conditions, call after createGrids()
-    void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ);
+    void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ) const;
     void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset,
-                                    real z0, real dx);
-    void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
-    void setPressureBoundaryCondition(SideType sideType, real rho);
-    void setNoSlipBoundaryCondition(SideType sideType);
-    void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+                                    real z0, real dx) const;
+    void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz) const;
+    void setPressureBoundaryCondition(SideType sideType, real rho) const;
+    void setNoSlipBoundaryCondition(SideType sideType) const;
+    void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z) const;
+    void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity) const;
     void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
                                        real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1,
-                                       std::vector<uint> fileLevelToGridLevelMap = {});
+                                       std::vector<uint> fileLevelToGridLevelMap = {}) const;
 
-    SPtr<MultipleGridBuilder> getGridBuilder();
+    SPtr<MultipleGridBuilder> getGridBuilder() const;
 
 protected:
     // index calculations
@@ -136,6 +136,7 @@ protected:
     uint getY3D(uint index1D) const;
     uint getZ3D(uint index1D) const;
     uint getIndex1D(uint xIndex, uint yIndex, uint zIndex) const;
+    uint getIndex1D(const std::array<uint, 3>& index3D) const;
 
 private:
     //! \brief calculate the number of subdomains in all coordinate directions
@@ -150,24 +151,30 @@ private:
     //! \brief for each direction, calculate if the current subdomain has a neighbor in this direction
     void checkForNeighbors();
 
-    //! \brief set up coarse grids and subdomain boxes for all grids
+    //! \brief set up coarse grids and subdomain boxes for all subdomains
     void configureSubDomainGrids();
 
     //! \brief set up the communication to neighboring subdomains
     void setUpCommunicationNeighbors();
 
     //! \brief check if all locations for domain splits are inside the grid bounds and there are no duplicates.
-    void checkSplitLocations(const std::vector<real> &splits, real lowerBound, real upperBound) const;
+    void checkSplitLocations(const std::vector<real>& splits, real lowerBound, real upperBound) const;
 
-    //! \brief add fine grids to the gridBuilder
+    //! \brief add fine grids to the grid builder
     void addFineGridsToGridBuilder();
 
     //! \brief add geometries to the grid builder
     void addGeometriesToGridBuilder();
 
+    //! \brief check whether a subdomain is the last one in a direction
+    bool isFinalSubdomainInDirection(CommunicationDirections::CommunicationDirection direction) const;
+
+    //! \brief get 1D index of the final subdomain in a direction, in the other directions it has the same position as the current subdomain
+    uint getIndexOfFinalSubdomainInDirection(CommunicationDirections::CommunicationDirection direction) const;
+
     //! \brief call the grid builder's setter for a boundary condition
     template <typename function>
-    void setBoundaryCondition(SideType sideType, function boundaryConditionFunction)
+    void setBoundaryCondition(SideType sideType, function boundaryConditionFunction) const
     {
         if (!createGridsHasBeenCalled) {
             throw std::runtime_error(
@@ -175,16 +182,14 @@ private:
         }
 
         if (sideType == SideType::GEOMETRY ||
-            !hasNeighbors[static_cast<CommunicationDirections::CommunicationDirection>(static_cast<int>(sideType))]) {
+            !hasNeighbors.at(static_cast<CommunicationDirections::CommunicationDirection>(static_cast<int>(sideType)))) {
             boundaryConditionFunction();
         }
     }
 
 protected:
-    //! \brief total number of subdomains (computed)
-    uint numberGridsX;
-    uint numberGridsY;
-    uint numberGridsZ;
+    //! \brief total number of subdomains in each coordinate direction (computed)
+    std::array<uint, 3> numberOfSubdomains;
 
 private:
     const SPtr<MultipleGridBuilder> gridBuilder;
@@ -192,7 +197,7 @@ private:
     // basic grid dimension (set in constructor)
     const SPtr<GridDimensions> gridDimensionsDomain;
 
-    uint numberOfGridsTotal;
+    uint numberOfSubdomainsTotal;
 
     //! \brief coordinates, signifying where the domain is split into subdomains (must be set in a setter)
     std::vector<real> xSplits;
@@ -203,9 +208,7 @@ private:
     std::optional<real> overlapOfSubdomains = std::nullopt;
 
     //! \brief index of the current subdomains in relation to all subdomains (computed)
-    uint xIndex;
-    uint yIndex;
-    uint zIndex;
+    std::array<uint, 3> index;
 
     //! \brief hasNeighbors, indicates if the current subdomains has a neighbor in a specific direction (computed)
     //! \details use the enum CommunciationDirection to access the data
