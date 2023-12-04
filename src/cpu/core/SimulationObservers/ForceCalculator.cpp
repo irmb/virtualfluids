@@ -28,7 +28,7 @@
 //
 //! \file ForceCalculator.h
 //! \ingroup SimulationObservers
-//! \author Sören Peters
+//! \author SÃ¶ren Peters
 //=======================================================================================
 #include "ForceCalculator.h"
 #include "BCSet.h"
