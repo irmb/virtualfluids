@@ -26,26 +26,28 @@ class MultipleGridBuilderFacadeTest : public MultipleGridBuilderFacade
 
     void setNumberOfGrids(uint x, uint y, uint z)
     {
-        this->numberGridsX = x;
-        this->numberGridsY = y;
-        this->numberGridsZ = z;
+        numberOfSubdomains = { x, y, z };
     };
 
-    uint getX3D(const uint index1D)
+    uint getX3D(uint index1D)
     {
         return MultipleGridBuilderFacade::getX3D(index1D);
     }
-    uint getY3D(const uint index1D)
+    uint getY3D(uint index1D)
     {
         return MultipleGridBuilderFacade::getY3D(index1D);
     }
-    uint getZ3D(const uint index1D)
+    uint getZ3D(uint index1D)
     {
         return MultipleGridBuilderFacade::getZ3D(index1D);
     }
-    uint getIndex1D(const uint xIndex, const uint yIndex, const uint zIndex)
+    uint getIndex1D(uint xIndex, uint yIndex, uint zIndex)
     {
         return MultipleGridBuilderFacade::getIndex1D(xIndex, yIndex, zIndex);
+    }
+    uint getIndex1D(const std::array<uint, 3>& index3D)
+    {
+        return MultipleGridBuilderFacade::getIndex1D(index3D);
     }
 };
 
@@ -138,16 +140,20 @@ TEST(MultipleGridBuilderFacadeTest, transformComponentsTo1DCoordinate)
     sut.setNumberOfGrids(2, 3, 4);
 
     EXPECT_THAT(sut.getIndex1D(0, 0, 0), testing::Eq(0));
+    EXPECT_THAT(sut.getIndex1D({0, 0, 0}), testing::Eq(0));
     EXPECT_THAT(sut.getIndex1D(1, 2, 1), testing::Eq(11));
+    EXPECT_THAT(sut.getIndex1D({1, 2, 1}), testing::Eq(11));
     EXPECT_THAT(sut.getIndex1D(0, 0, 2), testing::Eq(12));
+    EXPECT_THAT(sut.getIndex1D({0, 0, 2}), testing::Eq(12));
     EXPECT_THAT(sut.getIndex1D(1, 2, 3), testing::Eq(23));
+    EXPECT_THAT(sut.getIndex1D({1, 2, 3}), testing::Eq(23));
 }
 
 TEST(MultipleGridBuilderFacadeTest, noOverlapOnMultiGpu_Throws)
 {
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
     auto sut = MultipleGridBuilderFacadeTest(gridBuilder, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
 }
 
@@ -206,12 +212,12 @@ protected:
     void createNewSut()
     {
         sut = std::make_unique<MultipleGridBuilderFacadeTest>(mockGridBuilder, std::make_unique<GridDimensions>(0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1), 0.1);
-        sut->addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
-        sut->addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::y);
-        sut->addDomainSplit(2.0, MultipleGridBuilderFacade::CoordDirection::y);
-        sut->addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::z);
-        sut->addDomainSplit(2.0, MultipleGridBuilderFacade::CoordDirection::z);
-        sut->addDomainSplit(3.0, MultipleGridBuilderFacade::CoordDirection::z);
+        sut->addDomainSplit(1.0, Axis::x);
+        sut->addDomainSplit(1.0, Axis::y);
+        sut->addDomainSplit(2.0, Axis::y);
+        sut->addDomainSplit(1.0, Axis::z);
+        sut->addDomainSplit(2.0, Axis::z);
+        sut->addDomainSplit(3.0, Axis::z);
     }
 };
 
@@ -241,7 +247,7 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, createGridsMultiGpu)
 TEST(MultipleGridBuilderFacadeTest, xSplitToLarge)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(10.0, MultipleGridBuilderFacade::CoordDirection::x); // xSplit > maxX
+    sut.addDomainSplit(10.0, Axis::x); // xSplit > maxX
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -250,7 +256,7 @@ TEST(MultipleGridBuilderFacadeTest, xSplitToLarge)
 TEST(MultipleGridBuilderFacadeTest, xSplitToSmall)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(-1.0, MultipleGridBuilderFacade::CoordDirection::x); // xSplit < minX
+    sut.addDomainSplit(-1.0, Axis::x); // xSplit < minX
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -259,8 +265,8 @@ TEST(MultipleGridBuilderFacadeTest, xSplitToSmall)
 TEST(MultipleGridBuilderFacadeTest, ySplitToLarge)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::y);  // valid ySplit
-    sut.addDomainSplit(10.0, MultipleGridBuilderFacade::CoordDirection::y); // ySplit > maxY
+    sut.addDomainSplit(1.0, Axis::y);  // valid ySplit
+    sut.addDomainSplit(10.0, Axis::y); // ySplit > maxY
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -269,8 +275,8 @@ TEST(MultipleGridBuilderFacadeTest, ySplitToLarge)
 TEST(MultipleGridBuilderFacadeTest, ySplitToSmall)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::y);
-    sut.addDomainSplit(-1.0, MultipleGridBuilderFacade::CoordDirection::y); // ySplit < minY
+    sut.addDomainSplit(1.0, Axis::y);
+    sut.addDomainSplit(-1.0, Axis::y); // ySplit < minY
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -279,9 +285,9 @@ TEST(MultipleGridBuilderFacadeTest, ySplitToSmall)
 TEST(MultipleGridBuilderFacadeTest, zSplitToLarge)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::z);
-    sut.addDomainSplit(10.0, MultipleGridBuilderFacade::CoordDirection::z); // zSplit > maxZ
-    sut.addDomainSplit(2.0, MultipleGridBuilderFacade::CoordDirection::z);
+    sut.addDomainSplit(1.0, Axis::z);
+    sut.addDomainSplit(10.0, Axis::z); // zSplit > maxZ
+    sut.addDomainSplit(2.0, Axis::z);
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -290,9 +296,9 @@ TEST(MultipleGridBuilderFacadeTest, zSplitToLarge)
 TEST(MultipleGridBuilderFacadeTest, zSplitToSmall)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::z);
-    sut.addDomainSplit(-1.0, MultipleGridBuilderFacade::CoordDirection::z); // zSplit < minZ
-    sut.addDomainSplit(2.0, MultipleGridBuilderFacade::CoordDirection::z);
+    sut.addDomainSplit(1.0, Axis::z);
+    sut.addDomainSplit(-1.0, Axis::z); // zSplit < minZ
+    sut.addDomainSplit(2.0, Axis::z);
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -301,9 +307,9 @@ TEST(MultipleGridBuilderFacadeTest, zSplitToSmall)
 TEST(MultipleGridBuilderFacadeTest, sameSplitTwiceY)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::y);
-    sut.addDomainSplit(2.0, MultipleGridBuilderFacade::CoordDirection::y);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::y);
+    sut.addDomainSplit(1.0, Axis::y);
+    sut.addDomainSplit(2.0, Axis::y);
+    sut.addDomainSplit(1.0, Axis::y);
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -312,8 +318,8 @@ TEST(MultipleGridBuilderFacadeTest, sameSplitTwiceY)
 TEST(MultipleGridBuilderFacadeTest, sameSplitTwiceZ)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1);
-    sut.addDomainSplit(0.9, MultipleGridBuilderFacade::CoordDirection::z);
-    sut.addDomainSplit(0.9, MultipleGridBuilderFacade::CoordDirection::z);
+    sut.addDomainSplit(0.9, Axis::z);
+    sut.addDomainSplit(0.9, Axis::z);
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -322,8 +328,8 @@ TEST(MultipleGridBuilderFacadeTest, sameSplitTwiceZ)
 TEST(MultipleGridBuilderFacadeTest, sameSplitTwiceX)
 {
     auto sut = MultipleGridBuilderFacadeTest(nullptr, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.1, 0.1);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
+    sut.addDomainSplit(1.0, Axis::x);
 
     EXPECT_THROW(sut.createGrids(0), std::runtime_error);
     EXPECT_THROW(sut.createGrids(1), std::runtime_error);
@@ -628,6 +634,7 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU
     bool periodic_Y = true;
     bool periodic_Z = true;
 
+    // no local periodicity, periodicity is realized by setting up inter-gpu communication
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(periodic_X, periodic_Y, periodic_Z)).Times(0);
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(false, false, false)).Times(24);
     for (int i = 0; i < 24; i++) {
@@ -744,7 +751,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicAllDirectionsSing
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicXY2GPUs)
 {
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
 
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(CommunicationDirections::PX, testing::_));
@@ -758,7 +765,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicXY2GPUs)
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicYZ2GPUs)
 {
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
 
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(CommunicationDirections::PX, testing::_));
@@ -809,7 +816,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addFineGrid_createGridCal
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addFineGrid_createGridCallsFineGridsInProcess0)
 {
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
     std::shared_ptr<Object> fineGrid = std::make_shared<Sphere>(0.0, 0.0, 0.0, 10.0);
     sut.addFineGrid(fineGrid, 1);
@@ -821,7 +828,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addFineGrid_createGridCal
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addFineGrid_createGridCallsFineGridsInProcess1)
 {
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
     std::shared_ptr<Object> fineGrid = std::make_shared<Sphere>(0.0, 0.0, 0.0, 10.0);
     sut.addFineGrid(fineGrid, 1);
@@ -849,7 +856,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, noFineGrid_createGrid_doe
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addGeometry_createGridCallsAddGeometryFunctionOfGridBuilderProcess0)
 {
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
     std::shared_ptr<Object> geometry = std::make_shared<Sphere>(0.0, 0.0, 0.0, 10.0);
     sut.addGeometry(geometry);
@@ -860,7 +867,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addGeometry_createGridCal
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addGeometry_createGridCallsAddGeometryFunctionOfGridBuilderProcess1)
 {
-    sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x);
+    sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
     std::shared_ptr<Object> geometry = std::make_shared<Sphere>(0.0, 0.0, 0.0, 10.0);
     sut.addGeometry(geometry);
@@ -893,7 +900,7 @@ TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, addSplit_calledAfterCreat
 {
     sut.createGrids(0);
     std::shared_ptr<Object> fineGrid = std::make_shared<Cuboid>(-0.25, -0.25, -0.25, 0.25, 0.25, 0.25);
-    EXPECT_THROW(sut.addDomainSplit(1.0, MultipleGridBuilderFacade::CoordDirection::x), std::runtime_error);
+    EXPECT_THROW(sut.addDomainSplit(1.0, Axis::x), std::runtime_error);
 }
 
 TEST(MultipleGridBuilderFacadeTest, createGrids_createGridsMoreThanOnceForSamePart_throws)
