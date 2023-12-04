@@ -385,7 +385,7 @@ void CalcMacMedSP27(
     getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ResetMedianValuesSP27(
+void ResetMeanValuesSP27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -397,7 +397,7 @@ void ResetMedianValuesSP27(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBResetMedianValuesSP27 <<< grid.grid, grid.threads >>> (
+    LBResetMeanValuesSP27 <<< grid.grid, grid.threads >>> (
         vxD,
         vyD,
         vzD,
@@ -405,10 +405,10 @@ void ResetMedianValuesSP27(
         pressD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBResetMedianValuesSP27 execution failed");
+    getLastCudaError("LBResetMeanValuesSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ResetMedianValuesAD27(
+void ResetMeanValuesAD27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -421,7 +421,7 @@ void ResetMedianValuesAD27(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBResetMedianValuesAD27 <<< grid.grid, grid.threads >>> (
+    LBResetMeanValuesAD27 <<< grid.grid, grid.threads >>> (
         vxD,
         vyD,
         vzD,
@@ -430,7 +430,7 @@ void ResetMedianValuesAD27(
         concD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBResetMedianValuesAD27 execution failed");
+    getLastCudaError("LBResetMeanValuesAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Calc2ndMomentsIncompSP27(

@@ -166,7 +166,7 @@ __global__ void LBCalcMacMedSP27( real* vxD,
                                              unsigned long long numberOfLBnodes,
                                              bool isEvenTimestep);
 
-__global__ void LBResetMedianValuesSP27(
+__global__ void LBResetMeanValuesSP27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -175,7 +175,7 @@ __global__ void LBResetMedianValuesSP27(
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
-__global__ void LBResetMedianValuesAD27(
+__global__ void LBResetMeanValuesAD27(
     real* vxD,
     real* vyD,
     real* vzD,

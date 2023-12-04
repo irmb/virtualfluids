@@ -39,7 +39,7 @@ public:
     double getMemsizeGPU();
 
     void cudaCopyPrint(int lev);
-    void cudaCopyMedianPrint(int lev);
+    void cudaCopyMeanPrint(int lev);
 
     void cudaAllocCoord(int lev);
     void cudaCopyCoord(int lev);
@@ -147,15 +147,15 @@ public:
     void cudaCopyTurbulenceIntensityDH(int lev, uint size);
     void cudaFreeTurbulenceIntensity(int lev);
 
-    void cudaAllocMedianSP(int lev);
-    void cudaCopyMedianSP(int lev);
-    void cudaFreeMedianSP(int lev);
+    void cudaAllocMeanSP(int lev);
+    void cudaCopyMeanSP(int lev);
+    void cudaFreeMeanSP(int lev);
 
-    void cudaAllocMedianOut(int lev);
-    void cudaFreeMedianOut(int lev);
+    void cudaAllocMeanOut(int lev);
+    void cudaFreeMeanOut(int lev);
 
-    void cudaAllocMedianOutAD(int lev);
-    void cudaFreeMedianOutAD(int lev);
+    void cudaAllocMeanOutAD(int lev);
+    void cudaFreeMeanOutAD(int lev);
 
     void cudaAllocInterfaceCF(int lev);
     void cudaCopyInterfaceCF(int lev);

@@ -197,7 +197,7 @@ void CalcMacMedSP27(  real* vxD,
                                  unsigned int numberOfThreads, 
                                  bool isEvenTimestep);
 
-void ResetMedianValuesSP27(
+void ResetMeanValuesSP27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -207,7 +207,7 @@ void ResetMedianValuesSP27(
     unsigned int numberOfThreads,
     bool isEvenTimestep);
 
-void ResetMedianValuesAD27(
+void ResetMeanValuesAD27(
     real* vxD,
     real* vyD,
     real* vzD,
