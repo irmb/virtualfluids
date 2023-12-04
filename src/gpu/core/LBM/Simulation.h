@@ -4,10 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include <PointerDefinitions.h>
-
+#include "PointerDefinitions.h"
 #include "LBM/LB.h"
-#include "Utilities/Buffer2D.hpp"
 
 namespace vf::parallel
 {
@@ -63,16 +61,6 @@ private:
 
     std::unique_ptr<KernelFactory> kernelFactory;
     std::shared_ptr<PreProcessorFactory> preProcessorFactory;
-
-    Buffer2D <real> sbuf_t;
-    Buffer2D <real> rbuf_t;
-    Buffer2D <real> sbuf_b;
-    Buffer2D <real> rbuf_b;
-
-    Buffer2D <int> geo_sbuf_t;
-    Buffer2D <int> geo_rbuf_t;
-    Buffer2D <int> geo_sbuf_b;
-    Buffer2D <int> geo_rbuf_b;
 
     vf::parallel::Communicator& communicator;
     SPtr<Parameter> para;
