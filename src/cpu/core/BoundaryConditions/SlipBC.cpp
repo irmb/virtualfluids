@@ -36,16 +36,6 @@
 #include "geometry3d/GbCuboid3D.h"
 
 //*==========================================================*/
-// ObObject* D3Q27SlipBCCreator::createObObject()
-//{
-//   return new D3Q27SlipBC;
-//}
-//*==========================================================*/
-// ObObjectCreator* D3Q27SlipBC::getCreator()
-//{
-//   return D3Q27SlipBCCreator::getInstance();
-//}
-//*==========================================================*/
 void SlipBC::adaptBC(const D3Q27Interactor &interactor, SPtr<BoundaryConditions> bc, const real & /*worldX1*/,
                             const real & /*worldX2*/, const real & /*worldX3*/, const real & /*time*/)
 {

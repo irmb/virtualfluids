@@ -49,8 +49,7 @@ class SetKernelBlockVisitor : public Block3DVisitor
 public:
     enum Action { NewKernel, ChangeKernel, ChangeKernelWithData };
 
-    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, real availMem, real needMem,
-                          SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
+    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
     SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, int numberOfProcesses,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
@@ -59,13 +58,10 @@ public:
 
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
-    void setNoDataSetFlag(bool flag);
-
 private:
     SPtr<LBMKernel> kernel;
     real nue;
     Action action;
-    bool dataSetFlag;
 
     int numberOfProcesses{ 1 };
 

@@ -222,7 +222,7 @@ void run(string configname)
             }
             //////////////////////////////////////////////////////////////////////////
 
-            SetKernelBlockVisitor kernelVisitor(kernel, nu, availMem, needMem);
+            SetKernelBlockVisitor kernelVisitor(kernel, nu);
             grid->accept(kernelVisitor);
 
             intHelper.setBC();

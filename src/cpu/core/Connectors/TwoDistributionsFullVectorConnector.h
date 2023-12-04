@@ -45,10 +45,8 @@
 class EsoTwist3D;
 class Block3D;
 
-//daten werden in einen vector (dieser befindet sich im transmitter) kopiert
-//der vector wird via transmitter uebertragen
-//transmitter kann ein lokal, MPI, RCG, CTL oder was auch immer fuer ein
-//transmitter sein, der von Transmitter abgeleitet ist ;-)
+//! \brief   Exchange data between blocks.
+//! \details Connector send and receive full distributions between two blocks in distributed memory.
 class TwoDistributionsFullVectorConnector : public FullVectorConnector
 {
 public:

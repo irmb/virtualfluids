@@ -59,6 +59,10 @@ void SetInterpolationConnectorsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block
 {
     if(!block) return;
 
+    UbTupleInt3 blockNX = grid->getBlockNX();
+    if (val<1>(blockNX) % 2 != 0 && val<2>(blockNX) % 2 != 0 && val<3>(blockNX) % 2 != 0)
+        UB_THROW(UbException(UB_EXARGS, "Odd number of nodes: The number of nodes in each dimension (x,y,z) has to be even."));
+
     UBLOG(logDEBUG5, "SetInterpolationConnectorsBlockVisitor::visit() - start");
     UBLOG(logDEBUG5, block->toString());
 

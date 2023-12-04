@@ -303,7 +303,7 @@ void InitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 {
     using namespace vf::basics::constant;
     
-    real x1 = c1o1, x2 = c1o1, x3 = c1o1;
+    double x1 = c1o1, x2 = c1o1, x3 = c1o1;
     fct.DefineVar("x1", &x1);
     fct.DefineVar("x2", &x2);
     fct.DefineVar("x3", &x3);

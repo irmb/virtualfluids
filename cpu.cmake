@@ -35,11 +35,10 @@ endif()
 ###                  Apps                                 ###
 #############################################################
 
-add_subdirectory(apps/cpu/FlowAroundCylinder)
-#add_subdirectory(apps/cpu/LidDrivenCavity)
-#add_subdirectory(apps/cpu/LaminarPlaneFlow)
-#add_subdirectory(apps/cpu/LaminarPipeFlow)
-#add_subdirectory(apps/cpu/AcousticPulse)
+add_subdirectory(apps/cpu/LidDrivenCavity)
+add_subdirectory(apps/cpu/LaminarPlaneFlow)
+add_subdirectory(apps/cpu/LaminarPipeFlow)
+
 
 if(VF_ENABLE_BOOST)
     add_subdirectory(apps/cpu/GyroidsRow)
