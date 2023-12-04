@@ -1447,21 +1447,6 @@ void setRecvGsDevF3(
     bool isEvenTimestep,
     unsigned int numberOfThreads);
 
-void WallFuncDev27(unsigned int numberOfThreads,
-                              real* vx,
-                              real* vy,
-                              real* vz,
-                              real* DD, 
-                              int* k_Q, 
-                              real* QQ,
-                              unsigned int numberOfBCnodes, 
-                              real om1, 
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned long long numberOfLBnodes, 
-                              bool isEvenTimestep);
-
 void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                           real* vxD,
                                           real* vyD,

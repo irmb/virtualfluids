@@ -3319,41 +3319,6 @@ void setRecvGsDevF3(
     getLastCudaError("setRecvGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void WallFuncDev27(
-    unsigned int numberOfThreads,
-    real* vx,
-    real* vy,
-    real* vz,
-    real* DD,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
-
-    WallFunction27<<< grid.grid, grid.threads >>> (
-        vx,
-        vy,
-        vz,
-        DD,
-        k_Q,
-        QQ,
-        numberOfBCnodes,
-        om1,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("WallFunction27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void SetOutputWallVelocitySP27(
     unsigned int numberOfThreads,
     real* vxD,
