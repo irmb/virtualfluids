@@ -28,7 +28,7 @@
 //
 //! \file D3Q27TriFaceMeshInteractor.h
 //! \ingroup Interactor
-//! \author Sören Freudiger
+//! \author SÃ¶ren Freudiger
 //! \author Sebastian Geller
 //! \author Ehsan Kian Far
 //! \author Konstantin Kutscher
