@@ -77,44 +77,6 @@ void PrecursorNonReflectiveCompressible(
     getLastCudaError("PrecursorNonReflectiveCompressible_Device execution failed");
 }
 
-void PrecursorEquilibrium(
-    LBMSimulationParameter* parameterDevice,
-    QforPrecursorBoundaryConditions* boundaryCondition,
-    real timeRatio,
-    real velocityRatio)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
-
-    PrecursorEquilibrium_Device<<< grid.grid, grid.threads >>>(
-        boundaryCondition->k,
-        boundaryCondition->numberOfBCnodes,
-        boundaryCondition->numberOfPrecursorNodes,
-        parameterDevice->omega,
-        parameterDevice->distributions.f[0],
-        parameterDevice->neighborX,
-        parameterDevice->neighborX,
-        parameterDevice->neighborX,
-        boundaryCondition->planeNeighbor0PP,
-        boundaryCondition->planeNeighbor0PM,
-        boundaryCondition->planeNeighbor0MP,
-        boundaryCondition->planeNeighbor0MM,
-        boundaryCondition->weights0PP,
-        boundaryCondition->weights0PM,
-        boundaryCondition->weights0MP,
-        boundaryCondition->weights0MM,
-        boundaryCondition->last,
-        boundaryCondition->current,
-        boundaryCondition->velocityX,
-        boundaryCondition->velocityY,
-        boundaryCondition->velocityZ,
-        timeRatio,
-        velocityRatio,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep);
-    getLastCudaError("PrecursorEquilibrium_Device execution failed");
-
-}
-
 void PrecursorDistributions(
     LBMSimulationParameter* parameterDevice,
     QforPrecursorBoundaryConditions* boundaryCondition,
@@ -148,38 +110,3 @@ void PrecursorDistributions(
 
 }
 
-void PrecursorDistributionsSubgridDistance(
-    LBMSimulationParameter* parameterDevice,
-    QforPrecursorBoundaryConditions* boundaryCondition,
-    real timeRatio,
-    real velocityRatio)
-{
-
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
-
-    PrecursorDistributionsSubgridDistance_Device<<< grid.grid, grid.threads >>>(
-        boundaryCondition->k,
-        boundaryCondition->q27[0],
-        boundaryCondition->sizeQ,
-        boundaryCondition->numberOfBCnodes,
-        boundaryCondition->numberOfPrecursorNodes,
-        parameterDevice->distributions.f[0],
-        parameterDevice->neighborX,
-        parameterDevice->neighborY,
-        parameterDevice->neighborZ,
-        boundaryCondition->planeNeighbor0PP,
-        boundaryCondition->planeNeighbor0PM,
-        boundaryCondition->planeNeighbor0MP,
-        boundaryCondition->planeNeighbor0MM,
-        boundaryCondition->weights0PP,
-        boundaryCondition->weights0PM,
-        boundaryCondition->weights0MP,
-        boundaryCondition->weights0MM,
-        boundaryCondition->last,
-        boundaryCondition->current,
-        timeRatio,
-        parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep);
-    getLastCudaError("PrecursorDistributionsSubgridDistance_Device execution failed");
-
-}

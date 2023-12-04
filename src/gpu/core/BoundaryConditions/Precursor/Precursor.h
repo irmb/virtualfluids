@@ -38,10 +38,6 @@ class Parameter;
 
 void PrecursorNonReflectiveCompressible(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
-void PrecursorEquilibrium(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
-
 void PrecursorDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
-
-void PrecursorDistributionsSubgridDistance(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
 #endif
