@@ -40,7 +40,6 @@ endif()
 ###                  Apps                                 ###
 #############################################################
 
-add_subdirectory(apps/cpu/FlowAroundCylinder)
 add_subdirectory(apps/cpu/LidDrivenCavity)
 add_subdirectory(apps/cpu/LaminarPlaneFlow)
 add_subdirectory(apps/cpu/LaminarPipeFlow)
