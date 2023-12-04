@@ -77,6 +77,10 @@ public:
     double getX3Centroid() override;
     double getX3Minimum() override;
     double getX3Maximum() override;
+    void setCenterCoordinates(const UbTupleDouble3 & /*position*/) override
+    {
+        throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
+    }
     void setCenterCoordinates(const double &x1, const double &x2, const double &x3) override;
 
     void translate(const double &x1, const double &x2, const double &x3) override;

@@ -80,10 +80,12 @@ private:
     void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
 
 private:
-    std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ; 
-    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override { return outputTimeSeries ? tOut*exp2(level) : 1; }
-
-
+    std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ;
+    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override
+    {
+        (void)para;
+        return outputTimeSeries ? tOut * exp2(level) : 1;
+    }
 };
 
 #endif

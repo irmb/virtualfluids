@@ -33,7 +33,7 @@
 #include "GridScaling/GridScalingKernelManager.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
-#include "Logger.h"
+#include <logger/Logger.h>
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"

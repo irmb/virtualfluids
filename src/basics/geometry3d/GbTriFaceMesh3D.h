@@ -48,8 +48,6 @@
 
 #include "basics/constants/NumericConstants.h"
 
-#include <basics_export.h>
-
 namespace Kd
 {
 template <typename T>
@@ -70,7 +68,7 @@ class WbWriter;
  * Note, that up to now no methods for checking consistency are included.
  * in this context this class describes facettes from an 3D-object !!!
  */
-class BASICS_EXPORT GbTriFaceMesh3D : public GbObject3D
+class GbTriFaceMesh3D : public GbObject3D
 {
 public:
     // nested class start

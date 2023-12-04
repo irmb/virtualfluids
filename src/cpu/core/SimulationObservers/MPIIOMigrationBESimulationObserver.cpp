@@ -43,7 +43,7 @@
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "Grid3DVisitor.h"
-#include "PointerDefinitions.h"
+#include <basics/PointerDefinitions.h>
 #include "RenumberGridVisitor.h"
 #include "UbFileInputASCII.h"
 #include "UbFileOutputASCII.h"

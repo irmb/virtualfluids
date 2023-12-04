@@ -7,7 +7,7 @@
 namespace vf::cuda
 {
 
-struct CudaGrid 
+struct CudaGrid
 {
     dim3 threads;
     dim3 grid;
@@ -20,6 +20,6 @@ struct CudaGrid
 
 dim3 getCudaGrid(const unsigned int numberOfThreads, const unsigned int numberOfEntities);
 
-}
+} // namespace vf::cuda
 
 #endif

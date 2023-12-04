@@ -1,6 +1,6 @@
 set(PYFLUIDS_LANGUAGES CXX)
 
-if(BUILD_VF_GPU)
+if(VF_ENABLE_GPU)
     set(PYFLUIDS_LANGUAGES CUDA CXX)
 endif()
 
@@ -41,18 +41,23 @@ target_include_directories(lbm_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
 target_include_directories(lbm_bindings PRIVATE ${CMAKE_BINARY_DIR})
 add_dependencies(python_bindings lbm_bindings)
 
+
 pybind11_add_module(parallel_bindings MODULE src/parallel.cpp)
 set_target_properties(  parallel_bindings PROPERTIES
                         LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
                         OUTPUT_NAME "parallel")
+
 target_link_libraries(parallel_bindings PRIVATE parallel)
 target_include_directories(parallel_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
 target_include_directories(parallel_bindings PRIVATE ${CMAKE_BINARY_DIR})
-target_compile_definitions(parallel_bindings PRIVATE VF_MPI)
 add_dependencies(python_bindings parallel_bindings)
 
+target_link_libraries(basics_bindings PRIVATE project_options)
+target_link_libraries(logger_bindings PRIVATE project_options)
+target_link_libraries(lbm_bindings PRIVATE project_options)
+target_link_libraries(parallel_bindings PRIVATE project_options)
 
-IF(BUILD_VF_GPU)
+IF(VF_ENABLE_GPU)
     pybind11_add_module(gpu_bindings MODULE src/gpu/gpu.cpp)
     set_target_properties(  gpu_bindings PROPERTIES
                             LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
@@ -66,10 +71,10 @@ IF(BUILD_VF_GPU)
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_BINARY_DIR})
     add_dependencies(python_bindings gpu_bindings)
-
+    target_link_libraries(gpu_bindings PRIVATE project_options)
 ENDIF()
 
-IF(BUILD_VF_CPU)
+IF(VF_ENABLE_CPU)
     pybind11_add_module(cpu_bindings MODULE src/cpu/cpu.cpp)
     set_target_properties(  cpu_bindings PROPERTIES
                             LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
@@ -79,7 +84,6 @@ IF(BUILD_VF_CPU)
     target_include_directories(cpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(cpu_bindings PRIVATE ${CMAKE_BINARY_DIR})
 
-    target_compile_definitions(cpu_bindings PRIVATE VF_METIS VF_MPI)
     add_dependencies(python_bindings cpu_bindings)
 
     # include bindings for muparsers
@@ -91,19 +95,8 @@ IF(BUILD_VF_CPU)
     set_target_properties(  pymuparser PROPERTIES
                             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pythonbindings/pymuparser
                             OUTPUT_NAME "bindings")
-    target_compile_definitions(pymuparser PRIVATE VF_METIS VF_MPI)
     target_link_libraries(pymuparser PRIVATE muparser)
-ENDIF()
 
-if(BUILD_VF_DOUBLE_ACCURACY)
-IF(BUILD_VF_CPU)
-    target_compile_definitions(cpu_bindings PRIVATE VF_DOUBLE_ACCURACY)
-endif()
-    target_compile_definitions(basics_bindings PRIVATE VF_DOUBLE_ACCURACY)
-    target_compile_definitions(logger_bindings PRIVATE VF_DOUBLE_ACCURACY)
-    target_compile_definitions(lbm_bindings PRIVATE VF_DOUBLE_ACCURACY)
-    IF(BUILD_VF_GPU)
-    target_compile_definitions(gpu_bindings PRIVATE VF_DOUBLE_ACCURACY)
-    endif()
-    target_compile_definitions(parallel_bindings PRIVATE VF_DOUBLE_ACCURACY)
-endif()
+    target_link_libraries(pymuparser PRIVATE project_options)
+    target_link_libraries(cpu_bindings PRIVATE project_options)
+ENDIF()

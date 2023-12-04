@@ -21,11 +21,11 @@ target_include_directories(metis PRIVATE ${GKLIB_PATH})
 target_include_directories(metis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(metis PRIVATE "-Wno-misleading-indentation")
+    target_compile_options(metis PRIVATE "-Wno-misleading-indentation" "-Wno-fortify-source")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     target_compile_options(metis PRIVATE "-Wno-fortify-source")
 endif()
 
-groupTarget(metis ${thirdFolder})
+group_target(metis ${thirdFolder})

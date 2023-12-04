@@ -30,20 +30,16 @@
 //! \ingroup GridGenerator
 //! \author Soeren Peters
 //=======================================================================================
-#ifndef global_h
-#define global_h
-
+#ifndef gpu_gridgenerator_global_h
+#define gpu_gridgenerator_global_h
 
 #define DEBUG 1
 #define GLOB_NODE 5
 #define DIMENSION 3
 #define MASTERRANK 0
 
-
-#include "GridGenerator_export.h"
-
-#include "basics/PointerDefinitions.h"
-#include "basics/DataTypes.h"
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
 
 #include <logger/Logger.h>
 

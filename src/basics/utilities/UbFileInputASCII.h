@@ -37,7 +37,7 @@
 #include <iostream>
 #include <string>
 
-#include "basics_export.h"
+
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbFileInput.h>
@@ -56,7 +56,7 @@
 usage: ...
 */
 
-class BASICS_EXPORT UbFileInputASCII : public UbFileInput
+class UbFileInputASCII : public UbFileInput
 {
 public:
     UbFileInputASCII() : UbFileInput() {}

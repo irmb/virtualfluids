@@ -41,7 +41,7 @@ enum class WRITING_FORMAT { BINARY, ASCII };
 
 class Grid;
 
-class GRIDGENERATOR_EXPORT GridVTKWriter
+class GridVTKWriter
 {
 public:
     static void writeSparseGridToVTK(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);

@@ -53,16 +53,16 @@ class TriangularMesh : public Object
 {
 public:
 
-    GRIDGENERATOR_EXPORT static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
-    GRIDGENERATOR_EXPORT TriangularMesh();
-    GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
-    GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
-    GRIDGENERATOR_EXPORT ~TriangularMesh() override = default;
+    static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
+    TriangularMesh();
+    TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
+    TriangularMesh(const std::string& inputPath, const BoundingBox &box);
+    ~TriangularMesh() override = default;
 
-    GRIDGENERATOR_EXPORT uint getNumberOfTriangles() const;
+    uint getNumberOfTriangles() const;
 
-    GRIDGENERATOR_EXPORT void setTriangles(std::vector<Triangle> triangles);
-    GRIDGENERATOR_EXPORT void setMinMax(BoundingBox minmax);
+    void setTriangles(std::vector<Triangle> triangles);
+    void setMinMax(BoundingBox minmax);
 
     std::vector<Triangle> triangleVec;
     Triangle *triangles = nullptr;
@@ -71,13 +71,13 @@ public:
 
     SPtr<GbTriFaceMesh3D> VF_GbTriFaceMesh3D;
 
-    GRIDGENERATOR_EXPORT bool operator==(const TriangularMesh &geometry) const;
+    bool operator==(const TriangularMesh &geometry) const;
 
-    GRIDGENERATOR_EXPORT void findNeighbors();
+    void findNeighbors();
 
-    GRIDGENERATOR_EXPORT GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
+    GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
-    GRIDGENERATOR_EXPORT void generateGbTriFaceMesh3D();
+    void generateGbTriFaceMesh3D();
 
 private:
 
@@ -99,10 +99,16 @@ public:
     double getX3Maximum() const override { return minmax.maxZ; }
     void changeSizeByDelta(double delta) override;
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
-        const double& maxOffset) override {
+                         const double& maxOffset) override
+    {
+        (void)x1;
+        (void)x2;
+        (void)x3;
+        (void)minOffset;
+        (void)maxOffset;
         return false;
     }
-    
+
     void findInnerNodes(SPtr<GridImp> grid) override;
 };
 

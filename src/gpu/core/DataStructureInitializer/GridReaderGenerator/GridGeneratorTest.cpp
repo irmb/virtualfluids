@@ -4,7 +4,6 @@
 #include <basics/DataTypes.h>
 #include "GPU/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
-#include "NullCommunicator.h"
 #include "Parameter/Parameter.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"

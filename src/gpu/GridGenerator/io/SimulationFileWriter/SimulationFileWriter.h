@@ -58,7 +58,7 @@ enum class FILEFORMAT
 class SimulationFileWriter
 {
 public:
-    GRIDGENERATOR_EXPORT static void write(const std::string& folder, SPtr<GridBuilder> builder, FILEFORMAT format);
+    static void write(const std::string& folder, SPtr<GridBuilder> builder, FILEFORMAT format);
 
 private:
     static void write(SPtr<GridBuilder> builder, FILEFORMAT format);

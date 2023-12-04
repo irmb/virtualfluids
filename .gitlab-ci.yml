@@ -51,9 +51,8 @@ workflow:
     - rm -r -f ./*
     - cmake .. -LAH
       --preset=make_all
-      -DBUILD_WARNINGS_AS_ERRORS=ON
+      -DVF_ENABLE_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=70
-      -DBUILD_VF_ALL_SAMPLES=ON
     - make -j4
     - ccache --show-stats
 
@@ -101,7 +100,7 @@ msvc_17:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=msvc_all -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON -DBUILD_VF_ALL_SAMPLES=ON
+    - cmake .. --preset=msvc_all -DVF_ENABLE_PYTHON_BINDINGS=OFF -DCMAKE_CUDA_ARCHITECTURES=61 -DVF_ENABLE_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   artifacts:
@@ -130,7 +129,7 @@ gcc_12_python:
 
   script:
     - export SKBUILD_BUILD_DIR="pybuild"
-    - export SKBUILD_CMAKE_ARGS="-DBUILD_VF_CPU=ON;-DBUILD_VF_GPU=ON;-DCMAKE_CUDA_ARCHITECTURES=70;-DBUILD_VF_DOUBLE_ACCURACY=ON;-DCMAKE_CXX_COMPILER_LAUNCHER=ccache;-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache;-DCMAKE_C_COMPILER_LAUNCHER=ccache;-G=Ninja"
+    - export SKBUILD_CMAKE_ARGS="--preset=make_all;-G=Ninja"
     - pip install . -v
 
 ###############################################################################
@@ -432,7 +431,7 @@ include_what_you_use_clang_15:
     - cmake ..
       --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
+      -DVF_ENABLE_INCLUDE_WHAT_YOU_USE=ON
     - make
 
 ###############################################################################
@@ -481,8 +480,6 @@ gcov_gcc:
 
   before_script:
     - gcovr --version
-    - export CC=/usr/bin/gcc-11
-    - export CXX=/usr/bin/g++-11
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
@@ -524,9 +521,9 @@ clang-tidy:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_DOUBLE_ACCURACY=ON
-      -DBUILD_VF_GPU=OFF
+      -DVF_ENABLE_CPU=ON
+      -DVF_ENABLE_DOUBLE_ACCURACY=ON
+      -DVF_ENABLE_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
     - run-clang-tidy-15 -quiet > clangtidy.txt
 
@@ -547,10 +544,11 @@ sanitizer-address-leak-ub:
     - mkdir -p build && cd build
     - cmake ..
       --preset=make_all
+      -DVF_ENABLE_PYTHON_BINDINGS=OFF
       -DCMAKE_CUDA_ARCHITECTURES=70
-      -DENABLE_SANITIZER_ADDRESS=ON
-      -DENABLE_SANITIZER_LEAK=ON
-      -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
+      -DVF_ENABLE_SANITIZER_ADDRESS=ON
+      -DVF_ENABLE_SANITIZER_LEAK=ON
+      -DVF_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
     - make -j8
     - ctest --output-on-failure
 
@@ -561,7 +559,7 @@ sanitizer-memory:
     - cmake ..
       --preset=make_all
       -DCMAKE_CUDA_ARCHITECTURES=70
-      -DENABLE_SANITIZER_MEMORY=ON
+      -DVF_ENABLE_SANITIZER_MEMORY=ON
     - make -j8
     - ctest --output-on-failure
 

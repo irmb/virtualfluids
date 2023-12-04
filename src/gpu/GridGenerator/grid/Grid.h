@@ -47,7 +47,7 @@ class Object;
 class BoundingBox;
 enum class SideType;
 
-class GRIDGENERATOR_EXPORT Grid
+class Grid
 {
 public:
     virtual ~Grid() = default;

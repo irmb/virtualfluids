@@ -106,118 +106,93 @@
 #include <muParserToken.h>
 #include <muParserTokenReader.h>
 
-#include <BoundaryConditions/BC.h>
-#include <BoundaryConditions/BCStrategy.h>
-#include <BoundaryConditions/BCArray3D.h>
-#include <BoundaryConditions/BCFunction.h>
-#include <BoundaryConditions/BCSet.h>
-#include <BoundaryConditions/BoundaryConditions.h>
-#include <BoundaryConditions/PressureBC.h>
-#include <BoundaryConditions/NoSlipBC.h>
-#include <BoundaryConditions/NoSlipInterpolated.h>
-#include <BoundaryConditions/PressureNonEquilibrium.h>
-#include <BoundaryConditions/OutflowNonReflecting.h>
-#include <BoundaryConditions/OutflowNonReflectingWithPressure.h>
-#include <BoundaryConditions/VelocityNonReflecting.h>
-#include <BoundaryConditions/SlipBC.h>
-#include <BoundaryConditions/SlipInterpolated.h>
-#include <BoundaryConditions/ThinWallBCSet.h>
-#include <BoundaryConditions/ThinWallNoSlip.h>
-#include <BoundaryConditions/VelocityBC.h>
-#include <BoundaryConditions/VelocityInterpolated.h>
-#include <BoundaryConditions/VelocityWithPressureInterpolated.h>
-#include <BoundaryConditions/VelocityBounceBack.h>
-#include <BoundaryConditions/SlipBounceBack.h>
+#include <cpu/core/BoundaryConditions/BC.h>
+#include <cpu/core/BoundaryConditions/BCArray3D.h>
+#include <cpu/core/BoundaryConditions/BCFunction.h>
+#include <cpu/core/BoundaryConditions/BCSet.h>
+#include <cpu/core/BoundaryConditions/BCStrategy.h>
+#include <cpu/core/BoundaryConditions/BoundaryConditions.h>
+#include <cpu/core/BoundaryConditions/NoSlipBC.h>
+#include <cpu/core/BoundaryConditions/NoSlipInterpolated.h>
+#include <cpu/core/BoundaryConditions/OutflowNonReflecting.h>
+#include <cpu/core/BoundaryConditions/OutflowNonReflectingWithPressure.h>
+#include <cpu/core/BoundaryConditions/PressureBC.h>
+#include <cpu/core/BoundaryConditions/PressureNonEquilibrium.h>
+#include <cpu/core/BoundaryConditions/SlipBC.h>
+#include <cpu/core/BoundaryConditions/SlipBounceBack.h>
+#include <cpu/core/BoundaryConditions/SlipInterpolated.h>
+#include <cpu/core/BoundaryConditions/ThinWallBCSet.h>
+#include <cpu/core/BoundaryConditions/ThinWallNoSlip.h>
+#include <cpu/core/BoundaryConditions/VelocityBC.h>
+#include <cpu/core/BoundaryConditions/VelocityBounceBack.h>
+#include <cpu/core/BoundaryConditions/VelocityInterpolated.h>
+#include <cpu/core/BoundaryConditions/VelocityNonReflecting.h>
+#include <cpu/core/BoundaryConditions/VelocityWithPressureInterpolated.h>
 
+#include <cpu/core/Connectors/Block3DConnector.h>
+#include <cpu/core/Connectors/CoarseToFineVectorConnector.h>
+#include <cpu/core/Connectors/FineToCoarseVectorConnector.h>
+#include <cpu/core/Connectors/LocalBlock3DConnector.h>
+#include <cpu/core/Connectors/OneDistributionFullDirectConnector.h>
+#include <cpu/core/Connectors/OneDistributionFullVectorConnector.h>
+#include <cpu/core/Connectors/RemoteBlock3DConnector.h>
+#include <cpu/core/Connectors/TwoDistributionsFullDirectConnector.h>
+#include <cpu/core/Connectors/TwoDistributionsFullVectorConnector.h>
 
+#include <cpu/core/Data/DataSet3D.h>
+#include <cpu/core/Data/DistributionArray3D.h>
+#include <cpu/core/Data/EsoSplit.h>
+#include <cpu/core/Data/EsoTwist3D.h>
 
+#include <cpu/core/Simulation/Block3D.h>
+#include <cpu/core/Simulation/Grid3D.h>
+#include <cpu/core/Simulation/Simulation.h>
 
+#include <cpu/core/Interactors/D3Q27Interactor.h>
+#include <cpu/core/Interactors/D3Q27TriFaceMeshInteractor.h>
+#include <cpu/core/Interactors/Interactor3D.h>
+#include <cpu/core/Interactors/InteractorsHelper.h>
 
-#include <Connectors/Block3DConnector.h>
-//#include <Connectors/Block3DConnectorFactory.h>
-//#include <Connectors/CoarseToFineBlock3DConnector.h>
-//#include <Connectors/CoarseToFineNodeSetBlock3DConnector.h>
-//#include <Connectors/ConnectorFactory.h>
-#include <Connectors/CoarseToFineVectorConnector.h>
-#include <Connectors/FineToCoarseVectorConnector.h>
-#include <Connectors/OneDistributionFullDirectConnector.h>
-#include <Connectors/OneDistributionFullVectorConnector.h>
-//#include <Connectors/FineToCoarseBlock3DConnector.h>
-//#include <Connectors/FineToCoarseNodeSetBlock3DConnector.h>
-#include <Connectors/LocalBlock3DConnector.h>
-#include <Connectors/RemoteBlock3DConnector.h>
-#include <Connectors/TwoDistributionsFullDirectConnector.h>
-#include <Connectors/TwoDistributionsFullVectorConnector.h>
+#include <cpu/core/SimulationObservers/AdjustForcingSimulationObserver.h>
+#include <cpu/core/SimulationObservers/AverageValuesSimulationObserver.h>
+#include <cpu/core/SimulationObservers/CalculateForcesSimulationObserver.h>
+#include <cpu/core/SimulationObservers/DecreaseViscositySimulationObserver.h>
+#include <cpu/core/SimulationObservers/EmergencyExitSimulationObserver.h>
+#include <cpu/core/SimulationObservers/InSituCatalystSimulationObserver.h>
+#include <cpu/core/SimulationObservers/InSituVTKSimulationObserver.h>
+#include <cpu/core/SimulationObservers/IntegrateValuesHelper.h>
+#include <cpu/core/SimulationObservers/LineTimeSeriesSimulationObserver.h>
+#include <cpu/core/SimulationObservers/MPIIOMigrationBESimulationObserver.h>
+#include <cpu/core/SimulationObservers/MPIIOMigrationSimulationObserver.h>
+#include <cpu/core/SimulationObservers/MPIIORestartSimulationObserver.h>
+#include <cpu/core/SimulationObservers/MicrophoneArraySimulationObserver.h>
+#include <cpu/core/SimulationObservers/NUPSCounterSimulationObserver.h>
+#include <cpu/core/SimulationObservers/PressureDifferenceSimulationObserver.h>
+#include <cpu/core/SimulationObservers/QCriterionSimulationObserver.h>
+#include <cpu/core/SimulationObservers/ShearStressSimulationObserver.h>
+#include <cpu/core/SimulationObservers/SimulationObserver.h>
+#include <cpu/core/SimulationObservers/TimeAveragedValuesSimulationObserver.h>
+#include <cpu/core/SimulationObservers/TimeDependentBCSimulationObserver.h>
+#include <cpu/core/SimulationObservers/TimeseriesSimulationObserver.h>
+#include <cpu/core/SimulationObservers/TurbulenceIntensitySimulationObserver.h>
+#include <cpu/core/SimulationObservers/WriteBlocksSimulationObserver.h>
+#include <cpu/core/SimulationObservers/WriteBoundaryConditionsSimulationObserver.h>
+#include <cpu/core/SimulationObservers/WriteMQFromSelectionSimulationObserver.h>
+#include <cpu/core/SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
 
+#include <cpu/core/LBM/D3Q27System.h>
+#include <cpu/core/LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
+#include <cpu/core/LBM/Interpolation/ICell.h>
+#include <cpu/core/LBM/Interpolation/IncompressibleOffsetInterpolator.h>
+#include <cpu/core/LBM/Interpolation/Interpolator.h>
+#include <cpu/core/LBM/LBMKernel.h>
+#include <cpu/core/LBM/LBMSystem.h>
+#include <cpu/core/LBM/LBMUnitConverter.h>
 
-#include <Data/EsoSplit.h>
-
-#include <Data/DataSet3D.h>
-#include <Data/DistributionArray3D.h>
-#include <Data/EsoTwist3D.h>
-
-
-#include <Simulation/Block3D.h>
-#include <Simulation/Simulation.h>
-#include <Simulation/Grid3D.h>
-
-#include <Interactors/D3Q27Interactor.h>
-#include <Interactors/D3Q27TriFaceMeshInteractor.h>
-#include <Interactors/Interactor3D.h>
-#include <Interactors/InteractorsHelper.h>
-
-#include <SimulationObservers/AdjustForcingSimulationObserver.h>
-#include <SimulationObservers/CalculateForcesSimulationObserver.h>
-
-#include <SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
-#include <SimulationObservers/WriteMQFromSelectionSimulationObserver.h>
-#include <SimulationObservers/WriteBoundaryConditionsSimulationObserver.h>
-#include <SimulationObservers/WriteMQFromSelectionSimulationObserver.h>
-#include <SimulationObservers/WriteMacroscopicQuantitiesSimulationObserver.h>
-#include <WriteBlocksSimulationObserver.h>
-//#include <SimulationObservers/PathLineSimulationObserver.h>
-//#include <SimulationObservers/PathLineSimulationObserverMcpart.h>
-#include <SimulationObservers/EmergencyExitSimulationObserver.h>
-#include <SimulationObservers/NUPSCounterSimulationObserver.h>
-#include <SimulationObservers/PressureDifferenceSimulationObserver.h>
-//#include <SimulationObservers/Particles.h>
-#include <SimulationObservers/AverageValuesSimulationObserver.h>
-#include <SimulationObservers/SimulationObserver.h>
-#include <SimulationObservers/DecreaseViscositySimulationObserver.h>
-#include <SimulationObservers/InSituVTKSimulationObserver.h>
-#include <SimulationObservers/QCriterionSimulationObserver.h>
-#include <SimulationObservers/ShearStressSimulationObserver.h>
-#include <SimulationObservers/TimeseriesSimulationObserver.h>
-#include <SimulationObservers/TurbulenceIntensitySimulationObserver.h>
-#include <SimulationObservers/TimeAveragedValuesSimulationObserver.h>
-
-//#include <SimulationObservers/MeanValuesSimulationObserver.h>
-#include <SimulationObservers/InSituCatalystSimulationObserver.h>
-#include <SimulationObservers/LineTimeSeriesSimulationObserver.h>
-#include <SimulationObservers/MPIIOMigrationBESimulationObserver.h>
-#include <SimulationObservers/MPIIOMigrationSimulationObserver.h>
-#include <SimulationObservers/MPIIORestartSimulationObserver.h>
-#include <SimulationObservers/MicrophoneArraySimulationObserver.h>
-
-
-#include <TimeDependentBCSimulationObserver.h>
-
-#include <IntegrateValuesHelper.h>
-#include <LBM/Interpolation/CompressibleOffsetMomentsInterpolator.h>
-#include <LBM/Interpolation/IncompressibleOffsetInterpolator.h>
-#include <LBM/Interpolation/Interpolator.h>
-#include <LBM/D3Q27System.h>
-#include <LBM/Interpolation/ICell.h>
-#include <LBM/LBMKernel.h>
-#include <LBM/LBMSystem.h>
-#include <LBM/LBMUnitConverter.h>
-
-
-#include <LBM/B92IncompressibleNavierStokes.h>
-#include <LBM/K15CompressibleNavierStokes.h>
-#include <LBM/K16IncompressibleNavierStokes.h>
-#include <LBM/K17CompressibleNavierStokes.h>
-
+#include <cpu/core/LBM/B92IncompressibleNavierStokes.h>
+#include <cpu/core/LBM/K15CompressibleNavierStokes.h>
+#include <cpu/core/LBM/K16IncompressibleNavierStokes.h>
+#include <cpu/core/LBM/K17CompressibleNavierStokes.h>
 
 #include <geometry3d/CoordinateTransformation3D.h>
 #include <geometry3d/GbCuboid3D.h>
@@ -254,52 +229,43 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
-#include <Parallel/MetisPartitioner.h>
+#include <cpu/core/Parallel/MetisPartitioner.h>
 
-#include <Utilities/ChangeRandomQs.hpp>
-#include <Utilities/CheckpointConverter.h>
-#include <Utilities/MathUtil.hpp>
-#include <Utilities/MemoryUtil.h>
-#include <Utilities/VoxelMatrixUtil.hpp>
+#include <cpu/core/Utilities/ChangeRandomQs.hpp>
+#include <cpu/core/Utilities/CheckpointConverter.h>
+#include <cpu/core/Utilities/MathUtil.hpp>
+#include <cpu/core/Utilities/MemoryUtil.h>
+#include <cpu/core/Utilities/VoxelMatrixUtil.hpp>
 
-#include <CheckRatioBlockVisitor.h>
-#include <InitDistributionsWithInterpolationGridVisitor.h>
-#include <SpongeLayerBlockVisitor.h>
-#include <Visitors/Block3DVisitor.h>
-#include <Visitors/BoundaryConditionsBlockVisitor.h>
-#include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
-#include <Visitors/CoarsenCrossAndInsideGbObjectBlockVisitor.h>
-//#include <Visitors/ConnectorBlockVisitor.h>
-#include <Visitors/CreateTransmittersHelper.h>
-#include <Visitors/GenBlocksGridVisitor.h>
-#include <Visitors/Grid3DVisitor.h>
-#include <Visitors/InitDistributionsBlockVisitor.h>
-#include <Visitors/MetisPartitioningGridVisitor.h>
-#include <Visitors/OverlapBlockVisitor.h>
-#include <Visitors/RatioBlockVisitor.h>
-#include <Visitors/RatioSmoothBlockVisitor.h>
-#include <Visitors/RefineCrossAndInsideGbObjectBlockVisitor.h>
-#include <Visitors/RefineInterGbObjectsVisitor.h>
-#include <Visitors/RenumberBlockVisitor.h>
-#include <Visitors/SetBcBlocksBlockVisitor.h>
-#include <Visitors/SetConnectorsBlockVisitor.h>
-#include <Visitors/SetForcingBlockVisitor.h>
-#include <Visitors/SetInterpolationDirsBlockVisitor.h>
-#include <Visitors/SetKernelBlockVisitor.h>
-#include <Visitors/SetSolidBlocksBlockVisitor.h>
-#include <Visitors/SetUndefinedNodesBlockVisitor.h>
-#include <Visitors/ViscosityBlockVisitor.h>
-#include <Visitors/BoundaryConditionsBlockVisitor.h>
-#include <Visitors/BoundaryConditionsBlockVisitor.h>
-#include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
-#include <InitDistributionsWithInterpolationGridVisitor.h>
-
-#include <CheckRatioBlockVisitor.h>
-#include <SpongeLayerBlockVisitor.h>
-
-#include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
-
-#include <RefineAroundGbObjectHelper.h>
-#include <Visitors/RefineCrossAndInsideGbObjectHelper.h>
+#include <cpu/core/Visitors/Block3DVisitor.h>
+#include <cpu/core/Visitors/BoundaryConditionsBlockVisitor.h>
+#include <cpu/core/Visitors/ChangeBoundaryDensityBlockVisitor.h>
+#include <cpu/core/Visitors/CheckRatioBlockVisitor.h>
+#include <cpu/core/Visitors/CoarsenCrossAndInsideGbObjectBlockVisitor.h>
+#include <cpu/core/Visitors/CreateTransmittersHelper.h>
+#include <cpu/core/Visitors/GenBlocksGridVisitor.h>
+#include <cpu/core/Visitors/Grid3DVisitor.h>
+#include <cpu/core/Visitors/InitDistributionsBlockVisitor.h>
+#include <cpu/core/Visitors/InitDistributionsWithInterpolationGridVisitor.h>
+#include <cpu/core/Visitors/InitThixotropyBlockVisitor.h>
+#include <cpu/core/Visitors/MetisPartitioningGridVisitor.h>
+#include <cpu/core/Visitors/OverlapBlockVisitor.h>
+#include <cpu/core/Visitors/RatioBlockVisitor.h>
+#include <cpu/core/Visitors/RatioSmoothBlockVisitor.h>
+#include <cpu/core/Visitors/RefineAroundGbObjectHelper.h>
+#include <cpu/core/Visitors/RefineCrossAndInsideGbObjectBlockVisitor.h>
+#include <cpu/core/Visitors/RefineCrossAndInsideGbObjectHelper.h>
+#include <cpu/core/Visitors/RefineInterGbObjectsVisitor.h>
+#include <cpu/core/Visitors/RenumberBlockVisitor.h>
+#include <cpu/core/Visitors/SetBcBlocksBlockVisitor.h>
+#include <cpu/core/Visitors/SetConnectorsBlockVisitor.h>
+#include <cpu/core/Visitors/SetForcingBlockVisitor.h>
+#include <cpu/core/Visitors/SetInterpolationConnectorsBlockVisitor.h>
+#include <cpu/core/Visitors/SetInterpolationDirsBlockVisitor.h>
+#include <cpu/core/Visitors/SetKernelBlockVisitor.h>
+#include <cpu/core/Visitors/SetSolidBlocksBlockVisitor.h>
+#include <cpu/core/Visitors/SetUndefinedNodesBlockVisitor.h>
+#include <cpu/core/Visitors/SpongeLayerBlockVisitor.h>
+#include <cpu/core/Visitors/ViscosityBlockVisitor.h>
 
 #endif // VirtualFluids_h__

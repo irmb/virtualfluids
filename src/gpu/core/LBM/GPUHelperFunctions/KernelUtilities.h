@@ -51,7 +51,7 @@ using namespace vf::lbm::dir;
 namespace vf::gpu
 {
 
-inline real getForceFactor(int level)
+inline real getForceFactor(size_t level)
 {
     real factor = c1o1;
     for (size_t i = 1; i <= level; i++) {

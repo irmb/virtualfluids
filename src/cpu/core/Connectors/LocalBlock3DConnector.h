@@ -36,8 +36,9 @@
 
 #include "Block3D.h"
 #include "Block3DConnector.h"
-#include "PointerDefinitions.h"
-#include "lbm/constants/D3Q27.h"
+
+#include <basics/PointerDefinitions.h>
+#include <lbm/constants/D3Q27.h>
 
 //! A class provides an interface for connectors in shared memory
 class LocalBlock3DConnector : public Block3DConnector

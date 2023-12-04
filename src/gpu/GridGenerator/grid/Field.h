@@ -37,7 +37,7 @@
 
 struct Vertex;
 
-class GRIDGENERATOR_EXPORT Field : public enableSharedFromThis<Field>
+class Field : public enableSharedFromThis<Field>
 {
 public:
     Field(uint size);

@@ -42,7 +42,7 @@
 
 #define MAX_NUMBER_OF_OBJECTS 20
 
-class GRIDGENERATOR_EXPORT Conglomerate : public Object
+class Conglomerate : public Object
 {
 public:
     static SPtr<Conglomerate> makeShared();

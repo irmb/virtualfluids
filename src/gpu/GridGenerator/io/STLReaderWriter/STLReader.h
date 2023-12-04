@@ -43,7 +43,7 @@ struct Triangle;
 struct Vertex;
 class BoundingBox;
 
-class GRIDGENERATOR_EXPORT STLReader
+class STLReader
 {
 public:
 

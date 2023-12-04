@@ -153,7 +153,6 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
     {
 
         real dx = abs(para->getParH(level)->coordinateX[1]-para->getParH(level)->coordinateX[para->getParH(level)->neighborX[1]]);
-        int maxPoints = (int((yMax-yMin)/dx)+1)* (int((zMax-zMin)/dx)+1);
 
         real lowestY, lowestZ, highestY, highestZ;
 
@@ -243,7 +242,6 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
 {
     uint t_level         = para->getTimeStep(level, t, true);
     uint tStartOut_level = tStartOut*pow(2, level);
-    uint tEnd_level      = para->getTimestepEnd()*pow(2, level);
 
     if(t_level>tStartOut_level && ((t_level-tStartOut_level) % tSave)==0)
     {

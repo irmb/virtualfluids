@@ -38,9 +38,9 @@
 #include <basics/writer/WbWriter.h>
 #include <basics/DataTypes.h>
 
-#include "basics_export.h"
 
-class BASICS_EXPORT WbWriterVtkXmlBinary : public WbWriter
+
+class WbWriterVtkXmlBinary : public WbWriter
 {
 public:
     static WbWriterVtkXmlBinary *getInstance()
@@ -55,11 +55,11 @@ public:
 private:
     WbWriterVtkXmlBinary() : WbWriter()
     {
-        if (sizeof(unsigned char) != 1)
+        if constexpr (sizeof(unsigned char) != 1)
             throw UbException(UB_EXARGS, "machine error char  type mismatch");
-        if (sizeof(int) != 4)
+        if constexpr (sizeof(int) != 4)
             throw UbException(UB_EXARGS, "machine error int   type mismatch");
-        if (sizeof(float) != 4)
+        if constexpr (sizeof(float) != 4)
             throw UbException(UB_EXARGS, "machine error float type mismatch");
     }
 

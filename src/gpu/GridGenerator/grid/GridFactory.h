@@ -45,7 +45,7 @@ enum class TriangularMeshDiscretizationMethod
     RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE
 };
 
-class GRIDGENERATOR_EXPORT GridFactory
+class GridFactory
 {
 public:
     static SPtr<GridFactory> make()

@@ -1,14 +1,16 @@
 #include "IndexRearrangementForStreams.h"
 
-#include "Logger.h"
-#include "Parameter/Parameter.h"
+#include <algorithm>
+#include <iostream>
+
+#include <logger/Logger.h>
+
 #include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
 #include <parallel/Communicator.h>
 
-#include <algorithm>
-#include <iostream>
+#include "Parameter/Parameter.h"
 
 IndexRearrangementForStreams::IndexRearrangementForStreams(std::shared_ptr<Parameter> para,
                                                            std::shared_ptr<GridBuilder> builder,

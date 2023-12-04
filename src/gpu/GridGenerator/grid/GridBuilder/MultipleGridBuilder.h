@@ -51,34 +51,34 @@ class MultipleGridBuilder : public LevelGridBuilder
 public:
     MultipleGridBuilder();
 
-    GRIDGENERATOR_EXPORT virtual void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ,
+    virtual void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ,
                                                     real delta);
-    GRIDGENERATOR_EXPORT virtual void addCoarseGrid(const GridDimensions& gridDimensions);
-    GRIDGENERATOR_EXPORT virtual void addGrid(SPtr<Object> gridShape);
-    GRIDGENERATOR_EXPORT virtual void addGrid(SPtr<Object> gridShape, uint levelFine);
+    virtual void addCoarseGrid(const GridDimensions& gridDimensions);
+    virtual void addGrid(SPtr<Object> gridShape);
+    virtual void addGrid(SPtr<Object> gridShape, uint levelFine);
 
-    GRIDGENERATOR_EXPORT virtual void addGeometry(SPtr<Object> gridShape);
-    GRIDGENERATOR_EXPORT void addGeometry(SPtr<Object> solidObject, uint level);
+    virtual void addGeometry(SPtr<Object> gridShape);
+    void addGeometry(SPtr<Object> solidObject, uint level);
 
-    GRIDGENERATOR_EXPORT uint getNumberOfLevels() const;
-    GRIDGENERATOR_EXPORT real getDelta(uint level) const;
+    uint getNumberOfLevels() const;
+    real getDelta(uint level) const;
 
-    GRIDGENERATOR_EXPORT real getStartX(uint level) const;
-    GRIDGENERATOR_EXPORT real getStartY(uint level) const;
-    GRIDGENERATOR_EXPORT real getStartZ(uint level) const;
+    real getStartX(uint level) const;
+    real getStartY(uint level) const;
+    real getStartZ(uint level) const;
 
-    GRIDGENERATOR_EXPORT real getEndX(uint level) const;
-    GRIDGENERATOR_EXPORT real getEndY(uint level) const;
-    GRIDGENERATOR_EXPORT real getEndZ(uint level) const;
+    real getEndX(uint level) const;
+    real getEndY(uint level) const;
+    real getEndZ(uint level) const;
 
-    GRIDGENERATOR_EXPORT std::vector<SPtr<Grid> > getGrids() const;
-    GRIDGENERATOR_EXPORT virtual void buildGrids(bool enableThinWalls = false);
+    std::vector<SPtr<Grid> > getGrids() const;
+    virtual void buildGrids(bool enableThinWalls = false);
 
-    GRIDGENERATOR_EXPORT virtual void setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels);
+    virtual void setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels);
 
-    GRIDGENERATOR_EXPORT void writeGridsToVtk(const std::string& path) const;
+    void writeGridsToVtk(const std::string& path) const;
 
-    GRIDGENERATOR_EXPORT virtual void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
+    virtual void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
 
 private:
     void addGridToList(SPtr<Grid> grid);
@@ -111,7 +111,7 @@ private:
     SPtr<BoundingBox> subDomainBox;
 
 public:
-    GRIDGENERATOR_EXPORT virtual void findCommunicationIndices(int direction, bool doShift=false);
+    virtual void findCommunicationIndices(int direction, bool doShift=false);
 };
 
 #endif

@@ -915,7 +915,9 @@ void ShearStressSimulationObserver::initDistance()
                     continue;
 
                 if (bcArray->isFluid(ix1, ix2, ix3)) {
-                    SPtr<BoundaryConditions> bc = bcArray->getBC(ix1, ix2, ix3);
+                    auto bc = bcArray->getBC(ix1, ix2, ix3);
+                    if (!bc)
+                        continue;
                     if ((bc->hasDensityBoundary() || bc->hasVelocityBoundary()))
                         continue;
                     int numberOfCorner = 0;

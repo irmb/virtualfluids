@@ -30,7 +30,9 @@
 //! \ingroup io
 //! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
+#ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
+#endif
 #include "SimulationFileWriter.h"
 
 #include <iostream>
@@ -645,28 +647,31 @@ void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::Boundary
         if( boundaryCondition->getType() == BC_PRESSURE )
         {
             auto bcPressure = dynamic_cast< PressureBoundaryCondition* >( boundaryCondition.get() );
-
-            *valueStreams[side] << bcPressure->getRho() << " ";
-            // + 1 for numbering shift between GridGenerator and VF_GPU
-            *valueStreams[side] << grid->getSparseIndex( bcPressure->neighborIndices[index] ) + 1 << " ";
+            if(bcPressure != nullptr) {
+                *valueStreams[side] << bcPressure->getRho() << " ";
+                // + 1 for numbering shift between GridGenerator and VF_GPU
+                *valueStreams[side] << grid->getSparseIndex( bcPressure->neighborIndices[index] ) + 1 << " ";
+            }
         }
 
         if( boundaryCondition->getType() == BC_VELOCITY )
         {
             auto bcVelocity = dynamic_cast< VelocityBoundaryCondition* >( boundaryCondition.get() );
-
-            *valueStreams[side] << bcVelocity->getVx(index) << " ";
-            *valueStreams[side] << bcVelocity->getVy(index) << " ";
-            *valueStreams[side] << bcVelocity->getVz(index) << " ";
+            if(bcVelocity != nullptr) {
+                *valueStreams[side] << bcVelocity->getVx(index) << " ";
+                *valueStreams[side] << bcVelocity->getVy(index) << " ";
+                *valueStreams[side] << bcVelocity->getVz(index) << " ";
+            }
         }
 
         if( boundaryCondition->getType() == BC_SOLID )
         {
             auto bcGeometry = dynamic_cast< GeometryBoundaryCondition* >( boundaryCondition.get() );
-
-            *valueStreams[side] << bcGeometry->getVx(index) << " ";
-            *valueStreams[side] << bcGeometry->getVy(index) << " ";
-            *valueStreams[side] << bcGeometry->getVz(index) << " ";
+            if(bcGeometry != nullptr) {
+                *valueStreams[side] << bcGeometry->getVx(index) << " ";
+                *valueStreams[side] << bcGeometry->getVy(index) << " ";
+                *valueStreams[side] << bcGeometry->getVz(index) << " ";
+            }
         }
 
         *valueStreams[side] << "\n";

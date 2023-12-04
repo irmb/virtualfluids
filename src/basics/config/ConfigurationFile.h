@@ -42,6 +42,22 @@
 namespace vf::basics
 {
 
+template <class T>
+T convert_to(const std::string& value)
+{
+    std::istringstream stream(value);
+    T typedValue;
+    stream >> typedValue;
+    if (stream.fail())
+        throw UbException(UB_EXARGS, " cannot convert \"" + value + "\" to type <" +
+                                         static_cast<std::string>(typeid(typedValue).name()) + ">");
+
+    return typedValue;
+}
+
+template <>
+bool convert_to<bool>(const std::string& value);
+
 class ConfigurationFile
 {
 public:
@@ -78,8 +94,8 @@ private:
     static std::string trim(const std::string& str);
 
     //! convert string to data type T
-    template <class T>
-    T convert_to(const std::string& value) const;
+    // template <class T>
+    // T convert_to(const std::string& value) const;
 
     void split(std::vector<std::string>& lst, const std::string& input, const std::string& separators,
                bool remove_empty = true) const;
@@ -100,23 +116,6 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
     }
     return values;
 }
-//////////////////////////////////////////////////////////////////////////
-template <class T>
-T ConfigurationFile::convert_to(const std::string& value) const
-{
-    if constexpr (std::is_same_v<T, bool>) {
-        return (value == "true");
-    }
-
-    std::istringstream stream(value);
-    T typedValue;
-    stream >> typedValue;
-    if (stream.fail())
-        throw UbException(UB_EXARGS, " cannot convert \"" + value + "\" to type <" +
-                                         static_cast<std::string>(typeid(typedValue).name()) + ">");
-
-    return typedValue;
-}
 
 //////////////////////////////////////////////////////////////////////////
 template <class T>
@@ -136,21 +135,7 @@ T ConfigurationFile::getValue(const std::string& key, T defaultValue) const
     return defaultValue;
 }
 
-static ConfigurationFile loadConfig(int argc, char* argv[], std::string configPath = "./config.txt")
-{
-    // the config file's default path can be replaced by passing a command line argument
-
-    if (argc > 1) {
-        configPath = argv[1];
-        VF_LOG_INFO("Using command line argument for config path: {}", configPath);
-    } else {
-        VF_LOG_INFO("Using default config path: {}", configPath);
-    }
-
-    vf::basics::ConfigurationFile config;
-    config.load(configPath);
-    return config;
-}
+ConfigurationFile loadConfig(int argc, char* argv[], std::string configPath = "./config.txt");
 
 } // namespace vf::basics
 

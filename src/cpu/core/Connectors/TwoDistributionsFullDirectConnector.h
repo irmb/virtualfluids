@@ -50,6 +50,11 @@ public:
     TwoDistributionsFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
     void init() override;
 
+    void exchangeData() override
+    {
+        FullDirectConnector::exchangeData();
+    }
+
 protected:
     inline void updatePointers() override;
     inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;

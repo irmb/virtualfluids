@@ -63,9 +63,9 @@ void K15CompressibleNavierStokes::initDataSet()
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> K15CompressibleNavierStokes::clone()
 {
-   SPtr<LBMKernel> kernel(new K15CompressibleNavierStokes());
+   SPtr<K15CompressibleNavierStokes> kernel(new K15CompressibleNavierStokes());
    kernel->setNX(nx);
-   dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->initDataSet();
+   kernel->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCSet(bcSet->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -79,20 +79,20 @@ SPtr<LBMKernel> K15CompressibleNavierStokes::clone()
    switch (parameter)
    {
    case NORMAL:
-      dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->OxyyMxzz = c1o1;
+      kernel->OxyyMxzz = c1o1;
       break;
    case MAGIC:
-      dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->OxyyMxzz = c2o1 +(-collFactor);
+      kernel->OxyyMxzz = c2o1 +(-collFactor);
       break;
    }
 
    if (bulkOmegaToOmega)
    {
-      dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->OxxPyyPzz = collFactor;
+      kernel->OxxPyyPzz = collFactor;
    }
    else
    {
-      dynamicPointerCast<K15CompressibleNavierStokes>(kernel)->OxxPyyPzz = c1o1;
+      kernel->OxxPyyPzz = c1o1;
    }
    return kernel;
 }

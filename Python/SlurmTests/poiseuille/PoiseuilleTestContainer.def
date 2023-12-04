@@ -33,7 +33,7 @@ Stage: build
     pip3 install setuptools wheel cmake numpy scipy pyvista scikit-build
 
     export PYTHONPATH=Python
-    python3 /setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DBUILD_VF_CPU=ON -DBUILD_VF_DOUBLE_ACCURACY=ON
+    python3 /setup.py bdist_wheel build_ext --build-temp=_skbuild -- -DVF_ENABLE_CPU=ON -DVF_ENABLE_DOUBLE_ACCURACY=ON
 
     pip3 install $(find dist/*.whl)
 

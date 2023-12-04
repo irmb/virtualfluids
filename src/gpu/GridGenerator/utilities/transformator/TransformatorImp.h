@@ -65,25 +65,25 @@ class TransformatorImp
     : public Transformator, public ArrowTransformator
 {
 public:
-    GRIDGENERATOR_EXPORT TransformatorImp();
-    GRIDGENERATOR_EXPORT TransformatorImp(const TransformatorImp& trafo);
-    GRIDGENERATOR_EXPORT TransformatorImp(real delta, const Vertex& translater);
-    GRIDGENERATOR_EXPORT TransformatorImp(real delta, real dx, real dy, real dz);
-    GRIDGENERATOR_EXPORT virtual ~TransformatorImp();
+    TransformatorImp();
+    TransformatorImp(const TransformatorImp& trafo);
+    TransformatorImp(real delta, const Vertex& translater);
+    TransformatorImp(real delta, real dx, real dy, real dz);
+    virtual ~TransformatorImp();
     
-    GRIDGENERATOR_EXPORT void transformWorldToGrid(Triangle &value) const override;
-    GRIDGENERATOR_EXPORT void transformWorldToGrid(TriangularMesh &geom) const override;
-    GRIDGENERATOR_EXPORT void transformWorldToGrid(Vertex &value) const override;
+    void transformWorldToGrid(Triangle &value) const override;
+    void transformWorldToGrid(TriangularMesh &geom) const override;
+    void transformWorldToGrid(Vertex &value) const override;
 
-    GRIDGENERATOR_EXPORT void transformGridToWorld(Triangle &t) const override;
-    GRIDGENERATOR_EXPORT void transformGridToWorld(Vertex &value) const override;
+    void transformGridToWorld(Triangle &t) const override;
+    void transformGridToWorld(Vertex &value) const override;
 
-    GRIDGENERATOR_EXPORT void transformGridToWorld(BoundingBox &box) const override;
-    GRIDGENERATOR_EXPORT void transformWorldToGrid(BoundingBox &box) const override;
+    void transformGridToWorld(BoundingBox &box) const override;
+    void transformWorldToGrid(BoundingBox &box) const override;
 
-    GRIDGENERATOR_EXPORT bool operator==(const TransformatorImp& trafo) const;
+    bool operator==(const TransformatorImp& trafo) const;
 
-    GRIDGENERATOR_EXPORT virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
+    virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
 
 private:
     real delta;

@@ -36,27 +36,33 @@
             "name": "unit_tests",
             "hidden": true,
             "cacheVariables": {
-                "BUILD_VF_UNIT_TESTS": "ON"
+                "VF_ENABLE_UNIT_TESTS": "ON"
             }
         },
         {
             "name": "cpu",
             "inherits": "default",
-            "hidden": true,
             "description": "CPU build of VirtualFluids",
             "cacheVariables": {
-                "BUILD_VF_CPU": "ON",
-                "BUILD_VF_DOUBLE_ACCURACY": "ON"
+                "VF_ENABLE_CPU": "ON",
+                "VF_ENABLE_DOUBLE_ACCURACY": "ON"
             }
         },
         {
             "name": "gpu",
             "inherits": "default",
-            "hidden": true,
             "description": "GPU build of VirtualFluids",
             "cacheVariables": {
-                "BUILD_VF_GPU": "ON",
-                "BUILD_VF_DOUBLE_ACCURACY": "OFF"
+                "VF_ENABLE_GPU": "ON",
+                "VF_ENABLE_DOUBLE_ACCURACY": "OFF"
+            }
+        },
+        {
+            "name": "python_bindings",
+            "inherits": "default",
+            "description": "python bindings of VirtualFluids",
+            "cacheVariables": {
+                "VF_ENABLE_PYTHON_BINDINGS": "ON"
             }
         },
         {
@@ -68,8 +74,8 @@
             "hidden": true,
             "description": "GPU numerical tests of VirtualFluids",
             "cacheVariables": {
-                "BUILD_VF_DOUBLE_ACCURACY": "ON",
-                "BUILD_NUMERIC_TESTS": "ON"
+                "VF_ENABLE_DOUBLE_ACCURACY": "ON",
+                "VF_GPU_ENABLE_NUMERIC_TESTS": "ON"
             }
         },
         {
@@ -77,10 +83,14 @@
             "inherits": [
                 "cpu",
                 "gpu",
+                "python_bindings",
                 "unit_tests",
                 "make"
             ],
-            "displayName": "all make configuration"
+            "displayName": "all make configuration",
+            "cacheVariables": {
+                "VF_ENABLE_ALL_APPS": "ON"
+            }
         },
         {
             "name": "make_cpu",
@@ -105,10 +115,14 @@
             "inherits": [
                 "cpu",
                 "gpu",
+                "python_bindings",
                 "unit_tests",
                 "msvc"
             ],
-            "displayName": "all msvc configuration"
+            "displayName": "all msvc configuration",
+            "cacheVariables": {
+                "VF_ENABLE_ALL_APPS": "ON"
+            }
         },
         {
             "name": "msvc_cpu",

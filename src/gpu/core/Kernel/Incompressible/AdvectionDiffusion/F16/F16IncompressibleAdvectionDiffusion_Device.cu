@@ -201,7 +201,7 @@ __global__ void F16IncompressibleAdvectionDiffusion_Device(
         real fbaa = (dist.f[d0MM])[kbs];
         real fbca = (dist.f[d0PM])[kb];
         real fbac = (dist.f[d0MP])[ks];
-        real fbbb = (dist.f[d000])[k];
+        // real fbbb = (dist.f[d000])[k];
         real fccc = (dist.f[dPPP])[k];
         real faac = (dist.f[dMMP])[ksw];
         real fcac = (dist.f[dPMP])[ks];

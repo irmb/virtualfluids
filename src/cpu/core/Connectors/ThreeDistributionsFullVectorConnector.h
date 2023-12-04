@@ -50,9 +50,19 @@ class Block3D;
 class ThreeDistributionsFullVectorConnector : public FullVectorConnector
 {
 public:
-   ThreeDistributionsFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir);
+    ThreeDistributionsFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir);
 
-   void init() override;
+    void init() override;
+
+    void fillData() override
+    {
+        FullVectorConnector::fillData();
+    }
+
+    void distributeData() override
+    {
+        FullVectorConnector::distributeData();
+    }
 
 protected:
    inline void updatePointers() override;

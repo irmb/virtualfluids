@@ -37,7 +37,7 @@
 
 #include "geometries/Object.h"
 
-class GRIDGENERATOR_EXPORT Cuboid : public Object
+class Cuboid : public Object
 {
 public:              
     Cuboid(const double& minX1, const double& minX2, const double& minX3, const double& maxX1,const double& maxX2, const double& maxX3);

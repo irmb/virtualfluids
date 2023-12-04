@@ -169,7 +169,7 @@ std::vector<bool> StringUtil::toBoolVector(const std::string &input)
 
 std::vector<std::string> StringUtil::toStringVector(const std::string &input) { return split(input, " \n\t"); }
 
-BASICS_EXPORT std::vector<double> StringUtil::toDoubleVector(const std::string &input)
+std::vector<double> StringUtil::toDoubleVector(const std::string &input)
 {
     std::vector<double> v;
     std::vector<std::string> inputEntries;
@@ -188,7 +188,7 @@ std::string StringUtil::toString(const T &t)
     return stream.str();
 }
 
-template BASICS_EXPORT std::string StringUtil::toString<int>(const int &t);
+template std::string StringUtil::toString<int>(const int &t);
 
 bool StringUtil::endsWith(const std::string &input, const std::string &end)
 {

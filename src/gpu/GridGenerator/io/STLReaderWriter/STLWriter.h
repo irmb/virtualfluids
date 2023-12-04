@@ -43,7 +43,7 @@
 class Transformator;
 struct Triangle;
 
-class GRIDGENERATOR_EXPORT STLWriter
+class STLWriter
 {
 public:
     static void writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary = false);

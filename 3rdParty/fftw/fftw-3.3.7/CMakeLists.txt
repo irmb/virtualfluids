@@ -335,7 +335,7 @@ if (ENABLE_OPENMP AND OPENMP_FOUND)
   target_compile_options (${fftw3_lib}_omp PRIVATE ${OpenMP_C_FLAGS})
 endif ()
 
-groupTarget(${fftw3_lib} ${thirdFolder})
+group_target(${fftw3_lib} ${thirdFolder})
 target_include_directories(${fftw3_lib} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/api)
 
 foreach(subtarget ${subtargets})

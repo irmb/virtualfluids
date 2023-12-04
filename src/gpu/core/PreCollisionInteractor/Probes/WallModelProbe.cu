@@ -207,23 +207,23 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
 
         if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalMeans)] && doTmpAveraging)
         {
-            uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalMeans)];
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_u_el  , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+0, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_v_el  , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+1, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_w_el  , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+2, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_u1    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+3, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_v1    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+4, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_w1    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+5, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_u_star, timestep, probeStruct->nTimesteps, oldTimestep, arrOff+6, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_Fx    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+7, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_Fy    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+8, inv_n);
-            temporal_average(probeStruct->quantitiesArrayH, spatMean_Fz    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff+9, inv_n);
+            uint arrOff2 = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalMeans)];
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_u_el  , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+0, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_v_el  , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+1, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_w_el  , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+2, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_u1    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+3, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_v1    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+4, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_w1    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+5, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_u_star, timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+6, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_Fx    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+7, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_Fy    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+8, inv_n);
+            temporal_average(probeStruct->quantitiesArrayH, spatMean_Fz    , timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+9, inv_n);
 
             if(this->evaluatePressureGradient)
             {
-                temporal_average(probeStruct->quantitiesArrayH, spatMean_dpdx, timestep, probeStruct->nTimesteps, oldTimestep, arrOff+10, inv_n);
-                temporal_average(probeStruct->quantitiesArrayH, spatMean_dpdy, timestep, probeStruct->nTimesteps, oldTimestep, arrOff+11, inv_n);
-                temporal_average(probeStruct->quantitiesArrayH, spatMean_dpdz, timestep, probeStruct->nTimesteps, oldTimestep, arrOff+12, inv_n);
+                temporal_average(probeStruct->quantitiesArrayH, spatMean_dpdx, timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+10, inv_n);
+                temporal_average(probeStruct->quantitiesArrayH, spatMean_dpdy, timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+11, inv_n);
+                temporal_average(probeStruct->quantitiesArrayH, spatMean_dpdz, timestep, probeStruct->nTimesteps, oldTimestep, arrOff2+12, inv_n);
             }
         }    
     }

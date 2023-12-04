@@ -33,7 +33,7 @@
 
 #include <GbGyroidThirdOrderLong.h>
 
-#ifdef BUILD_USE_BOOST
+#ifdef VF_BOOST
 
 #include <basics/utilities/UbMath.h>
 

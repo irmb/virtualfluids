@@ -150,7 +150,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const real pressureGradient = frictionVelocity * frictionVelocity / boundaryLayerHeight;
     const real pressureGradientLB = pressureGradient * (deltaT * deltaT) / deltaX;
 
-    const uint timeStepStartOut = uint(timeStartOut / deltaT);
+    // const uint timeStepStartOut = uint(timeStartOut / deltaT);
     const uint timeStepOut = uint(timeOut / deltaT);
     const uint timeStepEnd = uint(timeEnd / deltaT);
 

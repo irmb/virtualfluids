@@ -41,7 +41,7 @@ format:
 markup:
   bullet_char: '*'
   enum_char: .
-  first_comment_is_literal: false
+  first_comment_is_literal: true
   literal_comment_pattern: null
   fence_pattern: ^\s*([`~]{3}[`~]*)(.*)$
   ruler_pattern: ^\s*[^\w\s]{3}.*[^\w\s]{3}$

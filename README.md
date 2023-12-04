@@ -32,19 +32,19 @@ $ mkdir build && cd build
 Pass the relevant [options](#options) to cmake.
 E.g. for the CPU part:
 ```shell
-$ cmake .. -DBUILD_VF_CPU=ON
+$ cmake .. -DVF_ENABLE_CPU=ON
 $ make
 ```
 Alternatively enable the options via the cmake-gui.
 
 ### <a id="options"></a> Options
-- BUILD_VF_CPU
+- VF_ENABLE_CPU
   - Build VirtualFluids CPU variant
-- BUILD_VF_GPU
+- VF_ENABLE_GPU
   - Build VirtualFluids GPU variant
-- BUILD_VF_UNIT_TESTS
+- VF_ENABLE_UNIT_TESTS
   -  Build VirtualFluids unit tests
-- BUILD_VF_DOUBLE_ACCURACY
+- VF_ENABLE_DOUBLE_ACCURACY
     - GPU change between Double and Single Precision
 
 ### Result Files
