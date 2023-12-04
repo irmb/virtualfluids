@@ -27,8 +27,8 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \file BC.cpp
-//! \ingroup BoundarConditions
-//! \author Sören Freudiger
+//! \ingroup BoundaryConditions
+//! \author SÃ¶ren Freudiger
 //=======================================================================================
 #include "BC.h"
 
