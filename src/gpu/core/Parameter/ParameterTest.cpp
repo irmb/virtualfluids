@@ -58,7 +58,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getCalc2ndOrderMoments(), testing::Eq(true));
     EXPECT_THAT(para.getCalc3rdOrderMoments(), testing::Eq(true));
     EXPECT_THAT(para.getCalcHighOrderMoments(), testing::Eq(true));
-    EXPECT_THAT(para.getCalcMedian(), testing::Eq(true));
+    EXPECT_THAT(para.getCalcMean(), testing::Eq(true));
     EXPECT_THAT(para.getCalcCp(), testing::Eq(true));
     EXPECT_THAT(para.getCalcDragLift(), testing::Eq(true));
     EXPECT_THAT(para.getWriteVeloASCIIfiles(), testing::Eq(true));
