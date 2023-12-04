@@ -39,7 +39,8 @@
 #include "BoundaryConditions/NoSlip/NoSlip.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/Slip/Slip.h"
-#include "GPU/GPU_Interface.h"
+#include "BoundaryConditions/Stress/Stress.h"
+#include "BoundaryConditions/Precursor/Precursor.h"
 #include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
@@ -167,11 +168,11 @@ boundaryCondition BoundaryConditionFactory::getPressureBoundaryConditionPre() co
 precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryConditionPost() const
 {
     switch (this->precursorBoundaryCondition) {
-        case PrecursorBC::VelocityPrecursor:
-            return QPrecursorDevCompZeroPress;
+        case PrecursorBC::PrecursorNonReflectiveCompressible:
+            return PrecursorNonReflectiveCompressible;
             break;
-        case PrecursorBC::DistributionsPrecursor:
-            return PrecursorDevDistributions;
+        case PrecursorBC::PrecursorDistributions:
+            return PrecursorDistributions;
             break;
         default:
             return nullptr;
@@ -181,14 +182,14 @@ precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryCon
 boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
-        case StressBC::StressBounceBack:
-            return BBStressDev27;
+        case StressBC::StressBounceBackCompressible:
+            return StressBounceBackCompressible;
             break;
-        case StressBC::StressPressureBounceBack:
-            return BBStressPressureDev27;
+        case StressBC::StressBounceBackPressureCompressible:
+            return StressBounceBackPressureCompressible;
             break;
         case StressBC::StressCompressible:
-            return QStressDevComp27;
+            return StressCompressible;
             break;
         default:
             return nullptr;

@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SlipBCs27.cu
-//! \ingroup GPU
 //! \author Martin Schoenherr, Anna Wellmann
 //======================================================================================
 #include "LBM/LB.h" 

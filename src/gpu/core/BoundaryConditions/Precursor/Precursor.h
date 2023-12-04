@@ -26,37 +26,18 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Soeren Peters, Stephan Lenz
+//! \author Martin Schoenherr
 //=======================================================================================
-#ifndef Communication_H
-#define Communication_H
+#ifndef Precursor_H
+#define Precursor_H
 
-#include <basics/geometry3d/Axis.h>
+#include "LBM/LB.h"
 
-#include "grid/BoundaryConditions/Side.h"
+struct LBMSimulationParameter;
+class Parameter;
 
-// has to have the same order as SideType in Side.h
-namespace CommunicationDirections
-{
-enum CommunicationDirection {
-    MX = static_cast<int>(SideType::MX),
-    PX = static_cast<int>(SideType::PX),
-    MY = static_cast<int>(SideType::MY),
-    PY = static_cast<int>(SideType::PY),
-    MZ = static_cast<int>(SideType::MZ),
-    PZ = static_cast<int>(SideType::PZ)
-};
+void PrecursorNonReflectiveCompressible(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
-bool isNegative(CommunicationDirection direction);
-bool isPositive(CommunicationDirection direction);
+void PrecursorDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
-const std::map<CommunicationDirection, Axis> communicationDirectionToAxes { { MX, Axis::x }, { PX, Axis::x },
-                                                                            { MY, Axis::y }, { PY, Axis::y },
-                                                                            { MZ, Axis::z }, { PZ, Axis::z } };
-
-CommunicationDirection getNegativeDirectionAlongAxis(Axis axis);
-CommunicationDirection getPositiveDirectionAlongAxis(Axis axis);
-
-} // namespace CommunicationDirections
-
-#endif // Communication_H
+#endif

@@ -26,37 +26,62 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Soeren Peters, Stephan Lenz
+//! \author Martin Schoenherr
 //=======================================================================================
-#ifndef Communication_H
-#define Communication_H
+#ifndef Precursor_Device_H
+#define Precursor_Device_H
 
-#include <basics/geometry3d/Axis.h>
+#include "LBM/LB.h"
 
-#include "grid/BoundaryConditions/Side.h"
+__global__ void PrecursorNonReflectiveCompressible_Device(
+    int* subgridDistanceIndices,
+    int numberOfBCnodes,
+    int numberOfPrecursorNodes,
+    int sizeQ,
+    real omega,
+    real* distributions,
+    real* subgridDistances,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint* neighborsNT,
+    uint* neighborsNB,
+    uint* neighborsST,
+    uint* neighborsSB,
+    real* weights0PP,
+    real* weights0PM,
+    real* weights0MP,
+    real* weights0MM,
+    real* vLast,
+    real* vCurrent,
+    real velocityX,
+    real velocityY,
+    real velocityZ,
+    real timeRatio,
+    real velocityRatio,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
-// has to have the same order as SideType in Side.h
-namespace CommunicationDirections
-{
-enum CommunicationDirection {
-    MX = static_cast<int>(SideType::MX),
-    PX = static_cast<int>(SideType::PX),
-    MY = static_cast<int>(SideType::MY),
-    PY = static_cast<int>(SideType::PY),
-    MZ = static_cast<int>(SideType::MZ),
-    PZ = static_cast<int>(SideType::PZ)
-};
+__global__ void PrecursorDistributions_Device(
+    int* subgridDistanceIndices,
+    int numberOfBCNodes,
+    int numberOfPrecursorNodes,
+    real* distributions,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint* neighborsNT,
+    uint* neighborsNB,
+    uint* neighborsST,
+    uint* neighborsSB,
+    real* weights0PP,
+    real* weights0PM,
+    real* weights0MP,
+    real* weights0MM,
+    real* fsLast,
+    real* fsNext,
+    real timeRatio,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
-bool isNegative(CommunicationDirection direction);
-bool isPositive(CommunicationDirection direction);
-
-const std::map<CommunicationDirection, Axis> communicationDirectionToAxes { { MX, Axis::x }, { PX, Axis::x },
-                                                                            { MY, Axis::y }, { PY, Axis::y },
-                                                                            { MZ, Axis::z }, { PZ, Axis::z } };
-
-CommunicationDirection getNegativeDirectionAlongAxis(Axis axis);
-CommunicationDirection getPositiveDirectionAlongAxis(Axis axis);
-
-} // namespace CommunicationDirections
-
-#endif // Communication_H
+#endif

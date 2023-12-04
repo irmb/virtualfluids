@@ -136,14 +136,14 @@ void runVirtualFluids(const vf::basics::ConfigurationFile& config)
     const real zSplit = 0.0;
 
     if (numberOfProcesses == 2) {
-        gridBuilderFacade->addDomainSplit(zSplit, MultipleGridBuilderFacade::CoordDirection::z);
+        gridBuilderFacade->addDomainSplit(zSplit, Axis::z);
     } else if (numberOfProcesses == 4) {
-        gridBuilderFacade->addDomainSplit(xSplit, MultipleGridBuilderFacade::CoordDirection::y);
-        gridBuilderFacade->addDomainSplit(zSplit, MultipleGridBuilderFacade::CoordDirection::z);
+        gridBuilderFacade->addDomainSplit(xSplit, Axis::y);
+        gridBuilderFacade->addDomainSplit(zSplit, Axis::z);
     } else if (numberOfProcesses == 8) {
-        gridBuilderFacade->addDomainSplit(xSplit, MultipleGridBuilderFacade::CoordDirection::x);
-        gridBuilderFacade->addDomainSplit(ySplit, MultipleGridBuilderFacade::CoordDirection::y);
-        gridBuilderFacade->addDomainSplit(zSplit, MultipleGridBuilderFacade::CoordDirection::z);
+        gridBuilderFacade->addDomainSplit(xSplit, Axis::x);
+        gridBuilderFacade->addDomainSplit(ySplit, Axis::y);
+        gridBuilderFacade->addDomainSplit(zSplit, Axis::z);
     }
 
     // create grids

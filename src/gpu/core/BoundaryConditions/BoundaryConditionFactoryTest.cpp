@@ -1,3 +1,33 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr, Anna Wellmann
+//======================================================================================
 #include <gmock/gmock.h>
 #include <typeindex>
 
@@ -9,6 +39,7 @@
 #include "BoundaryConditions/NoSlip/NoSlip.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/Slip/Slip.h"
+#include "BoundaryConditions/Stress/Stress.h"
 #include "GPU/GPU_Interface.h"
 
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
@@ -210,15 +241,15 @@ TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBack);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible);
     auto bc = bcFactory.getStressBoundaryConditionPost();
     auto bcTarget = *bc.target<bcFunctionParamter>();
-    EXPECT_TRUE(*bcTarget == BBStressDev27)
-        << "The returned boundary condition is not the expected function BBStressDev27.";
+    EXPECT_TRUE(*bcTarget == StressBounceBackCompressible)
+        << "The returned boundary condition is not the expected function StressBounceBackCompressible.";
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
     bc = bcFactory.getStressBoundaryConditionPost();
     bcTarget = *bc.target<bcFunctionParamter>();
-    EXPECT_TRUE(*bcTarget == QStressDevComp27)
-        << "The returned boundary condition is not the expected function QStressDevComp27.";
+    EXPECT_TRUE(*bcTarget == StressCompressible)
+        << "The returned boundary condition is not the expected function StressCompressible.";
 }
