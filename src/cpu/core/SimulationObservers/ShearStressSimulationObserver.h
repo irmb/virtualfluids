@@ -86,7 +86,7 @@ protected:
 private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<std::string> datanames;
-    std::vector<std::vector<real>> data;
+    std::vector<std::vector<double>> data;
     std::string path;
     std::vector<SPtr<D3Q27Interactor>> interactors;
     std::vector<real> normals;

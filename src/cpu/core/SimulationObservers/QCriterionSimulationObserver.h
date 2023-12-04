@@ -80,7 +80,7 @@ private:
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames; // only one entry for QKrit-SimulationObserver: Q
-    std::vector<std::vector<real>> data;
+    std::vector<std::vector<double>> data;
     std::vector<std::vector<SPtr<Block3D>>> blockVector;
     int minInitLevel; // go through all levels for block vector of current process from minInitLevel to maxInitLevel
     int maxInitLevel;

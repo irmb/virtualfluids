@@ -247,7 +247,6 @@
 #include <cpu/core/Visitors/Grid3DVisitor.h>
 #include <cpu/core/Visitors/InitDistributionsBlockVisitor.h>
 #include <cpu/core/Visitors/InitDistributionsWithInterpolationGridVisitor.h>
-#include <cpu/core/Visitors/InitThixotropyBlockVisitor.h>
 #include <cpu/core/Visitors/MetisPartitioningGridVisitor.h>
 #include <cpu/core/Visitors/OverlapBlockVisitor.h>
 #include <cpu/core/Visitors/RatioBlockVisitor.h>

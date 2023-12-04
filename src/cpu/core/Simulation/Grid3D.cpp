@@ -484,7 +484,7 @@ UbTupleDouble3 Grid3D::getBlockLengths(const SPtr<Block3D> block) const
 }
 //////////////////////////////////////////////////////////////////////////
 using namespace vf::basics::constant;
-UbTupleDouble6 Grid3D::getBlockOversize() const { return makeUbTuple(c0o1, c0o1, c0o1, c0o1, c0o1, c0o1); }
+UbTupleDouble6 Grid3D::getBlockOversize() const { return makeUbTuple(0., 0., 0., 0., 0., 0.); }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setCoordinateTransformator(SPtr<CoordinateTransformation3D> trafo) { this->trafo = trafo; }
 //////////////////////////////////////////////////////////////////////////
@@ -504,8 +504,8 @@ real Grid3D::getDeltaX(SPtr<Block3D> block) const { return getDeltaX(block->getL
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 Grid3D::getNodeOffset(SPtr<Block3D> block) const
 {
-    real delta = this->getDeltaX(block);
-    return makeUbTuple(offset * delta, offset * delta, offset * delta);
+    double delta = (double)this->getDeltaX(block);
+    return makeUbTuple((double)offset * delta, (double)offset * delta, (double)offset * delta);
 }
 ////////////////////////////////////////////////////////////////////////////
 Vector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const

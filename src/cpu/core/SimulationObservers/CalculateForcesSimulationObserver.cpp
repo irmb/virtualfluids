@@ -227,10 +227,10 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
 
     if (bc) {
         // references to tuple "force"
-        real &forceX1 = val<1>(force);
-        real &forceX2 = val<2>(force);
-        real &forceX3 = val<3>(force);
-        real f, fnbr;
+        double &forceX1 = val<1>(force);
+        double &forceX2 = val<2>(force);
+        double &forceX3 = val<3>(force);
+        double f, fnbr;
 
         dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
