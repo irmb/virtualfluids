@@ -9,7 +9,7 @@ REFERENCE_DATA_DIR=regression_tests/cpu/LaminarPipeFlow
 CMAKE_FLAGS="--preset=make_cpu -DCMAKE_BUILD_TYPE=Release"
 
 # 3. define the application to be executed
-APPLICATION="mpiexec -np 8 --allow-run-as-root ./build/bin/LaminarPipeFlow ./apps/cpu/LaminarPipeFlow/LaminarPipeFlow.cfg"
+APPLICATION="mpiexec -np 8 --allow-run-as-root ./build/bin/LaminarPipeFlow ./apps/cpu/LaminarPipeFlow/LaminarPipeFlow_regression_test.cfg"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/LaminarPipeFlow

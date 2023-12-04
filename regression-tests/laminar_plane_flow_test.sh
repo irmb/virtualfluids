@@ -9,7 +9,7 @@ REFERENCE_DATA_DIR=regression_tests/cpu/LaminarPlaneFlow
 CMAKE_FLAGS="--preset=make_cpu -DCMAKE_BUILD_TYPE=Release"
 
 # 3. define the application to be executed
-APPLICATION="./build/bin/LaminarPlaneFlow ./apps/cpu/LaminarPlaneFlow/LaminarPlaneFlow.cfg"
+APPLICATION="./build/bin/LaminarPlaneFlow ./apps/cpu/LaminarPlaneFlow/LaminarPlaneFlow_regression_test.cfg"
 
 # 4. set the path to the produced data
 RESULT_DATA_DIR=output/LaminarPlaneFlow
