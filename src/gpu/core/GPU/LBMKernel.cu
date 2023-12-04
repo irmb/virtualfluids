@@ -3397,37 +3397,6 @@ void SetOutputWallVelocitySP27(
     getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void GetVelotoForce27(
-    unsigned int numberOfThreads,
-    real* DD,
-    int* bcIndex,
-    int nonAtBC,
-    real* Vx,
-    real* Vy,
-    real* Vz,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonAtBC);
-
-    GetVeloforForcing27<<< grid.grid, grid.threads >>> (
-        DD,
-        bcIndex,
-        nonAtBC,
-        Vx,
-        Vy,
-        Vz,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("GetVeloforForcing27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void CalcTurbulenceIntensityDevice(
     real* vxx,
     real* vyy,

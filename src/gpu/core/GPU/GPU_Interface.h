@@ -1481,19 +1481,6 @@ void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                           real* DD,
                                           bool isEvenTimestep);
 
-void GetVelotoForce27(unsigned int numberOfThreads,
-                                 real* DD, 
-                                 int* bcIndex, 
-                                 int nonAtBC, 
-                                 real* Vx,
-                                 real* Vy,
-                                 real* Vz,
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes, 
-                                 bool isEvenTimestep);
-
 void CalcTurbulenceIntensityDevice(
    real* vxx,
    real* vyy,

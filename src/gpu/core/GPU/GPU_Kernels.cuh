@@ -1457,18 +1457,6 @@ __global__ void LBSetOutputWallVelocitySP27( real* vxD,
                                                         real* DD,
                                                         bool isEvenTimestep);
 
-__global__ void GetVeloforForcing27( real* DD,
-                                                int* bcIndex,
-                                                int nonAtBC,
-                                                real* Vx,
-                                                real* Vy,
-                                                real* Vz,
-                                                unsigned int* neighborX,
-                                                unsigned int* neighborY,
-                                                unsigned int* neighborZ,
-                                                unsigned long long numberOfLBnodes,
-                                                bool isEvenTimestep);
-
 __global__ void CalcTurbulenceIntensity(
    real* vxx,
    real* vyy,
