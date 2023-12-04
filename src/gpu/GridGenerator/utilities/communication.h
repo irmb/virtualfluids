@@ -26,25 +26,37 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Communication.h
-//! \ingroup utilities
 //! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
 #ifndef Communication_H
 #define Communication_H
 
+#include <basics/geometry3d/Axis.h>
+
 #include "grid/BoundaryConditions/Side.h"
 
 // has to have the same order as SideType in Side.h
-namespace CommunicationDirections {
-    enum CommunicationDirection{
-        MX = static_cast<int>(SideType::MX),
-        PX = static_cast<int>(SideType::PX),
-        MY = static_cast<int>(SideType::MY),
-        PY = static_cast<int>(SideType::PY),
-        MZ = static_cast<int>(SideType::MZ),
-        PZ = static_cast<int>(SideType::PZ)
-    };
-}
+namespace CommunicationDirections
+{
+enum CommunicationDirection {
+    MX = static_cast<int>(SideType::MX),
+    PX = static_cast<int>(SideType::PX),
+    MY = static_cast<int>(SideType::MY),
+    PY = static_cast<int>(SideType::PY),
+    MZ = static_cast<int>(SideType::MZ),
+    PZ = static_cast<int>(SideType::PZ)
+};
+
+bool isNegative(CommunicationDirection direction);
+bool isPositive(CommunicationDirection direction);
+
+const std::map<CommunicationDirection, Axis> communicationDirectionToAxes { { MX, Axis::x }, { PX, Axis::x },
+                                                                            { MY, Axis::y }, { PY, Axis::y },
+                                                                            { MZ, Axis::z }, { PZ, Axis::z } };
+
+CommunicationDirection getNegativeDirectionAlongAxis(Axis axis);
+CommunicationDirection getPositiveDirectionAlongAxis(Axis axis);
+
+} // namespace CommunicationDirections
 
 #endif // Communication_H

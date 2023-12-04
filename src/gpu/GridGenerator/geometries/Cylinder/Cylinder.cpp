@@ -1,6 +1,8 @@
 #include "Cylinder.h"
 #include <numeric>
 
+using namespace axis;
+
 Cylinder::Cylinder(double centerX, double centerY, double centerZ, double radius, double height, Axis rotationalAxis)
     : center({ centerX, centerY, centerZ }), radius(radius), height(height), rotationalAxis(rotationalAxis)
 {
