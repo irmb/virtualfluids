@@ -25,6 +25,7 @@
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
+#include "PostProcessor/Concentration.cuh"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 //////////////////////////////////////////////////////////////////////////
 #include "Calculation/Calc2ndMoments.h"

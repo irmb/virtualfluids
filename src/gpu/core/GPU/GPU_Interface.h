@@ -39,51 +39,6 @@
 struct LBMSimulationParameter;
 class Parameter;
 
-
-void CalcMacThS7(  real* Conc,
-                              unsigned int* geoD,
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned long long numberOfLBnodes,
-                              unsigned int numberOfThreads, 
-                              real* DD7,
-                              bool isEvenTimestep);
-
-void PlaneConcThS7(real* Conc,
-                              int* kPC,
-                              unsigned int numberOfPointskPC,
-                              unsigned int* geoD,
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned long long numberOfLBnodes,
-                              unsigned int numberOfThreads, 
-                              real* DD7,
-                              bool isEvenTimestep);
-
-void PlaneConcThS27(real* Conc,
-                               int* kPC,
-                               unsigned int numberOfPointskPC,
-                               unsigned int* geoD,
-                               unsigned int* neighborX,
-                               unsigned int* neighborY,
-                               unsigned int* neighborZ,
-                               unsigned long long numberOfLBnodes,
-                               unsigned int numberOfThreads, 
-                               real* DD27,
-                               bool isEvenTimestep);
-
-void CalcConcentration27( unsigned int numberOfThreads,
-                                     real* Conc,
-                                     unsigned int* geoD,
-                                     unsigned int* neighborX,
-                                     unsigned int* neighborY,
-                                     unsigned int* neighborZ,
-                                     unsigned long long numberOfLBnodes,
-                                     real* DD27,
-                                     bool isEvenTimestep);
-
 void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
                                          real* kyzFromfcNEQ,
                                          real* kxzFromfcNEQ,

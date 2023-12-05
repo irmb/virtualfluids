@@ -26,14 +26,19 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CalcConc27.cu
-//! \ingroup GPU
 //! \author Martin Schoenherr
 //=======================================================================================
-/* Device code */
-#include "LBM/LB.h"
-#include "lbm/constants/D3Q27.h"
+#include "Concentration.cuh"
+
+#include <helper_cuda.h>
+
+#include <cuda_helper/CudaGrid.h>
+
+#include <lbm/constants/D3Q27.h>
+
 #include <basics/constants/NumericConstants.h>
+
+#include "LBM/LB.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -709,4 +714,46 @@ __global__ void GetPlaneConc27(real* Conc,
                         (D27.f[dPMM])[kbse]+ (D27.f[dMPM])[kbnw];
       }
    }   
+}
+
+void PlaneConcThS7(real* Conc, int* kPC, unsigned int numberOfPointskPC, unsigned int* geoD, unsigned int* neighborX,
+                   unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                   unsigned int numberOfThreads, real* DD7, bool isEvenTimestep)
+{
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
+
+   GetPlaneConc7<<<grid.grid, grid.threads>>>(Conc, kPC, numberOfPointskPC, geoD, neighborX, neighborY, neighborZ,
+                                              numberOfLBnodes, DD7, isEvenTimestep);
+   getLastCudaError("GetPlaneConc7 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void PlaneConcThS27(real* Conc, int* kPC, unsigned int numberOfPointskPC, unsigned int* geoD, unsigned int* neighborX,
+                    unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                    unsigned int numberOfThreads, real* DD27, bool isEvenTimestep)
+{
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
+
+   GetPlaneConc27<<<grid.grid, grid.threads>>>(Conc, kPC, numberOfPointskPC, geoD, neighborX, neighborY, neighborZ,
+                                               numberOfLBnodes, DD27, isEvenTimestep);
+   getLastCudaError("GetPlaneConc27 execution failed");
+}
+
+void CalcConcentration27(unsigned int numberOfThreads, real* Conc, unsigned int* geoD, unsigned int* neighborX,
+                         unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes, real* DD27,
+                         bool isEvenTimestep)
+{
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+   CalcConc27<<<grid.grid, grid.threads>>>(Conc, geoD, neighborX, neighborY, neighborZ, numberOfLBnodes, DD27,
+                                           isEvenTimestep);
+   getLastCudaError("CalcConc27 execution failed");
+}
+
+void CalcConcThS7(real* Conc, unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                  unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD7, bool isEvenTimestep)
+{
+   vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+   CalcConc7<<<grid.grid, grid.threads>>>(Conc, geoD, neighborX, neighborY, neighborZ, numberOfLBnodes, DD7, isEvenTimestep);
+   getLastCudaError("CalcConc7 execution failed");
 }
