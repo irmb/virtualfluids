@@ -36,7 +36,7 @@
 
 #include "Calculation/Calculation.h"
 
-class LBMSimulationParameter;
+struct LBMSimulationParameter;
 
 void ScaleCF27(real* DC, real* DF, unsigned int* neighborCX, unsigned int* neighborCY, unsigned int* neighborCZ,
                unsigned int* neighborFX, unsigned int* neighborFY, unsigned int* neighborFZ,

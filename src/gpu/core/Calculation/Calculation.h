@@ -27,7 +27,7 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \author Martin Schoenherr
-//=======================================================================================#ifndef _LB_H_
+//=======================================================================================
 #ifndef CALCULATION_H
 #define CALCULATION_H
 

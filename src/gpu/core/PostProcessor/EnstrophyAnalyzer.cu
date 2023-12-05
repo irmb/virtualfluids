@@ -47,7 +47,6 @@
 
 #include <basics/constants/NumericConstants.h>
 
-#include "GPU/GPU_Kernels.cuh"
 #include "Parameter/Parameter.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 

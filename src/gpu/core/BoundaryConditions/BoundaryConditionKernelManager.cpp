@@ -45,7 +45,7 @@
 
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
-#include "GPU/GPU_Interface.h"
+
 
 BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {

@@ -30,7 +30,7 @@
 //=======================================================================================
 #include "Kernel/ADKernelManager.h"
 #include "Cuda/CudaMemoryManager.h"
-#include "GPU/GPU_Interface.h"
+
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
 #include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"

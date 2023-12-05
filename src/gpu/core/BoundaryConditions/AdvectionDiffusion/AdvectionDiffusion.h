@@ -31,7 +31,7 @@
 #ifndef AdvectionDiffusion_H
 #define AdvectionDiffusion_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>

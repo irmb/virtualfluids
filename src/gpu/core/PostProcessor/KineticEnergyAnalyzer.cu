@@ -48,14 +48,13 @@
 
 #include <basics/constants/NumericConstants.h>
 
-#include "GPU/GPU_Kernels.cuh"
 #include "Parameter/Parameter.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
-__global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, unsigned long long numberOfLBnodes);
+__global__ void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, unsigned long long numberOfLBnodes);
 
 __host__ __device__ inline void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint index);
 

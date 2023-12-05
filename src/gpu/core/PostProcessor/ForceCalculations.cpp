@@ -1,7 +1,7 @@
 #include "ForceCalculations.h"
 
 //////////////////////////////////////////////////////////////////////////
-#include "GPU/GPU_Interface.h"
+
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include <stdio.h>

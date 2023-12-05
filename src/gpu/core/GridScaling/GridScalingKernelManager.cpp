@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "GridScaling/GridScalingKernelManager.h"
 #include "Cuda/CudaMemoryManager.h"
-#include "GPU/GPU_Interface.h"
+
 #include <logger/Logger.h>
 #include "Parameter/Parameter.h"
 #include "Cuda/CudaStreamManager.h"
