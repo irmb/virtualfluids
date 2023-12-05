@@ -26,13 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ADKernelManager.h
-//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Kernel/ADKernelManager.h"
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
 #include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"
 
@@ -69,7 +68,7 @@ void ADKernelManager::runADcollisionKernel(const int level)const
 
 void ADKernelManager::runADslipBCKernel(const int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 1) {
-        ADSlipVelDevComp(
+        AdvectionDiffusionSlipVelocityCompressible(
             para->getParD(level)->numberofthreads,
             para->getParD(level)->slipBC.normalX,
             para->getParD(level)->slipBC.normalY,
@@ -88,71 +87,10 @@ void ADKernelManager::runADslipBCKernel(const int level) const{
     }
 }
 
-void ADKernelManager::runADpressureBCKernel(const int level) const{
-    if (para->getParD(level)->TempPress.kTemp > 0){
-            // QADPressIncompDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->TempPress.temp,
-            //     para->getParD(level)->TempPress.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->TempPress.k,
-            //     para->getParD(level)->pressureBC.q27[0],
-            //     para->getParD(level)->TempPress.kTemp,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-
-            //////////////////////////////////////////////////////////////////////////
-            // C O M P R E S S I B L E
-            //////////////////////////////////////////////////////////////////////////
-            QADPressDev27(
-                para->getParD(level)->numberofthreads,
-                para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD.f[0],
-                para->getParD(level)->TempPress.temp,
-                para->getParD(level)->TempPress.velo,
-                para->getParD(level)->diffusivity,
-                para->getParD(level)->TempPress.k,
-                para->getParD(level)->pressureBC.q27[0],
-                para->getParD(level)->TempPress.kTemp,
-                para->getParD(level)->omega,
-                para->getParD(level)->neighborX,
-                para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ,
-                para->getParD(level)->numberOfNodes,
-                para->getParD(level)->isEvenTimestep);
-    }
-}
-
 void ADKernelManager::runADgeometryBCKernel(const int level) const
 {
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0) {
-            // QNoSlipADincompDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->Temp.temp,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->Temp.k,
-            //     para->getParD(level)->geometryBC.q27[0],
-            //     para->getParD(level)->Temp.kTemp,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-
-            //////////////////////////////////////////////////////////////////////////
-            // C O M P R E S S I B L E
-            //////////////////////////////////////////////////////////////////////////
-
-            QADBBDev27(
+            AdvectionDiffusionBounceBack(
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD.f[0],
@@ -170,34 +108,13 @@ void ADKernelManager::runADgeometryBCKernel(const int level) const
     }
 }
 
-void ADKernelManager::runADveloBCKernel(const int level) const{
+void ADKernelManager::runADDirichletBCKernel(const int level) const{
     if (para->getParD(level)->TempVel.kTemp > 0){
-            // QADVeloIncompDev27(
-            //     para->getParD(level)->numberofthreads,
-            //     para->getParD(level)->distributions.f[0],
-            //     para->getParD(level)->distributionsAD27.f[0],
-            //     para->getParD(level)->TempVel.temp,
-            //     para->getParD(level)->TempVel.velo,
-            //     para->getParD(level)->diffusivity,
-            //     para->getParD(level)->TempVel.k,
-            //     para->getParD(level)->velocityBC.q27[0],
-            //     para->getParD(level)->TempVel.kTemp,
-            //     para->getParD(level)->omega,
-            //     para->getParD(level)->neighborX,
-            //     para->getParD(level)->neighborY,
-            //     para->getParD(level)->neighborZ,
-            //     para->getParD(level)->numberOfNodes,
-            //     para->getParD(level)->isEvenTimestep);
-
-            //////////////////////////////////////////////////////////////////////////
-            // C O M P R E S S I B L E
-            //////////////////////////////////////////////////////////////////////////
-            QADVelDev27(
+            AdvectionDiffusionDirichlet(
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD.f[0],
                 para->getParD(level)->TempVel.tempPulse,
-                para->getParD(level)->TempVel.velo,
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->velocityBC.k,
                 para->getParD(level)->velocityBC.q27[0],
