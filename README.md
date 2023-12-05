@@ -48,7 +48,7 @@ Alternatively enable the options via the cmake-gui.
     - GPU change between Double and Single Precision
 
 ### Result Files
-The output files can be found in `<build directory>/bin/output`. As there is an usually high amount of data, you might want to change the output path in the main function.
+The output files can be found in `<build directory>/bin/output`. As there is usually high amount of data, you might want to change the output path in the main function.
 
 The CPU part generates a set of multiple output directories in the prescribed output path. The flow fields can be found in the _mq_ directory. To view the flow fields, it is most conveniant to open the _mq_collection.pvd_ file in Paraview. The _bc_ directory contains the boundary condition information, the _geo_ directory contains information on the geometry of the flow domain and the _blocks_ directory contains the block grid.
 
