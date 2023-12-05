@@ -31,8 +31,8 @@
 //! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/GPUHelperFunctions/ScalingUtilities.h"
+#include "Utilities/KernelUtilities.h"
+#include "Utilities/ScalingUtilities.h"
 
 #include <lbm/refinement/InterpolationFC.h>
 #include <lbm/interpolation/InterpolationCoefficients.h>

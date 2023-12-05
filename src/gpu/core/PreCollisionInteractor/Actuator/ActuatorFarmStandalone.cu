@@ -42,12 +42,12 @@
 #include <basics/constants/NumericConstants.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include "GPU/GeometryUtils.h"
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/GeometryUtils.h"
+#include "Utilities/KernelUtilities.h"
 #include "Parameter/Parameter.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 
 using namespace vf::basics::constant;
 

@@ -5,11 +5,11 @@
 #include "Utilities/NumericalTestGridReader/NumericalTestGridReader.h"
 #include "Utilities/SimulationParameter/SimulationParameter.h"
 
-#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/Cuda/CudaMemoryManager.h"
 #include "gpu/core/Parameter/Parameter.h"
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/Calculation/Simulation.h"
 
 #include <parallel/MPICommunicator.h>
 

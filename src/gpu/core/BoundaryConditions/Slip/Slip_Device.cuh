@@ -31,7 +31,7 @@
 #ifndef Slip_Device_H
 #define Slip_Device_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 __global__ void SlipCompressible_Device(
     real* DD,

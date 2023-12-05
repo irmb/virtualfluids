@@ -33,7 +33,7 @@
 #ifndef GridScalingKernelManager_H
 #define GridScalingKernelManager_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include <basics/PointerDefinitions.h>
 
 #include <logger/Logger.h>

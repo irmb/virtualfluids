@@ -1,5 +1,5 @@
 #include "DistributionDebugWriter.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Utilities/testUtilitiesGPU.h"
 #include <gmock/gmock.h>
 

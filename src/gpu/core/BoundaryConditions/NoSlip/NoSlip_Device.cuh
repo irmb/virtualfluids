@@ -31,7 +31,7 @@
 #ifndef NoSlip_Device_H
 #define NoSlip_Device_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 __global__ void NoSlipBounceBack_Device(
     real* distributions, 

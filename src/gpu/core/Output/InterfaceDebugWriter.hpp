@@ -5,7 +5,7 @@
 #include <sstream>
 #include "StringUtilities/StringUtil.h"
 #include "lbm/constants/D3Q27.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>

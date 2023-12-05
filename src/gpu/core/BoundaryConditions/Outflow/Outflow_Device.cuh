@@ -34,7 +34,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 __global__ void OutflowNonReflecting_Device(  
     real* rhoBC,

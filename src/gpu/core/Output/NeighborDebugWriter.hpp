@@ -10,7 +10,7 @@
 
 #include <lbm/constants/D3Q27.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 #include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"

@@ -31,7 +31,7 @@
 #ifndef NoSlip_H
 #define NoSlip_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 struct LBMSimulationParameter;
 class Parameter;

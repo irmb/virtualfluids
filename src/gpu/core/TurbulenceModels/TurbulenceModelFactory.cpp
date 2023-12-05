@@ -30,16 +30,18 @@
 //! \ingroup TurbulentViscosity
 //! \author Henrik Asmuth
 //=======================================================================================
-#include "LBM/LB.h"
+
+#include "TurbulenceModelFactory.h"
+
+#include <variant>
 
 #include <basics/config/ConfigurationFile.h>
 
-#include "TurbulenceModelFactory.h"
-#include "GPU/TurbulentViscosityKernels.h"
-#include "Parameter/Parameter.h"
 #include <logger/Logger.h>
 
-#include <variant>
+#include "Calculation/Calculation.h"
+#include "Parameter/Parameter.h"
+#include "PostProcessor/TurbulentViscosityKernels.h"
 
 void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel)
 {

@@ -9,7 +9,7 @@
 
 //#include <cmath>
 
-//#include "LBM/LB.h"
+//#include "Calculation/Calculation.h"
 //#include "lbm/constants/D3Q27.h"
 #include <numeric>
 #include "basics/utilities/UbFileOutputASCII.h"

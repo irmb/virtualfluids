@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 #include <basics/DataTypes.h>
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"

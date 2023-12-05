@@ -31,7 +31,7 @@
 #ifndef Stress_Device_H
 #define Stress_Device_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 __global__ void StressCompressible_Device(
     real* DD,

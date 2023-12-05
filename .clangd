@@ -6,4 +6,4 @@ CompileFlags:
     - --cuda-path=/usr/local/cuda
     - -L/usr/local/cuda/lib64
     - -I/usr/local/cuda/include
-  Remove: [-ccbin=*,-rdc=*,--generate-code*,--options-file,-forward*,--extended-lambda,-fopenmp]
+  Remove: [-ccbin=*,-rdc=*,--generate-code*,--options-file,-forward*,--extended-lambda,-fopenmp,-Xcompiler*]

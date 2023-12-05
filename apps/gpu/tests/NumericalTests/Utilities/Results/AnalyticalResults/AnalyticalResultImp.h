@@ -3,7 +3,7 @@
 
 #include "AnalyticalResult.h"
 
-#include "gpu/core/LBM/LB.h"
+#include "gpu/core/Calculation/Calculation.h"
 
 class AnalyticalResultsImp : public AnalyticalResults
 {

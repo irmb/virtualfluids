@@ -31,7 +31,7 @@
 #ifndef AdvectionDiffusion_Device_H
 #define AdvectionDiffusion_Device_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition

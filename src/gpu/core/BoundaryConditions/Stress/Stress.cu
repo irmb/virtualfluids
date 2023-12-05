@@ -32,7 +32,7 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
 #include "BoundaryConditions/Stress/Stress_Device.cuh"
