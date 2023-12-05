@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "LBM/Simulation.h"
+#include "Calculation/Simulation.h"
 #include "Parameter.h"
 #include <basics/PointerDefinitions.h>
 #include "basics/config/ConfigurationFile.h"
@@ -12,7 +12,7 @@
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "GridScaling/GridScalingFactory.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 

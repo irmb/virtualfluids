@@ -31,7 +31,7 @@
 #ifndef Stress_H
 #define Stress_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 struct LBMSimulationParameter;
 class Parameter;

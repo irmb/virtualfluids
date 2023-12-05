@@ -37,13 +37,13 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include <cuda_helper/CudaGrid.h>
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 #include "StringUtilities/StringUtil.h"
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Output/FilePartCalculator.h"
 
 using namespace vf::lbm::dir;

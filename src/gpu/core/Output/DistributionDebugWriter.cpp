@@ -7,7 +7,7 @@
 #include <lbm/constants/D3Q27.h>
 
 #include "FilePartCalculator.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Parameter/Parameter.h"
 #include "WriterUtilities.h"
 

@@ -8,7 +8,7 @@
 #include "BoundaryQs.h"
 #include "BoundaryValues.h"
 
-#include <GPU/CudaMemoryManager.h>
+#include "Cuda/CudaMemoryManager.h"
 #include "OffsetScale.h"
 
 using namespace vf::lbm::dir;

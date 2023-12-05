@@ -40,7 +40,7 @@
 #include <optional>
 
 #include "lbm/constants/D3Q27.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"

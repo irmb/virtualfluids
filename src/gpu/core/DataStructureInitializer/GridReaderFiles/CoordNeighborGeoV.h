@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 
 class CoordNeighborGeoV 

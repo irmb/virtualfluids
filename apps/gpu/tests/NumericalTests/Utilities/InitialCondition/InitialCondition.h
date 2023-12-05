@@ -1,7 +1,7 @@
 #ifndef INITIAL_CONDITION_H
 #define INITIAL_CONDITION_H
 
-#include "gpu/core/LBM/LB.h"
+#include "gpu/core/Calculation/Calculation.h"
 
 #include <vector>
 #include <memory>

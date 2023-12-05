@@ -38,15 +38,15 @@
 #include <parallel/Communicator.h>
 
 #include "BoundaryConditions/BoundaryConditionKernelManager.h"
+#include "CollisionStrategy.h"
 #include "Communication/ExchangeData27.h"
+#include "Cuda/CudaStreamManager.h"
 #include "GridScaling/GridScalingKernelManager.h"
+#include "GridScaling/RefinementStrategy.h"
 #include "Kernel/ADKernelManager.h"
 #include "Kernel/Kernel.h"
-#include "Parameter/CudaStreamManager.h"
+#include "PostProcessor/MacroscopicQuantities.cuh"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-
-#include "CollisionStrategy.h"
-#include "RefinementStrategy.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
@@ -272,7 +272,7 @@ void UpdateGrid27::swapBetweenEvenAndOddTimestep(int level)
 
 void UpdateGrid27::calcMacroscopicQuantities(int level)
 {
-    CalcMacCompSP27(para->getParD(level)->velocityX,
+    calculateMacroscopicQuantitiesCompressible(para->getParD(level)->velocityX,
                     para->getParD(level)->velocityY,
                     para->getParD(level)->velocityZ,
                     para->getParD(level)->rho,
@@ -285,7 +285,7 @@ void UpdateGrid27::calcMacroscopicQuantities(int level)
                     para->getParD(level)->numberofthreads,
                     para->getParD(level)->distributions.f[0],
                     para->getParD(level)->isEvenTimestep);
-    getLastCudaError("CalcMacSP27 execution failed");
+    getLastCudaError("calculateMacroscopicQuantities execution failed");
 }
 
 void UpdateGrid27::preCollisionBC(int level, unsigned int t)

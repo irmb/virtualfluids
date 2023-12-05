@@ -1,6 +1,6 @@
 #include "KernelImp.h"
 
-#include "LBM/LB.h" 
+#include "Calculation/Calculation.h" 
 
 
 void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex)

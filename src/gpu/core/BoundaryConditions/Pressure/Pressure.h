@@ -31,7 +31,7 @@
 #ifndef Pressure_H
 #define Pressure_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 struct LBMSimulationParameter;
 

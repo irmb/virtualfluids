@@ -29,11 +29,12 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Kernel/ADKernelManager.h"
-#include "GPU/CudaMemoryManager.h"
-#include "GPU/GPU_Interface.h"
+#include "Cuda/CudaMemoryManager.h"
+
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
 #include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"
+#include "PostProcessor/Concentration.cuh"
 
 ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(parameter), adkernels(adkernels){}
 

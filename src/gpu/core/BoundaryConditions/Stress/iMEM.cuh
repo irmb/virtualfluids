@@ -36,10 +36,10 @@
 #ifndef iMEM_H
 #define iMEM_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "lbm/constants/D3Q27.h"
 #include <basics/constants/NumericConstants.h>
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;

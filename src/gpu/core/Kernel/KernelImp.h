@@ -1,7 +1,7 @@
 #ifndef KERNEL_IMP_H
 #define KERNEL_IMP_H
 
-#include "LBM/LB.h" 
+#include "Calculation/Calculation.h" 
 
 #include "Kernel.h"
 

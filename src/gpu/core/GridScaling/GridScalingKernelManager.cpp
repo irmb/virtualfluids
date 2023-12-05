@@ -31,14 +31,15 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "GridScaling/GridScalingKernelManager.h"
-#include "GPU/CudaMemoryManager.h"
-#include "GPU/GPU_Interface.h"
+#include "Cuda/CudaMemoryManager.h"
+
 #include <logger/Logger.h>
 #include "Parameter/Parameter.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "GridScaling/GridScalingFactory.h"
 #include <stdexcept>
+#include "GridScaling/Scaling.cuh"
 
 GridScalingKernelManager::GridScalingKernelManager(SPtr<Parameter> parameter, GridScalingFactory *gridScalingFactory)
     : para(parameter)

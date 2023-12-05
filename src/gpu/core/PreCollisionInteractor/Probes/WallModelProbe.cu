@@ -13,7 +13,7 @@
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "basics/constants/NumericConstants.h"
 
 using namespace vf::basics::constant;
