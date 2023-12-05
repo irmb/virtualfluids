@@ -55,7 +55,6 @@ public:
 private:
     timePoint startTime;
     timePoint endTime;
-    double totalTime { 0. };
 };
 
 } // namespace vf::basics
