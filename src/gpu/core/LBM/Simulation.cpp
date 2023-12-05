@@ -11,7 +11,6 @@
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/EdgeNodeFinder.h"
 #include "GPU/GPU_Interface.h"
-#include "GPU/EnstrophyAnalyzer.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
@@ -31,6 +30,7 @@
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.h"
+#include "Calculation/EnstrophyAnalyzer.h"
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/KineticEnergyAnalyzer.h"
 #include "Calculation/PlaneCalculations.h"
