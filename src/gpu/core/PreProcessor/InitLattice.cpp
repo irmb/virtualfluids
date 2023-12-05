@@ -43,7 +43,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Pre
     for (int lev = para->getFine(); lev >= para->getCoarse(); lev--) {
         preProcessor->init(para, lev);
 
-        CalcMacCompSP27(
+        calculateMacroscopicQuantitiesCompressible(
             para->getParD(lev)->velocityX, 
             para->getParD(lev)->velocityY, 
             para->getParD(lev)->velocityZ, 
@@ -60,7 +60,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Pre
 
         if (para->getCalcMean()) {
             constexpr uint tdiff = 1;
-            CalcMacMedSP27(
+            calculateMacrosopicMean(
                 para->getParD(lev)->vx_SP_Med, 
                 para->getParD(lev)->vy_SP_Med, 
                 para->getParD(lev)->vz_SP_Med,

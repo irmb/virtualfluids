@@ -252,7 +252,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t_level, int level)
 {   
     // Compute macroscopic variables in entire domain
-    CalcMacCompSP27(
+    calculateMacroscopicQuantitiesCompressible(
         para->getParD(level)->velocityX, 
         para->getParD(level)->velocityY, 
         para->getParD(level)->velocityZ,
@@ -266,7 +266,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         para->getParD(level)->numberofthreads, 
         para->getParD(level)->distributions.f[0],
         para->getParD(level)->isEvenTimestep);
-    getLastCudaError("In PlanarAverageProbe Kernel CalcMacSP27 execution failed");
+    getLastCudaError("In PlanarAverageProbe Kernel calculateMacroscopicQuantities execution failed");
 
     // Definition of normal and inplane directions for moveIndices kernels
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;

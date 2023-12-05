@@ -34,13 +34,6 @@
 
 #include <basics/DataTypes.h>
 
-void CalcConcThS7(real* Conc, unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
-                  unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD7, bool isEvenTimestep);
-
-void PlaneConcThS7(real* Conc, int* kPC, unsigned int numberOfPointskPC, unsigned int* geoD, unsigned int* neighborX,
-                   unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                   unsigned int numberOfThreads, real* DD7, bool isEvenTimestep);
-
 void PlaneConcThS27(real* Conc, int* kPC, unsigned int numberOfPointskPC, unsigned int* geoD, unsigned int* neighborX,
                     unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                     unsigned int numberOfThreads, real* DD27, bool isEvenTimestep);

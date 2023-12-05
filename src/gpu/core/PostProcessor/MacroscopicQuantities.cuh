@@ -34,28 +34,28 @@
 
 #include <basics/DataTypes.h>
 
-void CalcMacSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMacroscopicQuantities(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                  unsigned int numberOfThreads, real* DD, bool isEvenTimestep);
 
-void CalcMacCompSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                      unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                      unsigned int numberOfThreads, real* DD, bool isEvenTimestep);
 
-void CalcMedSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                  unsigned int numberOfThreads, real* DD, bool isEvenTimestep);
 
-void CalcMedCompSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMeanCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                      unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                      unsigned int numberOfThreads, real* DD, bool isEvenTimestep);
 
-void CalcMedCompAD27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD, unsigned int* geoD,
+void calculateMeanCompressibleAdvectionDiffusion(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD, unsigned int* geoD,
                      unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                      unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD, real* DD_AD,
                      bool isEvenTimestep);
 
-void CalcMacMedSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMacrosopicMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                     unsigned int* neighborY, unsigned int* neighborZ, unsigned int tdiff, unsigned long long numberOfLBnodes,
                     unsigned int numberOfThreads, bool isEvenTimestep);
 
@@ -65,7 +65,7 @@ void ResetMeanValuesSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pres
 void ResetMeanValuesAD27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD,
                          unsigned long long numberOfLBnodes, unsigned int numberOfThreads, bool isEvenTimestep);
 
-void LBCalcMeasurePoints27(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsigned int* kMP,
+void calculateMeasurePoints(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsigned int* kMP,
                            unsigned int numberOfPointskMP, unsigned int MPClockCycle, unsigned int t, unsigned int* geoD,
                            unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                            unsigned long long numberOfLBnodes, real* DD, unsigned int numberOfThreads, bool isEvenTimestep);

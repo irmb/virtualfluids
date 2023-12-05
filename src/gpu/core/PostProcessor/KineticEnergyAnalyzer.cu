@@ -70,7 +70,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
     thrust::device_vector<real> kineticEnergy( this->para->getParD(lev)->numberOfNodes, c0o1);
     thrust::device_vector<uint> isFluid      ( this->para->getParD(lev)->numberOfNodes, 0);
 
-    CalcMacCompSP27(para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ,
+    calculateMacroscopicQuantitiesCompressible(para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ,
                     para->getParD(lev)->rho, para->getParD(lev)->pressure, para->getParD(lev)->typeOfGridNode,
                     para->getParD(lev)->neighborX, para->getParD(lev)->neighborY, para->getParD(lev)->neighborZ,
                     para->getParD(lev)->numberOfNodes, para->getParD(lev)->numberofthreads, para->getParD(lev)->distributions.f[0],

@@ -337,13 +337,13 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
             cudaMemoryManager->cudaCopyFsForRestart(lev);
             //////////////////////////////////////////////////////////////////////////
             // macroscopic values
-            CalcMacSP27(para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ,
+            calculateMacroscopicQuantities(para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ,
                         para->getParD(lev)->rho, para->getParD(lev)->pressure, para->getParD(lev)->typeOfGridNode,
                         para->getParD(lev)->neighborX, para->getParD(lev)->neighborY,
                         para->getParD(lev)->neighborZ, para->getParD(lev)->numberOfNodes,
                         para->getParD(lev)->numberofthreads, para->getParD(lev)->distributions.f[0],
                         para->getParD(lev)->isEvenTimestep);
-            getLastCudaError("Kernel CalcMacSP27 execution failed");
+            getLastCudaError("Kernel calculateMacroscopicQuantities execution failed");
             //////////////////////////////////////////////////////////////////////////
             // test...should not work...and does not
             // para->getEvenOrOdd(lev)==false;
@@ -523,7 +523,7 @@ void Simulation::calculateTimestep(uint timestep)
     {
         for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
         {
-            //CalcMedSP27(para->getParD(lev)->vx_SP_Med,
+            //calculateMean(para->getParD(lev)->vx_SP_Med,
                   //      para->getParD(lev)->vy_SP_Med,
                   //      para->getParD(lev)->vz_SP_Med,
                   //      para->getParD(lev)->rho_SP_Med,
@@ -536,8 +536,8 @@ void Simulation::calculateTimestep(uint timestep)
                   //      para->getParD(lev)->numberofthreads,
                   //      para->getParD(lev)->d0SP.f[0],
                   //      para->getParD(lev)->evenOrOdd);
-            //getLastCudaError("CalcMacSP27 execution failed");
-            CalcMedCompSP27(para->getParD(lev)->vx_SP_Med,
+            //getLastCudaError("calculateMacroscopicQuantities execution failed");
+            calculateMeanCompressible(para->getParD(lev)->vx_SP_Med,
                             para->getParD(lev)->vy_SP_Med,
                             para->getParD(lev)->vz_SP_Med,
                             para->getParD(lev)->rho_SP_Med,
@@ -612,7 +612,7 @@ void Simulation::calculateTimestep(uint timestep)
             for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
             {
                 // VF_LOG_INFO("start level = {}", lev);
-                LBCalcMeasurePoints27(  para->getParD(lev)->VxMP,            para->getParD(lev)->VyMP,                 para->getParD(lev)->VzMP,
+                calculateMeasurePoints(  para->getParD(lev)->VxMP,            para->getParD(lev)->VyMP,                 para->getParD(lev)->VzMP,
                                         para->getParD(lev)->RhoMP,           para->getParD(lev)->kMP,                  para->getParD(lev)->numberOfPointskMP,
                                         valuesPerClockCycle,                 timestepForMeasuringPoints,                                     para->getParD(lev)->typeOfGridNode,
                                         para->getParD(lev)->neighborX,       para->getParD(lev)->neighborY,            para->getParD(lev)->neighborZ,
@@ -730,7 +730,7 @@ void Simulation::readAndWriteFiles(uint timestep)
         //    if (para->getCalcMean() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
         //    {
         //         unsigned int tdiff = t - t_prev;
-        //         CalcMacMedSP27(para->getParD(lev)->vx_SP_Med,
+        //         calculateMacrosopicMean(para->getParD(lev)->vx_SP_Med,
         //                           para->getParD(lev)->vy_SP_Med,
         //                           para->getParD(lev)->vz_SP_Med,
         //                           para->getParD(lev)->rho_SP_Med,
@@ -743,9 +743,9 @@ void Simulation::readAndWriteFiles(uint timestep)
         //                           para->getParD(lev)->size_Mat_SP,
         //                           para->getParD(lev)->numberofthreads,
         //                           para->getParD(lev)->evenOrOdd);
-        //         getLastCudaError("CalcMacMedSP27 execution failed");
+        //         getLastCudaError("calculateMacrosopicMean execution failed");
         //    }
-        //    CalcMacSP27(para->getParD(lev)->vx_SP,
+        //    calculateMacroscopicQuantities(para->getParD(lev)->vx_SP,
         //                        para->getParD(lev)->vy_SP,
         //                        para->getParD(lev)->vz_SP,
         //                        para->getParD(lev)->rho,
@@ -758,8 +758,8 @@ void Simulation::readAndWriteFiles(uint timestep)
         //                        para->getParD(lev)->numberofthreads,
         //                        para->getParD(lev)->d0SP.f[0],
         //                        para->getParD(lev)->evenOrOdd);
-        //     getLastCudaError("CalcMacSP27 execution failed");
-            CalcMacCompSP27(para->getParD(lev)->velocityX,
+        //     getLastCudaError("calculateMacroscopicQuantities execution failed");
+            calculateMacroscopicQuantitiesCompressible(para->getParD(lev)->velocityX,
                             para->getParD(lev)->velocityY,
                             para->getParD(lev)->velocityZ,
                             para->getParD(lev)->rho,
@@ -772,7 +772,7 @@ void Simulation::readAndWriteFiles(uint timestep)
                             para->getParD(lev)->numberofthreads,
                             para->getParD(lev)->distributions.f[0],
                             para->getParD(lev)->isEvenTimestep);
-            getLastCudaError("CalcMacSP27 execution failed");
+            getLastCudaError("calculateMacroscopicQuantities execution failed");
 
         cudaMemoryManager->cudaCopyPrint(lev);
         if (para->getCalcMean())

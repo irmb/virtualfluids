@@ -46,7 +46,7 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
-__global__ void LBCalcMacSP27(
+__global__ void calculateMacroscopicQuantities_device(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -186,7 +186,7 @@ __global__ void LBCalcMacSP27(
     }
 }
 
-__global__ void LBCalcMacCompSP27(
+__global__ void calculateMacroscopicQuantitiesCompressible_device(
     real *vxD,
     real *vyD,
     real *vzD,
@@ -231,7 +231,7 @@ __global__ void LBCalcMacCompSP27(
     pressD[nodeIndex] = vf::lbm::getPressure(distribution, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]);
 }
 
-__global__ void LBCalcMedSP27(
+__global__ void calculateMean_device(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -382,7 +382,7 @@ __global__ void LBCalcMedSP27(
     }
 }
 
-__global__ void LBCalcMedCompSP27(
+__global__ void calculateMeanCompressible_device(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -530,7 +530,7 @@ __global__ void LBCalcMedCompSP27(
     }
 }
 
-__global__ void LBCalcMedCompAD27(
+__global__ void calculateMeanCompressibleAdvectionDiffusion_device(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -718,7 +718,7 @@ __global__ void LBCalcMedCompAD27(
     }
 }
 
-__global__ void LBCalcMacMedSP27(
+__global__ void calculateMacrosopicMean_device(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -934,71 +934,71 @@ __global__ void LBCalcMeasurePoints(
     }
 }
 
-void CalcMacSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMacroscopicQuantities(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                  unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBCalcMacSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+    calculateMacroscopicQuantities_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
                                                numberOfLBnodes, DD, isEvenTimestep);
-    getLastCudaError("LBCalcMacSP27 execution failed");
+    getLastCudaError("calculateMacroscopicQuantities_device execution failed");
 }
 
-void CalcMacCompSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                      unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                      unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBCalcMacCompSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+    calculateMacroscopicQuantitiesCompressible_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
                                                    numberOfLBnodes, DD, isEvenTimestep);
-    getLastCudaError("LBCalcMacCompSP27 execution failed");
+    getLastCudaError("calculateMacroscopicQuantitiesCompressible_device execution failed");
 }
 
-void CalcMedSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                  unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBCalcMedSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+    calculateMean_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
                                                numberOfLBnodes, DD, isEvenTimestep);
-    getLastCudaError("LBCalcMedSP27 execution failed");
+    getLastCudaError("calculateMean_device execution failed");
 }
 
-void CalcMedCompSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMeanCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                      unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                      unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBCalcMedCompSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+    calculateMeanCompressible_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
                                                    numberOfLBnodes, DD, isEvenTimestep);
-    getLastCudaError("LBCalcMedCompSP27 execution failed");
+    getLastCudaError("calculateMeanCompressible_device execution failed");
 }
 
-void CalcMedCompAD27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD, unsigned int* geoD,
+void calculateMeanCompressibleAdvectionDiffusion(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD, unsigned int* geoD,
                      unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                      unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD, real* DD_AD,
                      bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBCalcMedCompAD27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, concD, geoD, neighborX, neighborY, neighborZ,
+    calculateMeanCompressibleAdvectionDiffusion_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, concD, geoD, neighborX, neighborY, neighborZ,
                                                    numberOfLBnodes, DD, DD_AD, isEvenTimestep);
-    getLastCudaError("LBCalcMedCompAD27 execution failed");
+    getLastCudaError("calculateMeanCompressibleAdvectionDiffusion_device execution failed");
 }
 
-void CalcMacMedSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+void calculateMacrosopicMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                     unsigned int* neighborY, unsigned int* neighborZ, unsigned int tdiff, unsigned long long numberOfLBnodes,
                     unsigned int numberOfThreads, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBCalcMacMedSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ, tdiff,
+    calculateMacrosopicMean_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ, tdiff,
                                                   numberOfLBnodes, isEvenTimestep);
-    getLastCudaError("LBCalcMacMedSP27 execution failed");
+    getLastCudaError("calculateMacrosopicMean_device execution failed");
 }
 
 void ResetMeanValuesSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned long long numberOfLBnodes,
@@ -1019,7 +1019,7 @@ void ResetMeanValuesAD27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pres
     getLastCudaError("LBResetMeanValuesAD27 execution failed");
 }
 
-void LBCalcMeasurePoints27(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsigned int* kMP,
+void calculateMeasurePoints(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsigned int* kMP,
                            unsigned int numberOfPointskMP, unsigned int MPClockCycle, unsigned int t, unsigned int* geoD,
                            unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                            unsigned long long numberOfLBnodes, real* DD, unsigned int numberOfThreads, bool isEvenTimestep)

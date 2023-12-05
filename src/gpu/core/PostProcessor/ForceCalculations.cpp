@@ -52,7 +52,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
          unsigned long long numberOfElements = para->getParH(lev)->numberOfNodes;
          if (numberOfElements > 0)
          {
-             CalcMacCompSP27(para->getParD(lev)->velocityX,
+             calculateMacroscopicQuantitiesCompressible(para->getParD(lev)->velocityX,
                              para->getParD(lev)->velocityY,
                              para->getParD(lev)->velocityZ,
                              para->getParD(lev)->rho,
@@ -65,7 +65,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
                              para->getParD(lev)->numberofthreads,
                              para->getParD(lev)->distributions.f[0],
                              para->getParD(lev)->isEvenTimestep);
-             getLastCudaError("CalcMacSP27 execution failed");
+             getLastCudaError("calculateMacroscopicQuantities execution failed");
              //////////////////////////////////////////////////////////////////
              cudaMemoryManager->cudaCopyPrint(lev);
              //////////////////////////////////////////////////////////////////
