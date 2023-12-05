@@ -26,7 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CumlantK17_Device.cu
 //! \author Anna Wellmann, Martin Schönherr, Henry Korb, Henrik Asmuth
 //! \date 05/12/2022
 //! \brief Kernel for CumulantK17 including different turbulence models and options for local body forces and writing
