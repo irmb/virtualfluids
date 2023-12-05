@@ -40,12 +40,12 @@
 #include "BoundaryConditions/BoundaryConditionKernelManager.h"
 #include "CollisionStrategy.h"
 #include "Communication/ExchangeData27.h"
+#include "Cuda/CudaStreamManager.h"
 #include "GridScaling/GridScalingKernelManager.h"
+#include "GridScaling/RefinementStrategy.h"
 #include "Kernel/ADKernelManager.h"
 #include "Kernel/Kernel.h"
-#include "Cuda/CudaStreamManager.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
-#include "RefinementStrategy.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
