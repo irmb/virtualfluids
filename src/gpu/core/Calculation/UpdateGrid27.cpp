@@ -1,3 +1,33 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr, Stephan Lenz, Anna Wellmann
+//=======================================================================================
 #include "UpdateGrid27.h"
 
 #include <cuda_runtime.h>
@@ -127,13 +157,6 @@ void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    // D E P R E C A T E D
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-    // 1D domain decomposition
-    // exchangePostCollDataGPU27(para, comm, level);
 }
 void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useReducedComm)
 {
@@ -236,9 +259,8 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
     if (para->getDiffOn())
     {
         this->adKernelManager->runADgeometryBCKernel(level);
-        this->adKernelManager->runADveloBCKernel(level);
+        this->adKernelManager->runADDirichletBCKernel(level);
         this->adKernelManager->runADslipBCKernel(level);
-        this->adKernelManager->runADpressureBCKernel(level);
     }
 }
 

@@ -28,53 +28,57 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
-#ifndef ADVECTION_DIFFUSION_H
-#define ADVECTION_DIFFUSION_H
+#ifndef AdvectionDiffusion_Device_H
+#define AdvectionDiffusion_Device_H
 
-#include <vector>
+#include "LBM/LB.h"
 
-#include <basics/DataTypes.h>
-#include <basics/PointerDefinitions.h>
+//////////////////////////////////////////////////////////////////////////
+//! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
+__global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
+    real * normalX,
+    real * normalY,
+    real * normalZ,
+    real * distributions,
+    real * distributionsAD,
+    int* QindexArray,
+    real * Qarrays,
+    uint numberOfBCnodes,
+    real omegaDiffusivity,
+    uint * neighborX,
+    uint * neighborY,
+    uint * neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
+__global__ void AdvectionDiffusionDirichlet_Device(
+    real* DD,
+    real* DD27,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
-//! \brief Class forwarding for Parameter, CudaMemoryManager
-class Parameter;
-class CudaMemoryManager;
-class AdvectionDiffusionKernel;
-
-//! \class ADKernelManager
-//! \brief manage the advection diffusion kernel calls
-class ADKernelManager
-{
-
-public:
-    //! Class constructor
-    //! \param parameter shared pointer to instance of class Parameter
-    ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels);
-
-    //! \brief set initial concentration values at all nodes
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;
-
-    //! \brief calculate the state of the next time step of the advection diffusion distributions
-    void runADcollisionKernel(const int level) const;
-
-    //! \brief calls the device function of the geometry boundary condition for advection diffusion
-    void runADgeometryBCKernel(const int level) const;
-
-    //! \brief calls the device function of the velocity boundary condition for advection diffusion
-    void runADDirichletBCKernel(const int level) const;
-
-    //! \brief calls the device function of the slip boundary condition for advection diffusion
-    void runADslipBCKernel(const int level) const;
-
-    //! \brief copy the concentration from device to host and writes VTK file with concentration
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void printAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;
-
-private:
-    SPtr<Parameter> para;
-    std::vector<SPtr<AdvectionDiffusionKernel>> adkernels;
-};
+__global__ void AdvectionDiffusionBounceBack_Device(
+    real* DD,
+    real* DD27,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
 
 #endif
