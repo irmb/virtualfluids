@@ -33,44 +33,6 @@
 
 #include "LBM/LB.h"
 
-__global__ void LBCalcMac27( real* vxD,
-                                        real* vyD,
-                                        real* vzD,
-                                        real* rhoD,
-                                        unsigned int* neighborX,
-                                        unsigned int* neighborY,
-                                        unsigned int* neighborZ,
-                                        unsigned int* geoD,
-                                        unsigned long long numberOfLBnodes,
-                                        real* DD,
-                                        bool isEvenTimestep);
-
-__global__ void LBCalcMacSP27( real* vxD,
-                                          real* vyD,
-                                          real* vzD,
-                                          real* rhoD,
-                                          real* pressD,
-                                          unsigned int* geoD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          real* DD,
-                                          bool isEvenTimestep);
-
-__global__ void LBCalcMacCompSP27( real* vxD,
-                                              real* vyD,
-                                              real* vzD,
-                                              real* rhoD,
-                                              real* pressD,
-                                              unsigned int* geoD,
-                                              unsigned int* neighborX,
-                                              unsigned int* neighborY,
-                                              unsigned int* neighborZ,
-                                              unsigned long long numberOfLBnodes,
-                                              real* DD,
-                                              bool isEvenTimestep);
-
 __global__ void CalcConc7( real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,

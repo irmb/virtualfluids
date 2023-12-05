@@ -18,6 +18,7 @@
 #include "gpu/core/GPU/GPU_Interface.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/cuda_helper/CudaGrid.h"
+#include "PostProcessor/MacroscopicQuantities.cuh"
 
 
 using namespace vf::basics::constant;

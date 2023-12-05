@@ -49,6 +49,7 @@
 
 #include "GPU/GPU_Kernels.cuh"
 #include "Parameter/Parameter.h"
+#include "PostProcessor/MacroscopicQuantities.cuh"
 
 using namespace vf::basics::constant;
 
@@ -68,20 +69,11 @@ bool EnstrophyAnalyzer::run(uint iter)
     thrust::device_vector<real> enstrophy( this->para->getParD(lev)->numberOfNodes, c0o1);
     thrust::device_vector<uint> isFluid  ( this->para->getParD(lev)->numberOfNodes, 0);
 
-    LBCalcMacCompSP27<<< grid.grid, grid.threads >>>(
-        para->getParD(lev)->velocityX,
-        para->getParD(lev)->velocityY,
-        para->getParD(lev)->velocityZ,
-        para->getParD(lev)->rho,
-        para->getParD(lev)->pressure,
-        para->getParD(lev)->typeOfGridNode,
-        para->getParD(lev)->neighborX,
-        para->getParD(lev)->neighborY,
-        para->getParD(lev)->neighborZ,
-        para->getParD(lev)->numberOfNodes,
-        para->getParD(lev)->distributions.f[0],
-        para->getParD(lev)->isEvenTimestep); 
-    getLastCudaError("LBCalcMacCompSP27 execution failed");
+    CalcMacCompSP27(para->getParD(lev)->velocityX, para->getParD(lev)->velocityY, para->getParD(lev)->velocityZ,
+                    para->getParD(lev)->rho, para->getParD(lev)->pressure, para->getParD(lev)->typeOfGridNode,
+                    para->getParD(lev)->neighborX, para->getParD(lev)->neighborY, para->getParD(lev)->neighborZ,
+                    para->getParD(lev)->numberOfNodes, para->getParD(lev)->numberofthreads, para->getParD(lev)->distributions.f[0],
+                    para->getParD(lev)->isEvenTimestep);
 
     enstrophyKernel<<< grid.grid, grid.threads >>>(
         para->getParD(lev)->velocityX,

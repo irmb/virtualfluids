@@ -26,79 +26,26 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CalcMac27.cu
-//! \ingroup GPU
 //! \author Martin Schoenherr, Soeren Peters
 //======================================================================================
-#include "LBM/LB.h"
+#include "MacroscopicQuantities.cuh"
+
+#include <helper_cuda.h>
+
+#include <cuda_helper/CudaGrid.h>
+
+#include <lbm/MacroscopicQuantities.h>
+#include <lbm/constants/D3Q27.h>
+
+#include <basics/constants/NumericConstants.h>
 
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
-
-#include "lbm/constants/D3Q27.h"
-#include "basics/constants/NumericConstants.h"
-#include "lbm/MacroscopicQuantities.h"
-
+#include "LBM/LB.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
-////////////////////////////////////////////////////////////////////////////////
-__global__ void LBCalcMac27(
-    real* vxD,
-    real* vyD,
-    real* vzD,
-    real* rhoD,
-    unsigned int* geoD,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    real* distributions,
-    bool isEvenTimestep)
-{
-    const unsigned int tx = threadIdx.x;    // Thread index = lokaler i index
-    const unsigned int by = blockIdx.x;     // Block index x
-    const unsigned int bz = blockIdx.y;     // Block index y
-    const unsigned int x = tx + STARTOFFX;  // Globaler x-Index
-    const unsigned int y = by + STARTOFFY;  // Globaler y-Index
-    const unsigned int z = bz + STARTOFFZ;  // Globaler z-Index
- 
-    const unsigned nx = blockDim.x + 2 * STARTOFFX;
-    const unsigned ny = gridDim.x + 2 * STARTOFFY;
- 
-    const unsigned int k = nx*(ny*z + y) + x; // Zugriff auf arrays im device
- 
- 
-    if(k >= numberOfLBnodes)
-        return;
- 
-    if(!isValidFluidNode(geoD[k]))
-       return;
- 
-    rhoD[k] = c0o1;
-    vxD[k]  = c0o1;
-    vyD[k]  = c0o1;
-    vzD[k]  = c0o1;
- 
-    Distributions27 dist;
-    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
-    vf::gpu::ListIndices listIndices(k, neighborX, neighborY, neighborZ);
-
-    real distribution[27];
-    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
- 
-    rhoD[k] = vf::lbm::getDensity(distribution);
-    vxD[k] = vf::lbm::getIncompressibleVelocityX1(distribution);
-    vyD[k] = vf::lbm::getIncompressibleVelocityX2(distribution);
-    vzD[k] = vf::lbm::getIncompressibleVelocityX3(distribution);
-}
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMacSP27(
     real* vxD,
     real* vyD,
@@ -238,40 +185,7 @@ __global__ void LBCalcMacSP27(
        }
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMacCompSP27(
     real *vxD,
     real *vyD,
@@ -317,42 +231,6 @@ __global__ void LBCalcMacCompSP27(
     pressD[nodeIndex] = vf::lbm::getPressure(distribution, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMedSP27(
     real* vxD,
     real* vyD,
@@ -503,29 +381,7 @@ __global__ void LBCalcMedSP27(
         }
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMedCompSP27(
     real* vxD,
     real* vyD,
@@ -673,29 +529,7 @@ __global__ void LBCalcMedCompSP27(
         }
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMedCompAD27(
     real* vxD,
     real* vyD,
@@ -883,29 +717,7 @@ __global__ void LBCalcMedCompAD27(
         }
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMacMedSP27(
     real* vxD,
     real* vyD,
@@ -951,29 +763,7 @@ __global__ void LBCalcMacMedSP27(
         }
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBResetMeanValuesSP27(
     real* vxD,
     real* vyD,
@@ -999,29 +789,7 @@ __global__ void LBResetMeanValuesSP27(
         vzD[nodeIndex] = c0o1;
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBResetMeanValuesAD27(
     real* vxD,
     real* vyD,
@@ -1048,29 +816,7 @@ __global__ void LBResetMeanValuesAD27(
         vzD[nodeIndex]    = c0o1;
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalcMeasurePoints(
     real* vxMP,
     real* vyMP,
@@ -1187,107 +933,130 @@ __global__ void LBCalcMeasurePoints(
         }
     }
 }
-////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-__global__ void LBSetOutputWallVelocitySP27(
-    real* vxD,
-    real* vyD,
-    real* vzD,
-    real* vxWall,
-    real* vyWall,
-    real* vzWall,
-    int numberOfWallNodes, 
-    int* kWallNodes, 
-    real* rhoD,
-    real* pressD,
-    unsigned int* geoD,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    real* DD,
-    bool isEvenTimestep)
+__global__ void LBSetOutputWallVelocitySP27(real* vxD, real* vyD, real* vzD, real* vxWall, real* vyWall, real* vzWall,
+                                            int numberOfWallNodes, int* kWallNodes, real* rhoD, real* pressD,
+                                            unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
+                                            unsigned int* neighborZ, unsigned long long numberOfLBnodes, real* DD,
+                                            bool isEvenTimestep)
 {
-   ////////////////////////////////////////////////////////////////////////////////
-   //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-   //!
-   const unsigned nodeIndex = getNodeIndex();
+    const unsigned nodeIndex = getNodeIndex();
 
-   //////////////////////////////////////////////////////////////////////////
-   if(nodeIndex<numberOfWallNodes)
-   {
-      //////////////////////////////////////////////////////////////////////////
-      //index
-      unsigned int KWN  = kWallNodes[nodeIndex];
-      //////////////////////////////////////////////////////////////////////////
-      vxD[KWN] = 0.0;//vxWall[k];
-      vyD[KWN] = 0.0;//vyWall[k];
-      vzD[KWN] = 0.0;//vzWall[k];
-   }
+    if (nodeIndex < numberOfWallNodes) {
+        unsigned int KWN = kWallNodes[nodeIndex];
+
+        vxD[KWN] = 0.0; // vxWall[k];
+        vyD[KWN] = 0.0; // vyWall[k];
+        vzD[KWN] = 0.0; // vzWall[k];
+    }
 }
 
+void CalcMacSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+                 unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                 unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBCalcMacSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+                                               numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalcMacSP27 execution failed");
+}
 
+void CalcMacCompSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+                     unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                     unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBCalcMacCompSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+                                                   numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalcMacCompSP27 execution failed");
+}
 
+void CalcMedSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+                 unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                 unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBCalcMedSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+                                               numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalcMedSP27 execution failed");
+}
 
+void CalcMedCompSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+                     unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+                     unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBCalcMedCompSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+                                                   numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalcMedCompSP27 execution failed");
+}
 
+void CalcMedCompAD27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD, unsigned int* geoD,
+                     unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                     unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD, real* DD_AD,
+                     bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBCalcMedCompAD27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, concD, geoD, neighborX, neighborY, neighborZ,
+                                                   numberOfLBnodes, DD, DD_AD, isEvenTimestep);
+    getLastCudaError("LBCalcMedCompAD27 execution failed");
+}
 
+void CalcMacMedSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
+                    unsigned int* neighborY, unsigned int* neighborZ, unsigned int tdiff, unsigned long long numberOfLBnodes,
+                    unsigned int numberOfThreads, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBCalcMacMedSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ, tdiff,
+                                                  numberOfLBnodes, isEvenTimestep);
+    getLastCudaError("LBCalcMacMedSP27 execution failed");
+}
 
+void ResetMeanValuesSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned long long numberOfLBnodes,
+                         unsigned int numberOfThreads, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBResetMeanValuesSP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, numberOfLBnodes, isEvenTimestep);
+    getLastCudaError("LBResetMeanValuesSP27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+void ResetMeanValuesAD27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, real* concD,
+                         unsigned long long numberOfLBnodes, unsigned int numberOfThreads, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
+    LBResetMeanValuesAD27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, concD, numberOfLBnodes, isEvenTimestep);
+    getLastCudaError("LBResetMeanValuesAD27 execution failed");
+}
 
+void LBCalcMeasurePoints27(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsigned int* kMP,
+                           unsigned int numberOfPointskMP, unsigned int MPClockCycle, unsigned int t, unsigned int* geoD,
+                           unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                           unsigned long long numberOfLBnodes, real* DD, unsigned int numberOfThreads, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskMP);
 
+    LBCalcMeasurePoints<<<grid.grid, grid.threads>>>(vxMP, vyMP, vzMP, rhoMP, kMP, numberOfPointskMP, MPClockCycle, t, geoD,
+                                                     neighborX, neighborY, neighborZ, numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalcMeasurePoints execution failed");
+}
 
+void SetOutputWallVelocitySP27(unsigned int numberOfThreads, real* vxD, real* vyD, real* vzD, real* vxWall, real* vyWall,
+                               real* vzWall, int numberOfWallNodes, int* kWallNodes, real* rhoD, real* pressD,
+                               unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                               unsigned long long numberOfLBnodes, real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfWallNodes);
 
-
-
-
-
-
-
-
-
-
-
+    LBSetOutputWallVelocitySP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, vxWall, vyWall, vzWall, numberOfWallNodes,
+                                                             kWallNodes, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
+                                                             numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
+}

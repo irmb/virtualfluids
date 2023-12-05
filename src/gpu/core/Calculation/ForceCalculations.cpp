@@ -9,6 +9,8 @@
 #include <sstream>
 #include "GPU/CudaMemoryManager.h"
 
+#include "PostProcessor/MacroscopicQuantities.cuh"
+
 #include "StringUtilities/StringUtil.h"
 //using namespace std;
 //////////////////////////////////////////////////////////////////////////

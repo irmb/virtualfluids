@@ -9,6 +9,8 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
+#include "PostProcessor/MacroscopicQuantities.cuh"
+
 void allocMean(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)

@@ -35,8 +35,8 @@
 #include "GPU/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
+#include "PostProcessor/MacroscopicQuantities.cuh"
 #include "PreProcessor/PreProcessor.h"
-
 
 void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<PreProcessor> preProcessorAD, SPtr<CudaMemoryManager> cudaMemoryManager)
 {

@@ -25,6 +25,8 @@
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
+#include "PostProcessor/MacroscopicQuantities.cuh"
+//////////////////////////////////////////////////////////////////////////
 #include "Calculation/Calc2ndMoments.h"
 #include "Calculation/CalcMean.h"
 #include "Calculation/CalcTurbulenceIntensity.h"
