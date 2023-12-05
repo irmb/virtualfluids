@@ -11,7 +11,7 @@
 #include <lbm/collision/K17CompressibleNavierStokes.h>
 
 #include "Kernel/KernelImp.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
 #include "LBM/GPUHelperFunctions/RunCollision.cuh"

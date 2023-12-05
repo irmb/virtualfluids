@@ -1,5 +1,5 @@
 #include "RefinementStrategy.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 #include <logger/Logger.h>
 

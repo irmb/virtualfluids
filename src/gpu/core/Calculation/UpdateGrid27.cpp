@@ -43,7 +43,7 @@
 #include "GridScaling/GridScalingKernelManager.h"
 #include "Kernel/ADKernelManager.h"
 #include "Kernel/Kernel.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 #include "RefinementStrategy.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"

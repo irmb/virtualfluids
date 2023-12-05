@@ -43,10 +43,10 @@
 #include <logger/Logger.h>
 
 #include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Utilities/GeometryUtils.h"
 #include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 
 using namespace vf::basics::constant;

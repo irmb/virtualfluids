@@ -1,27 +1,41 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #ifndef CudamemoryManager_H
 #define CudamemoryManager_H
 
-#include <vector>
-#include <string>
 #include <memory>
-#include <basics/PointerDefinitions.h>
+#include <string>
+#include <vector>
 
 #include "LBM/LB.h"
-#include "lbm/constants/D3Q27.h"
-
-#include <cuda_runtime.h>
-#include <helper_cuda.h>
-
-#include <curand.h>
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-#pragma clang diagnostic ignored "-Wunused-but-set-parameter"
-#endif
-#include <curand_kernel.h>
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 class Parameter;
 class ActuatorFarm;
@@ -95,7 +109,7 @@ public:
     void cudaFreeQuadricLimiters();
 
     //////////////////////////////////////////////////////////////////////////
-    //3D domain decomposition
+    // 3D domain decomposition
     virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
     void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
@@ -117,7 +131,7 @@ public:
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
-    //3D domain decomposition F3
+    // 3D domain decomposition F3
     void cudaAllocProcessNeighborF3X(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborF3XFsHD(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborF3XFsDH(int lev, unsigned int processNeighbor);
@@ -190,8 +204,8 @@ public:
     void cudaFreePrecursorData(int lev);
 
     void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
-    void cudaCopyWallModel(int lev,  bool hasWallModelMonitor);
-    void cudaFreeWallModel(int lev,  bool hasWallModelMonitor);
+    void cudaCopyWallModel(int lev, bool hasWallModelMonitor);
+    void cudaFreeWallModel(int lev, bool hasWallModelMonitor);
 
     void cudaAllocGeomValuesBC(int lev);
     void cudaCopyGeomValuesBC(int lev);
@@ -239,7 +253,6 @@ public:
     void cudaAllocOutlet(int lev);
     void cudaCopyOutlet(int lev);
     void cudaFreeOutlet(int lev);
-
 
     void cudaAllocPressX0(int lev);
     void cudaCopyPressX0(int lev);
@@ -395,7 +408,7 @@ public:
     void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
 
-    //Precursor Writer
+    // Precursor Writer
     void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
     void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);
     void cudaCopyPrecursorWriterOutputVariablesDtoH(PrecursorWriter* writer, int level);
@@ -404,6 +417,6 @@ public:
 private:
     std::shared_ptr<Parameter> parameter;
     double memsizeGPU = 0.0;
-
 };
+
 #endif

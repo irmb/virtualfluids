@@ -37,7 +37,7 @@
 #include <parallel/Communicator.h>
 
 #include "ExchangeData27_Device.cuh"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 
 using namespace vf::lbm::dir;
 

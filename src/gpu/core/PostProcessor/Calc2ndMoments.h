@@ -27,28 +27,26 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \author Martin Schoenherr
-//=======================================================================================
-#ifndef GPU_KERNELS_H
-#define GPU_KERNELS_H
+//======================================================================================
+#ifndef Calc2ndMoments_H
+#define Calc2ndMoments_H
 
-#include "LBM/LB.h"
+class Parameter;
+class CudaMemoryManager;
 
-//Advection / Diffusion BCs
-__global__ void QAD7( real* DD,
-                                 real* DD7,
-                                 real* temp,
-                                 real diffusivity,
-                                 int* k_Q,
-                                 real* QQ,
-                                 unsigned int numberOfBCnodes,
-                                 real om1,
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes,
-                                 bool isEvenTimestep);
+//2nd
+void alloc2ndMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+void init2ndMoments(Parameter* para);
+void calc2ndMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
-//////////////////////////////////////////////////////////////////////////
+//3rd
+void alloc3rdMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+void init3rdMoments(Parameter* para);
+void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
+//higher order
+void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+void initHigherOrderMoments(Parameter* para);
+void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 
 #endif

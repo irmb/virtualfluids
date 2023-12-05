@@ -31,7 +31,7 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include <gpu/core/GPU/CudaMemoryManager.h>
+#include <gpu/core/Cuda/CudaMemoryManager.h>
 #include <gpu/core/Parameter/Parameter.h>
 
 

@@ -6,7 +6,7 @@
 #include "LBM/LB.h" 
 
 #include "PreProcessor/PreProcessorType.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 
 #include <helper_cuda.h>
 

@@ -9,7 +9,7 @@
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 
 bool PointProbe::isAvailableStatistic(Statistic _variable)
 {

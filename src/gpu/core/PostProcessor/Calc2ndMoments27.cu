@@ -1,7 +1,44 @@
-/* Device code */
-#include "LBM/LB.h" 
-#include "lbm/constants/D3Q27.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//======================================================================================
+#include "Calc2ndMoments27.cuh"
+
+#include <helper_cuda.h>
+
+#include <cuda_helper/CudaGrid.h>
+
+#include <lbm/constants/D3Q27.h>
+
 #include <basics/constants/NumericConstants.h>
+
+#include "LBM/LB.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -2172,4 +2209,83 @@ __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
             ////////////////////////////////////////////////////////////////////////////////////
         }                                                                                                                    
     }
+}
+
+void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ, real* kyzFromfcNEQ, real* kxzFromfcNEQ, real* kxxMyyFromfcNEQ,
+                              real* kxxMzzFromfcNEQ, unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
+                              unsigned int* neighborZ, unsigned long long numberOfLBnodes, unsigned int numberOfThreads,
+                              real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalc2ndMomentsIncompSP27<<<grid.grid, grid.threads>>>(kxyFromfcNEQ, kyzFromfcNEQ, kxzFromfcNEQ, kxxMyyFromfcNEQ,
+                                                            kxxMzzFromfcNEQ, geoD, neighborX, neighborY, neighborZ,
+                                                            numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
+}
+
+void Calc2ndMomentsCompSP27(real* kxyFromfcNEQ, real* kyzFromfcNEQ, real* kxzFromfcNEQ, real* kxxMyyFromfcNEQ,
+                            real* kxxMzzFromfcNEQ, unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
+                            unsigned int* neighborZ, unsigned long long numberOfLBnodes, unsigned int numberOfThreads,
+                            real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalc2ndMomentsCompSP27<<<grid.grid, grid.threads>>>(kxyFromfcNEQ, kyzFromfcNEQ, kxzFromfcNEQ, kxxMyyFromfcNEQ,
+                                                          kxxMzzFromfcNEQ, geoD, neighborX, neighborY, neighborZ,
+                                                          numberOfLBnodes, DD, isEvenTimestep);
+    getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
+}
+
+void Calc3rdMomentsIncompSP27(real* CUMbbb, real* CUMabc, real* CUMbac, real* CUMbca, real* CUMcba, real* CUMacb,
+                              real* CUMcab, unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
+                              unsigned int* neighborZ, unsigned long long numberOfLBnodes, unsigned int numberOfThreads,
+                              real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalc3rdMomentsIncompSP27<<<grid.grid, grid.threads>>>(CUMbbb, CUMabc, CUMbac, CUMbca, CUMcba, CUMacb, CUMcab, geoD,
+                                                            neighborX, neighborY, neighborZ, DD, numberOfLBnodes,
+                                                            isEvenTimestep);
+    getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
+}
+
+void Calc3rdMomentsCompSP27(real* CUMbbb, real* CUMabc, real* CUMbac, real* CUMbca, real* CUMcba, real* CUMacb, real* CUMcab,
+                            unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                            unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalc3rdMomentsCompSP27<<<grid.grid, grid.threads>>>(CUMbbb, CUMabc, CUMbac, CUMbca, CUMcba, CUMacb, CUMcab, geoD,
+                                                          neighborX, neighborY, neighborZ, DD, numberOfLBnodes,
+                                                          isEvenTimestep);
+    getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
+}
+
+void CalcHigherMomentsIncompSP27(real* CUMcbb, real* CUMbcb, real* CUMbbc, real* CUMcca, real* CUMcac, real* CUMacc,
+                                 real* CUMbcc, real* CUMcbc, real* CUMccb, real* CUMccc, unsigned int* geoD,
+                                 unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                                 unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD,
+                                 bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalcHigherMomentsIncompSP27<<<grid.grid, grid.threads>>>(CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc,
+                                                               CUMcbc, CUMccb, CUMccc, geoD, neighborX, neighborY, neighborZ,
+                                                               DD, numberOfLBnodes, isEvenTimestep);
+    getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
+}
+
+void CalcHigherMomentsCompSP27(real* CUMcbb, real* CUMbcb, real* CUMbbc, real* CUMcca, real* CUMcac, real* CUMacc,
+                               real* CUMbcc, real* CUMcbc, real* CUMccb, real* CUMccc, unsigned int* geoD,
+                               unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                               unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD,
+                               bool isEvenTimestep)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+
+    LBCalcHigherMomentsCompSP27<<<grid.grid, grid.threads>>>(CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc,
+                                                             CUMccb, CUMccc, geoD, neighborX, neighborY, neighborZ, DD,
+                                                             numberOfLBnodes, isEvenTimestep);
+    getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
 }

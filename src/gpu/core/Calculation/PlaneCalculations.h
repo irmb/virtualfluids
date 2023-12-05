@@ -2,7 +2,7 @@
 #define PLANE_CALCULATIONS_H
 
 #include "Parameter/Parameter.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "basics/utilities/UbSystem.h"
 
 #include <iostream>

@@ -38,7 +38,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Parameter/Parameter.h"
 #include "StringUtilities/StringUtil.h"
 

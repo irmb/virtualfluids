@@ -17,7 +17,7 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
 #include "Parameter/Parameter.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "WriterUtilities.h"
 #include "FilePartCalculator.h"
 

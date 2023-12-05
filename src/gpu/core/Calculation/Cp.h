@@ -4,7 +4,7 @@
 #include "LBM/LB.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 
 void calcCp(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
 void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev);

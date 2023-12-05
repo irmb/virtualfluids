@@ -40,2030 +40,545 @@
 #include "GPU/GPU_Kernels.cuh"
 
 #include "Parameter/Parameter.h"
-//////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-void Calc2ndMomentsIncompSP27(
-    real* kxyFromfcNEQ,
-    real* kyzFromfcNEQ,
-    real* kxzFromfcNEQ,
-    real* kxxMyyFromfcNEQ,
-    real* kxxMzzFromfcNEQ,
-    unsigned int* geoD,
+void QADPressDev7(
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD7,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    unsigned int numberOfThreads,
-    real* DD,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    LBCalc2ndMomentsIncompSP27<<< grid.grid, grid.threads >>> (
-        kxyFromfcNEQ,
-        kyzFromfcNEQ,
-        kxzFromfcNEQ,
-        kxxMyyFromfcNEQ,
-        kxxMzzFromfcNEQ,
-        geoD,
+    QADPress7<<< grid.grid, grid.threads >>>(
+        DD,
+        DD7,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
         neighborX,
         neighborY,
         neighborZ,
         numberOfLBnodes,
-        DD,
         isEvenTimestep);
-    getLastCudaError("LBCalc2ndMomentsIncompSP27 execution failed");
+    getLastCudaError("QADPress7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void Calc2ndMomentsCompSP27(
-    real* kxyFromfcNEQ,
-    real* kyzFromfcNEQ,
-    real* kxzFromfcNEQ,
-    real* kxxMyyFromfcNEQ,
-    real* kxxMzzFromfcNEQ,
-    unsigned int* geoD,
+void QADPressDev27(
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD27,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    unsigned int numberOfThreads,
-    real* DD,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    LBCalc2ndMomentsCompSP27<<< grid.grid, grid.threads >>> (
-        kxyFromfcNEQ,
-        kyzFromfcNEQ,
-        kxzFromfcNEQ,
-        kxxMyyFromfcNEQ,
-        kxxMzzFromfcNEQ,
-        geoD,
+    QADPress27<<< grid.grid, grid.threads >>>(
+        DD,
+        DD27,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
         neighborX,
         neighborY,
         neighborZ,
         numberOfLBnodes,
-        DD,
         isEvenTimestep);
-    getLastCudaError("LBCalc2ndMomentsCompSP27 execution failed");
+    getLastCudaError("QADPress27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void Calc3rdMomentsIncompSP27(
-    real* CUMbbb,
-    real* CUMabc,
-    real* CUMbac,
-    real* CUMbca,
-    real* CUMcba,
-    real* CUMacb,
-    real* CUMcab,
-    unsigned int* geoD,
+void QADPressNEQNeighborDev27(
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD27,
+    int* k_Q,
+    int* k_N,
+    int numberOfBCnodes,
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    unsigned int numberOfThreads,
-    real* DD,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    LBCalc3rdMomentsIncompSP27<<< grid.grid, grid.threads >>> (
-        CUMbbb,
-        CUMabc,
-        CUMbac,
-        CUMbca,
-        CUMcba,
-        CUMacb,
-        CUMcab,
-        geoD,
+    QADPressNEQNeighbor27<<< grid.grid, grid.threads >>>(
+        DD,
+        DD27,
+        k_Q,
+        k_N,
+        numberOfBCnodes,
         neighborX,
         neighborY,
         neighborZ,
-        DD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBCalc3rdMomentsIncompSP27 execution failed");
+       getLastCudaError("QADPressNEQNeighbor27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void Calc3rdMomentsCompSP27(
-    real* CUMbbb,
-    real* CUMabc,
-    real* CUMbac,
-    real* CUMbca,
-    real* CUMcba,
-    real* CUMacb,
-    real* CUMcab,
-    unsigned int* geoD,
+void QADVelDev7(
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD7,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    unsigned int numberOfThreads,
-    real* DD,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    LBCalc3rdMomentsCompSP27<<< grid.grid, grid.threads >>> (
-        CUMbbb,
-        CUMabc,
-        CUMbac,
-        CUMbca,
-        CUMcba,
-        CUMacb,
-        CUMcab,
-        geoD,
+    QADVel7<<< grid.grid, grid.threads >>> (
+        DD,
+        DD7,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
         neighborX,
         neighborY,
         neighborZ,
-        DD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBCalc3rdMomentsCompSP27 execution failed");
+    getLastCudaError("QADVel7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void CalcHigherMomentsIncompSP27(
-    real* CUMcbb,
-    real* CUMbcb,
-    real* CUMbbc,
-    real* CUMcca,
-    real* CUMcac,
-    real* CUMacc,
-    real* CUMbcc,
-    real* CUMcbc,
-    real* CUMccb,
-    real* CUMccc,
-    unsigned int* geoD,
+void QADVelDev27(
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD27,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    unsigned int numberOfThreads,
-    real* DD,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    LBCalcHigherMomentsIncompSP27<<< grid.grid, grid.threads >>> (
-        CUMcbb,
-        CUMbcb,
-        CUMbbc,
-        CUMcca,
-        CUMcac,
-        CUMacc,
-        CUMbcc,
-        CUMcbc,
-        CUMccb,
-        CUMccc,
-        geoD,
+    QADVel27<<< grid.grid, grid.threads >>> (
+        DD,
+        DD27,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
         neighborX,
         neighborY,
         neighborZ,
-        DD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBCalcHigherMomentsIncompSP27 execution failed");
+    getLastCudaError("QADVel27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void CalcHigherMomentsCompSP27(
-    real* CUMcbb,
-    real* CUMbcb,
-    real* CUMbbc,
-    real* CUMcca,
-    real* CUMcac,
-    real* CUMacc,
-    real* CUMbcc,
-    real* CUMcbc,
-    real* CUMccb,
-    real* CUMccc,
-    unsigned int* geoD,
+void QADDev7(
+    unsigned int numberOfThreads,
+    real* DD,
+    real* DD7,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
     unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    unsigned int numberOfThreads,
-    real* DD,
     bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    LBCalcHigherMomentsCompSP27<<< grid.grid, grid.threads >>> (
-        CUMcbb,
-        CUMbcb,
-        CUMbbc,
-        CUMcca,
-        CUMcac,
-        CUMacc,
-        CUMbcc,
-        CUMcbc,
-        CUMccb,
-        CUMccc,
-        geoD,
+    QAD7<<< grid.grid, grid.threads >>> (
+        DD,
+        DD7,
+        temp,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
         neighborX,
         neighborY,
         neighborZ,
-        DD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
+    getLastCudaError("QAD7 execution failed");
 }
-//////////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads)
+//////////////////////////////////////////////////////////////////////////
+void ADSlipVelDevComp(
+    uint numberOfThreads,
+    real * normalX,
+    real * normalY,
+    real * normalZ,
+    real * distributions,
+    real * distributionsAD,
+    int* QindexArray,
+    real * Qarrays,
+    uint numberOfBCnodes,
+    real omegaDiffusivity,
+    uint * neighborX,
+    uint * neighborY,
+    uint * neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCF27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF);
-    getLastCudaError("scaleCF27 execution failed");
+    AD_SlipVelDeviceComp <<< grid.grid, grid.threads >>> (
+        normalX,
+        normalY,
+        normalZ,
+        distributions,
+        distributionsAD,
+        QindexArray,
+        Qarrays,
+        numberOfBCnodes,
+        omegaDiffusivity,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("AD_SlipVelDeviceComp execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCFEff27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+
+void QADDirichletDev27(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
+    real* DD,
+    real* DD27,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCFEff27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCFEff27 execution failed");
+    QADDirichlet27<<< grid.grid, grid.threads >>> (
+        DD,
+        DD27,
+        temp,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QADDirichletDev27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCFLast27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QADBBDev27(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
+    real* DD,
+    real* DD27,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCFLast27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCFLast27 execution failed");
+    QADBB27<<< grid.grid, grid.threads >>> (
+        DD,
+        DD27,
+        temp,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QADBB27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCFpress27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QNoSlipADincompDev7(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
+    real* DD,
+    real* DD7,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCFpress27<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCFpress27 execution failed");
+    QNoSlipADincomp7<<< grid.grid, grid.threads >>> (
+        DD,
+        DD7,
+        temp,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QNoSlipADincomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_Fix_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QNoSlipADincompDev27(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
+    real* DD,
+    real* DD27,
+    real* temp,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCF_Fix_27<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_Fix_27 execution failed");
+    QNoSlipADincomp27<<< grid.grid, grid.threads >>> (
+        DD,
+        DD27,
+        temp,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QNoSlipADincomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_Fix_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QADVeloIncompDev7(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
+    real* DD,
+    real* DD7,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCF_Fix_comp_27<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_Fix_comp_27 execution failed");
+    QADVeloIncomp7<<< grid.grid, grid.threads >>> (
+        DD,
+        DD7,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QADVeloIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_0817_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QADVeloIncompDev27(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine,
-    CUstream_st *stream)
+    real* DD,
+    real* DD27,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCF_0817_comp_27<<< grid.grid, grid.threads, 0, stream >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_0817_27 execution failed");
+    QADVeloIncomp27<<< grid.grid, grid.threads >>> (
+        DD,
+        DD27,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QADVeloIncomp27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_comp_D3Q27F3_2018(
-    real* DC,
-    real* DF,
-    real* G6,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QADPressIncompDev7(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
+    real* DD,
+    real* DD7,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCF_comp_D3Q27F3_2018 <<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        G6,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_comp_D3Q27F3_2018 execution failed");
+    QADPressIncomp7<<< grid.grid, grid.threads >>>(
+        DD,
+        DD7,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QADPressIncomp7 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ScaleCF_comp_D3Q27F3(
-    real* DC,
-    real* DF,
-    real* G6,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
+void QADPressIncompDev27(
     unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine,
-    CUstream_st *stream)
+    real* DD,
+    real* DD27,
+    real* temp,
+    real* velo,
+    real diffusivity,
+    int* k_Q,
+    real* QQ,
+    unsigned int numberOfBCnodes,
+    real om1,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    scaleCF_comp_D3Q27F3 <<< grid.grid, grid.threads, 0, stream >>>(
-        DC,
-        DF,
-        G6,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_comp_D3Q27F3 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCF_staggered_time_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCF_staggered_time_comp_27<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_staggered_time_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCF_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream)
-{
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  coarseToFine->numberOfCells);
-    dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
-
-    scaleCF_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
-        parameterDeviceC->distributions.f[0],
-        parameterDeviceF->distributions.f[0],
-        parameterDeviceC->neighborX,
-        parameterDeviceC->neighborY,
-        parameterDeviceC->neighborZ,
-        parameterDeviceF->neighborX,
-        parameterDeviceF->neighborY,
-        parameterDeviceF->neighborZ,
-        parameterDeviceC->numberOfNodes,
-        parameterDeviceF->numberOfNodes,
-        parameterDeviceC->isEvenTimestep,
-        coarseToFine->coarseCellIndices,
-        coarseToFine->fineCellIndices,
-        coarseToFine->numberOfCells,
-        parameterDeviceC->omega,
-        parameterDeviceF->omega,
-        parameterDeviceC->viscosity,
-        parameterDeviceC->nx,
-        parameterDeviceC->ny,
-        parameterDeviceF->nx,
-        parameterDeviceF->ny,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_RhoSq_27 execution failed");
-}
-
-template<bool hasTurbulentViscosity> void ScaleCF_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream)
-{
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  coarseToFine->numberOfCells);
-    dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
-
-    scaleCF_compressible<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
-        parameterDeviceC->distributions.f[0],
-        parameterDeviceF->distributions.f[0],
-        parameterDeviceC->neighborX,
-        parameterDeviceC->neighborY,
-        parameterDeviceC->neighborZ,
-        parameterDeviceF->neighborX,
-        parameterDeviceF->neighborY,
-        parameterDeviceF->neighborZ,
-        parameterDeviceC->numberOfNodes,
-        parameterDeviceF->numberOfNodes,
-        parameterDeviceC->isEvenTimestep,
-        coarseToFine->coarseCellIndices,
-        coarseToFine->fineCellIndices,
-        coarseToFine->numberOfCells,
-        parameterDeviceC->omega,
-        parameterDeviceF->omega,
-        parameterDeviceC->turbViscosity,
-        parameterDeviceF->turbViscosity,
-        neighborCoarseToFine);
-
-    getLastCudaError("scaleCF_compressible execution failed");
-}
-template void ScaleCF_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream);
-template void ScaleCF_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * coarseToFine, ICellNeigh& neighborCoarseToFine, CUstream_st *stream);
-
-//////////////////////////////////////////////////////////////////////////
-void ScaleCF_RhoSq_3rdMom_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine,
-    CUstream_st *stream)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCF_RhoSq_3rdMom_comp_27<<< grid.grid, grid.threads, 0, stream >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_RhoSq_3rdMom_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCF_AA2016_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine,
-    CUstream_st *stream)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCF_AA2016_comp_27<<< grid.grid, grid.threads, 0, stream >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_AA2016_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCF_NSPress_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCF_NSPress_27<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCF_NSPress_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCFThSMG7(
-    real* DC,
-    real* DF,
-    real* DD7C,
-    real* DD7F,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real nu,
-    real diffusivity_fine,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCFThSMG7<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        DD7C,
-        DD7F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        nu,
-        diffusivity_fine,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCFThSMG7 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCFThS7(
-    real* DC,
-    real* DF,
-    real* DD7C,
-    real* DD7F,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real nu,
-    real diffusivity_fine,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCFThS7<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        DD7C,
-        DD7F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        nu,
-        diffusivity_fine);
-    getLastCudaError("scaleCFThS7 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleCFThS27(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posCSWB,
-    unsigned int* posFSWB,
-    unsigned int kCF,
-    real nu,
-    real diffusivity_fine,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
-
-    scaleCFThS27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        DD27C,
-        DD27F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        nu,
-        diffusivity_fine,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCFThS27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF);
-    getLastCudaError("scaleFC27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFCEff27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFCEff27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFCEff27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFCLast27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFCLast27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("Kernel execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFCpress27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFCpress27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFCpress27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_Fix_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_Fix_27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_Fix_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_Fix_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_Fix_comp_27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_Fix_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_0817_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse,
-    CUstream_st *stream)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_0817_comp_27<<< grid.grid, grid.threads, 0, stream >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_0817_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_comp_D3Q27F3_2018(
-    real* DC,
-    real* DF,
-    real* G6,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_comp_D3Q27F3_2018 <<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        G6,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_comp_D3Q27F3_2018 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_comp_D3Q27F3(
-    real* DC,
-    real* DF,
-    real* G6,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse,
-    CUstream_st *stream)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_comp_D3Q27F3 <<< grid.grid, grid.threads, 0, stream >>> (
-        DC,
-        DF,
-        G6,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_comp_D3Q27F3 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_staggered_time_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_staggered_time_comp_27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_staggered_time_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_RhoSq_comp_27(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream)
-{
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  fineToCoarse->numberOfCells);
-    dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
-
-    scaleFC_RhoSq_comp_27<<<grid, threads, 0, stream>>>(
-        parameterDeviceC->distributions.f[0],
-        parameterDeviceF->distributions.f[0],
-        parameterDeviceC->neighborX,
-        parameterDeviceC->neighborY,
-        parameterDeviceC->neighborZ,
-        parameterDeviceF->neighborX,
-        parameterDeviceF->neighborY,
-        parameterDeviceF->neighborZ,
-        parameterDeviceC->numberOfNodes,
-        parameterDeviceF->numberOfNodes,
-        parameterDeviceC->isEvenTimestep,
-        fineToCoarse->coarseCellIndices,
-        fineToCoarse->fineCellIndices,
-        fineToCoarse->numberOfCells,
-        parameterDeviceC->omega,
-        parameterDeviceF->omega,
-        parameterDeviceC->viscosity,
-        parameterDeviceC->nx,
-        parameterDeviceC->ny,
-        parameterDeviceF->nx,
-        parameterDeviceF->ny,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_RhoSq_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-template<bool hasTurbulentViscosity> void ScaleFC_compressible(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream)
-{
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads,  fineToCoarse->numberOfCells);
-    dim3 threads(parameterDeviceC->numberofthreads, 1, 1 );
-
-    scaleFC_compressible<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
-        parameterDeviceC->distributions.f[0],
-        parameterDeviceF->distributions.f[0],
-        parameterDeviceC->neighborX,
-        parameterDeviceC->neighborY,
-        parameterDeviceC->neighborZ,
-        parameterDeviceF->neighborX,
-        parameterDeviceF->neighborY,
-        parameterDeviceF->neighborZ,
-        parameterDeviceC->numberOfNodes,
-        parameterDeviceF->numberOfNodes,
-        parameterDeviceC->isEvenTimestep,
-        fineToCoarse->coarseCellIndices,
-        fineToCoarse->fineCellIndices,
-        fineToCoarse->numberOfCells,
-        parameterDeviceC->omega,
-        parameterDeviceF->omega,
-        parameterDeviceC->turbViscosity,
-        parameterDeviceF->turbViscosity,
-        neighborFineToCoarse);
-
-    getLastCudaError("scaleFC_compressible execution failed");
-}
-template void ScaleFC_compressible<true>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream);
-template void ScaleFC_compressible<false>(LBMSimulationParameter * parameterDeviceC, LBMSimulationParameter* parameterDeviceF, ICells * fineToCoarse, ICellNeigh &neighborFineToCoarse, CUstream_st *stream);
-
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_RhoSq_3rdMom_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse,
-    CUstream_st *stream)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_RhoSq_3rdMom_comp_27<<< grid.grid, grid.threads, 0, stream >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_RhoSq_3rdMom_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_AA2016_comp_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse,
-    CUstream_st *stream)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_AA2016_comp_27<<< grid.grid, grid.threads, 0, stream >>>(
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_AA2016_comp_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFC_NSPress_27(
-    real* DC,
-    real* DF,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real omCoarse,
-    real omFine,
-    real nu,
-    unsigned int nxC,
-    unsigned int nyC,
-    unsigned int nxF,
-    unsigned int nyF,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFC_NSPress_27<<< grid.grid, grid.threads >>> (
-        DC,
-        DF,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        omCoarse,
-        omFine,
-        nu,
-        nxC,
-        nyC,
-        nxF,
-        nyF,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFC_NSPress_27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFCThSMG7(
-    real* DC,
-    real* DF,
-    real* DD7C,
-    real* DD7F,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real nu,
-    real diffusivity_coarse,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFCThSMG7<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        DD7C,
-        DD7F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        nu,
-        diffusivity_coarse,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFCThSMG7 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFCThS7(
-    real* DC,
-    real* DF,
-    real* DD7C,
-    real* DD7F,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real nu,
-    real diffusivity_coarse,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFCThS7<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        DD7C,
-        DD7F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        nu,
-        diffusivity_coarse);
-    getLastCudaError("scaleFCThS7 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void ScaleFCThS27(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    unsigned int* neighborCX,
-    unsigned int* neighborCY,
-    unsigned int* neighborCZ,
-    unsigned int* neighborFX,
-    unsigned int* neighborFY,
-    unsigned int* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    unsigned int* posC,
-    unsigned int* posFSWB,
-    unsigned int kFC,
-    real nu,
-    real diffusivity_coarse,
-    unsigned int numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFCThS27<<< grid.grid, grid.threads >>>(
-        DC,
-        DF,
-        DD27C,
-        DD27F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        nu,
-        diffusivity_coarse,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFCThS27 execution failed");
+    QADPressIncomp27<<< grid.grid, grid.threads >>>(
+        DD,
+        DD27,
+        temp,
+        velo,
+        diffusivity,
+        k_Q,
+        QQ,
+        numberOfBCnodes,
+        om1,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("QADPressIncomp27 execution failed");
 }

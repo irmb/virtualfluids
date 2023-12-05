@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "PreProcessor/InitLattice.h"
 
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"

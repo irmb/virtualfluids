@@ -14,7 +14,7 @@
 #include <basics/constants/NumericConstants.h>
 
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
-#include "gpu/core/GPU/CudaMemoryManager.h"
+#include "gpu/core/Cuda/CudaMemoryManager.h"
 #include "gpu/core/GPU/GPU_Interface.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/cuda_helper/CudaGrid.h"

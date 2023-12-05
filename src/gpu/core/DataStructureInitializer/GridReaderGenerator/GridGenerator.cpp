@@ -11,12 +11,12 @@
 
 #include <logger/Logger.h>
 
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
 #include "LBM/LB.h"
 #include "Output/QDebugWriter.hpp"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 #include "utilities/communication.h"
 

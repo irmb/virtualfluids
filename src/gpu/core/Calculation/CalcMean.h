@@ -4,7 +4,7 @@
 #include "LBM/LB.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 
 void allocMean(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 void allocMeanAD(Parameter* para, CudaMemoryManager* cudaMemoryManager);

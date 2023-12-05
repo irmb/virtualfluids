@@ -8,7 +8,7 @@
 #include "LBM/LB.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "Parameter/EdgeNodeFinder.h"
 #include "GPU/GPU_Interface.h"
 #include "basics/utilities/UbFileOutputASCII.h"
@@ -28,7 +28,7 @@
 #include "PostProcessor/Concentration.cuh"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 //////////////////////////////////////////////////////////////////////////
-#include "Calculation/Calc2ndMoments.h"
+#include "PostProcessor/Calc2ndMoments.h"
 #include "Calculation/CalcMean.h"
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/Cp.h"

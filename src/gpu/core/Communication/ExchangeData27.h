@@ -32,9 +32,9 @@
 #ifndef EXCHANGEDATA27_H
 #define EXCHANGEDATA27_H
 
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "LBM/LB.h"
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 
 namespace vf::parallel

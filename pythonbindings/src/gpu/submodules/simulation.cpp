@@ -36,7 +36,7 @@
 #include <gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
 #include <gpu/core/DataStructureInitializer/GridProvider.h>
 #include <gpu/core/Parameter/Parameter.h>
-#include <gpu/core/GPU/CudaMemoryManager.h>
+#include <gpu/core/Cuda/CudaMemoryManager.h>
 #include <gpu/core/DataStructureInitializer/GridProvider.h>
 #include <gpu/core/Output/DataWriter.h>
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"

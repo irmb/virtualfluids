@@ -52,7 +52,7 @@
 #include <basics/config/ConfigurationFile.h>
 
 #include <logger/Logger.h>
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 

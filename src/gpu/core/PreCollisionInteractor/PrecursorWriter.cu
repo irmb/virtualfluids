@@ -43,7 +43,7 @@
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Output/FilePartCalculator.h"
 
 using namespace vf::lbm::dir;
