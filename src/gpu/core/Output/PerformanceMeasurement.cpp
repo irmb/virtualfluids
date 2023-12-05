@@ -42,10 +42,10 @@ void PerformanceMeasurement::print(vf::basics::Timer& timer, uint timestep, Para
     real bandwidth = 0.0;
 
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-        fnups += 1000.0 * (timestep - para->getTimestepStart()) * para->getParH(lev)->numberOfNodes * pow(2., lev) /
-                 totalTime * 1000;
-        bandwidth += (27.0 + 1.0) * 4.0 * 1000.0 * (timestep - para->getTimestepStart()) *
-                     para->getParH(lev)->numberOfNodes / totalTime;
+        fnups +=
+            (timestep - para->getTimestepStart()) * para->getParH(lev)->numberOfNodes * pow(2., lev) / (totalTime * 1.0E6);
+        bandwidth += (27.0 + 1.0) * 4.0 * (timestep - para->getTimestepStart()) * para->getParH(lev)->numberOfNodes /
+                     (totalTime * 10e9);
     }
 
     if (this->firstOutput && communicator.getProcessID() == 0) // only display the legend once
