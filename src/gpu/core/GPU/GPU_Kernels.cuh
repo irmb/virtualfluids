@@ -1425,20 +1425,6 @@ __global__ void setRecvGsF3(
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
-__global__ void WallFunction27(     real* vx,
-                                            real* vy,
-                                            real* vz,
-                                            real* DD,
-                                            int* k_Q,
-                                            real* QQ,
-                                            unsigned int numberOfBCnodes,
-                                            real om1,
-                                            unsigned int* neighborX,
-                                            unsigned int* neighborY,
-                                            unsigned int* neighborZ,
-                                            unsigned long long numberOfLBnodes,
-                                            bool isEvenTimestep);
-
 __global__ void LBSetOutputWallVelocitySP27( real* vxD,
                                                         real* vyD,
                                                         real* vzD,
@@ -1456,18 +1442,6 @@ __global__ void LBSetOutputWallVelocitySP27( real* vxD,
                                                         unsigned long long numberOfLBnodes,
                                                         real* DD,
                                                         bool isEvenTimestep);
-
-__global__ void GetVeloforForcing27( real* DD,
-                                                int* bcIndex,
-                                                int nonAtBC,
-                                                real* Vx,
-                                                real* Vy,
-                                                real* Vz,
-                                                unsigned int* neighborX,
-                                                unsigned int* neighborY,
-                                                unsigned int* neighborZ,
-                                                unsigned long long numberOfLBnodes,
-                                                bool isEvenTimestep);
 
 __global__ void CalcTurbulenceIntensity(
    real* vxx,
