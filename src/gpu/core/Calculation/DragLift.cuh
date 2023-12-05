@@ -28,15 +28,17 @@
 //
 //! \author Martin Schoenherr
 //=======================================================================================
+#ifndef DRAG_LIFT27_H
+#define DRAG_LIFT27_H
 
-#ifndef DragLift_H
-#define DragLift_H
+#include <basics/DataTypes.h>
 
-class Parameter;
-class CudaMemoryManager;
+void DragLiftPostD27(real* DD, int* k_Q, real* QQ, int numberOfBCnodes, double* DragX, double* DragY, double* DragZ,
+                     unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                     unsigned long long numberOfLBnodes, bool isEvenTimestep, unsigned int numberOfThreads);
 
-void calcDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
-void allocDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager);
-void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep);
+void DragLiftPreD27(real* DD, int* k_Q, real* QQ, int numberOfBCnodes, double* DragX, double* DragY, double* DragZ,
+                    unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
+                    unsigned long long numberOfLBnodes, bool isEvenTimestep, unsigned int numberOfThreads);
 
 #endif

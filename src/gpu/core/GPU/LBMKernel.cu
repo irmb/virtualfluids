@@ -2491,72 +2491,7 @@ void ScaleFCThS27(
         neighborFineToCoarse);
     getLastCudaError("scaleFCThS27 execution failed");
 }
-//////////////////////////////////////////////////////////////////////////
-void DragLiftPostD27(
-    real* DD,
-    int* k_Q,
-    real* QQ,
-    int numberOfBCnodes,
-    double *DragX,
-    double *DragY,
-    double *DragZ,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
 
-    DragLiftPost27<<< grid.grid, grid.threads >>>(
-        DD,
-        k_Q,
-        QQ,
-        numberOfBCnodes,
-        DragX,
-        DragY,
-        DragZ,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("DragLiftPost27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void DragLiftPreD27(
-    real* DD,
-    int* k_Q,
-    real* QQ,
-    int numberOfBCnodes,
-    double *DragX,
-    double *DragY,
-    double *DragZ,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
-
-    DragLiftPre27<<< grid.grid, grid.threads >>>(
-        DD,
-        k_Q,
-        QQ,
-        numberOfBCnodes,
-        DragX,
-        DragY,
-        DragZ,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("DragLiftPre27 execution failed");
-}
 //////////////////////////////////////////////////////////////////////////
 void CalcCPtop27(
     real* DD,

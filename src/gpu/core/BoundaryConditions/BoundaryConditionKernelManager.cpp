@@ -36,9 +36,10 @@
 
 #include "BoundaryConditionKernelManager.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
-#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Calculation/Cp.h"
+#include "Calculation/DragLift.cuh"
 #include "Calculation/DragLift.h"
+#include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 #include "Parameter/Parameter.h"
 
 #include "BoundaryConditions/Outflow/Outflow.h"

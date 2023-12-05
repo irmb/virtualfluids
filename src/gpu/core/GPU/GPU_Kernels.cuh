@@ -1108,32 +1108,6 @@ __global__ void scaleFCThS27(  real* DC,
                                           real diffusivity_coarse,
                                           ICellNeigh neighborFineToCoarse);
 
-__global__ void DragLiftPost27(  real* DD,
-                                            int* k_Q,
-                                            real* QQ,
-                                            int numberOfBCnodes,
-                                            double *DragX,
-                                            double *DragY,
-                                            double *DragZ,
-                                            unsigned int* neighborX,
-                                            unsigned int* neighborY,
-                                            unsigned int* neighborZ,
-                                            unsigned long long numberOfLBnodes,
-                                            bool isEvenTimestep);
-
-__global__ void DragLiftPre27(   real* DD,
-                                            int* k_Q,
-                                            real* QQ,
-                                            int numberOfBCnodes,
-                                            double *DragX,
-                                            double *DragY,
-                                            double *DragZ,
-                                            unsigned int* neighborX,
-                                            unsigned int* neighborY,
-                                            unsigned int* neighborZ,
-                                            unsigned long long numberOfLBnodes,
-                                            bool isEvenTimestep);
-
 __global__ void CalcCP27(real* DD,
                                     int* cpIndex,
                                     int nonCp,
