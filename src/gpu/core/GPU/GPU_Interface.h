@@ -182,6 +182,7 @@ void CalcHigherMomentsCompSP27(real* CUMcbb,
                                           real* DD,
                                           bool isEvenTimestep);
 
+
 void QADDev7(unsigned int numberOfThreads,
                         real* DD, 
                         real* DD7,

@@ -73,80 +73,6 @@ __global__ void CalcConc27(real* Conc,
                                           real* DD27,
                                           bool isEvenTimestep);
 
-__global__ void LBCalcMedSP27( real* vxD,
-                                          real* vyD,
-                                          real* vzD,
-                                          real* rhoD,
-                                          real* pressD,
-                                          unsigned int* geoD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          real* DD,
-                                          bool isEvenTimestep);
-
-__global__ void LBCalcMedCompSP27( real* vxD,
-                                              real* vyD,
-                                              real* vzD,
-                                              real* rhoD,
-                                              real* pressD,
-                                              unsigned int* geoD,
-                                              unsigned int* neighborX,
-                                              unsigned int* neighborY,
-                                              unsigned int* neighborZ,
-                                              unsigned long long numberOfLBnodes,
-                                              real* DD,
-                                              bool isEvenTimestep);
-
-__global__ void LBCalcMedCompAD27(
-    real* vxD,
-    real* vyD,
-    real* vzD,
-    real* rhoD,
-    real* pressD,
-    real* concD,
-    unsigned int* geoD,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    real* DD,
-    real* DD_AD,
-    bool isEvenTimestep);
-
-__global__ void LBCalcMacMedSP27( real* vxD,
-                                             real* vyD,
-                                             real* vzD,
-                                             real* rhoD,
-                                             real* pressD,
-                                             unsigned int* geoD,
-                                             unsigned int* neighborX,
-                                             unsigned int* neighborY,
-                                             unsigned int* neighborZ,
-                                             unsigned int tdiff,
-                                             unsigned long long numberOfLBnodes,
-                                             bool isEvenTimestep);
-
-__global__ void LBResetMeanValuesSP27(
-    real* vxD,
-    real* vyD,
-    real* vzD,
-    real* rhoD,
-    real* pressD,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
-
-__global__ void LBResetMeanValuesAD27(
-    real* vxD,
-    real* vyD,
-    real* vzD,
-    real* rhoD,
-    real* pressD,
-    real* concD,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
-
 __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
                                                         real* kyzFromfcNEQ,
                                                         real* kxzFromfcNEQ,
@@ -1069,23 +995,5 @@ __global__ void scaleFCThS27(  real* DC,
                                           real nu,
                                           real diffusivity_coarse,
                                           ICellNeigh neighborFineToCoarse);
-
-__global__ void LBSetOutputWallVelocitySP27( real* vxD,
-                                                        real* vyD,
-                                                        real* vzD,
-                                                        real* vxWall,
-                                                        real* vyWall,
-                                                        real* vzWall,
-                                                        int numberOfWallNodes,
-                                                        int* kWallNodes,
-                                                        real* rhoD,
-                                                        real* pressD,
-                                                        unsigned int* geoD,
-                                                        unsigned int* neighborX,
-                                                        unsigned int* neighborY,
-                                                        unsigned int* neighborZ,
-                                                        unsigned long long numberOfLBnodes,
-                                                        real* DD,
-                                                        bool isEvenTimestep);
 
 #endif
