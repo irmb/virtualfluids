@@ -11,7 +11,6 @@
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/EdgeNodeFinder.h"
 #include "GPU/GPU_Interface.h"
-#include "GPU/KineticEnergyAnalyzer.h"
 #include "GPU/EnstrophyAnalyzer.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
@@ -27,14 +26,15 @@
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Calculation/UpdateGrid27.h"
-#include "Calculation/PlaneCalculations.h"
-#include "Calculation/DragLift.h"
-#include "Calculation/Cp.h"
 #include "Calculation/Calc2ndMoments.h"
 #include "Calculation/CalcMean.h"
 #include "Calculation/CalcTurbulenceIntensity.h"
+#include "Calculation/Cp.h"
+#include "Calculation/DragLift.h"
 #include "Calculation/ForceCalculations.h"
+#include "Calculation/KineticEnergyAnalyzer.h"
+#include "Calculation/PlaneCalculations.h"
+#include "Calculation/UpdateGrid27.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/Timer.h"
 #include "Output/FileWriter.h"

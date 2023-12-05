@@ -1,3 +1,34 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
+
 #include "KineticEnergyAnalyzer.h"
 
 #include <cuda.h>
@@ -5,21 +36,20 @@
 #include <helper_cuda.h>
 
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 
-#include <thrust/device_vector.h>
-#include <thrust/reduce.h>
 #include <thrust/device_ptr.h>
+#include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
-
-#include <iomanip>
+#include <thrust/reduce.h>
 
 #include <cuda_helper/CudaGrid.h>
 
-#include "Parameter/Parameter.h"
-// includes, kernels
-#include "GPU/GPU_Kernels.cuh"
 #include <basics/constants/NumericConstants.h>
+
+#include "GPU/GPU_Kernels.cuh"
+#include "Parameter/Parameter.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
