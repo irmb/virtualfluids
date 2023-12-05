@@ -33,7 +33,6 @@
 #define EXCHANGEDATA27_H
 
 #include "GPU/CudaMemoryManager.h"
-#include "GPU/GPU_Interface.h"
 #include "LBM/LB.h"
 #include "Parameter/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
