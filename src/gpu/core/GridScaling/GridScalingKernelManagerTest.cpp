@@ -28,7 +28,7 @@
 //
 //! \author Anna Wellmann, Martin Schönherr
 //=======================================================================================
-include <gmock/gmock.h>
+#include <gmock/gmock.h>
 #include <stdexcept>
 
 #include "GridScalingKernelManager.h"
@@ -108,4 +108,3 @@ TEST_F(GridScalingKernelManagerTest_Initialization, multipleLevelWithInterpolati
     para->getParD(0)->fineToCoarse.numberOfCells = 100;
     EXPECT_THROW(GridScalingKernelManager(para, &scalingFactory), std::runtime_error);
 }
-
