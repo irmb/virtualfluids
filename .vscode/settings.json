@@ -5,5 +5,6 @@
         "__mutex_base": "cpp",
         "memory": "cpp",
         "mutex": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

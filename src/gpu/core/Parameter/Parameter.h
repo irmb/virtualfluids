@@ -40,7 +40,7 @@
 #include <optional>
 
 #include "lbm/constants/D3Q27.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
@@ -329,7 +329,7 @@ struct LBMSimulationParameter {
     real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
     std::vector<real> turbulenceIntensity;
 
-    // median-macro-values/////
+    // mean-macro-values/////
     real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
     real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
     // Advection-Diffusion
@@ -492,7 +492,7 @@ public:
     void setTimestepStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
     void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
-    void setCalcMedian(bool calcMedian);
+    void setCalcMean(bool calcMean);
     void setCalcDragLift(bool calcDragLift);
     void setCalcCp(bool calcCp);
     void setWriteVeloASCIIfiles(bool writeVeloASCII);
@@ -692,7 +692,7 @@ public:
     bool getPrintFiles();
     bool getReadGeo();
     bool getCalcTurbulenceIntensity();
-    bool getCalcMedian();
+    bool getCalcMean();
     bool getCalcDragLift();
     bool getCalcCp();
     bool getWriteVeloASCIIfiles();
@@ -982,7 +982,7 @@ private:
     bool is2ndOrderMoments{ false };
     bool is3rdOrderMoments{ false };
     bool isHighOrderMoments{ false };
-    bool calcMedian{ false };
+    bool calcMean{ false };
     bool isConc{ false };
     bool isTurbulentViscosity{ false };
     bool isMeasurePoints{ false };

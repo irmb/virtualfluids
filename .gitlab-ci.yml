@@ -68,6 +68,35 @@ gcc_12:
     - export CXX=g++
 
 ###############################################################################
+gcc_12_float:
+  extends: .gnu_build_template
+
+  before_script:
+    - export CC=gcc
+    - export CXX=g++
+
+  script:
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - export CCACHE_COMPILERCHECK=content
+    - ccache --zero-stats
+    - ccache --show-stats
+    - $CXX --version
+    - $CC --version
+    - cmake --version
+    - mpirun --version
+    - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
+    - cd $CI_PROJECT_DIR/$BUILD_FOLDER
+    - rm -r -f ./*
+    - cmake .. -LAH
+      --preset=make_all
+      -DVF_ENABLE_DOUBLE_ACCURACY=OFF
+      -DVF_ENABLE_WARNINGS_AS_ERRORS=ON
+      -DCMAKE_CUDA_ARCHITECTURES=70
+    - make -j4
+    - ccache --show-stats
+
+###############################################################################
 clang_15:
   extends: .gnu_build_template
 

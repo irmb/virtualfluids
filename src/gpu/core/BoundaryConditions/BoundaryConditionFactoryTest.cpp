@@ -40,7 +40,7 @@
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/Slip/Slip.h"
 #include "BoundaryConditions/Stress/Stress.h"
-#include "GPU/GPU_Interface.h"
+
 
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionParamter = void (*)(Parameter *, QforBoundaryConditions *, const int level);

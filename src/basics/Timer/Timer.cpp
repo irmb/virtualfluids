@@ -33,6 +33,10 @@
 namespace vf::basics
 {
 
+Timer::Timer(const std::string& name) : name(name)
+{
+}
+
 void Timer::start()
 {
     this->startTime = std::chrono::high_resolution_clock::now();

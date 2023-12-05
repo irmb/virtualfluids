@@ -31,7 +31,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
 #include "BoundaryConditions/Pressure/Pressure_Device.cuh"

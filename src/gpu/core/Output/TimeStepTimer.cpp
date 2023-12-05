@@ -1,56 +1,66 @@
-#include "helper_cuda.h"
-#include <cuda_runtime.h>
-#include <basics/DataTypes.h>
-#include "UbScheduler.h"
-#include "Parameter/Parameter.h"
-
-#include "Timer.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #include "TimeStepTimer.h"
 
-void TimeStepTimer::startTotalTimer             (uint t){ if(t%this->tActivate==0) this->totalTimer->startTimer();              }
-void TimeStepTimer::stopTotalTimer              (uint t){ if(t%this->tActivate==0) this->totalTimer->stopTimer();               }
-void TimeStepTimer::startCollisionTimer         (uint t){ if(t%this->tActivate==0) this->collisionTimer->startTimer();          }
-void TimeStepTimer::stopCollisionTimer          (uint t){ if(t%this->tActivate==0) this->collisionTimer->stopTimer();           }
-void TimeStepTimer::startPostCollisionBCTimer   (uint t){ if(t%this->tActivate==0) this->postCollisionBCTimer->startTimer();    }
-void TimeStepTimer::stopPostCollisionBCTimer    (uint t){ if(t%this->tActivate==0) this->postCollisionBCTimer->stopTimer();     }
-void TimeStepTimer::startPreCollisionBCTimer    (uint t){ if(t%this->tActivate==0) this->preCollisionBCTimer->startTimer();     }
-void TimeStepTimer::stopPreCollisionBCTimer     (uint t){ if(t%this->tActivate==0) this->preCollisionBCTimer->stopTimer();      }
-void TimeStepTimer::startEddyViscosityTimer     (uint t){ if(t%this->tActivate==0) this->eddyViscosityTimer->startTimer();      }
-void TimeStepTimer::stopEddyViscosityTimer      (uint t){ if(t%this->tActivate==0) this->eddyViscosityTimer->stopTimer();       }
-void TimeStepTimer::startActuatorTimer          (uint t){ if(t%this->tActivate==0) this->actuatorTimer->startTimer();           }
-void TimeStepTimer::stopActuatorTimer           (uint t){ if(t%this->tActivate==0) this->actuatorTimer->stopTimer();            }
-void TimeStepTimer::startProbeTimer             (uint t){ if(t%this->tActivate==0) this->probeTimer->startTimer();              }
-void TimeStepTimer::stopProbeTimer              (uint t){ if(t%this->tActivate==0) this->probeTimer->stopTimer();               }
-void TimeStepTimer::startExchangeTimer          (uint t){ if(t%this->tActivate==0) this->exchangeTimer->startTimer();           }
-void TimeStepTimer::stopExchangeTimer           (uint t){ if(t%this->tActivate==0) this->exchangeTimer->stopTimer();            }
+#include <basics/DataTypes.h>
 
+#include <logger/Logger.h>
 
-void TimeStepTimer::resetTimers(uint t)
+void TimeStepTimer::startTotalTimer             (uint t){ if(t%this->tActivate==0) this->totalTimer.start();              }
+void TimeStepTimer::stopTotalTimer              (uint t){ if(t%this->tActivate==0) this->totalTimer.end();               }
+void TimeStepTimer::startCollisionTimer         (uint t){ if(t%this->tActivate==0) this->collisionTimer.start();          }
+void TimeStepTimer::stopCollisionTimer          (uint t){ if(t%this->tActivate==0) this->collisionTimer.end();           }
+void TimeStepTimer::startPostCollisionBCTimer   (uint t){ if(t%this->tActivate==0) this->postCollisionBCTimer.start();    }
+void TimeStepTimer::stopPostCollisionBCTimer    (uint t){ if(t%this->tActivate==0) this->postCollisionBCTimer.end();     }
+void TimeStepTimer::startPreCollisionBCTimer    (uint t){ if(t%this->tActivate==0) this->preCollisionBCTimer.start();     }
+void TimeStepTimer::stopPreCollisionBCTimer     (uint t){ if(t%this->tActivate==0) this->preCollisionBCTimer.end();      }
+void TimeStepTimer::startEddyViscosityTimer     (uint t){ if(t%this->tActivate==0) this->eddyViscosityTimer.start();      }
+void TimeStepTimer::stopEddyViscosityTimer      (uint t){ if(t%this->tActivate==0) this->eddyViscosityTimer.end();       }
+void TimeStepTimer::startActuatorTimer          (uint t){ if(t%this->tActivate==0) this->actuatorTimer.start();           }
+void TimeStepTimer::stopActuatorTimer           (uint t){ if(t%this->tActivate==0) this->actuatorTimer.end();            }
+void TimeStepTimer::startProbeTimer             (uint t){ if(t%this->tActivate==0) this->probeTimer.start();              }
+void TimeStepTimer::stopProbeTimer              (uint t){ if(t%this->tActivate==0) this->probeTimer.end();               }
+void TimeStepTimer::startExchangeTimer          (uint t){ if(t%this->tActivate==0) this->exchangeTimer.start();           }
+void TimeStepTimer::stopExchangeTimer           (uint t){ if(t%this->tActivate==0) this->exchangeTimer.end();            }
+
+void TimeStepTimer::outputPerformance(uint t)
 {
-    if(t%this->tActivate==0)
-    {
-        this->totalTimer->resetTimer();
-        this->collisionTimer->resetTimer();
-        this->postCollisionBCTimer->resetTimer();
-        this->preCollisionBCTimer->resetTimer();
-        this->eddyViscosityTimer->resetTimer();
-        this->actuatorTimer->resetTimer();
-        this->probeTimer->resetTimer();
-    }
-}
-
-void TimeStepTimer::outputPerformance(uint t, Parameter* para)
-{
-    if(t%this->tActivate==0)
-    {
-        
-        float tCollision         = this->collisionTimer->getTotalElapsedTime();
-        float tPostCollisionBC   = this->postCollisionBCTimer->getTotalElapsedTime();
-        float tPreCollisionBC    = this->preCollisionBCTimer->getTotalElapsedTime();
-        float tEddyViscosity     = this->eddyViscosityTimer->getTotalElapsedTime();
-        float tAcutator          = this->actuatorTimer->getTotalElapsedTime();
-        float tProbe             = this->probeTimer->getTotalElapsedTime();
-        float tExchange          = this->exchangeTimer->getTotalElapsedTime();
+    if (t % this->tActivate == 0) {
+        float tCollision         = this->collisionTimer.getTimeInSeconds();
+        float tPostCollisionBC   = this->postCollisionBCTimer.getTimeInSeconds();
+        float tPreCollisionBC    = this->preCollisionBCTimer.getTimeInSeconds();
+        float tEddyViscosity     = this->eddyViscosityTimer.getTimeInSeconds();
+        float tAcutator          = this->actuatorTimer.getTimeInSeconds();
+        float tProbe             = this->probeTimer.getTimeInSeconds();
+        float tExchange          = this->exchangeTimer.getTimeInSeconds();
         float tTotal             = tCollision+tPostCollisionBC+tPreCollisionBC+tEddyViscosity+tAcutator+tProbe+tExchange;
         
         VF_LOG_INFO(" --- Collision \t {}%",        (tCollision/tTotal)*100 );

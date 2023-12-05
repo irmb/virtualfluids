@@ -52,7 +52,7 @@
 #include <basics/config/ConfigurationFile.h>
 
 #include <logger/Logger.h>
-#include "Parameter/CudaStreamManager.h"
+#include "Cuda/CudaStreamManager.h"
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 
@@ -109,8 +109,8 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("calcHigherOrderMoments"))
         this->setCalcHighOrderMoments(configData.getValue<bool>("calcHigherOrderMoments"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("calcMedian"))
-        this->setCalcMedian(configData.getValue<bool>("calcMedian"));
+    if (configData.contains("calcMean"))
+        this->setCalcMean(configData.getValue<bool>("calcMean"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("calcCp"))
         this->calcCp = configData.getValue<bool>("calcCp");
@@ -145,11 +145,11 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("TimeStartOut"))
         this->setTimestepStartOut(configData.getValue<int>("TimeStartOut"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("TimeStartCalcMedian"))
-        this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMedian"));
+    if (configData.contains("TimeStartCalcMean"))
+        this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMean"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("TimeEndCalcMedian"))
-        this->setTimeCalcMedEnd(configData.getValue<int>("TimeEndCalcMedian"));
+    if (configData.contains("TimeEndCalcMean"))
+        this->setTimeCalcMedEnd(configData.getValue<int>("TimeEndCalcMean"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("PressInID"))
         this->setPressInID(configData.getValue<int>("PressInID"));
@@ -677,9 +677,9 @@ void Parameter::setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations)
 {
     this->calcVelocityAndFluctuations = calcVelocityAndFluctuations;
 }
-void Parameter::setCalcMedian(bool calcMedian)
+void Parameter::setCalcMean(bool calcMean)
 {
-    this->calcMedian = calcMedian;
+    this->calcMean = calcMean;
 }
 void Parameter::setCalcDragLift(bool calcDragLift)
 {
@@ -1735,9 +1735,9 @@ unsigned int Parameter::getTimestepStartOut()
 {
     return this->tStartOut;
 }
-bool Parameter::getCalcMedian()
+bool Parameter::getCalcMean()
 {
-    return this->calcMedian;
+    return this->calcMean;
 }
 bool Parameter::getCalcDragLift()
 {

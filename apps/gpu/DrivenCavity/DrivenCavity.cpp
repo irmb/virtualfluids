@@ -52,10 +52,10 @@
 #include <gpu/core/BoundaryConditions/BoundaryConditionFactory.h>
 #include <gpu/core/DataStructureInitializer/GridProvider.h>
 #include <gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h>
-#include <gpu/core/GPU/CudaMemoryManager.h>
+#include <gpu/core/Cuda/CudaMemoryManager.h>
 #include <gpu/core/GridScaling/GridScalingFactory.h>
 #include <gpu/core/Kernel/KernelTypes.h>
-#include <gpu/core/LBM/Simulation.h>
+#include <gpu/core/Calculation/Simulation.h>
 #include <gpu/core/Output/FileWriter.h>
 #include <gpu/core/Parameter/Parameter.h>
 

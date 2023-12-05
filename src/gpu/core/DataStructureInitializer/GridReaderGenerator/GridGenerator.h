@@ -38,7 +38,7 @@
 #include <vector>
 #include <string>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 
 class Parameter;

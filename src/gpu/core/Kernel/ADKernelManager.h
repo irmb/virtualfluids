@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ADKernelManager.h
-//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #ifndef ADVECTION_DIFFUSION_H
@@ -65,13 +63,10 @@ public:
     void runADgeometryBCKernel(const int level) const;
 
     //! \brief calls the device function of the velocity boundary condition for advection diffusion
-    void runADveloBCKernel(const int level) const;
+    void runADDirichletBCKernel(const int level) const;
 
     //! \brief calls the device function of the slip boundary condition for advection diffusion
     void runADslipBCKernel(const int level) const;
-
-    //! \brief calls the device function of the pressure boundary condition for advection diffusion
-    void runADpressureBCKernel(const int level) const;
 
     //! \brief copy the concentration from device to host and writes VTK file with concentration
     //! \param cudaMemoryManager instance of class CudaMemoryManager

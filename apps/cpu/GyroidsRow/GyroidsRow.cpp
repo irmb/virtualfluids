@@ -282,6 +282,11 @@ void run(string configname)
         
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(500, 1000, 3000));
+        //OpenMP threads control
+#ifdef _OPENMP
+      omp_set_num_threads(numOfThreads);
+#endif
+
         SPtr<SimulationObserver> npr(new NUPSCounterSimulationObserver(grid, nupsSch, numOfThreads, comm));
 
 

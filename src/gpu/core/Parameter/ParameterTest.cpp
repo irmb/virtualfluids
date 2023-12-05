@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "LBM/Simulation.h"
+#include "Calculation/Simulation.h"
 #include "Parameter.h"
 #include <basics/PointerDefinitions.h>
 #include "basics/config/ConfigurationFile.h"
@@ -12,7 +12,7 @@
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "GridScaling/GridScalingFactory.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
-#include "GPU/CudaMemoryManager.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 
@@ -58,7 +58,7 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getCalc2ndOrderMoments(), testing::Eq(true));
     EXPECT_THAT(para.getCalc3rdOrderMoments(), testing::Eq(true));
     EXPECT_THAT(para.getCalcHighOrderMoments(), testing::Eq(true));
-    EXPECT_THAT(para.getCalcMedian(), testing::Eq(true));
+    EXPECT_THAT(para.getCalcMean(), testing::Eq(true));
     EXPECT_THAT(para.getCalcCp(), testing::Eq(true));
     EXPECT_THAT(para.getCalcDragLift(), testing::Eq(true));
     EXPECT_THAT(para.getWriteVeloASCIIfiles(), testing::Eq(true));

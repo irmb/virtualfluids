@@ -31,7 +31,7 @@
 #ifndef Slip_H
 #define Slip_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 struct LBMSimulationParameter;
 class Parameter;

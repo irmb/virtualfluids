@@ -31,7 +31,7 @@
 #ifndef Outflow_H
 #define Outflow_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 struct LBMSimulationParameter;
 

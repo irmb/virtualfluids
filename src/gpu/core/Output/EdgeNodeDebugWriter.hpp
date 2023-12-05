@@ -1,27 +1,60 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #ifndef EDGENODEDEBUG_HPP
 #define EDGENODEDEBUG_HPP
 
+#include <cmath>
+#include <cstdio>
 #include <fstream>
 #include <sstream>
-#include <cstdio>
-// #include <math.h>
-#include "StringUtilities/StringUtil.h"
-#include "lbm/constants/D3Q27.h"
-#include "LBM/LB.h"
-#include "Parameter/Parameter.h"
-#include "basics/utilities/UbSystem.h"
-#include <basics/writer/WbWriterVtkXmlBinary.h>
-#include <cmath>
 
+#include <basics/StringUtilities/StringUtil.h>
+#include <basics/utilities/UbSystem.h>
+#include <basics/writer/WbWriterVtkXmlBinary.h>
+
+#include <lbm/constants/D3Q27.h>
+
+#include "Calculation/Calculation.h"
+#include "Parameter/Parameter.h"
 
 namespace EdgeNodeDebugWriter
 {
 
-void addCoordinatesToNodeVector(SPtr<LBMSimulationParameter> parH, std::vector<UbTupleFloat3> &nodesVec, int indexInNodesVector, int sparseIndexOfNode){
-            double x1           = parH->coordinateX[sparseIndexOfNode];
-            double x2           = parH->coordinateY[sparseIndexOfNode];
-            double x3           = parH->coordinateZ[sparseIndexOfNode];
-            nodesVec[indexInNodesVector] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+void addCoordinatesToNodeVector(SPtr<LBMSimulationParameter> parH, std::vector<UbTupleFloat3>& nodesVec,
+                                int indexInNodesVector, int sparseIndexOfNode)
+{
+    double x1 = parH->coordinateX[sparseIndexOfNode];
+    double x2 = parH->coordinateY[sparseIndexOfNode];
+    double x3 = parH->coordinateZ[sparseIndexOfNode];
+    nodesVec[indexInNodesVector] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
 }
 
 void writeEdgeNodesXZ_Send(SPtr<Parameter> para, int processID = 0)

@@ -37,7 +37,7 @@
 
 #include <basics/PointerDefinitions.h>
 
-#include "core/LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 class CudaMemoryManager;
 class BoundaryConditionFactory;

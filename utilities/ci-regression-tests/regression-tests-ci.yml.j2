@@ -1,4 +1,4 @@
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.0
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1
 
 stages: 
   - test
@@ -13,7 +13,7 @@ stages:
     - linux
 
   before_script:
-    - chmod +x ./regression-tests/*
+    - chmod -R +x ./regression-tests/*
     - pip install fieldcompare
 
   artifacts:
@@ -23,10 +23,10 @@ stages:
     when: on_failure
 
 {% for regression_test in regression_tests %}
-run-regression-test-{{ regression_test }}:
+run-regression-test-{{ regression_test[1] }}-{{ regression_test[0] }}:
   extends: .regression-test
 
   script:
-    - ./regression-tests/{{ regression_test }}.sh
+    - ./regression-tests/{{ regression_test[1] }}/{{ regression_test[0] }}.sh
 
 {% endfor %}

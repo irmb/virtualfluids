@@ -6,7 +6,7 @@
 
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
-#include <GPU/CudaMemoryManager.h>
+#include "Cuda/CudaMemoryManager.h"
 
 
 std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
@@ -65,7 +65,7 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
 
         //////////////////////////////////////////////////////////////////////////
 
-        if (para->getCalcMedian()) {
+        if (para->getCalcMean()) {
             para->getParH(level)->vx_SP_Med[pos] = 0.0f;
             para->getParH(level)->vy_SP_Med[pos] = 0.0f;
             para->getParH(level)->vz_SP_Med[pos] = 0.0f;

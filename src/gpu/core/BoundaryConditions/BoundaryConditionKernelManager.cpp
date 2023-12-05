@@ -37,13 +37,15 @@
 #include "BoundaryConditionKernelManager.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
-#include "Calculation/Cp.h"
-#include "Calculation/DragLift.h"
 #include "Parameter/Parameter.h"
+#include "PostProcessor/CP27.cuh"
+#include "PostProcessor/Cp.h"
+#include "PostProcessor/DragLift.cuh"
+#include "PostProcessor/DragLift.h"
 
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
-#include "GPU/GPU_Interface.h"
+
 
 BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, BoundaryConditionFactory *bcFactory) : para(parameter)
 {

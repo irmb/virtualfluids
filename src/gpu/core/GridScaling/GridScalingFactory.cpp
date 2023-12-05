@@ -1,5 +1,5 @@
 #include "GridScalingFactory.h"
-#include "GPU/GPU_Interface.h"
+#include "Scaling.cuh"
 
 void GridScalingFactory::setScalingFactory(const GridScalingFactory::GridScaling gridScalingType)
 {

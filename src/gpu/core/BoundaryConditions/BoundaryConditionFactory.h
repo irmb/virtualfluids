@@ -38,7 +38,7 @@
 
 #include <GridGenerator/grid/BoundaryConditions/Side.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
 struct LBMSimulationParameter;

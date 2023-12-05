@@ -1,3 +1,33 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr, Stephan Lenz, Anna Wellmann
+//=======================================================================================
 #include "UpdateGrid27.h"
 
 #include <cuda_runtime.h>
@@ -8,15 +38,15 @@
 #include <parallel/Communicator.h>
 
 #include "BoundaryConditions/BoundaryConditionKernelManager.h"
+#include "CollisionStrategy.h"
 #include "Communication/ExchangeData27.h"
+#include "Cuda/CudaStreamManager.h"
 #include "GridScaling/GridScalingKernelManager.h"
+#include "GridScaling/RefinementStrategy.h"
 #include "Kernel/ADKernelManager.h"
 #include "Kernel/Kernel.h"
-#include "Parameter/CudaStreamManager.h"
+#include "PostProcessor/MacroscopicQuantities.cuh"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-
-#include "CollisionStrategy.h"
-#include "RefinementStrategy.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
@@ -127,13 +157,6 @@ void UpdateGrid27::exchangeMultiGPU(int level, CudaStreamIndex streamIndex)
         exchangePostCollDataADZGPU27(para.get(), comm, cudaMemoryManager.get(), level);
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    // D E P R E C A T E D
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-    // 1D domain decomposition
-    // exchangePostCollDataGPU27(para, comm, level);
 }
 void UpdateGrid27::exchangeMultiGPU_noStreams_withPrepare(int level, bool useReducedComm)
 {
@@ -236,9 +259,8 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
     if (para->getDiffOn())
     {
         this->adKernelManager->runADgeometryBCKernel(level);
-        this->adKernelManager->runADveloBCKernel(level);
+        this->adKernelManager->runADDirichletBCKernel(level);
         this->adKernelManager->runADslipBCKernel(level);
-        this->adKernelManager->runADpressureBCKernel(level);
     }
 }
 
@@ -250,7 +272,7 @@ void UpdateGrid27::swapBetweenEvenAndOddTimestep(int level)
 
 void UpdateGrid27::calcMacroscopicQuantities(int level)
 {
-    CalcMacCompSP27(para->getParD(level)->velocityX,
+    calculateMacroscopicQuantitiesCompressible(para->getParD(level)->velocityX,
                     para->getParD(level)->velocityY,
                     para->getParD(level)->velocityZ,
                     para->getParD(level)->rho,
@@ -263,7 +285,7 @@ void UpdateGrid27::calcMacroscopicQuantities(int level)
                     para->getParD(level)->numberofthreads,
                     para->getParD(level)->distributions.f[0],
                     para->getParD(level)->isEvenTimestep);
-    getLastCudaError("CalcMacSP27 execution failed");
+    getLastCudaError("calculateMacroscopicQuantities execution failed");
 }
 
 void UpdateGrid27::preCollisionBC(int level, unsigned int t)

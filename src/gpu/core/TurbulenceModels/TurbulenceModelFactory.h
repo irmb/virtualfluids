@@ -39,7 +39,7 @@
 #include <variant>
 #include <memory>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 namespace vf::basics
 {
