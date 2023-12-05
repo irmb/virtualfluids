@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include <basics/PointerDefinitions.h>
 
 #include "gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"

@@ -5,7 +5,7 @@
 
 #include "Cuda/CudaMemoryManager.h"
 #include "GPU/GPU_Interface.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"

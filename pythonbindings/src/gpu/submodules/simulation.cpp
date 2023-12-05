@@ -31,7 +31,7 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include <gpu/core/LBM/Simulation.h>
+#include <gpu/core/Calculation/Simulation.h>
 #include <gpu/core/Kernel/KernelFactory/KernelFactory.h>
 #include <gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
 #include <gpu/core/DataStructureInitializer/GridProvider.h>

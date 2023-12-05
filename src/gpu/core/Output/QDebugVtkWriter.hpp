@@ -11,7 +11,7 @@
 #include <logger/Logger.h>
 
 #include "gpu/GridGenerator/grid/NodeValues.h"
-#include "gpu/core/LBM/LB.h"
+#include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Utilities/FindNeighbors.h"
 

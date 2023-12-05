@@ -31,7 +31,7 @@
 #ifndef Precursor_Device_H
 #define Precursor_Device_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 __global__ void PrecursorNonReflectiveCompressible_Device(
     int* subgridDistanceIndices,

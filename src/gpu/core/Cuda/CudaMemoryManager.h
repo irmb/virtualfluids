@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 class Parameter;
 class ActuatorFarm;

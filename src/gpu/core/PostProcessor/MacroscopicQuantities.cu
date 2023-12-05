@@ -39,8 +39,8 @@
 
 #include <basics/constants/NumericConstants.h>
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/LB.h"
+#include "Utilities/KernelUtilities.h"
+#include "Calculation/Calculation.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
@@ -934,23 +934,6 @@ __global__ void LBCalcMeasurePoints(
     }
 }
 
-__global__ void LBSetOutputWallVelocitySP27(real* vxD, real* vyD, real* vzD, real* vxWall, real* vyWall, real* vzWall,
-                                            int numberOfWallNodes, int* kWallNodes, real* rhoD, real* pressD,
-                                            unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
-                                            unsigned int* neighborZ, unsigned long long numberOfLBnodes, real* DD,
-                                            bool isEvenTimestep)
-{
-    const unsigned nodeIndex = getNodeIndex();
-
-    if (nodeIndex < numberOfWallNodes) {
-        unsigned int KWN = kWallNodes[nodeIndex];
-
-        vxD[KWN] = 0.0; // vxWall[k];
-        vyD[KWN] = 0.0; // vyWall[k];
-        vzD[KWN] = 0.0; // vzWall[k];
-    }
-}
-
 void CalcMacSP27(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                  unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
@@ -1046,17 +1029,4 @@ void LBCalcMeasurePoints27(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsi
     LBCalcMeasurePoints<<<grid.grid, grid.threads>>>(vxMP, vyMP, vzMP, rhoMP, kMP, numberOfPointskMP, MPClockCycle, t, geoD,
                                                      neighborX, neighborY, neighborZ, numberOfLBnodes, DD, isEvenTimestep);
     getLastCudaError("LBCalcMeasurePoints execution failed");
-}
-
-void SetOutputWallVelocitySP27(unsigned int numberOfThreads, real* vxD, real* vyD, real* vzD, real* vxWall, real* vyWall,
-                               real* vzWall, int numberOfWallNodes, int* kWallNodes, real* rhoD, real* pressD,
-                               unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
-                               unsigned long long numberOfLBnodes, real* DD, bool isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfWallNodes);
-
-    LBSetOutputWallVelocitySP27<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, vxWall, vyWall, vzWall, numberOfWallNodes,
-                                                             kWallNodes, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
-                                                             numberOfLBnodes, DD, isEvenTimestep);
-    getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
 }

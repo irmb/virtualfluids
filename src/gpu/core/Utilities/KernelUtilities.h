@@ -33,12 +33,13 @@
 #ifndef GPU_DISTRIBUTION_HELPER_H
 #define GPU_DISTRIBUTION_HELPER_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 #include <array>
 #include <cassert>
 #include <optional>
 
+#include <cuda.h>
 #include <cuda_runtime.h>
 
 #include <lbm/constants/D3Q27.h>

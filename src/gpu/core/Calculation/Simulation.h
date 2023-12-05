@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "PointerDefinitions.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 namespace vf::parallel
 {

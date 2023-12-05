@@ -40,7 +40,7 @@
 
 #include <basics/constants/NumericConstants.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;

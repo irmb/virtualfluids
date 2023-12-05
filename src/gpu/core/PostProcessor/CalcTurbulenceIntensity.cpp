@@ -5,9 +5,11 @@
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
-#include "Calculation/CalcTurbulenceIntensity.h"
+#include "CalcTurbulenceIntensity.h"
+
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
+
 #include <basics/StringUtilities/StringUtil.h>
 
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager)

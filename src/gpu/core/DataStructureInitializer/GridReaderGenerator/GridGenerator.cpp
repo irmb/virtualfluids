@@ -14,7 +14,7 @@
 #include "Cuda/CudaMemoryManager.h"
 #include "IndexRearrangementForStreams.h"
 #include "InterpolationCellGrouper.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Output/QDebugWriter.hpp"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"

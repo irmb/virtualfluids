@@ -1,4 +1,4 @@
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 #include "Probe.h"
 #include "PlanarAverageProbe.h"
 

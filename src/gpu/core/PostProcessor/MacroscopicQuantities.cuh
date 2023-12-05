@@ -70,9 +70,4 @@ void LBCalcMeasurePoints27(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, unsi
                            unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                            unsigned long long numberOfLBnodes, real* DD, unsigned int numberOfThreads, bool isEvenTimestep);
 
-void SetOutputWallVelocitySP27(unsigned int numberOfThreads, real* vxD, real* vyD, real* vzD, real* vxWall, real* vyWall,
-                               real* vzWall, int numberOfWallNodes, int* kWallNodes, real* rhoD, real* pressD,
-                               unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
-                               unsigned long long numberOfLBnodes, real* DD, bool isEvenTimestep);
-
 #endif

@@ -34,7 +34,7 @@
 
 #include <basics/DataTypes.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 class LBMSimulationParameter;
 

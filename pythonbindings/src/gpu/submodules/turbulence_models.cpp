@@ -32,7 +32,7 @@
 //=======================================================================================
 #include "pybind11/pybind11.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/core/LBM/LB.h"
+#include "gpu/core/Calculation/Calculation.h"
 
 namespace turbulence_model
 {

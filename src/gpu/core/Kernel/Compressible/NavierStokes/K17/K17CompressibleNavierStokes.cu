@@ -13,8 +13,8 @@
 #include "Kernel/KernelImp.h"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/GPUHelperFunctions/RunCollision.cuh"
+#include "Utilities/KernelUtilities.h"
+#include "Utilities/RunCollision.cuh"
 
 template <vf::lbm::TurbulenceModel turbulenceModel>
 std::shared_ptr<K17CompressibleNavierStokes<turbulenceModel>>

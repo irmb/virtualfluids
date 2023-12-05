@@ -45,7 +45,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "Cuda/CudaMemoryManager.h"
 #include "Utilities/GeometryUtils.h"
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 

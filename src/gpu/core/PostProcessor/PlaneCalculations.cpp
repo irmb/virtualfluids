@@ -1,15 +1,13 @@
-#include "Calculation/PlaneCalculations.h"
+#include "PlaneCalculations.h"
 
-//////////////////////////////////////////////////////////////////////////
-//advection + diffusion
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include <stdio.h>
+
+#include <cstdio>
 #include <fstream>
 #include <sstream>
-//using namespace std;
-//////////////////////////////////////////////////////////////////////////
-#include "StringUtilities/StringUtil.h"
+
+#include <basics/StringUtilities/StringUtil.h>
 
 void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
 {

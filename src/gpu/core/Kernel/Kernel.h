@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "LBM/LB.h" 
+#include "Calculation/Calculation.h" 
 
 #include "PreProcessor/PreProcessorType.h"
 #include "Cuda/CudaStreamManager.h"

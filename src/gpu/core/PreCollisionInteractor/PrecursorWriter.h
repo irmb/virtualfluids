@@ -47,7 +47,7 @@
 
 #include <logger/Logger.h>
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "PreCollisionInteractor.h"
 #include "WbWriterVtkXmlImageBinary.h"
 

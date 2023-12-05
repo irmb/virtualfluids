@@ -46,7 +46,7 @@
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
 #include "gpu/core/Utilities/GeometryUtils.h"
-#include "gpu/core/LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 #include "gpu/core/Output/FilePartCalculator.h"
 #include "gpu/core/Parameter/Parameter.h"
 

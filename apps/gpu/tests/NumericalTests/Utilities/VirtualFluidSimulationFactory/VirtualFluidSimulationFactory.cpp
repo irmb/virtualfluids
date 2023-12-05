@@ -9,7 +9,7 @@
 #include "gpu/core/Parameter/Parameter.h"
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
-#include "gpu/core/LBM/Simulation.h"
+#include "gpu/core/Calculation/Simulation.h"
 
 #include <parallel/MPICommunicator.h>
 

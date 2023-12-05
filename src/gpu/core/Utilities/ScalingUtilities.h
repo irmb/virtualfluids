@@ -33,7 +33,7 @@
 #ifndef SCALING_HELPER_FUNCTIONS_H
 #define SCALING_HELPER_FUNCTIONS_H
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 #include <basics/constants/NumericConstants.h>
 

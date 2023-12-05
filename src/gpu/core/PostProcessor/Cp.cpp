@@ -1,21 +1,16 @@
-#include "Calculation/Cp.h"
+#include "Cp.h"
+
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include <stdio.h>
-
+#include <cassert>
+#include <cstdio>
 #include <fstream>
 #include <sstream>
 
-#include "StringUtilities/StringUtil.h"
-#include <cassert>
-
-//#include <math.h>
-//#include "LB.h"
+#include <basics/StringUtilities/StringUtil.h>
 
 using namespace std;
-
-
 
 void calcCp(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {

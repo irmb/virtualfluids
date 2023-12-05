@@ -35,7 +35,7 @@
 #include "Parameter/Parameter.h"
 #include "lbm/constants/D3Q27.h"
 #include "basics/constants/NumericConstants.h"
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 #include <cuda_helper/CudaGrid.h>
 #include <cuda.h>

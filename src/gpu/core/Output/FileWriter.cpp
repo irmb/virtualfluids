@@ -21,7 +21,7 @@
 #include "WriterUtilities.h"
 #include "FilePartCalculator.h"
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "lbm/constants/D3Q27.h"
 
 std::string makeCollectionFileNameEnding(int ID, int timestep)

@@ -28,12 +28,12 @@
 //
 //! \author Henry Korb, Henrik Asmuth, Martin Schoenherr
 //======================================================================================
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include <basics/constants/NumericConstants.h>
 #include <lbm/constants/D3Q27.h>
 #include <lbm/MacroscopicQuantities.h>
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;

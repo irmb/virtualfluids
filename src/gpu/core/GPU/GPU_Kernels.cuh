@@ -31,7 +31,7 @@
 #ifndef GPU_KERNELS_H
 #define GPU_KERNELS_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 //Advection / Diffusion BCs
 __global__ void QAD7( real* DD,

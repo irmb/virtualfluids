@@ -5,7 +5,7 @@
 #include <helper_timer.h>
 
 #include "GridScaling/GridScalingFactory.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
 #include "Cuda/CudaStreamManager.h"
@@ -25,20 +25,19 @@
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/ReaderMeasurePoints.h"
 //////////////////////////////////////////////////////////////////////////
-#include "PostProcessor/Concentration.cuh"
-#include "PostProcessor/MacroscopicQuantities.cuh"
-//////////////////////////////////////////////////////////////////////////
 #include "PostProcessor/Calc2ndMoments.h"
-#include "Calculation/CalcMean.h"
-#include "Calculation/CalcTurbulenceIntensity.h"
-#include "Calculation/Cp.h"
-#include "Calculation/DragLift.h"
-#include "Calculation/EnstrophyAnalyzer.h"
-#include "Calculation/ForceCalculations.h"
-#include "Calculation/KineticEnergyAnalyzer.h"
-#include "Calculation/PlaneCalculations.h"
-#include "Calculation/TurbulenceIntensity.h"
-#include "Calculation/UpdateGrid27.h"
+#include "PostProcessor/CalcMean.h"
+#include "PostProcessor/CalcTurbulenceIntensity.h"
+#include "PostProcessor/Concentration.cuh"
+#include "PostProcessor/Cp.h"
+#include "PostProcessor/DragLift.h"
+#include "PostProcessor/EnstrophyAnalyzer.h"
+#include "PostProcessor/ForceCalculations.h"
+#include "PostProcessor/KineticEnergyAnalyzer.h"
+#include "PostProcessor/MacroscopicQuantities.cuh"
+#include "PostProcessor/PlaneCalculations.h"
+#include "PostProcessor/TurbulenceIntensity.h"
+#include "UpdateGrid27.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/Timer.h"
 #include "Output/FileWriter.h"
@@ -744,46 +743,6 @@ void Simulation::readAndWriteFiles(uint timestep)
                             para->getParD(lev)->distributions.f[0],
                             para->getParD(lev)->isEvenTimestep);
             getLastCudaError("CalcMacSP27 execution failed");
-        //     // overwrite with wall nodes
-        //     SetOutputWallVelocitySP27( para->getParD(lev)->numberofthreads,
-        //                                para->getParD(lev)->velocityX,
-        //                                para->getParD(lev)->velocityY,
-        //                                para->getParD(lev)->velocityZ,
-        //                                para->getParD(lev)->geometryBC.Vx,
-        //                                para->getParD(lev)->geometryBC.Vy,
-        //                                para->getParD(lev)->geometryBC.Vz,
-        //                                para->getParD(lev)->geometryBC.numberOfBCnodes,
-        //                                para->getParD(lev)->geometryBC.k,
-        //                                para->getParD(lev)->rho,
-        //                                para->getParD(lev)->pressure,
-        //                                para->getParD(lev)->typeOfGridNode,
-        //                                para->getParD(lev)->neighborX,
-        //                                para->getParD(lev)->neighborY,
-        //                                para->getParD(lev)->neighborZ,
-        //                                para->getParD(lev)->size_Mat,
-        //                                para->getParD(lev)->distributions.f[0],
-        //                                para->getParD(lev)->isEvenTimestep);
-        //     getLastCudaError("SetOutputWallVelocitySP27 execution failed");
-        //     SetOutputWallVelocitySP27( para->getParD(lev)->numberofthreads,
-        //                                para->getParD(lev)->velocityX,
-        //                                para->getParD(lev)->velocityY,
-        //                                para->getParD(lev)->velocityZ,
-        //                                para->getParD(lev)->velocityBC.Vx,
-        //                                para->getParD(lev)->velocityBC.Vy,
-        //                                para->getParD(lev)->velocityBC.Vz,
-        //                                para->getParD(lev)->velocityBC.numberOfBCnodes,
-        //                                para->getParD(lev)->velocityBC.k,
-        //                                para->getParD(lev)->rho,
-        //                                para->getParD(lev)->pressure,
-        //                                para->getParD(lev)->typeOfGridNode,
-        //                                para->getParD(lev)->neighborX,
-        //                                para->getParD(lev)->neighborY,
-        //                                para->getParD(lev)->neighborZ,
-        //                                para->getParD(lev)->size_Mat,
-        //                                para->getParD(lev)->distributions.f[0],
-        //                                para->getParD(lev)->isEvenTimestep);
-        //     getLastCudaError("SetOutputWallVelocitySP27 execution failed");
-        // }
 
         cudaMemoryManager->cudaCopyPrint(lev);
         if (para->getCalcMean())

@@ -31,7 +31,7 @@
 #ifndef Velocity_Device_H
 #define Velocity_Device_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 __global__ void VelocityBounceBack_Device(
     real* velocityX,

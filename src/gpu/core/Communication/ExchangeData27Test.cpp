@@ -34,7 +34,7 @@
 #include <filesystem>
 
 #include "ExchangeData27.h"
-#include "gpu/core/LBM/LB.h"
+#include "gpu/core/Calculation/Calculation.h"
 
 #include <basics/config/ConfigurationFile.h>
 

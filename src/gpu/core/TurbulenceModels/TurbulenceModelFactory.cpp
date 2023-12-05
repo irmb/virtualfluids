@@ -39,9 +39,9 @@
 
 #include <logger/Logger.h>
 
-#include "Calculation/TurbulentViscosityKernels.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
+#include "PostProcessor/TurbulentViscosityKernels.h"
 
 void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel)
 {

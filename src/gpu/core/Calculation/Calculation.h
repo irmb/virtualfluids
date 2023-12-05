@@ -26,12 +26,10 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file lb.h
-//! \ingroup LBM
 //! \author Martin Schoenherr
 //=======================================================================================#ifndef _LB_H_
-#ifndef _LB_H_
-#define _LB_H_
+#ifndef CALCULATION_H
+#define CALCULATION_H
 
 //////////////////////////////////////////////////////////////////////////
 #define GEO_FLUID_OLD    1

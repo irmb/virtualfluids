@@ -1,7 +1,7 @@
 #ifndef CalcTurbulenceIntensity_H
 #define CalcTurbulenceIntensity_H
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "Cuda/CudaMemoryManager.h"

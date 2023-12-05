@@ -43,7 +43,7 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
 #include "Utilities/GeometryUtils.h"
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 #include "Parameter/Parameter.h"
 #include "Cuda/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"

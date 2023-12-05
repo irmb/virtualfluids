@@ -4,7 +4,7 @@
 #include "Utilities/LogFileInformation/LogFileInformationImp.h"
 #include "Utilities/LogFileInformation/SimulationLogFileInformation/SimulationLogFileInformation.h"
 
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 
 #include <memory>
 #include <vector>

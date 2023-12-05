@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "LBM/Simulation.h"
+#include "Calculation/Simulation.h"
 #include "Parameter.h"
 #include <basics/PointerDefinitions.h>
 #include "basics/config/ConfigurationFile.h"

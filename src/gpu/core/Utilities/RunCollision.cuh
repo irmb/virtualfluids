@@ -8,7 +8,7 @@
 #include <lbm/collision/CollisionParameter.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 namespace vf::gpu
 {

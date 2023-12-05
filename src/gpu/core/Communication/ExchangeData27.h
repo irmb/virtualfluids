@@ -33,7 +33,7 @@
 #define EXCHANGEDATA27_H
 
 #include "Cuda/CudaMemoryManager.h"
-#include "LBM/LB.h"
+#include "Calculation/Calculation.h"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 

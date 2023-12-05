@@ -36,7 +36,7 @@
 
 #include <lbm/MacroscopicQuantities.h>
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
+#include "Utilities/KernelUtilities.h"
 
 __global__ void CalcTurbulenceIntensity(real* vxx, real* vyy, real* vzz, real* vxy, real* vxz, real* vyz, real* vx_mean,
                                         real* vy_mean, real* vz_mean, real* distributions, uint* typeOfGridNode,

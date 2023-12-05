@@ -5,7 +5,8 @@
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
-#include "Calculation/CalcMean.h"
+#include "CalcMean.h"
+
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 

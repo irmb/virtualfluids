@@ -39,8 +39,8 @@
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
-#include "LBM/GPUHelperFunctions/KernelUtilities.h"
-#include "LBM/LB.h"
+#include "Utilities/KernelUtilities.h"
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
 using namespace vf::basics::constant;
