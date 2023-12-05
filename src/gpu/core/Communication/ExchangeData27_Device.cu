@@ -1,12 +1,50 @@
-/* Device code */
-#include "LBM/LB.h" 
-#include "lbm/constants/D3Q27.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//======================================================================================
+
+#include "ExchangeData27_Device.cuh"
+
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
+
+#include <cuda_helper/CudaGrid.h>
+
+#include <lbm/constants/D3Q27.h>
+
 #include <basics/constants/NumericConstants.h>
+
+#include "LBM/LB.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void getSendFsPost27(real* DD,
                                            real* bufferFs,
                                            int* sendIndex,
@@ -211,38 +249,7 @@ __global__ void getSendFsPost27(real* DD,
       (Dbuff.f[dMPM])[k] = (D.f[dPMP])[ktse ];
    }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void setRecvFsPost27(real* DD,
                                            real* bufferFs,
                                            int* recvIndex,
@@ -447,37 +454,7 @@ __global__ void setRecvFsPost27(real* DD,
       (D.f[dPMP])[ktse ] = (Dbuff.f[dMPM])[k];
    }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void getSendFsPre27(real* DD,
                                           real* bufferFs,
                                           int* sendIndex,
@@ -655,38 +632,7 @@ __global__ void getSendFsPre27(real* DD,
       (Dbuff.f[dMPM])[k] = (D.f[dMPM])[kbnw ];
    }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void setRecvFsPre27(real* DD,
                                           real* bufferFs,
                                           int* recvIndex,
@@ -864,37 +810,7 @@ __global__ void setRecvFsPre27(real* DD,
       (D.f[dMPM])[kbnw ] = (Dbuff.f[dMPM])[k];
    }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void getSendGsF3(
     real* G6,
     real* bufferGs,
@@ -966,38 +882,7 @@ __global__ void getSendGsF3(
         (Dbuff.g[d00M])[k] = (G.g[d00P])[kr];
     }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void setRecvGsF3(
     real* G6,
     real* bufferGs,
@@ -1069,4 +954,171 @@ __global__ void setRecvGsF3(
         (G.g[d00P])[kr] = (Dbuff.g[d00M])[k];
     }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void GetSendFsPreDev27(
+    real* DD,
+    real* bufferFs,
+    int* sendIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads,
+    cudaStream_t stream)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
+
+    getSendFsPre27<<< grid.grid, grid.threads, 0, stream >>>(
+        DD,
+        bufferFs,
+        sendIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("getSendFsPre27 execution failed");
+}
+
+void GetSendFsPostDev27(
+    real* DD,
+    real* bufferFs,
+    int* sendIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads,
+    cudaStream_t stream)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
+
+    getSendFsPost27<<< grid.grid, grid.threads, 0, stream >>>(
+        DD,
+        bufferFs,
+        sendIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("getSendFsPost27 execution failed");
+}
+
+void SetRecvFsPreDev27(
+    real* DD,
+    real* bufferFs,
+    int* recvIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads,
+    cudaStream_t stream)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
+
+    setRecvFsPre27<<< grid.grid, grid.threads, 0, stream >>>(
+        DD,
+        bufferFs,
+        recvIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("setRecvFsPre27 execution failed");
+}
+
+void SetRecvFsPostDev27(
+    real* DD,
+    real* bufferFs,
+    int* recvIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads,
+    cudaStream_t stream)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
+
+    setRecvFsPost27<<< grid.grid, grid.threads, 0, stream >>>(
+        DD,
+        bufferFs,
+        recvIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("setRecvFsPost27 execution failed");
+}
+
+void getSendGsDevF3(
+    real* G6,
+    real* bufferGs,
+    int* sendIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
+
+    getSendGsF3 <<< grid.grid, grid.threads >>> (
+        G6,
+        bufferGs,
+        sendIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("getSendGsF3 execution failed");
+}
+
+void setRecvGsDevF3(
+    real* G6,
+    real* bufferGs,
+    int* recvIndex,
+    int buffmax,
+    unsigned int* neighborX,
+    unsigned int* neighborY,
+    unsigned int* neighborZ,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep,
+    unsigned int numberOfThreads)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
+
+    setRecvGsF3 <<< grid.grid, grid.threads >>> (
+        G6,
+        bufferGs,
+        recvIndex,
+        buffmax,
+        neighborX,
+        neighborY,
+        neighborZ,
+        numberOfLBnodes,
+        isEvenTimestep);
+    getLastCudaError("setRecvGsF3 execution failed");
+}

@@ -1144,67 +1144,6 @@ __global__ void CalcCP27(real* DD,
                                     unsigned long long numberOfLBnodes,
                                     bool isEvenTimestep);
 
-__global__ void getSendFsPre27(real* DD,
-                                          real* bufferFs,
-                                          int* sendIndex,
-                                          int buffmax,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
-__global__ void getSendFsPost27(real* DD,
-                                           real* bufferFs,
-                                           int* sendIndex,
-                                           int buffmax,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes,
-                                           bool isEvenTimestep);
-
-__global__ void setRecvFsPre27(real* DD,
-                                          real* bufferFs,
-                                          int* recvIndex,
-                                          int buffmax,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes,
-                                          bool isEvenTimestep);
-
-__global__ void setRecvFsPost27(real* DD,
-                                           real* bufferFs,
-                                           int* recvIndex,
-                                           int buffmax,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes,
-                                           bool isEvenTimestep);
-
-__global__ void getSendGsF3(
-    real* G6,
-    real* bufferGs,
-    int* sendIndex,
-    int buffmax,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
-
-__global__ void setRecvGsF3(
-    real* G6,
-    real* bufferGs,
-    int* recvIndex,
-    int buffmax,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
 
 __global__ void LBSetOutputWallVelocitySP27( real* vxD,
                                                         real* vyD,
