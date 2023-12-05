@@ -30,9 +30,9 @@
 #ifndef GridReader_H
 #define GridReader_H
 
-#include <memory>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Calculation/Calculation.h"
 #include <basics/PointerDefinitions.h>
