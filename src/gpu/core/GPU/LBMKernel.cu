@@ -2492,63 +2492,6 @@ void ScaleFCThS27(
     getLastCudaError("scaleFCThS27 execution failed");
 }
 
-//////////////////////////////////////////////////////////////////////////
-void CalcCPtop27(
-    real* DD,
-    int* cpIndex,
-    int nonCp,
-    double *cpPress,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonCp);
-
-    CalcCP27<<< grid.grid, grid.threads >>>(
-        DD,
-        cpIndex,
-        nonCp,
-        cpPress,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("CalcCP27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void CalcCPbottom27(
-    real* DD,
-    int* cpIndex,
-    int nonCp,
-    double *cpPress,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonCp);
-
-    CalcCP27<<< grid.grid, grid.threads >>>(
-        DD,
-        cpIndex,
-        nonCp,
-        cpPress,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("CalcCP27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////
 void SetOutputWallVelocitySP27(
     unsigned int numberOfThreads,
     real* vxD,

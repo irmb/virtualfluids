@@ -1108,17 +1108,6 @@ __global__ void scaleFCThS27(  real* DC,
                                           real diffusivity_coarse,
                                           ICellNeigh neighborFineToCoarse);
 
-__global__ void CalcCP27(real* DD,
-                                    int* cpIndex,
-                                    int nonCp,
-                                    double *cpPress,
-                                    unsigned int* neighborX,
-                                    unsigned int* neighborY,
-                                    unsigned int* neighborZ,
-                                    unsigned long long numberOfLBnodes,
-                                    bool isEvenTimestep);
-
-
 __global__ void LBSetOutputWallVelocitySP27( real* vxD,
                                                         real* vyD,
                                                         real* vzD,

@@ -1088,28 +1088,6 @@ void ScaleFCThS27( real* DC,
                               unsigned int numberOfThreads,
                               ICellNeigh neighborFineToCoarse);
 
-void CalcCPtop27(real* DD, 
-                            int* cpIndex, 
-                            int nonCp, 
-                            double *cpPress,
-                            unsigned int* neighborX,
-                            unsigned int* neighborY,
-                            unsigned int* neighborZ,
-                            unsigned long long numberOfLBnodes, 
-                            bool isEvenTimestep,
-                            unsigned int numberOfThreads);
-
-void CalcCPbottom27(real* DD, 
-                               int* cpIndex, 
-                               int nonCp, 
-                               double *cpPress,
-                               unsigned int* neighborX,
-                               unsigned int* neighborY,
-                               unsigned int* neighborZ,
-                               unsigned long long numberOfLBnodes, 
-                               bool isEvenTimestep,
-                               unsigned int numberOfThreads);
-
 void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                           real* vxD,
                                           real* vyD,

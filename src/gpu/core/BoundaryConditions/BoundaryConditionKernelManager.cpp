@@ -36,6 +36,7 @@
 
 #include "BoundaryConditionKernelManager.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
+#include "Calculation/CP27.cuh"
 #include "Calculation/Cp.h"
 #include "Calculation/DragLift.cuh"
 #include "Calculation/DragLift.h"
