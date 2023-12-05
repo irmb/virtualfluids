@@ -26,25 +26,41 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Martin Schoenherr
+//! \author Soeren Peters
 //=======================================================================================
-#include "DistributionDebugWriter.h"
-#include "Cuda/CudaMemoryManager.h"
-#include "Utilities/testUtilitiesGPU.h"
-#include <gmock/gmock.h>
+#include "PerformanceMeasurement.h"
 
-TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_CopyDistributions_ShouldThrow)
+#include <logger/Logger.h>
+
+#include "Parameter/Parameter.h"
+
+void PerformanceMeasurement::print(vf::basics::Timer& timer, uint timestep, Parameter* para,
+                                   vf::parallel::Communicator& communicator)
 {
-    const auto para = testingVF::createParameterForLevel(0);
-    const CudaMemoryManager cudaMemoryManager(para);
+    totalTime += timer.getTimeInSeconds();
+    real fnups = 0.0;
+    real bandwidth = 0.0;
 
-    EXPECT_THROW(DistributionDebugWriter::copyDistributionsToHost(*para, cudaMemoryManager), std::runtime_error);
-}
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+        fnups +=
+            (timestep - para->getTimestepStart()) * para->getParH(lev)->numberOfNodes * pow(2., lev) / (totalTime * 1.0E6);
+        bandwidth += (27.0 + 1.0) * 4.0 * (timestep - para->getTimestepStart()) * para->getParH(lev)->numberOfNodes /
+                     (totalTime * 10e9);
+    }
 
-TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_WriteDistributions_ShouldThrow)
-{
-    const auto para = testingVF::createParameterForLevel(0);
-    const CudaMemoryManager cudaMemoryManager(para);
+    if (this->firstOutput && communicator.getProcessID() == 0) // only display the legend once
+    {
+        VF_LOG_INFO("PID \t --- Average performance ---  Processing time (ms) \t Nups in Mio \t Bandwidth in GB/sec");
+        this->firstOutput = false;
+    }
 
-    EXPECT_THROW(DistributionDebugWriter::writeDistributions(*para, 0), std::runtime_error);
+    VF_LOG_INFO(" {} \t --- Average performance --- {:>8.1f}/ {:<8.1f} \t   {:5.1f} \t       {:4.1f}",
+                communicator.getProcessID(), timer.getTimeInSeconds() * 1000, totalTime * 1000, fnups, bandwidth);
+
+    // When using multiple GPUs, sum the nups of all processes
+    if (communicator.getNumberOfProcesses() > 1) {
+        double nupsSum = communicator.reduceSum(fnups);
+        if (communicator.getProcessID() == 0)
+            VF_LOG_INFO("Sum of all {} processes: Nups in Mio: {:.1f}", communicator.getNumberOfProcesses(), nupsSum);
+    }
 }

@@ -69,7 +69,6 @@
 #include "PostProcessor/TurbulenceIntensity.h"
 #include "UpdateGrid27.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Output/Timer.h"
 #include "Output/FileWriter.h"
 #include "Output/DistributionDebugWriter.h"
 //////////////////////////////////////////////////////////////////////////
@@ -423,10 +422,8 @@ void Simulation::initTimers()
     
     para->setStepEnsight(0);
 
-    averageTimer = std::make_unique<Timer>("Average performance");
-    averageTimer->startTimer();
+    averageTimer.start();
 }
-
 
 void Simulation::allocNeighborsOffsetsScalesAndBoundaries(GridProvider &gridProvider)
 {
@@ -582,7 +579,7 @@ void Simulation::calculateTimestep(uint timestep)
     ////////////////////////////////////////////////////////////////////////////////
     if(para->getDoCheckPoint() && para->getTimeDoCheckPoint()>0 && timestep%para->getTimeDoCheckPoint()==0 && timestep>0 && !para->overWritingRestart(timestep))
     {
-        averageTimer->stopTimer();
+        averageTimer.end();
         //////////////////////////////////////////////////////////////////////////
         if( para->getDoCheckPoint() )
         {
@@ -597,7 +594,7 @@ void Simulation::calculateTimestep(uint timestep)
             VF_LOG_INFO("done");
         }
         //////////////////////////////////////////////////////////////////////////
-        averageTimer->startTimer();
+        averageTimer.start();
     }
     //////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -689,22 +686,14 @@ void Simulation::calculateTimestep(uint timestep)
     ////////////////////////////////////////////////////////////////////////////////
     // File IO
     ////////////////////////////////////////////////////////////////////////////////
-    //communicator->startTimer();
-    if(para->getTimestepOut()>0 && timestep%para->getTimestepOut()==0 && timestep>=para->getTimestepStartOut())
-    {
-        //////////////////////////////////////////////////////////////////////////////////
-        //if (para->getParD(0)->evenOrOdd==true)  para->getParD(0)->evenOrOdd=false;
-        //else                                    para->getParD(0)->evenOrOdd=true;
-        //////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////
-        averageTimer->stopTimer();
-        averageTimer->outputPerformance(timestep, para.get(), communicator);
-        //////////////////////////////////////////////////////////////////////////
-        if( para->getPrintFiles() )
-        {
+    if (para->getTimestepOut() > 0 && timestep % para->getTimestepOut() == 0 && timestep >= para->getTimestepStartOut()) {
+        averageTimer.end();
+        performanceOutput.print(averageTimer, timestep, para.get(), communicator);
+
+        if (para->getPrintFiles()) {
             readAndWriteFiles(timestep);
         }
-        averageTimer->startTimer();
+        averageTimer.start();
     }
 }
 

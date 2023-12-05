@@ -34,8 +34,11 @@
 #include <memory>
 #include <vector>
 
-#include "PointerDefinitions.h"
+#include <basics/PointerDefinitions.h>
+#include <basics/Timer/Timer.h>
+
 #include "Calculation/Calculation.h"
+#include "Output/PerformanceMeasurement.h"
 
 namespace vf::parallel
 {
@@ -60,7 +63,6 @@ class EnstrophyAnalyzer;
 class BoundaryConditionFactory;
 class GridScalingFactory;
 class TurbulenceModelFactory;
-class Timer;
 
 class Simulation
 {
@@ -105,12 +107,13 @@ private:
     SPtr<RestartObject> restart_object;
 
     // Timer
-    std::unique_ptr<Timer> averageTimer;
+    vf::basics::Timer averageTimer;
+    PerformanceMeasurement performanceOutput;
     uint previousTimestepForAveraging;
     uint previousTimestepForTurbulenceIntensityCalculation;
     uint timestepForMeasuringPoints;
 
-    //Forcing Calculation
+    // Forcing Calculation
     std::shared_ptr<ForceCalculations> forceCalculator;
 
     std::unique_ptr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;

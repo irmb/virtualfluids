@@ -26,25 +26,26 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Martin Schoenherr
+//! \author Soeren Peters
 //=======================================================================================
-#include "DistributionDebugWriter.h"
-#include "Cuda/CudaMemoryManager.h"
-#include "Utilities/testUtilitiesGPU.h"
-#include <gmock/gmock.h>
+#ifndef PerformanceMeasurement_H
+#define PerformanceMeasurement_H
 
-TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_CopyDistributions_ShouldThrow)
+#include <basics/DataTypes.h>
+#include <basics/Timer/Timer.h>
+
+#include <parallel/Communicator.h>
+
+class Parameter;
+
+class PerformanceMeasurement
 {
-    const auto para = testingVF::createParameterForLevel(0);
-    const CudaMemoryManager cudaMemoryManager(para);
+public:
+    void print(vf::basics::Timer& timer, uint timestep, Parameter* para, vf::parallel::Communicator& communicator);
 
-    EXPECT_THROW(DistributionDebugWriter::copyDistributionsToHost(*para, cudaMemoryManager), std::runtime_error);
-}
+private:
+    double totalTime { 0. };
+    bool firstOutput { true };
+};
 
-TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_WriteDistributions_ShouldThrow)
-{
-    const auto para = testingVF::createParameterForLevel(0);
-    const CudaMemoryManager cudaMemoryManager(para);
-
-    EXPECT_THROW(DistributionDebugWriter::writeDistributions(*para, 0), std::runtime_error);
-}
+#endif

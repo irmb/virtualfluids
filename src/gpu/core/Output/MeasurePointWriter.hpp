@@ -1,32 +1,52 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #ifndef MEASURE_POINT_WRITER_H
 #define MEASURE_POINT_WRITER_H
 
-//#include <stdio.h>
-//#include <iostream>
-//#include <fstream>
-//#include <sstream>
-// #include <math.h>
-
-//#include <cmath>
-
-//#include "Calculation/Calculation.h"
-//#include "lbm/constants/D3Q27.h"
 #include <numeric>
-#include "basics/utilities/UbFileOutputASCII.h"
+
+#include <basics/utilities/UbFileOutputASCII.h>
+
 #include "Parameter/Parameter.h"
 
 class MeasurePointWriter
 {
 public:
-    MeasurePointWriter(){}
-    ~MeasurePointWriter(){}
-
     static void writeMeasurePoints(Parameter* para, int level, int index, int t)
     {
-        std::ostringstream convert;   // stream used for the conversion
-        convert << t;      // insert the textual representation of 'Number' in the characters in the stream
+        std::ostringstream convert; // stream used for the conversion
+        convert << t;               // insert the textual representation of 'Number' in the characters in the stream
         std::string st = convert.str();
-        UbFileOutputASCII out(para->getFName()+"_MeasurePoint_"+para->getParH(level)->MP[index].name+"_"+st+".dat");
+        UbFileOutputASCII out(para->getFName() + "_MeasurePoint_" + para->getParH(level)->MP[index].name + "_" + st +
+                              ".dat");
 
         out.writeString("Level:");
         out.writeInteger(level);
@@ -36,8 +56,7 @@ public:
         int numberNodes = (int)para->getParH(level)->MP[index].Rho.size();
         out.writeInteger(numberNodes);
         out.writeLine();
-        for(int u=0; u<numberNodes; u++)
-        {
+        for (int u = 0; u < numberNodes; u++) {
             out.writeFloat((float)(para->getParH(level)->MP[index].Vx[u] * para->getVelocityRatio()));
             out.writeFloat((float)(para->getParH(level)->MP[index].Vy[u] * para->getVelocityRatio()));
             out.writeFloat((float)(para->getParH(level)->MP[index].Vz[u] * para->getVelocityRatio()));
@@ -49,24 +68,22 @@ public:
 
     static void writeTestAcousticXY(Parameter* para, int level, int t)
     {
-        std::ostringstream convert;   // stream used for the conversion
-        convert << t;      // insert the textual representation of 'Number' in the characters in the stream
+        std::ostringstream convert; // stream used for the conversion
+        convert << t;               // insert the textual representation of 'Number' in the characters in the stream
         std::string st = convert.str();
-        std::ostringstream convertLevel;   // stream used for the conversion
-        convertLevel << level;      // insert the textual representation of 'Number' in the characters in the stream
+        std::ostringstream convertLevel; // stream used for the conversion
+        convertLevel << level;           // insert the textual representation of 'Number' in the characters in the stream
         std::string sLevel = convertLevel.str();
 
         UbFileOutputASCII out(para->getFName() + "_timestep_" + st + "_level_" + sLevel + "_XY.dat");
 
         int numberNodes = (int)para->getParH(level)->numberOfNodes;
-        
-        real deltaX = 1.0f / pow(2, level);
-        real halfDx = deltaX / 2.0f;
-        real middleOfTheGrid = (para->getMaxCoordZ()[0] + para->getMinCoordZ()[0]) / 2.f;
-        //cout << "deltax: " << deltaX << ", halfDx: " << halfDx << ", middle of the grid: " << middleOfTheGrid << endl;
 
-        for (int u = 0; u < numberNodes; u++)
-        {
+        real deltaX = vf::basics::constant::c1o1 / pow(2, level);
+        real halfDx = deltaX / 2.0f;
+        real middleOfTheGrid = (para->getMaxCoordZ()[0] + para->getMinCoordZ()[0]) / vf::basics::constant::c2o1;
+
+        for (int u = 0; u < numberNodes; u++) {
             if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
                 ((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateZ[u]) &&
                 ((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateZ[u]) )
@@ -82,23 +99,22 @@ public:
 
     static void writeTestAcousticYZ(Parameter* para, int level, int t)
     {
-        std::ostringstream convert;   // stream used for the conversion
-        convert << t;      // insert the textual representation of 'Number' in the characters in the stream
+        std::ostringstream convert; // stream used for the conversion
+        convert << t;               // insert the textual representation of 'Number' in the characters in the stream
         std::string st = convert.str();
-        std::ostringstream convertLevel;   // stream used for the conversion
-        convertLevel << level;      // insert the textual representation of 'Number' in the characters in the stream
+        std::ostringstream convertLevel; // stream used for the conversion
+        convertLevel << level;           // insert the textual representation of 'Number' in the characters in the stream
         std::string sLevel = convertLevel.str();
 
         UbFileOutputASCII out(para->getFName() + "_timestep_" + st + "_level_" + sLevel + "_YZ.dat");
 
         int numberNodes = (int)para->getParH(level)->numberOfNodes;
 
-        real deltaX = 1.0f / pow(2, level);
-        real halfDx = deltaX / 2.0f;
-        real middleOfTheGrid = (para->getMaxCoordX()[0] + para->getMinCoordX()[0]) / 2.f;
+        real deltaX = vf::basics::constant::c1o1 / pow(2, level);
+        real halfDx = deltaX / vf::basics::constant::c2o1;
+        real middleOfTheGrid = (para->getMaxCoordX()[0] + para->getMinCoordX()[0]) / vf::basics::constant::c2o1;
 
-        for (int u = 0; u < numberNodes; u++)
-        {
+        for (int u = 0; u < numberNodes; u++) {
             if ((para->getParH(level)->typeOfGridNode[u] == GEO_FLUID) &&
                 ((middleOfTheGrid - halfDx) <= para->getParH(level)->coordinateX[u]) &&
                 ((middleOfTheGrid + halfDx) >= para->getParH(level)->coordinateX[u]))
@@ -289,8 +305,6 @@ public:
         }
         out.writeLine();
     }
-protected:
-
-private:
 };
+
 #endif
