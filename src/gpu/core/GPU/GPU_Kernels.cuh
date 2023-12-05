@@ -1163,22 +1163,4 @@ __global__ void LBSetOutputWallVelocitySP27( real* vxD,
                                                         real* DD,
                                                         bool isEvenTimestep);
 
-__global__ void CalcTurbulenceIntensity(
-   real* vxx,
-   real* vyy,
-   real* vzz,
-   real* vxy,
-   real* vxz,
-   real* vyz,
-   real* vx_mean,
-   real* vy_mean,
-   real* vz_mean,
-   real* DD,
-   uint *typeOfGridNode,
-   unsigned int* neighborX,
-   unsigned int* neighborY,
-   unsigned int* neighborZ,
-   unsigned long long numberOfLBnodes,
-   bool isEvenTimestep);
-
 #endif

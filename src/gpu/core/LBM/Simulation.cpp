@@ -34,6 +34,7 @@
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/KineticEnergyAnalyzer.h"
 #include "Calculation/PlaneCalculations.h"
+#include "Calculation/TurbulenceIntensity.h"
 #include "Calculation/UpdateGrid27.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/Timer.h"
