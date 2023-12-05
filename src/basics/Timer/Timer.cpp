@@ -33,6 +33,10 @@
 namespace vf::basics
 {
 
+Timer::Timer(const std::string& name) : name(name)
+{
+}
+
 void Timer::start()
 {
     this->startTime = std::chrono::high_resolution_clock::now();
@@ -41,6 +45,7 @@ void Timer::start()
 void Timer::end()
 {
     this->endTime = std::chrono::high_resolution_clock::now();
+    this->totalTime += getTimeInSeconds();
 }
 
 double timeInSeconds(Timer::timePoint end, Timer::timePoint start)

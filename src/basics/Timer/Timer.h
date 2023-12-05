@@ -32,6 +32,7 @@
 #define BASICS_TIMER_H
 
 #include <chrono>
+#include <string>
 
 namespace vf::basics
 {
@@ -39,6 +40,8 @@ namespace vf::basics
 class Timer
 {
 public:
+    Timer() = default;
+    Timer(const std::string& name);
     using timePoint = std::chrono::high_resolution_clock::time_point;
 
     void start();
@@ -47,9 +50,12 @@ public:
     double getTimeInSeconds() const;
     double getCurrentRuntimeInSeconds() const;
 
+    std::string name;
+
 private:
     timePoint startTime;
     timePoint endTime;
+    double totalTime { 0. };
 };
 
 } // namespace vf::basics

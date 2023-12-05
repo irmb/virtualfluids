@@ -1,86 +1,87 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \author Martin Schoenherr
+//=======================================================================================
 #ifndef POSITION_WRITER_H
 #define POSITION_WRITER_H
 
-//#include <stdio.h>
-//#include <iostream>
-//#include <fstream>
-//#include <sstream>
-// #include <math.h>
+#include <basics/utilities/UbFileOutputASCII.h>
 
-//#include <cmath>
-
-//#include "Calculation/Calculation.h"
-//#include "lbm/constants/D3Q27.h"
-#include "basics/utilities/UbFileOutputASCII.h"
 #include "Parameter/Parameter.h"
 
 class PositionWriter
 {
 public:
-    PositionWriter(){}
-    ~PositionWriter(){}
-
     static void writePosition(Parameter* para, std::string Type)
     {
-        UbFileOutputASCII out(para->getFName()+Type+".dat");
+        UbFileOutputASCII out(para->getFName() + Type + ".dat");
 
         out.writeInteger(para->getMaxLevel());
         out.writeLine();
 
-        if (Type == "_geoSP")
-        {
-            for (int level = 0; level <= para->getMaxLevel(); level++)
-            {
+        if (Type == "_geoSP") {
+            for (int level = 0; level <= para->getMaxLevel(); level++) {
                 out.writeInteger(para->getParH(level)->numberOfNodes);
                 out.writeLine();
-                for(size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
-                {
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
                     out.writeInteger(para->getParH(level)->typeOfGridNode[index]);
                 }
                 out.writeLine();
-            } //end levelloop
-        }
-        else if (Type == "_neighborX_SP")
-        {
-            for (int level = 0; level <= para->getMaxLevel(); level++)
-            {
+            }
+        } else if (Type == "_neighborX_SP") {
+            for (int level = 0; level <= para->getMaxLevel(); level++) {
                 out.writeInteger(para->getParH(level)->numberOfNodes);
                 out.writeLine();
-                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
-                {
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
                     out.writeInteger(para->getParH(level)->neighborX[index]);
                 }
                 out.writeLine();
-            } //end levelloop
-        }
-        else if (Type == "_neighborY_SP")
-        {
-            for (int level = 0; level <= para->getMaxLevel(); level++)
-            {
+            }
+        } else if (Type == "_neighborY_SP") {
+            for (int level = 0; level <= para->getMaxLevel(); level++) {
                 out.writeInteger(para->getParH(level)->numberOfNodes);
                 out.writeLine();
-                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
-                {
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
                     out.writeInteger(para->getParH(level)->neighborY[index]);
                 }
                 out.writeLine();
-            } //end levelloop
-        }
-        else if (Type == "_neighborZ_SP")
-        {
-            for (int level = 0; level <= para->getMaxLevel(); level++)
-            {
+            }
+        } else if (Type == "_neighborZ_SP") {
+            for (int level = 0; level <= para->getMaxLevel(); level++) {
                 out.writeInteger(para->getParH(level)->numberOfNodes);
                 out.writeLine();
-                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++)
-                {
+                for (size_t index = 0; index < para->getParH(level)->numberOfNodes; index++) {
                     out.writeInteger(para->getParH(level)->neighborZ[index]);
                 }
                 out.writeLine();
-            } //end levelloop
+            }
         }
     }
-protected:
-private:
 };
 #endif
