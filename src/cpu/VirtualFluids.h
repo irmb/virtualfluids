@@ -229,7 +229,6 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
-#include <cpu/core/Parallel/BlocksDistributor.h>
 #include <cpu/core/Parallel/MetisPartitioner.h>
 
 #include <cpu/core/Utilities/ChangeRandomQs.hpp>
@@ -248,7 +247,6 @@
 #include <cpu/core/Visitors/Grid3DVisitor.h>
 #include <cpu/core/Visitors/InitDistributionsBlockVisitor.h>
 #include <cpu/core/Visitors/InitDistributionsWithInterpolationGridVisitor.h>
-#include <cpu/core/Visitors/InitThixotropyBlockVisitor.h>
 #include <cpu/core/Visitors/MetisPartitioningGridVisitor.h>
 #include <cpu/core/Visitors/OverlapBlockVisitor.h>
 #include <cpu/core/Visitors/RatioBlockVisitor.h>

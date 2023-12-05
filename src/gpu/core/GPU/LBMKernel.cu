@@ -385,7 +385,7 @@ void CalcMacMedSP27(
     getLastCudaError("LBCalcMacMedSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ResetMedianValuesSP27(
+void ResetMeanValuesSP27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -397,7 +397,7 @@ void ResetMedianValuesSP27(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBResetMedianValuesSP27 <<< grid.grid, grid.threads >>> (
+    LBResetMeanValuesSP27 <<< grid.grid, grid.threads >>> (
         vxD,
         vyD,
         vzD,
@@ -405,10 +405,10 @@ void ResetMedianValuesSP27(
         pressD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBResetMedianValuesSP27 execution failed");
+    getLastCudaError("LBResetMeanValuesSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void ResetMedianValuesAD27(
+void ResetMeanValuesAD27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -421,7 +421,7 @@ void ResetMedianValuesAD27(
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
 
-    LBResetMedianValuesAD27 <<< grid.grid, grid.threads >>> (
+    LBResetMeanValuesAD27 <<< grid.grid, grid.threads >>> (
         vxD,
         vyD,
         vzD,
@@ -430,7 +430,7 @@ void ResetMedianValuesAD27(
         concD,
         numberOfLBnodes,
         isEvenTimestep);
-    getLastCudaError("LBResetMedianValuesAD27 execution failed");
+    getLastCudaError("LBResetMeanValuesAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void Calc2ndMomentsIncompSP27(
@@ -3319,41 +3319,6 @@ void setRecvGsDevF3(
     getLastCudaError("setRecvGsF3 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
-void WallFuncDev27(
-    unsigned int numberOfThreads,
-    real* vx,
-    real* vy,
-    real* vz,
-    real* DD,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
-
-    WallFunction27<<< grid.grid, grid.threads >>> (
-        vx,
-        vy,
-        vz,
-        DD,
-        k_Q,
-        QQ,
-        numberOfBCnodes,
-        om1,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("WallFunction27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
 void SetOutputWallVelocitySP27(
     unsigned int numberOfThreads,
     real* vxD,
@@ -3395,37 +3360,6 @@ void SetOutputWallVelocitySP27(
         DD,
         isEvenTimestep);
     getLastCudaError("LBSetOutputWallVelocitySP27 execution failed");
-}
-//////////////////////////////////////////////////////////////////////////
-void GetVelotoForce27(
-    unsigned int numberOfThreads,
-    real* DD,
-    int* bcIndex,
-    int nonAtBC,
-    real* Vx,
-    real* Vy,
-    real* Vz,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, nonAtBC);
-
-    GetVeloforForcing27<<< grid.grid, grid.threads >>> (
-        DD,
-        bcIndex,
-        nonAtBC,
-        Vx,
-        Vy,
-        Vz,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("GetVeloforForcing27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void CalcTurbulenceIntensityDevice(

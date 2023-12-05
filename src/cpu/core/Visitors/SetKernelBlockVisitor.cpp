@@ -44,19 +44,14 @@
 #include <utility>
 
 //////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, real availMem, real needMem,
-                                             SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true)
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, SetKernelBlockVisitor::Action action)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action)
 {
-    if (needMem > availMem) {
-        throw UbException(UB_EXARGS, "SetKernelBlockVisitor: Not enough memory!!!");
-    }
 }
 
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, int numberOfProcesses,
                                              SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true),
-      numberOfProcesses(numberOfProcesses)
+    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), numberOfProcesses(numberOfProcesses)
 {
 }
 
@@ -111,8 +106,6 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
         }
     }
 }
-
-void SetKernelBlockVisitor::setNoDataSetFlag(bool flag) { dataSetFlag = flag; }
 
 void SetKernelBlockVisitor::throwExceptionIfNotEnoughMemory(const SPtr<Grid3D> &grid)
 {

@@ -34,9 +34,9 @@ std::string makePartFileName(const std::string &prefix, uint level, int ID, int 
     return prefix + "_bin" + WriterUtilities::makePartFileNameEnding(level, ID, part, timestep);
 }
 
-std::string makeMedianPartFileName(const std::string &prefix, uint level, int ID, int part, int timestep)
+std::string makeMeanPartFileName(const std::string &prefix, uint level, int ID, int part, int timestep)
 {
-    return prefix + "_bin_median" + WriterUtilities::makePartFileNameEnding(level, ID, part, timestep);
+    return prefix + "_bin_mean" + WriterUtilities::makePartFileNameEnding(level, ID, part, timestep);
 }
 
 
@@ -45,9 +45,9 @@ std::string makeCollectionFileName(const std::string &prefix, int ID, int timest
     return prefix + "_bin" + makeCollectionFileNameEnding(ID, timestep);
 }
 
-std::string makeMedianCollectionFileName(const std::string &prefix, int ID, int timestep)
+std::string makeMeanCollectionFileName(const std::string &prefix, int ID, int timestep)
 {
-    return prefix + "_bin_median" + makeCollectionFileNameEnding(ID, timestep);
+    return prefix + "_bin_mean" + makeCollectionFileNameEnding(ID, timestep);
 }
 
 std::string makePvdCollectionFileName(const std::string &prefix, int mpiProcessID)
@@ -67,8 +67,8 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<Cuda
     this->fileNamesForCollectionFileTimeSeries[timestep] = this->fileNamesForCollectionFile;
     this->writeCollectionFile(para, timestep);
 
-    if( para->getCalcMedian() )
-        this->writeCollectionFileMedian(para, timestep);
+    if( para->getCalcMean() )
+        this->writeCollectionFileMean(para, timestep);
 }
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep)
@@ -82,8 +82,8 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 
     this->writeCollectionFile(para, timestep);
 
-    if( para->getCalcMedian() )
-        this->writeCollectionFileMedian(para, timestep);
+    if( para->getCalcMean() )
+        this->writeCollectionFileMean(para, timestep);
 }
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
@@ -95,7 +95,7 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     for (unsigned int i = 1; i <= numberOfParts; i++)
     {
         std::string fname = makePartFileName(para->getFName(), level, para->getMyProcessID(), i, timestep); 
-        std::string fnameMed = makeMedianPartFileName(para->getFName(), level, para->getMyProcessID(), i, timestep); 
+        std::string fnameMed = makeMeanPartFileName(para->getFName(), level, para->getMyProcessID(), i, timestep); 
 
         fnames.push_back(fname);
         fnamesMed.push_back(fnameMed);
@@ -105,11 +105,11 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
     for(auto fname : fnamesLong)
         this->fileNamesForCollectionFile.push_back(fname.substr( fname.find_last_of('/') + 1 ));
 
-    if (para->getCalcMedian())
+    if (para->getCalcMean())
     {
-        std::vector<std::string> fnamesMedianLong = writeUnstructuredGridMedianLT(para, level, fnamesMed);
-        for(auto fname : fnamesMedianLong)
-            this->fileNamesForCollectionFileMedian.push_back(fname.substr( fname.find_last_of('/') + 1 ));
+        std::vector<std::string> fnamesMeanLong = writeUnstructuredGridMeanLT(para, level, fnamesMed);
+        for(auto fname : fnamesMeanLong)
+            this->fileNamesForCollectionFileMean.push_back(fname.substr( fname.find_last_of('/') + 1 ));
     }
 }
 
@@ -150,7 +150,7 @@ std::vector<std::string> FileWriter::getNodeDataNames(std::shared_ptr<Parameter>
     return nodeDataNames;
 }
 
-std::vector<std::string> FileWriter::getMedianNodeDataNames(std::shared_ptr<Parameter> para)
+std::vector<std::string> FileWriter::getMeanNodeDataNames(std::shared_ptr<Parameter> para)
 {
     std::vector<std::string> nodeDataNames;
     
@@ -176,13 +176,13 @@ std::string FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, uns
     return pFileName;
 }
 
-std::string FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
+std::string FileWriter::writeCollectionFileMean(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
-    std::string filename = makeMedianCollectionFileName(para->getFName(), para->getMyProcessID(), timestep);
-    std::vector<std::string> nodeDataNames = getMedianNodeDataNames(para);
+    std::string filename = makeMeanCollectionFileName(para->getFName(), para->getMyProcessID(), timestep);
+    std::vector<std::string> nodeDataNames = getMeanNodeDataNames(para);
     std::vector<std::string> cellDataNames;
-    std::string pFileName =  WbWriterVtkXmlBinary::getInstance()->writeParallelFile(filename, this->fileNamesForCollectionFileMedian, nodeDataNames, cellDataNames);
-    this->fileNamesForCollectionFileMedian.clear();
+    std::string pFileName =  WbWriterVtkXmlBinary::getInstance()->writeParallelFile(filename, this->fileNamesForCollectionFileMean, nodeDataNames, cellDataNames);
+    this->fileNamesForCollectionFileMean.clear();
     return pFileName;
 }
 
@@ -302,14 +302,14 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
     return outFNames;
 }
 
-std::vector<std::string> FileWriter::writeUnstructuredGridMedianLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
+std::vector<std::string> FileWriter::writeUnstructuredGridMeanLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
 {
     std::vector< std::string > outFNames;
 
     std::vector< UbTupleFloat3 > nodes;
     std::vector< UbTupleUInt8 > cells;
     //std::vector< UbTupleUInt8 > cells2;
-    std::vector< std::string > nodeDataNames = getMedianNodeDataNames(para);
+    std::vector< std::string > nodeDataNames = getMeanNodeDataNames(para);
     int startIndex = para->getDiffOn()? 1 : 0;
 
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;

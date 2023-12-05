@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file CalculateForcesSimulationObserver.cpp
+//! \ingroup SimulationObservers
+//! \author Konstantin Kutscher
+//=======================================================================================
 #include "CalculateForcesSimulationObserver.h"
 #include "BCSet.h"
 
@@ -195,10 +227,12 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
 
     if (bc) {
         // references to tuple "force"
-        real &forceX1 = val<1>(force);
-        real &forceX2 = val<2>(force);
-        real &forceX3 = val<3>(force);
-        real f, fnbr;
+        double &forceX1 = val<1>(force);
+        double &forceX2 = val<2>(force);
+        double &forceX3 = val<3>(force);
+        double f, fnbr;
+
+        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir)) {
@@ -214,6 +248,7 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
                 forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];
             }
         }
+        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
     }
 
     return force;

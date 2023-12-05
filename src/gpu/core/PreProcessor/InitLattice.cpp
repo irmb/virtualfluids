@@ -58,7 +58,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Pre
             para->getParD(lev)->distributions.f[0], 
             para->getParD(lev)->isEvenTimestep);
 
-        if (para->getCalcMedian()) {
+        if (para->getCalcMean()) {
             constexpr uint tdiff = 1;
             CalcMacMedSP27(
                 para->getParD(lev)->vx_SP_Med, 

@@ -22,7 +22,6 @@
 #include "Output/NeighborDebugWriter.hpp"
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
-#include "Utilities/Buffer2D.hpp"
 #include "StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
 #include "PreProcessor/InitLattice.h"
@@ -33,7 +32,7 @@
 #include "Calculation/DragLift.h"
 #include "Calculation/Cp.h"
 #include "Calculation/Calc2ndMoments.h"
-#include "Calculation/CalcMedian.h"
+#include "Calculation/CalcMean.h"
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/ForceCalculations.h"
 //////////////////////////////////////////////////////////////////////////
@@ -174,14 +173,14 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // if (para->getDiffOn()) allocPlaneConc(para.get(), cudaMemoryManager.get());
 
     //////////////////////////////////////////////////////////////////////////
-    // Median
+    // Mean
     //////////////////////////////////////////////////////////////////////////
-    if (para->getCalcMedian()) {
+    if (para->getCalcMean()) {
         VF_LOG_INFO("alloc Calculation for Mean Values");
         if (para->getDiffOn())
-            allocMedianAD(para.get(), cudaMemoryManager.get());
+            allocMeanAD(para.get(), cudaMemoryManager.get());
         else
-            allocMedian(para.get(), cudaMemoryManager.get());
+            allocMean(para.get(), cudaMemoryManager.get());
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -485,9 +484,9 @@ void Simulation::calculateTimestep(uint timestep)
     if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(timestep);
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
-    //Calc Median
+    //Calc Mean
     ////////////////////////////////////////////////////////////////////////////////
-    if (para->getCalcMedian() && ((int)timestep >= para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()))
+    if (para->getCalcMean() && ((int)timestep >= para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()))
     {
         for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
         {
@@ -695,7 +694,7 @@ void Simulation::readAndWriteFiles(uint timestep)
         // }
         // else if (para->getD3Qxx()==27)
         // {
-        //    if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
+        //    if (para->getCalcMean() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
         //    {
         //         unsigned int tdiff = t - t_prev;
         //         CalcMacMedSP27(para->getParD(lev)->vx_SP_Med,
@@ -783,9 +782,9 @@ void Simulation::readAndWriteFiles(uint timestep)
         // }
 
         cudaMemoryManager->cudaCopyPrint(lev);
-        if (para->getCalcMedian())
+        if (para->getCalcMean())
         {
-            cudaMemoryManager->cudaCopyMedianPrint(lev);
+            cudaMemoryManager->cudaCopyMeanPrint(lev);
         }
         //////////////////////////////////////////////////////////////////////////
         //TODO: implement flag to write ASCII data
@@ -891,16 +890,16 @@ void Simulation::readAndWriteFiles(uint timestep)
     if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para.get(), cudaMemoryManager.get());
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
-    //calculate median on host
+    //calculate mean on host
     ////////////////////////////////////////////////////////////////////////
-    if (para->getCalcMedian() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0))
+    if (para->getCalcMean() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0))
     {
         unsigned int tdiff = timestep - previousTimestepForAveraging;
-        calcMedian(para.get(), tdiff);
+        calcMean(para.get(), tdiff);
         /////////////////////////////////
         //added for incremental averaging
         previousTimestepForAveraging = timestep;
-        resetMedian(para.get());
+        resetMean(para.get());
         /////////////////////////////////
     }
     if (para->getCalcTurbulenceIntensity())
@@ -948,9 +947,9 @@ Simulation::~Simulation()
         //para->cudaFreeFull(lev);
         cudaMemoryManager->cudaFreeCoord(lev);
         cudaMemoryManager->cudaFreeSP(lev);
-        if (para->getCalcMedian())
+        if (para->getCalcMean())
         {
-            cudaMemoryManager->cudaFreeMedianSP(lev);
+            cudaMemoryManager->cudaFreeMeanSP(lev);
         }
         //para->cudaFreeVeloBC(lev);
         //para->cudaFreeWallBC(lev);

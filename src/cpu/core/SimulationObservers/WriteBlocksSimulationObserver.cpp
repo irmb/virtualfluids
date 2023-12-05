@@ -76,7 +76,7 @@ void WriteBlocksSimulationObserver::collectData(real step)
         celldatanames.push_back("bundle");
 #endif
 
-        std::vector<std::vector<real>> celldata(celldatanames.size());
+        std::vector<std::vector<double>> celldata(celldatanames.size());
 
         int nr           = 0;
         int minInitLevel = this->grid->getCoarsestInitializedLevel();

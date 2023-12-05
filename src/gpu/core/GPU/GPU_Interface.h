@@ -35,17 +35,6 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <curand.h>
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-#pragma clang diagnostic ignored "-Wunused-but-set-parameter"
-#endif
-#include <curand_kernel.h>
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 struct LBMSimulationParameter;
 class Parameter;
@@ -197,7 +186,7 @@ void CalcMacMedSP27(  real* vxD,
                                  unsigned int numberOfThreads, 
                                  bool isEvenTimestep);
 
-void ResetMedianValuesSP27(
+void ResetMeanValuesSP27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -207,7 +196,7 @@ void ResetMedianValuesSP27(
     unsigned int numberOfThreads,
     bool isEvenTimestep);
 
-void ResetMedianValuesAD27(
+void ResetMeanValuesAD27(
     real* vxD,
     real* vyD,
     real* vzD,
@@ -1458,21 +1447,6 @@ void setRecvGsDevF3(
     bool isEvenTimestep,
     unsigned int numberOfThreads);
 
-void WallFuncDev27(unsigned int numberOfThreads,
-                              real* vx,
-                              real* vy,
-                              real* vz,
-                              real* DD, 
-                              int* k_Q, 
-                              real* QQ,
-                              unsigned int numberOfBCnodes, 
-                              real om1, 
-                              unsigned int* neighborX,
-                              unsigned int* neighborY,
-                              unsigned int* neighborZ,
-                              unsigned long long numberOfLBnodes, 
-                              bool isEvenTimestep);
-
 void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                           real* vxD,
                                           real* vyD,
@@ -1491,19 +1465,6 @@ void SetOutputWallVelocitySP27(unsigned int numberOfThreads,
                                           unsigned long long numberOfLBnodes,
                                           real* DD,
                                           bool isEvenTimestep);
-
-void GetVelotoForce27(unsigned int numberOfThreads,
-                                 real* DD, 
-                                 int* bcIndex, 
-                                 int nonAtBC, 
-                                 real* Vx,
-                                 real* Vy,
-                                 real* Vz,
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 unsigned long long numberOfLBnodes, 
-                                 bool isEvenTimestep);
 
 void CalcTurbulenceIntensityDevice(
    real* vxx,

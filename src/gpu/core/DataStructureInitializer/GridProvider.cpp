@@ -65,7 +65,7 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
 
         //////////////////////////////////////////////////////////////////////////
 
-        if (para->getCalcMedian()) {
+        if (para->getCalcMean()) {
             para->getParH(level)->vx_SP_Med[pos] = 0.0f;
             para->getParH(level)->vy_SP_Med[pos] = 0.0f;
             para->getParH(level)->vz_SP_Med[pos] = 0.0f;

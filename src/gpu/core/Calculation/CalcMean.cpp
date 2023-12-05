@@ -5,15 +5,15 @@
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
 //////////////////////////////////////////////////////////////////////////
-#include "Calculation/CalcMedian.h"
+#include "Calculation/CalcMean.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-void allocMedian(Parameter* para, CudaMemoryManager* cudaMemoryManager)
+void allocMean(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     {
-        cudaMemoryManager->cudaAllocMedianOut(lev);
+        cudaMemoryManager->cudaAllocMeanOut(lev);
         for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
         {
             para->getParH(lev)->vx_SP_Med_Out[pos]    = (real)0.0;
@@ -29,7 +29,7 @@ void allocMedian(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 
 
-void calcMedian(Parameter* para, uint tdiff)
+void calcMean(Parameter* para, uint tdiff)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     {
@@ -48,11 +48,11 @@ void calcMedian(Parameter* para, uint tdiff)
 
 
 
-void resetMedian(Parameter* para)
+void resetMean(Parameter* para)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     {
-        ResetMedianValuesSP27(
+        ResetMeanValuesSP27(
             para->getParD(lev)->vx_SP_Med,
             para->getParD(lev)->vy_SP_Med,
             para->getParD(lev)->vz_SP_Med,
@@ -61,7 +61,7 @@ void resetMedian(Parameter* para)
             para->getParD(lev)->numberOfNodes,
             para->getParD(lev)->numberofthreads,
             para->getParD(lev)->isEvenTimestep);
-        getLastCudaError("ResetMedianValuesSP27 execution failed");
+        getLastCudaError("ResetMeanValuesSP27 execution failed");
     }
 }
 
@@ -70,11 +70,11 @@ void resetMedian(Parameter* para)
 
 
 //Advection-Diffusion
-void allocMedianAD(Parameter* para, CudaMemoryManager* cudaMemoryManager)
+void allocMeanAD(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     {
-        cudaMemoryManager->cudaAllocMedianOutAD(lev);
+        cudaMemoryManager->cudaAllocMeanOutAD(lev);
         for (size_t pos = 0; pos < para->getParH(lev)->numberOfNodes; pos++)
         {
             para->getParH(lev)->vx_SP_Med_Out[pos]    = (real)0.0;
@@ -91,7 +91,7 @@ void allocMedianAD(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
 
 
-void calcMedianAD(Parameter* para, uint tdiff)
+void calcMeanAD(Parameter* para, uint tdiff)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     {
@@ -111,11 +111,11 @@ void calcMedianAD(Parameter* para, uint tdiff)
 
 
 
-void resetMedianAD(Parameter* para)
+void resetMeanAD(Parameter* para)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     {
-        ResetMedianValuesAD27(
+        ResetMeanValuesAD27(
             para->getParD(lev)->vx_SP_Med,
             para->getParD(lev)->vy_SP_Med,
             para->getParD(lev)->vz_SP_Med,
@@ -125,7 +125,7 @@ void resetMedianAD(Parameter* para)
             para->getParD(lev)->numberOfNodes,
             para->getParD(lev)->numberofthreads,
             para->getParD(lev)->isEvenTimestep);
-        getLastCudaError("ResetMedianValuesSP27 execution failed");
+        getLastCudaError("ResetMeanValuesAD27 execution failed");
     }
 }
 

@@ -1282,7 +1282,7 @@ namespace UnstructuredGridWriter
 
 
     //////////////////////////////////////////////////////////////////////////
-    void writeUnstrucuredGridMedianLT(Parameter* para, int level, vector<string >& fname) 
+    void writeUnstrucuredGridMeanLT(Parameter* para, int level, vector<string >& fname) 
     {
         vector< UbTupleFloat3 > nodes;
         vector< UbTupleUInt8 > cells;
@@ -1388,7 +1388,7 @@ namespace UnstructuredGridWriter
             }
             WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part],nodes,cells,nodedatanames,nodedata);
             //////////////////////////////////////////////////////////////////////////
-            printf("\n vx median max: %.1f at level: %d\n", vxmax, level);
+            printf("\n vx mean max: %.1f at level: %d\n", vxmax, level);
         } 
     }
     //////////////////////////////////////////////////////////////////////////
@@ -1400,7 +1400,7 @@ namespace UnstructuredGridWriter
 
 
     //////////////////////////////////////////////////////////////////////////
-    void writeUnstrucuredGridMedianLTConc(Parameter* para, int level, vector<string >& fname)
+    void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, vector<string >& fname)
     {
         vector< UbTupleFloat3 > nodes;
         vector< UbTupleUInt8 > cells;
@@ -1505,7 +1505,7 @@ namespace UnstructuredGridWriter
             }
             WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
             //////////////////////////////////////////////////////////////////////////
-            printf("\n vx median max: %.1f at level: %d\n", vxmax, level);
+            printf("\n vx mean max: %.1f at level: %d\n", vxmax, level);
         }
     }
     //////////////////////////////////////////////////////////////////////////
@@ -1517,7 +1517,7 @@ namespace UnstructuredGridWriter
 
 
     //////////////////////////////////////////////////////////////////////////
-    void writeUnstrucuredGridMedianLTwithDerivationsAndSqaredVelos(Parameter* para, int level, vector<string >& fname)
+    void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, int level, vector<string >& fname)
     {
         vector< UbTupleFloat3 > nodes;
         vector< UbTupleUInt8 > cells;
@@ -1652,7 +1652,7 @@ namespace UnstructuredGridWriter
             }
             WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
             //////////////////////////////////////////////////////////////////////////
-            printf("\n vx median max: %.1f at level: %d\n", vxmax, level);
+            printf("\n vx mean max: %.1f at level: %d\n", vxmax, level);
         }
     }
     //////////////////////////////////////////////////////////////////////////
@@ -1664,7 +1664,7 @@ namespace UnstructuredGridWriter
 
 
     //////////////////////////////////////////////////////////////////////////
-    void writeUnstrucuredGridEffMedian(Parameter* para, int level, std::string& fname) 
+    void writeUnstrucuredGridEffMean(Parameter* para, int level, std::string& fname) 
     {
         vector< UbTupleFloat3 > nodes;
         vector< UbTupleUInt8 > cells;
