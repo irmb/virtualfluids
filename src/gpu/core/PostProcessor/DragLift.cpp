@@ -27,6 +27,8 @@
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 //! \author Martin Schoenherr
+//! \brief note, that the drag/lift calculations are build for being used with 
+//! \brief geometry boundary nodes and the related area has to be defined here
 //=======================================================================================
 
 #include "DragLift.h"
