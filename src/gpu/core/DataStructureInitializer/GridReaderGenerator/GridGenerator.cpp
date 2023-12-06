@@ -330,24 +330,23 @@ void GridGenerator::allocArrays_BoundaryValues()
             // advection - diffusion stuff
             if (para->getDiffOn()==true){
                 //////////////////////////////////////////////////////////////////////////
-                para->getParH(level)->TempVel.kTemp = para->getParH(level)->velocityBC.numberOfBCnodes;
+                para->getParH(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes = para->getParH(level)->velocityBC.numberOfBCnodes;
                 //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-                VF_LOG_INFO("getTemperatureInit = {}", para->getTemperatureInit());
-                VF_LOG_INFO("getTemperatureBC = {}", para->getTemperatureBC());
+                VF_LOG_INFO("getTemperatureInit = {}", para->getConcentrationInit());
+                VF_LOG_INFO("getTemperatureBC = {}", para->getConcentrationBC());
                 //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocTempVeloBC(level);
+                cudaMemoryManager->cudaAllocConcentrationDirichletBC(level);
                 //cout << "nach alloc " << endl;
                 //////////////////////////////////////////////////////////////////////////
                 for (uint m = 0; m < para->getParH(level)->velocityBC.numberOfBCnodes; m++)
                 {
-                    para->getParH(level)->TempVel.temp[m]      = para->getTemperatureInit();
-                    para->getParH(level)->TempVel.tempPulse[m] = para->getTemperatureBC();
-                    para->getParH(level)->TempVel.velo[m]      = para->getVelocity();
-                    para->getParH(level)->TempVel.k[m]         = para->getParH(level)->velocityBC.k[m];
+                    para->getParH(level)->AdvectionDiffusionDirichletBC.concentration[m]   = para->getConcentrationInit();
+                    para->getParH(level)->AdvectionDiffusionDirichletBC.concentrationBC[m] = para->getConcentrationBC();
+                    para->getParH(level)->AdvectionDiffusionDirichletBC.k[m]               = para->getParH(level)->velocityBC.k[m];
                 }
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor copy " << endl;
-                cudaMemoryManager->cudaCopyTempVeloBCHD(level);
+                cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level);
                 //cout << "nach copy " << endl;
                 //////////////////////////////////////////////////////////////////////////
             }
@@ -756,31 +755,7 @@ void GridGenerator::allocArrays_BoundaryQs()
 
             builder->getPressureQs(Q.q27, i);
 
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion
-            if (para->getDiffOn()) {
-                //////////////////////////////////////////////////////////////////////////
-                //cout << "vor setzen von kTemp" << endl;
-                para->getParH(i)->TempPress.kTemp = numberOfPressureValues;
-                para->getParD(i)->TempPress.kTemp = numberOfPressureValues;
-                VF_LOG_INFO("size TempPress.kTemp: {}: {}", i, para->getParH(i)->TempPress.kTemp);
-                //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocTempPressBC(i);
-                //////////////////////////////////////////////////////////////////////////
-                for (int m = 0; m < numberOfPressureValues; m++)
-                {
-                    para->getParH(i)->TempPress.temp[m] = para->getTemperatureInit();
-                    para->getParH(i)->TempPress.velo[m] = (real)0.0;
-                    para->getParH(i)->TempPress.k[m] = para->getParH(i)->pressureBC.k[m];
-                }
-                //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaCopyTempPressBCHD(i);
-                //////////////////////////////////////////////////////////////////////////
-            }
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaCopyPress(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }//ende if
     }//ende oberste for schleife
 
@@ -837,22 +812,21 @@ void GridGenerator::allocArrays_BoundaryQs()
 
             if (para->getDiffOn()) {
                 //////////////////////////////////////////////////////////////////////////
-                para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
-                para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
-                VF_LOG_INFO("size TempVel.kTemp: {}",  para->getParH(i)->TempVel.kTemp);
-                VF_LOG_INFO("getTemperatureInit: {}",  para->getTemperatureInit());
-                VF_LOG_INFO("getTemperatureBC: {}",  para->getTemperatureBC());
+                para->getParH(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes = numberOfVelocityNodes;
+                para->getParD(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes = numberOfVelocityNodes;
+                VF_LOG_INFO("size TempVel.kTemp: {}",  para->getParH(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes);
+                VF_LOG_INFO("getTemperatureInit: {}",  para->getConcentrationInit());
+                VF_LOG_INFO("getTemperatureBC: {}",  para->getConcentrationBC());
                 //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocTempVeloBC(i);
+                cudaMemoryManager->cudaAllocConcentrationDirichletBC(i);
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfVelocityNodes; m++)
                 {
-                    para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
-                    para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
-                    para->getParH(i)->TempVel.velo[m] = para->getVelocity();
-                    para->getParH(i)->TempVel.k[m] = para->getParH(i)->velocityBC.k[m];
+                    para->getParH(i)->AdvectionDiffusionDirichletBC.concentration[m] = para->getConcentrationInit();
+                    para->getParH(i)->AdvectionDiffusionDirichletBC.concentrationBC[m] = para->getConcentrationBC();
+                    para->getParH(i)->AdvectionDiffusionDirichletBC.k[m] = para->getParH(i)->velocityBC.k[m];
                 }
-                cudaMemoryManager->cudaCopyTempVeloBCHD(i);
+                cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(i);
             }
             cudaMemoryManager->cudaCopyVeloBC(i);
         }
@@ -949,19 +923,19 @@ void GridGenerator::allocArrays_BoundaryQs()
             // advection - diffusion stuff
             if (para->getDiffOn() == true) {
                     //////////////////////////////////////////////////////////////////////////
-                    para->getParH(i)->Temp.kTemp = numberOfGeometryNodes;
-                    para->getParD(i)->Temp.kTemp = numberOfGeometryNodes;
-                    std::cout << "Groesse Temp.kTemp = " << para->getParH(i)->Temp.kTemp << std::endl;
+                    para->getParH(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes = numberOfGeometryNodes;
+                    para->getParD(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes = numberOfGeometryNodes;
+                    std::cout << "Groesse Temp.kTemp = " << para->getParH(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes << std::endl;
                     //////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaAllocTempNoSlipBC(i);
+                    cudaMemoryManager->cudaAllocConcentrationNoSlipBC(i);
                     //////////////////////////////////////////////////////////////////////////
                     for (int m = 0; m < numberOfGeometryNodes; m++)
                     {
-                        para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
-                        para->getParH(i)->Temp.k[m] = para->getParH(i)->geometryBC.k[m];
+                        para->getParH(i)->AdvectionDiffusionNoSlipBC.concentration[m] = para->getConcentrationInit();
+                        para->getParH(i)->AdvectionDiffusionNoSlipBC.k[m] = para->getParH(i)->geometryBC.k[m];
                     }
                     //////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyTempNoSlipBCHD(i);
+                    cudaMemoryManager->cudaCopyConcentrationNoSlipBCHD(i);
                     //////////////////////////////////////////////////////////////////////////
                 }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

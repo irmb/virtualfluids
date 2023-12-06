@@ -79,7 +79,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Pre
             cudaMemoryManager->cudaAllocConcentration(lev);
 
             for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++) {
-                para->getParH(lev)->concentration[index] = para->getTemperatureInit();
+                para->getParH(lev)->concentration[index] = para->getConcentrationInit();
             }
 
             preProcessorAD->init(para, lev);

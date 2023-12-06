@@ -2147,7 +2147,7 @@ void CudaMemoryManager::cudaFreeConcentration(int lev)
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->concentration));
 }
 //////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocTempFs(int lev)
+void CudaMemoryManager::cudaAllocConcentrationFs(int lev)
 {
     //Device
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->distributionsAD.f[0]), 27*parameter->getParH(lev)->memSizeRealLBnodes));
@@ -2156,108 +2156,70 @@ void CudaMemoryManager::cudaAllocTempFs(int lev)
     setMemsizeGPU(tmp, false);
 }
 //////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocTempPressBC(int lev)
+void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
 {
-    unsigned int mem_size_TempPress_k = sizeof(int)*parameter->getParH(lev)->TempPress.kTemp;
-    unsigned int mem_size_TempPress_q = sizeof(real)*parameter->getParH(lev)->TempPress.kTemp;
-
-    // Host Memory
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempPress.temp, mem_size_TempPress_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempPress.velo, mem_size_TempPress_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempPress.k,    mem_size_TempPress_k ));
-
-    // Device Memory
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempPress.temp, mem_size_TempPress_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempPress.velo, mem_size_TempPress_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempPress.k,    mem_size_TempPress_k));
-    //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)(2.0 * mem_size_TempPress_q) + (double)(mem_size_TempPress_k);
-    setMemsizeGPU(tmp, false);
-}
-void CudaMemoryManager::cudaCopyTempPressBCHD(int lev)
-{
-    unsigned int mem_size_TempPress_k = sizeof(int)*parameter->getParH(lev)->TempPress.kTemp;
-    unsigned int mem_size_TempPress_q = sizeof(real)*parameter->getParH(lev)->TempPress.kTemp;
-
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempPress.temp, parameter->getParH(lev)->TempPress.temp, mem_size_TempPress_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempPress.velo, parameter->getParH(lev)->TempPress.velo, mem_size_TempPress_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempPress.k,    parameter->getParH(lev)->TempPress.k,    mem_size_TempPress_k,  cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaFreeTempPressBC(int lev)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempPress.temp));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempPress.velo));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempPress.k   ));
-}
-//////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocTempVeloBC(int lev)
-{
-    unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->TempVel.kTemp;
-    unsigned int mem_size_TempVel_q = sizeof(real)*parameter->getParH(lev)->TempVel.kTemp;
+    unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
+    unsigned int mem_size_TempVel_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
 
     printf("mem_size_TempVel_k = %d,  mem_size_TempVel_q = %d \n", mem_size_TempVel_k, mem_size_TempVel_q);
     // Host Memory
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempVel.temp,      mem_size_TempVel_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempVel.tempPulse, mem_size_TempVel_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempVel.velo,      mem_size_TempVel_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->TempVel.k,         mem_size_TempVel_k ));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentration,   mem_size_TempVel_q ));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentrationBC, mem_size_TempVel_q ));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionDirichletBC.k,               mem_size_TempVel_k ));
 
     // Device Memory
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempVel.temp,      mem_size_TempVel_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempVel.tempPulse, mem_size_TempVel_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempVel.velo,      mem_size_TempVel_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->TempVel.k,         mem_size_TempVel_k));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentration,   mem_size_TempVel_q));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentrationBC, mem_size_TempVel_q));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionDirichletBC.k,               mem_size_TempVel_k));
     //////////////////////////////////////////////////////////////////////////
     double tmp = (double)(3.0 * mem_size_TempVel_q) + (double)(mem_size_TempVel_k);
     setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyTempVeloBCHD(int lev)
+void CudaMemoryManager::cudaCopyConcentrationDirichletBCHostToDevice(int lev)
 {
-    unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->TempVel.kTemp;
-    unsigned int mem_size_TempVel_q = sizeof(real)*parameter->getParH(lev)->TempVel.kTemp;
+    unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
+    unsigned int mem_size_TempVel_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
 
     printf("mem_size_TempVel_k = %d,  mem_size_TempVel_q = %d \n", mem_size_TempVel_k, mem_size_TempVel_q);
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempVel.temp,      parameter->getParH(lev)->TempVel.temp,      mem_size_TempVel_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempVel.tempPulse, parameter->getParH(lev)->TempVel.tempPulse, mem_size_TempVel_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempVel.velo,      parameter->getParH(lev)->TempVel.velo,      mem_size_TempVel_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->TempVel.k,         parameter->getParH(lev)->TempVel.k,         mem_size_TempVel_k,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentration,   parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentration,   mem_size_TempVel_q,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentrationBC, parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentrationBC, mem_size_TempVel_q,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionDirichletBC.k,               parameter->getParH(lev)->AdvectionDiffusionDirichletBC.k,               mem_size_TempVel_k,  cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeTempVeloBC(int lev)
+void CudaMemoryManager::cudaFreeConcentrationDirichletBC(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempVel.temp     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempVel.tempPulse));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempVel.velo     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->TempVel.k        ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentration     ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentrationBC));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionDirichletBC.k        ));
 }
 //////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocTempNoSlipBC(int lev)
+void CudaMemoryManager::cudaAllocConcentrationNoSlipBC(int lev)
 {
-    unsigned int mem_size_Temp_k = sizeof(int)*parameter->getParH(lev)->Temp.kTemp;
-    unsigned int mem_size_Temp_q = sizeof(real)*parameter->getParH(lev)->Temp.kTemp;
+    unsigned int mem_size_Temp_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
+    unsigned int mem_size_Temp_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
 
     // Host Memory
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->Temp.temp, mem_size_Temp_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->Temp.k,    mem_size_Temp_k ));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration, mem_size_Temp_q ));
+    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.k,             mem_size_Temp_k ));
 
     // Device Memory
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->Temp.temp, mem_size_Temp_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->Temp.k,    mem_size_Temp_k));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.concentration, mem_size_Temp_q));
+    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.k,             mem_size_Temp_k));
     //////////////////////////////////////////////////////////////////////////
     double tmp = (double)(mem_size_Temp_q) + (double)(mem_size_Temp_k);
     setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyTempNoSlipBCHD(int lev)
+void CudaMemoryManager::cudaCopyConcentrationNoSlipBCHD(int lev)
 {
-    unsigned int mem_size_Temp_k = sizeof(int)*parameter->getParH(lev)->Temp.kTemp;
-    unsigned int mem_size_Temp_q = sizeof(real)*parameter->getParH(lev)->Temp.kTemp;
+    unsigned int mem_size_Temp_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
+    unsigned int mem_size_Temp_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
 
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Temp.temp, parameter->getParH(lev)->Temp.temp, mem_size_Temp_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->Temp.k,    parameter->getParH(lev)->Temp.k,    mem_size_Temp_k,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.concentration, parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration, mem_size_Temp_q,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.k,             parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.k,             mem_size_Temp_k,  cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeTempNoSlipBC(int lev)
+void CudaMemoryManager::cudaFreeConcentrationNoSlipBC(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->Temp.temp));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->Temp.k   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.k   ));
 }
 //PlaneConc
 void CudaMemoryManager::cudaAllocPlaneConcIn(int lev, int numofelem)

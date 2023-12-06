@@ -965,14 +965,10 @@ Simulation::~Simulation()
         {
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc_Full));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.temp));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.k));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.temp));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.velo));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.k));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.temp));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.velo));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.k));
+            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
+            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.k));
+            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.concentration));
+            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.k));
         }
     }
     //////////////////////////////////////////////////////////////////////////

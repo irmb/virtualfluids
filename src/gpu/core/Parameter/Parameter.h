@@ -119,6 +119,13 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the precursor boundary condition data
     QforPrecursorBoundaryConditions precursorBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion noSlip boundary condition data
+    AdvectionDiffusionNoSlipBoundaryConditions AdvectionDiffusionNoSlipBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionDirichletBoundaryConditions AdvectionDiffusionDirichletBC;
+
 
     //////////////////////////////////////////////////////////////////////////
     //! \brief sets a uniform forcing on each fluid node in all three spatial dimensions
@@ -240,13 +247,6 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     // ADD IN FUTURE RELEASE
     //////////////////////////////////////////////////////////////////////////
-
-    // BC NoSlip
-    TempforBoundaryConditions Temp;
-    // BC Velocity
-    TempVelforBoundaryConditions TempVel;
-    // BC Pressure
-    TempPressforBoundaryConditions TempPress;
 
     // Measure Points/////////
     std::vector<MeasurePoints> MP;
@@ -559,8 +559,8 @@ public:
     void setConcentration(std::string concFile);
     void setPrintFiles(bool printfiles);
     void setReadGeo(bool readGeo);
-    void setTemperatureInit(real Temp);
-    void setTemperatureBC(real TempBC);
+    void setConcentrationInit(real concentrationInit);
+    void setConcentrationBC(real concentrationBC);
     void setViscosityLB(real Viscosity);
     void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
@@ -600,12 +600,10 @@ public:
     void setMaxCoordX(std::vector<real> MaxCoordX);
     void setMaxCoordY(std::vector<real> MaxCoordY);
     void setMaxCoordZ(std::vector<real> MaxCoordZ);
-    void setTempH(TempforBoundaryConditions *TempH);
-    void setTempD(TempforBoundaryConditions *TempD);
-    void setTempVelH(TempVelforBoundaryConditions *TempVelH);
-    void setTempVelD(TempVelforBoundaryConditions *TempVelD);
-    void setTempPressH(TempPressforBoundaryConditions *TempPressH);
-    void setTempPressD(TempPressforBoundaryConditions *TempPressD);
+    void setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost);
+    void setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice);
+    void setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost);
+    void setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice);
     void setTimeDoCheckPoint(unsigned int tDoCheckPoint);
     void setTimeDoRestart(unsigned int tDoRestart);
     void setDoCheckPoint(bool doCheckPoint);
@@ -777,8 +775,8 @@ public:
     unsigned int getTimestepForMP();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
-    real getTemperatureInit();
-    real getTemperatureBC();
+    real getConcentrationInit();
+    real getConcentrationBC();
     real getViscosity();
     real getVelocity();
     //! \returns the viscosity ratio in SI/LB units
@@ -831,12 +829,10 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    TempforBoundaryConditions *getTempH();
-    TempforBoundaryConditions *getTempD();
-    TempVelforBoundaryConditions *getTempVelH();
-    TempVelforBoundaryConditions *getTempVelD();
-    TempPressforBoundaryConditions *getTempPressH();
-    TempPressforBoundaryConditions *getTempPressD();
+    AdvectionDiffusionNoSlipBoundaryConditions *getTempH();
+    AdvectionDiffusionNoSlipBoundaryConditions *getTempD();
+    AdvectionDiffusionDirichletBoundaryConditions *getTempVelH();
+    AdvectionDiffusionDirichletBoundaryConditions *getTempVelD();
     std::vector<SPtr<PreCollisionInteractor>> getActuators();
     //! \returns the probes, e.g. point or plane probe
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
@@ -936,8 +932,8 @@ private:
     real Re;
     real factorPressBC{ 1.0 };
     real Diffusivity{ 0.001 };
-    real Temp{ 0.0 };
-    real TempBC{ 1.0 };
+    real concentrationInit{ 0.0 };
+    real concentrationBC{ 1.0 };
     real RealX{ 1.0 };
     real RealY{ 1.0 };
     real clockCycleForMP{ 1.0 };
@@ -1045,11 +1041,9 @@ private:
     std::string adKernel;
 
     // Temperature
-    TempforBoundaryConditions *TempH, *TempD;
+    AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
     // Temperature Velocity
-    TempVelforBoundaryConditions *TempVelH, *TempVelD;
-    // Temperature Pressure
-    TempPressforBoundaryConditions *TempPressH, *TempPressD;
+    AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 
     // Drehung///////////////
     real Phi{ 0.0 };
