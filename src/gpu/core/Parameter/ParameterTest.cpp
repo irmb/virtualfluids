@@ -99,8 +99,8 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getGeometryFileM(), testing::Eq("/pass/to/m"));
     EXPECT_THAT(para.getGeometryFileF(), testing::Eq("/pass/to/f"));
 
-    EXPECT_THAT(para.getclockCycleForMP(), RealEq(0.4));
-    EXPECT_THAT(para.getTimestepForMP(), testing::Eq(4));
+    EXPECT_THAT(para.getclockCycleForMeasurePoints(), RealEq(0.4));
+    EXPECT_THAT(para.getTimestepForMeasurePoints(), testing::Eq(4));
 
     std::vector<real> forces{ 2.0, 2.1, 2.2 };
     double *forces_actual = para.getForcesDouble();

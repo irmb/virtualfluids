@@ -242,10 +242,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("measureClockCycle"))
-        this->setclockCycleForMP(configData.getValue<real>("measureClockCycle"));
+        this->setclockCycleForMeasurePoints(configData.getValue<real>("measureClockCycle"));
 
     if (configData.contains("measureTimestep"))
-        this->settimestepForMP(configData.getValue<uint>("measureTimestep"));
+        this->settimestepForMeasurePoints(configData.getValue<uint>("measureTimestep"));
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -591,14 +591,14 @@ void Parameter::checkParameterValidityCumulantK17() const
 
 void Parameter::copyMeasurePointsArrayToVector(int lev)
 {
-    int valuesPerClockCycle = (int)(getclockCycleForMP() / getTimestepForMP());
-    for (int i = 0; i < (int)parH[lev]->MP.size(); i++) {
+    int valuesPerClockCycle = (int)(getclockCycleForMeasurePoints() / getTimestepForMeasurePoints());
+    for (int i = 0; i < (int)parH[lev]->MeasurePointVector.size(); i++) {
         for (int j = 0; j < valuesPerClockCycle; j++) {
             int index = i * valuesPerClockCycle + j;
-            parH[lev]->MP[i].Vx.push_back(parH[lev]->VxMP[index]);
-            parH[lev]->MP[i].Vy.push_back(parH[lev]->VyMP[index]);
-            parH[lev]->MP[i].Vz.push_back(parH[lev]->VzMP[index]);
-            parH[lev]->MP[i].Rho.push_back(parH[lev]->RhoMP[index]);
+            parH[lev]->MeasurePointVector[i].Vx.push_back(parH[lev]->velocityInXdirectionAtMeasurePoints[index]);
+            parH[lev]->MeasurePointVector[i].Vy.push_back(parH[lev]->velocityInYdirectionAtMeasurePoints[index]);
+            parH[lev]->MeasurePointVector[i].Vz.push_back(parH[lev]->velocityInZdirectionAtMeasurePoints[index]);
+            parH[lev]->MeasurePointVector[i].Rho.push_back(parH[lev]->densityAtMeasurePoints[index]);
         }
     }
 }
@@ -1254,9 +1254,9 @@ void Parameter::setConcentration(std::string concFile)
 {
     this->concentration = concFile;
 }
-void Parameter::setclockCycleForMP(real clockCycleForMP)
+void Parameter::setclockCycleForMeasurePoints(real clockCycleForMP)
 {
-    this->clockCycleForMP = clockCycleForMP;
+    this->clockCycleForMeasurePoints = clockCycleForMP;
 }
 void Parameter::setTimeDoCheckPoint(unsigned int tDoCheckPoint)
 {
@@ -1274,9 +1274,9 @@ void Parameter::setDoRestart(bool doRestart)
 {
     this->doRestart = doRestart;
 }
-void Parameter::settimestepForMP(unsigned int timestepForMP)
+void Parameter::settimestepForMeasurePoints(unsigned int timestepForMP)
 {
-    this->timeStepForMP = timestepForMP;
+    this->timeStepForMeasurePoints = timestepForMP;
 }
 void Parameter::setObj(std::string str, bool isObj)
 {
@@ -2166,9 +2166,9 @@ std::string Parameter::getConcentration()
 {
     return this->concentration;
 }
-real Parameter::getclockCycleForMP()
+real Parameter::getclockCycleForMeasurePoints()
 {
-    return this->clockCycleForMP;
+    return this->clockCycleForMeasurePoints;
 }
 unsigned int Parameter::getTimeDoCheckPoint()
 {
@@ -2288,9 +2288,9 @@ bool Parameter::overWritingRestart(uint t)
 {
     return t == getTimeDoRestart();
 }
-unsigned int Parameter::getTimestepForMP()
+unsigned int Parameter::getTimestepForMeasurePoints()
 {
-    return this->timeStepForMP;
+    return this->timeStepForMeasurePoints;
 }
 unsigned int Parameter::getTimestepOfCoarseLevel()
 {

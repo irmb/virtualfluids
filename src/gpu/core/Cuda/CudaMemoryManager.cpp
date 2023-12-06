@@ -1710,46 +1710,46 @@ void CudaMemoryManager::cudaFreePressX1(int lev)
 void CudaMemoryManager::cudaAllocMeasurePointsIndex(int lev)
 {
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->kMP),                     parameter->getParH(lev)->memSizeIntkMP  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->VxMP),                    parameter->getParH(lev)->memSizerealkMP ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->VyMP),                    parameter->getParH(lev)->memSizerealkMP ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->VzMP),                    parameter->getParH(lev)->memSizerealkMP ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->RhoMP),                   parameter->getParH(lev)->memSizerealkMP ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->indicesOfMeasurePoints),                     parameter->getParH(lev)->memSizeIntegerMeasurePoints  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->velocityInXdirectionAtMeasurePoints),                    parameter->getParH(lev)->memSizeRealMeasurePoints ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->velocityInYdirectionAtMeasurePoints),                    parameter->getParH(lev)->memSizeRealMeasurePoints ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->velocityInZdirectionAtMeasurePoints),                    parameter->getParH(lev)->memSizeRealMeasurePoints ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->densityAtMeasurePoints),                   parameter->getParH(lev)->memSizeRealMeasurePoints ));
 
     //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->kMP),                         parameter->getParD(lev)->memSizeIntkMP  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->VxMP),                        parameter->getParD(lev)->memSizerealkMP ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->VyMP),                        parameter->getParD(lev)->memSizerealkMP ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->VzMP),                        parameter->getParD(lev)->memSizerealkMP ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->RhoMP),                       parameter->getParD(lev)->memSizerealkMP ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->indicesOfMeasurePoints),                         parameter->getParD(lev)->memSizeIntegerMeasurePoints  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->velocityInXdirectionAtMeasurePoints),                        parameter->getParD(lev)->memSizeRealMeasurePoints ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->velocityInYdirectionAtMeasurePoints),                        parameter->getParD(lev)->memSizeRealMeasurePoints ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->velocityInZdirectionAtMeasurePoints),                        parameter->getParD(lev)->memSizeRealMeasurePoints ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->densityAtMeasurePoints),                       parameter->getParD(lev)->memSizeRealMeasurePoints ));
 
     //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)parameter->getParH(lev)->memSizeIntkMP + 4. * (double)parameter->getParH(lev)->memSizerealkMP;
+    double tmp = (double)parameter->getParH(lev)->memSizeIntegerMeasurePoints + 4. * (double)parameter->getParH(lev)->memSizeRealMeasurePoints;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyMeasurePointsIndex(int lev)
 {
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->kMP,           parameter->getParH(lev)->kMP,                parameter->getParH(lev)->memSizeIntkMP,      cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->VxMP,          parameter->getParH(lev)->VxMP,               parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->VyMP,          parameter->getParH(lev)->VyMP,               parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->VzMP,          parameter->getParH(lev)->VzMP,               parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->RhoMP,         parameter->getParH(lev)->RhoMP,              parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->indicesOfMeasurePoints,           parameter->getParH(lev)->indicesOfMeasurePoints,                parameter->getParH(lev)->memSizeIntegerMeasurePoints,      cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->velocityInXdirectionAtMeasurePoints,          parameter->getParH(lev)->velocityInXdirectionAtMeasurePoints,               parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->velocityInYdirectionAtMeasurePoints,          parameter->getParH(lev)->velocityInYdirectionAtMeasurePoints,               parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->velocityInZdirectionAtMeasurePoints,          parameter->getParH(lev)->velocityInZdirectionAtMeasurePoints,               parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->densityAtMeasurePoints,         parameter->getParH(lev)->densityAtMeasurePoints,              parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaCopyMeasurePointsToHost(int lev)
 {
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->kMP,           parameter->getParD(lev)->kMP,                parameter->getParH(lev)->memSizeIntkMP,      cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->VxMP,          parameter->getParD(lev)->VxMP,               parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->VyMP,          parameter->getParD(lev)->VyMP,               parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->VzMP,          parameter->getParD(lev)->VzMP,               parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->RhoMP,         parameter->getParD(lev)->RhoMP,              parameter->getParH(lev)->memSizerealkMP,  cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->indicesOfMeasurePoints,           parameter->getParD(lev)->indicesOfMeasurePoints,                parameter->getParH(lev)->memSizeIntegerMeasurePoints,      cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityInXdirectionAtMeasurePoints,          parameter->getParD(lev)->velocityInXdirectionAtMeasurePoints,               parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityInYdirectionAtMeasurePoints,          parameter->getParD(lev)->velocityInYdirectionAtMeasurePoints,               parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->velocityInZdirectionAtMeasurePoints,          parameter->getParD(lev)->velocityInZdirectionAtMeasurePoints,               parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->densityAtMeasurePoints,         parameter->getParD(lev)->densityAtMeasurePoints,              parameter->getParH(lev)->memSizeRealMeasurePoints,  cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaFreeMeasurePointsIndex(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->kMP));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->VxMP));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->VyMP));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->VzMP));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->RhoMP));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->indicesOfMeasurePoints));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->velocityInXdirectionAtMeasurePoints));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->velocityInYdirectionAtMeasurePoints));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->velocityInZdirectionAtMeasurePoints));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->densityAtMeasurePoints));
 }
 void CudaMemoryManager::cudaAllocFsForCheckPointAndRestart(int lev) const
 {

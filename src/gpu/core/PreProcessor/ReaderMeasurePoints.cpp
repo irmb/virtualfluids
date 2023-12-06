@@ -56,7 +56,7 @@ void ReaderMeasurePoints::readMeasurePoints( Parameter* para )
         //printf("done, read level...\n");
         in.readLine();
         //printf("done, read the values...\n");
-        para->getParH(tempLevel)->MP.push_back(tempMP);
+        para->getParH(tempLevel)->MeasurePointVector.push_back(tempMP);
         //printf("done, put it into a vector...\n");
     }
 }
@@ -70,37 +70,37 @@ void ReaderMeasurePoints::readMeasurePoints(Parameter* para, CudaMemoryManager* 
     // level loop
     for (int lev = 0; lev <= para->getMaxLevel(); lev++) {
         // set Memory Size and malloc of the indices and macroscopic values per level
-        para->getParH(lev)->numberOfValuesMP = (unsigned int)para->getParH(lev)->MP.size() *
-                                               (unsigned int)para->getclockCycleForMP() /
-                                               ((unsigned int)para->getTimestepForMP());
-        para->getParD(lev)->numberOfValuesMP = para->getParH(lev)->numberOfValuesMP;
+        para->getParH(lev)->numberOfMeasurePoints = (unsigned int)para->getParH(lev)->MeasurePointVector.size() *
+                                               (unsigned int)para->getclockCycleForMeasurePoints() /
+                                               ((unsigned int)para->getTimestepForMeasurePoints());
+        para->getParD(lev)->numberOfMeasurePoints = para->getParH(lev)->numberOfMeasurePoints;
 
-        para->getParH(lev)->numberOfPointskMP = (int)para->getParH(lev)->MP.size();
-        para->getParD(lev)->numberOfPointskMP = para->getParH(lev)->numberOfPointskMP;
+        para->getParH(lev)->numberOfMeasurePoints = (int)para->getParH(lev)->MeasurePointVector.size();
+        para->getParD(lev)->numberOfMeasurePoints = para->getParH(lev)->numberOfMeasurePoints;
 
-        para->getParH(lev)->memSizeIntkMP = sizeof(unsigned int) * (int)para->getParH(lev)->MP.size();
-        para->getParD(lev)->memSizeIntkMP = para->getParH(lev)->memSizeIntkMP;
+        para->getParH(lev)->memSizeIntegerMeasurePoints = sizeof(unsigned int) * (int)para->getParH(lev)->MeasurePointVector.size();
+        para->getParD(lev)->memSizeIntegerMeasurePoints = para->getParH(lev)->memSizeIntegerMeasurePoints;
 
-        para->getParH(lev)->memSizerealkMP = sizeof(real) * para->getParH(lev)->numberOfValuesMP;
-        para->getParD(lev)->memSizerealkMP = para->getParH(lev)->memSizerealkMP;
+        para->getParH(lev)->memSizeRealMeasurePoints = sizeof(real) * para->getParH(lev)->numberOfMeasurePoints;
+        para->getParD(lev)->memSizeRealMeasurePoints = para->getParH(lev)->memSizeRealMeasurePoints;
 
         printf("Level: %d, numberOfValuesMP: %d, memSizeIntkMP: %d, memSizerealkMP: %d\n", lev,
-               para->getParH(lev)->numberOfValuesMP, para->getParH(lev)->memSizeIntkMP, para->getParD(lev)->memSizerealkMP);
+               para->getParH(lev)->numberOfMeasurePoints, para->getParH(lev)->memSizeIntegerMeasurePoints, para->getParD(lev)->memSizeRealMeasurePoints);
 
         cudaMemoryManager->cudaAllocMeasurePointsIndex(lev);
 
         // loop over all measure points per level
-        for (int index = 0; index < (int)para->getParH(lev)->MP.size(); index++) {
+        for (int index = 0; index < (int)para->getParH(lev)->MeasurePointVector.size(); index++) {
             // set indices
-            para->getParH(lev)->kMP[index] = para->getParH(lev)->MP[index].k;
+            para->getParH(lev)->indicesOfMeasurePoints[index] = para->getParH(lev)->MeasurePointVector[index].k;
         }
         // loop over all measure points per level times MPClockCycle
-        for (int index = 0; index < (int)para->getParH(lev)->numberOfValuesMP; index++) {
+        for (int index = 0; index < (int)para->getParH(lev)->numberOfMeasurePoints; index++) {
             // init values
-            para->getParH(lev)->VxMP[index] = (real)0.0;
-            para->getParH(lev)->VyMP[index] = (real)0.0;
-            para->getParH(lev)->VzMP[index] = (real)0.0;
-            para->getParH(lev)->RhoMP[index] = (real)0.0;
+            para->getParH(lev)->velocityInXdirectionAtMeasurePoints[index] = (real)0.0;
+            para->getParH(lev)->velocityInYdirectionAtMeasurePoints[index] = (real)0.0;
+            para->getParH(lev)->velocityInZdirectionAtMeasurePoints[index] = (real)0.0;
+            para->getParH(lev)->densityAtMeasurePoints[index] = (real)0.0;
         }
 
         // copy indices-arrays
