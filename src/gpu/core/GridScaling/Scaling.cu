@@ -47,6 +47,7 @@ using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
 
+//////////////////////////////////////////////////////////////////////////
 // coarse to fine
 template <bool hasTurbulentViscosity>
 __global__ void scaleCoarseToFineCompressible_Device(
@@ -71,28 +72,7 @@ __global__ void scaleCoarseToFineCompressible_Device(
     ICellNeigh offsetCF);
 
 
-__global__ void scaleCoarseToFineAdvectionDiffusion_Device(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    uint* neighborCX,
-    uint* neighborCY,
-    uint* neighborCZ,
-    uint* neighborFX,
-    uint* neighborFY,
-    uint* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    uint* posCSWB,
-    uint* posFSWB,
-    uint kCF,
-    real nu,
-    real diffusivity_fine,
-    ICellNeigh neighborCoarseToFine);
-
-
+//////////////////////////////////////////////////////////////////////////
 // fine to coarse
 template <bool hasTurbulentViscosity>
 __global__ void scaleFineToCoarseCompressible_Device(
@@ -117,29 +97,8 @@ __global__ void scaleFineToCoarseCompressible_Device(
     ICellNeigh offsetFC);
 
 
-__global__ void scaleFineToCoarseAdvectionDiffusion_Device(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    uint* neighborCX,
-    uint* neighborCY,
-    uint* neighborCZ,
-    uint* neighborFX,
-    uint* neighborFY,
-    uint* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    uint* posC,
-    uint* posFSWB,
-    uint kFC,
-    real nu,
-    real diffusivity_coarse,
-    ICellNeigh neighborFineToCoarse);
-
 //////////////////////////////////////////////////////////////////////////
-
+// coarse to fine
 template <bool hasTurbulentViscosity>
 void scaleCoarseToFineCompressible(
     LBMSimulationParameter* parameterDeviceC,
@@ -187,54 +146,9 @@ template void scaleCoarseToFineCompressible<false>(
     ICellNeigh& neighborCoarseToFine,
     CUstream_st* stream);
 
-void scaleCoarseToFineAdvectionDiffusion(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    uint* neighborCX,
-    uint* neighborCY,
-    uint* neighborCZ,
-    uint* neighborFX,
-    uint* neighborFY,
-    uint* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    uint* posCSWB,
-    uint* posFSWB,
-    uint kCF,
-    real nu,
-    real diffusivity_fine,
-    uint numberOfThreads,
-    ICellNeigh neighborCoarseToFine)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kCF);
 
-    scaleCoarseToFineAdvectionDiffusion_Device<<<grid.grid, grid.threads>>>(
-        DC,
-        DF,
-        DD27C,
-        DD27F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posCSWB,
-        posFSWB,
-        kCF,
-        nu,
-        diffusivity_fine,
-        neighborCoarseToFine);
-    getLastCudaError("scaleCoarseToFineAdvectionDiffusion_Device execution failed");
-}
-
-
+//////////////////////////////////////////////////////////////////////////
+// fine to coarse
 template <bool hasTurbulentViscosity>
 void scaleFineToCoarseCompressible(
     LBMSimulationParameter* parameterDeviceC,
@@ -281,51 +195,3 @@ template void scaleFineToCoarseCompressible<false>(
     ICells* fineToCoarse,
     ICellNeigh& neighborFineToCoarse,
     CUstream_st* stream);
-
-
-void scaleFineToCoarseAdvectionDiffusion(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    uint* neighborCX,
-    uint* neighborCY,
-    uint* neighborCZ,
-    uint* neighborFX,
-    uint* neighborFY,
-    uint* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    uint* posC,
-    uint* posFSWB,
-    uint kFC,
-    real nu,
-    real diffusivity_coarse,
-    uint numberOfThreads,
-    ICellNeigh neighborFineToCoarse)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, kFC);
-
-    scaleFineToCoarseAdvectionDiffusion_Device<<<grid.grid, grid.threads>>>(
-        DC,
-        DF,
-        DD27C,
-        DD27F,
-        neighborCX,
-        neighborCY,
-        neighborCZ,
-        neighborFX,
-        neighborFY,
-        neighborFZ,
-        numberOfLBnodesC,
-        numberOfLBnodesF,
-        isEvenTimestep,
-        posC,
-        posFSWB,
-        kFC,
-        nu,
-        diffusivity_coarse,
-        neighborFineToCoarse);
-    getLastCudaError("scaleFineToCoarseAdvectionDiffusion_Device execution failed");
-}

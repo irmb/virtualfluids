@@ -64,58 +64,8 @@ void GridScalingKernelManager::runFineToCoarseKernelLB(const int level, Interpol
     this->scalingFineToCoarse(para->getParD(level).get(), para->getParD(level+1).get(), fineToCoarse, neighborFineToCoarse, stream);
 }
 
-void GridScalingKernelManager::runFineToCoarseKernelAD(const int level) const
-{
-    scaleFineToCoarseAdvectionDiffusion(
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level+1)->distributions.f[0],
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level+1)->distributionsAD.f[0],
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level+1)->neighborX,
-        para->getParD(level+1)->neighborY,
-        para->getParD(level+1)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level+1)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep,
-        para->getParD(level)->fineToCoarse.coarseCellIndices,
-        para->getParD(level)->fineToCoarse.fineCellIndices,
-        para->getParD(level)->fineToCoarse.numberOfCells,
-        para->getParD(level)->viscosity,
-        para->getParD(level)->diffusivity,
-        para->getParD(level)->numberofthreads,
-        para->getParD(level)->neighborFineToCoarse);
-}
-
 void GridScalingKernelManager::runCoarseToFineKernelLB(const int level, InterpolationCells* coarseToFine, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex) const
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     this->scalingCoarseToFine(para->getParD(level).get(), para->getParD(level+1).get(), coarseToFine, neighborFineToCoarse, stream);
-}
-
-void GridScalingKernelManager::runCoarseToFineKernelAD(const int level) const
-{
-    scaleCoarseToFineAdvectionDiffusion(
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level+1)->distributions.f[0],
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level+1)->distributionsAD.f[0],
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level+1)->neighborX,
-        para->getParD(level+1)->neighborY,
-        para->getParD(level+1)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level+1)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep,
-        para->getParD(level)->coarseToFine.coarseCellIndices,
-        para->getParD(level)->coarseToFine.fineCellIndices,
-        para->getParD(level)->coarseToFine.numberOfCells,
-        para->getParD(level)->viscosity,
-        para->getParD(level+1)->diffusivity,
-        para->getParD(level)->numberofthreads,
-        para->getParD(level)->neighborCoarseToFine);
 }

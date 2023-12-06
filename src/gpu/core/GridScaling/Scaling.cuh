@@ -54,49 +54,4 @@ void scaleFineToCoarseCompressible(
     ICellNeigh& neighborFineToCoarse,
     CUstream_st* stream);
 
-
-void scaleCoarseToFineAdvectionDiffusion(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    uint* neighborCX,
-    uint* neighborCY,
-    uint* neighborCZ,
-    uint* neighborFX,
-    uint* neighborFY,
-    uint* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    uint* posCSWB,
-    uint* posFSWB,
-    uint kCF,
-    real nu,
-    real diffusivity_fine,
-    uint numberOfThreads,
-    ICellNeigh neighborCoarseToFine);
-
-void scaleFineToCoarseAdvectionDiffusion(
-    real* DC,
-    real* DF,
-    real* DD27C,
-    real* DD27F,
-    uint* neighborCX,
-    uint* neighborCY,
-    uint* neighborCZ,
-    uint* neighborFX,
-    uint* neighborFY,
-    uint* neighborFZ,
-    unsigned long long numberOfLBnodesC,
-    unsigned long long numberOfLBnodesF,
-    bool isEvenTimestep,
-    uint* posC,
-    uint* posFSWB,
-    uint kFC,
-    real nu,
-    real diffusivity_coarse,
-    uint numberOfThreads,
-    ICellNeigh neighborFineToCoarse);
-
 #endif

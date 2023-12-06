@@ -62,14 +62,8 @@ public:
     //! \brief calls the device function of the fine to coarse grid interpolation kernelH
     void runFineToCoarseKernelLB(const int level, InterpolationCells *fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex) const;
 
-    //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
-    void runFineToCoarseKernelAD(const int level) const;
-
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
     void runCoarseToFineKernelLB(const int level, InterpolationCells *coarseToFine, ICellNeigh &neighborCoarseToFine, CudaStreamIndex streamIndex) const;
-
-    //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
-    void runCoarseToFineKernelAD(const int level) const;
 
 private:
     //! \brief check if grid scaling was set
