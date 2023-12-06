@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file PointerDefinitions.h
-//! \ingroup Core
 //! \author Soeren Peters
 //=======================================================================================
 #ifndef SHARED_POINTER_H
@@ -45,7 +43,7 @@ template <class T>
 using UPtr = std::unique_ptr<T>;
 
 template <class T>
-using RPtr = T *;
+using RPtr = T*;
 
 template <class T>
 using enableSharedFromThis = std::enable_shared_from_this<T>;
