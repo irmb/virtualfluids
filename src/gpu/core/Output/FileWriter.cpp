@@ -375,12 +375,12 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMeanLT(std::shared_ptr
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
                 if(para->getDiffOn())
-                    nodeData[0][dn1] = (double)para->getParH(level)->Conc_Med_Out[pos];
-                nodeData[startIndex    ][dn1] = para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodeData[startIndex + 1][dn1] = para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodeData[startIndex + 2][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodeData[startIndex + 3][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodeData[startIndex + 4][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
+                    nodeData[0][dn1] = (double)para->getParH(level)->meanConcentrationOut[pos];
+                nodeData[startIndex    ][dn1] = para->getParH(level)->meanPressureOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodeData[startIndex + 1][dn1] = para->getParH(level)->meanDensityOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodeData[startIndex + 2][dn1] = para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio();
+                nodeData[startIndex + 3][dn1] = para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio();
+                nodeData[startIndex + 4][dn1] = para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio();
                 nodeData[startIndex + 5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];

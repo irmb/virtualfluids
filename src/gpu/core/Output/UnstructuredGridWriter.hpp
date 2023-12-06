@@ -1376,11 +1376,11 @@ void writeUnstrucuredGridMeanLT(Parameter* para, int level, vector<string >& fna
                 neighborsFluid = true;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-                nodedata[0][dn1] = para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodedata[1][dn1] = para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodedata[2][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[3][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[4][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
+                nodedata[0][dn1] = para->getParH(level)->meanPressureOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodedata[1][dn1] = para->getParH(level)->meanDensityOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodedata[2][dn1] = para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[3][dn1] = para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[4][dn1] = para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];
@@ -1492,12 +1492,12 @@ void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, vector<string >&
                 neighborsFluid = true;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodedata[0][dn1] = para->getParH(level)->Conc_Med_Out[pos];
-                nodedata[1][dn1] = para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodedata[2][dn1] = para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodedata[3][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[4][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[5][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
+                nodedata[0][dn1] = para->getParH(level)->meanConcentrationOut[pos];
+                nodedata[1][dn1] = para->getParH(level)->meanPressureOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodedata[2][dn1] = para->getParH(level)->meanDensityOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodedata[3][dn1] = para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[4][dn1] = para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[5][dn1] = para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio();
                 nodedata[6][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];
@@ -1622,26 +1622,26 @@ void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, in
                 neighborsFluid = true;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodedata[0][dn1]  = para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodedata[1][dn1]  = para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-                nodedata[2][dn1]  = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[3][dn1]  = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[4][dn1]  = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
-                nodedata[5][dn1]  = (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio()));
-                nodedata[6][dn1]  = (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
-                nodedata[7][dn1]  = (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio()));
+                nodedata[0][dn1]  = para->getParH(level)->meanPressureOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodedata[1][dn1]  = para->getParH(level)->meanDensityOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+                nodedata[2][dn1]  = para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[3][dn1]  = para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[4][dn1]  = para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio();
+                nodedata[5][dn1]  = (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio()));
+                nodedata[6][dn1]  = (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio()));
+                nodedata[7][dn1]  = (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio()));
                 nodedata[8][dn1]  = 
-                    (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio())) * 
-                    (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio()));
+                    (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio())) * 
+                    (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio()));
                 nodedata[9][dn1]  = 
-                    (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio())) * 
-                    (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
+                    (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio())) * 
+                    (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio()));
                 nodedata[10][dn1] = 
-                    (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio())) * 
-                    (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio()));
+                    (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio())) * 
+                    (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio()));
                 nodedata[11][dn1] =
-                    (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio())) *
-                    (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio()));
+                    (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio())) *
+                    (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) - (para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio()));
                 //nodedata[8][dn1]  = (((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->velocityX[pos] * (double)para->getVelocityRatio()));
                 //nodedata[9][dn1]  = (((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio()));
                 //nodedata[10][dn1] = (((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()) * ((double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio()));
@@ -1738,11 +1738,11 @@ void writeUnstrucuredGridEffMean(Parameter* para, int level, std::string& fname)
             neighborsFluid = true;
             //////////////////////////////////////////////////////////////////////////
             nodes[number1]=( makeUbTuple( (float)(x1 ),(float)(x2 ),(float)(x3 ) ) );
-            nodedata[0][number1] = para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-            nodedata[1][number1] = para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
-            nodedata[2][number1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
-            nodedata[3][number1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
-            nodedata[4][number1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
+            nodedata[0][number1] = para->getParH(level)->meanPressureOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+            nodedata[1][number1] = para->getParH(level)->meanDensityOut[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+            nodedata[2][number1] = para->getParH(level)->meanVelocityInXdirectionOut[pos] * para->getVelocityRatio();
+            nodedata[3][number1] = para->getParH(level)->meanVelocityInYdirectionOut[pos] * para->getVelocityRatio();
+            nodedata[4][number1] = para->getParH(level)->meanVelocityInZdirectionOut[pos] * para->getVelocityRatio();
             nodedata[5][number1] = para->getParH(level)->typeOfGridNode[pos];
             //////////////////////////////////////////////////////////////////////////
             number2 = para->getParH(level)->neighborX[number1];
