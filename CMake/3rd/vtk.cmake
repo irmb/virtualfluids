@@ -26,7 +26,7 @@
 #  You should have received a copy of the GNU General Public License along
 #  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 # 
-# ########################################################################
+# #######################################################################################
 # VTK_DIR needs to bet set to the VTK build directory in the config file.
 # #######################################################################################
 find_package(VTK REQUIRED)
