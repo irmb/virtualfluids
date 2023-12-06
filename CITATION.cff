@@ -32,9 +32,14 @@ authors:
   - family-names: Marcus
     given-names: Sven
     orcid: https://orcid.org/0000-0003-3689-2162
+  - family-names: Henrik
+    given-names: Asmuth
+    orcid: https://orcid.org/0000-0003-2929-3022
+  - family-names: Henry
+    given-names: Korb
+    orcid: https://orcid.org/0000-0003-3177-5960
 title: "VirtualFluids"
 version: 0.1.0
 license: GPL-3.0-or-later
-repository-code: "https://git.rz.tu-bs.de/irmb/VirtualFluids"
-date-released: "2023-12-01"
-
+repository-code: "https://git.rz.tu-bs.de/irmb/virtualfluids"
+date-released: "2023-12-06"
