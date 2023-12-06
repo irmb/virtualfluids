@@ -855,13 +855,6 @@ Simulation::~Simulation()
         }
     }
     //////////////////////////////////////////////////////////////////////////
-    // Normals
-    if (para->getIsGeoNormal()) {
-        for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            cudaMemoryManager->cudaFreeGeomNormals(lev);
-        }
-    }
-    //////////////////////////////////////////////////////////////////////////
     // Turbulence Intensity
     if (para->getCalcTurbulenceIntensity()) {
         cudaFreeTurbulenceIntensityArrays(para.get(), cudaMemoryManager.get());

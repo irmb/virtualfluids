@@ -341,23 +341,6 @@ struct LBMSimulationParameter {
 
 
 
-
-    //////////////////////////////////////////////////////////////////////////
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0,
-        QpressZ1;                                      // DEPRECATED  BCs that are not used any more
-    QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED BCs that are not used any more
-    unsigned int kInletQread, kOutletQread;            // DEPRECATED
-
-    QforBoundaryConditions geometryBCnormalX, geometryBCnormalY, geometryBCnormalZ;     // DEPRECATED
-    QforBoundaryConditions inflowBCnormalX, inflowBCnormalY, inflowBCnormalZ;           // DEPRECATED
-    QforBoundaryConditions outflowBCnormalX, outflowBCnormalY, outflowBCnormalZ;        // DEPRECATED
-
-    unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, // DEPRECATED
-    numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead; // DEPRECATED
-
-
-
-
     //////////////////////////////////////////////////////////////////////////
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
@@ -505,9 +488,6 @@ public:
     void setRe(real Re);
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
-    void setIsGeoNormal(bool isGeoNormal);
-    void setIsInflowNormal(bool isInflowNormal);
-    void setIsOutflowNormal(bool isOutflowNormal);
     void setIsCp(bool isCp);
     void setConcFile(bool concFile);
     void setUseMeasurePoints(bool useMeasurePoints);
@@ -754,9 +734,6 @@ public:
     bool getDoRestart();
     bool overWritingRestart(unsigned int t);
     bool getIsGeo();
-    bool getIsGeoNormal();
-    bool getIsInflowNormal();
-    bool getIsOutflowNormal();
     bool getIsCp();
     bool getIsGeometryValues();
     bool getCalc2ndOrderMoments();
@@ -874,7 +851,6 @@ private:
     bool isTurbulentViscosity{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
-    bool isGeoNormal, isInflowNormal, isOutflowNormal;
     bool hasWallModelMonitor{ false };
 
     //! \property maximum level of grid refinement

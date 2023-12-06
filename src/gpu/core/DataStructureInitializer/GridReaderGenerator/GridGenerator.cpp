@@ -246,8 +246,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyPress(level);
         }
         para->getParD(level)->pressureBC.numberOfBCnodes = para->getParH(level)->pressureBC.numberOfBCnodes;
-        para->getParH(level)->numberOfPressureBCnodesRead = para->getParH(level)->pressureBC.numberOfBCnodes * para->getD3Qxx();
-        para->getParD(level)->numberOfPressureBCnodesRead = para->getParH(level)->pressureBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -265,8 +263,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopySlipBC(level);
         }
         para->getParD(level)->slipBC.numberOfBCnodes = para->getParH(level)->slipBC.numberOfBCnodes;
-        para->getParH(level)->numberOfSlipBCnodesRead = para->getParH(level)->slipBC.numberOfBCnodes * para->getD3Qxx();
-        para->getParD(level)->numberOfSlipBCnodesRead = para->getParH(level)->slipBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -291,8 +287,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
         }
         para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
-        para->getParH(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
-        para->getParD(level)->numberOfStressBCnodesRead = para->getParH(level)->stressBC.numberOfBCnodes * para->getD3Qxx();
     }
 
 
@@ -344,8 +338,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
         para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
-        para->getParH(level)->numberOfVeloBCnodesRead = para->getParH(level)->velocityBC.numberOfBCnodes * para->getD3Qxx();
-        para->getParD(level)->numberOfVeloBCnodesRead = para->getParH(level)->velocityBC.numberOfBCnodes * para->getD3Qxx();
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -358,8 +350,6 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
         para->getParD(level)->precursorBC.numberOfBCnodes = numberOfPrecursorValues;
-        para->getParH(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
-        para->getParD(level)->numberOfPrecursorBCnodesRead = numberOfPrecursorValues * para->getD3Qxx();
 
         if (numberOfPrecursorValues > 1)
         {

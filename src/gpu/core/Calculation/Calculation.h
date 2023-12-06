@@ -141,8 +141,6 @@ struct QforBoundaryConditions
 {
    int* k;
    int* kN;
-   long long* valueQ;
-   real* qread;
    real* q27[27];
    real* q19[19];
    unsigned int numberOfBCnodes=0;

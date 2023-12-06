@@ -773,18 +773,6 @@ void Parameter::setIsGeo(bool isGeo)
 {
     this->isGeo = isGeo;
 }
-void Parameter::setIsGeoNormal(bool isGeoNormal)
-{
-    this->isGeoNormal = isGeoNormal;
-}
-void Parameter::setIsInflowNormal(bool isInflowNormal)
-{
-    this->isInflowNormal = isInflowNormal;
-}
-void Parameter::setIsOutflowNormal(bool isOutflowNormal)
-{
-    this->isOutflowNormal = isOutflowNormal;
-}
 void Parameter::setIsCp(bool isCp)
 {
     this->isCp = isCp;
@@ -1133,12 +1121,6 @@ void Parameter::setObj(std::string str, bool isObj)
         this->setIsGeo(isObj);
     } else if (str == "cp") {
         this->setIsCp(isObj);
-    } else if (str == "geoNormal") {
-        this->setIsGeoNormal(isObj);
-    } else if (str == "inflowNormal") {
-        this->setIsInflowNormal(isObj);
-    } else if (str == "outflowNormal") {
-        this->setIsOutflowNormal(isObj);
     }
 }
 void Parameter::setUseGeometryValues(bool useGeometryValues)
@@ -1987,18 +1969,6 @@ bool Parameter::getDoRestart()
 bool Parameter::getIsGeo()
 {
     return this->isGeo;
-}
-bool Parameter::getIsGeoNormal()
-{
-    return this->isGeoNormal;
-}
-bool Parameter::getIsInflowNormal()
-{
-    return this->isInflowNormal;
-}
-bool Parameter::getIsOutflowNormal()
-{
-    return this->isOutflowNormal;
 }
 bool Parameter::getIsCp()
 {

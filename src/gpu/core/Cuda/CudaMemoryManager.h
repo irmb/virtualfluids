@@ -188,18 +188,6 @@ public:
     void cudaCopyGeomValuesBC(int lev);
     void cudaFreeGeomValuesBC(int lev);
 
-    void cudaAllocGeomNormals(int lev);
-    void cudaCopyGeomNormals(int lev);
-    void cudaFreeGeomNormals(int lev);
-
-    void cudaAllocInflowNormals(int lev);
-    void cudaCopyInflowNormals(int lev);
-    void cudaFreeInflowNormals(int lev);
-
-    void cudaAllocOutflowNormals(int lev);
-    void cudaCopyOutflowNormals(int lev);
-    void cudaFreeOutflowNormals(int lev);
-
     void cudaAllocTestRE(int lev, unsigned int size);
     void cudaCopyTestREtoDevice(int lev, unsigned int size);
     void cudaCopyTestREtoHost(int lev, unsigned int size);
@@ -223,20 +211,6 @@ public:
     void cudaAllocConcFile(int lev);
     void cudaCopyConcFile(int lev);
     void cudaFreeConcFile(int lev);
-
-    void cudaAllocInlet(int lev);
-    void cudaCopyInlet(int lev);
-    void cudaFreeInlet(int lev);
-    void cudaAllocOutlet(int lev);
-    void cudaCopyOutlet(int lev);
-    void cudaFreeOutlet(int lev);
-
-    void cudaAllocPressX0(int lev);
-    void cudaCopyPressX0(int lev);
-    void cudaFreePressX0(int lev);
-    void cudaAllocPressX1(int lev);
-    void cudaCopyPressX1(int lev);
-    void cudaFreePressX1(int lev);
 
     void cudaAllocMeasurePointsIndex(int lev);
     void cudaCopyMeasurePointsIndex(int lev);
