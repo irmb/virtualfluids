@@ -49,7 +49,8 @@ __global__ void PressureNonEquilibriumCompressible_Device(
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    bool isEvenTimestep)
+    bool isEvenTimestep,
+    size_t direction)
 {
    ////////////////////////////////////////////////////////////////////////////////
    //! The pressure boundary condition is executed in the following steps
@@ -264,35 +265,134 @@ __global__ void PressureNonEquilibriumCompressible_Device(
       __syncthreads();
 
       ////////////////////////////////////////////////////////////////////////////////
-      //! write the new distributions to the bc nodes
+      //! write the new distributions to the bc nodes (only for the relevant directions)
       //!
-      (dist.f[dP00])[ke   ] = f1_W   ;
-      (dist.f[dM00])[kw   ] = f1_E   ;
-      (dist.f[d0P0])[kn   ] = f1_S   ;
-      (dist.f[d0M0])[ks   ] = f1_N   ;
-      (dist.f[d00P])[kt   ] = f1_B   ;
-      (dist.f[d00M])[kb   ] = f1_T   ;
-      (dist.f[dPP0])[kne  ] = f1_SW  ;
-      (dist.f[dMM0])[ksw  ] = f1_NE  ;
-      (dist.f[dPM0])[kse  ] = f1_NW  ;
-      (dist.f[dMP0])[knw  ] = f1_SE  ;
-      (dist.f[dP0P])[kte  ] = f1_BW  ;
-      (dist.f[dM0M])[kbw  ] = f1_TE  ;
-      (dist.f[dP0M])[kbe  ] = f1_TW  ;
-      (dist.f[dM0P])[ktw  ] = f1_BE  ;
-      (dist.f[d0PP])[ktn  ] = f1_BS  ;
-      (dist.f[d0MM])[kbs  ] = f1_TN  ;
-      (dist.f[d0PM])[kbn  ] = f1_TS  ;
-      (dist.f[d0MP])[kts  ] = f1_BN  ;
-      (dist.f[d000])[kzero] = f1_ZERO;
-      (dist.f[dPPP])[ktne ] = f1_BSW ;
-      (dist.f[dMMP])[ktsw ] = f1_BNE ;
-      (dist.f[dPMP])[ktse ] = f1_BNW ;
-      (dist.f[dMPP])[ktnw ] = f1_BSE ;
-      (dist.f[dPPM])[kbne ] = f1_TSW ;
-      (dist.f[dMMM])[kbsw ] = f1_TNE ;
-      (dist.f[dPMM])[kbse ] = f1_TNW ;
-      (dist.f[dMPM])[kbnw ] = f1_TSE ;
+
+      switch (direction)
+      {
+         case dM00:
+            (dist.f[dP00])[ke   ] = f1_W   ;
+            (dist.f[d0P0])[kn   ] = f1_S   ;
+            (dist.f[d0M0])[ks   ] = f1_N   ;
+            (dist.f[d00P])[kt   ] = f1_B   ;
+            (dist.f[d00M])[kb   ] = f1_T   ;
+            (dist.f[dPP0])[kne  ] = f1_SW  ;
+            (dist.f[dPM0])[kse  ] = f1_NW  ;
+            (dist.f[dP0P])[kte  ] = f1_BW  ;
+            (dist.f[dP0M])[kbe  ] = f1_TW  ;
+            (dist.f[d0PP])[ktn  ] = f1_BS  ;
+            (dist.f[d0MM])[kbs  ] = f1_TN  ;
+            (dist.f[d0PM])[kbn  ] = f1_TS  ;
+            (dist.f[d0MP])[kts  ] = f1_BN  ;
+            (dist.f[d000])[kzero] = f1_ZERO;
+            (dist.f[dPPP])[ktne ] = f1_BSW ;
+            (dist.f[dPMP])[ktse ] = f1_BNW ;
+            (dist.f[dPPM])[kbne ] = f1_TSW ;
+            (dist.f[dPMM])[kbse ] = f1_TNW ;
+            break;
+         case dP00:
+            (dist.f[dM00])[kw   ] = f1_E   ;
+            (dist.f[d0P0])[kn   ] = f1_S   ;
+            (dist.f[d0M0])[ks   ] = f1_N   ;
+            (dist.f[d00P])[kt   ] = f1_B   ;
+            (dist.f[d00M])[kb   ] = f1_T   ;
+            (dist.f[dMM0])[ksw  ] = f1_NE  ;
+            (dist.f[dMP0])[knw  ] = f1_SE  ;
+            (dist.f[dM0M])[kbw  ] = f1_TE  ;
+            (dist.f[dM0P])[ktw  ] = f1_BE  ;
+            (dist.f[d0PP])[ktn  ] = f1_BS  ;
+            (dist.f[d0MM])[kbs  ] = f1_TN  ;
+            (dist.f[d0PM])[kbn  ] = f1_TS  ;
+            (dist.f[d0MP])[kts  ] = f1_BN  ;
+            (dist.f[d000])[kzero] = f1_ZERO;
+            (dist.f[dMMP])[ktsw ] = f1_BNE ;
+            (dist.f[dMPP])[ktnw ] = f1_BSE ;
+            (dist.f[dMMM])[kbsw ] = f1_TNE ;
+            (dist.f[dMPM])[kbnw ] = f1_TSE ;
+            break;
+         case d0M0:
+            (dist.f[dP00])[ke   ] = f1_W   ;
+            (dist.f[dM00])[kw   ] = f1_E   ;
+            (dist.f[d0P0])[kn   ] = f1_S   ;
+            (dist.f[d00P])[kt   ] = f1_B   ;
+            (dist.f[d00M])[kb   ] = f1_T   ;
+            (dist.f[dPP0])[kne  ] = f1_SW  ;
+            (dist.f[dMP0])[knw  ] = f1_SE  ;
+            (dist.f[dP0P])[kte  ] = f1_BW  ;
+            (dist.f[dM0M])[kbw  ] = f1_TE  ;
+            (dist.f[dP0M])[kbe  ] = f1_TW  ;
+            (dist.f[dM0P])[ktw  ] = f1_BE  ;
+            (dist.f[d0PP])[ktn  ] = f1_BS  ;
+            (dist.f[d0PM])[kbn  ] = f1_TS  ;
+            (dist.f[d000])[kzero] = f1_ZERO;
+            (dist.f[dPPP])[ktne ] = f1_BSW ;
+            (dist.f[dMPP])[ktnw ] = f1_BSE ;
+            (dist.f[dPPM])[kbne ] = f1_TSW ;
+            (dist.f[dMPM])[kbnw ] = f1_TSE ;
+            break;
+         case d0P0:
+            (dist.f[dP00])[ke   ] = f1_W   ;
+            (dist.f[dM00])[kw   ] = f1_E   ;
+            (dist.f[d0M0])[ks   ] = f1_N   ;
+            (dist.f[d00P])[kt   ] = f1_B   ;
+            (dist.f[d00M])[kb   ] = f1_T   ;
+            (dist.f[dMM0])[ksw  ] = f1_NE  ;
+            (dist.f[dPM0])[kse  ] = f1_NW  ;
+            (dist.f[dP0P])[kte  ] = f1_BW  ;
+            (dist.f[dM0M])[kbw  ] = f1_TE  ;
+            (dist.f[dP0M])[kbe  ] = f1_TW  ;
+            (dist.f[dM0P])[ktw  ] = f1_BE  ;
+            (dist.f[d0MM])[kbs  ] = f1_TN  ;
+            (dist.f[d0MP])[kts  ] = f1_BN  ;
+            (dist.f[d000])[kzero] = f1_ZERO;
+            (dist.f[dMMP])[ktsw ] = f1_BNE ;
+            (dist.f[dPMP])[ktse ] = f1_BNW ;
+            (dist.f[dMMM])[kbsw ] = f1_TNE ;
+            (dist.f[dPMM])[kbse ] = f1_TNW ;
+            break;
+         case d00M:
+            (dist.f[dP00])[ke   ] = f1_W   ;
+            (dist.f[dM00])[kw   ] = f1_E   ;
+            (dist.f[d0P0])[kn   ] = f1_S   ;
+            (dist.f[d0M0])[ks   ] = f1_N   ;
+            (dist.f[d00P])[kt   ] = f1_B   ;
+            (dist.f[dPP0])[kne  ] = f1_SW  ;
+            (dist.f[dMM0])[ksw  ] = f1_NE  ;
+            (dist.f[dPM0])[kse  ] = f1_NW  ;
+            (dist.f[dMP0])[knw  ] = f1_SE  ;
+            (dist.f[dP0P])[kte  ] = f1_BW  ;
+            (dist.f[dM0P])[ktw  ] = f1_BE  ;
+            (dist.f[d0PP])[ktn  ] = f1_BS  ;
+            (dist.f[d0MP])[kts  ] = f1_BN  ;
+            (dist.f[d000])[kzero] = f1_ZERO;
+            (dist.f[dPPP])[ktne ] = f1_BSW ;
+            (dist.f[dMMP])[ktsw ] = f1_BNE ;
+            (dist.f[dPMP])[ktse ] = f1_BNW ;
+            (dist.f[dMPP])[ktnw ] = f1_BSE ;
+            break;
+         case d00P:
+            (dist.f[dP00])[ke   ] = f1_W   ;
+            (dist.f[dM00])[kw   ] = f1_E   ;
+            (dist.f[d0P0])[kn   ] = f1_S   ;
+            (dist.f[d0M0])[ks   ] = f1_N   ;
+            (dist.f[d00M])[kb   ] = f1_T   ;
+            (dist.f[dPP0])[kne  ] = f1_SW  ;
+            (dist.f[dMM0])[ksw  ] = f1_NE  ;
+            (dist.f[dPM0])[kse  ] = f1_NW  ;
+            (dist.f[dMP0])[knw  ] = f1_SE  ;
+            (dist.f[dM0M])[kbw  ] = f1_TE  ;
+            (dist.f[dP0M])[kbe  ] = f1_TW  ;
+            (dist.f[d0MM])[kbs  ] = f1_TN  ;
+            (dist.f[d0PM])[kbn  ] = f1_TS  ;
+            (dist.f[d000])[kzero] = f1_ZERO;
+            (dist.f[dPPM])[kbne ] = f1_TSW ;
+            (dist.f[dMMM])[kbsw ] = f1_TNE ;
+            (dist.f[dPMM])[kbse ] = f1_TNW ;
+            (dist.f[dMPM])[kbnw ] = f1_TSE ;
+            break;
+         default:
+            break; 
+      }
    }
 }
 

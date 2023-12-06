@@ -194,6 +194,10 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 
 void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 {
+    if (sideType != SideType::PX)
+        throw std::runtime_error(
+            "The pressure boundary condition is currently only supported at the side PX"); // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/176
+
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
         SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);

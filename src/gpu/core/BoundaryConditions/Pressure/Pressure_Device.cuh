@@ -47,7 +47,8 @@ __global__ void PressureNonEquilibriumIncompressible_Device(
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+    bool isEvenTimestep,
+    size_t direction);
 
 __global__ void PressureNonEquilibriumCompressible_Device(
     real* rhoBC,
@@ -60,6 +61,7 @@ __global__ void PressureNonEquilibriumCompressible_Device(
     unsigned int* neighborY,
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+    bool isEvenTimestep,
+    size_t direction);
 
 #endif

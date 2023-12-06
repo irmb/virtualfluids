@@ -55,7 +55,7 @@ void OutflowNonReflecting(LBMSimulationParameter* parameterDevice, QforBoundaryC
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        vf::lbm::dir::dP00);
+        vf::lbm::dir::dP00);  // #TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/176
     getLastCudaError("OutflowNonReflecting_Device execution failed");
 }
 
@@ -76,7 +76,7 @@ void OutflowNonReflectingPressureCorrection(LBMSimulationParameter* parameterDev
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        vf::lbm::dir::dP00,
+        vf::lbm::dir::dP00, // #TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/176
         parameterDevice->outflowPressureCorrectionFactor);
     getLastCudaError("OutflowNonReflectingPressureCorrection_Device execution failed");
 }
