@@ -316,28 +316,11 @@ void UpdateGrid27::preCollisionBC(int level, unsigned int t)
 void UpdateGrid27::fineToCoarse(int level, InterpolationCells* fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex)
 {
     gridScalingKernelManager->runFineToCoarseKernelLB(level, fineToCoarse, neighborFineToCoarse, streamIndex);
-
-    if (para->getDiffOn()) {
-        if (para->getStreamManager()->streamIsRegistered(streamIndex)) {
-            printf("fineToCoarse Advection Diffusion not implemented"); // TODO
-            return;
-        }
-        gridScalingKernelManager->runFineToCoarseKernelAD(level);
-    }
 }
 
 void UpdateGrid27::coarseToFine(int level, InterpolationCells* coarseToFine, ICellNeigh &neighborCoarseToFine, CudaStreamIndex streamIndex)
 {
     this->gridScalingKernelManager->runCoarseToFineKernelLB(level, coarseToFine, neighborCoarseToFine, streamIndex);
-
-    if (para->getDiffOn())
-    {
-        if(para->getStreamManager()->streamIsRegistered(streamIndex)){
-            printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
-            return;
-        }
-        this->gridScalingKernelManager->runCoarseToFineKernelAD(level);
-    }
 }
 
 void UpdateGrid27::interactWithActuators(int level, unsigned int t)

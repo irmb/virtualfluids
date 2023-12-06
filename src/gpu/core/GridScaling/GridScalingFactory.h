@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Anna Wellmann, Martin Schönherr
+//! \author Anna Wellmann, Martin Schoenherr
 //=======================================================================================
 #ifndef GS_FACTORY
 #define GS_FACTORY
@@ -49,8 +49,7 @@ public:
     enum class GridScaling {
         //! - ScaleCompressible = basic scaling for compressible fluid flow
         ScaleCompressible,
-        //! - DEPRECATED: ScaleRhoSq = scaling for cumulant kernel rho squared
-        ScaleRhoSq,
+        //! - not specified scaling
         NotSpecified
     };
 

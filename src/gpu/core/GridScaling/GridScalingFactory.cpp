@@ -26,8 +26,9 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Anna Wellmann, Martin Schönherr
+//! \author Anna Wellmann, Martin Schoenherr
 //=======================================================================================
+
 #include "GridScalingFactory.h"
 #include "Scaling.cuh"
 
@@ -40,12 +41,9 @@ gridScaling GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) con
 {
     // for descriptions of the scaling types refer to the header
     switch (gridScalingType) {
-        case GridScaling::ScaleRhoSq:
-            return ScaleFC_RhoSq_comp_27;
-            break;
         case GridScaling::ScaleCompressible:
-            if(hasTurbulentViscosity)   return ScaleFC_compressible<true>;
-            else                        return ScaleFC_compressible<false>;
+            if(hasTurbulentViscosity)   return scaleFineToCoarseCompressible<true>;
+            else                        return scaleFineToCoarseCompressible<false>;
             break;
         default:
             return nullptr;
@@ -56,13 +54,10 @@ gridScaling GridScalingFactory::getGridScalingCF(bool hasTurbulentViscosity) con
 {
     // for descriptions of the scaling types refer to the header
     switch (gridScalingType) {
-        case GridScaling::ScaleRhoSq:
-            return ScaleCF_RhoSq_comp_27;
-            break;
         case GridScaling::ScaleCompressible:
             {
-                if(hasTurbulentViscosity)   return ScaleCF_compressible<true>;
-                else                        return ScaleCF_compressible<false>;
+                if(hasTurbulentViscosity)   return scaleCoarseToFineCompressible<true>;
+                else                        return scaleCoarseToFineCompressible<false>;
                 break;
             }
         default:

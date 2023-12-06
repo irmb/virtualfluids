@@ -96,7 +96,7 @@ TEST_F(GridScalingKernelManagerTest_Initialization, multipleLevelWithoutInterpol
     // multiple levels and NO interpolation nodes specified, but the user provided a scaling function anyway --> no error
     para->setMaxLevel(2);
     para->initLBMSimulationParameter();
-    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleRhoSq);
+    scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     EXPECT_NO_THROW(GridScalingKernelManager(para, &scalingFactory));
 }
 
