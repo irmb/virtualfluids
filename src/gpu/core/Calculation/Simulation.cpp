@@ -515,25 +515,36 @@ void Simulation::calculateTimestep(uint timestep)
     ////////////////////////////////////////////////////////////////////////////////
     // set MP-Time
     if (para->getUseMeasurePoints()) {
-        if ((timestep % para->getTimestepForMP()) == 0) {
-            unsigned int valuesPerClockCycle = (unsigned int)(para->getclockCycleForMP() / para->getTimestepForMP());
+        if ((timestep % para->getTimestepForMeasurePoints()) == 0) {
+            unsigned int valuesPerClockCycle = (unsigned int)(para->getclockCycleForMeasurePoints() / para->getTimestepForMeasurePoints());
             for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
-                calculateMeasurePoints(  para->getParD(lev)->VxMP,            para->getParD(lev)->VyMP,                 para->getParD(lev)->VzMP,
-                                        para->getParD(lev)->RhoMP,           para->getParD(lev)->kMP,                  para->getParD(lev)->numberOfPointskMP,
-                                        valuesPerClockCycle,                 timestepForMeasuringPoints,                                     para->getParD(lev)->typeOfGridNode,
-                                        para->getParD(lev)->neighborX,       para->getParD(lev)->neighborY,            para->getParD(lev)->neighborZ,
-                                        para->getParD(lev)->numberOfNodes,   para->getParD(lev)->distributions.f[0],   para->getParD(lev)->numberofthreads,
-                                        para->getParD(lev)->isEvenTimestep);
+                calculateMeasurePoints( 
+                    para->getParD(lev)->velocityInXdirectionAtMeasurePoints,
+                    para->getParD(lev)->velocityInYdirectionAtMeasurePoints,
+                    para->getParD(lev)->velocityInZdirectionAtMeasurePoints,
+                    para->getParD(lev)->densityAtMeasurePoints,
+                    para->getParD(lev)->indicesOfMeasurePoints,
+                    para->getParD(lev)->numberOfMeasurePoints,
+                    valuesPerClockCycle,
+                    timestepForMeasuringPoints,
+                    para->getParD(lev)->typeOfGridNode,
+                    para->getParD(lev)->neighborX,
+                    para->getParD(lev)->neighborY,
+                    para->getParD(lev)->neighborZ,
+                    para->getParD(lev)->numberOfNodes,
+                    para->getParD(lev)->distributions.f[0],
+                    para->getParD(lev)->numberofthreads,
+                    para->getParD(lev)->isEvenTimestep);
             }
             timestepForMeasuringPoints++;
         }
         // Copy Measure Values
-        if ((timestep % (unsigned int)para->getclockCycleForMP()) == 0) {
+        if ((timestep % (unsigned int)para->getclockCycleForMeasurePoints()) == 0) {
             for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
                 cudaMemoryManager->cudaCopyMeasurePointsToHost(lev);
                 para->copyMeasurePointsArrayToVector(lev);
                 VF_LOG_INFO("Write MeasurePoints at level = {} and timestep = {}", lev, timestep);
-                for (int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
+                for (int j = 0; j < (int)para->getParH(lev)->MeasurePointVector.size(); j++)
                 {
                     MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, timestep);
                 }
@@ -765,7 +776,7 @@ void Simulation::readAndWriteFiles(uint timestep)
     ////////////////////////////////////////////////////////////////////////
     //calculate mean on host
     ////////////////////////////////////////////////////////////////////////
-    if (para->getCalcMean() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0)) {
+    if (para->getCalcMean() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMeasurePoints())==0)) {
         unsigned int tdiff = timestep - previousTimestepForAveraging;
         calcMean(para.get(), tdiff);
         /////////////////////////////////
