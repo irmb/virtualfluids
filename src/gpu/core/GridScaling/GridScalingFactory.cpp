@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \author Anna Wellmann, Martin Schönherr
+//! \author Anna Wellmann, Martin Schoenherr
 //=======================================================================================
 
 #include "GridScalingFactory.h"
