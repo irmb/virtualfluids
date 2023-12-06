@@ -385,14 +385,6 @@ struct LBMSimulationParameter {
 
 
 
-    // trafo///////////////////
-    real mTtoWx, mTtoWy, mTtoWz;
-    real cTtoWx, cTtoWy, cTtoWz;
-
-    // MGstrafo////////////////
-    real cStartx, cStarty, cStartz;
-    real cFx, cFy, cFz;
-
     // interface////////////////
     bool need_interface[6];
     unsigned int XdistKn, YdistKn, ZdistKn;
@@ -1054,15 +1046,6 @@ private:
 
     // Step of Ensight writing//
     unsigned int stepEnsight;
-
-    real TrafoXtoWorld(int CoordX, int level);
-    real TrafoYtoWorld(int CoordY, int level);
-    real TrafoZtoWorld(int CoordZ, int level);
-
-public:
-    real TrafoXtoMGsWorld(int CoordX, int level);
-    real TrafoYtoMGsWorld(int CoordY, int level);
-    real TrafoZtoMGsWorld(int CoordZ, int level);
 
 private:
     // Multi GPU

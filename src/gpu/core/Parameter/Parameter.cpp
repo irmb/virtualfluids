@@ -495,36 +495,10 @@ void Parameter::initLBMSimulationParameter()
             parH[i]->distX  = (real)getDistX().at(i);
             parH[i]->distY  = (real)getDistY().at(i);
             parH[i]->distZ  = (real)getDistZ().at(i);
-            parH[i]->mTtoWx = (real)1.0;
-            parH[i]->mTtoWy = (real)1.0;
-            parH[i]->mTtoWz = (real)1.0;
-            parH[i]->cTtoWx = (real)0.0;
-            parH[i]->cTtoWy = (real)0.0;
-            parH[i]->cTtoWz = (real)0.0;
-            ////MGs Trafo///////////////////////////////////////////////////////////////
-            // parH[i]->cStartx               = (real)parH[i]->XdistKn;
-            // parH[i]->cStarty               = (real)parH[i]->XdistKn;
-            // parH[i]->cStartz               = (real)parH[i]->XdistKn;
-            ////////////////////////////////////////////////////////////////////////////
         } else {
-            // Geller
             parH[i]->distX = ((real)getDistX().at(i) + (real)0.25) * parH[i - 1]->dx;
             parH[i]->distY = ((real)getDistY().at(i) + (real)0.25) * parH[i - 1]->dx;
             parH[i]->distZ = ((real)getDistZ().at(i) + (real)0.25) * parH[i - 1]->dx;
-            // parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
-            // parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
-            // parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
-            parH[i]->mTtoWx = (real)pow(0.5f, i);
-            parH[i]->mTtoWy = (real)pow(0.5f, i);
-            parH[i]->mTtoWz = (real)pow(0.5f, i);
-            parH[i]->cTtoWx = (real)(STARTOFFX / 2.f + (parH[i]->gridNX + 1.f) / 4.f); // funzt nur fuer zwei level
-            parH[i]->cTtoWy = (real)(STARTOFFY / 2.f + (parH[i]->gridNY + 1.f) / 4.f); // funzt nur fuer zwei level
-            parH[i]->cTtoWz = (real)(STARTOFFZ / 2.f + (parH[i]->gridNZ + 1.f) / 4.f); // funzt nur fuer zwei level
-            ////MGs Trafo///////////////////////////////////////////////////////////////
-            // parH[i]->cStartx               = (real)parH[i]->XdistKn;
-            // parH[i]->cStarty               = (real)parH[i]->XdistKn;
-            // parH[i]->cStartz               = (real)parH[i]->XdistKn;
-            ////////////////////////////////////////////////////////////////////////////
         }
     }
 
@@ -2426,46 +2400,6 @@ std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
     return this->initialConditionAD;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-real Parameter::TrafoXtoWorld(int CoordX, int level)
-{
-    return (parH[level]->mTtoWx * CoordX + parH[level]->cTtoWx);
-}
-real Parameter::TrafoYtoWorld(int CoordY, int level)
-{
-    return (parH[level]->mTtoWy * CoordY + parH[level]->cTtoWy);
-}
-real Parameter::TrafoZtoWorld(int CoordZ, int level)
-{
-    return (parH[level]->mTtoWz * CoordZ + parH[level]->cTtoWz);
-}
-real Parameter::TrafoXtoMGsWorld(int CoordX, int level)
-{
-    real temp = 0;
-    for (int i = 0; i <= level; i++) {
-        temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->dx;
-    }
-    temp += (real)((CoordX)*parH[level]->dx);
-    return temp;
-}
-real Parameter::TrafoYtoMGsWorld(int CoordY, int level)
-{
-    real temp = 0;
-    for (int i = 0; i <= level; i++) {
-        temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->dx;
-    }
-    temp += (real)((CoordY)*parH[level]->dx);
-    return temp;
-}
-real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
-{
-    real temp = 0;
-    for (int i = 0; i <= level; i++) {
-        temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->dx;
-    }
-    temp += (real)((CoordZ)*parH[level]->dx);
-    return temp;
-}
 
 void Parameter::setUseStreams(bool useStreams)
 {
