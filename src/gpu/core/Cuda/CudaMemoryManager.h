@@ -300,12 +300,6 @@ public:
     void cudaCopyPlaneConcOut2(int lev, int numofelem);
     void cudaFreePlaneConc(int lev);
 
-    void cudaAllocProcessNeighbor(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighbor(int lev, unsigned int processNeighbor);
-
     void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor);
@@ -317,6 +311,7 @@ public:
     void cudaCopyProcessNeighborADYFsDH(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADYIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborADY(int lev, unsigned int processNeighbor);
+
     void cudaAllocProcessNeighborADZ(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADZFsHD(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADZFsDH(int lev, unsigned int processNeighbor);

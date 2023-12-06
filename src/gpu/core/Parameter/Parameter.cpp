@@ -1316,29 +1316,6 @@ void Parameter::setMemsizeGPU(double admem, bool reset)
         this->memsizeGPU += admem;
     }
 }
-// 1D domain decomposition
-void Parameter::setPossNeighborFiles(std::vector<std::string> possNeighborFiles, std::string sor)
-{
-    if (sor == "send") {
-        this->possNeighborFilesSend = possNeighborFiles;
-    } else if (sor == "recv") {
-        this->possNeighborFilesRecv = possNeighborFiles;
-    }
-}
-void Parameter::setNumberOfProcessNeighbors(unsigned int numberOfProcessNeighbors, int level, std::string sor)
-{
-    if (sor == "send") {
-        parH[level]->sendProcessNeighbor.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighbor.resize(numberOfProcessNeighbors);
-    } else if (sor == "recv") {
-        parH[level]->recvProcessNeighbor.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighbor.resize(numberOfProcessNeighbors);
-    }
-}
-void Parameter::setIsNeighbor(bool isNeigbor)
-{
-    this->isNeigbor = isNeigbor;
-}
 // 3D domain decomposition
 void Parameter::setPossNeighborFilesX(std::vector<std::string> possNeighborFiles, std::string sor)
 {
@@ -2299,29 +2276,6 @@ unsigned int Parameter::getTimestepOfCoarseLevel()
 double Parameter::getMemsizeGPU()
 {
     return this->memsizeGPU;
-}
-// 1D domain decomposition
-std::vector<std::string> Parameter::getPossNeighborFiles(std::string sor)
-{
-    if (sor == "send") {
-        return this->possNeighborFilesSend;
-    } else if (sor == "recv") {
-        return this->possNeighborFilesRecv;
-    }
-    throw std::runtime_error("Parameter string invalid.");
-}
-unsigned int Parameter::getNumberOfProcessNeighbors(int level, std::string sor)
-{
-    if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighbor.size();
-    } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighbor.size();
-    }
-    throw std::runtime_error("Parameter string invalid.");
-}
-bool Parameter::getIsNeighbor()
-{
-    return this->isNeigbor;
 }
 // 3D domain decomposition
 std::vector<std::string> Parameter::getPossNeighborFilesX(std::string sor)

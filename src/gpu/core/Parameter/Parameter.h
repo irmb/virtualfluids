@@ -429,11 +429,6 @@ struct LBMSimulationParameter {
     // deltaPhi
     real deltaPhi;
 
-    ////////////////////////////////////////////////////////////////////////////
-    // 1D domain decomposition
-    std::vector<ProcessNeighbor27> sendProcessNeighbor;
-    std::vector<ProcessNeighbor27> recvProcessNeighbor;
-
     // print///////////////////
     unsigned int startz, endz;
     real Lx, Ly, Lz, dx;
@@ -625,10 +620,6 @@ public:
     void setCalc3rdOrderMoments(bool is3rdOrderMoments);
     void setCalcHighOrderMoments(bool isHighOrderMoments);
     void setMemsizeGPU(double admem, bool reset);
-    // 1D domain decomposition
-    void setPossNeighborFiles(std::vector<std::string> possNeighborFiles, std::string sor);
-    void setNumberOfProcessNeighbors(unsigned int numberOfProcessNeighbors, int level, std::string sor);
-    void setIsNeighbor(bool isNeighbor);
     // 3D domain decomposition
     void setPossNeighborFilesX(std::vector<std::string> possNeighborFiles, std::string sor);
     void setPossNeighborFilesY(std::vector<std::string> possNeighborFiles, std::string sor);
@@ -871,10 +862,6 @@ public:
     bool getUseInitNeq();
     bool getIsBodyForce();
     double getMemsizeGPU();
-    // 1D domain decomposition
-    std::vector<std::string> getPossNeighborFiles(std::string sor);
-    unsigned int getNumberOfProcessNeighbors(int level, std::string sor);
-    bool getIsNeighbor();
     // 3D domain decomposition
     std::vector<std::string> getPossNeighborFilesX(std::string sor);
     std::vector<std::string> getPossNeighborFilesY(std::string sor);
