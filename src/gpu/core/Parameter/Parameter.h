@@ -251,6 +251,19 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
 
 
+    //////////////////////////////////////////////////////////////////////////
+    // Measure Points
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store the indices, velocities and density at distinct measure points
+    std::vector<MeasurePoints> MeasurePointVector;
+    unsigned int* indicesOfMeasurePoints;
+    real* velocityInXdirectionAtMeasurePoints;
+    real* velocityInYdirectionAtMeasurePoints;
+    real* velocityInZdirectionAtMeasurePoints;
+    real* densityAtMeasurePoints;
+    unsigned int memSizeRealMeasurePoints, memSizeIntegerMeasurePoints, numberOfMeasurePoints;
+    //////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -260,16 +273,6 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     // ADD IN FUTURE RELEASE
     //////////////////////////////////////////////////////////////////////////
-
-    // Measure Points/////////
-    std::vector<MeasurePoints> MP;
-    unsigned int *kMP;
-    real *VxMP;
-    real *VyMP;
-    real *VzMP;
-    real *RhoMP;
-    unsigned int memSizerealkMP, memSizeIntkMP, numberOfPointskMP;
-    unsigned int numberOfValuesMP;
 
     // 2ndMoments////////////
     real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
@@ -500,7 +503,7 @@ public:
     void setPressOutID(unsigned int PressOutID);
     void setPressInZ(unsigned int PressInZ);
     void setPressOutZ(unsigned int PressOutZ);
-    void settimestepForMP(unsigned int timestepForMP);
+    void settimestepForMeasurePoints(unsigned int timestepForMeasurePoints);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
     void setGridPath(std::string gridPath);
@@ -589,7 +592,7 @@ public:
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setIsBodyForce(bool isBodyForce);
-    void setclockCycleForMP(real clockCycleForMP);
+    void setclockCycleForMeasurePoints(real clockCycleForMeasurePoints);
     void setDevices(std::vector<uint> devices);
     void setGridX(std::vector<int> GridX);
     void setGridY(std::vector<int> GridY);
@@ -777,7 +780,7 @@ public:
     unsigned int getTimestepEnd();
     unsigned int getTimestepOut();
     unsigned int getTimestepStartOut();
-    unsigned int getTimestepForMP();
+    unsigned int getTimestepForMeasurePoints();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
     real getConcentrationInit();
@@ -818,7 +821,7 @@ public:
     real getRealY();
     real getRe();
     real getFactorPressBC();
-    real getclockCycleForMP();
+    real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices();
     std::vector<int> getGridX();
     std::vector<int> getGridY();
@@ -941,7 +944,7 @@ private:
     real concentrationBC{ 1.0 };
     real RealX{ 1.0 };
     real RealY{ 1.0 };
-    real clockCycleForMP{ 1.0 };
+    real clockCycleForMeasurePoints{ 1.0 };
     real vis{ 0.001 };
     real vis_ratio{ 1.0 };
     real u0{ 0.01 };
@@ -1002,7 +1005,7 @@ private:
     uint PressOutID{ 0 };
     uint PressInZ{ 1 };
     uint PressOutZ{ 2 };
-    uint timeStepForMP{ 10 };
+    uint timeStepForMeasurePoints{ 10 };
 
     std::vector<uint> devices{ 0, 1 }; // one device with ID = 0
     std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;

@@ -45,7 +45,7 @@ public:
         std::ostringstream convert; // stream used for the conversion
         convert << t;               // insert the textual representation of 'Number' in the characters in the stream
         std::string st = convert.str();
-        UbFileOutputASCII out(para->getFName() + "_MeasurePoint_" + para->getParH(level)->MP[index].name + "_" + st +
+        UbFileOutputASCII out(para->getFName() + "_MeasurePoint_" + para->getParH(level)->MeasurePointVector[index].name + "_" + st +
                               ".dat");
 
         out.writeString("Level:");
@@ -53,14 +53,14 @@ public:
         out.writeLine();
         out.writeString("Vx  Vy  Vz  Rho");
         out.writeLine();
-        int numberNodes = (int)para->getParH(level)->MP[index].Rho.size();
+        int numberNodes = (int)para->getParH(level)->MeasurePointVector[index].Rho.size();
         out.writeInteger(numberNodes);
         out.writeLine();
         for (int u = 0; u < numberNodes; u++) {
-            out.writeFloat((float)(para->getParH(level)->MP[index].Vx[u] * para->getVelocityRatio()));
-            out.writeFloat((float)(para->getParH(level)->MP[index].Vy[u] * para->getVelocityRatio()));
-            out.writeFloat((float)(para->getParH(level)->MP[index].Vz[u] * para->getVelocityRatio()));
-            out.writeFloat((float)(para->getParH(level)->MP[index].Rho[u] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio()));
+            out.writeFloat((float)(para->getParH(level)->MeasurePointVector[index].Vx[u] * para->getVelocityRatio()));
+            out.writeFloat((float)(para->getParH(level)->MeasurePointVector[index].Vy[u] * para->getVelocityRatio()));
+            out.writeFloat((float)(para->getParH(level)->MeasurePointVector[index].Vz[u] * para->getVelocityRatio()));
+            out.writeFloat((float)(para->getParH(level)->MeasurePointVector[index].Rho[u] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio()));
             out.writeLine();
         }
         out.writeLine();
@@ -163,7 +163,7 @@ public:
     static void calcAndWriteMeanAndFluctuations(Parameter* para, int level, int t, unsigned int startOfCalculation)
     {
         //calc
-        int numberNodes = (int)para->getParH(level)->MP.size();
+        int numberNodes = (int)para->getParH(level)->MeasurePointVector.size();
         std::vector<double> uMean(numberNodes);
         std::vector<double> vMean(numberNodes);
         std::vector<double> wMean(numberNodes);
@@ -174,7 +174,7 @@ public:
         std::vector<double> uwMean(numberNodes);
         std::vector<double> vwMean(numberNodes);
 
-        int numberSteps = (int)para->getParH(level)->MP[0].Vx.size();
+        int numberSteps = (int)para->getParH(level)->MeasurePointVector[0].Vx.size();
 
         std::vector<double> uuFluct(t);
         std::vector<double> vvFluct(t);
@@ -195,9 +195,9 @@ public:
 
             for (int step = startOfCalculation; step < t; step++)
             {
-                uMean[index] += para->getParH(level)->MP[index].Vx[step];
-                vMean[index] += para->getParH(level)->MP[index].Vy[step];
-                wMean[index] += para->getParH(level)->MP[index].Vz[step];
+                uMean[index] += para->getParH(level)->MeasurePointVector[index].Vx[step];
+                vMean[index] += para->getParH(level)->MeasurePointVector[index].Vy[step];
+                wMean[index] += para->getParH(level)->MeasurePointVector[index].Vz[step];
             }
 
             uMean[index] /= double(t - startOfCalculation);
@@ -206,13 +206,13 @@ public:
 
             for (int step = 0; step < t; step++)
             {
-                uuFluct[step] = (para->getParH(level)->MP[index].Vx[step] - uMean[index]) * (para->getParH(level)->MP[index].Vx[step] - uMean[index]);
-                vvFluct[step] = (para->getParH(level)->MP[index].Vy[step] - vMean[index]) * (para->getParH(level)->MP[index].Vy[step] - vMean[index]);
-                wwFluct[step] = (para->getParH(level)->MP[index].Vz[step] - wMean[index]) * (para->getParH(level)->MP[index].Vz[step] - wMean[index]);
+                uuFluct[step] = (para->getParH(level)->MeasurePointVector[index].Vx[step] - uMean[index]) * (para->getParH(level)->MeasurePointVector[index].Vx[step] - uMean[index]);
+                vvFluct[step] = (para->getParH(level)->MeasurePointVector[index].Vy[step] - vMean[index]) * (para->getParH(level)->MeasurePointVector[index].Vy[step] - vMean[index]);
+                wwFluct[step] = (para->getParH(level)->MeasurePointVector[index].Vz[step] - wMean[index]) * (para->getParH(level)->MeasurePointVector[index].Vz[step] - wMean[index]);
 
-                uvFluct[step] = (para->getParH(level)->MP[index].Vx[step] - uMean[index]) * (para->getParH(level)->MP[index].Vy[step] - vMean[index]);
-                uwFluct[step] = (para->getParH(level)->MP[index].Vx[step] - uMean[index]) * (para->getParH(level)->MP[index].Vz[step] - wMean[index]);
-                vwFluct[step] = (para->getParH(level)->MP[index].Vy[step] - vMean[index]) * (para->getParH(level)->MP[index].Vz[step] - wMean[index]);
+                uvFluct[step] = (para->getParH(level)->MeasurePointVector[index].Vx[step] - uMean[index]) * (para->getParH(level)->MeasurePointVector[index].Vy[step] - vMean[index]);
+                uwFluct[step] = (para->getParH(level)->MeasurePointVector[index].Vx[step] - uMean[index]) * (para->getParH(level)->MeasurePointVector[index].Vz[step] - wMean[index]);
+                vwFluct[step] = (para->getParH(level)->MeasurePointVector[index].Vy[step] - vMean[index]) * (para->getParH(level)->MeasurePointVector[index].Vz[step] - wMean[index]);
             }
 
             //uuMean[index] = std::accumulate(uuFluct.begin() + (startOfCalculation - 1), uuFluct.end(), 0.0) / double(t - startOfCalculation);
@@ -266,7 +266,7 @@ public:
         out.writeLine();
         for (int index = 0; index < numberNodes; index++)
         {
-            out.writeString(para->getParH(level)->MP[index].name);
+            out.writeString(para->getParH(level)->MeasurePointVector[index].name);
             out.writeFloat((float)(uMean[index]  * para->getVelocityRatio()));
             out.writeFloat((float)(vMean[index]  * para->getVelocityRatio()));
             out.writeFloat((float)(wMean[index]  * para->getVelocityRatio()));

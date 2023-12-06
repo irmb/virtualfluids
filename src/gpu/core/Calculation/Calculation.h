@@ -198,7 +198,6 @@ struct WallModelParameters
 };
 
 
-// ADD IN FUTURE RELEASE
 struct MeasurePoints
 {
    std::string name;
@@ -207,10 +206,6 @@ struct MeasurePoints
    std::vector<real> Vy;
    std::vector<real> Vz;
    std::vector<real> Rho;
-   //real* Vx;
-   //real* Vy;
-   //real* Vz;
-   //real* Rho;
 };
 
 
