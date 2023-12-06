@@ -37,29 +37,45 @@
 
 using namespace std;
 
-int main(int  /*argc*/, char*  /*argv*/[])
+int main(int  argc, char*  argv[])
 {
-    using namespace vf::lbm::dir;
+   using namespace vf::lbm::dir;
+   string configname;
+   if (argv != NULL)
+   {
+      if (argv[1] != NULL)
+      {
+         configname = string(argv[1]);
+      }
+      else
+      {
+         cout << "Configuration file is missing!" << endl;
+         return 0;
+      }
+   }
+
    try
    {
       //////////////////////////////////////////////////////////////////////////
       // Simulation parameters
       //////////////////////////////////////////////////////////////////////////
+      vf::basics::ConfigurationFile   config;
+      config.load(configname);
 
       // set your output path here
-      string path = "./output/LidDrivenCavity";
+      string path = config.getValue<string>("path");   
 
-      const real L = 1.0;
-      const real Re = 1000.0;
-      const real velocity = 1.0;
-      const real dt = 0.5e-3;
-      const unsigned int nx = 64;
+      const real L = config.getValue<real>("L");
+      const real Re = config.getValue<real>("Re");
+      const real velocity = config.getValue<real>("velocity");
+      const real dt = config.getValue<real>("dt");
+      const unsigned int nx = config.getValue<unsigned int>("nx");
 
-      const real timeStepOut = 10;
-      const real timeStepEnd = 10;
+      const real timeStepOut = config.getValue<real>("timeStepOut");
+      const real timeStepEnd = config.getValue<real>("timeStepEnd");
 
       // Number of OpenMP threads
-      int numOfThreads = 1;
+      int numOfThreads = config.getValue<int>("numOfThreads");      
 
       //////////////////////////////////////////////////////////////////////////
 

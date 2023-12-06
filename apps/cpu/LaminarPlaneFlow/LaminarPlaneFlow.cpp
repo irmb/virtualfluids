@@ -314,7 +314,6 @@ int main(int argc, char* argv[])
    {
       if (argv[1] != NULL)
       {
-         //pflowForcing(string(argv[1]));
          pflowdp(string(argv[1]));
       }
       else
