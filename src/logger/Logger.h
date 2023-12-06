@@ -51,23 +51,23 @@
 #define VF_LOG_WARNING(...) spdlog::warn(__VA_ARGS__)
 #define VF_LOG_CRITICAL(...) spdlog::critical(__VA_ARGS__)
 
-
 namespace vf::logging
 {
-    class Logger
-    {
-    public:
-        // initializing the above named logger
-        static void initializeLogger();
+class Logger
+{
+public:
+    // initializing the above named logger
+    static void initializeLogger();
 
-        // changing the path of the log files
-        static void changeLogPath(const std::string& path);
+    // changing the path of the log files
+    static void changeLogPath(const std::string& path);
 
-    private:
-        static void updateDefaultLogger();
+private:
+    static void updateDefaultLogger();
 
-        static std::string logPath;
-    };
-}
+    static std::string logPath;
+};
+
+} // namespace vf::logging
 
 #endif
