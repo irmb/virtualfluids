@@ -46,7 +46,6 @@ namespace grid_scaling_factory
 
         py::enum_<GridScalingFactory::GridScaling>(parentModule, "GridScaling")
         .value("ScaleCompressible", GridScalingFactory::GridScaling::ScaleCompressible)
-        .value("ScaleRhoSq", GridScalingFactory::GridScaling::ScaleRhoSq)
         .value("NotSpecified", GridScalingFactory::GridScaling::NotSpecified);
     }
 }
