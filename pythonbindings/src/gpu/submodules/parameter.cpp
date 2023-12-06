@@ -60,7 +60,6 @@ namespace parameter
         .def("set_forcing", &Parameter::setForcing, py::arg("forcing_x"), py::arg("forcing_y"), py::arg("forcing_z"))
         .def("set_quadric_limiters", &Parameter::setQuadricLimiters, py::arg("quadric_limiter_p"), py::arg("quadric_limiter_m"), py::arg("quadric_limiter_d"))
         .def("set_diff_on", &Parameter::setDiffOn, py::arg("is_diff"))
-        .def("set_comp_on", &Parameter::setCompOn, py::arg("is_comp"))
         .def("set_max_level", &Parameter::setMaxLevel, py::arg("number_of_levels"))
         .def("set_timestep_end", &Parameter::setTimestepEnd, py::arg("tend"))
         .def("set_timestep_out", &Parameter::setTimestepOut, py::arg("tout"))
