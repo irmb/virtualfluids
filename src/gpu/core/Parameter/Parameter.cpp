@@ -120,9 +120,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("writeVeloASCIIfiles"))
         this->writeVeloASCII = configData.getValue<bool>("writeVeloASCIIfiles");
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("calcPlaneConc"))
-        this->calcPlaneConc = configData.getValue<bool>("calcPlaneConc");
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseConcFile"))
         this->setConcFile(configData.getValue<bool>("UseConcFile"));
     //////////////////////////////////////////////////////////////////////////
@@ -572,10 +569,6 @@ void Parameter::setCalcCp(bool calcCp)
 void Parameter::setWriteVeloASCIIfiles(bool writeVeloASCII)
 {
     this->writeVeloASCII = writeVeloASCII;
-}
-void Parameter::setCalcPlaneConc(bool calcPlaneConc)
-{
-    this->calcPlaneConc = calcPlaneConc;
 }
 void Parameter::setTimeCalcMedStart(int CalcMedStart)
 {
@@ -1550,10 +1543,6 @@ bool Parameter::getCalcCp()
 bool Parameter::getWriteVeloASCIIfiles()
 {
     return this->writeVeloASCII;
-}
-bool Parameter::getCalcPlaneConc()
-{
-    return this->calcPlaneConc;
 }
 int Parameter::getTimeCalcMedStart()
 {

@@ -73,7 +73,6 @@
 #include "PostProcessor/ForceCalculations.h"
 #include "PostProcessor/KineticEnergyAnalyzer.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
-#include "PostProcessor/PlaneCalculations.h"
 #include "PostProcessor/TurbulenceIntensity.h"
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
@@ -380,11 +379,6 @@ void Simulation::run()
     ////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////
-    if (para->getDiffOn())
-        printPlaneConc(para.get(), cudaMemoryManager.get());
-    ////////////////////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////////////////////
     ////for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
     ////{
     ////    if (para->getParH(lev)->cpTop.size() > 0)
@@ -552,52 +546,6 @@ void Simulation::calculateTimestep(uint timestep)
             }
             timestepForMeasuringPoints = 0;
         }
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // get concentration at the plane
-    //////////////////////////////////////////////////////////////////////////////////
-    if (para->getDiffOn() && para->getCalcPlaneConc()) {
-        PlaneConcThS27(para->getParD(0)->ConcPlaneIn,
-                       para->getParD(0)->cpTopIndex,
-                       para->getParD(0)->numberOfPointsCpTop,
-                       para->getParD(0)->typeOfGridNode,
-                       para->getParD(0)->neighborX,
-                       para->getParD(0)->neighborY,
-                       para->getParD(0)->neighborZ,
-                       para->getParD(0)->numberOfNodes,
-                       para->getParD(0)->numberofthreads,
-                       para->getParD(0)->distributionsAD.f[0],
-                       para->getParD(0)->isEvenTimestep);
-        getLastCudaError("PlaneConcThS27 execution failed");
-        PlaneConcThS27( para->getParD(0)->ConcPlaneOut1,
-                        para->getParD(0)->cpBottomIndex,
-                        para->getParD(0)->numberOfPointsCpBottom,
-                        para->getParD(0)->typeOfGridNode,
-                        para->getParD(0)->neighborX,
-                        para->getParD(0)->neighborY,
-                        para->getParD(0)->neighborZ,
-                        para->getParD(0)->numberOfNodes,
-                        para->getParD(0)->numberofthreads,
-                        para->getParD(0)->distributionsAD.f[0],
-                        para->getParD(0)->isEvenTimestep);
-        getLastCudaError("PlaneConcThS27 execution failed");
-        PlaneConcThS27( para->getParD(0)->ConcPlaneOut2,
-                        para->getParD(0)->pressureBC.kN,
-                        para->getParD(0)->pressureBC.numberOfBCnodes,
-                        para->getParD(0)->typeOfGridNode,
-                        para->getParD(0)->neighborX,
-                        para->getParD(0)->neighborY,
-                        para->getParD(0)->neighborZ,
-                        para->getParD(0)->numberOfNodes,
-                        para->getParD(0)->numberofthreads,
-                        para->getParD(0)->distributionsAD.f[0],
-                        para->getParD(0)->isEvenTimestep);
-        getLastCudaError("PlaneConcThS27 execution failed");
-        //////////////////////////////////////////////////////////////////////////////////
-        ////Calculation of concentration at the plane
-        //////////////////////////////////////////////////////////////////////////////////
-        calcPlaneConc(para.get(), cudaMemoryManager.get(), 0);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -844,7 +792,6 @@ Simulation::~Simulation()
     // Temp
     if (para->getDiffOn()) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc_Full));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.k));

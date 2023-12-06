@@ -62,7 +62,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getCalcCp(), testing::Eq(true));
     EXPECT_THAT(para.getCalcDragLift(), testing::Eq(true));
     EXPECT_THAT(para.getWriteVeloASCIIfiles(), testing::Eq(true));
-    EXPECT_THAT(para.getCalcPlaneConc(), testing::Eq(true));
     EXPECT_THAT(para.getConcFile(), testing::Eq(true));
     EXPECT_THAT(para.getUseMeasurePoints(), testing::Eq(true));
     EXPECT_THAT(para.getUseInitNeq(), testing::Eq(true));

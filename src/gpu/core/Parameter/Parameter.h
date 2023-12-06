@@ -339,19 +339,6 @@ struct LBMSimulationParameter {
     // \brief velocities to fit the force
     real *VxForce, *VyForce, *VzForce; //Deprecated
 
-    //////////////////////////////////////////////////////////////////////////
-    //! \brief stores a full matrix field of concentration values
-    real* Conc_Full;
-    //! \brief stores indices for the concentration field
-    int *concIndex; //Deprecated
-    //    real *concentration;
-    unsigned int numberOfPointsConc; //Deprecated
-    //! \brief store all distribution functions for the D3Q7 advection diffusion field
-    Distributions7 distributionsAD7; //Deprecated
-    // Plane Conc
-    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2; //Deprecated
-    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2; //Deprecated
-
 
 
 
@@ -432,7 +419,6 @@ public:
     void setCalcDragLift(bool calcDragLift);
     void setCalcCp(bool calcCp);
     void setWriteVeloASCIIfiles(bool writeVeloASCII);
-    void setCalcPlaneConc(bool calcPlaneConc);
     void setTimeCalcMedStart(int CalcMedStart);
     void setTimeCalcMedEnd(int CalcMedEnd);
     void setMaxDev(int maxdev);
@@ -619,7 +605,6 @@ public:
     bool getCalcDragLift();
     bool getCalcCp();
     bool getWriteVeloASCIIfiles();
-    bool getCalcPlaneConc();
     //! \returns index of finest level
     int getFine() const;
     //! \returns index of coarsest level
@@ -872,7 +857,6 @@ private:
     bool calcDragLift{ false };
     bool calcCp{ false };
     bool writeVeloASCII{ false };
-    bool calcPlaneConc{ false };
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
     bool printFiles{ false };

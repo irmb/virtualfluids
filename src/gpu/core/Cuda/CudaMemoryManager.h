@@ -292,14 +292,6 @@ public:
     void cudaCopyConcentrationNoSlipBCHD(int lev);
     void cudaFreeConcentrationNoSlipBC(int lev);
 
-    void cudaAllocPlaneConcIn(int lev, int numofelem);
-    void cudaCopyPlaneConcIn(int lev, int numofelem);
-    void cudaAllocPlaneConcOut1(int lev, int numofelem);
-    void cudaCopyPlaneConcOut1(int lev, int numofelem);
-    void cudaAllocPlaneConcOut2(int lev, int numofelem);
-    void cudaCopyPlaneConcOut2(int lev, int numofelem);
-    void cudaFreePlaneConc(int lev);
-
     void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor);
