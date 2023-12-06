@@ -237,6 +237,19 @@ struct LBMSimulationParameter {
 
     std::vector<CollisionTemplate> allocatedBulkFluidNodeTags = {};
 
+    //////////////////////////////////////////////////////////////////////////
+    // Drag and Lift
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores pre- an post-processing values for the calculation
+    //! \brief of drag and lift
+    double *DragLiftPreProcessingInXdirection, *DragLiftPostProcessingInXdirection;
+    double *DragLiftPreProcessingInYdirection, *DragLiftPostProcessingInYdirection;
+    double *DragLiftPreProcessingInZdirection, *DragLiftPostProcessingInZdirection;
+    std::vector<double> DragLiftVectorInXdirection;
+    std::vector<double> DragLiftVectorInYdirection;
+    std::vector<double> DragLiftVectorInZdirection;
+    //////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -257,14 +270,6 @@ struct LBMSimulationParameter {
     real *RhoMP;
     unsigned int memSizerealkMP, memSizeIntkMP, numberOfPointskMP;
     unsigned int numberOfValuesMP;
-
-    // Drag Lift//////////////
-    double *DragPreX, *DragPostX;
-    double *DragPreY, *DragPostY;
-    double *DragPreZ, *DragPostZ;
-    std::vector<double> DragXvector;
-    std::vector<double> DragYvector;
-    std::vector<double> DragZvector;
 
     // 2ndMoments////////////
     real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;

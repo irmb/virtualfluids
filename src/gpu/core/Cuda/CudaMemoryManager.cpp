@@ -1784,20 +1784,20 @@ void CudaMemoryManager::cudaAllocDragLift(int lev, int numofelem)
     unsigned int mem_size = sizeof(double)*numofelem;
 
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragPreX),  mem_size  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragPreY),  mem_size  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragPreZ),  mem_size  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragPostX), mem_size  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragPostY), mem_size  ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragPostZ), mem_size  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragLiftPreProcessingInXdirection),  mem_size  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragLiftPreProcessingInYdirection),  mem_size  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragLiftPreProcessingInZdirection),  mem_size  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragLiftPostProcessingInXdirection), mem_size  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragLiftPostProcessingInYdirection), mem_size  ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->DragLiftPostProcessingInZdirection), mem_size  ));
 
     //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragPreX),  mem_size  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragPreY),  mem_size  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragPreZ),  mem_size  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragPostX), mem_size  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragPostY), mem_size  ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragPostZ), mem_size  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragLiftPreProcessingInXdirection),  mem_size  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragLiftPreProcessingInYdirection),  mem_size  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragLiftPreProcessingInZdirection),  mem_size  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragLiftPostProcessingInXdirection), mem_size  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragLiftPostProcessingInYdirection), mem_size  ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->DragLiftPostProcessingInZdirection), mem_size  ));
 
     //////////////////////////////////////////////////////////////////////////
     double tmp = 6. * (double)mem_size;
@@ -1807,21 +1807,21 @@ void CudaMemoryManager::cudaCopyDragLift(int lev, int numofelem)
 {
     unsigned int mem_size = sizeof(double)*numofelem;
 
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragPreX, parameter->getParD(lev)->DragPreX, mem_size, cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragPreY, parameter->getParD(lev)->DragPreY, mem_size, cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragPreZ, parameter->getParD(lev)->DragPreZ, mem_size, cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragPostX, parameter->getParD(lev)->DragPostX, mem_size, cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragPostY, parameter->getParD(lev)->DragPostY, mem_size, cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragPostZ, parameter->getParD(lev)->DragPostZ, mem_size, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragLiftPreProcessingInXdirection, parameter->getParD(lev)->DragLiftPreProcessingInXdirection, mem_size, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragLiftPreProcessingInYdirection, parameter->getParD(lev)->DragLiftPreProcessingInYdirection, mem_size, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragLiftPreProcessingInZdirection, parameter->getParD(lev)->DragLiftPreProcessingInZdirection, mem_size, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragLiftPostProcessingInXdirection, parameter->getParD(lev)->DragLiftPostProcessingInXdirection, mem_size, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragLiftPostProcessingInYdirection, parameter->getParD(lev)->DragLiftPostProcessingInYdirection, mem_size, cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->DragLiftPostProcessingInZdirection, parameter->getParD(lev)->DragLiftPostProcessingInZdirection, mem_size, cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaFreeDragLift(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragPreX));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragPreY));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragPreZ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragPostX));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragPostY));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragPostZ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragLiftPreProcessingInXdirection));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragLiftPreProcessingInYdirection));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragLiftPreProcessingInZdirection));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragLiftPostProcessingInXdirection));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragLiftPostProcessingInYdirection));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->DragLiftPostProcessingInZdirection));
 }
 //2ndMoments
 void CudaMemoryManager::cudaAlloc2ndMoments(int lev, int numofelem)
