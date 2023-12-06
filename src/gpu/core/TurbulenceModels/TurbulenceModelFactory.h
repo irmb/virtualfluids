@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityFactory.h
-//! \ingroup TurbulentViscosity
 //! \author Henrik Asmuth
 //=======================================================================================
 #ifndef TurbulenceModelFactory_H
@@ -35,9 +33,9 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 #include <variant>
-#include <memory>
 
 #include "Calculation/Calculation.h"
 

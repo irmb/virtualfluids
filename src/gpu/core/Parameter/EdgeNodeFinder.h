@@ -26,13 +26,10 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EdgeNodeFinder.h
-//! \ingroup Parameter
 //! \author Anna Wellmann
 //! \brief Functions for finding edge nodes in the multi-gpu implementation
 //! \details Edge nodes are nodes, which are part of the communication in multiple directions
 //! \ref master thesis of Anna Wellmann (p. 54-57)
-
 //=======================================================================================
 #ifndef GPU_EDGENODES_H
 #define GPU_EDGENODES_H
