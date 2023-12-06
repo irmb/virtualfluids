@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TurbulentViscosityFactory.cpp
-//! \ingroup TurbulentViscosity
 //! \author Henrik Asmuth
 //=======================================================================================
 
@@ -63,31 +61,29 @@ void TurbulenceModelFactory::setModelConstant(real modelConstant)
     para->setSGSConstant(modelConstant);
 }
 
-void TurbulenceModelFactory::readConfigFile(const vf::basics::ConfigurationFile &configData)
+void TurbulenceModelFactory::readConfigFile(const vf::basics::ConfigurationFile& configData)
 {
-    if (configData.contains("TurbulenceModel"))
-    {
+    if (configData.contains("TurbulenceModel")) {
         std::string config = configData.getValue<std::string>("TurbulenceModel");
-        
-        if      (config == "Smagorinsky") this->setTurbulenceModel( vf::lbm::TurbulenceModel::Smagorinsky ); 
-        else if (config == "AMD")         this->setTurbulenceModel( vf::lbm::TurbulenceModel::AMD );               
-        else if (config == "QR" )         this->setTurbulenceModel( vf::lbm::TurbulenceModel::QR );             
-        else if (config == "None")        this->setTurbulenceModel( vf::lbm::TurbulenceModel::None );           
-        else    std::runtime_error("TurbulenceModelFactory: Invalid turbulence model!");           
+
+        if      (config == "Smagorinsky") this->setTurbulenceModel( vf::lbm::TurbulenceModel::Smagorinsky );
+        else if (config == "AMD")         this->setTurbulenceModel( vf::lbm::TurbulenceModel::AMD );
+        else if (config == "QR" )         this->setTurbulenceModel( vf::lbm::TurbulenceModel::QR );
+        else if (config == "None")        this->setTurbulenceModel( vf::lbm::TurbulenceModel::None );
+        else    std::runtime_error("TurbulenceModelFactory: Invalid turbulence model!");
 
         VF_LOG_INFO("Turbulence model: {}", config);
         
     }
 
-    if (configData.contains("SGSconstant"))
-    {
+    if (configData.contains("SGSconstant")) {
         para->setSGSConstant(configData.getValue<real>("SGSconstant"));
-
-        VF_LOG_INFO("SGS constant: {}", para->getSGSConstant() );
+        VF_LOG_INFO("SGS constant: {}", para->getSGSConstant());
     }
 }
 
 void TurbulenceModelFactory::runTurbulenceModelKernel(const int level) const
 {
-    if(this->turbulenceModelKernel) this->turbulenceModelKernel(para.get(), level);
+    if (this->turbulenceModelKernel)
+        this->turbulenceModelKernel(para.get(), level);
 }

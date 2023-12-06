@@ -68,7 +68,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
-#include "gpu/core/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"

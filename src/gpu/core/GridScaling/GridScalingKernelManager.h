@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file GridScalingKernelManager.h
-//! \ingroup KernelManager
 //! \author Martin Schoenherr
 //=======================================================================================
 #ifndef GridScalingKernelManager_H
@@ -64,14 +62,8 @@ public:
     //! \brief calls the device function of the fine to coarse grid interpolation kernelH
     void runFineToCoarseKernelLB(const int level, InterpolationCells *fineToCoarse, ICellNeigh &neighborFineToCoarse, CudaStreamIndex streamIndex) const;
 
-    //! \brief calls the device function of the fine to coarse grid interpolation kernel (advection diffusion)
-    void runFineToCoarseKernelAD(const int level) const;
-
     //! \brief calls the device function of the coarse to fine grid interpolation kernel
     void runCoarseToFineKernelLB(const int level, InterpolationCells *coarseToFine, ICellNeigh &neighborCoarseToFine, CudaStreamIndex streamIndex) const;
-
-    //! \brief calls the device function of the coarse to fine grid interpolation kernel (advection diffusion)
-    void runCoarseToFineKernelAD(const int level) const;
 
 private:
     //! \brief check if grid scaling was set
