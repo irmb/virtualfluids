@@ -35,10 +35,6 @@
 class Parameter;
 class CudaMemoryManager;
 
-void setSizeOfPlane(Parameter* para, int lev, unsigned int z);
-void calcPressure(Parameter* para, std::string inorout, int lev);
-void calcFlowRate(Parameter* para, int lev);
-
 // advection + diffusion
 void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
 void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager);

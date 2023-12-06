@@ -48,8 +48,6 @@ __global__ void VelocityBounceBack_Device(
     bool isEvenTimestep);
 
 __global__ void VelocityInterpolatedIncompressible_Device(
-    int inx,
-    int iny,
     real* vx,
     real* vy,
     real* vz,

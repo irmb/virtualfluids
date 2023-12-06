@@ -65,8 +65,6 @@ void VelocityInterpolatedIncompressible(LBMSimulationParameter* parameterDevice,
     dim3 threads(parameterDevice->numberofthreads, 1, 1 );
 
     VelocityInterpolatedIncompressible_Device<<< grid, threads >>> (
-        parameterDevice->nx,
-        parameterDevice->ny,
         boundaryCondition->Vx,
         boundaryCondition->Vy,
         boundaryCondition->Vz,

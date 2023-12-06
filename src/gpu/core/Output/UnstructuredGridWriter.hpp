@@ -76,7 +76,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
     nodedata[4].resize(allnodes);
 
     unsigned int nodeCount = 0;
-    double nodeDeltaLevel = para->getParH(level)->dx;
 
     for (size_t pos = 0; pos < para->getParH(level)->numberOfNodes; pos++)
     {
@@ -90,12 +89,12 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             double ix2P = para->getParH(level)->coordinateY[para->getParH(level)->neighborY[pos]];//-STARTOFFY;
             double ix3P = para->getParH(level)->coordinateZ[para->getParH(level)->neighborZ[pos]];//-STARTOFFZ;
             //////////////////////////////////////////////////////////////////////////
-            double x1  = ix1;  // para->getParH(level)->distX + ix1 *nodeDeltaLevel;// + tmpDist;
-            double x2  = ix2;  // para->getParH(level)->distY + ix2 *nodeDeltaLevel;// + tmpDist;
-            double x3  = ix3;  // para->getParH(level)->distZ + ix3 *nodeDeltaLevel;// + tmpDist;
-            double x1P = ix1P; // para->getParH(level)->distX + ix1P*nodeDeltaLevel;// + tmpDist;
-            double x2P = ix2P; // para->getParH(level)->distY + ix2P*nodeDeltaLevel;// + tmpDist;
-            double x3P = ix3P; // para->getParH(level)->distZ + ix3P*nodeDeltaLevel;// + tmpDist;
+            double x1  = ix1;  
+            double x2  = ix2;  
+            double x3  = ix3;  
+            double x1P = ix1P; 
+            double x2P = ix2P; 
+            double x3P = ix3P; 
             //////////////////////////////////////////////////////////////////////////
             neighborsFluid = true;
             //////////////////////////////////////////////////////////////////////////
@@ -106,7 +105,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[pos] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[pos] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[pos];
-            //if(para->getParH(level)->typeOfGridNode[pos]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //2
@@ -116,7 +114,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborX[pos]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborX[pos]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborX[pos]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborX[pos]]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //3
@@ -126,7 +123,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //4
@@ -136,8 +132,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborY[pos]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborY[pos]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[pos]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborY[pos]]==GEO_VOID) neighborsFluid = false;
-            //if((para->getParH(level)->neighborY[pos]<=pos) && ((para->getParH(level)->coordinateY[pos]) > (para->getParH(level)->gridNY-2))) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //5
@@ -147,7 +141,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[pos]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[pos]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[pos]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[pos]]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //6
@@ -157,7 +150,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborX[pos]]]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //7
@@ -167,7 +159,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[pos]]]]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
             //////////////////////////////////////////////////////////////////////////
             //8
@@ -177,7 +168,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
             nodedata[2][nodeCount] = para->getParH(level)->velocityY[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]] * para->getVelocityRatio();
             nodedata[3][nodeCount] = para->getParH(level)->velocityZ[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]] * para->getVelocityRatio();
             nodedata[4][nodeCount] = para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]];
-            //if(para->getParH(level)->typeOfGridNode[para->getParH(level)->neighborZ[para->getParH(level)->neighborY[pos]]]==GEO_VOID) neighborsFluid = false;
             nodeCount++;
 
             if(neighborsFluid)
@@ -187,7 +177,6 @@ void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::
         }
     }
     WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname,nodes,cells,nodedatanames,nodedata);
-    //WbWriterVtkXmlBinary::getInstance()->writeNodes(filenameVec2,nodes);
 }
 //////////////////////////////////////////////////////////////////////////
 

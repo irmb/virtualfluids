@@ -335,11 +335,13 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
 
 
-
     //////////////////////////////////////////////////////////////////////////
     // \brief velocities to fit the force
     real *VxForce, *VyForce, *VzForce; //Deprecated
 
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores a full matrix field of concentration values
+    real* Conc_Full;
     //! \brief stores indices for the concentration field
     int *concIndex; //Deprecated
     //    real *concentration;
@@ -351,25 +353,11 @@ struct LBMSimulationParameter {
     std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2; //Deprecated
 
 
-    unsigned int size_Array_SP; //?? Deprecated
 
-    // distributions///////////
-    // Distributions19 d0;
-    Distributions27 d0;  // DEPRECATED: distribution functions for full matrix (not sparse)
 
-    // typeOfGridNode (formerly known as "geo") /////////////////////
-    int *geo; // DEPRECATED: typeOfGridNode for full matrix (not sparse)
-
-    // k///////////////////////
-    unsigned int *k; // DEPRECATED: index for full matrix
-
-    // memsize/////////////////
-    //unsigned int mem_size_real_yz;
-    //unsigned int mem_size_bool;
-    //unsigned int mem_size_int;
-    //unsigned int mem_size_real;
-
-    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1; // DEPRECATED  BCs that are not used any more
+    //////////////////////////////////////////////////////////////////////////
+    QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0,
+        QpressZ1;                                      // DEPRECATED  BCs that are not used any more
     QforBoundaryConditions QInlet, QOutlet, QPeriodic; // DEPRECATED BCs that are not used any more
     unsigned int kInletQread, kOutletQread;            // DEPRECATED
 
@@ -380,51 +368,12 @@ struct LBMSimulationParameter {
     unsigned int numberOfNoSlipBCnodesRead, numberOfVeloBCnodesRead, numberOfOutflowBCnodesRead, // DEPRECATED
     numberOfSlipBCnodesRead, numberOfStressBCnodesRead, numberOfPressureBCnodesRead, numberOfPrecursorBCnodesRead; // DEPRECATED
 
-    //! \brief stores a full matrix field of concentration values
-    real *Conc_Full;
 
 
 
-    // interface////////////////
-    bool need_interface[6];
-    unsigned int XdistKn, YdistKn, ZdistKn;
-
-    // vel parab///////////////
-    real *vParab;
-
-    // macroscopic values//////
-    // real *vx, *vy, *vz, *rho;  // DEPRECATED: macroscopic values for full matrix
-
+    //////////////////////////////////////////////////////////////////////////
     // derivations for iso test
     real *dxxUx, *dyyUy, *dzzUz;
-
-    // grid////////////////////
-    unsigned int nx, ny, nz;
-    unsigned int gridNX, gridNY, gridNZ;
-
-    // size of matrix//////////
-    unsigned int size_Mat;
-    unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
-
-    // size of Plane btw. 2 GPUs//////
-    unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
-    unsigned int sizePlaneST, sizePlaneRT, startT, endT;
-    bool isSetSendB, isSetRecvB, isSetSendT, isSetRecvT;
-    int *SendT, *SendB, *RecvT, *RecvB;
-
-    // size of Plane for PressMess
-    unsigned int sizePlanePress, startP;
-    unsigned int sizePlanePressIN, startPIN;
-    unsigned int sizePlanePressOUT, startPOUT;
-    bool isSetPress;
-
-    // deltaPhi
-    real deltaPhi;
-
-    // print///////////////////
-    unsigned int startz, endz;
-    real Lx, Ly, Lz, dx;
-    real distX, distY, distZ;
 
     // testRoundoffError
     Distributions27 kDistTestRE;
@@ -584,12 +533,6 @@ public:
     void setIsBodyForce(bool isBodyForce);
     void setclockCycleForMeasurePoints(real clockCycleForMeasurePoints);
     void setDevices(std::vector<uint> devices);
-    void setGridX(std::vector<int> GridX);
-    void setGridY(std::vector<int> GridY);
-    void setGridZ(std::vector<int> GridZ);
-    void setDistX(std::vector<int> DistX);
-    void setDistY(std::vector<int> DistY);
-    void setDistZ(std::vector<int> DistZ);
     void setScaleLBMtoSI(std::vector<real> scaleLBMtoSI);
     void setTranslateLBMtoSI(std::vector<real> translateLBMtoSI);
     void setMinCoordX(std::vector<real> MinCoordX);
@@ -756,11 +699,6 @@ public:
     unsigned int getPressOutID();
     unsigned int getPressInZ();
     unsigned int getPressOutZ();
-//    unsigned int getMemSizereal(int level);    //DEPRECATED: related to full matrix
-//    unsigned int getMemSizeInt(int level);     //DEPRECATED: related to full matrix
-//    unsigned int getMemSizeBool(int level);    //DEPRECATED: related to full matrix
-//    unsigned int getMemSizerealYZ(int level);  //DEPRECATED: related to full matrix
-    unsigned int getSizeMat(int level);
     unsigned int getTimestepStart();
     unsigned int getTimestepInit();
     unsigned int getTimestepEnd();
@@ -809,12 +747,6 @@ public:
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices();
-    std::vector<int> getGridX();
-    std::vector<int> getGridY();
-    std::vector<int> getGridZ();
-    std::vector<int> getDistX();
-    std::vector<int> getDistY();
-    std::vector<int> getDistZ();
     std::vector<real> getScaleLBMtoSI();
     std::vector<real> getTranslateLBMtoSI();
     std::vector<real> getMinCoordX();
@@ -911,7 +843,6 @@ public:
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initGridPaths();
-    void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
 
     void setPathAndFilename(std::string fname);
@@ -990,7 +921,6 @@ private:
     uint timeStepForMeasurePoints{ 10 };
 
     std::vector<uint> devices{ 0, 1 }; // one device with ID = 0
-    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
     std::vector<real> scaleLBMtoSI, translateLBMtoSI;
     std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
 

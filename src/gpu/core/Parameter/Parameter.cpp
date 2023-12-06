@@ -72,7 +72,6 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
         readConfigData(**configData);
 
     initGridPaths();
-    initGridBasePoints();
     initDefaultLBMkernelAllLevels();
 
     this->cudaStreamManager = std::make_unique<CudaStreamManager>();
@@ -296,24 +295,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("NOGL"))
         setMaxLevel(configData.getValue<int>("NOGL"));
 
-    if (configData.contains("GridX"))
-        this->setGridX(configData.getVector<int>("GridX"));
-
-    if (configData.contains("GridY"))
-        this->setGridY(configData.getVector<int>("GridY"));
-
-    if (configData.contains("GridZ"))
-        this->setGridZ(configData.getVector<int>("GridZ"));
-
-    if (configData.contains("DistX"))
-        this->setDistX(configData.getVector<int>("DistX"));
-
-    if (configData.contains("DistY"))
-        this->setDistY(configData.getVector<int>("DistY"));
-
-    if (configData.contains("DistZ"))
-        this->setDistZ(configData.getVector<int>("DistZ"));
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Kernel
     if (configData.contains("MainKernelName"))
@@ -423,23 +404,6 @@ void Parameter::initGridPaths(){
     }
 }
 
-void Parameter::initGridBasePoints()
-{
-    if (this->getGridX().empty())
-        this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    if (this->getGridY().empty())
-        this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    if (this->getGridZ().empty())
-        this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
-
-    if (this->getDistX().empty())
-        this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
-    if (this->getDistY().empty())
-        this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
-    if (this->getDistZ().empty())
-        this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
-}
-
 void Parameter::initDefaultLBMkernelAllLevels(){
     if (this->getMultiKernelOn() && this->getMultiKernelLevel().empty()) {
         std::vector<int> tmp;
@@ -464,78 +428,20 @@ void Parameter::initLBMSimulationParameter()
     for (int i = coarse; i <= fine; i++) {
         parH[i]                   = std::make_shared<LBMSimulationParameter>();
         parH[i]->numberofthreads  = 64; // 128;
-        parH[i]->gridNX           = getGridX().at(i);
-        parH[i]->gridNY           = getGridY().at(i);
-        parH[i]->gridNZ           = getGridZ().at(i);
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
         parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
-        parH[i]->nx               = parH[i]->gridNX + 2 * STARTOFFX;
-        parH[i]->ny               = parH[i]->gridNY + 2 * STARTOFFY;
-        parH[i]->nz               = parH[i]->gridNZ + 2 * STARTOFFZ;
-        parH[i]->size_Mat         = parH[i]->nx * parH[i]->ny * parH[i]->nz;
-        parH[i]->sizePlaneXY      = parH[i]->nx * parH[i]->ny;
-        parH[i]->sizePlaneYZ      = parH[i]->ny * parH[i]->nz;
-        parH[i]->sizePlaneXZ      = parH[i]->nx * parH[i]->nz;
-//        parH[i]->mem_size_real    = sizeof(real) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
-//        parH[i]->mem_size_int     = sizeof(unsigned int) * parH[i]->size_Mat; //DEPRECATED: related to full matrix
-//        parH[i]->mem_size_bool    = sizeof(bool) * parH[i]->size_Mat;         //DEPRECATED: related to full matrix
-//        parH[i]->mem_size_real_yz = sizeof(real) * parH[i]->ny * parH[i]->nz; //DEPRECATED: related to full matrix
-        parH[i]->isEvenTimestep        = true;
-        parH[i]->startz           = parH[i]->gridNZ * this->myProcessId;
-        parH[i]->endz             = parH[i]->gridNZ * this->myProcessId + parH[i]->gridNZ;
-        parH[i]->Lx               = ((real)1.0 * parH[i]->gridNX - (real)1.0) / (pow((real)2.0, i));
-        parH[i]->Ly               = ((real)1.0 * parH[i]->gridNY - (real)1.0) / (pow((real)2.0, i));
-        parH[i]->Lz               = ((real)1.0 * parH[i]->gridNZ - (real)1.0) / (pow((real)2.0, i));
-        parH[i]->dx               = (real)1.0 / pow((real)2.0, i);
-        parH[i]->XdistKn          = getDistX().at(i);
-        parH[i]->YdistKn          = getDistY().at(i);
-        parH[i]->ZdistKn          = getDistZ().at(i);
-        if (i == coarse) {
-            parH[i]->distX  = (real)getDistX().at(i);
-            parH[i]->distY  = (real)getDistY().at(i);
-            parH[i]->distZ  = (real)getDistZ().at(i);
-        } else {
-            parH[i]->distX = ((real)getDistX().at(i) + (real)0.25) * parH[i - 1]->dx;
-            parH[i]->distY = ((real)getDistY().at(i) + (real)0.25) * parH[i - 1]->dx;
-            parH[i]->distZ = ((real)getDistZ().at(i) + (real)0.25) * parH[i - 1]->dx;
-        }
+        parH[i]->isEvenTimestep   = true;
     }
 
     // device
     for (int i = coarse; i <= fine; i++) {
         parD[i]                   = std::make_shared<LBMSimulationParameter>();
         parD[i]->numberofthreads  = parH[i]->numberofthreads;
-        parD[i]->gridNX           = parH[i]->gridNX;
-        parD[i]->gridNY           = parH[i]->gridNY;
-        parD[i]->gridNZ           = parH[i]->gridNZ;
         parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
-        parD[i]->nx               = parH[i]->nx;
-        parD[i]->ny               = parH[i]->ny;
-        parD[i]->nz               = parH[i]->nz;
-        parD[i]->size_Mat         = parH[i]->size_Mat;
-        parD[i]->sizePlaneXY      = parH[i]->sizePlaneXY;
-        parD[i]->sizePlaneYZ      = parH[i]->sizePlaneYZ;
-        parD[i]->sizePlaneXZ      = parH[i]->sizePlaneXZ;
-        //parD[i]->mem_size_real    = sizeof(real) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
-        //parD[i]->mem_size_int     = sizeof(unsigned int) * parD[i]->size_Mat;  //DEPRECATED: related to full matrix
-        //parD[i]->mem_size_bool    = sizeof(bool) * parD[i]->size_Mat;          //DEPRECATED: related to full matrix
-        //parD[i]->mem_size_real_yz = sizeof(real) * parD[i]->ny * parD[i]->nz;  //DEPRECATED: related to full matrix
-        parD[i]->isEvenTimestep        = parH[i]->isEvenTimestep;
-        parD[i]->startz           = parH[i]->startz;
-        parD[i]->endz             = parH[i]->endz;
-        parD[i]->Lx               = parH[i]->Lx;
-        parD[i]->Ly               = parH[i]->Ly;
-        parD[i]->Lz               = parH[i]->Lz;
-        parD[i]->dx               = parH[i]->dx;
-        parD[i]->XdistKn          = parH[i]->XdistKn;
-        parD[i]->YdistKn          = parH[i]->YdistKn;
-        parD[i]->ZdistKn          = parH[i]->ZdistKn;
-        parD[i]->distX            = parH[i]->distX;
-        parD[i]->distY            = parH[i]->distY;
-        parD[i]->distZ            = parH[i]->distZ;
+        parD[i]->isEvenTimestep   = parH[i]->isEvenTimestep;
     }
 
     checkParameterValidityCumulantK17();
@@ -924,30 +830,6 @@ void Parameter::setIsBodyForce(bool isBodyForce)
     this->isBodyForce = isBodyForce;
 }
 
-void Parameter::setGridX(std::vector<int> GridX)
-{
-    this->GridX = GridX;
-}
-void Parameter::setGridY(std::vector<int> GridY)
-{
-    this->GridY = GridY;
-}
-void Parameter::setGridZ(std::vector<int> GridZ)
-{
-    this->GridZ = GridZ;
-}
-void Parameter::setDistX(std::vector<int> DistX)
-{
-    this->DistX = DistX;
-}
-void Parameter::setDistY(std::vector<int> DistY)
-{
-    this->DistY = DistY;
-}
-void Parameter::setDistZ(std::vector<int> DistZ)
-{
-    this->DistZ = DistZ;
-}
 void Parameter::setScaleLBMtoSI(std::vector<real> scaleLBMtoSI)
 {
     this->scaleLBMtoSI = scaleLBMtoSI;
@@ -1593,26 +1475,6 @@ const std::vector<std::shared_ptr<LBMSimulationParameter>> &Parameter::getParDal
     return parD;
 }
 
-unsigned int Parameter::getSizeMat(int level)
-{
-    return parH[level]->size_Mat;
-}
-//unsigned int Parameter::getMemSizereal(int level)      //DEPRECATED: related to full matrix
-//{
-//    return parH[level]->mem_size_real;
-//}
-//unsigned int Parameter::getMemSizeInt(int level)     //DEPRECATED: related to full matrix
-//{
-//    return parH[level]->mem_size_int;
-//}
-//unsigned int Parameter::getMemSizeBool(int level)    //DEPRECATED: related to full matrix
-//{
-//    return parH[level]->mem_size_bool;
-//}
-//unsigned int Parameter::getMemSizerealYZ(int level)  //DEPRECATED: related to full matrix
-//{
-//    return parH[level]->mem_size_real_yz;
-//}
 int Parameter::getFine() const
 {
     return fine;
@@ -1812,30 +1674,6 @@ real Parameter::getRe()
 real Parameter::getFactorPressBC()
 {
     return this->factorPressBC;
-}
-std::vector<int> Parameter::getGridX()
-{
-    return this->GridX;
-}
-std::vector<int> Parameter::getGridY()
-{
-    return this->GridY;
-}
-std::vector<int> Parameter::getGridZ()
-{
-    return this->GridZ;
-}
-std::vector<int> Parameter::getDistX()
-{
-    return this->DistX;
-}
-std::vector<int> Parameter::getDistY()
-{
-    return this->DistY;
-}
-std::vector<int> Parameter::getDistZ()
-{
-    return this->DistZ;
 }
 std::vector<real> Parameter::getScaleLBMtoSI()
 {

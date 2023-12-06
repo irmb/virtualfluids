@@ -120,13 +120,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getDoRestart(), testing::Eq(true));
     EXPECT_THAT(para.getMaxLevel(), testing::Eq(1)); // NOGL - 1
 
-    EXPECT_THAT(para.getGridX(), testing::ElementsAreArray({ 100, 101 }));
-    EXPECT_THAT(para.getGridY(), testing::ElementsAreArray({ 200, 201 }));
-    EXPECT_THAT(para.getGridZ(), testing::ElementsAreArray({ 300, 301 }));
-    EXPECT_THAT(para.getDistX(), testing::ElementsAreArray({ 400, 401 }));
-    EXPECT_THAT(para.getDistY(), testing::ElementsAreArray({ 500, 501 }));
-    EXPECT_THAT(para.getDistZ(), testing::ElementsAreArray({ 600, 601 }));
-
     EXPECT_THAT(para.getMainKernel(), testing::Eq("KernelName"));
     EXPECT_THAT(para.getMultiKernelOn(), testing::Eq(true));
     EXPECT_THAT(para.getMultiKernelLevel(), testing::ElementsAreArray({ 3, 2, 1 }));
@@ -209,15 +202,6 @@ public:
     {
     }
 
-    void initalGridInformations() override
-    {
-        para->setGridX({ 2, 8 });
-        para->setGridY({ 2, 8 });
-        para->setGridZ({ 2, 8 });
-        para->setDistX({ 0, 0 });
-        para->setDistY({ 0, 0 });
-        para->setDistZ({ 0, 0 });
-    }
     void allocArrays_CoordNeighborGeo() override{};
     void setBoundingBox() override{};
     void allocArrays_OffsetScale() override{};
@@ -229,13 +213,6 @@ TEST(ParameterTest, whenCreatingParameterClassWithGridRefinement_afterCallingIni
 {
     auto para = std::make_shared<Parameter>();
     para->setMaxLevel(2);
-
-    para->setGridX({ 2, 8 });
-    para->setGridY({ 2, 8 });
-    para->setGridZ({ 2, 8 });
-    para->setDistX({ 0, 0 });
-    para->setDistY({ 0, 0 });
-    para->setDistZ({ 0, 0 });
 
     EXPECT_THAT(para->getParH(1), testing::Eq(nullptr)); // Parameter initialization incomplete
     para->initLBMSimulationParameter();
