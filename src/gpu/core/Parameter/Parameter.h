@@ -1065,11 +1065,7 @@ public:
     real TrafoZtoMGsWorld(int CoordZ, int level);
 
 private:
-    // Multi GPGPU///////////////
-    // 1D domain decomposition
-    std::vector<std::string> possNeighborFilesSend;
-    std::vector<std::string> possNeighborFilesRecv;
-    bool isNeigbor;
+    // Multi GPU
     // 3D domain decomposition
     std::vector<std::string> possNeighborFilesSendX, possNeighborFilesSendY, possNeighborFilesSendZ;
     std::vector<std::string> possNeighborFilesRecvX, possNeighborFilesRecvY, possNeighborFilesRecvZ;
