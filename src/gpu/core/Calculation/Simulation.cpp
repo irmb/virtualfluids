@@ -30,31 +30,39 @@
 //=======================================================================================
 #include "Simulation.h"
 
+#include <string>
 #include <vector>
 
 #include <helper_timer.h>
 
-#include "GridScaling/GridScalingFactory.h"
-#include "Calculation/Calculation.h"
-#include "Communication/ExchangeData27.h"
-#include "Parameter/Parameter.h"
-#include "Cuda/CudaStreamManager.h"
-#include "Parameter/EdgeNodeFinder.h"
+#include <cuda_helper/DeviceInfo.h>
 
-#include "basics/utilities/UbFileOutputASCII.h"
-//////////////////////////////////////////////////////////////////////////
-#include "Output/MeasurePointWriter.hpp"
+#include <basics/utilities/UbFileOutputASCII.h>
+
+#include <logger/Logger.h>
+
+#include <parallel/Communicator.h>
+
+#include "Calculation/Calculation.h"
+#include "Calculation/UpdateGrid27.h"
+#include "Communication/ExchangeData27.h"
+#include "Cuda/CudaStreamManager.h"
+#include "DataStructureInitializer/GridProvider.h"
+#include "GridScaling/GridScalingFactory.h"
+#include "Kernel/Kernel.h"
+#include "Kernel/KernelFactory/KernelFactory.h"
+#include "Kernel/KernelFactory/KernelFactoryImp.h"
 #include "Output/AnalysisData.hpp"
-#include "Output/InterfaceDebugWriter.hpp"
+#include "Output/DataWriter.h"
+#include "Output/DistributionDebugWriter.h"
 #include "Output/EdgeNodeDebugWriter.hpp"
+#include "Output/FileWriter.h"
+#include "Output/InterfaceDebugWriter.hpp"
+#include "Output/MeasurePointWriter.hpp"
 #include "Output/NeighborDebugWriter.hpp"
 #include "Output/VeloASCIIWriter.hpp"
-//////////////////////////////////////////////////////////////////////////
-#include "StringUtilities/StringUtil.h"
-//////////////////////////////////////////////////////////////////////////
-#include "PreProcessor/InitLattice.h"
-#include "PreProcessor/ReaderMeasurePoints.h"
-//////////////////////////////////////////////////////////////////////////
+#include "Parameter/EdgeNodeFinder.h"
+#include "Parameter/Parameter.h"
 #include "PostProcessor/Calc2ndMoments.h"
 #include "PostProcessor/CalcMean.h"
 #include "PostProcessor/CalcTurbulenceIntensity.h"
@@ -67,31 +75,16 @@
 #include "PostProcessor/MacroscopicQuantities.cuh"
 #include "PostProcessor/PlaneCalculations.h"
 #include "PostProcessor/TurbulenceIntensity.h"
-#include "UpdateGrid27.h"
-//////////////////////////////////////////////////////////////////////////
-#include "Output/FileWriter.h"
-#include "Output/DistributionDebugWriter.h"
-//////////////////////////////////////////////////////////////////////////
-#include "Restart/RestartObject.h"
-//////////////////////////////////////////////////////////////////////////
-#include "DataStructureInitializer/GridProvider.h"
-#include "Output/DataWriter.h"
-#include "Kernel/KernelFactory/KernelFactory.h"
+#include "PreProcessor/InitLattice.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
-#include "Kernel/KernelFactory/KernelFactoryImp.h"
-#include "Kernel/Kernel.h"
+#include "PreProcessor/ReaderMeasurePoints.h"
+#include "Restart/RestartObject.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
-
-#include <cuda_helper/DeviceInfo.h>
-
-#include <logger/Logger.h>
-
-#include <parallel/Communicator.h>
 
 std::string getFileName(const std::string& fname, int step, int myID)
 {
-    return std::string(fname + "_Restart_" + UbSystem::toString(myID) + "_" +  UbSystem::toString(step));
+    return std::string(fname + "_Restart_" + std::to_string(myID) + "_" + std::to_string(step));
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,
@@ -121,7 +114,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     gridProvider.allocAndCopyForcing();
     gridProvider.allocAndCopyQuadricLimiters();
-        
+
     gridProvider.setDimensions();
     gridProvider.setBoundingBox();
 
@@ -139,8 +132,7 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     VF_LOG_INFO("vis_ratio:       {}", para->getViscosityRatio());
     VF_LOG_INFO("u0_ratio:        {}", para->getVelocityRatio());
     VF_LOG_INFO("delta_rho:       {}", para->getDensityRatio());
-    VF_LOG_INFO("QuadricLimiters: {}, \t{}, \t{}", para->getQuadricLimitersHost()[0],
-                para->getQuadricLimitersHost()[1], para->getQuadricLimitersHost()[2]);
+    VF_LOG_INFO("QuadricLimiters: {}, \t{}, \t{}", para->getQuadricLimitersHost()[0], para->getQuadricLimitersHost()[1], para->getQuadricLimitersHost()[2]);
     //////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////
@@ -149,14 +141,14 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
 
     //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
-    for (SPtr<PreCollisionInteractor> actuator : para->getActuators()) {
+    for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
         actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
-        actuator->getTaggedFluidNodes( para.get(), &gridProvider );
+        actuator->getTaggedFluidNodes(para.get(), &gridProvider);
     }
 
-    for (SPtr<PreCollisionInteractor> probe : para->getProbes()) {
+    for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
         probe->init(para.get(), &gridProvider, cudaMemoryManager.get());
-        probe->getTaggedFluidNodes( para.get(), &gridProvider );
+        probe->getTaggedFluidNodes(para.get(), &gridProvider);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -167,9 +159,8 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         para->getStreamManager()->createCudaEvents();
     }
     //////////////////////////////////////////////////////////////////////////
-    
-    if (para->getKernelNeedsFluidNodeIndicesToRun())
-    {
+
+    if (para->getKernelNeedsFluidNodeIndicesToRun()) {
         gridProvider.sortFluidNodeTags();
         gridProvider.allocArrays_taggedFluidNodes();
     }
@@ -264,45 +255,9 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     // VF_LOG_INFO("new object forceCalulator");
     // forceCalculator = std::make_shared<ForceCalculations>(para.get());
 
-    //////////////////////////////////////////////////////////////////////////
-    // VF_LOG_INFO("define the Grid...");
-    // defineGrid(para, communicator);
-    ////allocateMemory();
-    // VF_LOG_INFO("done.");
-
     VF_LOG_INFO("init lattice...");
     initLattice(para, preProcessor, preProcessorAD, cudaMemoryManager);
     VF_LOG_INFO("done");
-
-    // VF_LOG_INFO("set geo for Q...\n");
-    // setGeoForQ();
-
-    // if (maxlevel>1)
-    //{
-    // VF_LOG_INFO("find Qs...");
-    // findQ27(para);
-    // VF_LOG_INFO("done.");
-    //}
-
-    // if (para->getDiffOn()==true)
-    //{
-    //   VF_LOG_INFO("define TempBC...");
-    //   findTempSim(para);
-
-    //   VF_LOG_INFO("define TempVelBC...");
-    //   findTempVelSim(para);
-
-    //   VF_LOG_INFO("define TempPressBC...");
-    //   findTempPressSim(para);
-    //   VF_LOG_INFO("done.");
-    //}
-
-    // VF_LOG_INFO("find Qs-BC...");
-    // findBC27(para);
-
-    // VF_LOG_INFO("find Press-BC...");
-    // findPressQShip(para);
-    // VF_LOG_INFO("done.");
 
     //////////////////////////////////////////////////////////////////////////
     // find indices of corner nodes for multiGPU communication
@@ -343,9 +298,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
                         para->getParD(lev)->numberofthreads, para->getParD(lev)->distributions.f[0],
                         para->getParD(lev)->isEvenTimestep);
             getLastCudaError("Kernel calculateMacroscopicQuantities execution failed");
-            //////////////////////////////////////////////////////////////////////////
-            // test...should not work...and does not
-            // para->getEvenOrOdd(lev)==false;
         }
         VF_LOG_INFO("done.");
     }
@@ -362,34 +314,12 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     dataWriter->writeInit(para, cudaMemoryManager);
     VF_LOG_INFO("... done.");
 
-    // VF_LOG_INFO("Write vtk files for debugging...");
-    // NeighborDebugWriter::writeNeighborLinkLinesDebug(para.get());
-
-    // InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-    // InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
-
-    // writers for version with communication hiding
-    //    if(para->getNumprocs() > 1 && para->getUseStreams()){
-    //        InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
-    //        InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
-    //        InterfaceDebugWriter::writeSendNodesStream(para.get());
-    //        InterfaceDebugWriter::writeRecvNodesStream(para.get());
-    //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
-    //        EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
-    //    }
-
 #if DEBUG_FS
     VF_LOG_INFO("Allocating host memory for DistributionWriter.");
     DistributionDebugWriter::allocateDistributionsOnHost(*cudaMemoryManager);
 #endif
 
-    // VF_LOG_INFO("...done");
-
-    //////////////////////////////////////////////////////////////////////////
     VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
-    // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaMemoryManager->getMemsizeGPU() /
-    // 1000000.0 << " MB\n" << std::endl;
-    //////////////////////////////////////////////////////////////////////////
 }
 
 void Simulation::addKineticEnergyAnalyzer(uint tAnalyse)
@@ -419,7 +349,7 @@ void Simulation::initTimers()
     previousTimestepForAveraging = para->getTimeCalcMedStart();
     previousTimestepForTurbulenceIntensityCalculation = 0;
     timestepForMeasuringPoints = 0;
-    
+
     para->setStepEnsight(0);
 
     averageTimer.start();
@@ -438,24 +368,10 @@ void Simulation::run()
 {
     this->initTimers();
 
-    //////////////////////////////////////////////////////////////////////////
-    // turning Ship
-    real Pi = (real)3.14159265358979323846;
-    real delta_x_F = (real)0.1;
-    real delta_t_F = (real)((double)para->getVelocity() * (double)delta_x_F / (double)3.75);
-    real delta_t_C = (real)(delta_t_F * pow(2., para->getMaxLevel()));
-    real timesteps_C = (real)(12.5 / delta_t_C);
-    real AngularVelocity = (real)(12.5 / timesteps_C * Pi / 180.);
-    para->setAngularVelocity(AngularVelocity);
-    for (int i = 0; i <= para->getMaxLevel(); i++) {
-        para->getParD(i)->deltaPhi = (real)(para->getAngularVelocity() / (pow(2., i)));
-    }
-
     ////////////////////////////////////////////////////////////////////////////////
     // Time loop
     ////////////////////////////////////////////////////////////////////////////////
-    for(uint timestep=para->getTimestepStart();timestep<=para->getTimestepEnd();timestep++)
-    {
+    for(uint timestep = para->getTimestepStart(); timestep <= para->getTimestepEnd(); timestep++) {
         this->calculateTimestep(timestep);
     }
 
@@ -464,7 +380,8 @@ void Simulation::run()
     ////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////
-    if (para->getDiffOn() == true) printPlaneConc(para.get(), cudaMemoryManager.get());
+    if (para->getDiffOn())
+        printPlaneConc(para.get(), cudaMemoryManager.get());
     ////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -510,8 +427,10 @@ void Simulation::calculateTimestep(uint timestep)
     if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
         updateGrid27->exchangeData(0);
     }
-    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(timestep);
-    if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(timestep);
+    if (this->kineticEnergyAnalyzer)
+        this->kineticEnergyAnalyzer->run(timestep);
+    if (this->enstrophyAnalyzer)
+        this->enstrophyAnalyzer->run(timestep);
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
     //Calc Mean
@@ -573,42 +492,32 @@ void Simulation::calculateTimestep(uint timestep)
             );
         }
     }
-    ////////////////////////////////////////////////////////////////////////////////
+
     ////////////////////////////////////////////////////////////////////////////////
     // CheckPoint
     ////////////////////////////////////////////////////////////////////////////////
-    if(para->getDoCheckPoint() && para->getTimeDoCheckPoint()>0 && timestep%para->getTimeDoCheckPoint()==0 && timestep>0 && !para->overWritingRestart(timestep))
-    {
+    if (para->getDoCheckPoint() && para->getTimeDoCheckPoint() > 0 && timestep % para->getTimeDoCheckPoint() == 0 &&
+        timestep > 0 && !para->overWritingRestart(timestep)) {
         averageTimer.end();
-        //////////////////////////////////////////////////////////////////////////
-        if( para->getDoCheckPoint() )
-        {
-            VF_LOG_INFO("Copy data for CheckPoint t = {}....", timestep);
-            for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-            {
-                cudaMemoryManager->cudaCopyFsForCheckPoint(lev);
-            }
-            VF_LOG_INFO("Write data for CheckPoint t = {}...", timestep);
-            const auto name = getFileName(para->getFName(), timestep, para->getMyProcessID());
-            restart_object->serialize(name, para);
-            VF_LOG_INFO("done");
+        VF_LOG_INFO("Copy data for CheckPoint t = {}....", timestep);
+        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+            cudaMemoryManager->cudaCopyFsForCheckPoint(lev);
         }
-        //////////////////////////////////////////////////////////////////////////
+        VF_LOG_INFO("Write data for CheckPoint t = {}...", timestep);
+        const auto name = getFileName(para->getFName(), timestep, para->getMyProcessID());
+        restart_object->serialize(name, para);
+        VF_LOG_INFO("done");
         averageTimer.start();
     }
-    //////////////////////////////////////////////////////////////////////////////
+
     ////////////////////////////////////////////////////////////////////////////////
-    //Measure Points
+    // Measure Points
     ////////////////////////////////////////////////////////////////////////////////
-    //set MP-Time
-    if (para->getUseMeasurePoints())
-    {
-        if ((timestep%para->getTimestepForMP()) == 0)
-        {
+    // set MP-Time
+    if (para->getUseMeasurePoints()) {
+        if ((timestep % para->getTimestepForMP()) == 0) {
             unsigned int valuesPerClockCycle = (unsigned int)(para->getclockCycleForMP() / para->getTimestepForMP());
-            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
-            {
-                // VF_LOG_INFO("start level = {}", lev);
+            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
                 calculateMeasurePoints(  para->getParD(lev)->VxMP,            para->getParD(lev)->VyMP,                 para->getParD(lev)->VzMP,
                                         para->getParD(lev)->RhoMP,           para->getParD(lev)->kMP,                  para->getParD(lev)->numberOfPointskMP,
                                         valuesPerClockCycle,                 timestepForMeasuringPoints,                                     para->getParD(lev)->typeOfGridNode,
@@ -618,11 +527,9 @@ void Simulation::calculateTimestep(uint timestep)
             }
             timestepForMeasuringPoints++;
         }
-        //Copy Measure Values
-        if ((timestep % (unsigned int)para->getclockCycleForMP()) == 0)
-        {
-            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
-            {
+        // Copy Measure Values
+        if ((timestep % (unsigned int)para->getclockCycleForMP()) == 0) {
+            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
                 cudaMemoryManager->cudaCopyMeasurePointsToHost(lev);
                 para->copyMeasurePointsArrayToVector(lev);
                 VF_LOG_INFO("Write MeasurePoints at level = {} and timestep = {}", lev, timestep);
@@ -630,17 +537,16 @@ void Simulation::calculateTimestep(uint timestep)
                 {
                     MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, timestep);
                 }
-                //MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
+                // MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
             }
             timestepForMeasuringPoints = 0;
         }
     }
+
     //////////////////////////////////////////////////////////////////////////////////
+    // get concentration at the plane
     //////////////////////////////////////////////////////////////////////////////////
-    ////get concentration at the plane
-    //////////////////////////////////////////////////////////////////////////////////
-    if (para->getDiffOn() && para->getCalcPlaneConc())
-    {
+    if (para->getDiffOn() && para->getCalcPlaneConc()) {
         PlaneConcThS27( para->getParD(0)->ConcPlaneIn,
                        para->getParD(0)->cpTopIndex,
                        para->getParD(0)->numberOfPointsCpTop,
@@ -682,7 +588,7 @@ void Simulation::calculateTimestep(uint timestep)
         //////////////////////////////////////////////////////////////////////////////////
         calcPlaneConc(para.get(), cudaMemoryManager.get(), 0);
     }
-    //////////////////////////////////////////////////////////////////////////////////
+
     ////////////////////////////////////////////////////////////////////////////////
     // File IO
     ////////////////////////////////////////////////////////////////////////////////
@@ -701,21 +607,10 @@ void Simulation::readAndWriteFiles(uint timestep)
 {
     VF_LOG_INFO("Write files t = {} ...", timestep);
 
-    for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-    {
-        //////////////////////////////////////////////////////////////////////////
-        //exchange data for valid post process
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+
         updateGrid27->exchangeData(lev);
 
-        // ////////////////////////////////////////////////////////////////////////
-        // if (para->getD3Qxx()==19)
-        // {
-        //     CalcMac(para->getParD(lev)->vx,     para->getParD(lev)->vy,       para->getParD(lev)->vz,      para->getParD(lev)->rho,
-        //             para->getParD(lev)->geo,    para->getParD(lev)->size_Mat, para->getParD(lev)->gridNX,  para->getParD(lev)->gridNY,
-        //             para->getParD(lev)->gridNZ, para->getParD(lev)->d0.f[0],  para->getParD(lev)->evenOrOdd);
-        // }
-        // else if (para->getD3Qxx()==27)
-        // {
         //    if (para->getCalcMean() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
         //    {
         //         unsigned int tdiff = t - t_prev;
@@ -764,24 +659,20 @@ void Simulation::readAndWriteFiles(uint timestep)
             getLastCudaError("calculateMacroscopicQuantities execution failed");
 
         cudaMemoryManager->cudaCopyPrint(lev);
-        if (para->getCalcMean())
-        {
+        if (para->getCalcMean()) {
             cudaMemoryManager->cudaCopyMeanPrint(lev);
         }
-        //////////////////////////////////////////////////////////////////////////
-        //TODO: implement flag to write ASCII data
+
         if (para->getWriteVeloASCIIfiles())
             VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, timestep);
         //////////////////////////////////////////////////////////////////////////
-        if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
-        {
-            std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
-            if (this->kineticEnergyAnalyzer) this->kineticEnergyAnalyzer->writeToFile(fname);
-            if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
-        }
+        std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
+        if (this->kineticEnergyAnalyzer)
+            this->kineticEnergyAnalyzer->writeToFile(fname);
+        if (this->enstrophyAnalyzer)
+            this->enstrophyAnalyzer->writeToFile(fname);
         //////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn())
-        {
+        if (para->getDiffOn()) {
                CalcConcentration27(
                               para->getParD(lev)->numberofthreads,
                               para->getParD(lev)->concentration,
@@ -874,8 +765,7 @@ void Simulation::readAndWriteFiles(uint timestep)
     ////////////////////////////////////////////////////////////////////////
     //calculate mean on host
     ////////////////////////////////////////////////////////////////////////
-    if (para->getCalcMean() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0))
-    {
+    if (para->getCalcMean() && ((int)timestep > para->getTimeCalcMedStart()) && ((int)timestep <= para->getTimeCalcMedEnd()) && ((timestep%(unsigned int)para->getclockCycleForMP())==0)) {
         unsigned int tdiff = timestep - previousTimestepForAveraging;
         calcMean(para.get(), tdiff);
         /////////////////////////////////
@@ -884,8 +774,7 @@ void Simulation::readAndWriteFiles(uint timestep)
         resetMean(para.get());
         /////////////////////////////////
     }
-    if (para->getCalcTurbulenceIntensity())
-    {
+    if (para->getCalcTurbulenceIntensity()) {
         uint t_diff = timestep - previousTimestepForTurbulenceIntensityCalculation;
         calcTurbulenceIntensity(para.get(), cudaMemoryManager.get(), t_diff);
         //writeAllTiDatafToFile(para.get(), t);
@@ -923,46 +812,27 @@ Simulation::~Simulation()
         para->getStreamManager()->terminateStreams();
     }
 
-    //CudaFreeHostMemory
-    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
-    {
-        //para->cudaFreeFull(lev);
+    // CudaFreeHostMemory
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
         cudaMemoryManager->cudaFreeCoord(lev);
         cudaMemoryManager->cudaFreeSP(lev);
-        if (para->getCalcMean())
-        {
+        if (para->getCalcMean()) {
             cudaMemoryManager->cudaFreeMeanSP(lev);
         }
-        //para->cudaFreeVeloBC(lev);
-        //para->cudaFreeWallBC(lev);
-        //para->cudaFreeVeloBC(lev);
-        //para->cudaFreeInlet(lev);
-        //para->cudaFreeOutlet(lev);
-        //para->cudaFreeGeomBC(lev);
-        //para->cudaFreePress(lev);
     }
-    if (para->getMaxLevel()>1)
-    {
-        for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
-        {
+    if (para->getMaxLevel() > 1) {
+        for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
             cudaMemoryManager->cudaFreeInterfaceCF(lev);
             cudaMemoryManager->cudaFreeInterfaceFC(lev);
             cudaMemoryManager->cudaFreeInterfaceOffCF(lev);
             cudaMemoryManager->cudaFreeInterfaceOffFC(lev);
-            //para->cudaFreePressX1(lev);
         }
     }
-    //para->cudaFreeVeloBC(0); //level = 0
-    //para->cudaFreePressBC();
-    //para->cudaFreeVeloPropeller(para->getFine());
-    //para->cudaFreePressX0(para->getCoarse());
 
     //////////////////////////////////////////////////////////////////////////
-    //Temp
-    if (para->getDiffOn() == true)
-    {
-        for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
-        {
+    // Temp
+    if (para->getDiffOn()) {
+        for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc_Full));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.temp));
@@ -975,38 +845,28 @@ Simulation::~Simulation()
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.k));
         }
     }
-    //////////////////////////////////////////////////////////////////////////
-
 
     //////////////////////////////////////////////////////////////////////////
-    //free second order moments
-    if (para->getCalc2ndOrderMoments())
-    {
-        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
-        {
+    // free second order moments
+    if (para->getCalc2ndOrderMoments()) {
+        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
             cudaMemoryManager->cudaFree2ndMoments(lev);
         }
     }
     //////////////////////////////////////////////////////////////////////////
-    //free third order moments
-    if (para->getCalc3rdOrderMoments())
-    {
-        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
-        {
+    // free third order moments
+    if (para->getCalc3rdOrderMoments()) {
+        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
             cudaMemoryManager->cudaFree3rdMoments(lev);
         }
     }
     //////////////////////////////////////////////////////////////////////////
-    //free higher order moments
-    if (para->getCalcHighOrderMoments())
-    {
-        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
-        {
+    // free higher order moments
+    if (para->getCalcHighOrderMoments()) {
+        for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
             cudaMemoryManager->cudaFreeHigherMoments(lev);
         }
     }
-    //////////////////////////////////////////////////////////////////////////
-
 
     //////////////////////////////////////////////////////////////////////////
     //Multi GPU
@@ -1024,32 +884,26 @@ Simulation::~Simulation()
     //}
     //////////////////////////////////////////////////////////////////////////
     //3D domain decomposition
-    if (para->getNumprocs() > 1)
-    {
-        for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
-        {
+    if (para->getNumprocs() > 1) {
+        for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++)
-            {
+            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighborX(lev, i);
             }
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++)
-            {
+            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighborY(lev, i);
             }
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++)
-            {
+            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighborZ(lev, i);
             }
         }
     }
     //////////////////////////////////////////////////////////////////////////
-    //Normals
+    // Normals
     if (para->getIsGeoNormal()) {
-        for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
-        {
+        for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
             cudaMemoryManager->cudaFreeGeomNormals(lev);
         }
     }
@@ -1057,14 +911,13 @@ Simulation::~Simulation()
     // Turbulence Intensity
     if (para->getCalcTurbulenceIntensity()) {
         cudaFreeTurbulenceIntensityArrays(para.get(), cudaMemoryManager.get());
-    //PreCollisionInteractors
-    for( SPtr<PreCollisionInteractor> actuator: para->getActuators()){
-        actuator->free(para.get(), cudaMemoryManager.get());
-    }
 
-    for( SPtr<PreCollisionInteractor> probe: para->getProbes()){
-        probe->free(para.get(), cudaMemoryManager.get());
-    }
-    //////////////////////////////////////////////////////////////////////////
+        for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
+            actuator->free(para.get(), cudaMemoryManager.get());
+        }
+
+        for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
+            probe->free(para.get(), cudaMemoryManager.get());
+        }
     }
 }

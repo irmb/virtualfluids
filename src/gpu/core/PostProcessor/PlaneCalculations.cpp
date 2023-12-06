@@ -9,6 +9,9 @@
 
 #include <basics/StringUtilities/StringUtil.h>
 
+#include "Cuda/CudaMemoryManager.h"
+#include "Parameter/Parameter.h"
+
 void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
 {
    para->getParH(lev)->sizePlanePress  = 0;
@@ -265,7 +268,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     int lev = para->getCoarse();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //set filename
-    std::string ffnameIn = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "In" + "_PlaneConc.txt";
+    std::string ffnameIn = para->getFName() + std::to_string(para->getMyProcessID()) + "_" + "In" + "_PlaneConc.txt";
     const char* fnameIn = ffnameIn.c_str();
     //////////////////////////////////////////////////////////////////////////
     //set ofstream
@@ -285,7 +288,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //set filename
-    std::string ffnameOut1 = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "Out1" + "_PlaneConc.txt";
+    std::string ffnameOut1 = para->getFName() + std::to_string(para->getMyProcessID()) + "_" + "Out1" + "_PlaneConc.txt";
     const char* fnameOut1 = ffnameOut1.c_str();
     //////////////////////////////////////////////////////////////////////////
     //set ofstream
@@ -305,7 +308,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //set filename
-    std::string ffnameOut2 = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "Out2" + "_PlaneConc.txt";
+    std::string ffnameOut2 = para->getFName() + std::to_string(para->getMyProcessID()) + "_" + "Out2" + "_PlaneConc.txt";
     const char* fnameOut2 = ffnameOut2.c_str();
     //////////////////////////////////////////////////////////////////////////
     //set ofstream
