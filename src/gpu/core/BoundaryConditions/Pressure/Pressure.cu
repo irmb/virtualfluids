@@ -53,7 +53,8 @@ void PressureNonEquilibriumIncompressible(LBMSimulationParameter* parameterDevic
         parameterDevice->neighborY,
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep);
+        parameterDevice->isEvenTimestep,
+        vf::lbm::dir::dP00); // #TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/176
     getLastCudaError("PressureNonEquilibriumIncompressible_Device execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
@@ -73,6 +74,7 @@ void PressureNonEquilibriumCompressible(LBMSimulationParameter* parameterDevice,
         parameterDevice->neighborY,
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
-        parameterDevice->isEvenTimestep);
+        parameterDevice->isEvenTimestep,
+        vf::lbm::dir::dP00);  // #TODO: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/176
     getLastCudaError("PressureNonEquilibriumCompressible_Device execution failed");
 }
