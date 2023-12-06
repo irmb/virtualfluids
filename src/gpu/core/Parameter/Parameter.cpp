@@ -117,12 +117,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("calcDrafLift"))
         this->calcDragLift = configData.getValue<bool>("calcDrafLift");
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("writeVeloASCIIfiles"))
-        this->writeVeloASCII = configData.getValue<bool>("writeVeloASCIIfiles");
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("UseConcFile"))
-        this->setConcFile(configData.getValue<bool>("UseConcFile"));
-    //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseMeasurePoints"))
         this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
     //////////////////////////////////////////////////////////////////////////
@@ -146,18 +140,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("TimeEndCalcMean"))
         this->setTimeCalcMedEnd(configData.getValue<int>("TimeEndCalcMean"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("PressInID"))
-        this->setPressInID(configData.getValue<int>("PressInID"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("PressOutID"))
-        this->setPressOutID(configData.getValue<int>("PressOutID"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("PressInZ"))
-        this->setPressInZ(configData.getValue<int>("PressInZ"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("PressOutZ"))
-        this->setPressOutZ(configData.getValue<int>("PressOutZ"));
 
     //////////////////////////////////////////////////////////////////////////
     // second component
@@ -220,21 +202,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     // read Geometry (STL)
     if (configData.contains("ReadGeometry"))
         this->setReadGeo(configData.getValue<bool>("ReadGeometry"));
-
-    if (configData.contains("GeometryC"))
-        this->setGeometryFileC(configData.getValue<std::string>("GeometryC"));
-    else if (this->getReadGeo())
-        throw std::runtime_error("readGeo is true, GeometryC has to be set as well!");
-
-    if (configData.contains("GeometryM"))
-        this->setGeometryFileM(configData.getValue<std::string>("GeometryM"));
-    else if (this->getReadGeo())
-        throw std::runtime_error("readGeo is true, GeometryM has to be set as well!");
-
-    if (configData.contains("GeometryF"))
-        this->setGeometryFileF(configData.getValue<std::string>("GeometryF"));
-    else if (this->getReadGeo())
-        throw std::runtime_error("readGeo is true, GeometryF has to be set as well!");
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("measureClockCycle"))
@@ -361,21 +328,6 @@ void Parameter::initGridPaths(){
     this->setConcentration(gridPath + "conc.dat");
 
     //////////////////////////////////////////////////////////////////////////
-    // Normals - Geometry
-    this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
-    this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
-    this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
-    // Normals - Inlet
-    this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
-    this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
-    this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
-    // Normals - Outlet
-    this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
-    this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
-    this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
     // for Multi GPU
     if (this->getNumprocs() > 1) {
 
@@ -495,33 +447,13 @@ void Parameter::setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, r
     this->hostQuadricLimiters[1] = quadricLimiterM;
     this->hostQuadricLimiters[2] = quadricLimiterD;
 }
-void Parameter::setPhi(real inPhi)
-{
-    Phi = inPhi;
-}
-void Parameter::setAngularVelocity(real inAngVel)
-{
-    angularVelocity = inAngVel;
-}
 void Parameter::setStepEnsight(unsigned int step)
 {
     this->stepEnsight = step;
 }
-void Parameter::setOutputCount(unsigned int outputCount)
-{
-    this->outputCount = outputCount;
-}
-void Parameter::setStartTurn(unsigned int inStartTurn)
-{
-    startTurn = inStartTurn;
-}
 void Parameter::setDiffOn(bool isDiff)
 {
     diffOn = isDiff;
-}
-void Parameter::setCompOn(bool isComp)
-{
-    compOn = isComp;
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
@@ -565,10 +497,6 @@ void Parameter::setCalcDragLift(bool calcDragLift)
 void Parameter::setCalcCp(bool calcCp)
 {
     this->calcCp = calcCp;
-}
-void Parameter::setWriteVeloASCIIfiles(bool writeVeloASCII)
-{
-    this->writeVeloASCII = writeVeloASCII;
 }
 void Parameter::setTimeCalcMedStart(int CalcMedStart)
 {
@@ -713,22 +641,6 @@ void Parameter::setRealY(real RealY)
 {
     this->RealY = RealY;
 }
-void Parameter::setPressInID(unsigned int PressInID)
-{
-    this->PressInID = PressInID;
-}
-void Parameter::setPressOutID(unsigned int PressOutID)
-{
-    this->PressOutID = PressOutID;
-}
-void Parameter::setPressInZ(unsigned int PressInZ)
-{
-    this->PressInZ = PressInZ;
-}
-void Parameter::setPressOutZ(unsigned int PressOutZ)
-{
-    this->PressOutZ = PressOutZ;
-}
 void Parameter::setOutflowPressureCorrectionFactor(real pressBCrhoCorrectionFactor)
 {
     this->outflowPressureCorrectionFactor = pressBCrhoCorrectionFactor;
@@ -749,18 +661,6 @@ void Parameter::setDevices(std::vector<uint> devices)
 {
     this->devices = devices;
 }
-void Parameter::setGeometryFileC(std::string GeometryFileC)
-{
-    this->geometryFileC = GeometryFileC;
-}
-void Parameter::setGeometryFileM(std::string GeometryFileM)
-{
-    this->geometryFileM = GeometryFileM;
-}
-void Parameter::setGeometryFileF(std::string GeometryFileF)
-{
-    this->geometryFileF = GeometryFileF;
-}
 void Parameter::setRe(real Re)
 {
     this->Re = Re;
@@ -776,10 +676,6 @@ void Parameter::setIsGeo(bool isGeo)
 void Parameter::setIsCp(bool isCp)
 {
     this->isCp = isCp;
-}
-void Parameter::setConcFile(bool concFile)
-{
-    this->isConc = concFile;
 }
 void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 {
@@ -858,30 +754,6 @@ void Parameter::setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBound
 void Parameter::setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice)
 {
     this->concentrationDirichletBCDevice = concentrationDirichletBCDevice;
-}
-// void Parameter::setQinflowH(QforBoundaryConditions* QinflowH)
-//{
-//   this->QinflowH = QinflowH;
-//}
-// void Parameter::setQinflowD(QforBoundaryConditions* QinflowD)
-//{
-//   this->QinflowD = QinflowD;
-//}
-// void Parameter::setQoutflowH(QforBoundaryConditions* QoutflowH)
-//{
-//   this->QoutflowH = QoutflowH;
-//}
-// void Parameter::setQoutflowD(QforBoundaryConditions* QoutflowD)
-//{
-//   this->QoutflowD = QoutflowD;
-//}
-void Parameter::setkFull(std::string kFull)
-{
-    this->kFull = kFull;
-}
-void Parameter::setgeoFull(std::string geoFull)
-{
-    this->geoFull = geoFull;
 }
 void Parameter::setgeoVec(std::string geoVec)
 {
@@ -1304,42 +1176,6 @@ void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, 
     this->getParH(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     this->getParD(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
 }
-void Parameter::setgeomBoundaryNormalX(std::string geomNormalX)
-{
-    this->geomNormalX = geomNormalX;
-}
-void Parameter::setgeomBoundaryNormalY(std::string geomNormalY)
-{
-    this->geomNormalY = geomNormalY;
-}
-void Parameter::setgeomBoundaryNormalZ(std::string geomNormalZ)
-{
-    this->geomNormalZ = geomNormalZ;
-}
-void Parameter::setInflowBoundaryNormalX(std::string inflowNormalX)
-{
-    this->inflowNormalX = inflowNormalX;
-}
-void Parameter::setInflowBoundaryNormalY(std::string inflowNormalY)
-{
-    this->inflowNormalY = inflowNormalY;
-}
-void Parameter::setInflowBoundaryNormalZ(std::string inflowNormalZ)
-{
-    this->inflowNormalZ = inflowNormalZ;
-}
-void Parameter::setOutflowBoundaryNormalX(std::string outflowNormalX)
-{
-    this->outflowNormalX = outflowNormalX;
-}
-void Parameter::setOutflowBoundaryNormalY(std::string outflowNormalY)
-{
-    this->outflowNormalY = outflowNormalY;
-}
-void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
-{
-    this->outflowNormalZ = outflowNormalZ;
-}
 void Parameter::configureMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
@@ -1402,25 +1238,9 @@ real *Parameter::getQuadricLimitersDev()
 {
     return this->quadricLimitersD;
 }
-real Parameter::getPhi()
-{
-    return Phi;
-}
-real Parameter::getAngularVelocity()
-{
-    return angularVelocity;
-}
 unsigned int Parameter::getStepEnsight()
 {
     return this->stepEnsight;
-}
-unsigned int Parameter::getOutputCount()
-{
-    return this->outputCount;
-}
-unsigned int Parameter::getStartTurn()
-{
-    return startTurn;
 }
 std::shared_ptr<LBMSimulationParameter> Parameter::getParD(int level)
 {
@@ -1465,10 +1285,6 @@ bool Parameter::getEvenOrOdd(int level)
 bool Parameter::getDiffOn()
 {
     return diffOn;
-}
-bool Parameter::getCompOn()
-{
-    return compOn;
 }
 int Parameter::getFactorNZ()
 {
@@ -1521,10 +1337,6 @@ bool Parameter::getCalcDragLift()
 bool Parameter::getCalcCp()
 {
     return this->calcCp;
-}
-bool Parameter::getWriteVeloASCIIfiles()
-{
-    return this->writeVeloASCII;
 }
 int Parameter::getTimeCalcMedStart()
 {
@@ -1590,22 +1402,6 @@ real Parameter::getRealY()
 {
     return this->RealY;
 }
-unsigned int Parameter::getPressInID()
-{
-    return this->PressInID;
-}
-unsigned int Parameter::getPressOutID()
-{
-    return this->PressOutID;
-}
-unsigned int Parameter::getPressInZ()
-{
-    return this->PressInZ;
-}
-unsigned int Parameter::getPressOutZ()
-{
-    return this->PressOutZ;
-}
 real Parameter::getOutflowPressureCorrectionFactor()
 {
     return this->outflowPressureCorrectionFactor;
@@ -1625,18 +1421,6 @@ int Parameter::getNumprocs() const
 std::vector<uint> Parameter::getDevices()
 {
     return this->devices;
-}
-std::string Parameter::getGeometryFileC()
-{
-    return this->geometryFileC;
-}
-std::string Parameter::getGeometryFileM()
-{
-    return this->geometryFileM;
-}
-std::string Parameter::getGeometryFileF()
-{
-    return this->geometryFileF;
 }
 real Parameter::getRe()
 {
@@ -1693,30 +1477,6 @@ AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirich
 AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
 {
     return this->concentrationDirichletBCDevice;
-}
-// QforBoundaryConditions* Parameter::getQinflowH()
-//{
-//   return this->QinflowH;
-//}
-// QforBoundaryConditions* Parameter::getQinflowD()
-//{
-//   return this->QinflowD;
-//}
-// QforBoundaryConditions* Parameter::getQoutflowH()
-//{
-//   return this->QoutflowH;
-//}
-// QforBoundaryConditions* Parameter::getQoutflowD()
-//{
-//   return this->QoutflowD;
-//}
-std::string Parameter::getkFull()
-{
-    return this->kFull;
-}
-std::string Parameter::getgeoFull()
-{
-    return this->geoFull;
 }
 std::string Parameter::getgeoVec()
 {
@@ -1974,10 +1734,6 @@ bool Parameter::getIsCp()
 {
     return this->isCp;
 }
-bool Parameter::getConcFile()
-{
-    return this->isConc;
-}
 bool Parameter::getUseMeasurePoints()
 {
     return this->isMeasurePoints;
@@ -2115,42 +1871,6 @@ bool Parameter::getIsNeighborY()
 bool Parameter::getIsNeighborZ()
 {
     return this->isNeigborZ;
-}
-std::string Parameter::getgeomBoundaryNormalX()
-{
-    return this->geomNormalX;
-}
-std::string Parameter::getgeomBoundaryNormalY()
-{
-    return this->geomNormalY;
-}
-std::string Parameter::getgeomBoundaryNormalZ()
-{
-    return this->geomNormalZ;
-}
-std::string Parameter::getInflowBoundaryNormalX()
-{
-    return this->inflowNormalX;
-}
-std::string Parameter::getInflowBoundaryNormalY()
-{
-    return this->inflowNormalY;
-}
-std::string Parameter::getInflowBoundaryNormalZ()
-{
-    return this->inflowNormalZ;
-}
-std::string Parameter::getOutflowBoundaryNormalX()
-{
-    return this->outflowNormalX;
-}
-std::string Parameter::getOutflowBoundaryNormalY()
-{
-    return this->outflowNormalY;
-}
-std::string Parameter::getOutflowBoundaryNormalZ()
-{
-    return this->outflowNormalZ;
 }
 
 std::string Parameter::getMainKernel()

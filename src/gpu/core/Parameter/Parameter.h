@@ -90,6 +90,8 @@ struct LBMSimulationParameter {
     real omega;
     //! \brief stores the value for viscosity
     real viscosity;
+    //! \brief stores the space between the grid nodes
+    real gridSpacing;
     //////////////////////////////////////////////////////////////////////////
     //! \brief store higher order moments 
     //! \brief 2nd order moments
@@ -322,35 +324,6 @@ struct LBMSimulationParameter {
     real *meanConcentration, *meanConcentrationOut;
     //////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // DEPRECATED - planed to be taken out permanently
-    //////////////////////////////////////////////////////////////////////////
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // \brief velocities to fit the force
-    real *VxForce, *VyForce, *VzForce; //Deprecated
-
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // derivations for iso test
-    real *dxxUx, *dyyUy, *dzzUz;
-
-    // testRoundoffError
-    Distributions27 kDistTestRE;
-
-    real gridSpacing;
-
-    //////////////////////////////////////////////////////////////////////////
 };
 
 
@@ -383,13 +356,8 @@ public:
     // setter
     void setForcing(real forcingX, real forcingY, real forcingZ);
     void setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD);
-    void setPhi(real inPhi);
-    void setAngularVelocity(real inAngVel);
     void setStepEnsight(unsigned int step);
-    void setOutputCount(unsigned int outputCount);
-    void setStartTurn(unsigned int inStartTurn);
     void setDiffOn(bool isDiff);
-    void setCompOn(bool isComp);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
     void setMaxLevel(int numberOfLevels);
@@ -401,25 +369,15 @@ public:
     void setCalcMean(bool calcMean);
     void setCalcDragLift(bool calcDragLift);
     void setCalcCp(bool calcCp);
-    void setWriteVeloASCIIfiles(bool writeVeloASCII);
     void setTimeCalcMedStart(int CalcMedStart);
     void setTimeCalcMedEnd(int CalcMedEnd);
     void setMaxDev(int maxdev);
     void setMyID(int myid);
     void setNumprocs(int numprocs);
-    void setPressInID(unsigned int PressInID);
-    void setPressOutID(unsigned int PressOutID);
-    void setPressInZ(unsigned int PressInZ);
-    void setPressOutZ(unsigned int PressOutZ);
     void settimestepForMeasurePoints(unsigned int timestepForMeasurePoints);
     void setOutputPath(std::string oPath);
     void setOutputPrefix(std::string oPrefix);
     void setGridPath(std::string gridPath);
-    void setGeometryFileC(std::string GeometryFileC);
-    void setGeometryFileM(std::string GeometryFileM);
-    void setGeometryFileF(std::string GeometryFileF);
-    void setkFull(std::string kFull);
-    void setgeoFull(std::string geoFull);
     void setgeoVec(std::string geoVec);
     void setcoordX(std::string coordX);
     void setcoordY(std::string coordY);
@@ -489,7 +447,6 @@ public:
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
     void setIsCp(bool isCp);
-    void setConcFile(bool concFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
@@ -537,20 +494,6 @@ public:
     void setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
     void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
-    // void setQinflowH(QforBoundaryConditions* QinflowH);
-    // void setQinflowD(QforBoundaryConditions* QinflowD);
-    // void setQoutflowH(QforBoundaryConditions* QoutflowH);
-    // void setQoutflowD(QforBoundaryConditions* QoutflowD);
-    // Normals
-    void setgeomBoundaryNormalX(std::string geomNormalX);
-    void setgeomBoundaryNormalY(std::string geomNormalY);
-    void setgeomBoundaryNormalZ(std::string geomNormalZ);
-    void setInflowBoundaryNormalX(std::string inflowNormalX);
-    void setInflowBoundaryNormalY(std::string inflowNormalY);
-    void setInflowBoundaryNormalZ(std::string inflowNormalZ);
-    void setOutflowBoundaryNormalX(std::string outflowNormalX);
-    void setOutflowBoundaryNormalY(std::string outflowNormalY);
-    void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
     // Kernel
     void configureMainKernel(std::string kernel);
     void setMultiKernelOn(bool isOn);
@@ -570,21 +513,15 @@ public:
     double *getQuadricLimitersDouble();
     real *getQuadricLimitersHost();
     real *getQuadricLimitersDev();
-    real getPhi();
-    real getAngularVelocity();
     unsigned int getStepEnsight();
-    unsigned int getOutputCount();
-    unsigned int getStartTurn();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
-    bool getCompOn();
     bool getPrintFiles();
     bool getReadGeo();
     bool getCalcTurbulenceIntensity();
     bool getCalcMean();
     bool getCalcDragLift();
     bool getCalcCp();
-    bool getWriteVeloASCIIfiles();
     //! \returns index of finest level
     int getFine() const;
     //! \returns index of coarsest level
@@ -603,11 +540,6 @@ public:
     std::string getOutputPrefix();
     std::string getFName() const;
     std::string getGridPath();
-    std::string getGeometryFileC();
-    std::string getGeometryFileM();
-    std::string getGeometryFileF();
-    std::string getkFull();
-    std::string getgeoFull();
     std::string getgeoVec();
     std::string getcoordX();
     std::string getcoordY();
@@ -660,10 +592,6 @@ public:
     std::string getcpBottom();
     std::string getcpBottom2();
     std::string getConcentration();
-    unsigned int getPressInID();
-    unsigned int getPressOutID();
-    unsigned int getPressInZ();
-    unsigned int getPressOutZ();
     unsigned int getTimestepStart();
     unsigned int getTimestepInit();
     unsigned int getTimestepEnd();
@@ -739,7 +667,6 @@ public:
     bool getCalc2ndOrderMoments();
     bool getCalc3rdOrderMoments();
     bool getCalcHighOrderMoments();
-    bool getConcFile();
     bool getUseMeasurePoints();
     vf::lbm::TurbulenceModel getTurbulenceModel();
     bool getUseTurbulentViscosity();
@@ -758,16 +685,6 @@ public:
     bool getIsNeighborX();
     bool getIsNeighborY();
     bool getIsNeighborZ();
-    // Normals
-    std::string getgeomBoundaryNormalX();
-    std::string getgeomBoundaryNormalY();
-    std::string getgeomBoundaryNormalZ();
-    std::string getInflowBoundaryNormalX();
-    std::string getInflowBoundaryNormalY();
-    std::string getInflowBoundaryNormalZ();
-    std::string getOutflowBoundaryNormalX();
-    std::string getOutflowBoundaryNormalY();
-    std::string getOutflowBoundaryNormalZ();
     real getOutflowPressureCorrectionFactor();
     // Kernel
     std::string getMainKernel();
@@ -829,11 +746,9 @@ private:
     real SGSConstant{ 0.0 };
     real outflowPressureCorrectionFactor{ 0.0 };
 
-    bool compOn{ false };
     bool diffOn{ false };
     bool calcDragLift{ false };
     bool calcCp{ false };
-    bool writeVeloASCII{ false };
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
     bool printFiles{ false };
@@ -847,7 +762,6 @@ private:
     bool is3rdOrderMoments{ false };
     bool isHighOrderMoments{ false };
     bool calcMean{ false };
-    bool isConc{ false };
     bool isTurbulentViscosity{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
@@ -865,7 +779,6 @@ private:
 
     double memsizeGPU;
 
-    uint outputCount;
     uint timestep;
     uint tDoCheckPoint{ 0 };
     uint tDoRestart{ 0 };
@@ -874,10 +787,6 @@ private:
     uint tend{ 10 };
     uint tout{ 1 };
     uint tStartOut{ 0 };
-    uint PressInID{ 0 };
-    uint PressOutID{ 0 };
-    uint PressInZ{ 1 };
-    uint PressOutZ{ 2 };
     uint timeStepForMeasurePoints{ 10 };
 
     std::vector<uint> devices{ 0, 1 }; // one device with ID = 0
@@ -888,8 +797,7 @@ private:
     std::string oPath{ "output/" };
     std::string gridPath{ "grid/" };
     std::string oPrefix{ "simulation" };
-    std::string geometryFileC, geometryFileM, geometryFileF;
-    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
+    std::string geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
     std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
     std::string slipBcPos, slipBcQs, slipBcValue;
     std::string pressBcPos, pressBcQs, pressBcValue;
@@ -907,7 +815,6 @@ private:
     std::string numberNodes, LBMvsSI;
     std::string cpTop, cpBottom, cpBottom2;
     std::string concentration;
-    std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
     
     vf::lbm::TurbulenceModel turbulenceModel{ vf::lbm::TurbulenceModel::None };
 
@@ -924,11 +831,6 @@ private:
     AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
     // Concentration Dirichlet BC
     AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
-
-    // Drehung///////////////
-    real Phi{ 0.0 };
-    real angularVelocity;
-    unsigned int startTurn;
 
     // PreCollisionInteractors //////////////
     std::vector<SPtr<PreCollisionInteractor>> actuators;

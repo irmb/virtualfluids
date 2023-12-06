@@ -69,17 +69,6 @@ bool GridReader::getBinaer()
     return binaer;
 }
 
-void rearrangeGeometry(Parameter* para, int lev)
-{
-    for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++)
-    {
-        if (para->getParH(lev)->typeOfGridNode[index] == GEO_FLUID_OLD)
-        {
-            para->getParH(lev)->typeOfGridNode[index] = GEO_FLUID;
-        }
-    }
-}
-
 void GridReader::allocArrays_CoordNeighborGeo()
 {
     VF_LOG_TRACE("-----Config Arrays Coord, Neighbor, Geo------");
@@ -119,7 +108,6 @@ void GridReader::allocArrays_CoordNeighborGeo()
         neighZ->initalNeighbors(  para->getParH(level)->neighborZ,   level);
         neighWSB->initalNeighbors(para->getParH(level)->neighborInverse, level);
         geoV.initalNeighbors(     para->getParH(level)->typeOfGridNode,          level);
-        rearrangeGeometry(para.get(), level);
         setInitialNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopyNeighborWSB(level);

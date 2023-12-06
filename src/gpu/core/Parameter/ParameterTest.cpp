@@ -61,8 +61,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getCalcMean(), testing::Eq(true));
     EXPECT_THAT(para.getCalcCp(), testing::Eq(true));
     EXPECT_THAT(para.getCalcDragLift(), testing::Eq(true));
-    EXPECT_THAT(para.getWriteVeloASCIIfiles(), testing::Eq(true));
-    EXPECT_THAT(para.getConcFile(), testing::Eq(true));
     EXPECT_THAT(para.getUseMeasurePoints(), testing::Eq(true));
     EXPECT_THAT(para.getUseInitNeq(), testing::Eq(true));
 
@@ -72,10 +70,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getTimestepStartOut(), testing::Eq(11));
     EXPECT_THAT(para.getTimeCalcMedStart(), testing::Eq(22));
     EXPECT_THAT(para.getTimeCalcMedEnd(), testing::Eq(44));
-    EXPECT_THAT(para.getPressInID(), testing::Eq(25));
-    EXPECT_THAT(para.getPressOutID(), testing::Eq(26));
-    EXPECT_THAT(para.getPressInZ(), testing::Eq(27));
-    EXPECT_THAT(para.getPressOutZ(), testing::Eq(28));
 
     EXPECT_THAT(para.getDiffOn(), testing::Eq(true));
     EXPECT_THAT(para.getDiffusivity(), RealEq(1.11));
@@ -94,9 +88,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getFactorPressBC(), RealEq(0.3));
 
     EXPECT_THAT(para.getReadGeo(), testing::Eq(true));
-    EXPECT_THAT(para.getGeometryFileC(), testing::Eq("/pass/to/c"));
-    EXPECT_THAT(para.getGeometryFileM(), testing::Eq("/pass/to/m"));
-    EXPECT_THAT(para.getGeometryFileF(), testing::Eq("/pass/to/f"));
 
     EXPECT_THAT(para.getclockCycleForMeasurePoints(), RealEq(0.4));
     EXPECT_THAT(para.getTimestepForMeasurePoints(), testing::Eq(4));

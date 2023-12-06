@@ -188,11 +188,6 @@ public:
     void cudaCopyGeomValuesBC(int lev);
     void cudaFreeGeomValuesBC(int lev);
 
-    void cudaAllocTestRE(int lev, unsigned int size);
-    void cudaCopyTestREtoDevice(int lev, unsigned int size);
-    void cudaCopyTestREtoHost(int lev, unsigned int size);
-    void cudaFreeTestRE(int lev);
-
     void cudaAllocCpTop(int lev);
     void cudaCopyCpTopInit(int lev);
     void cudaCopyCpTop(int lev);
@@ -241,15 +236,6 @@ public:
     void cudaAllocHigherMoments(int lev, int numofelem);
     void cudaCopyHigherMoments(int lev, int numofelem);
     void cudaFreeHigherMoments(int lev);
-
-    void cudaAllocForceVelo(int lev, int numofelem);
-    void cudaCopyForceVelo(int lev, int numofelem);
-    void cudaFreeForceVelo(int lev);
-
-    void cudaAlloc2ndOrderDerivitivesIsoTest(int lev);
-    void cudaCopy2ndOrderDerivitivesIsoTestDH(int lev);
-    void cudaCopy2ndOrderDerivitivesIsoTestHD(int lev);
-    void cudaFree2ndOrderDerivitivesIsoTest(int lev);
 
     void cudaAllocConcentration(int lev);
     void cudaCopyConcentrationDeviceToHost(int lev);
