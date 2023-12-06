@@ -952,7 +952,6 @@ private:
 
     bool compOn{ false };
     bool diffOn{ false };
-    bool isF3{ false };
     bool calcDragLift{ false };
     bool calcCp{ false };
     bool writeVeloASCII{ false };
