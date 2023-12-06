@@ -112,12 +112,6 @@ struct ICellNeigh
 using InterpolationCellNeighbor = ICellNeigh;
 
 // ADD IN FUTURE RELEASE
-struct Distributions6 
-{
-   real* g[6];
-};
-
-// ADD IN FUTURE RELEASE
 struct  Distributions7
 {
    real* f[7];
@@ -241,18 +235,6 @@ struct ProcessNeighbor27
    uint rankNeighbor;
    int numberOfNodes;
    int numberOfFs;
-};
-
-// ADD IN FUTURE RELEASE
-struct ProcessNeighborF3
-{
-   real* g[6];
-   uint memsizeGs;
-   int* index;
-   uint memsizeIndex;
-   uint rankNeighbor;
-   int numberOfNodes;
-   int numberOfGs;
 };
 
 //////////////////////////////////////////////////////////////////////////

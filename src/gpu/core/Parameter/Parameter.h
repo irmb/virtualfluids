@@ -198,14 +198,6 @@ struct LBMSimulationParameter {
     std::vector<ProcessNeighbor27> recvProcessNeighborADX;
     std::vector<ProcessNeighbor27> recvProcessNeighborADY;
     std::vector<ProcessNeighbor27> recvProcessNeighborADZ;
-    ///////////////////////////////////////////////////////
-    // 3D domain decomposition F3
-    std::vector<ProcessNeighborF3> sendProcessNeighborF3X;
-    std::vector<ProcessNeighborF3> sendProcessNeighborF3Y;
-    std::vector<ProcessNeighborF3> sendProcessNeighborF3Z;
-    std::vector<ProcessNeighborF3> recvProcessNeighborF3X;
-    std::vector<ProcessNeighborF3> recvProcessNeighborF3Y;
-    std::vector<ProcessNeighborF3> recvProcessNeighborF3Z;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {
@@ -248,9 +240,6 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     // ADD IN FUTURE RELEASE
     //////////////////////////////////////////////////////////////////////////
-
-    // distributions F3////////
-    Distributions6 g6;
 
     // BC NoSlip
     TempforBoundaryConditions Temp;
