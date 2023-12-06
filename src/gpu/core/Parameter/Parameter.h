@@ -583,7 +583,6 @@ public:
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
-    void setIsF3(bool isF3);
     void setIsBodyForce(bool isBodyForce);
     void setclockCycleForMP(real clockCycleForMP);
     void setDevices(std::vector<uint> devices);
@@ -863,7 +862,6 @@ public:
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();
-    bool getIsF3();
     bool getIsBodyForce();
     double getMemsizeGPU();
     // 1D domain decomposition

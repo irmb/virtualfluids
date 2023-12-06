@@ -945,11 +945,6 @@ void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
     this->hasWallModelMonitor = hasWallModelMonitor;
 }
 
-void Parameter::setIsF3(bool isF3)
-{
-    this->isF3 = isF3;
-}
-
 void Parameter::setIsBodyForce(bool isBodyForce)
 {
     this->isBodyForce = isBodyForce;
@@ -2282,11 +2277,6 @@ std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
 bool Parameter::getUseInitNeq()
 {
     return this->isInitNeq;
-}
-
-bool Parameter::getIsF3()
-{
-    return this->isF3;
 }
 
 bool Parameter::getIsBodyForce()
