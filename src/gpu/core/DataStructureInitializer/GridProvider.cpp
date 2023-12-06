@@ -94,11 +94,11 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
         //////////////////////////////////////////////////////////////////////////
 
         if (para->getCalcMean()) {
-            para->getParH(level)->vx_SP_Med[pos] = 0.0f;
-            para->getParH(level)->vy_SP_Med[pos] = 0.0f;
-            para->getParH(level)->vz_SP_Med[pos] = 0.0f;
-            para->getParH(level)->rho_SP_Med[pos] = 0.0f;
-            para->getParH(level)->press_SP_Med[pos] = 0.0f;
+            para->getParH(level)->meanVelocityInXdirection[pos] = 0.0f;
+            para->getParH(level)->meanVelocityInYdirection[pos] = 0.0f;
+            para->getParH(level)->meanVelocityInZdirection[pos] = 0.0f;
+            para->getParH(level)->meanDensity[pos] = 0.0f;
+            para->getParH(level)->meanPressure[pos] = 0.0f;
         }
 
         if (para->getIsBodyForce()) {

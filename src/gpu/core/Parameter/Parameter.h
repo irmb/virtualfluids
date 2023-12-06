@@ -91,6 +91,14 @@ struct LBMSimulationParameter {
     //! \brief stores the value for viscosity
     real viscosity;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief store higher order moments 
+    //! \brief 2nd order moments
+    real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
+    //! \brief 3rd order moments
+    real *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
+    //! \brief higher order moments
+    real *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
+    //////////////////////////////////////////////////////////////////////////
     //! \brief stores the number of nodes (based on indirect addressing scheme)
     unsigned long long numberOfNodes;
     //! \brief stores the size of the memory consumption for real/int values of the arrays (e.g. coordinates, velocity)
@@ -252,6 +260,33 @@ struct LBMSimulationParameter {
 
 
     //////////////////////////////////////////////////////////////////////////
+    // Cp
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores pressure values at distinct locations
+    // Cp Top
+    int* cpTopIndex;
+    double* cpPressTop;
+    unsigned int numberOfPointsCpTop;
+    std::vector<std::vector<double>> cpTop;
+    std::vector<double> pressMirror;
+    std::vector<bool> isOutsideInterface;
+    unsigned int numberOfPointsPressWindow;
+    //////////////////////////////////////////////////////////////////////////
+    // Cp Bottom 1
+    int* cpBottomIndex;
+    double* cpPressBottom;
+    unsigned int numberOfPointsCpBottom;
+    std::vector<std::vector<double>> cpBottom;
+    //////////////////////////////////////////////////////////////////////////
+    // Cp Bottom 2
+    int* cpBottom2Index;
+    double* cpPressBottom2;
+    unsigned int numberOfPointsCpBottom2;
+    std::vector<std::vector<double>> cpBottom2;
+    //////////////////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////////////////////////////
     // Measure Points
     //////////////////////////////////////////////////////////////////////////
     //! \brief store the indices, velocities and density at distinct measure points
@@ -265,76 +300,27 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
 
 
-
-
-
-
-
     //////////////////////////////////////////////////////////////////////////
-    // ADD IN FUTURE RELEASE
+    // Turbulent Viscosity/Intensity
     //////////////////////////////////////////////////////////////////////////
-
-    // 2ndMoments////////////
-    real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
-
-    // 3rdMoments////////////
-    real *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
-
-    // HigherMoments/////////
-    real *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
-
-    // CpTop/////////////////
-    int *cpTopIndex;
-    double *cpPressTop;
-    unsigned int numberOfPointsCpTop;
-    std::vector<std::vector<double>> cpTop;
-    std::vector<double> pressMirror;
-    std::vector<bool> isOutsideInterface;
-    unsigned int numberOfPointsPressWindow;
-
-    // CpBottom/////////////
-    int *cpBottomIndex;
-    double *cpPressBottom;
-    unsigned int numberOfPointsCpBottom;
-    std::vector<std::vector<double>> cpBottom;
-
-    // CpBottom2////////////
-    int *cpBottom2Index;
-    double *cpPressBottom2;
-    unsigned int numberOfPointsCpBottom2;
-    std::vector<std::vector<double>> cpBottom2;
-
-    //////////////////////////////////////////////////////////////////////////
-    // \brief velocities to fit the force
-    real *VxForce, *VyForce, *VzForce;
-
-    //! \brief stores indices for the concentration field
-    int *concIndex;
-    //    real *concentration;
-    unsigned int numberOfPointsConc;
-    //! \brief store all distribution functions for the D3Q7 advection diffusion field
-    Distributions7 distributionsAD7;
-    // Plane Conc
-    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
-    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
-
-    // turbulent viscosity ///
-    real *turbViscosity;
-
-    // turbulence intensity //
+    //! \brief store the turbulent viscosity
+    real* turbViscosity;
+    //! \brief store the turbulent intensity and related values
     real *vx_mean, *vy_mean, *vz_mean;       // means
     real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
     std::vector<real> turbulenceIntensity;
-
-    // mean-macro-values/////
-    real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
-    real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
-    // Advection-Diffusion
-    real *Conc_Med, *Conc_Med_Out;
+    //////////////////////////////////////////////////////////////////////////
 
 
-
-
+    //////////////////////////////////////////////////////////////////////////
+    // Mean Macroscopic Values
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief store mean macroscopic fluid flow values
+    real *meanVelocityInXdirection, *meanVelocityInYdirection, *meanVelocityInZdirection, *meanDensity, *meanPressure;
+    real *meanVelocityInXdirectionOut, *meanVelocityInYdirectionOut, *meanVelocityInZdirectionOut, *meanDensityOut, *meanPressureOut;
+    //! \brief store mean macroscopic advection diffusion values
+    real *meanConcentration, *meanConcentrationOut;
+    //////////////////////////////////////////////////////////////////////////
 
 
 
@@ -347,6 +333,23 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     // DEPRECATED - planed to be taken out permanently
     //////////////////////////////////////////////////////////////////////////
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // \brief velocities to fit the force
+    real *VxForce, *VyForce, *VzForce; //Deprecated
+
+    //! \brief stores indices for the concentration field
+    int *concIndex; //Deprecated
+    //    real *concentration;
+    unsigned int numberOfPointsConc; //Deprecated
+    //! \brief store all distribution functions for the D3Q7 advection diffusion field
+    Distributions7 distributionsAD7; //Deprecated
+    // Plane Conc
+    real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2; //Deprecated
+    std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2; //Deprecated
+
 
     unsigned int size_Array_SP; //?? Deprecated
 

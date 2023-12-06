@@ -453,11 +453,11 @@ void Simulation::calculateTimestep(uint timestep)
                   //      para->getParD(lev)->d0SP.f[0],
                   //      para->getParD(lev)->evenOrOdd);
             //getLastCudaError("calculateMacroscopicQuantities execution failed");
-            calculateMeanCompressible(para->getParD(lev)->vx_SP_Med,
-                            para->getParD(lev)->vy_SP_Med,
-                            para->getParD(lev)->vz_SP_Med,
-                            para->getParD(lev)->rho_SP_Med,
-                            para->getParD(lev)->press_SP_Med,
+            calculateMeanCompressible(para->getParD(lev)->meanVelocityInXdirection,
+                            para->getParD(lev)->meanVelocityInYdirection,
+                            para->getParD(lev)->meanVelocityInZdirection,
+                            para->getParD(lev)->meanDensity,
+                            para->getParD(lev)->meanPressure,
                             para->getParD(lev)->typeOfGridNode,
                             para->getParD(lev)->neighborX,
                             para->getParD(lev)->neighborY,
@@ -558,7 +558,7 @@ void Simulation::calculateTimestep(uint timestep)
     // get concentration at the plane
     //////////////////////////////////////////////////////////////////////////////////
     if (para->getDiffOn() && para->getCalcPlaneConc()) {
-        PlaneConcThS27( para->getParD(0)->ConcPlaneIn,
+        PlaneConcThS27(para->getParD(0)->ConcPlaneIn,
                        para->getParD(0)->cpTopIndex,
                        para->getParD(0)->numberOfPointsCpTop,
                        para->getParD(0)->typeOfGridNode,

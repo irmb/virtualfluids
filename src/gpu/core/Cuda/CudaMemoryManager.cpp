@@ -67,11 +67,11 @@ void CudaMemoryManager::cudaCopyPrint(int lev)
 }
 void CudaMemoryManager::cudaCopyMeanPrint(int lev)
 {
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vx_SP_Med   , parameter->getParD(lev)->vx_SP_Med   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vy_SP_Med   , parameter->getParD(lev)->vy_SP_Med   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vz_SP_Med   , parameter->getParD(lev)->vz_SP_Med   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->rho_SP_Med  , parameter->getParD(lev)->rho_SP_Med  , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->press_SP_Med, parameter->getParD(lev)->press_SP_Med, parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->meanVelocityInXdirection   , parameter->getParD(lev)->meanVelocityInXdirection   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->meanVelocityInYdirection   , parameter->getParD(lev)->meanVelocityInYdirection   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->meanVelocityInZdirection   , parameter->getParD(lev)->meanVelocityInZdirection   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->meanDensity  , parameter->getParD(lev)->meanDensity  , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->meanPressure, parameter->getParD(lev)->meanPressure, parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaAllocCoord(int lev)
 {
@@ -836,17 +836,17 @@ void CudaMemoryManager::cudaFreeTurbulenceIntensity(int lev)
 void CudaMemoryManager::cudaAllocMeanSP(int lev)
 {
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->rho_SP_Med      ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vx_SP_Med       ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vy_SP_Med       ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vz_SP_Med       ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->press_SP_Med    ), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanDensity),              parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInXdirection), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInYdirection), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInZdirection), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanPressure),             parameter->getParH(lev)->memSizeRealLBnodes));
     //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->rho_SP_Med          ), parameter->getParD(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vx_SP_Med           ), parameter->getParD(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vy_SP_Med           ), parameter->getParD(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vz_SP_Med           ), parameter->getParD(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->press_SP_Med        ), parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->meanDensity),              parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->meanVelocityInXdirection), parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->meanVelocityInYdirection), parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->meanVelocityInZdirection), parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->meanPressure),             parameter->getParD(lev)->memSizeRealLBnodes));
     //////////////////////////////////////////////////////////////////////////
     double tmp = 5. * (double)parameter->getParH(lev)->memSizeRealLBnodes;
     setMemsizeGPU(tmp, false);
@@ -854,36 +854,36 @@ void CudaMemoryManager::cudaAllocMeanSP(int lev)
 void CudaMemoryManager::cudaCopyMeanSP(int lev)
 {
     //copy host to device
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->rho_SP_Med  ,  parameter->getParH(lev)->rho_SP_Med  ,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vx_SP_Med   ,  parameter->getParH(lev)->vx_SP_Med   ,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vy_SP_Med   ,  parameter->getParH(lev)->vy_SP_Med   ,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vz_SP_Med   ,  parameter->getParH(lev)->vz_SP_Med   ,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->press_SP_Med,  parameter->getParH(lev)->press_SP_Med,  parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->meanDensity,              parameter->getParH(lev)->meanDensity,              parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->meanVelocityInXdirection, parameter->getParH(lev)->meanVelocityInXdirection, parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->meanVelocityInYdirection, parameter->getParH(lev)->meanVelocityInYdirection, parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->meanVelocityInZdirection, parameter->getParH(lev)->meanVelocityInZdirection, parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->meanPressure,             parameter->getParH(lev)->meanPressure,             parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaFreeMeanSP(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vx_SP_Med   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vy_SP_Med   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vz_SP_Med   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->rho_SP_Med  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->press_SP_Med));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanVelocityInXdirection   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanVelocityInYdirection   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanVelocityInZdirection   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanDensity  ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanPressure));
 }
 void CudaMemoryManager::cudaAllocMeanOut(int lev)
 {
     //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->rho_SP_Med_Out      ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vx_SP_Med_Out       ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vy_SP_Med_Out       ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vz_SP_Med_Out       ), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->press_SP_Med_Out    ), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanDensityOut              ), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInXdirectionOut ), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInYdirectionOut ), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInZdirectionOut ), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->meanPressureOut             ), parameter->getParH(lev)->memSizeRealLBnodes));
 }
 void CudaMemoryManager::cudaFreeMeanOut(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vx_SP_Med_Out   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vy_SP_Med_Out   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vz_SP_Med_Out   ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->rho_SP_Med_Out  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->press_SP_Med_Out));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanVelocityInXdirectionOut   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanVelocityInYdirectionOut   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanVelocityInZdirectionOut   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanDensityOut  ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->meanPressureOut));
 }
 //Interface CF
 void CudaMemoryManager::cudaAllocInterfaceCF(int lev)
@@ -2309,21 +2309,21 @@ void CudaMemoryManager::cudaFreeConcFile(int lev)
 void CudaMemoryManager::cudaAllocMeanOutAD(int lev)
 {
     //Host
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->rho_SP_Med_Out),   parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->vx_SP_Med_Out),    parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->vy_SP_Med_Out),    parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->vz_SP_Med_Out),    parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->press_SP_Med_Out), parameter->getParH(lev)->memSizeRealLBnodes));
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->Conc_Med_Out),     parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->meanDensityOut),   parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInXdirectionOut),    parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInYdirectionOut),    parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->meanVelocityInZdirectionOut),    parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->meanPressureOut), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->meanConcentrationOut),     parameter->getParH(lev)->memSizeRealLBnodes));
 }
 void CudaMemoryManager::cudaFreeMeanOutAD(int lev)
 {
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->vx_SP_Med_Out));
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->vy_SP_Med_Out));
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->vz_SP_Med_Out));
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->rho_SP_Med_Out));
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->press_SP_Med_Out));
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->Conc_Med_Out));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanVelocityInXdirectionOut));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanVelocityInYdirectionOut));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanVelocityInZdirectionOut));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanDensityOut));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanPressureOut));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanConcentrationOut));
 }
 
 
