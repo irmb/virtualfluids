@@ -1040,9 +1040,9 @@ private:
     bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
 
-    // Temperature
+    // Concentration No Slip BC
     AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
-    // Temperature Velocity
+    // Concentration Dirichlet BC
     AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 
     // Drehung///////////////
