@@ -740,13 +740,13 @@ void Parameter::setDiffusivity(real Diffusivity)
 {
     this->Diffusivity = Diffusivity;
 }
-void Parameter::setConcentrationInit(real Temp)
+void Parameter::setConcentrationInit(real concentrationInit)
 {
-    this->concentrationInit = Temp;
+    this->concentrationInit = concentrationInit;
 }
-void Parameter::setConcentrationBC(real TempBC)
+void Parameter::setConcentrationBC(real concentrationBC)
 {
-    this->concentrationBC = TempBC;
+    this->concentrationBC = concentrationBC;
 }
 void Parameter::setViscosityLB(real Viscosity)
 {
