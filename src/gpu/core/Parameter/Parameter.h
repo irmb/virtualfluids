@@ -198,14 +198,6 @@ struct LBMSimulationParameter {
     std::vector<ProcessNeighbor27> recvProcessNeighborADX;
     std::vector<ProcessNeighbor27> recvProcessNeighborADY;
     std::vector<ProcessNeighbor27> recvProcessNeighborADZ;
-    ///////////////////////////////////////////////////////
-    // 3D domain decomposition F3
-    std::vector<ProcessNeighborF3> sendProcessNeighborF3X;
-    std::vector<ProcessNeighborF3> sendProcessNeighborF3Y;
-    std::vector<ProcessNeighborF3> sendProcessNeighborF3Z;
-    std::vector<ProcessNeighborF3> recvProcessNeighborF3X;
-    std::vector<ProcessNeighborF3> recvProcessNeighborF3Y;
-    std::vector<ProcessNeighborF3> recvProcessNeighborF3Z;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {
@@ -248,9 +240,6 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     // ADD IN FUTURE RELEASE
     //////////////////////////////////////////////////////////////////////////
-
-    // distributions F3////////
-    Distributions6 g6;
 
     // BC NoSlip
     TempforBoundaryConditions Temp;
@@ -594,7 +583,6 @@ public:
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
-    void setIsF3(bool isF3);
     void setIsBodyForce(bool isBodyForce);
     void setclockCycleForMP(real clockCycleForMP);
     void setDevices(std::vector<uint> devices);
@@ -874,7 +862,6 @@ public:
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();
-    bool getIsF3();
     bool getIsBodyForce();
     double getMemsizeGPU();
     // 1D domain decomposition
@@ -965,7 +952,6 @@ private:
 
     bool compOn{ false };
     bool diffOn{ false };
-    bool isF3{ false };
     bool calcDragLift{ false };
     bool calcCp{ false };
     bool writeVeloASCII{ false };

@@ -69,8 +69,6 @@ public:
     void cudaCopySP(int lev);
     void cudaFreeSP(int lev);
 
-    void cudaAllocF3SP(int lev);
-
     void cudaAllocNeighborWSB(int lev);
     void cudaCopyNeighborWSB(int lev);
     void cudaFreeNeighborWSB(int lev);
@@ -128,27 +126,6 @@ public:
     virtual void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
 
-    //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////
-    // 3D domain decomposition F3
-    void cudaAllocProcessNeighborF3X(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3XFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3XFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3XIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborF3X(int lev, unsigned int processNeighbor);
-    //
-    void cudaAllocProcessNeighborF3Y(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3YFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3YFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3YIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborF3Y(int lev, unsigned int processNeighbor);
-    //
-    void cudaAllocProcessNeighborF3Z(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3ZFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3ZFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborF3ZIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborF3Z(int lev, unsigned int processNeighbor);
     //////////////////////////////////////////////////////////////////////////
 
     void cudaAllocTurbulentViscosity(int lev);
