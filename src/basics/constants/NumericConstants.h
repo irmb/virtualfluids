@@ -1,3 +1,32 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//=======================================================================================
 #ifndef BASICS_NUMERIC_CONSTANT_H
 #define BASICS_NUMERIC_CONSTANT_H
 
@@ -248,8 +277,8 @@ static constexpr float c10eM10 = 1e-10f;
 static constexpr float cSmallSingle = 0.0000000002f;
 
 #ifndef __CUDACC__
-static const float cPi = 4.0f * std::atan(1.0f);               // 3.1415926535
-static const float c2Pi = 8.0f * std::atan(1.0f);              // 6.2831853071
+static const float cPi = 4.0f * std::atan(1.0f);                // 3.1415926535
+static const float c2Pi = 8.0f * std::atan(1.0f);               // 6.2831853071
 static const float cPio180 = 4.0f * std::atan(1.0f) / 180.0f;   // 1.74532925199e-2
 static const float c180oPi = 180.0f / (4.0f * std::atan(1.0f)); // 57.2957795131
 #else
@@ -261,8 +290,8 @@ static constexpr float c180oPi = 57.2957795131f;
 
 static const float c1oSqrt2 = 1.0 / sqrtf(2.0); // 0.707106781
 static const float c1oSqrt3 = 1.0 / sqrtf(3.0); // 0.577350269
-static const float cSqrt2 = sqrtf(2.0);                // 1.4142135
-static const float cSqrt3 = sqrtf(3.0);                // 1.7320508
+static const float cSqrt2 = sqrtf(2.0);         // 1.4142135
+static const float cSqrt3 = sqrtf(3.0);         // 1.7320508
 
 #endif
 
