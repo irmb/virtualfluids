@@ -170,31 +170,19 @@ struct QforPrecursorBoundaryConditions
    real velocityX, velocityY, velocityZ;
 };
 
-// ADD IN FUTURE RELEASE
-struct TempforBoundaryConditions
+struct AdvectionDiffusionNoSlipBoundaryConditions
 {
    int* k;
-   real* temp;
-   int kTemp=0;
+   real* concentration;
+   int numberOfBcNodes=0;
 };
 
-// ADD IN FUTURE RELEASE
-struct TempVelforBoundaryConditions
+struct AdvectionDiffusionDirichletBoundaryConditions
 {
    int* k;
-   real* temp;
-   real* tempPulse;
-   real* velo;
-   int kTemp=0;
-};
-
-// ADD IN FUTURE RELEASE
-struct TempPressforBoundaryConditions
-{
-   int* k;
-   real* temp;
-   real* velo;
-   int kTemp=0;
+   real* concentration;
+   real* concentrationBC;
+   int numberOfBcNodes=0;
 };
 
 // Settings for wall model used in StressBC

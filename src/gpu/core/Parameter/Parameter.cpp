@@ -171,11 +171,11 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("Diffusivity"))
         this->setDiffusivity(configData.getValue<real>("Diffusivity"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("Temp"))
-        this->setTemperatureInit(configData.getValue<real>("Temp"));
+    if (configData.contains("Concentration"))
+        this->setConcentrationInit(configData.getValue<real>("Concentration"));
     //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("TempBC"))
-        this->setTemperatureBC(configData.getValue<real>("TempBC"));
+    if (configData.contains("ConcentrationBC"))
+        this->setConcentrationBC(configData.getValue<real>("ConcentrationBC"));
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
@@ -740,13 +740,13 @@ void Parameter::setDiffusivity(real Diffusivity)
 {
     this->Diffusivity = Diffusivity;
 }
-void Parameter::setTemperatureInit(real Temp)
+void Parameter::setConcentrationInit(real concentrationInit)
 {
-    this->Temp = Temp;
+    this->concentrationInit = concentrationInit;
 }
-void Parameter::setTemperatureBC(real TempBC)
+void Parameter::setConcentrationBC(real concentrationBC)
 {
-    this->TempBC = TempBC;
+    this->concentrationBC = concentrationBC;
 }
 void Parameter::setViscosityLB(real Viscosity)
 {
@@ -1006,29 +1006,21 @@ void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
     this->maxCoordZ = MaxCoordZ;
 }
-void Parameter::setTempH(TempforBoundaryConditions *TempH)
+void Parameter::setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost)
 {
-    this->TempH = TempH;
+    this->concentrationNoSlipBCHost = concentrationNoSlipBCHost;
 }
-void Parameter::setTempD(TempforBoundaryConditions *TempD)
+void Parameter::setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice)
 {
-    this->TempD = TempD;
+    this->concentrationNoSlipBCDevice = concentrationNoSlipBCDevice;
 }
-void Parameter::setTempVelH(TempVelforBoundaryConditions *TempVelH)
+void Parameter::setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost)
 {
-    this->TempVelH = TempVelH;
+    this->concentrationDirichletBCHost = concentrationDirichletBCHost;
 }
-void Parameter::setTempVelD(TempVelforBoundaryConditions *TempVelD)
+void Parameter::setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice)
 {
-    this->TempVelD = TempVelD;
-}
-void Parameter::setTempPressH(TempPressforBoundaryConditions *TempPressH)
-{
-    this->TempPressH = TempPressH;
-}
-void Parameter::setTempPressD(TempPressforBoundaryConditions *TempPressD)
-{
-    this->TempPressD = TempPressD;
+    this->concentrationDirichletBCDevice = concentrationDirichletBCDevice;
 }
 // void Parameter::setQinflowH(QforBoundaryConditions* QinflowH)
 //{
@@ -1790,13 +1782,13 @@ real Parameter::getDiffusivity()
 {
     return this->Diffusivity;
 }
-real Parameter::getTemperatureInit()
+real Parameter::getConcentrationInit()
 {
-    return this->Temp;
+    return this->concentrationInit;
 }
-real Parameter::getTemperatureBC()
+real Parameter::getConcentrationBC()
 {
-    return this->TempBC;
+    return this->concentrationBC;
 }
 real Parameter::getViscosity()
 {
@@ -1926,29 +1918,21 @@ std::vector<real> Parameter::getMaxCoordZ()
 {
     return this->maxCoordZ;
 }
-TempforBoundaryConditions *Parameter::getTempH()
+AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCHost()
 {
-    return this->TempH;
+    return this->concentrationNoSlipBCHost;
 }
-TempforBoundaryConditions *Parameter::getTempD()
+AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCDevice()
 {
-    return this->TempD;
+    return this->concentrationNoSlipBCDevice;
 }
-TempVelforBoundaryConditions *Parameter::getTempVelH()
+AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCHost()
 {
-    return this->TempVelH;
+    return this->concentrationDirichletBCHost;
 }
-TempVelforBoundaryConditions *Parameter::getTempVelD()
+AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
 {
-    return this->TempVelD;
-}
-TempPressforBoundaryConditions *Parameter::getTempPressH()
-{
-    return this->TempPressH;
-}
-TempPressforBoundaryConditions *Parameter::getTempPressD()
-{
-    return this->TempPressD;
+    return this->concentrationDirichletBCDevice;
 }
 // QforBoundaryConditions* Parameter::getQinflowH()
 //{

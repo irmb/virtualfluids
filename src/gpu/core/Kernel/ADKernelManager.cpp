@@ -95,11 +95,11 @@ void ADKernelManager::runADgeometryBCKernel(const int level) const
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD.f[0],
-                para->getParD(level)->Temp.temp,
+                para->getParD(level)->AdvectionDiffusionNoSlipBC.concentration,
                 para->getParD(level)->diffusivity,
-                para->getParD(level)->Temp.k,
+                para->getParD(level)->AdvectionDiffusionNoSlipBC.k,
                 para->getParD(level)->geometryBC.q27[0],
-                para->getParD(level)->Temp.kTemp,
+                para->getParD(level)->AdvectionDiffusionNoSlipBC.numberOfBcNodes,
                 para->getParD(level)->omega,
                 para->getParD(level)->neighborX,
                 para->getParD(level)->neighborY,
@@ -110,12 +110,12 @@ void ADKernelManager::runADgeometryBCKernel(const int level) const
 }
 
 void ADKernelManager::runADDirichletBCKernel(const int level) const{
-    if (para->getParD(level)->TempVel.kTemp > 0){
+    if (para->getParD(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes > 0){
             AdvectionDiffusionDirichlet(
                 para->getParD(level)->numberofthreads,
                 para->getParD(level)->distributions.f[0],
                 para->getParD(level)->distributionsAD.f[0],
-                para->getParD(level)->TempVel.tempPulse,
+                para->getParD(level)->AdvectionDiffusionDirichletBC.concentrationBC,
                 para->getParD(level)->diffusivity,
                 para->getParD(level)->velocityBC.k,
                 para->getParD(level)->velocityBC.q27[0],

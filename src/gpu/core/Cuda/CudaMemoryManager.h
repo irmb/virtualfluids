@@ -282,19 +282,15 @@ public:
     void cudaCopyConcentrationHostToDevice(int lev);
     void cudaFreeConcentration(int lev);
 
-    void cudaAllocTempFs(int lev);
+    void cudaAllocConcentrationFs(int lev);
 
-    void cudaAllocTempPressBC(int lev);
-    void cudaCopyTempPressBCHD(int lev);
-    void cudaFreeTempPressBC(int lev);
+    void cudaAllocConcentrationDirichletBC(int lev);
+    void cudaCopyConcentrationDirichletBCHostToDevice(int lev);
+    void cudaFreeConcentrationDirichletBC(int lev);
 
-    void cudaAllocTempVeloBC(int lev);
-    void cudaCopyTempVeloBCHD(int lev);
-    void cudaFreeTempVeloBC(int lev);
-
-    void cudaAllocTempNoSlipBC(int lev);
-    void cudaCopyTempNoSlipBCHD(int lev);
-    void cudaFreeTempNoSlipBC(int lev);
+    void cudaAllocConcentrationNoSlipBC(int lev);
+    void cudaCopyConcentrationNoSlipBCHD(int lev);
+    void cudaFreeConcentrationNoSlipBC(int lev);
 
     void cudaAllocPlaneConcIn(int lev, int numofelem);
     void cudaCopyPlaneConcIn(int lev, int numofelem);
