@@ -1918,19 +1918,19 @@ std::vector<real> Parameter::getMaxCoordZ()
 {
     return this->maxCoordZ;
 }
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getTempH()
+AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCHost()
 {
     return this->concentrationNoSlipBCHost;
 }
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getTempD()
+AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCDevice()
 {
     return this->concentrationNoSlipBCDevice;
 }
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getTempVelH()
+AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCHost()
 {
     return this->concentrationDirichletBCHost;
 }
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getTempVelD()
+AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
 {
     return this->concentrationDirichletBCDevice;
 }

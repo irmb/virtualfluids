@@ -829,10 +829,10 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    AdvectionDiffusionNoSlipBoundaryConditions *getTempH();
-    AdvectionDiffusionNoSlipBoundaryConditions *getTempD();
-    AdvectionDiffusionDirichletBoundaryConditions *getTempVelH();
-    AdvectionDiffusionDirichletBoundaryConditions *getTempVelD();
+    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCHost();
+    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCDevice();
+    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCHost();
+    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCDevice();
     std::vector<SPtr<PreCollisionInteractor>> getActuators();
     //! \returns the probes, e.g. point or plane probe
     std::vector<SPtr<PreCollisionInteractor>> getProbes();
