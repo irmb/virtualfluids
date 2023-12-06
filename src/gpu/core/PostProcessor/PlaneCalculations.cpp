@@ -1,3 +1,32 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//=======================================================================================
 #include "PlaneCalculations.h"
 
 #include <cuda_runtime.h>
@@ -8,6 +37,9 @@
 #include <sstream>
 
 #include <basics/StringUtilities/StringUtil.h>
+
+#include "Cuda/CudaMemoryManager.h"
+#include "Parameter/Parameter.h"
 
 void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
 {
@@ -265,7 +297,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     int lev = para->getCoarse();
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //set filename
-    std::string ffnameIn = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "In" + "_PlaneConc.txt";
+    std::string ffnameIn = para->getFName() + std::to_string(para->getMyProcessID()) + "_" + "In" + "_PlaneConc.txt";
     const char* fnameIn = ffnameIn.c_str();
     //////////////////////////////////////////////////////////////////////////
     //set ofstream
@@ -285,7 +317,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //set filename
-    std::string ffnameOut1 = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "Out1" + "_PlaneConc.txt";
+    std::string ffnameOut1 = para->getFName() + std::to_string(para->getMyProcessID()) + "_" + "Out1" + "_PlaneConc.txt";
     const char* fnameOut1 = ffnameOut1.c_str();
     //////////////////////////////////////////////////////////////////////////
     //set ofstream
@@ -305,7 +337,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //set filename
-    std::string ffnameOut2 = para->getFName() + UbSystem::toString(para->getMyProcessID()) + "_" + "Out2" + "_PlaneConc.txt";
+    std::string ffnameOut2 = para->getFName() + std::to_string(para->getMyProcessID()) + "_" + "Out2" + "_PlaneConc.txt";
     const char* fnameOut2 = ffnameOut2.c_str();
     //////////////////////////////////////////////////////////////////////////
     //set ofstream
