@@ -41,7 +41,7 @@ void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Pa
         for (int level = para->getCoarse(); level <= para->getFine(); level++) {
 #pragma omp parallel for
             for (int timeStep = 0; timeStep < analyticalResult->getNumberOfTimeSteps(); timeStep++) {
-                const unsigned int numberOfParts = FilePartCalculator::calculateNumberOfParts(para->getParH(level)->size_Mat);
+                const unsigned int numberOfParts = FilePartCalculator::calculateNumberOfParts(para->getParH(level)->numberOfNodes);
                 std::vector<std::string> fname;
                 unsigned int time =
                     analyticalResult->getTimeSteps().at(timeStep) * analyticalResult->getTimeStepLength();
@@ -94,7 +94,7 @@ void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter>
     std::vector<double> vz = analyticalResult->getVz()[timeStep];
 
     for (unsigned int part = 0; part < fname.size(); part++) {
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->size_Mat, part);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
 
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);

@@ -2,10 +2,12 @@
 
 #include "Utilities/SimulationInfo/SimulationInfo.h"
 
-#include <iomanip>
 #include <ctime>
+#include <iomanip>
+
 #include <logger/Logger.h>
 
+#include <basics/DataTypes.h>
 
 void log(const char* fmt) {
     VF_LOG_INFO("{}", fmt);

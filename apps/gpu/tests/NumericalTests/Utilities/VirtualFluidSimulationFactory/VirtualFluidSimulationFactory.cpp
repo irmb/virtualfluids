@@ -81,19 +81,8 @@ std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<Simulat
     para->setCalcHighOrderMoments(false);
     para->setReadGeo(false);
     para->setCalcMean(false);
-    para->setConcFile(false);
     para->setUseMeasurePoints(false);
     para->setForcing(0.0, 0.0, 0.0);
-
-    std::vector<int> dist;
-    dist.resize(1);
-    dist[0] = 0;
-    para->setDistX(dist);
-    para->setDistY(dist);
-    para->setDistZ(dist);
-
-    // TODO: Find out if we still need this
-    // para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 
     para->configureMainKernel(simPara->getKernelConfiguration()->getMainKernel());
     para->setMultiKernelOn(simPara->getKernelConfiguration()->getMultiKernelOn());

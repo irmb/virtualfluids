@@ -1,10 +1,13 @@
 #include "LogFileQueueImp.h"
 
-#include "Utilities/LogFileWriter/LogFileWriter.h"
-
 #include <helper_functions.h>
-#include <iomanip>
+
 #include <ctime>
+#include <iomanip>
+
+#include <basics/DataTypes.h>
+
+#include "Utilities/LogFileWriter/LogFileWriter.h"
 
 std::shared_ptr<LogFileQueueImp> LogFileQueueImp::getNewInstance(std::string basicLogFilePath)
 {
