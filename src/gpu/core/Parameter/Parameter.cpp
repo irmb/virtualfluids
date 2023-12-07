@@ -259,6 +259,15 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("NOGL"))
         setMaxLevel(configData.getValue<int>("NOGL"));
 
+    if (configData.contains("GridX"))
+        this->setGridX(configData.getVector<int>("GridX"));
+
+    if (configData.contains("GridY"))
+        this->setGridY(configData.getVector<int>("GridY"));
+
+    if (configData.contains("GridZ"))
+        this->setGridZ(configData.getVector<int>("GridZ"));
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Kernel
     if (configData.contains("MainKernelName"))
@@ -353,6 +362,16 @@ void Parameter::initGridPaths(){
     }
 }
 
+void Parameter::initGridBasePoints()
+{
+    if (this->getGridX().empty())
+        this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridY().empty())
+        this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    if (this->getGridZ().empty())
+        this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
+}
+
 void Parameter::initDefaultLBMkernelAllLevels(){
     if (this->getMultiKernelOn() && this->getMultiKernelLevel().empty()) {
         std::vector<int> tmp;
@@ -377,20 +396,24 @@ void Parameter::initLBMSimulationParameter()
     for (int i = coarse; i <= fine; i++) {
         parH[i]                   = std::make_shared<LBMSimulationParameter>();
         parH[i]->numberofthreads  = 64; // 128;
+        parH[i]->gridNX           = getGridX().at(i);
+        parH[i]->gridNY           = getGridY().at(i);
+        parH[i]->gridNZ           = getGridZ().at(i);
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
         parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
-        parH[i]->isEvenTimestep   = true;
     }
 
     // device
     for (int i = coarse; i <= fine; i++) {
         parD[i]                   = std::make_shared<LBMSimulationParameter>();
         parD[i]->numberofthreads  = parH[i]->numberofthreads;
+        parD[i]->gridNX           = parH[i]->gridNX;
+        parD[i]->gridNY           = parH[i]->gridNY;
+        parD[i]->gridNZ           = parH[i]->gridNZ;
         parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
-        parD[i]->isEvenTimestep   = parH[i]->isEvenTimestep;
     }
 
     checkParameterValidityCumulantK17();
@@ -707,6 +730,18 @@ void Parameter::setIsBodyForce(bool isBodyForce)
     this->isBodyForce = isBodyForce;
 }
 
+void Parameter::setGridX(std::vector<int> GridX)
+{
+    this->GridX = GridX;
+}
+void Parameter::setGridY(std::vector<int> GridY)
+{
+    this->GridY = GridY;
+}
+void Parameter::setGridZ(std::vector<int> GridZ)
+{
+    this->GridZ = GridZ;
+}
 void Parameter::setScaleLBMtoSI(std::vector<real> scaleLBMtoSI)
 {
     this->scaleLBMtoSI = scaleLBMtoSI;
@@ -1429,6 +1464,18 @@ real Parameter::getRe()
 real Parameter::getFactorPressBC()
 {
     return this->factorPressBC;
+}
+std::vector<int> Parameter::getGridX()
+{
+    return this->GridX;
+}
+std::vector<int> Parameter::getGridY()
+{
+    return this->GridY;
+}
+std::vector<int> Parameter::getGridZ()
+{
+    return this->GridZ;
 }
 std::vector<real> Parameter::getScaleLBMtoSI()
 {

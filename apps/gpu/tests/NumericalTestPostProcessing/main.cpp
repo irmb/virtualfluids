@@ -13,6 +13,8 @@
 #include "Utilities/PostProcessingConfigFileReader/PostProcessingConfigFileReaderImp.h"
 #include "Utilities/PostProcessingConfigData/PostProcessingConfigData.h"
 
+#include "basics/DataTypes.h"
+
 #include <memory>
 #include <cfloat>
 #include <cstdio>

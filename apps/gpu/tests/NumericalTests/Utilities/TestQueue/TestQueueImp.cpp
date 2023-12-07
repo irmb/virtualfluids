@@ -4,6 +4,8 @@
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
 #include "Utilities/Test/Test.h"
 
+#include "basics/DataTypes.h"
+
 TestSuiteResult TestQueueImp::run()
 {
     for (const auto& test : tests)

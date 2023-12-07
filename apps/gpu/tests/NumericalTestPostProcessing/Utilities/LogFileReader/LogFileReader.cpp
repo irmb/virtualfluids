@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <string.h>
 
 std::shared_ptr<LogFileReader> LogFileReader::getInstance()
 {

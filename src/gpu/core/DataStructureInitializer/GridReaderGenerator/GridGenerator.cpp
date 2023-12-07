@@ -74,8 +74,14 @@ void GridGenerator::initalGridInformations()
 {
     if (para->getKernelNeedsFluidNodeIndicesToRun())
         builder->findFluidNodes(para->getUseStreams());
+    std::vector<int> gridX, gridY, gridZ;
+    std::vector<int> distX, distY, distZ;
     const int numberOfGridLevels = builder->getNumberOfGridLevels();
+    builder->getGridInformations(gridX, gridY, gridZ, distX, distY, distZ);
     para->setMaxLevel(numberOfGridLevels);
+    para->setGridX(gridX);
+    para->setGridY(gridY);
+    para->setGridZ(gridZ);
 }
 
 void GridGenerator::allocArrays_CoordNeighborGeo()

@@ -41,6 +41,13 @@ class GridScalingKernelManagerTest_Initialization : public testing::Test
 protected:
     GridScalingFactory scalingFactory;
     SPtr<Parameter> para = std::make_shared<Parameter>();
+
+    void SetUp() override
+    {
+        para->setGridX({2, 8});
+        para->setGridY({2, 8});
+        para->setGridZ({2, 8});
+    }
 };
 
 TEST_F(GridScalingKernelManagerTest_Initialization, singleLevel_noScalingFactoryProvided_doesNotThrow)

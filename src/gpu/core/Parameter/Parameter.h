@@ -76,6 +76,9 @@ struct LBMSimulationParameter {
     //! \brief stores the type for every lattice node (f.e. fluid node)
     uint *typeOfGridNode;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief store the grid dimensions of the domain
+    uint gridNX, gridNY, gridNZ;
+    //////////////////////////////////////////////////////////////////////////
     //! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
     //! \brief this information is important because we use an indirect addressing scheme
     uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
@@ -456,6 +459,9 @@ public:
     void setIsBodyForce(bool isBodyForce);
     void setclockCycleForMeasurePoints(real clockCycleForMeasurePoints);
     void setDevices(std::vector<uint> devices);
+    void setGridX(std::vector<int> GridX);
+    void setGridY(std::vector<int> GridY);
+    void setGridZ(std::vector<int> GridZ);
     void setScaleLBMtoSI(std::vector<real> scaleLBMtoSI);
     void setTranslateLBMtoSI(std::vector<real> translateLBMtoSI);
     void setMinCoordX(std::vector<real> MinCoordX);
@@ -640,6 +646,9 @@ public:
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices();
+    std::vector<int> getGridX();
+    std::vector<int> getGridY();
+    std::vector<int> getGridZ();
     std::vector<real> getScaleLBMtoSI();
     std::vector<real> getTranslateLBMtoSI();
     std::vector<real> getMinCoordX();
@@ -722,6 +731,7 @@ public:
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initGridPaths();
+    void initGridBasePoints();
     void initDefaultLBMkernelAllLevels();
 
     void setPathAndFilename(std::string fname);
@@ -790,6 +800,7 @@ private:
     uint timeStepForMeasurePoints{ 10 };
 
     std::vector<uint> devices{ 0, 1 }; // one device with ID = 0
+    std::vector<int> GridX, GridY, GridZ;
     std::vector<real> scaleLBMtoSI, translateLBMtoSI;
     std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
 
