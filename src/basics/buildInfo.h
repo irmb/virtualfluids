@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file buildInfo.h
-//! \ingroup Core
 //! \author Soeren Peters
 //=======================================================================================
 #ifndef buildInfo_H
@@ -35,21 +33,18 @@
 
 namespace buildInfo
 {
-const char *gitCommitHash();
-const char *gitBranch();
-const char *buildType();
-const char *compilerFlags();
-const char *buildMachine();
-const char *projectDir();
-const char *binaryDir();
-} // namespace buildInfo
 
-#define GIT_COMMIT_HASH buildinfo::gitCommitHash()
-#define GIT_BRANCH buildinfo::gitBranch()
-#define BUILD_MACHINE buildinfo::buildMachine()
-#define PROJECT_DIR buildinfo::projectDir()
-#define BINARY_DIR buildinfo::binaryDir()
-#define COMPILER_FLAGS buildinfo::compilerFlags()
-#define BUILD_TYPE buildinfo::buildType()
+const char* gitCommitHash();
+const char* gitBranch();
+const char* buildType();
+const char* compilerFlags();
+const char* compilerFlagWarnings();
+const char* compilerDefinitions();
+const char* buildMachine();
+const char* projectDir();
+const char* binaryDir();
+const char* precision();
+
+} // namespace buildInfo
 
 #endif

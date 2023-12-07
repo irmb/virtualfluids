@@ -26,8 +26,6 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file StringUtil.cpp
-//! \ingroup StringUtilities
 //! \author Konstantin Kutscher, Soeren Textor, Sebastian Geller
 //=======================================================================================
 #include "StringUtil.h"
