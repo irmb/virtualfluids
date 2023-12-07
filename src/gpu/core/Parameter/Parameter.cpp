@@ -72,6 +72,7 @@ Parameter::Parameter(int numberOfProcesses, int myId, std::optional<const vf::ba
         readConfigData(**configData);
 
     initGridPaths();
+    initGridBasePoints();
     initDefaultLBMkernelAllLevels();
 
     this->cudaStreamManager = std::make_unique<CudaStreamManager>();
