@@ -47,9 +47,6 @@ protected:
         para->setGridX({2, 8});
         para->setGridY({2, 8});
         para->setGridZ({2, 8});
-        para->setDistX({0, 0});
-        para->setDistY({0, 0});
-        para->setDistZ({0, 0});
     }
 };
 

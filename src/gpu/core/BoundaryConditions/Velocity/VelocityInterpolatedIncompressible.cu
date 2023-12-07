@@ -38,8 +38,6 @@ using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
 __global__ void VelocityInterpolatedIncompressible_Device(
-    int inx,
-    int iny,
     real* vx,
     real* vy,
     real* vz,

@@ -60,7 +60,6 @@
 #include "Output/InterfaceDebugWriter.hpp"
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/NeighborDebugWriter.hpp"
-#include "Output/VeloASCIIWriter.hpp"
 #include "Parameter/EdgeNodeFinder.h"
 #include "Parameter/Parameter.h"
 #include "PostProcessor/Calc2ndMoments.h"
@@ -73,7 +72,6 @@
 #include "PostProcessor/ForceCalculations.h"
 #include "PostProcessor/KineticEnergyAnalyzer.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
-#include "PostProcessor/PlaneCalculations.h"
 #include "PostProcessor/TurbulenceIntensity.h"
 #include "PreProcessor/InitLattice.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
@@ -119,10 +117,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     gridProvider.setBoundingBox();
 
     para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-    if (para->getDoRestart())
-        para->setStartTurn(para->getTimeDoRestart());
-    else
-        para->setStartTurn((unsigned int)0);
 
     restart_object = std::make_shared<ASCIIRestartObject>();
 
@@ -191,11 +185,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
         allocDragLift(para.get(), cudaMemoryManager.get());
 
     //////////////////////////////////////////////////////////////////////////
-    // Allocate Memory for Plane Conc Calculation
-    //////////////////////////////////////////////////////////////////////////
-    // if (para->getDiffOn()) allocPlaneConc(para.get(), cudaMemoryManager.get());
-
-    //////////////////////////////////////////////////////////////////////////
     // Mean
     //////////////////////////////////////////////////////////////////////////
     if (para->getCalcMean()) {
@@ -247,13 +236,6 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
     ////VF_LOG_INFO("print geo file...");
     // printGeoFile(para, true);  //true for binary
     ////VF_LOG_INFO("done.");
-
-    //////////////////////////////////////////////////////////////////////////
-    // Forcing
-    //////////////////////////////////////////////////////////////////////////
-    ////allocVeloForForcing(para);
-    // VF_LOG_INFO("new object forceCalulator");
-    // forceCalculator = std::make_shared<ForceCalculations>(para.get());
 
     VF_LOG_INFO("init lattice...");
     initLattice(para, preProcessor, preProcessorAD, cudaMemoryManager);
@@ -377,11 +359,6 @@ void Simulation::run()
 
     ////////////////////////////////////////////////////////////////////////////////
     // printDragLift(para);
-    ////////////////////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////////////////////
-    if (para->getDiffOn())
-        printPlaneConc(para.get(), cudaMemoryManager.get());
     ////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -554,52 +531,6 @@ void Simulation::calculateTimestep(uint timestep)
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // get concentration at the plane
-    //////////////////////////////////////////////////////////////////////////////////
-    if (para->getDiffOn() && para->getCalcPlaneConc()) {
-        PlaneConcThS27(para->getParD(0)->ConcPlaneIn,
-                       para->getParD(0)->cpTopIndex,
-                       para->getParD(0)->numberOfPointsCpTop,
-                       para->getParD(0)->typeOfGridNode,
-                       para->getParD(0)->neighborX,
-                       para->getParD(0)->neighborY,
-                       para->getParD(0)->neighborZ,
-                       para->getParD(0)->numberOfNodes,
-                       para->getParD(0)->numberofthreads,
-                       para->getParD(0)->distributionsAD.f[0],
-                       para->getParD(0)->isEvenTimestep);
-        getLastCudaError("PlaneConcThS27 execution failed");
-        PlaneConcThS27( para->getParD(0)->ConcPlaneOut1,
-                        para->getParD(0)->cpBottomIndex,
-                        para->getParD(0)->numberOfPointsCpBottom,
-                        para->getParD(0)->typeOfGridNode,
-                        para->getParD(0)->neighborX,
-                        para->getParD(0)->neighborY,
-                        para->getParD(0)->neighborZ,
-                        para->getParD(0)->numberOfNodes,
-                        para->getParD(0)->numberofthreads,
-                        para->getParD(0)->distributionsAD.f[0],
-                        para->getParD(0)->isEvenTimestep);
-        getLastCudaError("PlaneConcThS27 execution failed");
-        PlaneConcThS27( para->getParD(0)->ConcPlaneOut2,
-                        para->getParD(0)->pressureBC.kN,
-                        para->getParD(0)->pressureBC.numberOfBCnodes,
-                        para->getParD(0)->typeOfGridNode,
-                        para->getParD(0)->neighborX,
-                        para->getParD(0)->neighborY,
-                        para->getParD(0)->neighborZ,
-                        para->getParD(0)->numberOfNodes,
-                        para->getParD(0)->numberofthreads,
-                        para->getParD(0)->distributionsAD.f[0],
-                        para->getParD(0)->isEvenTimestep);
-        getLastCudaError("PlaneConcThS27 execution failed");
-        //////////////////////////////////////////////////////////////////////////////////
-        ////Calculation of concentration at the plane
-        //////////////////////////////////////////////////////////////////////////////////
-        calcPlaneConc(para.get(), cudaMemoryManager.get(), 0);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////
     // File IO
     ////////////////////////////////////////////////////////////////////////////////
@@ -674,8 +605,6 @@ void Simulation::readAndWriteFiles(uint timestep)
             cudaMemoryManager->cudaCopyMeanPrint(lev);
         }
 
-        if (para->getWriteVeloASCIIfiles())
-            VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, timestep);
         //////////////////////////////////////////////////////////////////////////
         std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyProcessID()) + "_t_" + StringUtil::toString<int>(timestep);
         if (this->kineticEnergyAnalyzer)
@@ -712,60 +641,7 @@ void Simulation::readAndWriteFiles(uint timestep)
         ////////////////////////////////////////////////////////////////////////
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////test print press mirror
-    //if (t > para->getTStartOut())
-    //{
-    //    ////////////////////////////////////////////////////////////////////////////////
-    //    //Level 7
-    //    CalcCPtop27(para->getParD(7)->d0SP.f[0],
-    //        para->getParD(7)->cpTopIndex,
-    //        para->getParD(7)->numberOfPointsCpTop,
-    //        para->getParD(7)->cpPressTop,
-    //        para->getParD(7)->neighborX_SP,
-    //        para->getParD(7)->neighborY_SP,
-    //        para->getParD(7)->neighborZ_SP,
-    //        para->getParD(7)->size_Mat_SP,
-    //        para->getParD(7)->evenOrOdd,
-    //        para->getParD(7)->numberofthreads);
-    //    //////////////////////////////////////////////////////////////////////////////////
-    //    calcPressForMirror(para, 7);
-    //    ////////////////////////////////////////////////////////////////////////////////
-    //    //Level 8
-    //    CalcCPtop27(para->getParD(8)->d0SP.f[0],
-    //        para->getParD(8)->cpTopIndex,
-    //        para->getParD(8)->numberOfPointsCpTop,
-    //        para->getParD(8)->cpPressTop,
-    //        para->getParD(8)->neighborX_SP,
-    //        para->getParD(8)->neighborY_SP,
-    //        para->getParD(8)->neighborZ_SP,
-    //        para->getParD(8)->size_Mat_SP,
-    //        para->getParD(8)->evenOrOdd,
-    //        para->getParD(8)->numberofthreads);
-    //    //////////////////////////////////////////////////////////////////////////////////
-    //    calcPressForMirror(para, 8);
-    //    ////////////////////////////////////////////////////////////////////////////////
-    //    //print press mirror
-    //    printScalars(para, false);
-    //    ////////////////////////////////////////////////////////////////////////////////
-    //}
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //t_prev = t;
-    //////////////////////////////////////////////////////////////////////////
-    ////Data Analysis
-    ////AnalysisData::writeAnalysisData(para, t);
-    //AnalysisData::writeAnalysisDataX(para, t);
-    //AnalysisData::writeAnalysisDataZ(para, t);
-    //////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    //pressure difference
-    ////////////////////////////////////////////////////////////////////////
-    //if (para->getMyID() == para->getPressInID())       calcPressure(para,  "in", 0);
-    //else if (para->getMyID() == para->getPressOutID()) calcPressure(para, "out", 0);
-    ////////////////////////////////////////////////////////////////////////
-    //flow rate
-    ////////////////////////////////////////////////////////////////////////
-    //calcFlowRate(para, 0);
-    ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
     //calculate 2nd, 3rd and higher order moments
     ////////////////////////////////////////////////////////////////////////
@@ -844,7 +720,6 @@ Simulation::~Simulation()
     // Temp
     if (para->getDiffOn()) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc_Full));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
             checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.k));
@@ -878,18 +753,6 @@ Simulation::~Simulation()
     //////////////////////////////////////////////////////////////////////////
     //Multi GPU
     //////////////////////////////////////////////////////////////////////////
-    ////1D domain decomposition
-    //if (para->getNumprocs() > 1)
-    //{
-    // for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
-    // {
-    //  for (unsigned int i=0; i < para->getNumberOfProcessNeighbors(lev, "send"); i++)
-    //  {
-    //   para->cudaFreeProcessNeighbor(lev, i);
-    //  }
-    // }
-    //}
-    //////////////////////////////////////////////////////////////////////////
     //3D domain decomposition
     if (para->getNumprocs() > 1) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
@@ -905,13 +768,6 @@ Simulation::~Simulation()
             for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighborZ(lev, i);
             }
-        }
-    }
-    //////////////////////////////////////////////////////////////////////////
-    // Normals
-    if (para->getIsGeoNormal()) {
-        for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            cudaMemoryManager->cudaFreeGeomNormals(lev);
         }
     }
     //////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,8 @@
 #include "Tests/PhiTest/PostProcessingStrategy/PhiTestPostProcessingStrategy.h"
 #include "Tests/PhiTest/PhiTestParameterStruct.h"
 
+#include "basics/DataTypes.h"
+
 #include <iomanip>
 #include <cmath>
 

@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <string.h>
 
 std::shared_ptr<LogFileReader> LogFileReader::getInstance()
 {
@@ -121,7 +122,8 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
         simSigniture << logFileData->getKernel() << "TaylorGreenVortexUzViscosity" << logFileData->getViscosity() << "Uz" << tgvUzUz.at(0) << "Amp" << tgvUzAmp.at(0);
         logFileData->setBasicSimulation(TaylorGreenVortexUz);
     }
-    std::string compatibleString = removeCharsFromString(simSigniture.str(), ".-");
+    char charsToRemove[] = ".-";
+    std::string compatibleString = removeCharsFromString(simSigniture.str(), charsToRemove);
     logFileData->setSimulationSigniture(compatibleString);
 
     std::vector<int> simTime;

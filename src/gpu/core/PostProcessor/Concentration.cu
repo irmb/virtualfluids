@@ -318,17 +318,6 @@ __global__ void GetPlaneConc27(real* Conc, int* kPC, unsigned int numberOfPoints
 }
 
 //////////////////////////////////////////////////////////////////////////
-void PlaneConcThS27(real* Conc, int* kPC, unsigned int numberOfPointskPC, unsigned int* geoD, unsigned int* neighborX,
-                    unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                    unsigned int numberOfThreads, real* DD27, bool isEvenTimestep)
-{
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfPointskPC);
-
-    GetPlaneConc27<<<grid.grid, grid.threads>>>(Conc, kPC, numberOfPointskPC, geoD, neighborX, neighborY, neighborZ,
-                                                numberOfLBnodes, DD27, isEvenTimestep);
-    getLastCudaError("GetPlaneConc27 execution failed");
-}
-
 void CalcConcentration27(unsigned int numberOfThreads, real* Conc, unsigned int* geoD, unsigned int* neighborX,
                          unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes, real* DD27,
                          bool isEvenTimestep)
