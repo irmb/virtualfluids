@@ -430,7 +430,7 @@ trigger-hpc-regression-tests:
     - linux
 
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_PROJECT_NAMESPACE == "irmb"'
       when: always
     - if: '$CI_PROJECT_NAMESPACE != "irmb"'
       when: manual
@@ -624,13 +624,14 @@ sanitizer-memory:
 ##                               Deploy                                      ##
 ###############################################################################
 # doxgen
+# This job only runs on the main branch of the parent repository, not on forks!
 pages:
   stage: deploy
 
   image: alpine
 
   only:
-    - develop@irmb/VirtualFluids_dev
+    - main@irmb/VirtualFluids
 
   needs: []
 
@@ -648,7 +649,7 @@ pages:
 
 # sonar-scanner runs sonar-project.properties
 # the reports in this file need to match the artifacts.
-# This job only runs on the development branch of the parent repository, not on forks!
+# This job only runs on the main branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
 
@@ -656,8 +657,7 @@ sonar-scanner:
     - linux
 
   only:
-    #- develop
-    - develop@irmb/VirtualFluids_dev
+    - main@irmb/VirtualFluids
 
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
