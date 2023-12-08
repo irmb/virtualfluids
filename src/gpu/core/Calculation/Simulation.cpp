@@ -774,13 +774,13 @@ Simulation::~Simulation()
     // Turbulence Intensity
     if (para->getCalcTurbulenceIntensity()) {
         cudaFreeTurbulenceIntensityArrays(para.get(), cudaMemoryManager.get());
+    }
 
-        for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
-            actuator->free(para.get(), cudaMemoryManager.get());
-        }
+    for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
+        actuator->free(para.get(), cudaMemoryManager.get());
+    }
 
-        for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
-            probe->free(para.get(), cudaMemoryManager.get());
-        }
+    for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
+        probe->free(para.get(), cudaMemoryManager.get());
     }
 }
