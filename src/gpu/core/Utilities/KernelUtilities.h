@@ -294,32 +294,33 @@ __device__ __inline__ void getPreCollisionDistribution(real* local, const Distri
 __device__ __inline__ void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
     local[d000] = (global.f[d000])[indices.k_000];
-    local[dP00] = (global.f[dP00])[indices.k_000];
-    local[dM00] = (global.f[dM00])[indices.k_M00];
-    local[d0P0] = (global.f[d0P0])[indices.k_000];
-    local[d0M0] = (global.f[d0M0])[indices.k_0M0];
-    local[d00P] = (global.f[d00P])[indices.k_000];
-    local[d00M] = (global.f[d00M])[indices.k_00M];
-    local[dPP0] = (global.f[dPP0])[indices.k_000];
-    local[dMM0] = (global.f[dMM0])[indices.k_MM0];
-    local[dPM0] = (global.f[dPM0])[indices.k_0M0];
-    local[dMP0] = (global.f[dMP0])[indices.k_M00];
-    local[dP0P] = (global.f[dP0P])[indices.k_000];
-    local[dM0M] = (global.f[dM0M])[indices.k_M0M];
-    local[dP0M] = (global.f[dP0M])[indices.k_00M];
-    local[dM0P] = (global.f[dM0P])[indices.k_M00];
-    local[d0PP] = (global.f[d0PP])[indices.k_000];
-    local[d0MM] = (global.f[d0MM])[indices.k_0MM];
-    local[d0PM] = (global.f[d0PM])[indices.k_00M];
-    local[d0MP] = (global.f[d0MP])[indices.k_0M0];
-    local[dPPP] = (global.f[dPPP])[indices.k_000];
-    local[dMPP] = (global.f[dMPP])[indices.k_M00];
-    local[dPMP] = (global.f[dPMP])[indices.k_0M0];
-    local[dMMP] = (global.f[dMMP])[indices.k_MM0];
-    local[dPPM] = (global.f[dPPM])[indices.k_00M];
-    local[dMPM] = (global.f[dMPM])[indices.k_M0M];
-    local[dPMM] = (global.f[dPMM])[indices.k_0MM];
-    local[dMMM] = (global.f[dMMM])[indices.k_MMM];
+    local[dM00] = (global.f[dP00])[indices.k_000];
+    local[dP00] = (global.f[dM00])[indices.k_M00];
+    local[d0M0] = (global.f[d0P0])[indices.k_000];
+    local[d0P0] = (global.f[d0M0])[indices.k_0M0];
+    local[d00M] = (global.f[d00P])[indices.k_000];
+    local[d00P] = (global.f[d00M])[indices.k_00M];
+    local[dMM0] = (global.f[dPP0])[indices.k_000];
+    local[dPP0] = (global.f[dMM0])[indices.k_MM0];
+    local[dMP0] = (global.f[dPM0])[indices.k_0M0];
+    local[dPM0] = (global.f[dMP0])[indices.k_M00];
+    local[dM0M] = (global.f[dP0P])[indices.k_000];
+    local[dP0P] = (global.f[dM0M])[indices.k_M0M];
+    local[dM0P] = (global.f[dP0M])[indices.k_00M];
+    local[dP0M] = (global.f[dM0P])[indices.k_M00];
+    local[d0MM] = (global.f[d0PP])[indices.k_000];
+    local[d0PP] = (global.f[d0MM])[indices.k_0MM];
+    local[d0MP] = (global.f[d0PM])[indices.k_00M];
+    local[d0PM] = (global.f[d0MP])[indices.k_0M0];
+    local[dMMM] = (global.f[dPPP])[indices.k_000];
+    local[dPMM] = (global.f[dMPP])[indices.k_M00];
+    local[dMPM] = (global.f[dPMP])[indices.k_0M0];
+    local[dPPM] = (global.f[dMMP])[indices.k_MM0];
+    local[dMMP] = (global.f[dPPM])[indices.k_00M];
+    local[dPMP] = (global.f[dMPM])[indices.k_M0M];
+    local[dMPP] = (global.f[dPMM])[indices.k_0MM];
+    local[dPPP] = (global.f[dMMM])[indices.k_MMM];
+}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
