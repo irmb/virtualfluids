@@ -296,7 +296,7 @@ regression_test_4gpu:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket4GPU.yml --read-jobid-from hpcrocket4GPU.log
 
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - output/4GPU/*
       - hpcrocket4GPU.log
@@ -331,7 +331,7 @@ regression_test_8gpu:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket8GPU.yml --read-jobid-from hpcrocket8GPU.log
 
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - output/8GPU/*
       - hpcrocket8GPU.log
@@ -435,59 +435,6 @@ trigger-hpc-regression-tests:
     - if: '$CI_PROJECT_NAMESPACE != "irmb"'
       when: manual
       allow_failure: true
-
-
-clang_build_analyzer:
-  extends: .analyze_template
-
-  before_script:
-    - export CC=clang
-    - export CXX=clang++
-    - $CXX --version
-    - cd /tmp
-    - git clone https://github.com/aras-p/ClangBuildAnalyzer.git
-    - cd ClangBuildAnalyzer
-    - cmake .
-    - make
-    - export PATH+=:$(pwd)
-
-  script:
-    - mkdir -p $CI_PROJECT_DIR/build
-    - cd $CI_PROJECT_DIR/build
-    - cmake ..
-      --preset=make_all
-      -DCMAKE_CUDA_ARCHITECTURES=60
-      -DCMAKE_CXX_FLAGS=-ftime-trace
-    - ClangBuildAnalyzer --start .
-    - make
-    - ClangBuildAnalyzer --stop . CBA
-    - ClangBuildAnalyzer --analyze CBA
-
-###############################################################################
-include_what_you_use_clang_15:
-  extends: .analyze_template
-
-  before_script:
-    - apt-get update && apt-get install -y libclang-15-dev llvm-15-dev
-    - export CC=clang
-    - export CXX=clang++
-    - $CXX --version
-    - cd /tmp
-    - git clone https://github.com/include-what-you-use/include-what-you-use.git
-    - cd include-what-you-use
-    - git checkout clang_15
-    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15
-    - make
-    - export PATH+=:$(pwd)/bin
-
-  script:
-    - mkdir -p $CI_PROJECT_DIR/build
-    - cd $CI_PROJECT_DIR/build
-    - cmake ..
-      --preset=make_all
-      -DCMAKE_CUDA_ARCHITECTURES=60
-      -DVF_ENABLE_INCLUDE_WHAT_YOU_USE=ON
-    - make
 
 ###############################################################################
 cppcheck:
