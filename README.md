@@ -19,8 +19,8 @@ VirtualFluids is research software and developed at research institutions.
 You can cite specific releases via Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10283049.svg)](https://doi.org/10.5281/zenodo.10283049).
 
 ## Contributing
-Contributions are highly welcome. Please review the [contribution guidelines](https://git.rz.tu-bs.de/irmb/virtualfluids/-/wikis/Contributing) before opening issues and merge requests. 
+Contributions are highly welcome. Please review the [contribution guidelines](https://git.rz.tu-bs.de/irmb/virtualfluids/-/wikis/Contributing) before opening issues and merge requests.
 
-
-## Known Issues
 If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new).
+
+ We are maintaining a [mailing list](https://lists.tu-braunschweig.de/sympa/subscribe/virtualfluids) for users of VirtualFluids. You can subscribe to the mailing list to receive news about new releases and other important information. If you have any further questions you can contact us via [email](mailto:vf-team@irmb.tu-bs.de).
