@@ -321,7 +321,6 @@ __device__ __inline__ void getPostCollisionDistribution(real* local, const Distr
     local[dMPP] = (global.f[dPMM])[indices.k_0MM];
     local[dPPP] = (global.f[dMMM])[indices.k_MMM];
 }
-}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Write distributions: style of reading and writing the distributions from/to
