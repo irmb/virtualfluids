@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         const real velocityLB = (real)0.5e-2; // LB units
         const uint numberOfNodesSphere = 10;
         const real dSphere =
-            0.2; // Caution, when using an STL for the sphere, this setting does not change the size of the sphere
+            0.2; // Caution, this App uses an STL for the sphere, so this setting does not change the size of the sphere
 
         const uint timeStepOut = 10000;
         const uint timeStepEnd = 10000;
