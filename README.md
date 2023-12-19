@@ -2,13 +2,14 @@
 
  [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![Latest Release](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/badges/release.svg)](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/releases) 
 [![pipeline status](https://git.rz.tu-bs.de/irmb/VirtualFluids/badges/main/pipeline.svg)](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/commits/main)
+[![Doxygen documentation](https://img.shields.io/badge/documentation-doxygen-blue.svg)](https://irmb.gitlab-pages.rz.tu-bs.de/VirtualFluids/)
 
 VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB) at the Technical University Braunschweig. The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent, thermal, multiphase and multicomponent flow problems as well as for multi-field problems such as Fluid-Structure-interaction. It includes distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
 
 
 ## Documentation
-You can find more information about the code in the [wiki](https://git.rz.tu-bs.de/irmb/virtualfluids/-/wikis/home).
-The wiki contains information about the installation, usage and development of VirtualFluids.
+You can find more information about the code in the [Documentation pages](https://irmb.gitlab-pages.rz.tu-bs.de/VirtualFluids/).
+The pages contains information about the installation, usage and development of VirtualFluids.
 
 ## License
 VirtualFluids is licensed under the terms and conditions of the GNU General Public License (GPL) version 3 or - at your choice - any later.
