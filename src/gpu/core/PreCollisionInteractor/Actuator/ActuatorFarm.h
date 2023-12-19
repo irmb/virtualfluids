@@ -6,7 +6,6 @@
 #include <basics/constants/NumericConstants.h>
 #include <stdexcept>
 
-class Parameter;
 class GridProvider;
 using namespace vf::basics::constant;
 

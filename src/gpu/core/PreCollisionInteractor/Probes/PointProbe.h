@@ -45,22 +45,22 @@ class PointProbe: public Probe
 {
 public:
     PointProbe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        uint _tStartAvg,
-        uint _tAvg,
-        uint _tStartOut,
-        uint _tOut,
-        bool _outputTimeseries = false
-    ): Probe(_probeName, 
-             _outputPath,
-             _tStartAvg, 
+        const std::string probeName,
+        const std::string outputPath,
+        uint tStartAvg,
+        uint tAvg,
+        uint tStartOut,
+        uint tOut,
+        bool outputTimeseries = false
+    ): Probe(probeName, 
+             outputPath,
+             tStartAvg, 
              0,
-             _tAvg,
-             _tStartOut, 
-             _tOut,
+             tAvg,
+             tStartOut, 
+             tOut,
              true,
-             _outputTimeseries)
+             outputTimeseries)
     {}
 
     ~PointProbe() = default;

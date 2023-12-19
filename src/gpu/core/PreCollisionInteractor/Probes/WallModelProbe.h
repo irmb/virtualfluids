@@ -49,24 +49,24 @@ class WallModelProbe : public Probe
 {
 public: 
     WallModelProbe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        uint _tStartAvg,
-        uint _tStartTmpAvg,
-        uint _tAvg,
-        uint _tStartOut,
-        uint _tOut
-    ):  Probe(_probeName, 
-            _outputPath,
-            _tStartAvg,
-            _tStartTmpAvg,
-            _tAvg,
-            _tStartOut, 
-            _tOut,
+        const std::string probeName,
+        const std::string outputPath,
+        uint tStartAvg,
+        uint tStartTmpAvg,
+        uint tAvg,
+        uint tStartOut,
+        uint tOut
+    ):  Probe(probeName, 
+            outputPath,
+            tStartAvg,
+            tStartTmpAvg,
+            tAvg,
+            tStartOut, 
+            tOut,
             false,
             true)
     {
-        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
+        if (tStartTmpAvg<tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
     }
 
     ~WallModelProbe() = default;

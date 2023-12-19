@@ -51,13 +51,13 @@ __global__ void moveIndicesInPosNormalDir( uint* pointIndices, uint nPoints, uin
 class PlanarAverageProbe : public Probe
 {
 public:
-    PlanarAverageProbe(const std::string _probeName, const std::string _outputPath, uint _tStartAvg, uint _tStartTmpAvg,
-                       uint _tAvg, uint _tStartOut, uint _tOut, char _planeNormal)
-        : Probe(_probeName, _outputPath, _tStartAvg, _tStartTmpAvg, _tAvg, _tStartOut, _tOut, false, false),
-          planeNormal(_planeNormal)
+    PlanarAverageProbe(const std::string probeName, const std::string outputPath, uint tStartAvg, uint tStartTmpAvg,
+                       uint tAvg, uint tStartOut, uint tOut, char planeNormal)
+        : Probe(probeName, outputPath, tStartAvg, tStartTmpAvg, tAvg, tStartOut, tOut, false, false),
+          planeNormal(planeNormal)
     {
-        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
-        if(!(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z')) 
+        if (tStartTmpAvg<tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
+        if(!(planeNormal == 'x' || planeNormal == 'y' || planeNormal == 'z')) 
             throw std::runtime_error("PlanarAverageProbe: planeNormal must be 'x', 'y' or 'z'!");
     }
     ~PlanarAverageProbe() = default;

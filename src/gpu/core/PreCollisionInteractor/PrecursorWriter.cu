@@ -33,8 +33,6 @@
 #include "PrecursorWriter.h"
 #include "basics/writer/WbWriterVtkXmlImageBinary.h"
 
-#include <cuda.h>
-#include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include <cuda_helper/CudaGrid.h>
 #include "Utilities/KernelUtilities.h"

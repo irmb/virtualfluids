@@ -139,30 +139,29 @@ class Probe : public PreCollisionInteractor
 {
 public:
     Probe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        const uint _tStartAvg,
-        const uint _tStartTmpAvg,
-        const uint _tAvg,
-        const uint _tStartOut,
-        const uint _tOut,
-        const bool _hasDeviceQuantityArray,
-        const bool _outputTimeSeries
-    ):  probeName(_probeName),
-        outputPath(_outputPath + (_outputPath.back() == '/' ? "" : "/")),
-        tStartAvg(_tStartAvg),
-        tStartTmpAveraging(_tStartTmpAvg),
-        tAvg(_tAvg),
-        tStartOut(_tStartOut),
-        tOut(_tOut),
-        hasDeviceQuantityArray(_hasDeviceQuantityArray),
-        outputTimeSeries(_outputTimeSeries),
-        PreCollisionInteractor()
+        const std::string probeName,
+        const std::string outputPath,
+        const uint tStartAvg,
+        const uint tStartTmpAvg,
+        const uint tAvg,
+        const uint tStartOut,
+        const uint tOut,
+        const bool hasDeviceQuantityArray,
+        const bool outputTimeSeries
+    ):  probeName(probeName),
+        outputPath(outputPath + (outputPath.back() == '/' ? "" : "/")),
+        tStartAvg(tStartAvg),
+        tStartTmpAveraging(tStartTmpAvg),
+        tAvg(tAvg),
+        tStartOut(tStartOut),
+        tOut(tOut),
+        hasDeviceQuantityArray(hasDeviceQuantityArray),
+        outputTimeSeries(outputTimeSeries)
     {
-        if (tStartOut < tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
+        if (tStartOut < tStartAvg) throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
 
-    virtual ~Probe();
+    ~Probe();
     void init() override;
     void interact(int level, uint t) override;
 

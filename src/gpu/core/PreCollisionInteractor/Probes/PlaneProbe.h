@@ -47,33 +47,33 @@ class PlaneProbe : public Probe
 {
 public: 
     PlaneProbe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        uint _tStartAvg,
-        uint _tAvg,
-        uint _tStartOut,
-        uint _tOut
-    ): Probe(_probeName, 
-             _outputPath,
-             _tStartAvg, 
-             _tStartAvg+1,
-             _tAvg,
-             _tStartOut, 
-             _tOut,
+        const std::string probeName,
+        const std::string outputPath,
+        uint tStartAvg,
+        uint tAvg,
+        uint tStartOut,
+        uint tOut
+    ): Probe(probeName, 
+             outputPath,
+             tStartAvg, 
+             tStartAvg+1,
+             tAvg,
+             tStartOut, 
+             tOut,
              true,
              false)
     {}
 
     ~PlaneProbe() = default;
 
-    void setProbePlane(real _posX, real _posY, real _posZ, real _deltaX, real _deltaY, real _deltaZ)
+    void setProbePlane(real posX, real posY, real posZ, real deltaX, real deltaY, real deltaZ)
     {
-        this->posX = _posX; 
-        this->posY = _posY; 
-        this->posZ = _posZ;         
-        this->deltaX = _deltaX; 
-        this->deltaY = _deltaY; 
-        this->deltaZ = _deltaZ; 
+        this->posX = posX; 
+        this->posY = posY; 
+        this->posZ = posZ;         
+        this->deltaX = deltaX; 
+        this->deltaY = deltaY; 
+        this->deltaZ = deltaZ; 
     }
 
     void getTaggedFluidNodes(GridProvider* gridProvider) override;
