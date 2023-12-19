@@ -579,8 +579,8 @@ sanitizer-memory:
 pages:
   stage: deploy
 
-  only:
-    - main@irmb/VirtualFluids
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "irmb" || $CI_PROJECT_NAMESPACE == "soe.peters"'
 
   needs: []
 
@@ -607,8 +607,8 @@ sonar-scanner:
   tags:
     - linux
 
-  only:
-    - main@irmb/VirtualFluids
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "irmb"'
 
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
