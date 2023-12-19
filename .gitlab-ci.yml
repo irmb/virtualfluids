@@ -580,7 +580,7 @@ pages:
   stage: deploy
 
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "irmb" || $CI_PROJECT_NAMESPACE == "soe.peters"'
+    - if: '$CI_PROJECT_NAMESPACE == "irmb"'
 
   needs: []
 
