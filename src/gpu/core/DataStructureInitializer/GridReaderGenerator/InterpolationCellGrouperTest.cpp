@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_DataStructureInitializer_tests DataStructureInitializer
+//! \ingroup gpu_core_tests core
+//! \{
 //! \author Anna Wellmann
 //! \details See [master thesis of Anna Wellmann]
 //=======================================================================================
@@ -280,3 +283,5 @@ TEST_F(InterpolationCellGrouperTest_IndicesFCBorderBulkTest, splitFineToCoarseIn
     EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFineToCoarse.z, fc.neighborz_Border_expected));
     EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->neighborFineToCoarseBulk.z, fc.neighborz_Bulk_expected));
 }
+
+//! \}

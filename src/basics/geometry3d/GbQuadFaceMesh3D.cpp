@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file GbQuadFaceMesh3D.cpp
-//! \ingroup geometry3D
+//! \addtogroup geometry3d
+//! \ingroup basics
+//! \{
 //! \author Konstantin Kutscher, Soeren Textor, Sebastian Geller
 //=======================================================================================
 #include <geometry3d/GbQuadFaceMesh3D.h>
@@ -340,3 +341,5 @@ GbLine3D *GbQuadFaceMesh3D::createClippedLine3D(GbPoint3D & /*point1*/, GbPoint3
 {
     throw UbException(UB_EXARGS, "not implemented");
 }
+
+//! \}

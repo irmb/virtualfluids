@@ -25,6 +25,8 @@ RUN apt-get update &&   \
     python3-pip         \
     python3.11-dev      \
     cppcheck            \
+    # needed for doxygen
+    flex bison          \ 
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
     && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100 \
@@ -45,5 +47,7 @@ RUN apt-get update &&   \
         ansible          \
         'jinja2<3.1'     \
         gcovr==6.0       \
-        lizard==1.17.10
-
+        lizard==1.17.10  \
+    && wget https://www.doxygen.nl/files/doxygen-1.9.8.src.tar.gz && tar -xvf doxygen-1.9.8.src.tar.gz \
+    && cd doxygen-1.9.8 && mkdir build && cd build && cmake -G "Unix Makefiles" .. && make -j8 && make install
+# flex and bison apt packages are needed for doxygen

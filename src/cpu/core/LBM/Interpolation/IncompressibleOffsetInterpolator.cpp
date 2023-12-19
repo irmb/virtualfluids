@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file IncompressibleOffsetInterpolator.cpp
-//! \ingroup Interpolation
+//! \addtogroup cpu_LBM LBM
+//! \ingroup cpu_core core
+//! \{
 //! \author Konstantin Kutscher
 //=======================================================================================
 
@@ -843,3 +844,5 @@ void IncompressibleOffsetInterpolator::calcInterpolatedShearStress(real x, real 
     tauxz=c1o2*((az+c2o1*azz*z+axz*x+ayz*y+axyz*x*y)+(cx+c2o1*cxx*x+cxy*y+cxz*z+cxyz*y*z));
     tauyz=c1o2*((bz+c2o1*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+c2o1*cyy*y+cxy*x+cyz*z+cxyz*x*z));
 }
+
+//! \}
