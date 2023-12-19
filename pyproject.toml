@@ -29,6 +29,7 @@ logging.level = "INFO"
 
 [tool.scikit-build.wheel]
 packages = ["pythonbindings/pyfluids", "pythonbindings/pyfluids-stubs", "pythonbindings/pymuparser"]
+license-files = ["COPYING.txt", "LICENSES/*"]
 
 [tool.scikit_build.cmake]
 verbose = true
@@ -36,9 +37,6 @@ build-type = "Release"
 
 [tool.scikit-build.cmake.define]
 VF_ENABLE_PYTHON_BINDINGS = "ON"
-BUILD_SHARED_LIBS = "OFF"
-VF_ENABLE_UNIT_TESTS = "OFF"
-VF_ENABLE_WARNINGS_AS_ERRORS = "OFF"
 
 
 [mypy]
