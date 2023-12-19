@@ -373,7 +373,11 @@ gpu_numerical_tests:
     - cd /tmp
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
-    - git sparse-checkout set numerical_tests_gpu/grids numerical_tests_gpu/grids
+    - git sparse-checkout set numerical_tests_gpu/grids numerical_tests_gpu/grids 
+    - cd /tmp && wget https://fftw.org/fftw-3.3.10.tar.gz
+    - tar -xzf fftw-3.3.10.tar.gz && cd fftw-3.3.10
+    - ./configure && make && make install
+    - apt-get update && apt-get install -y pkg-config # used for finding fftw in cmake
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
     - ccache -s
