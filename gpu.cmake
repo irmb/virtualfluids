@@ -67,7 +67,6 @@ if(VF_GPU_ENABLE_NUMERIC_TESTS)
         add_subdirectory(${VF_THIRD_DIR}/googletest)
     endif()
 
-    add_subdirectory(3rdParty/fftw/fftw-3.3.7)
     add_subdirectory(apps/gpu/tests/NumericalTests)
     add_subdirectory(apps/gpu/tests/NumericalTestPostProcessing)
 endif()
