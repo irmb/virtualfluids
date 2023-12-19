@@ -178,7 +178,7 @@ bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
 
 real Probe::getNondimensionalConversionFactor(int level){ return c1o1; }
 
-void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
+void Probe::init(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     using std::placeholders::_1;
     this->velocityRatio      = std::bind(&Parameter::getScaledVelocityRatio,        para, _1); 
@@ -200,7 +200,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::vector<real> pointCoordsY_level;
         std::vector<real> pointCoordsZ_level;
         
-        this->findPoints(para, gridProvider, probeIndices_level, distX_level, distY_level, distZ_level,      
+        this->findPoints(para, probeIndices_level, distX_level, distY_level, distZ_level,      
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
         

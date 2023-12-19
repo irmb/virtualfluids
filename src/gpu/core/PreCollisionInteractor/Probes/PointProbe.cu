@@ -68,7 +68,7 @@ std::vector<PostProcessingVariable> PointProbe::getPostProcessingVariables(Stati
     return postProcessingVariables;
 }
 
-void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+void PointProbe::findPoints(Parameter* para, std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level)

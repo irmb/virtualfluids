@@ -165,7 +165,7 @@ __global__ void applyBodyForces(GridData gridData, const TurbineData turbineData
     gridData.fz[gridIndex] += gridForceZ;
 }
 
-void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
+void ActuatorFarm::init(Parameter* para, CudaMemoryManager* cudaManager)
 {
     if (!para->getIsBodyForce())
         throw std::runtime_error("try to allocate ActuatorFarm but BodyForce is not set in Parameter.");

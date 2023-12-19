@@ -162,7 +162,7 @@ public:
         if (tStartOut < tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
 
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
+    void init(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
 
@@ -185,7 +185,7 @@ private:
 
     virtual std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) = 0;
 
-    virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+    virtual void findPoints(Parameter* para, std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level) = 0;

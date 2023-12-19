@@ -143,7 +143,7 @@ __global__ void fillArrayDistributions( uint numberOfPrecursorNodes,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
+void PrecursorWriter::init(Parameter* para, CudaMemoryManager* cudaManager)
 {
     VF_LOG_INFO("PrecursorWriter: Start initializing...");
     VF_LOG_INFO("Writing yz-planes at x={}m every {}. timestep, starting at t={}", this->xPos, this->tSave, this->tStartOut);
