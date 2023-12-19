@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_Parameter_tests Parameter
+//! \ingroup gpu_core_tests core
+//! \{
 //! \author Anna Wellmann
 //! \brief Functions for finding edge nodes in the multi-gpu implementation
 //! \details Edge nodes are nodes, which are part of the communication in multiple directions
@@ -191,3 +194,5 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForYZ)
     EXPECT_TRUE(compareEdgeNodesSend(para->parH[level]->edgeNodesYtoZ, expectedEdgeNodesYtoZSend))
         << "the edgeNodesYtoZ for the send process do not match the expected nodes";
 }
+
+//! \}

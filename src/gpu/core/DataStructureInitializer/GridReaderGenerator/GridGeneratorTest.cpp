@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_DataStructureInitializer_tests DataStructureInitializer
+//! \ingroup gpu_core_tests core
+//! \{
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "GridGenerator.h"
@@ -170,3 +173,5 @@ TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenCommunicationInX_s
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
 }
+
+//! \}

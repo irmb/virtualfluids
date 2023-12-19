@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_Utilities_tests Utilities
+//! \ingroup gpu_core_tests core
+//! \{
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "GeometryUtils.h"
@@ -330,3 +333,4 @@ TEST(GeometryUtilsTest, inverseRotateAboutX3dWithOrigin)
     EXPECT_THAT(newPosY, RealNear(1.0, 10e-5));
     EXPECT_THAT(newPosZ, RealNear(1.0, 10e-5));
 }
+//! \}

@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file VelocityBCs27.cu
-//! \ingroup GPU
+//! \addtogroup gpu_BoundaryConditions BoundaryConditions
+//! \ingroup gpu_core core
+//! \{
 //! \author Martin Schoenherr, Anna Wellmann
 //======================================================================================
 #include "Calculation/Calculation.h" 
@@ -182,3 +183,5 @@ __global__ void VelocityBounceBack_Device(
       q = (subgridD.q[dMPP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[dPMM])[kbse]=f_TNW + c1o36 * ( VeloX - VeloY - VeloZ);
    }
 }
+
+//! \}

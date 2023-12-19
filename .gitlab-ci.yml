@@ -26,7 +26,7 @@
 #  You should have received a copy of the GNU General Public License along
 #  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>
 # #######################################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.2
 
 stages:
   - build
@@ -579,16 +579,16 @@ sanitizer-memory:
 pages:
   stage: deploy
 
-  image: alpine
-
   only:
     - main@irmb/VirtualFluids
 
   needs: []
 
+  before_script:
+    - doxygen --version
+
   script:
-  - apk update && apk add doxygen
-  - doxygen docs/Doxyfile
+  - doxygen docs/doxygen/Doxyfile
   - mv docs/build/html/ public/
 
   artifacts:
