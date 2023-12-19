@@ -39,6 +39,8 @@
 #ifndef WallModelProbe_H
 #define WallModelProbe_H
 
+#include <basics/PointerDefinitions.h>
+
 #include "Probe.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +69,8 @@ public:
         if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
     }
 
+    ~WallModelProbe() = default;
+
 
     void setForceOutputToStress(bool _outputStress){ this->outputStress = _outputStress; }
     void setEvaluatePressureGradient(bool _evalPressGrad){ this->evaluatePressureGradient = _evalPressGrad; }
@@ -76,13 +80,13 @@ private:
 
     std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
 
-    void findPoints(Parameter* para, std::vector<int>& probeIndices_level,
+    void findPoints(std::vector<int>& probeIndices_level,
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override {};
-    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override {};
+    uint getNumberOfTimestepsInTimeseries(int level) override;
 
 private:
     bool outputStress = false; //!> if true, output wall force is converted to a stress 

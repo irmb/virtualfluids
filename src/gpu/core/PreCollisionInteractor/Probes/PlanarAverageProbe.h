@@ -60,18 +60,19 @@ public:
         if(!(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z')) 
             throw std::runtime_error("PlanarAverageProbe: planeNormal must be 'x', 'y' or 'z'!");
     }
+    ~PlanarAverageProbe() = default;
 
 private:
     bool isAvailableStatistic(Statistic _variable) override;
 
     std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
 
-    void findPoints(Parameter* para, std::vector<int>& probeIndices_level,
+    void findPoints(std::vector<int>& probeIndices_level,
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override {};
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override {};
 
 
 private:

@@ -110,16 +110,18 @@ public:
     tStartOut(_tStartOut), 
     tSave(_tSave),
     outputVariable(_outputVariable),
-    maxtimestepsPerFile(_maxTimestepsPerFile)
+    maxtimestepsPerFile(_maxTimestepsPerFile),
+    PreCollisionInteractor()
     {
         nodedatanames = determineNodeDataNames();
         writeFuture = std::async([](){});
     };
 
-    void init(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    ~PrecursorWriter();
+
+    void init() override;
+    void interact(int level, uint t) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
     OutputVariable getOutputVariable(){ return this->outputVariable; }
 
@@ -130,7 +132,7 @@ public:
     
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
-    void write(Parameter* para, int level, uint numberOfTimestepsBuffered);
+    void write(int level, uint numberOfTimestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {

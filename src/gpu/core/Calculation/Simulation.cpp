@@ -136,13 +136,13 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
     for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
-        actuator->init(para.get(), cudaMemoryManager.get());
-        actuator->getTaggedFluidNodes(para.get(), &gridProvider);
+        actuator->initInteractor(para, cudaMemoryManager);
+        actuator->getTaggedFluidNodes(&gridProvider);
     }
 
     for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
-        probe->init(para.get(), cudaMemoryManager.get());
-        probe->getTaggedFluidNodes(para.get(), &gridProvider);
+        probe->initInteractor(para, cudaMemoryManager);
+        probe->getTaggedFluidNodes(&gridProvider);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -774,13 +774,5 @@ Simulation::~Simulation()
     // Turbulence Intensity
     if (para->getCalcTurbulenceIntensity()) {
         cudaFreeTurbulenceIntensityArrays(para.get(), cudaMemoryManager.get());
-    }
-
-    for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
-        actuator->free(para.get(), cudaMemoryManager.get());
-    }
-
-    for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
-        probe->free(para.get(), cudaMemoryManager.get());
     }
 }

@@ -49,11 +49,11 @@ public:
         azimuths = std::vector<real>(numberOfTurbines, 0.0);
     }
 
-    ~ActuatorFarm() override = default;
-    void init(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    ~ActuatorFarm();
+
+    void init() override;
+    void interact(int level, uint t) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
     void enableOutput(const std::string outputName, uint tStart, uint tOut) {
         this->outputName = outputName;
@@ -137,13 +137,13 @@ public:
     virtual void updateForcesAndCoordinates()=0;
 
 private:
-    void initTurbineGeometries(CudaMemoryManager* cudaManager);
-    void initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaManager);
-    void initBladeCoords(CudaMemoryManager* cudaManager);
-    void initBladeVelocities(CudaMemoryManager* cudaManager);
-    void initBladeForces(CudaMemoryManager* cudaManager);
-    void initBladeIndices(CudaMemoryManager* cudaManager);
-    std::string getFilename(Parameter* para, uint t) const;
+    void initTurbineGeometries();
+    void initBoundingSpheres();
+    void initBladeCoords();
+    void initBladeVelocities();
+    void initBladeForces();
+    void initBladeIndices();
+    std::string getFilename(uint t) const;
     void swapDeviceArrays();
 
 public:

@@ -39,6 +39,8 @@
 #ifndef PlaneProbe_H
 #define PlaneProbe_H
 
+#include <logger/Logger.h>
+
 #include "Probe.h"
 
 class PlaneProbe : public Probe
@@ -62,6 +64,8 @@ public:
              false)
     {}
 
+    ~PlaneProbe() = default;
+
     void setProbePlane(real _posX, real _posY, real _posZ, real _deltaX, real _deltaY, real _deltaZ)
     {
         this->posX = _posX; 
@@ -72,18 +76,18 @@ public:
         this->deltaZ = _deltaZ; 
     }
 
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
 private:
     bool isAvailableStatistic(Statistic _variable) override;
 
     std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
 
-    void findPoints(Parameter* para, std::vector<int>& probeIndices_level,
+    void findPoints(std::vector<int>& probeIndices_level,
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
 
 private:
     real posX, posY, posZ;

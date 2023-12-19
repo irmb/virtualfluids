@@ -63,25 +63,27 @@ public:
              _outputTimeseries)
     {}
 
+    ~PointProbe() = default;
+
     void addProbePoint(real pointCoordX, real pointCoordY, real pointCoordZ);
     void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
     
 private:
     bool isAvailableStatistic(Statistic _variable) override;
 
     std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
 
-    void findPoints(Parameter* para, std::vector<int>& probeIndices_level,
+    void findPoints(std::vector<int>& probeIndices_level,
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
 
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
 
 private:
     std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ;
-    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override
+    uint getNumberOfTimestepsInTimeseries(int level) override
     {
         (void)para;
         return outputTimeSeries ? tOut * exp2(level) : 1;

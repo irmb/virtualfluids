@@ -102,7 +102,7 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void WallModelProbe::findPoints(Parameter* para, std::vector<int>& probeIndices_level,
+void WallModelProbe::findPoints(std::vector<int>& probeIndices_level,
                             std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
@@ -169,7 +169,7 @@ void temporal_average(T* quantitiesArray, T currentValue, uint currentTimestep, 
     quantitiesArray[calcArrayIndex(0, 1, currentTimestep, numberOfTimesteps, indexOfArray)] = oldMean + (currentValue-oldMean)*invNumberOfAverages;
 }
 
-void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level)
 {   
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
     uint numberOfStressBCPoints = para->getParD(level)->stressBC.numberOfBCnodes;
@@ -230,7 +230,7 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     getLastCudaError("WallModelProbe::calculateQuantities execution failed");
 }
 
-uint WallModelProbe::getNumberOfTimestepsInTimeseries(Parameter* para, int level)
+uint WallModelProbe::getNumberOfTimestepsInTimeseries(int level)
 {
     return this->tOut*exp2(level)/this->tAvg+1; 
 }

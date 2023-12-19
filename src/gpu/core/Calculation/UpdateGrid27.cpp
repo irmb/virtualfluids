@@ -327,7 +327,7 @@ void UpdateGrid27::interactWithActuators(int level, unsigned int t)
 {
     for( SPtr<PreCollisionInteractor> actuator: para->getActuators() )
     {
-        actuator->interact(para.get(), cudaMemoryManager.get(), level, t);
+        actuator->interact(level, t);
     }
 }
 
@@ -335,7 +335,7 @@ void  UpdateGrid27::interactWithProbes(int level, unsigned int t)
 {
     for( SPtr<PreCollisionInteractor> probe: para->getProbes() )
     {
-        probe->interact(para.get(), cudaMemoryManager.get(), level, t);
+        probe->interact(level, t);
     }
 }
 

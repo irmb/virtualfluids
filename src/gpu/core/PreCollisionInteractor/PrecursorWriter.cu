@@ -143,7 +143,7 @@ __global__ void fillArrayDistributions( uint numberOfPrecursorNodes,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void PrecursorWriter::init(Parameter* para, CudaMemoryManager* cudaManager)
+void PrecursorWriter::init()
 {
     VF_LOG_INFO("PrecursorWriter: Start initializing...");
     VF_LOG_INFO("Writing yz-planes at x={}m every {}. timestep, starting at t={}", this->xPos, this->tSave, this->tStartOut);
@@ -225,12 +225,12 @@ void PrecursorWriter::init(Parameter* para, CudaMemoryManager* cudaManager)
             break;
         }
 
-        cudaManager->cudaAllocPrecursorWriter(this, level);
+        cudaMemoryManager->cudaAllocPrecursorWriter(this, level);
     
         std::copy(indicesOnGrid.begin(), indicesOnGrid.end(), precursorStructs[level]->indicesH);
         std::copy(indicesOnPlane.begin(), indicesOnPlane.end(), precursorStructs[level]->indicesOnPlane);
 
-        cudaManager->cudaCopyPrecursorWriterIndicesHtoD(this, level);
+        cudaMemoryManager->cudaCopyPrecursorWriterIndicesHtoD(this, level);
 
         VF_LOG_INFO("Found {} points in precursor plane on level {}", precursorStructs[level]->numberOfPointsInBC, level);
     }
@@ -238,7 +238,7 @@ void PrecursorWriter::init(Parameter* para, CudaMemoryManager* cudaManager)
 }
 
 
-void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
+void PrecursorWriter::interact(int level, uint t)
 {
     uint t_level         = para->getTimeStep(level, t, true);
     uint tStartOut_level = tStartOut*pow(2, level);
@@ -264,7 +264,7 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
                                                                 para->getEvenOrOdd(level), para->getParD(level)->numberOfNodes);
             getLastCudaError("In PrecursorWriter::interact fillArrayDistributions execution failed");
         }
-        cudaManager->cudaCopyPrecursorWriterOutputVariablesDtoH(this, level);
+        cudaMemoryManager->cudaCopyPrecursorWriterOutputVariablesDtoH(this, level);
 
         // switch device buffer and data pointer so precursor data is gathered in buffer and copied from bufferD to bufferH
         real *tmp = precursorStructs[level]->bufferD;
@@ -282,27 +282,27 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
             precursorStructs[level]->dataH = tmp;
 
             writeFuture.wait();
-            writeFuture = std::async(std::launch::async, [this](Parameter* para, uint level, uint timesteps){ this->write(para, level, timesteps); }, para, level, precursorStructs[level]->numberOfTimestepsBuffered);
+            writeFuture = std::async(std::launch::async, [this](uint level, uint timesteps){ this->write(level, timesteps); }, level, precursorStructs[level]->numberOfTimestepsBuffered);
             precursorStructs[level]->numberOfTimestepsBuffered = 0;
         }
     }
 }
 
 
-void PrecursorWriter::free(Parameter* para, CudaMemoryManager* cudaManager)
+PrecursorWriter::~PrecursorWriter()
 {
     writeFuture.wait();
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
         if(getPrecursorStruct(level)->numberOfTimestepsBuffered>0)
-            write(para, level, getPrecursorStruct(level)->numberOfTimestepsBuffered);
+            write(level, getPrecursorStruct(level)->numberOfTimestepsBuffered);
 
-        cudaManager->cudaFreePrecursorWriter(this, level);
+        cudaMemoryManager->cudaFreePrecursorWriter(this, level);
     }
 }
 
 
-void PrecursorWriter::write(Parameter* para, int level, uint numberOfTimestepsBuffered)
+void PrecursorWriter::write(int level, uint numberOfTimestepsBuffered)
 {
     std::string fname = this->makeFileName(fileName, level, para->getMyProcessID(), precursorStructs[level]->numberOfFilesWritten) + getWriter()->getFileExtension();
     std::string wholeName = outputPath + "/" + fname;
@@ -345,7 +345,7 @@ std::string PrecursorWriter::makeFileName(std::string fileName, int level, int i
                     + "_File_" + StringUtil::toString<int>(numberOfFilesWritten);
 }
 
-void PrecursorWriter::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+void PrecursorWriter::getTaggedFluidNodes(GridProvider* gridProvider)
 {
     for(uint level=0; level<(uint)para->getMaxLevel(); level++)
     {
