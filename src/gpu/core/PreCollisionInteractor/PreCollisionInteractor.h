@@ -50,11 +50,11 @@ public:
         this->cudaMemoryManager = cudaMemoryManager;
         init();
     }
-    virtual void init() = 0;
     virtual void interact(int level, uint t) = 0;
     virtual void getTaggedFluidNodes(GridProvider* gridProvider) = 0;
 
 protected:
+    virtual void init() = 0;
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
 };
