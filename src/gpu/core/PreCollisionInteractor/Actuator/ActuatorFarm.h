@@ -81,7 +81,6 @@ public:
 
     ~ActuatorFarm();
 
-    void init() override;
     void interact(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
@@ -167,6 +166,7 @@ public:
     virtual void updateForcesAndCoordinates()=0;
 
 private:
+    void init() override;
     void initTurbineGeometries();
     void initBoundingSpheres();
     void initBladeCoords();

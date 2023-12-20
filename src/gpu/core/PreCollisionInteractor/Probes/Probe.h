@@ -164,7 +164,6 @@ public:
     }
 
     ~Probe();
-    void init() override;
     void interact(int level, uint t) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
@@ -182,6 +181,7 @@ protected:
     real getNondimensionalConversionFactor(int level);
 
 private:
+    void init() override;
     virtual bool isAvailableStatistic(Statistic _variable) = 0;
 
     virtual std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) = 0;
