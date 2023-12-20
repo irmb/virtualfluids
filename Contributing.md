@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Contributing
 If you want to contribute to VirtualFluids, your help is very welcome.
 To contribute use a merge request as follows:

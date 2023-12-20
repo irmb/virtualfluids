@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
 /**
 \file
 \brief Functions that deal with setting up the graphs for METIS.

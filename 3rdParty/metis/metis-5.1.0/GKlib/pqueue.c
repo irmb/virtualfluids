@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
 /*!
 \file  pqueue.c
 \brief This file implements various max-priority queues.

@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
+
 # Unit Tests
 
 This page describes how to add unit tests to VirtualFluids. VirtualFluids uses the C++ testing and mocking framework [GoogleTest](http://google.github.io/googletest/).

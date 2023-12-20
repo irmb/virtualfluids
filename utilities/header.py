@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
 from pathlib import Path
 from os.path import join
 
@@ -23,11 +26,11 @@ vf_header = """//===============================================================
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 //  for more details.
 //
-//  SPDX-License-Identifier: GPL-3.0-or-later
-//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
 """
 
@@ -59,11 +62,28 @@ vf_header_new = """//===========================================================
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//=======================================================================================
 """
 
 
-file_endings = ["**/*.h", "**/*.cpp", "**/*.hpp", "**/*.cu", "**/*.cuh"]
+file_endings = ["**/*.h", "**/*.cpp", "**/*.hpp", "**/*.cu", "**/*.cuh", "**/*.c"]
+
+def add_to_begin_of_file(folder, header):
+    path_files = []
+
+    for ending in file_endings:
+        path_files.extend(Path(folder).glob(join(ending)))
+
+    files = [x for x in path_files if x.is_file()]
+
+    for file in files:
+        with open(file, "r") as in_file:
+            file_content = in_file.read()
+
+            with open(file, "w+") as in_file:
+                file_content = header + file_content
+
+                in_file.write(file_content)
+                print(f"File modified: {file}")
 
 # this heler function can be used to remove all lines containg \ingroup and \file modifer
 # this might be helpful when doxygen changed
@@ -250,11 +270,18 @@ def find_test_files(folder, prefix = ""):
             print(file)
 
 
+metis_identifier = """// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
+"""
+
 if __name__ == "__main__":
-    folder = "apps/gpu/numerical_tests"
+    folder = "pythonbindings"
     # find_missing_header(folder, exchange_header = True)
     # add_header(folder)
     # remove_file_and_ingroup(folder)
     # add_doxygen_group(folder)
     # find_test_files(folder)
-    replace_line_containting("apps/", ["//! \{{", "//! \}}"], ["//! \{\n", "//! \}\n"])
+    # replace_line_containting("apps/", ["//! \{{", "//! \}}"], ["//! \{\n", "//! \}\n"])
+
+
+    # add_to_begin_of_file("3rdParty/metis/", metis_identifier)

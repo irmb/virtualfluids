@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
+
 ![VirtualFluids](docs/img/VF_logo.png)
 
  [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![Latest Release](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/badges/release.svg)](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/releases) 

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
 #ifndef _MSC_VER // [
 #error "Use this header only with Microsoft Visual C++ compilers!"
 #endif // _MSC_VER ]

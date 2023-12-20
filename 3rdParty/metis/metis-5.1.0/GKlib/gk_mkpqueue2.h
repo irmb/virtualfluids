@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
 /*!
 \file  gk_mkpqueue2.h
 \brief Templates for priority queues that do not utilize locators and as such

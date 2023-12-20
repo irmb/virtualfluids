@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
+
 cmake_minimum_required(VERSION 2.8)
 project(GKlib)
 

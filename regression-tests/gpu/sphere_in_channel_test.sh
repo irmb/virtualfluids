@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 source ./regression-tests/__regression_test_executer.sh
 
 # 1. set reference data directory (must match the folder structure in https://github.com/irmb/test_data)

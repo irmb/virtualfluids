@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
+
 # Coding Guidelines
 
 The current VirtualFluids Coding Guidelines are available as PDF here: [PDF Coding Guidelines](https://git.rz.tu-bs.de/irmb/codingguidelines/-/blob/master/main.pdf)

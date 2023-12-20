@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
 /*!
 \file blas.c
 \brief This file contains GKlib's implementation of BLAS-like routines

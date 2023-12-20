@@ -1,4 +1,5 @@
-
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 
 download_reference_data () {
     rm -rf reference_data && mkdir -p reference_data
@@ -7,7 +8,6 @@ download_reference_data () {
     git sparse-checkout add $1
     cd ..
 }
-
 
 # run regression test - arguments:
 # 1. REFERENCE_DATA_DIR - to download the reference data and compare against

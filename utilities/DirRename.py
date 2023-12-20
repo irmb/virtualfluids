@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
 # -*- coding: utf-8 -*-
 """
 Created on Tue Dec  6 13:21:27 2022

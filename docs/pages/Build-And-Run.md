@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
+
 # Build and Run
 
 This guide describes how to start using and developing VirtualFluids in the terminal. Alternativly you can use Visual Studio to build an run it.

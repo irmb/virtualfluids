@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
+
 # Regression Tests
 
 Regression testing is re-running tests to make sure that previously tested software still behaves as expected after a change. This is done by comparing the results of the simulation with the results of a previous "reference" simulation. If the results are the same, the test passes. If the results are different, the test fails. Thereby, the accuracy of the comparison can be defined. For comparison, we are using the Python tool [Fieldcompare](https://gitlab.com/dglaeser/fieldcompare). Fieldcompare is described in more detail in the [Fieldcompare Paper](https://doi.org/10.21105/joss.04905).
