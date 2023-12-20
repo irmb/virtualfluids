@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can
@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_PostProcessor PostProcessor
+//! \ingroup gpu_core core
+//! \{
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Concentration.cuh"
@@ -328,3 +331,5 @@ void CalcConcentration27(unsigned int numberOfThreads, real* Conc, unsigned int*
                                             isEvenTimestep);
     getLastCudaError("CalcConc27 execution failed");
 }
+
+//! \}

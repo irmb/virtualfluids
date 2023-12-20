@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_BoundaryConditions BoundaryConditions
+//! \ingroup gpu_core core
+//! \{
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Calculation/Calculation.h"
@@ -462,3 +465,5 @@ __global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
         q = q_dirTNW[k]; if (q >= c0o1 && q <= c1o1) { (DAD.f[dPMM])[kbse] = calcDistributionBC_AD(q, c1o216, -vx1+vx2+vx3, cu_sq, f_TNW, f_BSE, omegaDiffusivity, -jTan1+jTan2+jTan3, concentration); }
     }
 }
+
+//! \}

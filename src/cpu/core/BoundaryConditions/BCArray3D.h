@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file BCArray3D.h
-//! \ingroup BoundarConditions
+//! \addtogroup cpu_BoundaryConditions BoundaryConditions
+//! \ingroup cpu_core core
+//! \{
 //! \author Sören Freudiger
 //=======================================================================================
 
@@ -223,3 +224,5 @@ inline bool BCArray3D::isInsideOfDomain(const int &x1, const int &x2, const int 
 }
 
 #endif
+
+//! \}

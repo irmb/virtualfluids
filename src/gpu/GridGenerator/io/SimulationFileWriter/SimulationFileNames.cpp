@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file SimulationFileNames.cpp
-//! \ingroup io
+//! \addtogroup gpu_io io
+//! \ingroup gpu_GridGenerator GridGenerator
+//! \{
 //! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
 #include "SimulationFileNames.h"
@@ -75,3 +76,5 @@ const std::string simulationFileNames::outletBoundaryValues = "outletBoundaryVal
 const std::string simulationFileNames::numberNodes = "numberNodes" + fileEnding;
 const std::string simulationFileNames::LBMvsSI = "LBMvsSI" + fileEnding;
 
+
+//! \}
