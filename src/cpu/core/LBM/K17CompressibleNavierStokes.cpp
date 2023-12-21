@@ -121,7 +121,7 @@ void K17CompressibleNavierStokes::calculate(int step)
         for (int x2 = minX2; x2 < maxX2; x2++) {
             for (int x1 = minX1; x1 < maxX1; x1++) {
 
-                if (bcArray->isSolid(x1, x2, x3) || bcArray->isUndefined(x1, x2, x3)) {
+                if (bcArray->isUnvalidForCollision(x1, x2, x3)) {
                     continue;
                 }
 

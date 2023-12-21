@@ -91,6 +91,8 @@ public:
     //////////////////////////////////////////////////////////////////////////
     inline bool isUndefined(std::size_t x1, std::size_t x2, std::size_t x3) const;
     //////////////////////////////////////////////////////////////////////////
+    inline bool isUnvalidForCollision(std::size_t x1, std::size_t x2, std::size_t x3) const;
+    //////////////////////////////////////////////////////////////////////////
     void setUndefined(std::size_t x1, std::size_t x2, std::size_t x3);
     //////////////////////////////////////////////////////////////////////////
     inline bool isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t x3) const;
@@ -199,6 +201,12 @@ inline bool BCArray3D::isFluidWithoutBC(std::size_t x1, std::size_t x2, std::siz
 inline bool BCArray3D::isUndefined(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
     return bcindexmatrix(x1, x2, x3) == UNDEFINED;
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray3D::isUnvalidForCollision(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+    const int type = bcindexmatrix(x1, x2, x3);
+    return type == SOLID || type == UNDEFINED;
 }
 //////////////////////////////////////////////////////////////////////////
 inline bool BCArray3D::isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t x3) const
