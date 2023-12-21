@@ -1,5 +1,8 @@
 #!/bin/bash -l
 
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
 #SBATCH --partition=standard
 #SBATCH --nodes=1
 #SBATCH --time=01:00:00

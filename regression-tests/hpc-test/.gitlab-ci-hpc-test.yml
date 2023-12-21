@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 ###############################################################################
 # 1. builds the singularity container using a docker container
 # Needs a priviliged gitlab runner.

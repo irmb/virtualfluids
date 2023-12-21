@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #SBATCH -J PyFluidsTest
 #SBATCH -o poiseuille_test/POISEUILLE_TEST.out
 #SBATCH --nodes=1

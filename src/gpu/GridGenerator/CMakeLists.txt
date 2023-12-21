@@ -26,6 +26,9 @@
 #  You should have received a copy of the GNU General Public License along
 #  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 #
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
 #! \author Soeren Peters
 #=======================================================================================
 vf_add_library(NAME GridGenerator PUBLIC_LINK basics logger OpenMP::OpenMP_CXX PRIVATE_LINK project_options project_warnings)

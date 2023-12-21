@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: Copyright (C) 2004 - 2020 Ingo Berg
 
 # By default, build in Release mode. Must appear before project() command
 #if (NOT DEFINED CMAKE_BUILD_TYPE)

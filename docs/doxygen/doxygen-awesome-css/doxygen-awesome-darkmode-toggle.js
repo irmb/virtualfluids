@@ -1,4 +1,6 @@
 /**
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: Copyright (c) 2021 - 2023 jothepro
 
 Doxygen Awesome
 https://github.com/jothepro/doxygen-awesome-css

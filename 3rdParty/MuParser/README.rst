@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: Copyright (C) 2004 - 2020 Ingo Berg
+
 .. image:: https://travis-ci.org/beltoforion/muparser.svg?branch=master
     :target: https://travis-ci.org/beltoforion/muparser
 

@@ -29,7 +29,7 @@
 //! \addtogroup GyroidsRow
 //! \ingroup cpu_apps
 //! \{
-//! \author Hussein Alihussein 
+//! \author Hussein Alihussein
 //=======================================================================================
 #include <iostream>
 #include <string>
