@@ -54,6 +54,8 @@ public:
         ActuatorFarm(diameter, computeBladeRadii(diameter, numberOfNodesPerBlade), turbinePositionsX, turbinePositionsY, turbinePositionsZ, density, smearingWidth, level, deltaT, deltaX, true)
     {}
 
+    ~ActuatorFarmStandalone() = default;
+
     void updateForcesAndCoordinates() override;
     static std::vector<real> computeBladeRadii(const real diameter, const uint numberOfNodesPerBlade);
     

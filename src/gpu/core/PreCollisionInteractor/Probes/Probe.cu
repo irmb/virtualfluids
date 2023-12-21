@@ -180,7 +180,7 @@ bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
 
 real Probe::getNondimensionalConversionFactor(int level){ return c1o1; }
 
-void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager)
+void Probe::init()
 {
     using std::placeholders::_1;
     this->velocityRatio      = std::bind(&Parameter::getScaledVelocityRatio,        para, _1); 
@@ -202,26 +202,26 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::vector<real> pointCoordsY_level;
         std::vector<real> pointCoordsZ_level;
         
-        this->findPoints(para, gridProvider, probeIndices_level, distX_level, distY_level, distZ_level,      
+        this->findPoints(probeIndices_level, distX_level, distY_level, distZ_level,      
                        pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level,
                        level);
         
-        this->addProbeStruct(para, cudaMemoryManager, probeIndices_level, 
+        this->addProbeStruct(probeIndices_level, 
                             distX_level, distY_level, distZ_level, 
                             pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
 
-        if(this->outputTimeSeries) timeseriesFileNames.push_back(this->writeTimeseriesHeader(para, level));
+        if(this->outputTimeSeries) timeseriesFileNames.push_back(this->writeTimeseriesHeader(level));
     }
 }
 
-void Probe::addProbeStruct( Parameter* para, CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
+void Probe::addProbeStruct(std::vector<int>& probeIndices,
                             std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                             std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                             int level)
 {
     probeParams[level] = std::make_shared<ProbeStruct>();
-    probeParams[level]->nTimesteps = this->getNumberOfTimestepsInTimeseries(para, level);
+    probeParams[level]->nTimesteps = this->getNumberOfTimestepsInTimeseries(level);
     probeParams[level]->nPoints  = uint(pointCoordsX.size()); // Note, need to have both nPoints and nIndices because they differ in PlanarAverage
     probeParams[level]->nIndices = uint(probeIndices.size());
 
@@ -275,7 +275,7 @@ void Probe::addProbeStruct( Parameter* para, CudaMemoryManager* cudaMemoryManage
 
 }
 
-void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t)
+void Probe::interact(int level, uint t)
 {
     uint t_level = para->getTimeStep(level, t, false);
 
@@ -299,7 +299,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
 
     if( (t > this->tStartAvg) && (tAfterStartAvg % tAvg_level == 0))
     {
-        this->calculateQuantities(probeStruct, para, t_level, level);
+        this->calculateQuantities(probeStruct, t_level, level);
 
         if(t > this->tStartTmpAveraging) probeStruct->timestepInTimeAverage++;
         if(this->outputTimeSeries && (t_level >= tStartOut_level)) probeStruct->timestepInTimeseries++;
@@ -310,9 +310,9 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
     {   
         if(this->hasDeviceQuantityArray)
             cudaMemoryManager->cudaCopyProbeQuantityArrayDtoH(this, level);
-        this->write(para, level, t);
+        this->write(level, t);
         
-        if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(para, t);
+        if(level == 0&& !this->outputTimeSeries) this->writeParallelFile(t);
 
         if(this->outputTimeSeries)
         {
@@ -322,7 +322,7 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int 
     }
 }
 
-void Probe::free(Parameter* para, CudaMemoryManager* cudaMemoryManager)
+Probe::~Probe()
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {   
@@ -384,11 +384,11 @@ void Probe::addAllAvailableStatistics()
     }
 }
 
-void Probe::write(Parameter* para, int level, int t)
+void Probe::write(int level, int t)
 {
     if(this->outputTimeSeries)
     {
-        this->appendTimeseriesFile(para, level, t);
+        this->appendTimeseriesFile(level, t);
     }
     else
     {
@@ -399,13 +399,13 @@ void Probe::write(Parameter* para, int level, int t)
         std::vector<std::string> fnames;
         for (uint i = 1; i <= numberOfParts; i++)
         {
-            this->writeGridFile(para, level, t_write, i);
+            this->writeGridFile(level, t_write, i);
         }
     }
 
 }
 
-void Probe::writeParallelFile(Parameter* para, int t)
+void Probe::writeParallelFile(int t)
 {
     int t_write = this->fileNameLU ? t: t/this->tOut; 
     std::string filename = this->outputPath + this->makeParallelFileName(para->getMyProcessID(), t_write);
@@ -418,7 +418,7 @@ void Probe::writeParallelFile(Parameter* para, int t)
     this->fileNamesForCollectionFile.clear();
 }
 
-void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
+void Probe::writeGridFile(int level, int t, uint part)
 {
     std::string fname = this->outputPath + this->makeGridFileName(level, para->getMyProcessID(), t, part);
 
@@ -475,7 +475,7 @@ void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
     this->fileNamesForCollectionFile.push_back(fullName.substr(fullName.find_last_of('/') + 1));
 }
 
-std::string Probe::writeTimeseriesHeader(Parameter* para, int level)
+std::string Probe::writeTimeseriesHeader(int level)
 {
 /*
 File Layout:
@@ -511,7 +511,7 @@ t1 point1.quant1 point2.quant1 ... point1.quant2 point2.quant2 ...
     return fname;
 }
 
-void Probe::appendTimeseriesFile(Parameter* para, int level, int t)
+void Probe::appendTimeseriesFile(int level, int t)
 {
     std::ofstream out(this->timeseriesFileNames[level], std::ios::app | std::ios::binary);
 

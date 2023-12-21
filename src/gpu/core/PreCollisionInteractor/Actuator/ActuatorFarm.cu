@@ -166,21 +166,21 @@ __global__ void applyBodyForces(GridData gridData, const TurbineData turbineData
     gridData.fz[gridIndex] += gridForceZ;
 }
 
-void ActuatorFarm::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
+void ActuatorFarm::init()
 {
     if (!para->getIsBodyForce())
         throw std::runtime_error("try to allocate ActuatorFarm but BodyForce is not set in Parameter.");
     this->forceRatio = para->getForceRatio();
-    this->initTurbineGeometries(cudaManager);
-    this->initBladeCoords(cudaManager);
-    this->initBladeIndices(cudaManager);
-    this->initBladeVelocities(cudaManager);
-    this->initBladeForces(cudaManager);
-    this->initBoundingSpheres(para, cudaManager);
+    this->initTurbineGeometries();
+    this->initBladeCoords();
+    this->initBladeIndices();
+    this->initBladeVelocities();
+    this->initBladeForces();
+    this->initBoundingSpheres();
     this->streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::ActuatorFarm);
 }
 
-void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void ActuatorFarm::interact(int level, unsigned int t)
 {
     if (level != this->level)
         return;
@@ -188,15 +188,15 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaManager, int
     cudaStream_t stream = para->getStreamManager()->getStream(CudaStreamIndex::ActuatorFarm, this->streamIndex);
 
     if (useHostArrays)
-        cudaManager->cudaCopyBladeCoordsHtoD(this);
+        cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 
     if (this->writeOutput && ((t - this->tStartOut) % this->tOut == 0)) {
         if (!useHostArrays) {
-            cudaManager->cudaCopyBladeCoordsDtoH(this);
-            cudaManager->cudaCopyBladeVelocitiesDtoH(this);
-            cudaManager->cudaCopyBladeForcesDtoH(this);
+            cudaMemoryManager->cudaCopyBladeCoordsDtoH(this);
+            cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
+            cudaMemoryManager->cudaCopyBladeForcesDtoH(this);
         }
-        this->write(this->getFilename(para, t));
+        this->write(this->getFilename(t));
     }
 
     const GridData gridData {
@@ -224,13 +224,13 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaManager, int
     cudaStreamSynchronize(stream);
 
     if (useHostArrays)
-        cudaManager->cudaCopyBladeVelocitiesDtoH(this);
+        cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
 
     this->updateForcesAndCoordinates();
     this->swapDeviceArrays();
 
     if (useHostArrays)
-        cudaManager->cudaCopyBladeForcesHtoD(this);
+        cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 
     vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->numberOfIndices);
 
@@ -238,40 +238,40 @@ void ActuatorFarm::interact(Parameter* para, CudaMemoryManager* cudaManager, int
     cudaStreamSynchronize(stream);
 }
 
-void ActuatorFarm::free(Parameter* para, CudaMemoryManager* cudaManager)
+ActuatorFarm::~ActuatorFarm()
 {
-    cudaManager->cudaFreeBladeGeometries(this);
-    cudaManager->cudaFreeBladeCoords(this);
-    cudaManager->cudaFreeBladeVelocities(this);
-    cudaManager->cudaFreeBladeForces(this);
-    cudaManager->cudaFreeBladeIndices(this);
-    cudaManager->cudaFreeSphereIndices(this);
+    cudaMemoryManager->cudaFreeBladeGeometries(this);
+    cudaMemoryManager->cudaFreeBladeCoords(this);
+    cudaMemoryManager->cudaFreeBladeVelocities(this);
+    cudaMemoryManager->cudaFreeBladeForces(this);
+    cudaMemoryManager->cudaFreeBladeIndices(this);
+    cudaMemoryManager->cudaFreeSphereIndices(this);
 }
 
-void ActuatorFarm::getTaggedFluidNodes(Parameter* para, GridProvider* gridProvider)
+void ActuatorFarm::getTaggedFluidNodes(GridProvider* gridProvider)
 {
     std::vector<uint> indicesInSphere(this->boundingSphereIndicesH, this->boundingSphereIndicesH + this->numberOfIndices);
     gridProvider->tagFluidNodeIndices(indicesInSphere, CollisionTemplate::AllFeatures, this->level);
 }
 
-void ActuatorFarm::initTurbineGeometries(CudaMemoryManager* cudaManager)
+void ActuatorFarm::initTurbineGeometries()
 {
     this->numberOfGridNodes = this->numberOfTurbines * this->numberOfNodesPerTurbine;
 
-    cudaManager->cudaAllocBladeGeometries(this);
+    cudaMemoryManager->cudaAllocBladeGeometries(this);
 
     std::copy(initialTurbinePositionsX.begin(), initialTurbinePositionsX.end(), turbinePosXH);
     std::copy(initialTurbinePositionsY.begin(), initialTurbinePositionsY.end(), turbinePosYH);
     std::copy(initialTurbinePositionsZ.begin(), initialTurbinePositionsZ.end(), turbinePosZH);
 
-    cudaManager->cudaCopyBladeGeometriesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeGeometriesHtoD(this);
 
     this->factorGaussian = pow(this->smearingWidth * sqrt(cPi), -c3o1) / this->forceRatio;
 }
 
-void ActuatorFarm::initBladeCoords(CudaMemoryManager* cudaManager)
+void ActuatorFarm::initBladeCoords()
 {
-    cudaManager->cudaAllocBladeCoords(this);
+    cudaMemoryManager->cudaAllocBladeCoords(this);
 
     for (uint turbine = 0; turbine < this->numberOfTurbines; turbine++) {
         for (uint blade = 0; blade < ActuatorFarm::numberOfBlades; blade++) {
@@ -289,53 +289,53 @@ void ActuatorFarm::initBladeCoords(CudaMemoryManager* cudaManager)
             }
         }
     }
-    cudaManager->cudaCopyBladeCoordsHtoD(this);
+    cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
     swapArrays(this->bladeCoordsXDCurrentTimestep, this->bladeCoordsXDPreviousTimestep);
     swapArrays(this->bladeCoordsYDCurrentTimestep, this->bladeCoordsYDPreviousTimestep);
     swapArrays(this->bladeCoordsZDCurrentTimestep, this->bladeCoordsZDPreviousTimestep);
-    cudaManager->cudaCopyBladeCoordsHtoD(this);
+    cudaMemoryManager->cudaCopyBladeCoordsHtoD(this);
 }
 
-void ActuatorFarm::initBladeVelocities(CudaMemoryManager* cudaManager)
+void ActuatorFarm::initBladeVelocities()
 {
-    cudaManager->cudaAllocBladeVelocities(this);
+    cudaMemoryManager->cudaAllocBladeVelocities(this);
 
     std::fill_n(this->bladeVelocitiesXH, this->numberOfGridNodes, c0o1);
     std::fill_n(this->bladeVelocitiesYH, this->numberOfGridNodes, c0o1);
     std::fill_n(this->bladeVelocitiesZH, this->numberOfGridNodes, c0o1);
 
-    cudaManager->cudaCopyBladeVelocitiesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeVelocitiesHtoD(this);
     swapArrays(this->bladeVelocitiesXDCurrentTimestep, this->bladeVelocitiesXDPreviousTimestep);
     swapArrays(this->bladeVelocitiesYDCurrentTimestep, this->bladeVelocitiesYDPreviousTimestep);
     swapArrays(this->bladeVelocitiesZDCurrentTimestep, this->bladeVelocitiesZDPreviousTimestep);
-    cudaManager->cudaCopyBladeVelocitiesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeVelocitiesHtoD(this);
 }
 
-void ActuatorFarm::initBladeForces(CudaMemoryManager* cudaManager)
+void ActuatorFarm::initBladeForces()
 {
-    cudaManager->cudaAllocBladeForces(this);
+    cudaMemoryManager->cudaAllocBladeForces(this);
 
     std::fill_n(this->bladeForcesXH, this->numberOfGridNodes, c0o1);
     std::fill_n(this->bladeForcesYH, this->numberOfGridNodes, c0o1);
     std::fill_n(this->bladeForcesZH, this->numberOfGridNodes, c0o1);
 
-    cudaManager->cudaCopyBladeForcesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
     swapArrays(this->bladeForcesXDCurrentTimestep, this->bladeForcesXDPreviousTimestep);
     swapArrays(this->bladeForcesYDCurrentTimestep, this->bladeForcesYDPreviousTimestep);
     swapArrays(this->bladeForcesZDCurrentTimestep, this->bladeForcesZDPreviousTimestep);
-    cudaManager->cudaCopyBladeForcesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeForcesHtoD(this);
 }
 
-void ActuatorFarm::initBladeIndices(CudaMemoryManager* cudaManager)
+void ActuatorFarm::initBladeIndices()
 {
-    cudaManager->cudaAllocBladeIndices(this);
+    cudaMemoryManager->cudaAllocBladeIndices(this);
 
     std::fill_n(this->bladeIndicesH, this->numberOfGridNodes, 1);
 
-    cudaManager->cudaCopyBladeIndicesHtoD(this);
+    cudaMemoryManager->cudaCopyBladeIndicesHtoD(this);
 }
 
-void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaManager)
+void ActuatorFarm::initBoundingSpheres()
 {
     std::vector<int> nodesInSpheres;
     const real sphereRadius = getBoundingSphereRadius(this->diameter, this->smearingWidth);
@@ -370,9 +370,9 @@ void ActuatorFarm::initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaM
 
     this->numberOfIndices = uint(nodesInSpheres.size());
 
-    cudaManager->cudaAllocSphereIndices(this);
+    cudaMemoryManager->cudaAllocSphereIndices(this);
     std::copy(nodesInSpheres.begin(), nodesInSpheres.end(), this->boundingSphereIndicesH);
-    cudaManager->cudaCopySphereIndicesHtoD(this);
+    cudaMemoryManager->cudaCopySphereIndicesHtoD(this);
 }
 
 void ActuatorFarm::setAllBladeCoords(const real* _bladeCoordsX, const real* _bladeCoordsY, const real* _bladeCoordsZ)
@@ -436,7 +436,7 @@ void ActuatorFarm::swapDeviceArrays()
     swapArrays(this->bladeForcesZDPreviousTimestep, this->bladeForcesZDCurrentTimestep);
 }
 
-std::string ActuatorFarm::getFilename(Parameter* para, uint t) const
+std::string ActuatorFarm::getFilename(uint t) const
 {
     return para->getOutputPath() + this->outputName + "_ID_" + std::to_string(para->getMyProcessID()) + "_t_" + std::to_string(t);
 }

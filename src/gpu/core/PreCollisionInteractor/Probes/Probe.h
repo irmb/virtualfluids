@@ -141,32 +141,30 @@ class Probe : public PreCollisionInteractor
 {
 public:
     Probe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        const uint _tStartAvg,
-        const uint _tStartTmpAvg,
-        const uint _tAvg,
-        const uint _tStartOut,
-        const uint _tOut,
-        const bool _hasDeviceQuantityArray,
-        const bool _outputTimeSeries
-    ):  probeName(_probeName),
-        outputPath(_outputPath + (_outputPath.back() == '/' ? "" : "/")),
-        tStartAvg(_tStartAvg),
-        tStartTmpAveraging(_tStartTmpAvg),
-        tAvg(_tAvg),
-        tStartOut(_tStartOut),
-        tOut(_tOut),
-        hasDeviceQuantityArray(_hasDeviceQuantityArray),
-        outputTimeSeries(_outputTimeSeries),
-        PreCollisionInteractor()
+        const std::string probeName,
+        const std::string outputPath,
+        const uint tStartAvg,
+        const uint tStartTmpAvg,
+        const uint tAvg,
+        const uint tStartOut,
+        const uint tOut,
+        const bool hasDeviceQuantityArray,
+        const bool outputTimeSeries
+    ):  probeName(probeName),
+        outputPath(outputPath + (outputPath.back() == '/' ? "" : "/")),
+        tStartAvg(tStartAvg),
+        tStartTmpAveraging(tStartTmpAvg),
+        tAvg(tAvg),
+        tStartOut(tStartOut),
+        tOut(tOut),
+        hasDeviceQuantityArray(hasDeviceQuantityArray),
+        outputTimeSeries(outputTimeSeries)
     {
-        if (tStartOut < tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
+        if (tStartOut < tStartAvg) throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
 
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
+    ~Probe();
+    void interact(int level, uint t) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -183,32 +181,33 @@ protected:
     real getNondimensionalConversionFactor(int level);
 
 private:
+    void init() override;
     virtual bool isAvailableStatistic(Statistic _variable) = 0;
 
     virtual std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) = 0;
 
-    virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+    virtual void findPoints(std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level) = 0;
-    void addProbeStruct(Parameter* para, CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
+    void addProbeStruct(std::vector<int>& probeIndices,
                         std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
-    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) = 0;
+    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) = 0;
 
-    virtual void write(Parameter* para, int level, int t);
-    virtual void writeParallelFile(Parameter* para, int t);
-    virtual void writeGridFile(Parameter* para, int level, int t, uint part);
-    std::string writeTimeseriesHeader(Parameter* para, int level);
-    void appendTimeseriesFile(Parameter* para, int level, int t);
+    virtual void write(int level, int t);
+    virtual void writeParallelFile(int t);
+    virtual void writeGridFile(int level, int t, uint part);
+    std::string writeTimeseriesHeader(int level);
+    void appendTimeseriesFile(int level, int t);
 
     std::vector<std::string> getVarNames();
     std::string makeGridFileName(int level, int id, int t, uint part);
     std::string makeParallelFileName(int id, int t);
     std::string makeTimeseriesFileName(int leve, int id);
 
-    virtual uint getNumberOfTimestepsInTimeseries(Parameter* para, int level){ (void)para; (void)level; return 1; }
+    virtual uint getNumberOfTimestepsInTimeseries(int level){ (void)para; (void)level; return 1; }
 
 protected:
     const std::string probeName;

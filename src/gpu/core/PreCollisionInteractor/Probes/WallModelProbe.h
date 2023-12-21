@@ -41,6 +41,8 @@
 #ifndef WallModelProbe_H
 #define WallModelProbe_H
 
+#include <basics/PointerDefinitions.h>
+
 #include "Probe.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -49,25 +51,27 @@ class WallModelProbe : public Probe
 {
 public: 
     WallModelProbe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        uint _tStartAvg,
-        uint _tStartTmpAvg,
-        uint _tAvg,
-        uint _tStartOut,
-        uint _tOut
-    ):  Probe(_probeName, 
-            _outputPath,
-            _tStartAvg,
-            _tStartTmpAvg,
-            _tAvg,
-            _tStartOut, 
-            _tOut,
+        const std::string probeName,
+        const std::string outputPath,
+        uint tStartAvg,
+        uint tStartTmpAvg,
+        uint tAvg,
+        uint tStartOut,
+        uint tOut
+    ):  Probe(probeName, 
+            outputPath,
+            tStartAvg,
+            tStartTmpAvg,
+            tAvg,
+            tStartOut, 
+            tOut,
             false,
             true)
     {
-        if (_tStartTmpAvg<_tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
+        if (tStartTmpAvg<tStartAvg)   throw std::runtime_error("Probe: tStartTmpAvg must be larger than tStartAvg!");
     }
+
+    ~WallModelProbe() = default;
 
 
     void setForceOutputToStress(bool _outputStress){ this->outputStress = _outputStress; }
@@ -78,13 +82,13 @@ private:
 
     std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
 
-    void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+    void findPoints(std::vector<int>& probeIndices_level,
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override {};
-    uint getNumberOfTimestepsInTimeseries(Parameter* para, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override {};
+    uint getNumberOfTimestepsInTimeseries(int level) override;
 
 private:
     bool outputStress = false; //!> if true, output wall force is converted to a stress 

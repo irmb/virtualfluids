@@ -46,6 +46,7 @@
 #include <vector>
 
 #include <basics/PointerDefinitions.h>
+#include <basics/DataTypes.h>
 
 #include <logger/Logger.h>
 
@@ -53,8 +54,6 @@
 #include "PreCollisionInteractor.h"
 #include "WbWriterVtkXmlImageBinary.h"
 
-class Parameter;
-class CudaMemoryManager;
 class GridProvider;
 
 enum class OutputVariable {
@@ -92,47 +91,48 @@ class PrecursorWriter : public PreCollisionInteractor
 {
 public:
     PrecursorWriter(
-        const std::string _fileName,
-        const std::string _outputPath,
-        real _xPos,
-        real _yMin, real _yMax,
-        real _zMin, real _zMax,
-        uint _tStartOut,
-        uint _tSave,
-        OutputVariable _outputVariable,
-        uint _maxTimestepsPerFile=uint(1e4)
+        const std::string fileName,
+        const std::string outputPath,
+        real xPos,
+        real yMin, real yMax,
+        real zMin, real zMax,
+        uint tStartOut,
+        uint tSave,
+        OutputVariable outputVariable,
+        uint maxTimestepsPerFile=uint(1e4)
     ): 
-    fileName(_fileName), 
-    outputPath(_outputPath), 
-    xPos(_xPos),
-    yMin(_yMin),
-    yMax(_yMax),
-    zMin(_zMin),
-    zMax(_zMax),
-    tStartOut(_tStartOut), 
-    tSave(_tSave),
-    outputVariable(_outputVariable),
-    maxtimestepsPerFile(_maxTimestepsPerFile)
+    fileName(fileName), 
+    outputPath(outputPath), 
+    xPos(xPos),
+    yMin(yMin),
+    yMax(yMax),
+    zMin(zMin),
+    zMax(zMax),
+    tStartOut(tStartOut), 
+    tSave(tSave),
+    outputVariable(outputVariable),
+    maxtimestepsPerFile(maxTimestepsPerFile)
     {
         nodedatanames = determineNodeDataNames();
         writeFuture = std::async([](){});
     };
 
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    ~PrecursorWriter();
+
+    void interact(int level, uint t) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
     OutputVariable getOutputVariable(){ return this->outputVariable; }
 
     SPtr<PrecursorStruct> getPrecursorStruct(int level){return precursorStructs[level];}
-    static std::string makeFileName(std::string fileName, int level, int id, uint part);
+    static std::string makeFileName(std::string fileName, int level, int id, uint numberOfFilesWritten);
 
-    void setWritePrecision(uint _writePrecision){ this->writePrecision=_writePrecision;}
+    void setWritePrecision(uint writePrecision){ this->writePrecision=writePrecision;}
     
 private:
+    void init() override;
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
-    void write(Parameter* para, int level, uint numberOfTimestepsBuffered);
+    void write(int level, uint numberOfTimestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {

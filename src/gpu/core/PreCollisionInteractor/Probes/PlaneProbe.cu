@@ -101,7 +101,7 @@ std::vector<PostProcessingVariable> PlaneProbe::getPostProcessingVariables(Stati
     return postProcessingVariables;
 }
 
-void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+void PlaneProbe::findPoints(std::vector<int>& probeIndices_level,
                             std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
@@ -130,7 +130,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
     }
 }
 
-void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     calcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD,
@@ -152,7 +152,7 @@ void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
                                                         );
 }
 
-void PlaneProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+void PlaneProbe::getTaggedFluidNodes(GridProvider* gridProvider)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {

@@ -99,7 +99,7 @@ std::vector<PostProcessingVariable> PointProbe::getPostProcessingVariables(Stati
     return postProcessingVariables;
 }
 
-void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+void PointProbe::findPoints(std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level)
@@ -131,7 +131,7 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
     }
 }
 
-void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     int oldTimestepInTimeseries = this->outputTimeSeries ? calcOldTimestep(probeStruct->timestepInTimeseries, probeStruct->lastTimestepInOldTimeseries) : 0;
@@ -160,7 +160,7 @@ void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::v
     printf("Added list of %u  points \n", uint(_pointCoordsX.size()) );
 }
 
-void PointProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+void PointProbe::getTaggedFluidNodes(GridProvider* gridProvider)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
