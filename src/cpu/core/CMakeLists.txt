@@ -55,9 +55,7 @@ endif()
 
 set(library_name cpu_core)
 
-vf_add_library(NAME ${library_name} BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel project_options PRIVATE_LINK lbm logger project_warnings)
-
-vf_add_tests(NAME ${library_name})
+vf_add_library(NAME ${library_name} PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel project_options PRIVATE_LINK lbm logger project_warnings)
 
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)

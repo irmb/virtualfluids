@@ -18,7 +18,7 @@ To add a new test, create a new bash file in the `regression-tests` directory. T
 ```bash
 #!/bin/bash
 
-source ./regression-tests/__regression_test_executer.sh
+source ./tests/regression-tests/__regression_test_executer.sh
 
 # 1. set reference data directory (must match the folder structure in https://github.com/irmb/test_data)
 REFERENCE_DATA_DIR=regression_tests/gpu/DrivenCavity_2Levels

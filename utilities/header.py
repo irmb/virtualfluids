@@ -275,12 +275,12 @@ metis_identifier = """// SPDX-License-Identifier: Apache-2.0
 """
 
 if __name__ == "__main__":
-    folder = "pythonbindings"
+    folder = "src/"
     # find_missing_header(folder, exchange_header = True)
     # add_header(folder)
     # remove_file_and_ingroup(folder)
     # add_doxygen_group(folder)
-    # find_test_files(folder)
+    find_test_files(folder)
     # replace_line_containting("apps/", ["//! \{{", "//! \}}"], ["//! \{\n", "//! \}\n"])
 
 

@@ -32,14 +32,8 @@
 #! \author Soeren Peters
 #=======================================================================================
 vf_add_library(NAME GridGenerator PUBLIC_LINK basics logger OpenMP::OpenMP_CXX PRIVATE_LINK project_options project_warnings)
-vf_add_tests()
 
 target_include_directories(GridGenerator PRIVATE "${VF_ROOT_DIR}/src/gpu/GridGenerator/")
-
-
-if(VF_ENABLE_UNIT_TESTS)
-   target_include_directories(GridGeneratorTests PRIVATE "${VF_ROOT_DIR}/src/basics/")
-endif()
 
 
 ## WARNINGS

@@ -72,8 +72,57 @@ endfunction()
 ##
 #################################################################################
 include(CMake/FileUtilities.cmake)
+
 function(vf_add_library)
 
+    set( options )
+    set( oneValueArgs NAME BUILDTYPE)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE MODULEFOLDER)
+    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    vf_add_target(NAME ${ARG_NAME} BUILDTYPE ${ARG_BUILDTYPE} PUBLIC_LINK ${ARG_PUBLIC_LINK} PRIVATE_LINK ${ARG_PRIVATE_LINK} FILES ${ARG_FILES} FOLDER ${ARG_FOLDER} EXCLUDE ${ARG_EXCLUDE} MODULEFOLDER ${ARG_MODULEFOLDER})
+
+    if(NOT DEFINED ARG_BUILDTYPE)
+        string(REGEX REPLACE "src" "tests/unit-tests" test_path "${CMAKE_CURRENT_SOURCE_DIR}")
+        string(REGEX REPLACE "src" "tests/unit-tests" test_build_path "${CMAKE_CURRENT_BINARY_DIR}")
+        if (EXISTS ${test_path})
+            add_subdirectory(${test_path} ${test_build_path})
+        endif()
+    endif()
+endfunction()
+
+function(vf_add_tests2)
+
+    if (NOT VF_ENABLE_UNIT_TESTS)
+        return()
+    endif()
+
+    set( options )
+    set( oneValueArgs NAME)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE MODULEFOLDER)
+    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if(DEFINED ARG_NAME) 
+        set(library_test_name "${ARG_NAME}")
+    else()
+        vf_get_library_test_name(library_test_name)
+    endif()
+
+
+    vf_add_target(NAME ${library_test_name} BUILDTYPE binary PUBLIC_LINK ${ARG_PUBLIC_LINK} PRIVATE_LINK ${ARG_PRIVATE_LINK} FILES ${ARG_FILES} FOLDER ${ARG_FOLDER} EXCLUDE ${ARG_EXCLUDE} MODULEFOLDER ${ARG_MODULEFOLDER})
+
+    group_target (${library_test_name} ${testFolder})
+
+    # link googlemock
+    target_link_libraries(${library_test_name} PRIVATE GTest::gmock_main)
+
+    # add the target to ctest
+    gtest_add_tests(TARGET ${library_test_name})
+    
+endfunction()
+
+
+function(vf_add_target)
     set( options )
     set( oneValueArgs NAME BUILDTYPE)
     set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE MODULEFOLDER)
@@ -104,7 +153,7 @@ function(vf_add_library)
     ###   FIND FILES                                              ###
     #################################################################
     collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
-    includeProductionFiles (${folder_name} "${sourceFiles}")
+    includeAllFiles (${folder_name} "${sourceFiles}")
 
     #################################################################
     ###   ADD TARGET                                              ###
@@ -142,6 +191,8 @@ function(vf_add_library)
     endif()
 
     status("Target: ${library_name} (type=${ARG_BUILDTYPE}) configured.")
+
+
 endfunction()
 
 #################################################################################

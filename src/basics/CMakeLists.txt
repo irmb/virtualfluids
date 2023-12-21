@@ -58,8 +58,6 @@ if(VF_ENABLE_BOOST)
     target_link_libraries(${library_name} PRIVATE Boost::boost)
 endif()
 
-vf_add_tests()
-
 
 ## WARNINGS
 # TODO: Remove this and fix those warnings: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/163
