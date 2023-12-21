@@ -3,9 +3,11 @@
 
 ![VirtualFluids](docs/img/VF_logo.png)
 
- [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![Latest Release](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/badges/release.svg)](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/releases) 
+ [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![Latest Release](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/badges/release.svg)](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/releases)
 [![pipeline status](https://git.rz.tu-bs.de/irmb/VirtualFluids/badges/main/pipeline.svg)](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/commits/main)
 [![Doxygen documentation](https://img.shields.io/badge/documentation-doxygen-blue.svg)](https://irmb.gitlab-pages.rz.tu-bs.de/VirtualFluids/)
+[![REUSE status](https://api.reuse.software/badge/git.rz.tu-bs.de/irmb/VirtualFluids)](https://api.reuse.software/info/git.rz.tu-bs.de/irmb/VirtualFluids)
+
 
 VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB) at the Technical University Braunschweig. The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent, thermal, multiphase and multicomponent flow problems as well as for multi-field problems such as Fluid-Structure-interaction. It includes distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
 
