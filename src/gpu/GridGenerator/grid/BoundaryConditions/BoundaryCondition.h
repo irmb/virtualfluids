@@ -266,10 +266,11 @@ public:
         return SPtr<GeometryBoundaryCondition>(new GeometryBoundaryCondition());
     }
 
+    real vx, vy, vz;
+
     real normalX, normalY, normalZ;
     std::vector<real> normalXList, normalYList, normalZList;
 
-    real vx, vy, vz;
     std::vector<real> vxList, vyList, vzList;
 
 private:
@@ -349,7 +350,7 @@ public:
     real getVelocityZ() { return velocityZ; }
 
 private:
-    PrecursorBoundaryCondition(SPtr<TransientBCInputFileReader> _reader, uint _timeStepsBetweenReads, real vx, real vy, real vz) : reader(_reader), timeStepsBetweenReads(_timeStepsBetweenReads), velocityX(vx), velocityY(vy), velocityZ(vz) { };
+    PrecursorBoundaryCondition(SPtr<TransientBCInputFileReader> _reader, uint _timeStepsBetweenReads, real vx, real vy, real vz) : timeStepsBetweenReads(_timeStepsBetweenReads), velocityX(vx), velocityY(vy), velocityZ(vz), reader(_reader) { };
     virtual char getType() const override
     {
         return vf::gpu::BC_VELOCITY;
