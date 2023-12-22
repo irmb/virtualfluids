@@ -64,6 +64,9 @@ public:
 private:
     void correctNeighborForPeriodicBoundaries(const Grid *grid, std::array<real, 3>& coords, std::array<real, 3>& neighbors) const override
     {
+        (void)grid;
+        (void)coords;
+        (void)neighbors;
     }
 
     int getDirection() const override
@@ -73,6 +76,9 @@ private:
 
     void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override
     {
+        (void)grid;
+        (void)level;
+        (void)boundaryCondition;
     }
 
     int getCoordinate() const override
@@ -99,6 +105,7 @@ public:
 
     void transIndexToCoords(uint index, real &x, real &y, real &z) const override
     {
+        (void)index;
         x = 0;
         y = 0;
         z = 0;
@@ -111,6 +118,9 @@ public:
 
     uint transCoordToIndex(const real &x, const real &y, const real &z) const override
     {
+        (void)x;
+        (void)y;
+        (void)z;
         return 0;
     }
 

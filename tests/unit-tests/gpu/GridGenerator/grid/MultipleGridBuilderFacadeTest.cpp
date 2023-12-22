@@ -89,7 +89,7 @@ class MockMultipleGridBuilder : public MultipleGridBuilder
 public:
     MOCK_METHOD(void, addCoarseGrid, (real startX, real startY, real startZ, real endX, real endY, real endZ, real delta),
                 (override));
-    void addCoarseGrid(const GridDimensions& gridDimensions) override {};
+    void addCoarseGrid(const GridDimensions& gridDimensions) override {(void)gridDimensions;};
     MOCK_METHOD(void, setSubDomainBox, (SPtr<BoundingBox> subDomainBox), (override));
     MOCK_METHOD(void, findCommunicationIndices, (int direction, bool doShift), (override));
     MOCK_METHOD(void, setCommunicationProcess, (int direction, uint process), (override));
@@ -112,7 +112,7 @@ public:
     MOCK_METHOD(void, addGrid, (std::shared_ptr<Object> gridShape), (override));
     MOCK_METHOD(void, addGeometry, (std::shared_ptr<Object> gridShape), (override));
 
-    void buildGrids(bool enableThinWalls) override {};
+    void buildGrids(bool enableThinWalls) override {(void)enableThinWalls;};
 };
 
 TEST(MultipleGridBuilderFacadeTest, transform1dCoordinateToComponents)
