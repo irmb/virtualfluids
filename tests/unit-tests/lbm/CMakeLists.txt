@@ -33,4 +33,4 @@
 #=======================================================================================
 project(lbmTests LANGUAGES CXX)
 
-vf_add_tests2(NAME lbmTests PRIVATE_LINK lbm project_options project_warnings)
+vf_add_tests(NAME lbmTests PRIVATE_LINK lbm project_options project_warnings)

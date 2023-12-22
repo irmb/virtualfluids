@@ -33,7 +33,7 @@
 #=======================================================================================
 project(GridGeneratorTests LANGUAGES CXX)
 
-vf_add_tests2(NAME GridGeneratorTests PRIVATE_LINK GridGenerator project_options project_warnings)
+vf_add_tests(NAME GridGeneratorTests PRIVATE_LINK GridGenerator project_options project_warnings)
 
 if(VF_ENABLE_UNIT_TESTS)
    target_include_directories(GridGeneratorTests PRIVATE "${VF_ROOT_DIR}/src/basics/")

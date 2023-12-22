@@ -33,7 +33,7 @@
 #=======================================================================================
 project(gpu_coreTests LANGUAGES CXX)
 
-vf_add_tests2(NAME gpu_coreTests PRIVATE_LINK gpu_core project_options project_warnings)
+vf_add_tests(NAME gpu_coreTests PRIVATE_LINK gpu_core project_options project_warnings)
 
 # set_target_properties(gpu_coreTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_include_directories(gpu_coreTests PRIVATE "${VF_THIRD_DIR}/cuda_samples/")

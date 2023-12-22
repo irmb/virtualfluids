@@ -33,4 +33,4 @@
 #=======================================================================================
 project(basicsTests LANGUAGES CXX)
 
-vf_add_tests2(NAME basicsTests PRIVATE_LINK basics project_options project_warnings)
+vf_add_tests(NAME basicsTests PRIVATE_LINK basics project_options project_warnings)

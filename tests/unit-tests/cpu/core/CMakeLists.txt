@@ -33,4 +33,4 @@
 #=======================================================================================
 project(cpu_coreTests LANGUAGES CXX)
 
-vf_add_tests2(NAME cpu_coreTests PRIVATE_LINK cpu_core project_options project_warnings)
+vf_add_tests(NAME cpu_coreTests PRIVATE_LINK cpu_core project_options project_warnings)
