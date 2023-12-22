@@ -96,7 +96,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${library_name} PUBLIC "/wd4100") # unreferenced formal parameter
     target_compile_options(${library_name} PUBLIC "/wd4701") # potentially uninitialized local variable
     target_compile_options(${library_name} PUBLIC "/wd4703") # potentially uninitialized local pointer
-    target_compile_options(${library_name} PUBLIC "/wd4458") # declaration of 'XXX' hides class member
     target_compile_options(${library_name} PUBLIC "/wd4305") #'initializing': truncation from double to float
     target_compile_options(${library_name} PUBLIC "/wd4505") # C4505: 'XXX': unreferenced local function has been removed
     target_compile_options(${library_name} PUBLIC "/wd4310") # C4310: cast truncates constant value, triggerd by muParserbase.h

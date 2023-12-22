@@ -86,7 +86,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(basics PRIVATE "/wd4100") # unreferenced formal parameter
     target_compile_options(basics PRIVATE "/wd4701") # potentially uninitialized local variable
     target_compile_options(basics PRIVATE "/wd4703") # potentially uninitialized local pointer
-    target_compile_options(basics PRIVATE "/wd4458") # declaration of 'XXX' hides class member
     target_compile_options(basics PRIVATE "/wd4305") #'initializing': truncation from double to float
     target_compile_options(basics PRIVATE "/wd4242") #'conversion from 'int' to 'char', possible loss of data
 endif()

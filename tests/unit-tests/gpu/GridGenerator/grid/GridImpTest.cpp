@@ -37,6 +37,8 @@
 #include <memory>
 #include <ostream>
 
+#include <basics/tests/testUtilities.h>
+
 #include <gpu/GridGenerator/grid/GridImp.h>
 
 #include "PointerDefinitions.h"
@@ -310,9 +312,9 @@ void compareNodeToCoordinates(SPtr<Grid> grid, int index, real xExpected, real y
 {
     real xNode, yNode, zNode;
     grid->transIndexToCoords(index, xNode, yNode, zNode);
-    EXPECT_FLOAT_EQ(xNode, xExpected)  << message;
-    EXPECT_FLOAT_EQ(yNode, yExpected) << message;
-    EXPECT_FLOAT_EQ(zNode, zExpected) << message;
+    EXPECT_THAT(xNode, RealEq(xExpected)) << message;
+    EXPECT_THAT(yNode, RealEq(yExpected)) << message;
+    EXPECT_THAT(zNode, RealEq(zExpected)) << message;
 }
 
 void iterateOverXLine(std::shared_ptr<Grid> grid, uint iy, uint iz, std::function<void(int, const std::string&)> func)

@@ -84,7 +84,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     list(APPEND WARNINGS "/wd4100") # unreferenced formal parameter
     list(APPEND WARNINGS "/wd4701") # potentially uninitialized local variable
     list(APPEND WARNINGS "/wd4703") # potentially uninitialized local pointer
-    list(APPEND WARNINGS "/wd4458") # declaration of 'XXX' hides class member
     list(APPEND WARNINGS "/wd4305") # 'initializing': truncation from double to float  
     list(APPEND WARNINGS "/wd4505") # 'XXX': unreferenced local function has been removed
     list(APPEND WARNINGS "/wd4324") # structure was padded due to alignment specifier
