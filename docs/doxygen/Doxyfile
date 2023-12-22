@@ -953,6 +953,7 @@ WARN_LOGFILE           =
 
 INPUT                  = src/ \
                          apps/ \
+                         tests/ \
                          docs/img/VF_logo.png \
                          README.md \
                          AUTHORS.md \
