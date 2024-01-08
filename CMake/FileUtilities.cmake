@@ -94,7 +94,7 @@ function(createSourceGroups file_paths)
         get_filename_component(path ${file_path} DIRECTORY)
 
         if (path)
-            source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "general" FILES ${file_path})
+            source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${file_path})
         endif()
 
     endforeach()
