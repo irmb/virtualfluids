@@ -6,18 +6,18 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes"  title=""/>
-    <tab type="usergroup" title="Documentation" url="@ref documentation">
-        <tab type="user" url="@ref getting-start-with-docker" visible="yes" title="Getting Start with Docker" intro=""/>
-        <tab type="user" url="@ref getting-start-not-using-docker" visible="yes" title="Getting Start not using Docker" intro=""/>
-        <tab type="user" url="@ref build-and-run" visible="yes" title="Build and Run" intro=""/>
-        <tab type="user" url="@ref how-to-document-code" visible="yes" title="How to document code" intro=""/>
-        <tab type="user" url="@ref debugging-with-vscode" visible="yes" title="Debugging with VSCode" intro=""/>
-        <tab type="user" url="@ref unit-tests" visible="yes" title="Unit Tests" intro=""/>
-        <tab type="user" url="@ref regression-tests" visible="yes" title="Regression Tests" intro=""/>
-        <tab type="user" url="@ref release" visible="yes" title="Release" intro=""/>
-        <tab type="user" url="@ref coding-guidelines" visible="yes" title="Coding Guideline" intro=""/>
-        <tab type="user" url="@ref direction-scheme" visible="yes" title="Direction Scheme" intro=""/>
-        <tab type="user" url="@ref kernel-scheme" visible="yes" title="Kernel Scheme" intro=""/>
+    <tab type="usergroup" title="Documentation" url="@ref Documentation">
+        <tab type="user" url="@ref Getting-Started-with-Docker" visible="yes" title="Getting Started with Docker" intro=""/>
+        <tab type="user" url="@ref Getting-Started-Not-Using-Docker" visible="yes" title="Getting Started Not Using Docker" intro=""/>
+        <tab type="user" url="@ref Build-and-Run" visible="yes" title="Build and Run" intro=""/>
+        <tab type="user" url="@ref How-To-Document-Code" visible="yes" title="How To Document Code" intro=""/>
+        <tab type="user" url="@ref Debugging-with-Vscode" visible="yes" title="Debugging with VSCode" intro=""/>
+        <tab type="user" url="@ref Unit-Tests" visible="yes" title="Unit Tests" intro=""/>
+        <tab type="user" url="@ref Regression-Tests" visible="yes" title="Regression Tests" intro=""/>
+        <tab type="user" url="@ref Release" visible="yes" title="Release" intro=""/>
+        <tab type="user" url="@ref Coding-Guidelines" visible="yes" title="Coding Guidelines" intro=""/>
+        <tab type="user" url="@ref Direction-Scheme" visible="yes" title="Direction Scheme" intro=""/>
+        <tab type="user" url="@ref Kernel-Scheme" visible="yes" title="Kernel Scheme" intro=""/>
     </tab>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="topics" visible="yes" title="Modules" intro=""/>
