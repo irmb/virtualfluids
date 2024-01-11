@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 
-# Getting Start not using Docker
+# Getting Started Not Using Docker
 
 VirtualFluids is supported on Linux and Windows.
 We recommend using VirtualFludis with Docker. If, for whatever reason, Docker cannot be used, VirtualFluids can also be installed manually. The following packages are necessary for this:

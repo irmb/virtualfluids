@@ -6,12 +6,14 @@
 This page describes how to add unit tests to VirtualFluids. VirtualFluids uses the C++ testing and mocking framework [GoogleTest](http://google.github.io/googletest/).
 
 ## 0. Test Structure in VirtualFluids
+
 VirtualFluids is build upon multiple libraries `<library>` (e.g. [basics](https://git.rz.tu-bs.de/irmb/virtualfluids/-/tree/main/src/basics)). Every library can have a corresponding test executable. The test executable is called `<library>Test` and is created automatically by the CMake build system if the following two conditions are met:
 1. The CMakeLists.txt of the libraries contains: `vf_add_tests()` (e.g. the basics library: [CMakeLists.txt](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/src/basics/CMakeLists.txt))
 2. The library contains a file following the naming convention: `<fileName>Test.cpp` (e.g: [StringUtilTest.cpp](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/src/basics/StringUtilities/StringUtilTest.cpp))
 
 
 ## 1. Building and Running Tests
+
 The tests can be built by running the following commands:
 ```
 cmake .. -DBUILD_VF_UNIT_TESTS=ON
@@ -79,11 +81,13 @@ The next step ist to **act** on the target behavior. The act step should cover t
 The third and final step is to **assert** the expected outcome. The result or response of the act step is checked. The assertion(s) determine(s) whether the test passes or fails.
 
 ### Assertions with googletest
+
 For the assert step googleTest provides two options: [EXPECT and ASSERT](http://google.github.io/googletest/reference/assertions.html). Upon failure, `EXPECT_` macros generate nonfatal failures and allow the current function to continue running, while `ASSERT_` macros generate fatal failures and abort the current function. The above example uses the ``EXPECT_THAT`` macro. With ``EXPECT_THAT()``  you can use Google Test's [predefined matchers](http://google.github.io/googletest/reference/matchers.html) from the testing namespace (for example ``testing::IsTrue()`` or ``testing::IsEmpty()`` or your own custom matchers. The example above uses the custom matcher ``RealEQ()`` for testing the equality of two real numbers (float or double).
 
 
 
 ## 3. Common Problems
+
 When you test a class which depends on CUDA you may get a build error like this:
 ```
 fatal error: cuda_runtime.h: No such file or directory
@@ -102,4 +106,5 @@ For VirtualFluidsGPU you can find the CMakeList here: ``VirtualFluids/src/gpu/Vi
 <!-- Gleiches Problm wie in Punkt 2. Running the Tests -->
 
 ## 4. Further Information
+
  You can find further information on how to write tests in [GoogleTest User’s Guide](http://google.github.io/googletest/).

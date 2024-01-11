@@ -6,7 +6,8 @@
 This guide describes how to start using and developing VirtualFluids in the terminal. Alternativly you can use Visual Studio to build an run it.
 
 ## Build
-The necessary packages needs to be installed. Either we are working in a <!-- DOXYGEN_MAKE_REF -->[Docker container](getting-start-with-docker.md) or have installed the packages <!-- DOXYGEN_MAKE_REF -->[manually](getting-start-manually). 
+
+The necessary packages needs to be installed. Either we are working in a <!-- DOXYGEN_MAKE_REF -->[Docker container](Getting-Started-with-Docker.md) or have installed the packages <!-- DOXYGEN_MAKE_REF -->[manually](Getting-Started-Not-Using-Docker.md). 
 We can check if the necessary packages are installed by running the following commands in the terminal:
 ```
    git --version
@@ -48,6 +49,7 @@ Additionaly, the following options can be passed to cmake:
 - -DVF_ENABLE_PYTHON_BINDINGS=ON: enable python bindings (included in all_make and all_msvc)
 
 ## Run the examples
+
 VirtualFluids project comes with a list of examples. The source code of the examples are located in the folder `./apps/`. Most of the apps requires a configuration file, which lays next to source code example.
 
 For instance a simulation on the GPU containing a flow around a sphere can be started with the following command:

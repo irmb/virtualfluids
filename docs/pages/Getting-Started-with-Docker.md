@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 
-# Getting Start with Docker
+# Getting Started with Docker
 
 This page describes how to start using and developing VirtualFluids.
 

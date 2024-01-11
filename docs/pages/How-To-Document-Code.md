@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 
-# How to document code
+# How To Document Code
 
 To build sustainable research software, it is mandatory to document code. 
 Even if it turns out that some developments are not continued, documentation is important to help future scientists to learn from the own experiences.  
@@ -17,4 +17,4 @@ The documentation of the source code takes place…
    - In most of the cases comment should describe ***why*** something was implemented and not ***how***.
    - if available add formulas, references to scripts, paper, and all information you got linked to the implemented code
 
-- adding <!-- DOXYGEN_MAKE_REF -->[unit](unit-tests.md) and <!-- DOXYGEN_MAKE_DOXYGEN_MAKE_REFABSOLUTE -->[regression](regression-tests.md) tests.
+- adding <!-- DOXYGEN_MAKE_REF -->[unit](Unit-Tests.md) and <!-- DOXYGEN_MAKE_DOXYGEN_MAKE_REFABSOLUTE -->[regression](Regression-Tests.md) tests.

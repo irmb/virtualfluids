@@ -11,7 +11,7 @@ five-part naming structure:
 - fourth field: model
 - fifth field (optional): Other
 
-## first field - one letter:
+## First field - one letter:
 
 - C Central Moments/ Cascade
 - K Cumulant
@@ -19,13 +19,13 @@ five-part naming structure:
 - F Factorized
 - M MRT
 
-## third field:
+## Third field:
   
 - Incompressible
 - Compressible
 - Selective
 
-## fourth field:
+## Fourth field:
 
 - NavierStokes
 - AdvectionDiffusion
