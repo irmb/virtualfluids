@@ -31,11 +31,6 @@
 //! \{
 //! \author Henry Korb, Henrik Asmuth
 //! \date 13/05/2022
-//! \brief Probe computing point-wise statistics for a set of points across a plane
-//!
-//! The set of points can be defined by providing a list or on an x-normal plane.
-//! All statistics are temporal.
-//!
 //=======================================================================================
 
 #ifndef PlaneProbe_H
@@ -45,6 +40,11 @@
 
 #include "Probe.h"
 
+//! \brief Probe computing point-wise statistics for a set of points across a plane
+//!
+//! The set of points can be defined by providing a list or on an x-normal plane.
+//! All statistics are temporal.
+//!
 class PlaneProbe : public Probe
 {
 public: 

@@ -30,7 +30,6 @@
 //! \ingroup gpu_core core
 //! \{
 //! \author Anna Wellmann
-//! \details See [master thesis of Anna Wellmann]
 //=======================================================================================
 #include "InterpolationCellGrouper.h"
 

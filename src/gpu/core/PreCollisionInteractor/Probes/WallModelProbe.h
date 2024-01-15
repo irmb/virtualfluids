@@ -31,11 +31,6 @@
 //! \{
 //! \author Henrik Asmuth
 //! \date 13/05/2022
-//! \brief Probe computing statistics of all relevant wall model quantities used in the StressBC kernels
-//!
-//! Computes spatial statistics for all grid points of the StressBC 
-//! The spatial statistics can additionally be averaged in time.
-//!
 //=======================================================================================
 
 #ifndef WallModelProbe_H
@@ -47,6 +42,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////////
 
+//! \brief Probe computing statistics of all relevant wall model quantities used in the StressBC kernels
+//!
+//! Computes spatial statistics for all grid points of the StressBC 
+//! The spatial statistics can additionally be averaged in time.
+//!
 class WallModelProbe : public Probe
 {
 public: 

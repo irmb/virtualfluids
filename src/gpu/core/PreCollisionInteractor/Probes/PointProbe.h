@@ -31,11 +31,6 @@
 //! \{
 //! \author Henry Korb, Henrik Asmuth
 //! \date 13/05/2022
-//! \brief Probe computing statistics for a set of points in space
-//!
-//! The set of points can be defined by providing a list or on an x-normal plane (the latter being somewhat redundant with PlaneProbe)
-//! All statistics are temporal.
-//!
 //=======================================================================================
 
 #ifndef PointProbe_H
@@ -43,6 +38,11 @@
 
 #include "Probe.h"
 
+//! \brief Probe computing statistics for a set of points in space
+//!
+//! The set of points can be defined by providing a list or on an x-normal plane (the latter being somewhat redundant with PlaneProbe)
+//! All statistics are temporal.
+//!
 class PointProbe: public Probe
 {
 public:

@@ -31,11 +31,6 @@
 //! \{
 //! \author Henrik Asmuth
 //! \date 13/05/2022
-//! \brief Probe computing statistics across planes spanning the entire domain
-//!
-//! Computes spatial statistics across x, y or z-normal planes defined by planeNormal. 
-//! The planes include all points of the domain at each respective position along that normal direction.
-//! The spatial statistics can additionally be averaged in time.
 //!
 //=======================================================================================
 
@@ -50,6 +45,11 @@ __global__ void moveIndicesInPosNormalDir( uint* pointIndices, uint nPoints, uin
 
 ///////////////////////////////////////////////////////////////////////////////////
 
+//! \brief Probe computing statistics across planes spanning the entire domain
+//!
+//! Computes spatial statistics across x, y or z-normal planes defined by planeNormal. 
+//! The planes include all points of the domain at each respective position along that normal direction.
+//! The spatial statistics can additionally be averaged in time.
 class PlanarAverageProbe : public Probe
 {
 public:

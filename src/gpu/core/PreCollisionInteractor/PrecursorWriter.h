@@ -31,10 +31,6 @@
 //! \{
 //! \author Henry Korb, Henrik Asmuth
 //! \date 05/12/2022
-//! \brief Probe writing planes of data to be used as inflow data in successor simulation using PrecursorBC
-//!
-//! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions 
-//! that can be read by PrecursorBC as inflow data.
 //=======================================================================================
 
 
@@ -87,6 +83,11 @@ struct PrecursorStruct
     cudaStream_t stream;
 };
 
+//! \brief Probe writing planes of data to be used as inflow data in successor simulation using PrecursorBC
+//!
+//! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions 
+//! that can be read by PrecursorBC as inflow data.
+//!
 class PrecursorWriter : public PreCollisionInteractor
 {
 public:

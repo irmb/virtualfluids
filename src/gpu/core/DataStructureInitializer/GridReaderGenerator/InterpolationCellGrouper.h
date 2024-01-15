@@ -30,7 +30,6 @@
 //! \ingroup gpu_core core
 //! \{
 //! \author Anna Wellmann
-//! \details See [master thesis of Anna Wellmann]
 //=======================================================================================
 
 #ifndef InterpolationCellGrouper_H
@@ -46,9 +45,11 @@ class GridBuilder;
 
 using LBMSimulationParameters = std::vector<std::shared_ptr<LBMSimulationParameter>>;
 
+//! \brief Split the interpolation cells into two groups: cells which are at the border between gpus and therefore involved
+//! in the communication between gpus, and cells which are not directly related to the communication between gpus.
+//! \details See [master thesis of Anna Wellmann]
 class InterpolationCellGrouper {
 public:
-    //! \brief Construct InterpolationCellGrouper object
     InterpolationCellGrouper(const LBMSimulationParameters &parHs, const LBMSimulationParameters &parDs,
                              SPtr<GridBuilder> builder);
 

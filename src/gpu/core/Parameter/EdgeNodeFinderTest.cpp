@@ -29,10 +29,6 @@
 //! \addtogroup gpu_Parameter_tests Parameter
 //! \ingroup gpu_core_tests core
 //! \{
-//! \author Anna Wellmann
-//! \brief Functions for finding edge nodes in the multi-gpu implementation
-//! \details Edge nodes are nodes, which are part of the communication in multiple directions
-//! \ref master thesis of Anna Wellmann (p. 54-57)
 //=======================================================================================
 #include <gmock/gmock.h>
 
