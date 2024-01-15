@@ -30,8 +30,6 @@
 //! \ingroup gpu_core core
 //! \{
 //! \author Martin Schoenherr
-//! \brief note, that the drag/lift calculations are build for being used with 
-//! \brief geometry boundary nodes and the related area has to be defined here
 //=======================================================================================
 
 #include "DragLift.h"
@@ -49,6 +47,8 @@
 
 using namespace std;
 
+//! \brief Calculate drag and lift for a geometry
+//! \details note, that the drag/lift calculations are build for being used with geometry boundary nodes and the related area has to be defined here
 void calcDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
     //////////////////////////////////////////////////////////////////////////

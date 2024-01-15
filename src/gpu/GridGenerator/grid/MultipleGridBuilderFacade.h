@@ -30,8 +30,6 @@
 //! \ingroup gpu_GridGenerator GridGenerator
 //! \{
 //! \author Anna Wellmann
-//! \brief A class that makes the setup of simulations on multiple gpus easier
-//! \details Using this class is optional.
 
 //=======================================================================================
 
@@ -58,8 +56,9 @@ class FileCollection;
 
 //! \class MultipleGridBuilderFacade
 //! \brief Simplifies the creation of the grids for a multi-gpu simulation
+//! \details Using this class is optional.
 //!
-//! \details Steps to set up the grids:
+//! Steps to set up the grids:
 //!
 //! - 1. initialize class with a MultipleGridBuilder and the dimensions of the entire domain
 //!

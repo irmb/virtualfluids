@@ -31,12 +31,6 @@
 //! \{
 //! \author Henrik Asmuth
 //! \date 13/012/2022
-//! \brief Basic debugging class to print out f's in a certain area of the domain
-//!
-//! Basic debugging class. Needs to be directly added in UpdateGrid (could potentially also be added as a proper Probe in the
-//! future) How to use: Define a part of the domain via min/max x, y, and z. The DistributionDebugInspector will print out
-//! all f's in that area.
-//!
 //=======================================================================================
 
 #ifndef DISTRIBUTION_INSPECTOR_H
@@ -46,6 +40,11 @@
 
 class Parameter;
 
+//! \brief Basic debugging class to print out f's in a certain area of the domain
+//!
+//! Basic debugging class. Needs to be directly added in UpdateGrid (could potentially also be added as a proper Probe in the
+//! future) How to use: Define a part of the domain via min/max x, y, and z. The DistributionDebugInspector will print out
+//! all f's in that area.
 class DistributionDebugInspector
 {
 public:

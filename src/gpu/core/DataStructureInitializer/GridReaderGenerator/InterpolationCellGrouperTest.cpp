@@ -30,7 +30,6 @@
 //! \ingroup gpu_core_tests core
 //! \{
 //! \author Anna Wellmann
-//! \details See [master thesis of Anna Wellmann]
 //=======================================================================================
 #include <gmock/gmock.h>
 #include "Utilities/testUtilitiesGPU.h"

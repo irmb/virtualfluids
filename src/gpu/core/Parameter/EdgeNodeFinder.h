@@ -30,9 +30,6 @@
 //! \ingroup gpu_core core
 //! \{
 //! \author Anna Wellmann
-//! \brief Functions for finding edge nodes in the multi-gpu implementation
-//! \details Edge nodes are nodes, which are part of the communication in multiple directions
-//! \ref master thesis of Anna Wellmann (p. 54-57)
 //=======================================================================================
 #ifndef GPU_EDGENODES_H
 #define GPU_EDGENODES_H
@@ -43,7 +40,9 @@ class Parameter;
 
 namespace vf::gpu
 {
-//! \brief Find nodes which are part of communication in multiple coordinate directions
+//! \brief Function for finding edge nodes in the multi-gpu implementation
+//! \details Edge nodes are nodes, which are part of the communication in multiple directions
+//! \ref master thesis of Anna Wellmann (p. 54-57)
 void findEdgeNodesCommMultiGPU(Parameter& parameter);
 } // namespace vf::gpu
 
