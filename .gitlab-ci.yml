@@ -590,12 +590,8 @@ reuse:
 ##                               Deploy                                      ##
 ###############################################################################
 # doxgen
-# This job only runs on the main branch of the parent repository, not on forks!
 pages:
   stage: deploy
-
-  rules:
-    - if: '$CI_PROJECT_NAMESPACE == "irmb"'
 
   needs: []
 
