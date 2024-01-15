@@ -98,7 +98,7 @@ public:
     void clear();
 
     //! load a configuration file
-    bool load(const std::string& File);
+    void load(const std::string& File);
 
     //! check if value associated with given key exists
     bool contains(const std::string& key) const;

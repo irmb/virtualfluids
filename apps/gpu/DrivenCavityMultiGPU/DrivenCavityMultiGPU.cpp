@@ -201,36 +201,22 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilderFacade->getGridBuilder(), para, cudaMemoryManager, communicator);
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
-
-    // run simulation
     sim.run();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-    std::string str, str2, configFile;
 
-    if (argv != NULL) {
-
-        try {
-            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/DrivenCavityMultiGPU/drivencavity_1gpu.cfg");
-            runVirtualFluids(config);
-
-            //////////////////////////////////////////////////////////////////////////
-        } catch (const spdlog::spdlog_ex &ex) {
-            std::cout << "Log initialization failed: " << ex.what() << std::endl;
-        } catch (const std::bad_alloc &e) {
-            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
-        } catch (const std::exception &e) {
-            VF_LOG_CRITICAL("exception: {}", e.what());
-        } catch (...) {
-            VF_LOG_CRITICAL("Unknown exception!");
-        }
+    try {
+        vf::logging::Logger::initializeLogger();
+        vf::basics::ConfigurationFile config =
+            vf::basics::loadConfig(argc, argv, "./apps/gpu/DrivenCavityMultiGPU/drivencavity_1gpu.cfg");
+        runVirtualFluids(config);
+    } catch (const std::exception& e) {
+        VF_LOG_WARNING("{}", e.what());
+        return 1;
     }
 
-    MPI_Finalize();
     return 0;
 }
 
