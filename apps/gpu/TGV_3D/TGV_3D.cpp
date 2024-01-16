@@ -272,72 +272,53 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
     std::string str, str2;
-    if ( argv != NULL )
-    {
-        //str = static_cast<std::string>(argv[0]);
 
-        try
-        {
-            //////////////////////////////////////////////////////////////////////////
-            std::string targetPath( __FILE__ );
+    try {
+        //////////////////////////////////////////////////////////////////////////
+        std::string targetPath(__FILE__);
 
 #ifdef _WIN32
-            targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
+        targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
 #else
-            targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+        targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
-            //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 
-            if( cmdOptionExists( argv, argv+argc, "--Re" ) )
-                reynoldsNumber = atof( getCmdOption( argv, argv+argc, "--Re" ) );
+        if (cmdOptionExists(argv, argv + argc, "--Re"))
+            reynoldsNumber = atof(getCmdOption(argv, argv + argc, "--Re"));
 
-            if( cmdOptionExists( argv, argv+argc, "--nx" ) )
-                numberOfNodesX = atoi( getCmdOption( argv, argv+argc, "--nx" ) );
+        if (cmdOptionExists(argv, argv + argc, "--nx"))
+            numberOfNodesX = atoi(getCmdOption(argv, argv + argc, "--nx"));
 
-            if( cmdOptionExists( argv, argv+argc, "--dtPerL" ) )
-                dtPerL = atoi( getCmdOption( argv, argv+argc, "--dtPerL" ) );
+        if (cmdOptionExists(argv, argv + argc, "--dtPerL"))
+            dtPerL = atoi(getCmdOption(argv, argv + argc, "--dtPerL"));
 
-            if( cmdOptionExists( argv, argv+argc, "--kernel" ) )
-                kernel = getCmdOption( argv, argv+argc, "--kernel" );
+        if (cmdOptionExists(argv, argv + argc, "--kernel"))
+            kernel = getCmdOption(argv, argv + argc, "--kernel");
 
-            if( cmdOptionExists( argv, argv+argc, "--gpu" ) )
-                gpuIndex = atoi( getCmdOption( argv, argv+argc, "--gpu" ) );
+        if (cmdOptionExists(argv, argv + argc, "--gpu"))
+            gpuIndex = atoi(getCmdOption(argv, argv + argc, "--gpu"));
 
-            if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
-                useLimiter = true;
+        if (cmdOptionExists(argv, argv + argc, "--useLimiter"))
+            useLimiter = true;
 
-            multipleLevel(targetPath + "tgv3d.cfg");
+        multipleLevel(targetPath + "tgv3d.cfg");
 
-            //////////////////////////////////////////////////////////////////////////
-        }
-        catch (const std::bad_alloc& e)
-        {
-            std::cout << e.what() << std::flush;
-            //MPI_Abort(MPI_COMM_WORLD, -1);
-        }
-        catch (const std::exception& e)
-        {
-            std::cout << e.what() << std::flush;
-            //MPI_Abort(MPI_COMM_WORLD, -1);
-        }
-        catch (...)
-        {
-            std::cout << "unknown exeption" << std::endl;
-        }
-
-        //std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
-        //MPI_Abort(MPI_COMM_WORLD, -1);
+    } catch (const std::exception& e) {
+        VF_LOG_WARNING("{}", e.what());
+        return 1;
     }
 
+    // std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+    // MPI_Abort(MPI_COMM_WORLD, -1);
 
-   /*
-   MPE_Init_log() & MPE_Finish_log() are NOT needed when
-   liblmpe.a is linked with this program.  In that case,
-   MPI_Init() would have called MPE_Init_log() already.
-   */
+    /*
+    MPE_Init_log() & MPE_Finish_log() are NOT needed when
+    liblmpe.a is linked with this program.  In that case,
+    MPI_Init() would have called MPE_Init_log() already.
+    */
 #if defined( MPI_LOGGING )
    MPE_Init_log();
 #endif
@@ -351,7 +332,6 @@ int main( int argc, char* argv[])
       MPE_Finish_log( "TestLog" );
 #endif
 
-   MPI_Finalize();
    return 0;
 }
 
