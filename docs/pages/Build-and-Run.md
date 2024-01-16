@@ -3,7 +3,7 @@
 
 # Build and Run
 
-This guide describes how to start using and developing VirtualFluids in the terminal. Alternativly you can use Visual Studio to build an run it.
+This guide describes how to start using and developing VirtualFluids in the terminal. Alternatively you can use Visual Studio to build an run it.
 
 ## Build
 
@@ -58,9 +58,11 @@ For instance a simulation on the GPU containing a flow around a sphere can be st
 
 ```
 
-The result files of this simulation are usually stored in: `./output/`
-The result files of VirtualFluids are mostly in [VTK](https://kitware.github.io/vtk-examples/site/VTKFileFormats/) format. These files can be visualised with the free software [Paraview](https://www.paraview.org/).
+### Result files
 
-The CPU part generates a set of multiple output directories in the prescribed output path. The flow fields can be found in the _mq_ directory. To view the flow fields, it is most conveniant to open the _mq_collection.pvd_ file in Paraview. The _bc_ directory contains the boundary condition information, the _geo_ directory contains information on the geometry of the flow domain and the _blocks_ directory contains the block grid.
+The result files of this simulation are usually stored in: `./output/`
+The result files of VirtualFluids are mostly in [VTK](https://kitware.github.io/vtk-examples/site/VTKFileFormats/) format. These files can be visualized with the free software [Paraview](https://www.paraview.org/).
+
+The CPU part generates a set of multiple output directories in the prescribed output path. The flow fields can be found in the _mq_ directory. To view the flow fields, it is most convenient to open the _mq_collection.pvd_ file in Paraview. The _bc_ directory contains the boundary condition information, the _geo_ directory contains information on the geometry of the flow domain and the _blocks_ directory contains the block grid.
 
 A GPU computation generates a the time series of output files directly in the output path. In Paraview these time series can be read directly.
