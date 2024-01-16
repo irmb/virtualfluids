@@ -9,7 +9,7 @@
 [![REUSE status](https://api.reuse.software/badge/git.rz.tu-bs.de/irmb/VirtualFluids)](https://api.reuse.software/info/git.rz.tu-bs.de/irmb/VirtualFluids)
 
 
-VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB) at the Technical University Braunschweig. The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent, thermal, multiphase and multicomponent flow problems as well as for multi-field problems such as Fluid-Structure-interaction. It includes distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
+VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB) at the Technical University Braunschweig. The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent and multicomponent flow problems. It includes distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
 
 
 ## Documentation

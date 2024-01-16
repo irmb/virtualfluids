@@ -42,7 +42,7 @@ def _handle_ref_link(line: str) -> str:
     def _remove_relativ_path(p: str) -> str:
         rel_path = p.split("](", maxsplit=1)[1].split(")", maxsplit=1)[0]
         path = PurePath(rel_path)
-        return p.replace(rel_path, "@ref " + path.stem)
+        return p.replace(rel_path, "@ref " + path.stem.lower())
 
     p = _remove_relativ_path(pieces[1])
 
