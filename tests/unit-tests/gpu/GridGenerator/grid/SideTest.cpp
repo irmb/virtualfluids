@@ -38,13 +38,14 @@
 #include <stdexcept>
 #include <vector>
 
-#include <gpu/GridGenerator/grid/BoundaryConditions/Side.h>
+#include <basics/PointerDefinitions.h>
 
-#include "PointerDefinitions.h"
-#include  <gpu/GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
-#include "grid/GridImp.h"
-#include "grid/NodeValues.h"
-#include "lbm/constants/D3Q27.h"
+#include <lbm/constants/D3Q27.h>
+
+#include <gpu/GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
+#include <gpu/GridGenerator/grid/BoundaryConditions/Side.h>
+#include <gpu/GridGenerator/grid/GridImp.h>
+#include <gpu/GridGenerator/grid/NodeValues.h>
 
 using namespace vf::gpu;
 using namespace vf::lbm::dir;
