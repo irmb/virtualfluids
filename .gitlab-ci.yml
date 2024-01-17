@@ -148,7 +148,8 @@ msvc_17:
     - MSBuild.exe -version
 
   script:
-    - md -force build && cd build
+    - md -force build
+    - cd build
     - cmake .. --preset=msvc_all -DVF_ENABLE_PYTHON_BINDINGS=OFF -DCMAKE_CUDA_ARCHITECTURES=61 -DVF_ENABLE_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=Release /verbosity:minimal /maxcpucount:4
 
