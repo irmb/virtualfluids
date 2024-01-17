@@ -52,10 +52,16 @@ Additionaly, the following options can be passed to cmake:
 
 VirtualFluids project comes with a list of examples. The source code of the examples are located in the folder `./apps/`. Most of the apps requires a configuration file, which lays next to source code example.
 
+### Using the terminal
 For instance a simulation on the GPU containing a flow around a sphere can be started with the following command:
+```shell
+   ./build/bin/DrivenCavity ./apps/gpu/DrivenCavity/drivencavity_1level.cfg
 ```
-   ./build/bin/SphereInChannel ./apps/gpu/SphereInChannel/sphere_1level.cfg
 
+## Using VisualStudio
+In VisualStudio right click the App you want to run and select "Set as StartUp Project". Then you can run the App by pressing <kbd>CTRL</kbd> + <kbd>F5</kbd>. This will not automatically pass the configuration file to the App. You can do this by adding the following line to the "Command Arguments" in the project properties:
+```
+   ./apps/gpu/DrivenCavity/drivencavity_1level.cfg
 ```
 
 ### Result files
