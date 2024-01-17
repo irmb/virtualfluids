@@ -87,8 +87,8 @@ struct Distribution
 
     iterator begin() { return &directions[0]; }
     const_iterator begin() const { return &directions[0]; }
-    iterator end() { return &directions[dir_end + 1]; }
-    const_iterator end() const { return &directions[dir_end + 1]; }
+    iterator end() { return &directions.data()[dir_end + 1]; }
+    const_iterator end() const { return &directions.data()[dir_end + 1]; }
 };
 
 class Grid;
