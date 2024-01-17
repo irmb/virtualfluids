@@ -40,7 +40,7 @@ Additionally all test executables are automatically executed by our [continuous 
 ## 2. Adding Tests
 
 We will show you a simple example on how to add tests to VirtualFluids:
-To add tests for the class ```ExampleClass``` declared in ```ExampleClass.h``` you need to create a file named ```ExampleClassTest.cpp``` in the test library folder ([e.g. ](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/test/unit-tests/basics/config/))
+To add tests for the class ```ExampleClass``` declared in ```ExampleClass.h``` you need to create a file named ```ExampleClassTest.cpp``` in the test library folder ([example](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/test/unit-tests/basics/config/))
 
 The following code block shows a simple test case:
 ```cpp
