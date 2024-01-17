@@ -32,7 +32,7 @@
 #=======================================================================================
 PROJECT(SphereInChannel LANGUAGES CUDA CXX)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES SphereInChannel.cpp)
+vf_add_executable(PRIVATE_LINK basics gpu_core GridGenerator FILES SphereInChannel.cpp)
 
 set_source_files_properties(SphereInChannel.cpp PROPERTIES LANGUAGE CUDA)
 

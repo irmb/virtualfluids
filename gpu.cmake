@@ -68,6 +68,5 @@ if(VF_GPU_ENABLE_NUMERIC_TESTS)
         add_subdirectory(${VF_THIRD_DIR}/googletest)
     endif()
 
-    add_subdirectory(apps/gpu/numerical_tests/NumericalTests)
-    add_subdirectory(apps/gpu/numerical_tests/NumericalTestPostProcessing)
+    add_subdirectory(tests/numerical-tests/gpu/)
 endif()

@@ -72,11 +72,70 @@ endfunction()
 ##
 #################################################################################
 include(CMake/FileUtilities.cmake)
+
+function(vf_add_executable)
+
+    set( options )
+    set( oneValueArgs NAME)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE MODULEFOLDER)
+    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    vf_add_target(NAME ${ARG_NAME} BUILDTYPE binary PUBLIC_LINK ${ARG_PUBLIC_LINK} PRIVATE_LINK ${ARG_PRIVATE_LINK} FILES ${ARG_FILES} FOLDER ${ARG_FOLDER} EXCLUDE ${ARG_EXCLUDE} MODULEFOLDER ${ARG_MODULEFOLDER})
+endfunction()
+
+
 function(vf_add_library)
 
     set( options )
+    set( oneValueArgs NAME)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
+    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    vf_add_target(NAME ${ARG_NAME} PUBLIC_LINK ${ARG_PUBLIC_LINK} PRIVATE_LINK ${ARG_PRIVATE_LINK} FILES ${ARG_FILES} FOLDER ${ARG_FOLDER} EXCLUDE ${ARG_EXCLUDE})
+
+    # add corresponding test subdirectory if available
+    # test-target has to be located in under the same path as the library but in "test/unit-tests/" instead "src/"
+    if (VF_ENABLE_UNIT_TESTS)
+        string(REGEX REPLACE "src" "tests/unit-tests" test_path "${CMAKE_CURRENT_SOURCE_DIR}")
+        string(REGEX REPLACE "src" "tests/unit-tests" test_build_path "${CMAKE_CURRENT_BINARY_DIR}")
+        if (EXISTS ${test_path})
+            add_subdirectory(${test_path} ${test_build_path})
+        endif()
+    endif()
+endfunction()
+
+function(vf_add_tests)
+
+    set( options )
+    set( oneValueArgs NAME)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
+    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if(DEFINED ARG_NAME) 
+        set(library_test_name "${ARG_NAME}")
+    else()
+        vf_get_library_test_name(library_test_name)
+    endif()
+
+
+    vf_add_target(NAME ${library_test_name} BUILDTYPE binary PUBLIC_LINK ${ARG_PUBLIC_LINK} PRIVATE_LINK ${ARG_PRIVATE_LINK} FILES ${ARG_FILES} FOLDER ${ARG_FOLDER} EXCLUDE ${ARG_EXCLUDE})
+
+    # group the target into test folder
+    group_target (${library_test_name} ${testFolder})
+
+    # link googlemock
+    target_link_libraries(${library_test_name} PRIVATE GTest::gmock_main)
+
+    # add the target to ctest
+    gtest_add_tests(TARGET ${library_test_name})
+    
+endfunction()
+
+
+function(vf_add_target)
+    set( options )
     set( oneValueArgs NAME BUILDTYPE)
-    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE MODULEFOLDER)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if(DEFINED ARG_NAME) 
@@ -84,7 +143,6 @@ function(vf_add_library)
     else()
         vf_get_library_name (library_name)
     endif()
-    vf_get_library_name (folder_name) # folder_name is not equal to library_name when ARG_NAME was set
 
     if(NOT DEFINED ARG_BUILDTYPE)
         if(BUILD_SHARED_LIBS)
@@ -94,17 +152,10 @@ function(vf_add_library)
         endif()
     endif()
 
-    if(DEFINED ARG_MODULEFOLDER)
-        set(folder_name ${ARG_MODULEFOLDER})
-    endif()
-
-    # status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
-
     #################################################################
     ###   FIND FILES                                              ###
     #################################################################
-    collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
-    includeProductionFiles (${folder_name} "${sourceFiles}")
+    collectFiles("${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
 
     #################################################################
     ###   ADD TARGET                                              ###
@@ -142,62 +193,6 @@ function(vf_add_library)
     endif()
 
     status("Target: ${library_name} (type=${ARG_BUILDTYPE}) configured.")
-endfunction()
-
-#################################################################################
-## Add a test executable corresponding to the added target.
-## Must be called after vf_add_library().
-## The name of the test executable is: vf_get_library_name()Tests
-##
-## Precondition: VF_ENABLE_UNIT_TESTS needs to be ON
-#################################################################################
-function(vf_add_tests)
-
-    if (NOT VF_ENABLE_UNIT_TESTS)
-        return()
-    endif()
-
-    set( options )
-    set( oneValueArgs NAME)
-    set( multiValueArgs)
-    cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    if(DEFINED ARG_NAME) 
-        set(library_test_name "${ARG_NAME}Tests")
-        set(library_name "${ARG_NAME}")
-    else()
-        vf_get_library_test_name(library_test_name)
-        vf_get_library_name (library_name)
-    endif()
-
-    vf_get_library_name (folder_name)
-
-    status("Configuring test executable: ${library_test_name}")
-
-    # set test files to MY_SRCS
-    file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
-    includeTestFiles (${folder_name} "${all_files}")
-
-    # add the target
-    add_executable(${library_test_name} ${MY_SRCS})
-    group_target (${library_test_name} ${testFolder})
-
-    set_target_properties(${library_test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-
-    # link tested library
-    target_link_libraries(${library_test_name} PRIVATE ${library_name} project_options)
-
-    # link tested library
-    target_include_directories(${library_test_name} PRIVATE ${CMAKE_BINARY_DIR})
-    target_include_directories(${library_test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(${library_test_name} PRIVATE ${VF_SRC_DIR})
-
-    # link googlemock
-    target_link_libraries(${library_test_name} PRIVATE GTest::gmock_main)
-
-    # add the target to ctest
-    gtest_add_tests(TARGET ${library_test_name})
 
 endfunction()
 

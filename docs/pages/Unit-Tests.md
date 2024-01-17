@@ -8,9 +8,9 @@ This page describes how to add unit tests to VirtualFluids. VirtualFluids uses t
 ## 0. Test Structure in VirtualFluids
 
 VirtualFluids is build upon multiple libraries `<library>` (e.g. [basics](https://git.rz.tu-bs.de/irmb/virtualfluids/-/tree/main/src/basics)). Every library can have a corresponding test executable. The test executable is called `<library>Test` and is created automatically by the CMake build system if the following two conditions are met:
-1. The CMakeLists.txt of the libraries contains: `vf_add_tests()` (e.g. the basics library: [CMakeLists.txt](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/src/basics/CMakeLists.txt))
-2. The library contains a file following the naming convention: `<fileName>Test.cpp` (e.g: [StringUtilTest.cpp](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/src/basics/StringUtilities/StringUtilTest.cpp))
-
+1. A folder in `test/unit-tests/` with the name of the library exists (e.g. [basics](https://git.rz.tu-bs.de/irmb/virtualfluids/-/tree/main/test/unit-tests/basics))
+2. The folder contains a file named `CMakeLists.txt` with the following content: `vf_add_tests(...)` (e.g. [CMakeLists.txt](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/test/unit-tests/basics/CMakeLists.txt))
+3. A least one cpp test file exists in the library folder (see 2. Adding Tests)
 
 ## 1. Building and Running Tests
 
@@ -40,7 +40,7 @@ Additionally all test executables are automatically executed by our [continuous 
 ## 2. Adding Tests
 
 We will show you a simple example on how to add tests to VirtualFluids:
-To add tests for the class ```ExampleClass``` declared in ```ExampleClass.h``` you need to create a file named ```ExampleClassTest.cpp```.
+To add tests for the class ```ExampleClass``` declared in ```ExampleClass.h``` you need to create a file named ```ExampleClassTest.cpp``` in the test library folder ([example](https://git.rz.tu-bs.de/irmb/virtualfluids/-/blob/main/test/unit-tests/basics/config/))
 
 The following code block shows a simple test case:
 ```cpp

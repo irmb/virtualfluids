@@ -16,7 +16,7 @@ stages:
     - linux
 
   before_script:
-    - chmod -R +x ./regression-tests/*
+    - chmod -R +x ./tests/regression-tests/*
     - pip install fieldcompare
 
   artifacts:
@@ -30,6 +30,6 @@ run-regression-test-{{ regression_test[1] }}-{{ regression_test[0] }}:
   extends: .regression-test
 
   script:
-    - ./regression-tests/{{ regression_test[1] }}/{{ regression_test[0] }}.sh
+    - ./tests/regression-tests/{{ regression_test[1] }}/{{ regression_test[0] }}.sh
 
 {% endfor %}

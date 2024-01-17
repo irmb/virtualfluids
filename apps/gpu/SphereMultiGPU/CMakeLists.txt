@@ -32,4 +32,4 @@
 #=======================================================================================
 PROJECT(SphereMultiGPU LANGUAGES CXX)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics gpu_core GridGenerator FILES SphereMultiGPU.cpp)
+vf_add_executable(PRIVATE_LINK basics gpu_core GridGenerator FILES SphereMultiGPU.cpp)
