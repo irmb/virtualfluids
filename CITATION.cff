@@ -4,6 +4,9 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 authors:
+  - family-names: Peters
+    given-names: Sören
+    orcid: https://orcid.org/0000-0001-5236-377
   - family-names: Kutscher
     given-names: Konstantin
     orcid: https://orcid.org/0000-0002-1099-1608
@@ -13,35 +16,17 @@ authors:
   - family-names: Geier
     given-names: Martin
     orcid: https://orcid.org/0000-0002-8367-9412
-  - family-names: Krafczyk
-    given-names: Manfred
-    orcid: https://orcid.org/0000-0002-8509-0871
   - family-names: Alihussein
     given-names: Hussein
     orcid: https://orcid.org/0000-0003-3656-7028
-  - family-names: Linxweiler
-    given-names: Jan
-    orcid: https://orcid.org/0000-0002-2755-5087
-  - family-names: Peters
-    given-names: Sören
-    orcid: https://orcid.org/0000-0001-5236-3776
   - family-names: Wellmann
     given-names: Anna
     orcid: https://orcid.org/0000-0002-8825-2995
-  - family-names: Safari
-    given-names: Hesameddin
-    orcid: https://orcid.org/0000-0002-2755-5087
-  - family-names: Marcus
-    given-names: Sven
-    orcid: https://orcid.org/0000-0003-3689-2162
-  - family-names: Asmuth
-    given-names: Henrik
-    orcid: https://orcid.org/0000-0003-2929-3022
   - family-names: Korb
     given-names: Henry
     orcid: https://orcid.org/0000-0003-3177-5960
 title: "VirtualFluids"
-version: 0.1.0
+version: 0.1.1
 license: GPL-3.0-or-later
 repository-code: "https://git.rz.tu-bs.de/irmb/virtualfluids"
-date-released: "2023-12-06"
+date-released: "2024-01-19"

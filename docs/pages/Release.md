@@ -15,18 +15,20 @@ Release of VirtulFluids can be done by the core developers of VirtualFluids. A R
 
 ## 0. Check Issues and Merge Requests
 
-- [ ] Check if there are open issues or merge requests which are assigned to the current Release
+- [ ] Check if there are open issues or merge requests that are assigned to the current Release
+    - [ ] If there are open issues or merge requests, check if they are still relevant for the current Release
+    - [ ] If they are still relevant, assign them to the next Release
+    - [ ] If they are not relevant anymore, close them
 
 ## 1. Version Number and Authors
 
-- [ ] Update the version number in the authors.cff
+- [ ] Update the version number and the release date in the CITATION.cff
 - [ ] Update the version number in the CMakeLists.txt
 - [ ] Update the version number in the pyproject.toml
 - [ ] Update the version number in the sonar-project.properties
-- [ ] check authors in authors.cff
-    - authors of the current Release were directly involved in the development of the current Release
-    - authors of the current Release are listed in the authors.cff
-    - people  which are not involved in the current Release are listed in AUTHORS.md
+- [ ] check authors in CITATION.cff
+    - authors who were directly involved in the development of the current Release are listed in the CITATION.cff
+    - people who are not involved in the current Release are listed in AUTHORS.md
 
 ## 2. Update the Changelog
 
@@ -34,10 +36,11 @@ Release of VirtulFluids can be done by the core developers of VirtualFluids. A R
 
 ## 3. Prepare Release
 
-1. [ ] Merge the develop branch into main
+1. [ ] Merge the develop branch into main branch
 2. [ ] Create a tag for the current Release with the version number
 3. Tag and Main Branch are automatically mirrored to https://github.com/irmb/virtualfluids
-4. When Zenodo sees the new tag on github, it automatically creates a new version on Zenodo 
+4. [ ] Create a new Release on gitlab and github based on the tag
+5. When Zenodo sees the new release on github, it automatically creates a new version on Zenodo (this requires that the Zenodo account is linked to the github account and the repository is enabled on Zenodo)
 
 ## Repositories
 

@@ -33,7 +33,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pyfluids"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python bindings for VirtualFluids"
 readme = "README.md"
 requires-python = ">=3.6"
