@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Changelog
 
 ## [0.1.1](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/milestones/2) - 2024-01-12
