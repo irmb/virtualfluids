@@ -37,10 +37,11 @@ Release of VirtulFluids can be done by the core developers of VirtualFluids. A R
 
 ## 3. Prepare Release
 
-1. [ ] Merge the develop branch into main
+1. [ ] Merge the develop branch into main branch
 2. [ ] Create a tag for the current Release with the version number
 3. Tag and Main Branch are automatically mirrored to https://github.com/irmb/virtualfluids
-4. When Zenodo sees the new tag on github, it automatically creates a new version on Zenodo 
+4. [ ] Create a new Release on gitlab and github based on the tag
+5. When Zenodo sees the new release on github, it automatically creates a new version on Zenodo (this requires that the Zenodo account is linked to the github account and the repository is enabled on Zenodo)
 
 ## Repositories
 
