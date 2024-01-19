@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file GbMeshTools3D.h
-//! \ingroup geometry3D
+//! \addtogroup geometry3d
+//! \ingroup basics
+//! \{
 //! \author Konstantin Kutscher, Soeren Textor, Sebastian Geller
 //=======================================================================================
 #ifndef GBMESHTOOLS3D_H
@@ -494,3 +495,5 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
 //   if(!planeBoxOverlap(normal,v0,boxhalfsize)) return 0;    // -NJMP-
 //   return 1;   /* box and triangle overlaps */
 //}
+
+//! \}

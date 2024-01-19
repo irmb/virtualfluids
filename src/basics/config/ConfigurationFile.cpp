@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup config
+//! \ingroup basics
+//! \{
 //! \author Soeren Peters
 //=======================================================================================
 #include "ConfigurationFile.h"
@@ -34,6 +37,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -53,13 +57,17 @@ void ConfigurationFile::clear()
     data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-bool ConfigurationFile::load(const std::string& file)
+void ConfigurationFile::load(const std::string& file)
 {
     std::ifstream inFile(file.c_str());
 
     if (!inFile.good()) {
-        UB_THROW(UbException(UB_EXARGS, "Cannot read configuration file " + file + "! Your current directory is " +
-                                            std::filesystem::current_path().string() + "."));
+        const std::string error = "Cannot read configuration file " + file + "! Your current directory is " +
+                            std::filesystem::current_path().string() + "\n" +
+                            "For further information on how to run VirtualFluids please visit: "
+                            "https://irmb.gitlab-pages.rz.tu-bs.de/VirtualFluids/build-and-run.html#run-the-examples";
+
+        throw std::invalid_argument(error);
     }
 
     while (inFile.good() && !inFile.eof()) {
@@ -89,8 +97,6 @@ bool ConfigurationFile::load(const std::string& file)
             }
         }
     }
-
-    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -156,3 +162,5 @@ ConfigurationFile loadConfig(int argc, char* argv[], std::string configPath)
     return config;
 }
 } // namespace vf::basics
+
+//! \}

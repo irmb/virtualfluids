@@ -20,17 +20,16 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file MultipleGridBuilderFacade.h
-//! \ingroup grid
+//! \addtogroup gpu_grid grid
+//! \ingroup gpu_GridGenerator GridGenerator
+//! \{
 //! \author Anna Wellmann
-//! \brief A class that makes the setup of simulations on multiple gpus easier
-//! \details Using this class is optional.
 
 //=======================================================================================
 
@@ -57,8 +56,9 @@ class FileCollection;
 
 //! \class MultipleGridBuilderFacade
 //! \brief Simplifies the creation of the grids for a multi-gpu simulation
+//! \details Using this class is optional.
 //!
-//! \details Steps to set up the grids:
+//! Steps to set up the grids:
 //!
 //! - 1. initialize class with a MultipleGridBuilder and the dimensions of the entire domain
 //!
@@ -228,3 +228,4 @@ private:
 };
 
 #endif
+//! \}

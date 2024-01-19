@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+host: $PHOENIX_REMOTE_HOST
+user: $PHOENIX_REMOTE_USER
+private_keyfile: $PHOENIX_PRIVATE_KEY
+
+copy:
+  - from: "CMake/"
+    to: "multigpu_test/CMake/"
+    overwrite: true
+
+  - from: "3rdParty/"
+    to: "multigpu_test/3rdParty/"
+    overwrite: true
+
+  - from: "CMakeLists.txt"
+    to: "multigpu_test/CMakeLists.txt"
+    overwrite: true
+
+  - from: "gpu.cmake"
+    to: "multigpu_test/gpu.cmake"
+    overwrite: true
+
+  - from: "src/"
+    to: "multigpu_test/src/"
+    overwrite: true
+
+  - from: "CMakePresets.json"
+    to: "multigpu_test/CMakePresets.json"
+    overwrite: true
+
+  - from: "apps/gpu/"
+    to: "multigpu_test/apps/gpu/"
+    overwrite: true
+
+collect:
+  - from: multigpu_test/output/8GPU/
+    to: output/8GPU/
+    overwrite: true
+
+  - from: multigpu_test/slurm8GPU.out
+    to: output/8GPU/slurm8GPU.out
+    overwrite: true
+
+clean:
+  - multigpu_test/*
+
+sbatch:
+  script: multigpu_test/slurm8GPU.job
+  from: regression-tests/multigpu_test/slurm8GPU.job
+  overwrite: true
+
+continue_if_job_fails: true

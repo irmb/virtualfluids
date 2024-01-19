@@ -1,4 +1,4 @@
-
+//=======================================================================================
 // ____          ____    __    ______     __________   __      __       __        __
 // \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 //  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -20,25 +20,17 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \author Anna Wellmann, Martin Schönherr, Henry Korb, Henrik Asmuth
+//! \addtogroup collision
+//! \ingroup lbm
+//! \{
+//! \author Martin Schönherr, Anna Wellmann, Henry Korb, Henrik Asmuth
 //! \date 05/12/2022
-//! \brief Kernel for CumulantK17 including different turbulence models and options for local body forces and writing
-//! macroscopic variables
-//!
-//! CumulantK17 kernel using chimera transformations and quartic limiters as present in Geier et al. (2017). Additional
-//! options are three different eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template
-//! parameter turbulenceModel (with default TurbulenceModel::None). The kernel is executed separately for each subset of
-//! fluid node indices with a different tag CollisionTemplate. For each subset, only the locally required options are
-//! switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The
-//! default refers to the plain cumlant kernel (CollisionTemplate::Default). Nodes are added to subsets (taggedFluidNodes) in
-//! Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets are provided by the
-//! utilized PostCollisionInteractiors depending on they specific requirements (e.g. writeMacroscopicVariables for probes).
 
 //=======================================================================================
 #include <basics/constants/NumericConstants.h>
@@ -74,7 +66,20 @@ namespace vf::lbm
 {
 
 //////////////////////////////////////////////////////////////////////////
-//! Cumulant K17 Kernel is based on \ref
+//! \brief Kernel for CumulantK17 including different turbulence models and options for local body forces and writing
+//! macroscopic variables
+//!
+//! \details
+//! CumulantK17 kernel using chimera transformations and quartic limiters as present in Geier et al. (2017). Additional
+//! options are three different eddy-viscosity turbulence models (Smagorinsky, AMD, QR) that can be set via the template
+//! parameter turbulenceModel (with default TurbulenceModel::None). The kernel is executed separately for each subset of
+//! fluid node indices with a different tag CollisionTemplate. For each subset, only the locally required options are
+//! switched on ( \param writeMacroscopicVariables and/or \param applyBodyForce) in order to minimize memory accesses. The
+//! default refers to the plain cumlant kernel (CollisionTemplate::Default). Nodes are added to subsets (taggedFluidNodes) in
+//! Simulation::init using a corresponding tag with different values of CollisionTemplate. These subsets are provided by the
+//! utilized PostCollisionInteractiors depending on they specific requirements (e.g. writeMacroscopicVariables for probes).
+//!
+//! The CumulantK17 Kernel is based on \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040
 //! ]</b></a> and \ref <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017),
 //! DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
@@ -586,3 +591,5 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
 }
 
 } // namespace vf::lbm
+
+//! \}

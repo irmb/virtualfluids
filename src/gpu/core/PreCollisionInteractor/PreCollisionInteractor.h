@@ -20,19 +20,18 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 //=======================================================================================
 #ifndef PreCollisionInteractor_H
 #define PreCollisionInteractor_H
-
-#include <cassert>
-#include <string>
-#include <vector>
 
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
@@ -46,13 +45,20 @@ class PreCollisionInteractor
 public:
     virtual ~PreCollisionInteractor() = default;
 
-    virtual void init(Parameter *para, GridProvider *gridProvider, CudaMemoryManager *cudaMemoryManager) = 0;
-    virtual void interact(Parameter *para, CudaMemoryManager *cudaMemoryManager, int level, uint t) = 0;
-    virtual void free(Parameter *para, CudaMemoryManager *cudaMemoryManager) = 0;
-    virtual void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) = 0;
+    void initInteractor(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager) {
+        this->para = para;
+        this->cudaMemoryManager = cudaMemoryManager;
+        init();
+    }
+    virtual void interact(int level, uint t) = 0;
+    virtual void getTaggedFluidNodes(GridProvider* gridProvider) = 0;
 
 protected:
-    uint updateInterval { 1 };
+    virtual void init() = 0;
+    SPtr<Parameter> para;
+    SPtr<CudaMemoryManager> cudaMemoryManager;
 };
 
 #endif
+
+//! \}

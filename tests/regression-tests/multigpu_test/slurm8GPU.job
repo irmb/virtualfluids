@@ -1,0 +1,41 @@
+#!/bin/bash -l
+
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
+#SBATCH --partition=gpu01_queue
+#SBATCH --nodes=2
+#SBATCH --time=03:00:00
+#SBATCH --job-name=Regr8GPU
+#SBATCH --ntasks-per-node=4
+#SBATCH --gres=gpu:4
+#SBATCH --output=multigpu_test/slurm8GPU.out
+##SBATCH --exclusive
+
+echo "SLURM_JOBID="$SLURM_JOBID
+echo "SLURM_JOB_NODELIST"=$SLURM_JOB_NODELIST
+echo "SLURM_NNODES"=$SLURM_NNODES
+echo "SLURM_TASKS_PER_NODE"=$SLURM_TASKS_PER_NODE
+
+module purge
+module load comp/gcc/10.2.0
+module load mpi/openmpi/4.0.5_gcc_9.3/openmpi
+module load cuda/11.3
+module load comp/git/2.27.0
+PATH=/home/irmb/tools/cmake-3.26.4-linux-x86_64/bin:$PATH
+
+module list
+
+cd multigpu_test
+rm -rf build && mkdir -p build
+cd build
+cmake .. -DVF_ENABLE_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/DrivenCavityMultiGPU\;apps/gpu/SphereMultiGPU
+make -j 16
+cd ..
+mkdir -p output
+
+echo $'\n\n\n\n---First test: DrivenCavityMultiGPU on 8 GPUs\n\n'
+mpirun -np 8 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/DrivenCavityMultiGPU/drivencavity_regressiontest_8gpu.cfg"
+
+echo $'\n\n\n\n---Second test: SphereMultiGPU on 8 GPUs\n\n'
+mpirun -np 8 "./build/bin/SphereMultiGPU"        "apps/gpu/SphereMultiGPU/sphere_regressiontest_8gpu.cfg"

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
+host: $PHOENIX_REMOTE_HOST
+user: $PHOENIX_REMOTE_USER
+private_keyfile: $PHOENIX_PRIVATE_KEY
+
+copy:
+  - from: regression-tests/hpc-test/test.job.sh
+    to: virtualfluids-mpich-bind/test.job
+    overwrite: true
+
+  - from: regression-tests/hpc-test/Rockylinux9.sif
+    to: virtualfluids-mpich-bind/Rockylinux9.sif
+    overwrite: true
+
+  - from: apps/cpu/FlowAroundCylinder/cylinder.cfg
+    to: virtualfluids-mpich-bind/cylinder.cfg
+    overwrite: true
+
+collect:
+  - from: virtualfluids-mpich-bind/output/
+    to: results-regression-test/
+    overwrite: true
+
+  - from: virtualfluids-mpich-bind/virtualfluids.out
+    to: results-regression-test/virtualfluids.out
+    overwrite: true
+
+
+#clean:
+#  - laplace2d/*
+
+sbatch: virtualfluids-mpich-bind/test.job
+continue_if_job_fails: true

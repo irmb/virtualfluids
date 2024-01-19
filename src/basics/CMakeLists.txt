@@ -26,6 +26,9 @@
 #  You should have received a copy of the GNU General Public License along
 #  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 #
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
 #! \author Soeren Peters
 #=======================================================================================
 
@@ -55,8 +58,6 @@ if(VF_ENABLE_BOOST)
     target_link_libraries(${library_name} PRIVATE Boost::boost)
 endif()
 
-vf_add_tests()
-
 
 ## WARNINGS
 # TODO: Remove this and fix those warnings: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/163
@@ -85,7 +86,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(basics PRIVATE "/wd4100") # unreferenced formal parameter
     target_compile_options(basics PRIVATE "/wd4701") # potentially uninitialized local variable
     target_compile_options(basics PRIVATE "/wd4703") # potentially uninitialized local pointer
-    target_compile_options(basics PRIVATE "/wd4458") # declaration of 'XXX' hides class member
     target_compile_options(basics PRIVATE "/wd4305") #'initializing': truncation from double to float
     target_compile_options(basics PRIVATE "/wd4242") #'conversion from 'int' to 'char', possible loss of data
 endif()

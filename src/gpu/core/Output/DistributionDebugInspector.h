@@ -20,21 +20,17 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file DistributionDebugInspector.h
+//! \addtogroup gpu_Output Output
+//! \ingroup gpu_core core
+//! \{
 //! \author Henrik Asmuth
 //! \date 13/012/2022
-//! \brief Basic debugging class to print out f's in a certain area of the domain
-//!
-//! Basic debugging class. Needs to be directly added in UpdateGrid (could potentially also be added as a proper Probe in the
-//! future) How to use: Define a part of the domain via min/max x, y, and z. The DistributionDebugInspector will print out
-//! all f's in that area.
-//!
 //=======================================================================================
 
 #ifndef DISTRIBUTION_INSPECTOR_H
@@ -44,6 +40,11 @@
 
 class Parameter;
 
+//! \brief Basic debugging class to print out f's in a certain area of the domain
+//!
+//! Basic debugging class. Needs to be directly added in UpdateGrid (could potentially also be added as a proper Probe in the
+//! future) How to use: Define a part of the domain via min/max x, y, and z. The DistributionDebugInspector will print out
+//! all f's in that area.
 class DistributionDebugInspector
 {
 public:
@@ -66,3 +67,5 @@ private:
 };
 
 #endif
+
+//! \}

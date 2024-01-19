@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup DrivenCavityMultiGPU
+//! \ingroup gpu_apps
+//! \{
+//! \author Anna Wellmann
+//=======================================================================================
 #define _USE_MATH_DEFINES
 #include <exception>
 #include <filesystem>
@@ -168,35 +201,23 @@ void runVirtualFluids(const vf::basics::ConfigurationFile &config)
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilderFacade->getGridBuilder(), para, cudaMemoryManager, communicator);
     Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
-
-    // run simulation
     sim.run();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-    std::string str, str2, configFile;
 
-    if (argv != NULL) {
-
-        try {
-            VF_LOG_TRACE("For the default config path to work, execute the app from the project root.");
-            vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv, "./apps/gpu/DrivenCavityMultiGPU/drivencavity_1gpu.cfg");
-            runVirtualFluids(config);
-
-            //////////////////////////////////////////////////////////////////////////
-        } catch (const spdlog::spdlog_ex &ex) {
-            std::cout << "Log initialization failed: " << ex.what() << std::endl;
-        } catch (const std::bad_alloc &e) {
-            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
-        } catch (const std::exception &e) {
-            VF_LOG_CRITICAL("exception: {}", e.what());
-        } catch (...) {
-            VF_LOG_CRITICAL("Unknown exception!");
-        }
+    try {
+        vf::logging::Logger::initializeLogger();
+        vf::basics::ConfigurationFile config =
+            vf::basics::loadConfig(argc, argv, "./apps/gpu/DrivenCavityMultiGPU/drivencavity_1gpu.cfg");
+        runVirtualFluids(config);
+    } catch (const std::exception& e) {
+        VF_LOG_WARNING("{}", e.what());
+        return 1;
     }
 
-    MPI_Finalize();
     return 0;
 }
+
+//! \}

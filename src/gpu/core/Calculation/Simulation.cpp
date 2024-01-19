@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_Calculation Calculation
+//! \ingroup gpu_core core
+//! \{
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Simulation.h"
@@ -136,13 +139,13 @@ void Simulation::init(GridProvider &gridProvider, BoundaryConditionFactory *bcFa
 
     //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
     for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
-        actuator->init(para.get(), &gridProvider, cudaMemoryManager.get());
-        actuator->getTaggedFluidNodes(para.get(), &gridProvider);
+        actuator->initInteractor(para, cudaMemoryManager);
+        actuator->getTaggedFluidNodes(&gridProvider);
     }
 
     for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
-        probe->init(para.get(), &gridProvider, cudaMemoryManager.get());
-        probe->getTaggedFluidNodes(para.get(), &gridProvider);
+        probe->initInteractor(para, cudaMemoryManager);
+        probe->getTaggedFluidNodes(&gridProvider);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -774,13 +777,7 @@ Simulation::~Simulation()
     // Turbulence Intensity
     if (para->getCalcTurbulenceIntensity()) {
         cudaFreeTurbulenceIntensityArrays(para.get(), cudaMemoryManager.get());
-
-        for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
-            actuator->free(para.get(), cudaMemoryManager.get());
-        }
-
-        for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
-            probe->free(para.get(), cudaMemoryManager.get());
-        }
     }
 }
+
+//! \}

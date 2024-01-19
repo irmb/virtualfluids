@@ -1,3 +1,34 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 #include "Utilities/KernelUtilities.h"
 #include "Probe.h"
 #include "PlanarAverageProbe.h"
@@ -184,7 +215,7 @@ std::vector<PostProcessingVariable> PlanarAverageProbe::getPostProcessingVariabl
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+void PlanarAverageProbe::findPoints(std::vector<int>& probeIndices_level,
                             std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
@@ -249,7 +280,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t_level, int level)
+void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t_level, int level)
 {   
     // Compute macroscopic variables in entire domain
     calculateMacroscopicQuantitiesCompressible(
@@ -467,3 +498,5 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
 
     getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }
+
+//! \}

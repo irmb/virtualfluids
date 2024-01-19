@@ -1,4 +1,4 @@
-# #######################################################################################
+#=======================================================================================
 # ____          ____    __    ______     __________   __      __       __        __
 # \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 #  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -23,9 +23,11 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-# #######################################################################################
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
+#! \author Soeren Peters
+#=======================================================================================
 # Credit: https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 # #######################################################################################
 function(set_project_warnings project_name)
@@ -56,6 +58,7 @@ function(set_project_warnings project_name)
       /w14906 # string literal cast to 'LPWSTR'
       /w14928 # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
       /permissive- # standards conformance mode for MSVC compiler.
+      /wd4458 # disable declaration of 'XXX' hides class member
   )
 
   set(CLANG_WARNINGS

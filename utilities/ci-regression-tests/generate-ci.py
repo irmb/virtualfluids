@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
 from jinja2 import Template
 from pathlib import Path
 
@@ -5,7 +8,7 @@ TEMPLATES_DIR = Path(__file__).parent
 REGRESSION_CI_TEMPLATE = TEMPLATES_DIR / "regression-tests-ci.yml.j2"
 GENERATED_DIR = Path("generated")
 REGRESSION_CI_FILE = GENERATED_DIR / "regression-tests-ci.yml"
-TEST_FILE_DIR = Path("regression-tests")
+TEST_FILE_DIR = Path("tests/regression-tests")
 
 
 def build_regression_job_string(regression_tests: list[(str,str)]) -> str:

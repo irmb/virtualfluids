@@ -26,6 +26,9 @@
 #  You should have received a copy of the GNU General Public License along
 #  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 #
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
 #! \author Soeren Peters
 #=======================================================================================
 project(gpu_core LANGUAGES CUDA CXX)
@@ -44,24 +47,6 @@ target_include_directories(gpu_core SYSTEM PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_D
 if(MSVC)
     set_target_properties(gpu_core PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
-
-vf_add_tests(NAME gpu_core)
-
-if(VF_ENABLE_UNIT_TESTS)
-    # set_target_properties(gpu_coreTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-    target_include_directories(gpu_coreTests PRIVATE "${VF_THIRD_DIR}/cuda_samples/")
-    target_include_directories(gpu_coreTests PRIVATE "${VF_ROOT_DIR}/src/gpu/GridGenerator/")
-    set_source_files_properties(Communication/ExchangeData27Test.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(BoundaryConditions/BoundaryConditionFactoryTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(DataStructureInitializer/GridReaderGenerator/GridGeneratorTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreamsTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Test.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(Utilities/KernelUtilitiesTests.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(Output/DistributionDebugWriterTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(Parameter/ParameterTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(PreCollisionInteractor/Actuator/ActuatorFarmInlinesTest.cpp PROPERTIES LANGUAGE CUDA)
-endif()
-
 
 ## WARNINGS
 # TODO: Remove this and fix those warnings: https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/163
@@ -99,7 +84,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     list(APPEND WARNINGS "/wd4100") # unreferenced formal parameter
     list(APPEND WARNINGS "/wd4701") # potentially uninitialized local variable
     list(APPEND WARNINGS "/wd4703") # potentially uninitialized local pointer
-    list(APPEND WARNINGS "/wd4458") # declaration of 'XXX' hides class member
     list(APPEND WARNINGS "/wd4305") # 'initializing': truncation from double to float  
     list(APPEND WARNINGS "/wd4505") # 'XXX': unreferenced local function has been removed
     list(APPEND WARNINGS "/wd4324") # structure was padded due to alignment specifier

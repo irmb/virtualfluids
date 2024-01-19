@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file BCArray3D.h
-//! \ingroup BoundarConditions
+//! \addtogroup cpu_BoundaryConditions BoundaryConditions
+//! \ingroup cpu_core core
+//! \{
 //! \author Sören Freudiger
 //=======================================================================================
 
@@ -89,6 +90,8 @@ public:
     inline bool isFluidWithoutBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
     //////////////////////////////////////////////////////////////////////////
     inline bool isUndefined(std::size_t x1, std::size_t x2, std::size_t x3) const;
+    //////////////////////////////////////////////////////////////////////////
+    inline bool isUnvalidForCollision(std::size_t x1, std::size_t x2, std::size_t x3) const;
     //////////////////////////////////////////////////////////////////////////
     void setUndefined(std::size_t x1, std::size_t x2, std::size_t x3);
     //////////////////////////////////////////////////////////////////////////
@@ -200,6 +203,12 @@ inline bool BCArray3D::isUndefined(std::size_t x1, std::size_t x2, std::size_t x
     return bcindexmatrix(x1, x2, x3) == UNDEFINED;
 }
 //////////////////////////////////////////////////////////////////////////
+inline bool BCArray3D::isUnvalidForCollision(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+    const int type = bcindexmatrix(x1, x2, x3);
+    return type == SOLID || type == UNDEFINED;
+}
+//////////////////////////////////////////////////////////////////////////
 inline bool BCArray3D::isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
     return bcindexmatrix(x1, x2, x3) == INTERFACECF;
@@ -223,3 +232,5 @@ inline bool BCArray3D::isInsideOfDomain(const int &x1, const int &x2, const int 
 }
 
 #endif
+
+//! \}

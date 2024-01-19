@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+###############################################################################
+# 1. builds the singularity container using a docker container
+# Needs a priviliged gitlab runner.
+# Input: Containers/rockylinux9-mpich.def
+# Output: Containers/rockylinux9-mpich.sif
+###############################################################################
+build-singularity-image:
+  image:
+    name: quay.io/singularity/singularity:v3.10.4
+    entrypoint: [""]
+
+  stage: build
+
+  tags:
+    - linux
+    - privileged
+
+  variables:
+    SINGULARITY_IMAGE: "regression-tests/hpc-test/Rockylinux9.sif"
+    SINGULARITY_FILE: "regression-tests/hpc-test/Rockylinux9.def"
+
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - $SINGULARITY_IMAGE
+
+  cache:
+    key:
+      files:
+        - $SINGULARITY_FILE
+    paths:
+      - regression-tests/hpc-test/
+
+  script:
+    - |
+      if [[ -f $SINGULARITY_IMAGE ]]; then
+        echo "Cached version of $SINGULARITY_IMAGE used. Clear cache to force rebuild."
+        exit 0
+      fi
+    - singularity build $SINGULARITY_IMAGE $SINGULARITY_FILE
+
+
+###############################################################################
+# 2. runs the container on the hpc cluster using hpc-rocket
+# rocket.yml used the configuration file rocket.yml, copies the defined data
+# to the cluster, submits a slurm job and copies data back
+# Output: result data located in results-regression-test/
+###############################################################################
+run-simulation:
+  image: python:3.10
+
+  stage: test
+
+  needs: ["build-singularity-image"]
+
+  before_script:
+    - pip install hpc-rocket==0.4.0
+
+  script:
+    - hpc-rocket launch --watch regression-tests/hpc-test/rocket.yml
+    - cat results-regression-test/virtualfluids.out
+
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - results-regression-test/
+
+###############################################################################
+# 3. runs a regression data using fieldcompare
+# Fieldcompare compares the in the last job produced data from results-regression-test/
+# with a set of reference files located in reference_data/
+###############################################################################
+validate-simulation:
+  image: python:3.10
+
+  stage: test
+
+  needs: ["run-simulation"]
+
+  before_script:
+    - pip install "fieldcompare[all]"
+    - fieldcompare --version
+    - rm -rf reference_data && mkdir -p reference_data
+    - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data reference_data
+    - cd reference_data && git sparse-checkout add regression_tests/cpu/FlowAroundCylinder4processes && cd ..
+
+  script:
+     - fieldcompare dir results-regression-test/FlowAroundCylinder reference_data/regression_tests/cpu/FlowAroundCylinder4processes --include-files "*.vtu"

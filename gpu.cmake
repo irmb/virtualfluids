@@ -23,9 +23,10 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-# #######################################################################################
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
+# #################################################################################
 
 #############################################################
 ###                  Options                              ###
@@ -67,7 +68,5 @@ if(VF_GPU_ENABLE_NUMERIC_TESTS)
         add_subdirectory(${VF_THIRD_DIR}/googletest)
     endif()
 
-    add_subdirectory(3rdParty/fftw/fftw-3.3.7)
-    add_subdirectory(apps/gpu/tests/NumericalTests)
-    add_subdirectory(apps/gpu/tests/NumericalTestPostProcessing)
+    add_subdirectory(tests/numerical-tests/gpu/)
 endif()

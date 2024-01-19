@@ -1,3 +1,6 @@
+#  SPDX-License-Identifier: BSL-1.0
+#  SPDX-FileCopyrightText: Copyright Iowa State University 2009-2010
+
 # - Returns a version string from Git
 #
 # These functions force a re-configure on each git commit so that you can

@@ -1,3 +1,34 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 #ifndef ActuatorFarm_H
 #define ActuatorFarm_H
 
@@ -6,7 +37,6 @@
 #include <basics/constants/NumericConstants.h>
 #include <stdexcept>
 
-class Parameter;
 class GridProvider;
 using namespace vf::basics::constant;
 
@@ -49,11 +79,10 @@ public:
         azimuths = std::vector<real>(numberOfTurbines, 0.0);
     }
 
-    ~ActuatorFarm() override = default;
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    ~ActuatorFarm();
+
+    void interact(int level, uint t) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
     void enableOutput(const std::string outputName, uint tStart, uint tOut) {
         this->outputName = outputName;
@@ -137,13 +166,14 @@ public:
     virtual void updateForcesAndCoordinates()=0;
 
 private:
-    void initTurbineGeometries(CudaMemoryManager* cudaManager);
-    void initBoundingSpheres(Parameter* para, CudaMemoryManager* cudaManager);
-    void initBladeCoords(CudaMemoryManager* cudaManager);
-    void initBladeVelocities(CudaMemoryManager* cudaManager);
-    void initBladeForces(CudaMemoryManager* cudaManager);
-    void initBladeIndices(CudaMemoryManager* cudaManager);
-    std::string getFilename(Parameter* para, uint t) const;
+    void init() override;
+    void initTurbineGeometries();
+    void initBoundingSpheres();
+    void initBladeCoords();
+    void initBladeVelocities();
+    void initBladeForces();
+    void initBladeIndices();
+    std::string getFilename(uint t) const;
     void swapDeviceArrays();
 
 public:
@@ -187,3 +217,5 @@ protected:
 };
 
 #endif
+
+//! \}

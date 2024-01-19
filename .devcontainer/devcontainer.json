@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 {
     "name": "virtual-fluids-environment",
     "customizations": {
@@ -20,5 +22,5 @@
     "runArgs": ["--gpus","all",                     // remove this line in case you have no gpus available
                 "--hostname=${localEnv:HOSTNAME}"], // HOSTNAME needs to be known by the vscode environment. It is probably necessary to add "export HOSTNAME=<hostname>" to the config file of your host machine's bash.
 
-    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1"
+    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.2"
 }

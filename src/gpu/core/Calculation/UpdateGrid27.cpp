@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_Calculation Calculation
+//! \ingroup gpu_core core
+//! \{
 //! \author Martin Schoenherr, Stephan Lenz, Anna Wellmann
 //=======================================================================================
 #include "UpdateGrid27.h"
@@ -327,7 +330,7 @@ void UpdateGrid27::interactWithActuators(int level, unsigned int t)
 {
     for( SPtr<PreCollisionInteractor> actuator: para->getActuators() )
     {
-        actuator->interact(para.get(), cudaMemoryManager.get(), level, t);
+        actuator->interact(level, t);
     }
 }
 
@@ -335,7 +338,7 @@ void  UpdateGrid27::interactWithProbes(int level, unsigned int t)
 {
     for( SPtr<PreCollisionInteractor> probe: para->getProbes() )
     {
-        probe->interact(para.get(), cudaMemoryManager.get(), level, t);
+        probe->interact(level, t);
     }
 }
 
@@ -362,3 +365,5 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     this->adKernelManager = std::make_shared<ADKernelManager>(para, adkernels);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
 }
+
+//! \}

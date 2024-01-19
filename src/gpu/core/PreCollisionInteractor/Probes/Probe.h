@@ -1,43 +1,36 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Probe.h
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 //! \author Henry Korb, Henrik Asmuth
 //! \date 13/05/2022
-//! \brief Base class for probes called in UpdateGrid27
-//!
-//! Any probe should be initiated in the app and added via para->addProbe( someProbe )
-//! Note, that all probes generally require that macroscopic variables have been updated in the 
-//! time step they are called in. Most collision kernels (atm, all except K17CompressibleNavierStokes)
-//! don't do this and would require an explicit call of calcMacroscopicQuantities. It does seem quite 
-//! inexpensive though to simply save vx, vy, etc., directly in the collider.
-//!
-//! \todo might have to adapt conversionFactors when using grid refinement
 //=======================================================================================
 
 #ifndef Probe_H
@@ -135,36 +128,43 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
 
 uint calcOldTimestep(uint currentTimestep, uint lastTimestepInOldSeries);
 
+//! \brief Base class for probes called in UpdateGrid27
+//!
+//! Any probe should be initiated in the app and added via para->addProbe( someProbe )
+//! Note, that all probes generally require that macroscopic variables have been updated in the 
+//! time step they are called in. Most collision kernels (atm, all except K17CompressibleNavierStokes)
+//! don't do this and would require an explicit call of calcMacroscopicQuantities. It does seem quite 
+//! inexpensive though to simply save vx, vy, etc., directly in the collider.
+//!
+//! \todo might have to adapt conversionFactors when using grid refinement
 class Probe : public PreCollisionInteractor 
 {
 public:
     Probe(
-        const std::string _probeName,
-        const std::string _outputPath,
-        const uint _tStartAvg,
-        const uint _tStartTmpAvg,
-        const uint _tAvg,
-        const uint _tStartOut,
-        const uint _tOut,
-        const bool _hasDeviceQuantityArray,
-        const bool _outputTimeSeries
-    ):  probeName(_probeName),
-        outputPath(_outputPath + (_outputPath.back() == '/' ? "" : "/")),
-        tStartAvg(_tStartAvg),
-        tStartTmpAveraging(_tStartTmpAvg),
-        tAvg(_tAvg),
-        tStartOut(_tStartOut),
-        tOut(_tOut),
-        hasDeviceQuantityArray(_hasDeviceQuantityArray),
-        outputTimeSeries(_outputTimeSeries),
-        PreCollisionInteractor()
+        const std::string probeName,
+        const std::string outputPath,
+        const uint tStartAvg,
+        const uint tStartTmpAvg,
+        const uint tAvg,
+        const uint tStartOut,
+        const uint tOut,
+        const bool hasDeviceQuantityArray,
+        const bool outputTimeSeries
+    ):  probeName(probeName),
+        outputPath(outputPath + (outputPath.back() == '/' ? "" : "/")),
+        tStartAvg(tStartAvg),
+        tStartTmpAveraging(tStartTmpAvg),
+        tAvg(tAvg),
+        tStartOut(tStartOut),
+        tOut(tOut),
+        hasDeviceQuantityArray(hasDeviceQuantityArray),
+        outputTimeSeries(outputTimeSeries)
     {
-        if (tStartOut < tStartAvg)      throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
+        if (tStartOut < tStartAvg) throw std::runtime_error("Probe: tStartOut must be larger than tStartAvg!");
     }
 
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaMemoryManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaMemoryManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaMemoryManager) override;
+    ~Probe();
+    void interact(int level, uint t) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -181,32 +181,33 @@ protected:
     real getNondimensionalConversionFactor(int level);
 
 private:
+    void init() override;
     virtual bool isAvailableStatistic(Statistic _variable) = 0;
 
     virtual std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) = 0;
 
-    virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+    virtual void findPoints(std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                        int level) = 0;
-    void addProbeStruct(Parameter* para, CudaMemoryManager* cudaMemoryManager, std::vector<int>& probeIndices,
+    void addProbeStruct(std::vector<int>& probeIndices,
                         std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
-    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) = 0;
+    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) = 0;
 
-    virtual void write(Parameter* para, int level, int t);
-    virtual void writeParallelFile(Parameter* para, int t);
-    virtual void writeGridFile(Parameter* para, int level, int t, uint part);
-    std::string writeTimeseriesHeader(Parameter* para, int level);
-    void appendTimeseriesFile(Parameter* para, int level, int t);
+    virtual void write(int level, int t);
+    virtual void writeParallelFile(int t);
+    virtual void writeGridFile(int level, int t, uint part);
+    std::string writeTimeseriesHeader(int level);
+    void appendTimeseriesFile(int level, int t);
 
     std::vector<std::string> getVarNames();
     std::string makeGridFileName(int level, int id, int t, uint part);
     std::string makeParallelFileName(int id, int t);
     std::string makeTimeseriesFileName(int leve, int id);
 
-    virtual uint getNumberOfTimestepsInTimeseries(Parameter* para, int level){ (void)para; (void)level; return 1; }
+    virtual uint getNumberOfTimestepsInTimeseries(int level){ (void)para; (void)level; return 1; }
 
 protected:
     const std::string probeName;
@@ -237,3 +238,4 @@ protected:
 };
 
 #endif
+//! \}

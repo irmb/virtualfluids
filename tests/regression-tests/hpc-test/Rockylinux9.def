@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+
+BootStrap: docker
+From: rockylinux:9
+Stage: build
+ 
+%files
+    src src
+    CMakeLists.txt CMakeLists.txt
+    CMakePresets.json CMakePresets.json
+    apps apps
+    CMake CMake
+    3rdParty 3rdParty
+    pythonbindings pythonbindings
+    Python Python
+    pyproject.toml pyproject.toml
+    cpu.cmake cpu.cmake
+    gpu.cmake gpu.cmake
+
+
+%post
+    yum update -y                            && \
+    yum group install -y "Development Tools" && \
+    yum install -y                              \
+    mpich                                       \
+    mpich-devel                                 \
+    cmake                                    && \
+    source /etc/profile.d/modules.sh         && \
+    module load mpi                          && \
+    mkdir build && cd build && cmake .. -DVF_ENABLE_CPU=ON -DVF_ENABLE_DOUBLE_ACCURACY=ON && make -j8
+
+
+BootStrap: docker
+From: rockylinux:9
+Stage: runtime
+
+%files from build
+    build build
+
+%environment
+    export MPI_DIR=/cluster/mpi/mpich
+    export PATH="$MPI_DIR/bin:$PATH"
+    export LD_LIBRARY_PATH="$MPI_DIR/lib:$LD_LIBRARY_PATH"
+
+%post
+    yum update -y         && \
+    yum install -y           \
+    gcc-toolset-12           \
+    compat-libgfortran-48

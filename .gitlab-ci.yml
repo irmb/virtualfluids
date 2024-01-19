@@ -1,4 +1,4 @@
-# #######################################################################################
+#=======================================================================================
 # ____          ____    __    ______     __________   __      __       __        __
 # \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 #  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -23,10 +23,11 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>
-# #######################################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.1
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
+#=======================================================================================
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.2
 
 stages:
   - build
@@ -137,10 +138,6 @@ msvc_17:
     - win
     - gpu
 
-  variables:
-    BUILD_CONFIGURATION: "Release"
-    BUILD_FOLDER: "build"
-
   # add cmake and MSBuild.exe to the path.
   # This Needs to be adapted when moved to a new build machine.
   before_script:
@@ -151,16 +148,15 @@ msvc_17:
     - MSBuild.exe -version
 
   script:
-    - cd $CI_PROJECT_DIR
-    - md -force $env:BUILD_FOLDER
-    - cd $env:BUILD_FOLDER
+    - md -force build
+    - cd build
     - cmake .. --preset=msvc_all -DVF_ENABLE_PYTHON_BINDINGS=OFF -DCMAKE_CUDA_ARCHITECTURES=61 -DVF_ENABLE_WARNINGS_AS_ERRORS=ON
-    - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
+    - MSBuild.exe VirtualFluids.sln /property:Configuration=Release /verbosity:minimal /maxcpucount:4
 
   artifacts:
     expire_in: 1 hrs
     paths:
-      - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
+      - $CI_PROJECT_DIR/build
 
 
 ###############################################################################
@@ -296,7 +292,7 @@ regression_test_4gpu:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket4GPU.yml --read-jobid-from hpcrocket4GPU.log
 
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - output/4GPU/*
       - hpcrocket4GPU.log
@@ -331,7 +327,7 @@ regression_test_8gpu:
     - hpc-rocket cancel regression-tests/multigpu_test/rocket8GPU.yml --read-jobid-from hpcrocket8GPU.log
 
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - output/8GPU/*
       - hpcrocket8GPU.log
@@ -373,7 +369,11 @@ gpu_numerical_tests:
     - cd /tmp
     - git clone --depth 1 --filter=blob:none --sparse https://github.com/irmb/test_data
     - cd test_data
-    - git sparse-checkout set numerical_tests_gpu/grids numerical_tests_gpu/grids
+    - git sparse-checkout set numerical_tests_gpu/grids numerical_tests_gpu/grids 
+    - cd /tmp && wget https://fftw.org/fftw-3.3.10.tar.gz
+    - tar -xzf fftw-3.3.10.tar.gz && cd fftw-3.3.10
+    - ./configure && make && make install
+    - apt-get update && apt-get install -y pkg-config # used for finding fftw in cmake
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
     - ccache -s
@@ -436,59 +436,6 @@ trigger-hpc-regression-tests:
       when: manual
       allow_failure: true
 
-
-clang_build_analyzer:
-  extends: .analyze_template
-
-  before_script:
-    - export CC=clang
-    - export CXX=clang++
-    - $CXX --version
-    - cd /tmp
-    - git clone https://github.com/aras-p/ClangBuildAnalyzer.git
-    - cd ClangBuildAnalyzer
-    - cmake .
-    - make
-    - export PATH+=:$(pwd)
-
-  script:
-    - mkdir -p $CI_PROJECT_DIR/build
-    - cd $CI_PROJECT_DIR/build
-    - cmake ..
-      --preset=make_all
-      -DCMAKE_CUDA_ARCHITECTURES=60
-      -DCMAKE_CXX_FLAGS=-ftime-trace
-    - ClangBuildAnalyzer --start .
-    - make
-    - ClangBuildAnalyzer --stop . CBA
-    - ClangBuildAnalyzer --analyze CBA
-
-###############################################################################
-include_what_you_use_clang_15:
-  extends: .analyze_template
-
-  before_script:
-    - apt-get update && apt-get install -y libclang-15-dev llvm-15-dev
-    - export CC=clang
-    - export CXX=clang++
-    - $CXX --version
-    - cd /tmp
-    - git clone https://github.com/include-what-you-use/include-what-you-use.git
-    - cd include-what-you-use
-    - git checkout clang_15
-    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15
-    - make
-    - export PATH+=:$(pwd)/bin
-
-  script:
-    - mkdir -p $CI_PROJECT_DIR/build
-    - cd $CI_PROJECT_DIR/build
-    - cmake ..
-      --preset=make_all
-      -DCMAKE_CUDA_ARCHITECTURES=60
-      -DVF_ENABLE_INCLUDE_WHAT_YOU_USE=ON
-    - make
-
 ###############################################################################
 cppcheck:
   extends: .analyze_template
@@ -541,13 +488,12 @@ gcov_gcc:
     - cd $CI_PROJECT_DIR/build
     - cmake ..
       --preset=make_all
-      -DCMAKE_BUILD_TYPE=PROFILE
+      -DVF_ENABLE_COVERAGE=ON
       -DCMAKE_CUDA_ARCHITECTURES=70
     - make -j4
     - ctest --output-on-failure
-    - cd ..
-    - mkdir coverage
-    - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
+    - cd .. && mkdir coverage && cd build
+    - gcovr -r ../ -f ../src --print-summary --html ../coverage/coverage.html --html-details --xml ../coverage/coverage.xml --gcov-executable gcov-12 .
 
   artifacts:
     expire_in: 1 week
@@ -619,25 +565,35 @@ sanitizer-memory:
     - ctest --output-on-failure
 
 
+###############################################################################
+##                            License check                                  ##
+###############################################################################
+reuse:
+  stage: analyze
+
+  image:
+    name: fsfe/reuse:2.1.0-debian
+    entrypoint: [""]
+
+  needs: []
+
+  script:
+    - reuse lint
 
 ###############################################################################
 ##                               Deploy                                      ##
 ###############################################################################
 # doxgen
-# This job only runs on the main branch of the parent repository, not on forks!
 pages:
   stage: deploy
 
-  image: alpine
-
-  only:
-    - main@irmb/VirtualFluids
-
   needs: []
 
+  before_script:
+    - doxygen --version
+
   script:
-  - apk update && apk add doxygen
-  - doxygen docs/Doxyfile
+  - doxygen docs/doxygen/Doxyfile
   - mv docs/build/html/ public/
 
   artifacts:
@@ -656,8 +612,8 @@ sonar-scanner:
   tags:
     - linux
 
-  only:
-    - main@irmb/VirtualFluids
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "irmb"'
 
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"

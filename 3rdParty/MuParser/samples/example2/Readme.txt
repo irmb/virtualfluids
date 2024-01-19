@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: Copyright (C) 2004 - 2020 Ingo Berg
 
                  __________
     _____   __ __\______   \_____  _______  ______  ____ _______

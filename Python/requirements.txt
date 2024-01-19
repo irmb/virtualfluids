@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 appdirs==1.4.4
 attrs==20.3.0
 cycler==0.10.0

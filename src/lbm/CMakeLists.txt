@@ -23,8 +23,8 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #
 #! \author Soeren Peters
 #=======================================================================================
@@ -34,5 +34,3 @@ vf_add_library(PUBLIC_LINK basics logger PRIVATE_LINK project_warnings project_o
 if(VF_ENABLE_GPU)
     set_target_properties(lbm PROPERTIES CUDA_SEPARABLE_COMPILATION ON POSITION_INDEPENDENT_CODE ON)
 endif()
-
-vf_add_tests()

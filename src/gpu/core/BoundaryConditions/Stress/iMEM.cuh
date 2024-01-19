@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_BoundaryConditions BoundaryConditions
+//! \ingroup gpu_core core
+//! \{
 //! \author Henrik Asmuth, Martin Schönherr
 //! iMEM approach (see, Asmuth et. al (2021), https://doi.org/10.1063/5.0065701)
 //! Note, that the iMEM function is currently only implemented for straight walls with z-normal and q=0.5.
@@ -134,3 +137,5 @@ __host__ __device__ __forceinline__ void iMEM(
 }
 
 #endif
+
+//! \}

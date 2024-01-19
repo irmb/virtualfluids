@@ -23,15 +23,16 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-# #######################################################################################
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
+# #################################################################################
 
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 project(
     VirtualFluids
-    VERSION 0.1.0
+    VERSION 0.1.1
     DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
     HOMEPAGE_URL "https://www.tu-braunschweig.de/irmb/forschung/virtualfluids"
     LANGUAGES CXX)
@@ -59,6 +60,7 @@ option(VF_ENABLE_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(VF_ENABLE_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(VF_ENABLE_CPPCHECK "Add cppcheck to the targets" OFF)
 option(VF_ENABLE_CACHE "Enable ccache" ON)
+option(VF_ENABLE_COVERAGE "Enable gcov code coverage" OFF)
 
 option(VF_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
 option(VF_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)

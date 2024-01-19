@@ -1,0 +1,126 @@
+# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+##################################################
+#				 GPU Mapping					 #
+##################################################
+Devices=1
+
+##################################################
+#	       Basic Simulation Parameter			 #
+##################################################
+KernelsToTest=CumulantK15Comp
+#CumulantK17Comp
+#BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
+NumberOfTimeSteps=20
+Viscosity=0.00001
+Rho0=1.0
+
+##################################################
+#	    TaylorGreenVortex Parameter				 #
+##################################################
+BasisTimeStepLength_TGV_Ux=1000
+ux_TGV_Ux=0.096
+Amplitude_TGV_Ux=0.001
+l0_TGV_Ux=32
+DataToCalcTests_TGV_Ux=Vx Vz
+
+BasisTimeStepLength_TGV_Uz=1000
+uz_TGV_Uz=0.048
+Amplitude_TGV_Uz=0.001
+l0_TGV_Uz=48
+DataToCalcTests_TGV_Uz=Vx Vz
+
+##################################################
+#	       Shear Wave Parameter					 #
+##################################################
+BasisTimeStepLength_SW=1000
+u0_SW=0.096
+v0_SW=0.1
+l0_SW=32
+DataToCalcTests_SW=Vy
+
+##################################################
+#			   Basic Test Parameter				 #
+##################################################
+ySliceForCalculation=0
+
+##################################################
+#			Phi Test Parameter					 #
+##################################################
+PhiTest=true
+
+MinOrderOfAccuracy_Phi=1.95
+StartTimeStepCalculation_Phi=11
+EndTimeStepCalculation_Phi=20
+
+##################################################
+#			Ny Test Parameter					 #
+##################################################
+NyTest=true
+
+MinOrderOfAccuracy_Ny=1.95
+StartTimeStepCalculation_Ny=11
+EndTimeStepCalculation_Ny=20
+
+##################################################
+#			L2-Norm Test Parameter				 #
+##################################################
+L2NormTest=false
+
+NormalizeData_L2Norm=Amplitude BasicData
+MaxL2NormDiff=4.5 0.5
+
+BasicTimeStep_L2=0
+DivergentTimeStep_L2=20
+
+##################################################
+#    L2-Norm Test Between Kernels Parameter		 #
+##################################################
+L2NormBetweenKernelsTest=false
+
+BasicKernel_L2NormBetweenKernels=BGKCompSP27
+Timesteps_L2NormBetweenKernels=0 10 20
+NormalizeWith=amplitude
+
+##################################################
+#			Simulation To Perform				 #
+##################################################
+TaylorGreenVortexUx32=true
+TaylorGreenVortexUx64=true
+TaylorGreenVortexUx128=true
+TaylorGreenVortexUx256=true
+TaylorGreenVortexUx512=true
+
+TaylorGreenVortexUz32=false
+TaylorGreenVortexUz64=false
+TaylorGreenVortexUz128=false
+TaylorGreenVortexUz256=false
+TaylorGreenVortexUz512=false
+
+ShearWave32=true
+ShearWave64=true
+ShearWave128=true
+ShearWave256=true
+ShearWave512=true
+
+##################################################
+#				Grid Information				 #
+##################################################
+NumberOfGridLevels=1
+
+GridPath32=grids/gridUni32x4x48
+GridPath64=grids/gridUni64x4x96
+GridPath128=grids/gridUni128x4x192
+GridPath256=grids/gridUni256x4x384
+GridPath512=grids/gridUni512x4x768
+
+##################################################
+# 			File Writing Information			 #
+##################################################
+WriteVTKFiles=true
+FolderForVTKFileWriting=Output
+StartStepFileWriter=0
+
+WriteAnalyResultsToVTK=true
+
+FolderLogFile=logFiles

@@ -1,4 +1,4 @@
-# #######################################################################################
+#=======================================================================================
 # ____          ____    __    ______     __________   __      __       __        __
 # \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 #  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -23,138 +23,19 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-# #################################################################################
-#  Helper functions for building source groups
-#  and extracting test/production files.
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #
-#  After function call the files are stored in: MY_SRCS
-#################################################################################
+#! \author Soeren Peters
+#=======================================================================================
 
-macro(includeAllFiles folderName file_path)
-	if(NOT DEFINED collectTestFiles)
-	    set(collectTestFiles ON)
-	endif()
-	
-	if(NOT DEFINED collectProductionFiles)
-        set(collectProductionFiles ON)
-    endif()
-
-	includeFiles(${folderName} "${file_path}")
-endmacro(includeAllFiles)
-
-
-macro(includeProductionFiles folderName file_path)
-	if(NOT DEFINED collectTestFiles)
-	    set(collectTestFiles OFF)
-	endif()
-	
-	if(NOT DEFINED collectProductionFiles)
-        set(collectProductionFiles ON)
-    endif()
-
-	includeFiles(${folderName} "${file_path}")
-endmacro(includeProductionFiles)
-
-
-
-macro(includeTestFiles folderName file_paths)
-	if(NOT DEFINED collectTestFiles)
-		set(collectTestFiles ON)
-	endif()
-
-	if(NOT DEFINED collectProductionFiles)
-		set(collectProductionFiles OFF)
-	endif()
-
-	includeFiles(${folderName} "${file_paths}")
-endmacro(includeTestFiles)
-
-
-
-
-macro(includeFiles folderName file_paths)
-
-	foreach(file ${file_paths})
-
-		get_filename_component(package_dir ${file} DIRECTORY)
-		#message("File: " ${file})
-		#message("package_dir: " ${package_dir})
-
-		collectFilesFrom(${file})
-		if (package_dir)
-		   setSourceGroupForFilesIn(${file} ${package_dir} ${folderName})
-		endif()
-
-	endforeach()
-
-	unset(collectTestFiles)
-	unset(collectProductionFiles)
-
-endmacro(includeFiles)
-
-
-
-macro(collectFilesFrom path)
-	#input: path from files to collect
-
-	get_filename_component(fileName ${path} NAME)
-	if(collectTestFiles)
-		if(${fileName} MATCHES "Test" OR ${fileName} MATCHES "Mock")
-			set(MY_SRCS ${MY_SRCS} ${path})
-		endif()
-	endif()
-	if(collectProductionFiles)
-		if(NOT ${fileName} MATCHES "Test" AND NOT ${fileName} MATCHES "Mock")
-			set(MY_SRCS ${MY_SRCS} ${path})
-		endif()
-	endif()
-
-	#output: MY_SRCS
-endmacro()
-
-
-
-
-macro(setSourceGroupForFilesIn file package_dir folderName)
-#input: target_name PACKAGE_SRCS
-	buildSourceGroup(${folderName} ${package_dir})
-	source_group(${SOURCE_GROUP} FILES ${file})
-#output: -
-endmacro(setSourceGroupForFilesIn)
-
-
-
-
-macro(buildSourceGroup folderName path)
-#input: folderName (e.g. name of folder after src/)
-
-	unset(SOURCE_GROUP)
-	string(REPLACE "/" ";" folderListFromPath ${path})
-	set(findFolderName 0)
-
-	foreach(folder ${folderListFromPath})
-		if(findFolderName)
-			set(SOURCE_GROUP ${SOURCE_GROUP}\\${folder})
-		endif()
-
-		if(${folder} STREQUAL ${folderName})
-			SET(findFolderName 1)
-		endif()
-	endforeach()
-
-	#message("SOURCE_GROUP: " ${SOURCE_GROUP})
-
-	if(NOT SOURCE_GROUP)
-		set(SOURCE_GROUP "general")
-	endif()
-
-#output: SOURCE_GROUP
-endmacro(buildSourceGroup)
-
-
-function(collectFiles source_files ARG_FILES ARG_FOLDER ARG_EXCLUDE)
+# public function collectFiles
+# Return: <MY_SRC> writes all found source files into 
+# Input: <ARG_FILES> are added to source files
+#        <ARG_FOLDER> all files in folder are added to source files
+#        <ARG_EXCLUDE> removes files from source files
+#        When ARG_FILES and ARG_FOLDER are not defined all files are taken from directory
+macro(collectFiles ARG_FILES ARG_FOLDER ARG_EXCLUDE)
 	set(local_source_files)
 
 	#cmake_print_variables(ARG_FOLDER)
@@ -198,5 +79,24 @@ function(collectFiles source_files ARG_FILES ARG_FOLDER ARG_EXCLUDE)
 		set(local_source_files ${new_files})
 	endif()
 
-	set("${source_files}" "${local_source_files}" PARENT_SCOPE)
-endfunction()
+    # set output variable <MY_SRC>
+    set(MY_SRCS ${local_source_files})
+
+    # create source groups for Visual Studio (https://cmake.org/cmake/help/latest/command/source_group.html)
+    createSourceGroups("${MY_SRCS}")
+endmacro()
+
+
+function(createSourceGroups file_paths)
+
+    foreach(file_path ${file_paths})
+
+        get_filename_component(path ${file_path} DIRECTORY)
+
+        if (path)
+            source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${file_path})
+        endif()
+
+    endforeach()
+
+endfunction(createSourceGroups)

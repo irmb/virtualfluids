@@ -1,4 +1,4 @@
-# #######################################################################################
+#=======================================================================================
 # ____          ____    __    ______     __________   __      __       __        __
 # \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 #  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -23,9 +23,11 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
-#  You should have received a copy of the GNU General Public License along
-#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-# #######################################################################################
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
+#! \author Soeren Peters
+#=======================================================================================
 function(set_project_options project_name)
 
     set(PROJECT_OPTIONS_GCC "")
@@ -58,10 +60,11 @@ function(set_project_options project_name)
         set(PROJECT_OPTIONS_DEBUG ${PROJECT_OPTIONS_CLANG_DEBUG})
         set(PROJECT_OPTIONS_RELEASE ${PROJECT_OPTIONS_CLANG_RELEASE})
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # gcov: According to https://gcovr.com/en/stable/cookbook.html#out-of-source-builds-with-cmake
-        # These flags are used if cmake is called with -DCMAKE_BUILD_TYPE=PROFILE
-        set(CMAKE_C_FLAGS_PROFILE --coverage)
-        set(CMAKE_CXX_FLAGS_PROFILE --coverage)
+
+        if(VF_ENABLE_COVERAGE)
+            target_compile_options(${project_name} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:--coverage>)
+            target_link_options(${project_name} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:--coverage>)
+        endif()
 
         set(PROJECT_OPTIONS ${PROJECT_OPTIONS_GCC})
         set(PROJECT_OPTIONS_DEBUG ${PROJECT_OPTIONS_GCC_DEBUG})

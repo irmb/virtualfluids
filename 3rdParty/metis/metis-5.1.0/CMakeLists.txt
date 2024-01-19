@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 cmake_minimum_required(VERSION 3.0)
 project(METIS)
 
@@ -25,7 +27,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    target_compile_options(metis PRIVATE "-Wno-fortify-source")
+    target_compile_options(metis PRIVATE "-Wno-misleading-indentation" "-Wno-fortify-source" "-Wno-nested-anon-types")
 endif()
 
 group_target(metis ${thirdFolder})

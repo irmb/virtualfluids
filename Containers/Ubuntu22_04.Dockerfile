@@ -1,3 +1,32 @@
+# #######################################################################################
+# ____          ____    __    ______     __________   __      __       __        __
+# \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+#  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+#   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+#    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+#     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+#      \    \  |    |   ________________________________________________________________
+#       \    \ |    |  |  ______________________________________________________________|
+#        \    \|    |  |  |         __          __     __     __     ______      _______
+#         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+#          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+#           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+#            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+#
+#  This file is part of VirtualFluids. VirtualFluids is free software: you can
+#  redistribute it and/or modify it under the terms of the GNU General Public
+#  License as published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#  for more details.
+#
+#  SPDX-License-Identifier: GPL-3.0-or-later
+#  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+#
+# #################################################################################
 # VirtualFluids Development Image:
 # Ubuntu 22.04
 
@@ -25,6 +54,8 @@ RUN apt-get update &&   \
     python3-pip         \
     python3.11-dev      \
     cppcheck            \
+    # needed for doxygen
+    flex bison          \ 
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
     && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100 \
@@ -45,5 +76,6 @@ RUN apt-get update &&   \
         ansible          \
         'jinja2<3.1'     \
         gcovr==6.0       \
-        lizard==1.17.10
-
+        lizard==1.17.10  \
+    && wget https://www.doxygen.nl/files/doxygen-1.9.8.src.tar.gz && tar -xvf doxygen-1.9.8.src.tar.gz \
+    && cd doxygen-1.9.8 && mkdir build && cd build && cmake -G "Unix Makefiles" .. && make -j8 && make install

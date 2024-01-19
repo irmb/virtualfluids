@@ -20,14 +20,16 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_DataStructureInitializer DataStructureInitializer
+//! \ingroup gpu_core core
+//! \{
 //! \author Anna Wellmann
-//! \details See [master thesis of Anna Wellmann]
 //=======================================================================================
 #ifndef IndexRearrangementForStreams_H
 #define IndexRearrangementForStreams_H
@@ -44,10 +46,14 @@ namespace vf::parallel
 class Communicator;
 }
 
+//! \brief class that is used to rearrange the arrays of node indices for communication between gpus. The rearrangement is
+//! needed for communication hiding with cuda streams
+//! \details This class changes the order of the node indices that are needed for communication between gpus. The indices are
+//! reordered so that they can be split into two groups: nodes that are part if the interpolation between grid levels, and
+//! nodes that are not. These groups are needed for communication hiding. For details see [master thesis of Anna Wellmann]
 class IndexRearrangementForStreams
 {
 public:
-    //! \brief Construct IndexRearrangementForStreams object
     IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::parallel::Communicator& communicator);
 
     virtual ~IndexRearrangementForStreams() = default;
@@ -170,3 +176,5 @@ private:
 };
 
 #endif
+
+//! \}

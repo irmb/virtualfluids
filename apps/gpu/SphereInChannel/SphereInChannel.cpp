@@ -20,13 +20,16 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \author Martin Schoenherr, Stephan Lenz, Anna Wellmann
+//! \addtogroup SphereInChannel
+//! \ingroup gpu_apps
+//! \{
+//! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 #define _USE_MATH_DEFINES
 #include <exception>
@@ -83,17 +86,18 @@ int main(int argc, char* argv[])
         std::string path("output/Sphere");
         std::string simulationName("SphereInChannel");
 
-        const real length = 1.0;
         const real reynoldsNumber = 300.0;
         const real velocity = 1.0;
         const real velocityLB = (real)0.5e-2; // LB units
-        const uint numberOfNodesX = 50;
-        const real dSphere = 0.2;
+        const uint numberOfNodesSphere = 10;
+        const real dSphere =
+            0.2; // Caution, this App uses an STL for the sphere, so this setting does not change the size of the sphere
 
         const uint timeStepOut = 10000;
         const uint timeStepEnd = 10000;
 
-        vf::basics::ConfigurationFile config = vf::basics::loadConfig(argc, argv);
+        vf::basics::ConfigurationFile config =
+            vf::basics::loadConfig(argc, argv, "/workspaces/VirtualFluids/apps/gpu/SphereInChannel/sphere_1level.cfg");
 
         bool refine = false;
         if (config.contains("refine"))
@@ -106,10 +110,10 @@ int main(int argc, char* argv[])
         // compute parameters in lattice units
         //////////////////////////////////////////////////////////////////////////
 
-        const real deltaX = length / real(numberOfNodesX);
+        const real deltaX = dSphere / real(numberOfNodesSphere);
         const real deltaT = velocityLB / velocity * deltaX;
 
-        const real viscosityLB = numberOfNodesX * velocityLB / reynoldsNumber; // LB units
+        const real viscosityLB = velocityLB / reynoldsNumber; // LB units
 
         //////////////////////////////////////////////////////////////////////////
         // create grid
@@ -117,8 +121,8 @@ int main(int argc, char* argv[])
 
         auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-        gridBuilder->addCoarseGrid(-0.6 * length, -0.6 * length, -0.6 * length,
-                                    2.0 * length,  0.6 * length,  0.6 * length, deltaX);
+        gridBuilder->addCoarseGrid(-3  * dSphere, -3 * dSphere, -3 * dSphere,
+                                    10 * dSphere,  3 * dSphere,  3 * dSphere, deltaX);
 
         // add geometry: use primitive
         // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
@@ -208,6 +212,17 @@ int main(int argc, char* argv[])
         para->addProbe(planeProbe);
 
         //////////////////////////////////////////////////////////////////////////
+        // initial state of the flow field
+        //////////////////////////////////////////////////////////////////////////
+
+        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+            rho = c0o1;
+            vx = velocityLB;
+            vy = c0o1;
+            vz = c0o1;
+        });
+
+        //////////////////////////////////////////////////////////////////////////
         // set copy mesh to simulation
         //////////////////////////////////////////////////////////////////////////
 
@@ -224,7 +239,7 @@ int main(int argc, char* argv[])
         VF_LOG_INFO("world parameter:");
         VF_LOG_INFO("--------------");
         VF_LOG_INFO("delta t [s]            = {}", deltaT);
-        VF_LOG_INFO("world_length   [m]     = {}", length);
+        VF_LOG_INFO("dSphere [m]            = {}", dSphere);
         VF_LOG_INFO("world_velocity [m/s]   = {}", velocity);
         VF_LOG_INFO("delta x [m]            = {}", deltaX);
         printf("\n");
@@ -236,24 +251,20 @@ int main(int argc, char* argv[])
         printf("\n");
         VF_LOG_INFO("simulation parameter:");
         VF_LOG_INFO("--------------");
-        VF_LOG_INFO("number of nodes in x   = {}", numberOfNodesX);
-        VF_LOG_INFO("number of nodes        = {}", numberOfNodesX * numberOfNodesX * numberOfNodesX);
-        VF_LOG_INFO("write_nth_timestep     = {}", timeStepOut);
-        VF_LOG_INFO("last timestep          = {}", timeStepEnd);
-        VF_LOG_INFO("output_path            = {}", path);
+        VF_LOG_INFO("number of nodes in sphere = {}", numberOfNodesSphere);
+        VF_LOG_INFO("write_nth_timestep        = {}", timeStepOut);
+        VF_LOG_INFO("last timestep             = {}", timeStepEnd);
+        VF_LOG_INFO("output_path               = {}", path);
 
         Simulation sim(para, cudaMemoryManager, communicator, *gridGenerator, &bcFactory, &scalingFactory);
         sim.run();
 
-    } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log initialization failed: " << ex.what() << std::endl;
-    } catch (const std::bad_alloc& e) {
-        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     } catch (const std::exception& e) {
-        VF_LOG_CRITICAL("exception: {}", e.what());
-    } catch (...) {
-        VF_LOG_CRITICAL("Unknown exception!");
+        VF_LOG_WARNING("{}", e.what());
+        return 1;
     }
 
     return 0;
 }
+
+//! \}

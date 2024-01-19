@@ -20,12 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup ActuatorLine
+//! \ingroup gpu_apps
+//! \{
 //! \author Henry Korb, Henrik Asmuth, Anna Wellmann
 //=======================================================================================
 #define _USE_MATH_DEFINES
@@ -70,10 +73,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-void run(vf::basics::ConfigurationFile& config)
+void run(const vf::basics::ConfigurationFile& config)
 {
-    vf::logging::Logger::initializeLogger();
-
     //////////////////////////////////////////////////////////////////////////
     // Simulation parameters
     //////////////////////////////////////////////////////////////////////////
@@ -303,20 +304,15 @@ void run(vf::basics::ConfigurationFile& config)
 
 int main(int argc, char* argv[])
 {
-    if (argv == NULL)
-        return 0;
-
     try {
+        vf::logging::Logger::initializeLogger();
         auto config = vf::basics::loadConfig(argc, argv, "./actuatorline.cfg");
         run(config);
-    } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log initialization failed: " << ex.what() << std::endl;
-    } catch (const std::bad_alloc& e) {
-        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     } catch (const std::exception& e) {
-        VF_LOG_CRITICAL("exception: {}", e.what());
-    } catch (...) {
-        VF_LOG_CRITICAL("Unknown exception!");
+        VF_LOG_WARNING("{}", e.what());
+        return 1;
     }
     return 0;
 }
+
+//! \}

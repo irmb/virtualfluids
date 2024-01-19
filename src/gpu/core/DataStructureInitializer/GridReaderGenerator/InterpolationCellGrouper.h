@@ -20,14 +20,16 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_DataStructureInitializer DataStructureInitializer
+//! \ingroup gpu_core core
+//! \{
 //! \author Anna Wellmann
-//! \details See [master thesis of Anna Wellmann]
 //=======================================================================================
 
 #ifndef InterpolationCellGrouper_H
@@ -43,9 +45,11 @@ class GridBuilder;
 
 using LBMSimulationParameters = std::vector<std::shared_ptr<LBMSimulationParameter>>;
 
+//! \brief Split the interpolation cells into two groups: cells which are at the border between gpus and therefore involved
+//! in the communication between gpus, and cells which are not directly related to the communication between gpus.
+//! \details See [master thesis of Anna Wellmann]
 class InterpolationCellGrouper {
 public:
-    //! \brief Construct InterpolationCellGrouper object
     InterpolationCellGrouper(const LBMSimulationParameters &parHs, const LBMSimulationParameters &parDs,
                              SPtr<GridBuilder> builder);
 
@@ -99,3 +103,5 @@ private:
 };
 
 #endif
+
+//! \}

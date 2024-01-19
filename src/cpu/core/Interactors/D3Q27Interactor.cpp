@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file D3Q27Interactor.cpp
-//! \ingroup Interactor
+//! \addtogroup cpu_Interactors Interactors
+//! \ingroup cpu_core core
+//! \{
 //! \author Sören Freudiger
 //! \author Sebastian Geller
 //! \author Konstantin Kutscher
@@ -1019,3 +1020,5 @@ void D3Q27Interactor::writeValidationAVSFile(string filename)
     }
     UBLOG(logINFO, "D3Q27Interactor::writeValidationAVSFile(" << filename << ") - end");
 }
+
+//! \}

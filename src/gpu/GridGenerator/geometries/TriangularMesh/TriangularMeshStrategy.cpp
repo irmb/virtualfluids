@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file TriangularMeshStrategy.cpp
-//! \ingroup geometries
+//! \addtogroup gpu_geometries geometries
+//! \ingroup gpu_GridGenerator GridGenerator
+//! \{
 //! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
 #include "TriangularMeshStrategy.h"
@@ -298,3 +299,4 @@ void PointUnderTriangleStrategy::setNegativeDirBorderTo(GridImp* grid, const uin
     if (grid->isNode(index, NEGATIVE_DIRECTION_BORDER))
         grid->setNodeTo(index, innerType);
 }
+//! \}

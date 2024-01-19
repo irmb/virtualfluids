@@ -20,14 +20,12 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file VirtualFluids.h
-//! \ingroup Applications
 //! \author Konstantin Kutscher
 //=======================================================================================
 
@@ -78,7 +76,6 @@
 #include <basics/utilities/UbObserver.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/utilities/UbScheduler.h>
-#include <basics/utilities/UbStringInputASCII.h>
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/writer/WbWriter.h>

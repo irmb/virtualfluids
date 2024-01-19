@@ -1,38 +1,36 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
 //           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
+//  License as published by the Free Software Foundation, either version 3 of
 //  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file PrecursorWriter.h
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 //! \author Henry Korb, Henrik Asmuth
 //! \date 05/12/2022
-//! \brief Probe writing planes of data to be used as inflow data in successor simulation using PrecursorBC
-//!
-//! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions 
-//! that can be read by PrecursorBC as inflow data.
 //=======================================================================================
 
 
@@ -44,6 +42,7 @@
 #include <vector>
 
 #include <basics/PointerDefinitions.h>
+#include <basics/DataTypes.h>
 
 #include <logger/Logger.h>
 
@@ -51,8 +50,6 @@
 #include "PreCollisionInteractor.h"
 #include "WbWriterVtkXmlImageBinary.h"
 
-class Parameter;
-class CudaMemoryManager;
 class GridProvider;
 
 enum class OutputVariable {
@@ -86,51 +83,57 @@ struct PrecursorStruct
     cudaStream_t stream;
 };
 
+//! \brief Probe writing planes of data to be used as inflow data in successor simulation using PrecursorBC
+//!
+//! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions 
+//! that can be read by PrecursorBC as inflow data.
+//!
 class PrecursorWriter : public PreCollisionInteractor
 {
 public:
     PrecursorWriter(
-        const std::string _fileName,
-        const std::string _outputPath,
-        real _xPos,
-        real _yMin, real _yMax,
-        real _zMin, real _zMax,
-        uint _tStartOut,
-        uint _tSave,
-        OutputVariable _outputVariable,
-        uint _maxTimestepsPerFile=uint(1e4)
+        const std::string fileName,
+        const std::string outputPath,
+        real xPos,
+        real yMin, real yMax,
+        real zMin, real zMax,
+        uint tStartOut,
+        uint tSave,
+        OutputVariable outputVariable,
+        uint maxTimestepsPerFile=uint(1e4)
     ): 
-    fileName(_fileName), 
-    outputPath(_outputPath), 
-    xPos(_xPos),
-    yMin(_yMin),
-    yMax(_yMax),
-    zMin(_zMin),
-    zMax(_zMax),
-    tStartOut(_tStartOut), 
-    tSave(_tSave),
-    outputVariable(_outputVariable),
-    maxtimestepsPerFile(_maxTimestepsPerFile)
+    fileName(fileName), 
+    outputPath(outputPath), 
+    xPos(xPos),
+    yMin(yMin),
+    yMax(yMax),
+    zMin(zMin),
+    zMax(zMax),
+    tStartOut(tStartOut), 
+    tSave(tSave),
+    outputVariable(outputVariable),
+    maxtimestepsPerFile(maxTimestepsPerFile)
     {
         nodedatanames = determineNodeDataNames();
         writeFuture = std::async([](){});
     };
 
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
-    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
-    void getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider) override;
+    ~PrecursorWriter();
+
+    void interact(int level, uint t) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
     OutputVariable getOutputVariable(){ return this->outputVariable; }
 
     SPtr<PrecursorStruct> getPrecursorStruct(int level){return precursorStructs[level];}
-    static std::string makeFileName(std::string fileName, int level, int id, uint part);
+    static std::string makeFileName(std::string fileName, int level, int id, uint numberOfFilesWritten);
 
-    void setWritePrecision(uint _writePrecision){ this->writePrecision=_writePrecision;}
+    void setWritePrecision(uint writePrecision){ this->writePrecision=writePrecision;}
     
 private:
+    void init() override;
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
-    void write(Parameter* para, int level, uint numberOfTimestepsBuffered);
+    void write(int level, uint numberOfTimestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {
@@ -162,3 +165,5 @@ private:
 };
 
 #endif //PRECURSORPROBE_H_
+
+//! \}

@@ -23,9 +23,12 @@
 //  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_TurbulenceModels TurbulenceModels
+//! \ingroup gpu_core core
+//! \{
 //! \author Henrik Asmuth
 //=======================================================================================
 
@@ -87,3 +90,5 @@ void TurbulenceModelFactory::runTurbulenceModelKernel(const int level) const
     if (this->turbulenceModelKernel)
         this->turbulenceModelKernel(para.get(), level);
 }
+
+//! \}

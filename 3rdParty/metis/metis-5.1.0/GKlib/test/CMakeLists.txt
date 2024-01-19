@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright 1995-2013, Regents of the University of Minnesota
+
 # Where the header files reside
 #include_directories(../)
 

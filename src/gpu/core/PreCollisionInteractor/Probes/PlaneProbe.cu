@@ -1,3 +1,34 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 #include "Probe.h"
 #include "PlaneProbe.h"
 
@@ -70,7 +101,7 @@ std::vector<PostProcessingVariable> PlaneProbe::getPostProcessingVariables(Stati
     return postProcessingVariables;
 }
 
-void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+void PlaneProbe::findPoints(std::vector<int>& probeIndices_level,
                             std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
@@ -99,7 +130,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
     }
 }
 
-void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     calcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD,
@@ -121,7 +152,7 @@ void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
                                                         );
 }
 
-void PlaneProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider)
+void PlaneProbe::getTaggedFluidNodes(GridProvider* gridProvider)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
@@ -130,3 +161,4 @@ void PlaneProbe::getTaggedFluidNodes(Parameter *para, GridProvider* gridProvider
         gridProvider->tagFluidNodeIndices( probeIndices, CollisionTemplate::WriteMacroVars, level);
     }
 }
+//! \}

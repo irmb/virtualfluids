@@ -1,3 +1,34 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \ingroup gpu_core core
+//! \{
 #include "Probe.h"
 #include "WallModelProbe.h"
 
@@ -102,7 +133,7 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+void WallModelProbe::findPoints(std::vector<int>& probeIndices_level,
                             std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                             int level)
@@ -169,7 +200,7 @@ void temporal_average(T* quantitiesArray, T currentValue, uint currentTimestep, 
     quantitiesArray[calcArrayIndex(0, 1, currentTimestep, numberOfTimesteps, indexOfArray)] = oldMean + (currentValue-oldMean)*invNumberOfAverages;
 }
 
-void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
+void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level)
 {   
     bool doTmpAveraging = (t>this->getTStartTmpAveraging());
     uint numberOfStressBCPoints = para->getParD(level)->stressBC.numberOfBCnodes;
@@ -230,8 +261,10 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     getLastCudaError("WallModelProbe::calculateQuantities execution failed");
 }
 
-uint WallModelProbe::getNumberOfTimestepsInTimeseries(Parameter* para, int level)
+uint WallModelProbe::getNumberOfTimestepsInTimeseries(int level)
 {
     return this->tOut*exp2(level)/this->tAvg+1; 
 }
 
+
+//! \}

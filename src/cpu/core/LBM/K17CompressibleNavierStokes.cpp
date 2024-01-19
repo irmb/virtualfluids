@@ -20,14 +20,15 @@
 //
 //  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
 //  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 //  for more details.
 //
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \file K17CompressibleNavierStokes.cpp
-//! \ingroup LBM
+//! \addtogroup cpu_LBM LBM
+//! \ingroup cpu_core core
+//! \{
 //! \author Konstantin Kutscher, Martin Geier
 //=======================================================================================
 #include "K17CompressibleNavierStokes.h"
@@ -39,9 +40,9 @@
 #include "BCArray3D.h"
 #include "BCSet.h"
 #include "Block3D.h"
-#include "EsoSplit.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
+#include "EsoSplit.h"
 #include "LBMKernel.h"
 
 K17CompressibleNavierStokes::K17CompressibleNavierStokes()
@@ -51,7 +52,7 @@ K17CompressibleNavierStokes::K17CompressibleNavierStokes()
 
 void K17CompressibleNavierStokes::initDataSet()
 {
-    SPtr<DistributionArray3D> d(new EsoSplit(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
+    SPtr<DistributionArray3D> d = std::make_shared<EsoSplit>(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9);
     dataSet->setFdistributions(d);
 }
 
@@ -99,9 +100,7 @@ void K17CompressibleNavierStokes::calculate(int step)
         muForcingX3.DefineVar("nu", &muNu);
     }
 
-    auto localDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getLocalDistributions();
-    auto nonLocalDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getNonLocalDistributions();
-    auto restDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
+    auto esoSplit = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions());
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
@@ -122,12 +121,12 @@ void K17CompressibleNavierStokes::calculate(int step)
         for (int x2 = minX2; x2 < maxX2; x2++) {
             for (int x1 = minX1; x1 < maxX1; x1++) {
 
-                if (bcArray->isSolid(x1, x2, x3) || bcArray->isUndefined(x1, x2, x3)) {
+                if (bcArray->isUnvalidForCollision(x1, x2, x3)) {
                     continue;
                 }
 
                 vf::lbm::CollisionParameter parameter;
-                dataSet->getFdistributions()->getPreCollisionDistribution(parameter.distribution, x1, x2, x3);
+                esoSplit->getPreCollisionDistribution(parameter.distribution, x1, x2, x3);
 
                 real forces[3] = { c0o1, c0o1, c0o1 };
                 if (withForcing) // TODO: add level factor?
@@ -156,8 +155,10 @@ void K17CompressibleNavierStokes::calculate(int step)
                 vf::lbm::MacroscopicValues mv;  // not used
                 vf::lbm::TurbulentViscosity tv; // not used
                 vf::lbm::runK17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>(parameter, mv, tv);
-                dataSet->getFdistributions()->setPostCollisionDistribution(parameter.distribution, x1, x2, x3);
+                esoSplit->setPostCollisionDistribution(parameter.distribution, x1, x2, x3);
             }
         }
     }
 }
+
+//! \}
