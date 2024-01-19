@@ -60,10 +60,11 @@ function(set_project_options project_name)
         set(PROJECT_OPTIONS_DEBUG ${PROJECT_OPTIONS_CLANG_DEBUG})
         set(PROJECT_OPTIONS_RELEASE ${PROJECT_OPTIONS_CLANG_RELEASE})
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # gcov: According to https://gcovr.com/en/stable/cookbook.html#out-of-source-builds-with-cmake
-        # These flags are used if cmake is called with -DCMAKE_BUILD_TYPE=PROFILE
-        set(CMAKE_C_FLAGS_PROFILE --coverage)
-        set(CMAKE_CXX_FLAGS_PROFILE --coverage)
+
+        if(VF_ENABLE_COVERAGE)
+            target_compile_options(${project_name} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:--coverage>)
+            target_link_options(${project_name} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:--coverage>)
+        endif()
 
         set(PROJECT_OPTIONS ${PROJECT_OPTIONS_GCC})
         set(PROJECT_OPTIONS_DEBUG ${PROJECT_OPTIONS_GCC_DEBUG})

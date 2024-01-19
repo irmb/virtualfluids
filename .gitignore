@@ -34,6 +34,7 @@ output/
 logs/
 reference_data/
 generated/
+coverage/
 
 # grid
 .grid/
