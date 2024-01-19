@@ -573,7 +573,7 @@ reuse:
   stage: analyze
 
   image:
-    name: fsfe/reuse:latest
+    name: fsfe/reuse:2.1.0-debian
     entrypoint: [""]
 
   needs: []
