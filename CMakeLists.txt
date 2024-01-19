@@ -60,6 +60,7 @@ option(VF_ENABLE_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(VF_ENABLE_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(VF_ENABLE_CPPCHECK "Add cppcheck to the targets" OFF)
 option(VF_ENABLE_CACHE "Enable ccache" ON)
+option(VF_ENABLE_COVERAGE "Enable gcov code coverage" OFF)
 
 option(VF_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
 option(VF_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)
