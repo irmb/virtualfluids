@@ -488,7 +488,7 @@ gcov_gcc:
     - cd $CI_PROJECT_DIR/build
     - cmake ..
       --preset=make_all
-      -DCMAKE_BUILD_TYPE=PROFILE
+      -DVF_ENABLE_COVERAGE=ON
       -DCMAKE_CUDA_ARCHITECTURES=70
     - make -j4
     - ctest --output-on-failure
