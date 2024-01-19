@@ -15,7 +15,10 @@ Release of VirtulFluids can be done by the core developers of VirtualFluids. A R
 
 ## 0. Check Issues and Merge Requests
 
-- [ ] Check if there are open issues or merge requests which are assigned to the current Release
+- [ ] Check if there are open issues or merge requests that are assigned to the current Release
+    - [ ] If there are open issues or merge requests, check if they are still relevant for the current Release
+    - [ ] If they are still relevant, assign them to the next Release
+    - [ ] If they are not relevant anymore, close them
 
 ## 1. Version Number and Authors
 
@@ -26,7 +29,7 @@ Release of VirtulFluids can be done by the core developers of VirtualFluids. A R
 - [ ] check authors in authors.cff
     - authors of the current Release were directly involved in the development of the current Release
     - authors of the current Release are listed in the authors.cff
-    - people  which are not involved in the current Release are listed in AUTHORS.md
+    - people who are not involved in the current Release are listed in AUTHORS.md
 
 ## 2. Update the Changelog
 
