@@ -59,7 +59,7 @@ For instance a simulation on the GPU containing a flow around a sphere can be st
 ```
 
 ## Using VisualStudio
-In VisualStudio right click the App you want to run and select "Set as StartUp Project". Additionally to pass a configuration file you have to right click the app again and select "Properties". Then add the path to the configuration file in the "Command Arguments" field. For instance:
+In VisualStudio right click the App you want to run and select "Set as StartUp Project". When you want to pass a configuration file, you have to right click the app again and select "Properties". Then add the path to the configuration file in the "Command Arguments" field. For instance:
 ```
    ./apps/gpu/DrivenCavity/drivencavity_1level.cfg
 ```
