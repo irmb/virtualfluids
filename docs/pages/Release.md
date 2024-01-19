@@ -22,13 +22,12 @@ Release of VirtulFluids can be done by the core developers of VirtualFluids. A R
 
 ## 1. Version Number and Authors
 
-- [ ] Update the version number in the authors.cff
+- [ ] Update the version number and the release date in the CITATION.cff
 - [ ] Update the version number in the CMakeLists.txt
 - [ ] Update the version number in the pyproject.toml
 - [ ] Update the version number in the sonar-project.properties
-- [ ] check authors in authors.cff
-    - authors of the current Release were directly involved in the development of the current Release
-    - authors of the current Release are listed in the authors.cff
+- [ ] check authors in CITATION.cff
+    - authors who were directly involved in the development of the current Release are listed in the CITATION.cff
     - people who are not involved in the current Release are listed in AUTHORS.md
 
 ## 2. Update the Changelog
