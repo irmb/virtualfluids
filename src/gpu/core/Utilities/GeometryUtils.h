@@ -35,56 +35,59 @@
 #ifndef _GEOMETRYUTILS_H
 #define _GEOMETRYUTILS_H
 
+#include <algorithm>
+
 #include <cuda_runtime.h>
 
 #include <basics/DataTypes.h>
 
-__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of dMMM node
-                                        uint &ke, uint &kn, uint &kt, uint &kne, uint &kte,uint &ktn, uint &ktne,
-                                        const uint* neighborX, const uint* neighborY, const uint* neighborZ)
+constexpr void getNeighborIndicesOfBSW(uint k, // index of dMMM node
+                                       uint& ke, uint& kn, uint& kt, uint& kne, uint& kte, uint& ktn, uint& ktne,
+                                       const uint* neighborX, const uint* neighborY, const uint* neighborZ)
 {
-    ke   = neighborX[k];
-    kn   = neighborY[k];
-    kt   = neighborZ[k];
-    kne  = neighborY[ke];
-    kte  = neighborZ[ke];
-    ktn  = neighborZ[kn];
+    ke = neighborX[k];
+    kn = neighborY[k];
+    kt = neighborZ[k];
+    kne = neighborY[ke];
+    kte = neighborZ[ke];
+    ktn = neighborZ[kn];
     ktne = neighborX[ktn];
 }
 
-__inline__ __host__ __device__ uint findNearestCellBSW(const uint index, 
+constexpr uint findNearestCellBSW(const uint index, 
                                               const real* coordsX, const real* coordsY, const real* coordsZ, 
                                               const real posX, const real posY, const real posZ,
                                               const uint* neighborsX, const uint* neighborsY, const uint* neighborsZ, const uint* neighborsWSB)
 {
     uint new_index = index;
+    constexpr uint comparisor = 1;
 
-    while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsWSB[new_index]);}
+    while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = std::max(comparisor, neighborsWSB[new_index]);}
 
-    while(coordsX[new_index] > posX && coordsY[new_index] > posY ){ new_index = max(1, neighborsZ[neighborsWSB[new_index]]);}
-    while(coordsX[new_index] > posX && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsY[neighborsWSB[new_index]]);}
-    while(coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsX[neighborsWSB[new_index]]);}
+    while(coordsX[new_index] > posX && coordsY[new_index] > posY ){ new_index = std::max(comparisor, neighborsZ[neighborsWSB[new_index]]);}
+    while(coordsX[new_index] > posX && coordsZ[new_index] > posZ ){ new_index = std::max(comparisor, neighborsY[neighborsWSB[new_index]]);}
+    while(coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = std::max(comparisor, neighborsX[neighborsWSB[new_index]]);}
 
-    while(coordsX[new_index] > posX){ new_index = max(1, neighborsY[neighborsZ[neighborsWSB[new_index]]]);}
-    while(coordsY[new_index] > posY){ new_index = max(1, neighborsX[neighborsZ[neighborsWSB[new_index]]]);}
-    while(coordsZ[new_index] > posZ){ new_index = max(1, neighborsX[neighborsY[neighborsWSB[new_index]]]);}
+    while(coordsX[new_index] > posX){ new_index = std::max(comparisor, neighborsY[neighborsZ[neighborsWSB[new_index]]]);}
+    while(coordsY[new_index] > posY){ new_index = std::max(comparisor, neighborsX[neighborsZ[neighborsWSB[new_index]]]);}
+    while(coordsZ[new_index] > posZ){ new_index = std::max(comparisor, neighborsX[neighborsY[neighborsWSB[new_index]]]);}
 
-    while(coordsX[new_index] < posX){ new_index = max(1, neighborsX[new_index]);}
-    while(coordsY[new_index] < posY){ new_index = max(1, neighborsY[new_index]);}
-    while(coordsZ[new_index] < posZ){ new_index = max(1, neighborsZ[new_index]);}
+    while(coordsX[new_index] < posX){ new_index = std::max(comparisor, neighborsX[new_index]);}
+    while(coordsY[new_index] < posY){ new_index = std::max(comparisor, neighborsY[new_index]);}
+    while(coordsZ[new_index] < posZ){ new_index = std::max(comparisor, neighborsZ[new_index]);}
 
     return neighborsWSB[new_index];
 }
 
-__inline__ __host__ __device__ void getInterpolationWeights(real &dW, real &dE, real &dN, real &dS, real &dT, real &dB,
-                                        real tmpX, real tmpY, real tmpZ)
+constexpr void getInterpolationWeights(real& dW, real& dE, real& dN, real& dS, real& dT, real& dB, real tmpX, real tmpY,
+                                       real tmpZ)
 {
-    dW = tmpX;      
-    dE = 1.f - dW;        
-    dS = tmpY;    
-    dN = 1.f - dS;      
-    dB = tmpZ;         
-    dT = 1.f - dB;     
+    dW = tmpX;
+    dE = 1.f - dW;
+    dS = tmpY;
+    dN = 1.f - dS;
+    dB = tmpZ;
+    dT = 1.f - dB;
 }
 
 __inline__ __host__ __device__ real trilinearInterpolation( real dW, real dE, real dN, real dS, real dT, real dB,

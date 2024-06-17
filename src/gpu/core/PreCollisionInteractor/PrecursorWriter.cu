@@ -32,6 +32,9 @@
 //! \author Henrik Asmuth, Henry Korb
 //======================================================================================
 #include "PrecursorWriter.h"
+
+#include <algorithm>
+
 #include "basics/writer/WbWriterVtkXmlImageBinary.h"
 
 #include <helper_cuda.h>
@@ -176,11 +179,11 @@ void PrecursorWriter::init()
                 pointCoordY<=yMax && pointCoordY>=yMin               && 
                 pointCoordZ<=zMax && pointCoordZ>=zMin)
             {
-                highestY = max(highestY, pointCoordY);
-                highestZ = max(highestZ, pointCoordZ);
+                highestY = std::max(highestY, pointCoordY);
+                highestZ = std::max(highestZ, pointCoordZ);
 
-                lowestY = min(lowestY, pointCoordY);
-                lowestZ = min(lowestZ, pointCoordZ);
+                lowestY = std::min(lowestY, pointCoordY);
+                lowestZ = std::min(lowestZ, pointCoordZ);
                 indicesOnGrid.push_back((uint)pos);    
                 coordY.push_back(pointCoordY);            
                 coordZ.push_back(pointCoordZ);    

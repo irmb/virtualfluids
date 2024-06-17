@@ -71,7 +71,9 @@ constexpr real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz,
     //! Third invariant of the strain-rate tensor (determinant)
     // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
     real R = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
-    return C * std::max(R, c0o1) / Q;
+
+    constexpr real zero = c0o1; // I Don't know why this is necessary, but it is apparently to pass it to std::max ...
+    return C * std::max(R, zero) / Q;
 }
 
 constexpr real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
