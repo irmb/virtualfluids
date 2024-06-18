@@ -63,7 +63,8 @@ inline real getForceFactor(size_t level)
     return factor;
 }
 
-__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
+constexpr void getPointersToDistributions(Distributions27& dist, real* distributionArray,
+                                          const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
     if (isEvenTimestep) {
         dist.f[d000] = &distributionArray[d000 * numberOfLBnodes];
@@ -131,13 +132,16 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
  *  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
  *  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
  */
-__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes, const bool isEvenTimestep){
+constexpr DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes,
+                                                               const bool isEvenTimestep)
+{
     DistributionReferences27 distribution_references;
     getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
     return distribution_references;
 }
 
-__inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances, const unsigned int numberOfSubgridIndices)
+constexpr void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances,
+                                             const unsigned int numberOfSubgridIndices)
 {
     subgridD.q[dP00] = &subgridDistances[dP00 * numberOfSubgridIndices];
     subgridD.q[dM00] = &subgridDistances[dM00 * numberOfSubgridIndices];
@@ -168,52 +172,52 @@ __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& sub
     subgridD.q[dMPM] = &subgridDistances[dMPM * numberOfSubgridIndices];
 }
 
-__inline__ __device__ real getEquilibriumForBC(const real& drho, const real& velocity, const real& cu_sq, const real weight)
+constexpr real getEquilibriumForBC(const real& drho, const real& velocity, const real& cu_sq, const real weight)
 {
     return weight * (drho + c9o2 * velocity * velocity * (c1o1 + drho) - cu_sq);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq,
-                                                                const real& omega, const real& velocity, const real weight)
+constexpr real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq,
+                                                    const real& omega, const real& velocity, const real weight)
 {
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q);
 }
 
-__inline__ __device__ real getBounceBackDistributionForVeloBC(  const real& f,
-                                                                const real& velocity, const real weight)
+constexpr real getBounceBackDistributionForVeloBC(const real& f, const real& velocity, const real weight)
 {
 
     return f - (c6o1 * weight * velocity);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq,
-                                                                  const real& omega)
+constexpr real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq,
+                                                      const real& omega)
 {
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse)) / (c1o1 + q);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForNoSlipWithPressureBC(const real& q, const real& f, const real& fInverse, const real& feq, 
-                                                                  const real& omega, const real& drho, const real weight)
+constexpr real getInterpolatedDistributionForNoSlipWithPressureBC(const real& q, const real& f, const real& fInverse,
+                                                                  const real& feq, const real& omega, const real& drho,
+                                                                  const real weight)
 {
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
            + (q * (f + fInverse)) / (c1o1 + q) - weight * drho;
 }
 
-
-__inline__ __device__ real getInterpolatedDistributionForVeloWithPressureBC(const real& q, const real& f, const real& fInverse, const real& feq,
-                                                                            const real& omega, const real& drho, const real& velocity, const real weight)
+constexpr real getInterpolatedDistributionForVeloWithPressureBC(const real& q, const real& f, const real& fInverse,
+                                                                const real& feq, const real& omega, const real& drho,
+                                                                const real& velocity, const real weight)
 {
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q) - weight * drho;
 }
 
-__inline__ __device__ bool isValidFluidNode(uint nodeType)
+constexpr bool isValidFluidNode(uint nodeType)
 {
     return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
@@ -249,7 +253,7 @@ struct ListIndices
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__device__ __inline__ void getPreCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
+constexpr void getPreCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
     local[d000] = (global.f[d000])[indices.k_000];
     local[dP00] = (global.f[dP00])[indices.k_000];
@@ -280,7 +284,7 @@ __device__ __inline__ void getPreCollisionDistribution(real* local, const Distri
     local[dMMM] = (global.f[dMMM])[indices.k_MMM];
 }
 
-__device__ __inline__ void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
+constexpr void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
     local[d000] = (global.f[d000])[indices.k_000];
     local[dM00] = (global.f[dP00])[indices.k_000];
@@ -316,7 +320,7 @@ __device__ __inline__ void getPostCollisionDistribution(real* local, const Distr
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__inline__ __device__ void setPreCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
+constexpr void setPreCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
     (global.f[d000])[indices.k_000] = local[d000];
     (global.f[dP00])[indices.k_000] = local[dP00];
@@ -347,7 +351,7 @@ __inline__ __device__ void setPreCollisionDistribution(Distributions27& global, 
     (global.f[dMMM])[indices.k_MMM] = local[dMMM];
 }
 
-__inline__ __device__ void setPostCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
+constexpr void setPostCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
     (global.f[d000])[indices.k_000] = local[d000];
     (global.f[dP00])[indices.k_000] = local[dM00];
