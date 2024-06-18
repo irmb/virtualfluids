@@ -43,6 +43,4 @@ set_source_files_properties(BoundaryConditions/BoundaryConditionFactoryTest.cpp 
 set_source_files_properties(DataStructureInitializer/GridReaderGenerator/GridGeneratorTest.cpp PROPERTIES LANGUAGE CUDA)
 set_source_files_properties(DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreamsTest.cpp PROPERTIES LANGUAGE CUDA)
 set_source_files_properties(Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Test.cpp PROPERTIES LANGUAGE CUDA)
-set_source_files_properties(Output/DistributionDebugWriterTest.cpp PROPERTIES LANGUAGE CUDA)
 set_source_files_properties(Parameter/ParameterTest.cpp PROPERTIES LANGUAGE CUDA)
-set_source_files_properties(PreCollisionInteractor/Actuator/ActuatorFarmInlinesTest.cpp PROPERTIES LANGUAGE CUDA)
