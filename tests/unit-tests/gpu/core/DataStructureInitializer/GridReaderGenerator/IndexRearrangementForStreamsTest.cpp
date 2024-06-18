@@ -37,7 +37,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../Utilities/testUtilitiesGPU.h"
+#include "../../testUtilitiesGPU.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"

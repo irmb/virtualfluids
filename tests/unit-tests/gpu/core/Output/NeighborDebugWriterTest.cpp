@@ -35,7 +35,7 @@
 
 #include <gpu/core/Output/NeighborDebugWriter.h>
 
-#include "../Utilities/testUtilitiesGPU.h"
+#include "../testUtilitiesGPU.h"
 #include "WbWriter.h"
 
 class WbWriterVtkXmlBinarySpy : public WbWriter

@@ -33,7 +33,7 @@
 //=======================================================================================
 #include <gmock/gmock.h>
 
-#include "../../Utilities/testUtilitiesGPU.h"
+#include "../../testUtilitiesGPU.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/InterpolationCellGrouper.h"
 #include "Parameter/Parameter.h"

@@ -36,7 +36,7 @@
 #include <gpu/core/Cuda/CudaMemoryManager.h>
 #include <gpu/core/Output/DistributionDebugWriter.h>
 
-#include "../Utilities/testUtilitiesGPU.h"
+#include "../testUtilitiesGPU.h"
 
 TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_CopyDistributions_ShouldThrow)
 {
