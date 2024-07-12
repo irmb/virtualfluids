@@ -1246,13 +1246,9 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             this->lbmKernel->setNX(std::array<int, 3>{ {dataSetParamStr1.nx1, dataSetParamStr1.nx2, dataSetParamStr1.nx3}});
             SPtr<LBMKernel> kernel = this->lbmKernel->clone();
             real collFactor = LBMSystem::calcCollisionFactor(this->nue, block->getLevel());
-            real collFactorL = LBMSystem::calcCollisionFactor(this->nuL, block->getLevel());
-            real collFactorG = LBMSystem::calcCollisionFactor(this->nuG, block->getLevel());
             kernel->setCollisionFactor(collFactor);
             kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
             kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
-            kernel->setCollisionFactorMultiphase(collFactorL, collFactorG);
-            kernel->setDensityRatio(this->densityRatio);
             SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
             dataSetPtr->setFdistributions(mFdistributions);
             if (multiPhase1)

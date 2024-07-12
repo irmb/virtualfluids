@@ -97,14 +97,27 @@ std::string getFileName(const std::string& fname, int step, int myID)
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder,
                        const BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory)
-    : Simulation(para, builder, bcFactory, std::make_shared<TurbulenceModelFactory>(para), scalingFactory)
+    : Simulation(para, std::make_shared<CudaMemoryManager>(para), builder, bcFactory, std::make_shared<TurbulenceModelFactory>(para), scalingFactory)
+{
+}
+
+Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager, std::shared_ptr<GridBuilder> builder,
+                       const BoundaryConditionFactory* bcFactory, GridScalingFactory* scalingFactory)
+    : Simulation(para, memoryManager, builder, bcFactory, std::make_shared<TurbulenceModelFactory>(para), scalingFactory)
 {
 }
 
 Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder,
                        const BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory,
                        GridScalingFactory* scalingFactory)
-    : para(para), cudaMemoryManager(std::make_shared<CudaMemoryManager>(para)),
+    : Simulation(para, std::make_shared<CudaMemoryManager>(para), builder, bcFactory, tmFactory, scalingFactory)
+{
+}
+
+Simulation::Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager, std::shared_ptr<GridBuilder> builder,
+                       const BoundaryConditionFactory* bcFactory, SPtr<TurbulenceModelFactory> tmFactory,
+                       GridScalingFactory* scalingFactory)
+    : para(para), cudaMemoryManager(memoryManager),
 #ifdef VF_MPI
       communicator(*vf::parallel::MPICommunicator::getInstance())
 #else
@@ -156,14 +169,14 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider, bcFactory);
 
     //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
-    for (SPtr<PreCollisionInteractor>& actuator : para->getActuators()) {
-        actuator->initInteractor(para, cudaMemoryManager);
-        actuator->getTaggedFluidNodes(&gridProvider);
+    for (SPtr<PreCollisionInteractor>& interactor : para->getInteractors()) {
+        interactor->init();
+        interactor->getTaggedFluidNodes(&gridProvider);
     }
 
-    for (SPtr<PreCollisionInteractor>& probe : para->getProbes()) {
-        probe->initInteractor(para, cudaMemoryManager);
-        probe->getTaggedFluidNodes(&gridProvider);
+    for (SPtr<Sampler>& sampler : para->getSamplers()) {
+        sampler->init();
+        sampler->getTaggedFluidNodes(&gridProvider);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -417,7 +430,9 @@ void Simulation::run()
     //    }
     //}
     //  //////////////////////////////////////////////////////////////////////////
-
+    averageTimer.end();
+    metaData.simulation.runtimeSeconds += averageTimer.getTimeInSeconds();
+    performanceOutput->log(averageTimer, para->getTimestepEnd(), communicator);
     metaData.simulation.nups = performanceOutput->getNups();
     metaData.simulation.runtimeSeconds = performanceOutput->totalRuntimeInSeconds();
     vf::basics::logPostSimulation(metaData);

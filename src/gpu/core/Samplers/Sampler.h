@@ -26,71 +26,51 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \addtogroup gpu_Samplers Sampplers
 //! \ingroup gpu_core core
 //! \{
-//! \author Henry Korb, Henrik Asmuth
-//! \date 13/05/2022
+//! \author Henry Korb
+//! \brief Base class for all samplers
 //=======================================================================================
 
-#ifndef PointProbe_H
-#define PointProbe_H
+#ifndef SAMPLER_H
+#define SAMPLER_H
 
-#include "Probe.h"
+#include <functional>
 
-//! \brief Probe computing statistics for a set of points in space
-//!
-//! The set of points can be defined by providing a list or on an x-normal plane (the latter being somewhat redundant with PlaneProbe)
-//! All statistics are temporal.
-//!
-class PointProbe: public Probe
+#include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+
+class GridProvider;
+
+inline std::string fixOutputPath(const std::string path)
+{
+    if (path.back() == '/')
+        return path;
+    return path + "/";
+}
+
+
+//! \brief Base class for all samplers
+class Sampler
 {
 public:
-    PointProbe(
-        const std::string probeName,
-        const std::string outputPath,
-        uint tStartAvg,
-        uint tAvg,
-        uint tStartOut,
-        uint tOut,
-        bool outputTimeseries = false
-    ): Probe(probeName, 
-             outputPath,
-             tStartAvg, 
-             0,
-             tAvg,
-             tStartOut, 
-             tOut,
-             true,
-             outputTimeseries)
-    {}
-
-    ~PointProbe() = default;
-
-    void addProbePoint(real pointCoordX, real pointCoordY, real pointCoordZ);
-    void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
-    void getTaggedFluidNodes(GridProvider* gridProvider) override;
-    
-private:
-    bool isAvailableStatistic(Statistic _variable) override;
-
-    std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
-
-    void findPoints(std::vector<int>& probeIndices_level,
-                    std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
-                    std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
-                    int level) override;
-
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
-
-private:
-    std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ;
-    uint getNumberOfTimestepsInTimeseries(int level) override
+    Sampler(const std::string outputPath,
+            const std::string probeName)
+        : outputPath(fixOutputPath(outputPath)), probeName(probeName)
     {
-        (void)para;
-        return outputTimeSeries ? tOut * exp2(level) : 1;
     }
+    virtual ~Sampler() = default;
+
+    virtual void init() = 0;
+    virtual void sample(int level, uint t) = 0;
+    virtual void getTaggedFluidNodes(GridProvider* gridProvider) = 0;
+
+protected:
+    std::string outputPath;
+    std::string probeName;
 };
 
 #endif
+
 //! \}

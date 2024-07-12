@@ -43,6 +43,7 @@
 #include "lbm/constants/D3Q27.h"
 #include "Calculation/Calculation.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "Samplers/Sampler.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 
@@ -513,8 +514,8 @@ public:
     void setADKernel(std::string adKernel);
 
     // adder
-    void addActuator(SPtr<PreCollisionInteractor> actuator);
-    void addProbe(SPtr<PreCollisionInteractor> probes);
+    void addInteractor(SPtr<PreCollisionInteractor> interactor);
+    void addSampler(SPtr<Sampler> sampler);
 
     // getter
     double *getForcesDouble();
@@ -665,9 +666,8 @@ public:
     AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCDevice();
     AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCHost();
     AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCDevice();
-    std::vector<SPtr<PreCollisionInteractor>> getActuators();
-    //! \returns the probes, e.g. point or plane probe
-    std::vector<SPtr<PreCollisionInteractor>> getProbes();
+    std::vector<SPtr<PreCollisionInteractor>> getInteractors();
+    std::vector<SPtr<Sampler>> getSamplers();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart() const;
     unsigned int getTimeStep(int level, unsigned int t, bool isPostCollision);
@@ -847,9 +847,8 @@ private:
     // Concentration Dirichlet BC
     AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 
-    // PreCollisionInteractors //////////////
-    std::vector<SPtr<PreCollisionInteractor>> actuators;
-    std::vector<SPtr<PreCollisionInteractor>> probes;
+    std::vector<SPtr<PreCollisionInteractor>> interactors;
+    std::vector<SPtr<Sampler>> samplers;
 
     // Step of Ensight writing//
     unsigned int stepEnsight;

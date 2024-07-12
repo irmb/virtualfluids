@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
+//! \addtogroup gpu_Samplers
 //! \ingroup gpu_core core
 //! \{
 //! \author Henry Korb, Henrik Asmuth
@@ -40,17 +40,19 @@
 #include <future>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
-#include <basics/PointerDefinitions.h>
 #include <basics/DataTypes.h>
+#include <basics/PointerDefinitions.h>
+#include <basics/writer/WbWriterVtkXmlImageBinary.h>
 
 #include <logger/Logger.h>
 
 #include "Calculation/Calculation.h"
-#include "PreCollisionInteractor.h"
-#include "WbWriterVtkXmlImageBinary.h"
+#include "Sampler.h"
 
-class GridProvider;
+class Parameter;
+class CudaMemoryManager;
 
 enum class OutputVariable {
    //! - Velocities
@@ -84,35 +86,37 @@ struct PrecursorStruct
 };
 
 //! \brief Probe writing planes of data to be used as inflow data in successor simulation using PrecursorBC
-//!
 //! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions 
 //! that can be read by PrecursorBC as inflow data.
 //!
-class PrecursorWriter : public PreCollisionInteractor
+class PrecursorWriter : public Sampler
 {
 public:
     PrecursorWriter(
-        const std::string fileName,
+        SPtr<Parameter> para,
+        SPtr<CudaMemoryManager> cudaMemoryManager,
         const std::string outputPath,
+        const std::string probeName,
         real xPos,
         real yMin, real yMax,
         real zMin, real zMax,
-        uint tStartOut,
+        uint tStartWritingOutput,
         uint tSave,
         OutputVariable outputVariable,
         uint maxTimestepsPerFile=uint(1e4)
     ): 
-    fileName(fileName), 
-    outputPath(outputPath), 
+    para(para),
+    cudaMemoryManager(cudaMemoryManager),
     xPos(xPos),
     yMin(yMin),
     yMax(yMax),
     zMin(zMin),
     zMax(zMax),
-    tStartOut(tStartOut), 
+    tStartWritingOutput(tStartWritingOutput), 
     tSave(tSave),
     outputVariable(outputVariable),
-    maxtimestepsPerFile(maxTimestepsPerFile)
+    maxtimestepsPerFile(maxTimestepsPerFile),
+    Sampler(outputPath, probeName)
     {
         nodedatanames = determineNodeDataNames();
         writeFuture = std::async([](){});
@@ -120,7 +124,8 @@ public:
 
     ~PrecursorWriter();
 
-    void interact(int level, uint t) override;
+    void init() override;
+    void sample(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
     OutputVariable getOutputVariable(){ return this->outputVariable; }
@@ -131,7 +136,6 @@ public:
     void setWritePrecision(uint writePrecision){ this->writePrecision=writePrecision;}
     
 private:
-    void init() override;
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
     void write(int level, uint numberOfTimestepsBuffered);
 
@@ -145,7 +149,6 @@ private:
         case OutputVariable::Distributions:
             return {"fP00", "fPP0", "fPM0", "fP0P", "fP0M", "fPPP", "fPMP", "fPPM", "fPMM"};
             break;
-        
         default:
             throw std::runtime_error("Invalid OutputVariable for PrecursorWriter");
             break;
@@ -153,11 +156,13 @@ private:
     }
 
 private:
+    SPtr<Parameter> para;
+    SPtr<CudaMemoryManager> cudaMemoryManager;
     std::vector<SPtr<PrecursorStruct>> precursorStructs;
     std::string fileName, outputPath;
     std::vector<std::string> nodedatanames;
     std::vector<std::string> celldatanames;
-    uint tStartOut, tSave, maxtimestepsPerFile;
+    uint tStartWritingOutput, tSave, maxtimestepsPerFile;
     real xPos, yMin, yMax, zMin, zMax;
     OutputVariable outputVariable;
     std::future<void> writeFuture;

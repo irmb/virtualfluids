@@ -61,7 +61,9 @@ namespace actuator_farm
         using arr = py::array_t<real, py::array::c_style>;
         
         py::class_<ActuatorFarm, PreCollisionInteractor, PyActuatorFarm, std::shared_ptr<ActuatorFarm>>(parentModule, "ActuatorFarm", py::dynamic_attr())
-        .def(py::init<  const real,
+        .def(py::init<  SPtr<Parameter>,
+                        SPtr<CudaMemoryManager>,
+                        const real,
                         const std::vector<real>,
                         const std::vector<real>,
                         const std::vector<real>,
@@ -71,7 +73,9 @@ namespace actuator_farm
                         const int,
                         const real,
                         const real,
-                        const bool>(), 
+                        const bool>(),
+                        py::arg("para"),
+                        py::arg("cuda_memory_manager"),
                         py::arg("diameter"),
                         py::arg("blade_radii"),
                         py::arg("turbine_positions_x"),
@@ -163,7 +167,9 @@ namespace actuator_farm
         .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth, py::arg("turbine"), py::arg("azimuth"));
 
         py::class_<ActuatorFarmStandalone, ActuatorFarm, std::shared_ptr<ActuatorFarmStandalone>>(parentModule, "ActuatorFarmStandalone")
-        .def(py::init<  const real,
+        .def(py::init<  SPtr<Parameter>,
+                        SPtr<CudaMemoryManager>,
+                        const real,
                         const uint,
                         const std::vector<real>,
                         const std::vector<real>,
@@ -173,7 +179,9 @@ namespace actuator_farm
                         const real,
                         const int,
                         const real,
-                        const real>(), 
+                        const real>(),
+                        py::arg("para"),
+                        py::arg("cuda_memory_manager"),
                         py::arg("diameter"),
                         py::arg("number_of_nodes_per_blade"), 
                         py::arg("turbine_positions_x"),

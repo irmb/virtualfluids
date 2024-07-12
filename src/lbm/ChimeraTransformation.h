@@ -90,7 +90,7 @@ inline __host__ __device__ void backwardInverseChimeraWithK(real &mfa, real &mfb
 //! \brief forward chimera transformation \ref forwardChimera 
 //! Transformation from distributions to central moments according to Eq. (6)-(14) in
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
-//! for \f$ K_{abc}=0 \f$. This is to avoid unnessary floating point operations.
+//! for \f$ K_{abc}=0 \f$. This is to avoid unnecessary floating point operations.
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
 inline __host__ __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)

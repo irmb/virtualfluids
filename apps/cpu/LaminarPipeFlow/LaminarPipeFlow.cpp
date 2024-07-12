@@ -33,7 +33,7 @@
 //=======================================================================================
 #include <iostream>
 #include <string>
-//#include <omp.h>
+// #include <omp.h>
 
 #include "VirtualFluids.h"
 
@@ -114,7 +114,8 @@ void run(const vf::basics::ConfigurationFile& config)
         VF_LOG_INFO("Re = {}", Re);
         VF_LOG_INFO("dx = {}", dx);
         VF_LOG_INFO("number of levels = {}", refineLevel + 1);
-        VF_LOG_INFO("numOfThreads = {}", numOfThreads);
+        VF_LOG_INFO("number of threads = {}", numOfThreads);
+        VF_LOG_INFO("number of processes = {}", comm->getNumberOfProcesses());
         VF_LOG_INFO("path = {}", pathname);
         VF_LOG_INFO("Preprocess - start");
     }
@@ -173,7 +174,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
         if (refineLevel > 0) {
             if (myid == 0)
-                UBLOG(logINFO, "Refinement - start");
+                VF_LOG_INFO("Refinement - start");
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
             refineHelper.addGbObject(refineCube1_1, 1);
             refineHelper.addGbObject(refineCube1_2, 1);
@@ -181,7 +182,7 @@ void run(const vf::basics::ConfigurationFile& config)
             refineHelper.addGbObject(refineCube1_4, 1);
             refineHelper.refine();
             if (myid == 0)
-                UBLOG(logINFO, "Refinement - end");
+                VF_LOG_INFO("Refinement - end");
         }
 
         // inflow
@@ -208,7 +209,11 @@ void run(const vf::basics::ConfigurationFile& config)
         intHelper.addInteractor(cylinderInt);
         intHelper.addInteractor(inflowInt);
         intHelper.addInteractor(outflowInt);
+        if (myid == 0)
+            VF_LOG_INFO("Select blocks - start");
         intHelper.selectBlocks();
+        if (myid == 0)
+            VF_LOG_INFO("Select blocks - end");
 
         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(
             grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
@@ -218,7 +223,7 @@ void run(const vf::basics::ConfigurationFile& config)
         if (myid == 0)
             VF_LOG_INFO("{}", Utilities::toString(grid, comm->getNumberOfProcesses()));
 
-        SetKernelBlockVisitor kernelVisitor(kernel, nuLB);
+        SetKernelBlockVisitor kernelVisitor(kernel, nuLB, comm->getNumberOfProcesses());
         grid->accept(kernelVisitor);
 
         if (refineLevel > 0) {
@@ -226,11 +231,19 @@ void run(const vf::basics::ConfigurationFile& config)
             grid->accept(undefNodesVisitor);
         }
 
+        if (myid == 0)
+            VF_LOG_INFO("Set BC - start");
         intHelper.setBC();
+        if (myid == 0)
+            VF_LOG_INFO("Set BC - end");
 
         // initialization of distributions
+        if (myid == 0)
+            VF_LOG_INFO("Initialization of distributions - start");
         InitDistributionsBlockVisitor initVisitor;
         grid->accept(initVisitor);
+        if (myid == 0)
+            VF_LOG_INFO("Initialization of distributions - end");
 
         // boundary conditions grid
         {

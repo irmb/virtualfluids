@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Parallel Parallel
+//! \addtogroup cpu_SimulationObservers SimulationObservers
 //! \ingroup cpu_core core
 //! \{
 //! \author Alena Karanchuk
@@ -95,9 +95,6 @@ struct dataSetParam {
 struct DataSetRestart {
     double collFactor; // not float!!!
     double deltaT;     // not float!!!
-    double collFactorL; // for Multiphase model  // not float!!!
-    double collFactorG; // for Multiphase model // not float!!!
-    double densityRatio;// for Multiphase model // not float!!!
     int x1;
     int x2;
     int x3;
@@ -113,9 +110,6 @@ struct DataSetRestart {
 struct DataSetMigration {
     double collFactor;  // not float!!!
     double deltaT;      // not float!!!
-    double collFactorL; // for Multiphase model
-    double collFactorG; // for Multiphase model
-    double densityRatio;// for Multiphase model
     int globalID;
     int ghostLayerWidth;
     bool compressible;

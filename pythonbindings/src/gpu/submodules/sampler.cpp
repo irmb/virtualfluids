@@ -26,75 +26,17 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_PreCollisionInteractor PreCollisionInteractor
-//! \ingroup gpu_core core
-//! \{
-//! \author Henry Korb, Henrik Asmuth
-//! \date 13/05/2022
+//! \author Henry Korb
 //=======================================================================================
+#include <pybind11/pybind11.h>
+#include <gpu/core/Samplers/Sampler.h>
 
-#ifndef PlaneProbe_H
-#define PlaneProbe_H
-
-#include <logger/Logger.h>
-
-#include "Probe.h"
-
-//! \brief Probe computing point-wise statistics for a set of points across a plane
-//!
-//! The set of points can be defined by providing a list or on an x-normal plane.
-//! All statistics are temporal.
-//!
-class PlaneProbe : public Probe
+namespace sampler
 {
-public: 
-    PlaneProbe(
-        const std::string probeName,
-        const std::string outputPath,
-        uint tStartAvg,
-        uint tAvg,
-        uint tStartOut,
-        uint tOut
-    ): Probe(probeName, 
-             outputPath,
-             tStartAvg, 
-             tStartAvg+1,
-             tAvg,
-             tStartOut, 
-             tOut,
-             true,
-             false)
-    {}
+    namespace py = pybind11;
 
-    ~PlaneProbe() = default;
-
-    void setProbePlane(real posX, real posY, real posZ, real deltaX, real deltaY, real deltaZ)
+    void makeModule(py::module_ &parentModule)
     {
-        this->posX = posX; 
-        this->posY = posY; 
-        this->posZ = posZ;         
-        this->deltaX = deltaX; 
-        this->deltaY = deltaY; 
-        this->deltaZ = deltaZ; 
+        py::class_<Sampler, std::shared_ptr<Sampler>>(parentModule, "Sampler");
     }
-
-    void getTaggedFluidNodes(GridProvider* gridProvider) override;
-
-private:
-    bool isAvailableStatistic(Statistic _variable) override;
-
-    std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
-
-    void findPoints(std::vector<int>& probeIndices_level,
-                    std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
-                    std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
-                    int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, uint t, int level) override;
-
-private:
-    real posX, posY, posZ;
-    real deltaX, deltaY, deltaZ;
-};
-
-#endif
-//! \}
+}

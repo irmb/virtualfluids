@@ -125,3 +125,7 @@ if(NOT yaml-cpp_POPULATED)
   FetchContent_Populate(yaml-cpp)
   add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
 endif()
+
+# Metis
+add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.0)
+target_compile_definitions(project_options INTERFACE VF_METIS)

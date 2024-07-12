@@ -43,12 +43,13 @@
 #include <cuda_helper/CudaGrid.h>
 #include <logger/Logger.h>
 
-#include "DataStructureInitializer/GridProvider.h"
 #include "Cuda/CudaMemoryManager.h"
 #include "Utilities/GeometryUtils.h"
 #include "cuda_helper/CudaIndexCalculation.h"
 #include "Cuda/CudaStreamManager.h"
+#include "DataStructureInitializer/GridProvider.h"
 #include "Parameter/Parameter.h"
+#include "Utilities/KernelUtilities.h"
 
 using namespace vf::basics::constant;
 
@@ -91,35 +92,29 @@ __global__ void interpolateVelocities(const GridData gridData, const TurbineData
     const real coordY = componentData.coordsY[nodeIndex];
     const real coordZ = componentData.coordsZ[nodeIndex];
 
-    uint k, ke, kn, kt;
-    uint kne, kte, ktn, ktne;
 
-    k = findNearestCellBSW(componentData.gridIndices[nodeIndex],
-                           gridData.coordsX, gridData.coordsY, gridData.coordsZ,
-                           coordX, coordY, coordZ,
-                           gridData.neighborsX, gridData.neighborsY, gridData.neighborsZ, gridData.neighborsWSB);
+    const uint kMMM = findNearestCellBSW(componentData.gridIndices[nodeIndex], gridData.coordsX, gridData.coordsY, gridData.coordsZ,
+                              coordX, coordY, coordZ, gridData.neighborsX, gridData.neighborsY, gridData.neighborsZ,
+                              gridData.neighborsWSB);
 
-    componentData.gridIndices[nodeIndex] = k;
+    componentData.gridIndices[nodeIndex] = kMMM;
 
-    getNeighborIndicesOfBSW(k, ke, kn, kt, kne, kte, ktn, ktne, gridData.neighborsX, gridData.neighborsY,
+    uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
+    getNeighborIndicesOfBSW(kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, gridData.neighborsX, gridData.neighborsY,
                             gridData.neighborsZ);
 
-    real dW, dE, dN, dS, dT, dB;
-
-    const real distX = gridData.inverseDeltaX * (coordX - gridData.coordsX[k]);
-    const real distY = gridData.inverseDeltaX * (coordY - gridData.coordsY[k]);
-    const real distZ = gridData.inverseDeltaX * (coordZ - gridData.coordsZ[k]);
-
-    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX, distY, distZ);
+    const real distX = gridData.inverseDeltaX * (coordX - gridData.coordsX[kMMM]);
+    const real distY = gridData.inverseDeltaX * (coordY - gridData.coordsY[kMMM]);
+    const real distZ = gridData.inverseDeltaX * (coordZ - gridData.coordsZ[kMMM]);
 
     componentData.velocitiesX[nodeIndex] =
-        trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, gridData.vx) *
+        trilinearInterpolation(distX, distY, distZ, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, gridData.vx) *
         gridData.velocityRatio;
     componentData.velocitiesY[nodeIndex] =
-        trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, gridData.vy) *
+        trilinearInterpolation(distX, distY, distZ, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, gridData.vy) *
         gridData.velocityRatio;
     componentData.velocitiesZ[nodeIndex] =
-        trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, gridData.vz) *
+        trilinearInterpolation(distX, distY, distZ, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, gridData.vz) *
         gridData.velocityRatio;
 }
 
@@ -199,25 +194,39 @@ void ActuatorFarm::interact(int level, unsigned int t)
         this->write(this->getFilename(t));
     }
 
-    const GridData gridData {
-        this->boundingSphereIndicesD, this->numberOfIndices,
-        para->getParD(this->level)->coordinateX, para->getParD(this->level)->coordinateY, para->getParD(this->level)->coordinateZ,
-        para->getParD(this->level)->neighborX, para->getParD(this->level)->neighborY, para->getParD(this->level)->neighborZ, para->getParD(this->level)->neighborInverse,
-        para->getParD(this->level)->velocityX, para->getParD(this->level)->velocityY, para->getParD(this->level)->velocityZ,
-        para->getParD(this->level)->forceX_SP,para->getParD(this->level)->forceY_SP,para->getParD(this->level)->forceZ_SP,
-        this->invDeltaX, para->getVelocityRatio()};
+    const GridData gridData { this->boundingSphereIndicesD,
+                              this->numberOfIndices,
+                              para->getParD(this->level)->coordinateX,
+                              para->getParD(this->level)->coordinateY,
+                              para->getParD(this->level)->coordinateZ,
+                              para->getParD(this->level)->neighborX,
+                              para->getParD(this->level)->neighborY,
+                              para->getParD(this->level)->neighborZ,
+                              para->getParD(this->level)->neighborInverse,
+                              para->getParD(this->level)->velocityX,
+                              para->getParD(this->level)->velocityY,
+                              para->getParD(this->level)->velocityZ,
+                              para->getParD(this->level)->forceX_SP,
+                              para->getParD(this->level)->forceY_SP,
+                              para->getParD(this->level)->forceZ_SP,
+                              this->invDeltaX,
+                              para->getVelocityRatio() };
 
-    const TurbineData turbineData {
-        this->turbinePosXD, this->turbinePosYD, this->turbinePosZD,
-        this->numberOfTurbines,
-        this->smearingWidth, this->factorGaussian};
-    
-    const ComponentData bladeData {
-        this->diameter, this->numberOfNodesPerTurbine,
-        this->bladeCoordsXDCurrentTimestep, this->bladeCoordsYDCurrentTimestep, this->bladeCoordsZDCurrentTimestep, 
-        this->bladeVelocitiesXDCurrentTimestep, this->bladeVelocitiesYDCurrentTimestep, this->bladeVelocitiesZDCurrentTimestep, 
-        this->bladeForcesXDCurrentTimestep, this->bladeForcesYDCurrentTimestep, this->bladeForcesZDCurrentTimestep,
-        this->bladeIndicesD};
+    const TurbineData turbineData { this->turbinePosXD,     this->turbinePosYD,  this->turbinePosZD,
+                                    this->numberOfTurbines, this->smearingWidth, this->factorGaussian };
+
+    const ComponentData bladeData { this->diameter,
+                                    this->numberOfNodesPerTurbine,
+                                    this->bladeCoordsXDCurrentTimestep,
+                                    this->bladeCoordsYDCurrentTimestep,
+                                    this->bladeCoordsZDCurrentTimestep,
+                                    this->bladeVelocitiesXDCurrentTimestep,
+                                    this->bladeVelocitiesYDCurrentTimestep,
+                                    this->bladeVelocitiesZDCurrentTimestep,
+                                    this->bladeForcesXDCurrentTimestep,
+                                    this->bladeForcesYDCurrentTimestep,
+                                    this->bladeForcesZDCurrentTimestep,
+                                    this->bladeIndicesD };
 
     vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, this->numberOfGridNodes);
     interpolateVelocities<<<bladeGrid.grid, bladeGrid.threads, 0, stream>>>(gridData, turbineData, bladeData);
@@ -408,9 +417,12 @@ void ActuatorFarm::setTurbineBladeCoords(uint turbine, const real* _bladeCoordsX
 void ActuatorFarm::setTurbineBladeVelocities(uint turbine, const real* _bladeVelocitiesX, const real* _bladeVelocitiesY,
                                              const real* _bladeVelocitiesZ)
 {
-    std::copy_n(_bladeVelocitiesX, this->numberOfNodesPerTurbine, &this->bladeVelocitiesXH[turbine * this->numberOfNodesPerTurbine]);
-    std::copy_n(_bladeVelocitiesY, this->numberOfNodesPerTurbine, &this->bladeVelocitiesYH[turbine * this->numberOfNodesPerTurbine]);
-    std::copy_n(_bladeVelocitiesZ, this->numberOfNodesPerTurbine, &this->bladeVelocitiesZH[turbine * this->numberOfNodesPerTurbine]);
+    std::copy_n(_bladeVelocitiesX, this->numberOfNodesPerTurbine,
+                &this->bladeVelocitiesXH[turbine * this->numberOfNodesPerTurbine]);
+    std::copy_n(_bladeVelocitiesY, this->numberOfNodesPerTurbine,
+                &this->bladeVelocitiesYH[turbine * this->numberOfNodesPerTurbine]);
+    std::copy_n(_bladeVelocitiesZ, this->numberOfNodesPerTurbine,
+                &this->bladeVelocitiesZH[turbine * this->numberOfNodesPerTurbine]);
 }
 
 void ActuatorFarm::setTurbineBladeForces(uint turbine, const real* _bladeForcesX, const real* _bladeForcesY,
@@ -438,18 +450,14 @@ void ActuatorFarm::swapDeviceArrays()
 
 std::string ActuatorFarm::getFilename(uint t) const
 {
-    return para->getOutputPath() + this->outputName + "_ID_" + std::to_string(para->getMyProcessID()) + "_t_" + std::to_string(t);
+    return para->getOutputPath() + this->outputName + "_ID_" + std::to_string(para->getMyProcessID()) + "_t_" +
+           std::to_string(t);
 }
 
 void ActuatorFarm::write(const std::string& filename) const
 {
     std::vector<std::string> dataNames = {
-        "bladeVelocitiesX",
-        "bladeVelocitiesY",
-        "bladeVelocitiesZ",
-        "bladeForcesX",
-        "bladeForcesY",
-        "bladeForcesZ",
+        "bladeVelocitiesX", "bladeVelocitiesY", "bladeVelocitiesZ", "bladeForcesX", "bladeForcesY", "bladeForcesZ",
     };
     std::vector<UbTupleFloat3> nodes(numberOfGridNodes);
     std::vector<std::vector<double>> nodeData(6);

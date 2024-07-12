@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # AUTHORS
-VF has been developed essentially over the last fifteen years by various researchers at IRMB including (in alphabetical order):
+VF has been developed essentially over several years by various researchers at IRMB and other institutions including (in alphabetical order):
 
 
 - Damilola Adekanye, M.Sc.

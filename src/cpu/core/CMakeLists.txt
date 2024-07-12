@@ -34,12 +34,6 @@
 
 set(VF_LIBRARIES)
 
-IF(METIS_RELEASE_LIBRARY AND METIS_DEBUG_LIBRARY)
-   list(APPEND VF_LIBRARIES optimized ${METIS_RELEASE_LIBRARY} debug ${METIS_DEBUG_LIBRARY})
-ELSE()
-   list(APPEND VF_LIBRARIES metis)
-ENDIF()
-
 IF(${VF_CPU_ENABLE_VTK})
    list(APPEND VF_LIBRARIES optimized ${VTK_LIBRARIES} debug ${VTK_LIBRARIES})
 ENDIF()
@@ -99,6 +93,5 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${library_name} PUBLIC "/wd4305") #'initializing': truncation from double to float
     target_compile_options(${library_name} PUBLIC "/wd4505") # C4505: 'XXX': unreferenced local function has been removed
     target_compile_options(${library_name} PUBLIC "/wd4310") # C4310: cast truncates constant value, triggerd by muParserbase.h
-    target_compile_options(${library_name} PUBLIC "/wd4005") # disable macro redefinition (triggered by metis.h)
     target_compile_options(${library_name} PUBLIC "/wd4456") # C4456: declaration of hides previous local declaration
 endif()

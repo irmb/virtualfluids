@@ -43,6 +43,7 @@
 #include "submodules/actuator_farm.cpp"
 #include "submodules/grid_scaling_factory.cpp"
 #include "submodules/kernel.cpp"
+#include "submodules/sampler.cpp"
 
 namespace gpu_bindings
 {
@@ -55,6 +56,7 @@ PYBIND11_MODULE(gpu, m)
     boundary_conditions::makeModule(m);
     transient_bc_setter::makeModule(m);
     cuda_memory_manager::makeModule(m);
+    sampler::makeModule(m);
     probes::makeModule(m);
     precursor_writer::makeModule(m);
     grid_generator::makeModule(m);

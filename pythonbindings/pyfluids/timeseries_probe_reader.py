@@ -60,7 +60,7 @@ class TimeseriesProbeReader:
         header_length += len(quant_line)
         header_length += len(number_of_points_line)
 
-        quants = quant_line.decode().split(" ")[1:-1]
+        quants = list(map(lambda q: q[:-1], quant_line.decode().split(" ")[1:-1]))
         n_quants = len(quants)
         data = np.fromfile(self.file, dtype=np.float32, offset=header_length)
         n_timesteps = len(data)//(n_quants*n_points+1)
