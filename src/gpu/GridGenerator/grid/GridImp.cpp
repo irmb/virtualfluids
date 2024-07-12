@@ -1802,6 +1802,9 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
     // negative direction get a negative sign
     real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );
 
+    // the following code adds an index to the communication indices, when the coordinate is around + or - 0.5 * delta from the limit (see unit tests for
+    // details)
+
     if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta)
         this->communicationIndices[direction].receiveIndices.push_back(index);
 
