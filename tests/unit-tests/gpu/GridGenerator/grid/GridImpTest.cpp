@@ -48,6 +48,8 @@
 #include "geometries/BoundingBox/BoundingBox.h"
 #include "utilities/communication.h"
 
+using namespace testing;
+
 // This test is commented out because it causes a compiler error in Clang 10 --> The bug is fixed in Clang 14 (https://github.com/google/googletest/issues/2271)
 
 // class FieldDouble : public Field
@@ -1034,21 +1036,176 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MZ)
     auto grid = gridBuilder->getGrid(0);
     grid->findCommunicationIndices(CommunicationDirections::MZ, subdomain, direction!=6);
     uint nodeIndex=0;
-    for(uint iy=1; iy<grid->getNumberOfNodesY()-1; iy++){
-    for(uint ix=1; ix<grid->getNumberOfNodesX()-1; ix++){
+    for (uint iy = 1; iy < grid->getNumberOfNodesY() - 1; iy++) {
+        for (uint ix = 1; ix < grid->getNumberOfNodesX() - 1; ix++) {
         real x, y, z;
         grid->transIndexToCoords(getIndex(grid, ix, iy, 2), x, y, z);
-        if(direction==4)
-            x = wrap(x-shift, (nx+2)*dx);
-        if(direction==5)
-            y = wrap(y-shift, (ny+2)*dx);
+        if (direction == 4)
+            x = wrap(x - shift, (nx + 2) * dx);
+        if (direction == 5)
+            y = wrap(y - shift, (ny + 2) * dx);
         compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::MZ, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::MZ, nodeIndex), x, y, z-dx, "Receive");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::MZ, nodeIndex), x, y, z - dx,
+                                 "Receive");
         nodeIndex++;
-    }};
+        }
+    };
     EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::MZ));
     EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::MZ));
 }
-INSTANTIATE_TEST_SUITE_P(PeriodicBoundaryShiftMultiGPUIntegration, PeriodicBoundaryShiftMultiGPUIntegrationTest, testing::Combine(testing::Values(5), testing::Range(0,7)));
+INSTANTIATE_TEST_SUITE_P(PeriodicBoundaryShiftMultiGPUIntegration, PeriodicBoundaryShiftMultiGPUIntegrationTest,
+                         testing::Combine(testing::Values(5), testing::Range(0, 7)));
+
+namespace
+{
+
+void logForFindCommunicationIndexData(real coordinate, real coordinateLimit,
+                                      CommunicationDirections::CommunicationDirection direction, real delta)
+{
+    VF_LOG_INFO("coordinate = {},\tcoordinateLimit = {},\tdirection = {} (isPositive: {}),\tdelta = {}", coordinate, coordinateLimit,
+                direction, CommunicationDirections::isPositive(direction), delta);
+}
+
+TEST(GridImpTest, findCommunicationIndex_MX)
+{
+    real minCoordinate = 10;
+    real maxCoordinate = 20;
+    real delta = 1.5;
+    auto sut = GridImp::makeShared(nullptr, minCoordinate, minCoordinate, minCoordinate, maxCoordinate, maxCoordinate,
+                                   maxCoordinate, delta, "D3Q27", 0);
+    auto direction = CommunicationDirections::MX;
+    auto index = 42;
+
+    // send
+    real coordinate = minCoordinate + 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    auto result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No receive index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    // receive
+
+    coordinate = minCoordinate - 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No send index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+}
+
+TEST(GridImpTest, findCommunicationIndex_PX)
+{
+    real minCoordinate = -10;
+    real maxCoordinate = -20;
+    real delta = 1.5;
+    auto sut = GridImp::makeShared(nullptr, minCoordinate, minCoordinate, minCoordinate, maxCoordinate, maxCoordinate,
+                                   maxCoordinate, delta, "D3Q27", 0);
+    auto direction = CommunicationDirections::PX;
+    auto index = 42;
+
+    // send
+    real coordinate = minCoordinate + 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    auto result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No send index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    // receive
+
+    coordinate = minCoordinate - 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No receive index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+}
+
+}// namespace
 
 //! \}
