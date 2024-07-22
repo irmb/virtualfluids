@@ -53,7 +53,7 @@ class CudaMemoryManager;
 struct PlanarAverageProbeLevelData
 {
     unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
-    uint numberOfPlanes, numberOfPointsPerPlane, numberOfTimestepsInTimeAverage;
+    uint numberOfPlanes{}, numberOfPointsPerPlane{}, numberOfTimestepsInTimeAverage{};
     std::vector<real> coordinateX, coordinateY, coordinateZ;
     std::vector<std::vector<real>> instantaneous;
     std::vector<std::vector<real>> timeAverages;

@@ -495,6 +495,8 @@ void PlanarAverageProbe::calculateQuantities(int level, bool doTimeAverages)
 
         thrust::transform(indices, indices + data->numberOfPointsPerPlane, indices, shiftOp);
     }
+    if (doTimeAverages)
+        data->numberOfTimestepsInTimeAverage++;
     cudaMemoryManager->cudaCopyPlanarAverageProbeIndicesHtoD(this, level);
     getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }
