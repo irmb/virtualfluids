@@ -81,7 +81,7 @@ namespace grid_generator
         py::class_<TriangularMesh, Object, std::shared_ptr<TriangularMesh>>(gridGeneratorModule, "TriangularMesh")
         .def_static("make", &TriangularMesh::make, py::return_value_policy::reference);
 
-        py::class_<GridDimensions, std::shared_ptr<GridDimensions>>(gridGeneratorModule, "GridDimension")
+        py::class_<GridDimensions, std::shared_ptr<GridDimensions>>(gridGeneratorModule, "GridDimensions")
         .def(py::init<real, real, real, real, real, real, real>(), py::arg("min_x"), py::arg("max_x"), py::arg("min_y"), py::arg("max_y"), py::arg("min_z"), py::arg("max_z"), py::arg("delta"));
 
         py::class_<GridBuilder, std::shared_ptr<GridBuilder>>(gridGeneratorModule, "GridBuilder")
