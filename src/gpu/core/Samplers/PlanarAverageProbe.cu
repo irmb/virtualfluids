@@ -35,7 +35,6 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 
 #include <helper_cuda.h>
 
@@ -80,7 +79,7 @@ iterPair getPermutationIterators(real* values, unsigned long long* indices, uint
 struct shiftIndex
 {
     const uint* neighborNormal;
-    __host__ __device__ unsigned long long operator()(unsigned long long& pointIndices)
+    __host__ __device__ unsigned long long operator()(unsigned long long& pointIndices) const
     {
         return neighborNormal[pointIndices];
     }
@@ -165,7 +164,7 @@ std::string getName(std::string quantity, bool timeAverage)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statistic, bool namesForTimeAverages)
+std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statistic, bool namesForTimeAverages) const
 {
 
     std::vector<std::string> variableNames;
@@ -406,7 +405,7 @@ Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, iterPair p
 real computeSkewness(iterPair x, real mean, real covariance, real invNPointsPerPlane)
 {
     return thrust::transform_reduce(x.first, x.second, skewness(mean), c0o1, thrust::plus<real>()) * invNPointsPerPlane *
-           pow(covariance, -1.5f);
+           std::pow(covariance, -c3o2);
 }
 
 Skewnesses computeSkewnesses(Means means, Covariances covariances, iterPair vx, iterPair vy, iterPair vz, iterPair phi,

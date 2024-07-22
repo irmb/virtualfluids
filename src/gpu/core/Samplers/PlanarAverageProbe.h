@@ -93,7 +93,7 @@ public:
     }
 
 private:
-    std::vector<std::string> getVariableNames(Statistic statistic, bool namesForTimeAverages);
+    std::vector<std::string> getVariableNames(Statistic statistic, bool namesForTimeAverages) const;
     void copyDataToNodedata(std::vector<std::vector<real>>& data, std::vector<std::vector<double>>& nodeData);
     void calculateQuantities(int level, bool doTimeAverages);
     std::vector<unsigned long long> findIndicesInPlane(int level);
