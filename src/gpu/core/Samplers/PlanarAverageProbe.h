@@ -47,6 +47,7 @@
 #include <vector>
 
 #include <basics/DataTypes.h>
+#include <basics/geometry3d/Axis.h>
 
 class Parameter;
 class CudaMemoryManager;
@@ -66,7 +67,6 @@ struct PlanarAverageProbeLevelData
 class PlanarAverageProbe : public Sampler
 {
 public:
-    enum class PlaneNormal { x, y, z };
     enum class Statistic {
         Means,
         Covariances,
@@ -78,7 +78,7 @@ public:
     PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
                        const std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging,
                        uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
-                       PlanarAverageProbe::PlaneNormal planeNormal, bool computeTimeAverages)
+                       Axis planeNormal, bool computeTimeAverages)
         : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tStartTemporalAveraging(tStartTemporalAveraging),
           tBetweenAverages(tBetweenAverages), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
           computeTimeAverages(computeTimeAverages), planeNormal(planeNormal),
@@ -130,7 +130,7 @@ private:
     SPtr<CudaMemoryManager> cudaMemoryManager;
     uint tStartAveraging, tStartTemporalAveraging, tBetweenAverages, tStartWritingOutput, tBetweenWriting;
     bool computeTimeAverages, nameFilesWithFileCount = false;
-    PlaneNormal planeNormal;
+    Axis planeNormal;
     std::vector<PlanarAverageProbe::Statistic> statistics;
     std::vector<PlanarAverageProbeLevelData> levelData;
     std::vector<std::string> fileNamesForCollectionFile;

@@ -36,6 +36,7 @@
 #include <basics/DataTypes.h>
 #include <basics/config/ConfigurationFile.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/Axis.h>
 
 #include <logger/Logger.h>
 
@@ -336,7 +337,7 @@ void run(const vf::basics::ConfigurationFile& config)
     if (!usePrecursorInflow && (isFirstSubDomain || !isMultiGPU)) {
         const auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
             para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe", timeStepStartAveraging,
-            timeStepStartTemporalAveraging, timeStepAveraging, timeStepStartOutProbe, timeStepOutProbe, PlanarAverageProbe::PlaneNormal::z, true);
+            timeStepStartTemporalAveraging, timeStepAveraging, timeStepStartOutProbe, timeStepOutProbe, Axis::z, true);
         planarAverageProbe->addAllAvailableStatistics();
         planarAverageProbe->setFileNameToNOut();
         para->addSampler(planarAverageProbe);

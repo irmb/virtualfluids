@@ -47,6 +47,7 @@
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/Axis.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
@@ -273,11 +274,11 @@ std::vector<unsigned long long> PlanarAverageProbe::findIndicesInPlane(int level
 
     const real* coordinatesPlaneNormal = [&] {
         switch (planeNormal) {
-            case PlaneNormal::x:
+            case Axis::x:
                 return param->coordinateX;
-            case PlaneNormal::y:
+            case Axis::y:
                 return param->coordinateY;
-            case PlaneNormal::z:
+            case Axis::z:
                 return param->coordinateZ;
             default:
                 throw std::runtime_error("PlaneNormal not defined!");
@@ -304,19 +305,19 @@ void PlanarAverageProbe::findCoordinatesForPlanes(int level, std::vector<real>& 
     unsigned long long nextIndex = startIndex;
     do {
         switch (planeNormal) {
-            case PlaneNormal::x:
+            case Axis::x:
                 coordinateX.push_back(para->getParH(level)->coordinateX[nextIndex]);
                 coordinateY.push_back(999999);
                 coordinateZ.push_back(999999);
                 nextIndex = para->getParH(level)->neighborX[nextIndex];
                 break;
-            case PlaneNormal::y:
+            case Axis::y:
                 coordinateX.push_back(999999);
                 coordinateY.push_back(para->getParH(level)->coordinateY[nextIndex]);
                 coordinateZ.push_back(999999);
                 nextIndex = para->getParH(level)->neighborY[nextIndex];
                 break;
-            case PlaneNormal::z:
+            case Axis::z:
                 coordinateX.push_back(999999);
                 coordinateY.push_back(999999);
                 coordinateZ.push_back(para->getParH(level)->coordinateZ[nextIndex]);
@@ -504,11 +505,11 @@ void PlanarAverageProbe::calculateQuantities(int level, bool doTimeAverages)
 const uint* PlanarAverageProbe::getNeighborIndicesInPlaneNormal(int level)
 {
     switch (planeNormal) {
-        case PlaneNormal::x:
+        case Axis::x:
             return para->getParD(level)->neighborX;
-        case PlaneNormal::y:
+        case Axis::y:
             return para->getParD(level)->neighborY;
-        case PlaneNormal::z:
+        case Axis::z:
             return para->getParD(level)->neighborZ;
     };
 
