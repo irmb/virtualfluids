@@ -30,13 +30,15 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
+
 from __future__ import annotations
 from typing import Callable, ClassVar, List, Optional
 
 from typing import overload, Union
 import numpy as np
 import numpy.typing as npt
-import basics, parallel
+import basics
+import parallel
 
 from . import grid_generator as grid_generator
 from . import probes as probes
@@ -48,12 +50,26 @@ class PreCollisionInteractor:
 class Sampler:
     def __init__(self, *args, **kwargs) -> None: ...
 
-
 class FileCollection:
     def __init__(self, *args, **kwargs) -> None: ...
 
 class ActuatorFarm(PreCollisionInteractor):
-    def __init__(self, para: Parameter, cuda_memory_manager: CudaMemoryManager,  diameter: float, blade_radii: npt.NDArray[np.float32],turbine_positions_x: npt.NDArray[np.float32], turbine_positions_y: npt.NDArray[np.float32], turbine_positions_z: npt.NDArray[np.float32], density: float, smearing_width: float, level: int, delta_t: float, delta_x: float, use_host_arrays: bool) -> None: ...
+    def __init__(
+        self,
+        para: Parameter,
+        cuda_memory_manager: CudaMemoryManager,
+        diameter: float,
+        blade_radii: npt.NDArray[np.float32],
+        turbine_positions_x: npt.NDArray[np.float32],
+        turbine_positions_y: npt.NDArray[np.float32],
+        turbine_positions_z: npt.NDArray[np.float32],
+        density: float,
+        smearing_width: float,
+        level: int,
+        delta_t: float,
+        delta_x: float,
+        use_host_arrays: bool,
+    ) -> None: ...
     def update_forces_and_coordinates(self) -> None: ...
     def get_all_blade_coords_x(self) -> npt.NDArray[np.float32]: ...
     def get_all_blade_coords_x_device(self) -> int: ...
@@ -94,12 +110,45 @@ class ActuatorFarm(PreCollisionInteractor):
     def get_turbine_blade_velocities_y_device(self, turbine: int) -> int: ...
     def get_turbine_blade_velocities_z(self, turbine: int) -> npt.NDArray[np.float32]: ...
     def get_turbine_blade_velocities_z_device(self, turbine: int) -> int: ...
-    def set_all_blade_coords(self, blade_coords_x: npt.NDArray[np.float32], blade_coords_y: npt.NDArray[np.float32], blade_coords_z: npt.NDArray[np.float32]) -> None: ...
-    def set_all_blade_forces(self, blade_forces_x: npt.NDArray[np.float32], blade_forces_y: npt.NDArray[np.float32], blade_forces_z: npt.NDArray[np.float32]) -> None: ...
-    def set_all_blade_velocities(self, blade_velocities_x: npt.NDArray[np.float32], blade_velocities_y: npt.NDArray[np.float32], blade_velocities_z: npt.NDArray[np.float32]) -> None: ...
-    def set_turbine_blade_coords(self, turbine: int, blade_coords_x: npt.NDArray[np.float32], blade_coords_y: npt.NDArray[np.float32], blade_coords_z: npt.NDArray[np.float32]) -> None: ...
-    def set_turbine_blade_forces(self, turbine: int, blade_forces_x: npt.NDArray[np.float32], blade_forces_y: npt.NDArray[np.float32], blade_forces_z: npt.NDArray[np.float32]) -> None: ...
-    def set_turbine_blade_velocities(self, turbine: int, blade_velocities_x: npt.NDArray[np.float32], blade_velocities_y: npt.NDArray[np.float32], blade_velocities_z: npt.NDArray[np.float32]) -> None: ...
+    def set_all_blade_coords(
+        self,
+        blade_coords_x: npt.NDArray[np.float32],
+        blade_coords_y: npt.NDArray[np.float32],
+        blade_coords_z: npt.NDArray[np.float32],
+    ) -> None: ...
+    def set_all_blade_forces(
+        self,
+        blade_forces_x: npt.NDArray[np.float32],
+        blade_forces_y: npt.NDArray[np.float32],
+        blade_forces_z: npt.NDArray[np.float32],
+    ) -> None: ...
+    def set_all_blade_velocities(
+        self,
+        blade_velocities_x: npt.NDArray[np.float32],
+        blade_velocities_y: npt.NDArray[np.float32],
+        blade_velocities_z: npt.NDArray[np.float32],
+    ) -> None: ...
+    def set_turbine_blade_coords(
+        self,
+        turbine: int,
+        blade_coords_x: npt.NDArray[np.float32],
+        blade_coords_y: npt.NDArray[np.float32],
+        blade_coords_z: npt.NDArray[np.float32],
+    ) -> None: ...
+    def set_turbine_blade_forces(
+        self,
+        turbine: int,
+        blade_forces_x: npt.NDArray[np.float32],
+        blade_forces_y: npt.NDArray[np.float32],
+        blade_forces_z: npt.NDArray[np.float32],
+    ) -> None: ...
+    def set_turbine_blade_velocities(
+        self,
+        turbine: int,
+        blade_velocities_x: npt.NDArray[np.float32],
+        blade_velocities_y: npt.NDArray[np.float32],
+        blade_velocities_z: npt.NDArray[np.float32],
+    ) -> None: ...
     def set_turbine_azimuth(self, turbine: int, azimuth: float) -> None: ...
     def enable_output(self, output_name: str, t_start_out: int, t_out: int) -> None: ...
     @property
@@ -120,7 +169,22 @@ class ActuatorFarm(PreCollisionInteractor):
     def number_of_turbines(self) -> int: ...
 
 class ActuatorFarmStandalone(ActuatorFarm):
-    def __init__(self, para: Parameter, cuda_memory_manager: CudaMemoryManager, diameter: float, number_of_nodes_per_blade: int, turbine_positions_x: npt.NDArray[np.float32], turbine_positions_y: npt.NDArray[np.float32], turbine_positions_z: npt.NDArray[np.float32], rotor_speeds: npt.NDArray[np.float32], density: float, smearing_width: float, level: int, delta_t: float, delta_x: float) -> None: ...
+    def __init__(
+        self,
+        para: Parameter,
+        cuda_memory_manager: CudaMemoryManager,
+        diameter: float,
+        number_of_nodes_per_blade: int,
+        turbine_positions_x: npt.NDArray[np.float32],
+        turbine_positions_y: npt.NDArray[np.float32],
+        turbine_positions_z: npt.NDArray[np.float32],
+        rotor_speeds: npt.NDArray[np.float32],
+        density: float,
+        smearing_width: float,
+        level: int,
+        delta_t: float,
+        delta_x: float,
+    ) -> None: ...
 
 class BoundaryConditionFactory:
     def __init__(self) -> None: ...
@@ -132,10 +196,8 @@ class BoundaryConditionFactory:
     def set_stress_boundary_condition(self, boundary_condition_type: StressBC) -> None: ...
     def set_velocity_boundary_condition(self, boundary_condition_type: VelocityBC) -> None: ...
 
-
 class CudaMemoryManager:
     def __init__(self, parameter: Parameter) -> None: ...
-
 
 class TransientBCFileType:
     __members__: ClassVar[dict] = ...  # read-only
@@ -152,11 +214,15 @@ class TransientBCFileType:
     @property
     def name(self) -> str: ...
 
-
 class GridProvider:
     def __init__(self, *args, **kwargs) -> None: ...
     @staticmethod
-    def make_grid_generator(builder: grid_generator.GridBuilder, para: Parameter, cuda_memory_manager: CudaMemoryManager, communicator: parallel.Communicator) -> GridProvider: ...
+    def make_grid_generator(
+        builder: grid_generator.GridBuilder,
+        para: Parameter,
+        cuda_memory_manager: CudaMemoryManager,
+        communicator: parallel.Communicator,
+    ) -> GridProvider: ...
 
 class MultipleGridBuilder:
     def __init__(self) -> None: ...
@@ -178,11 +244,9 @@ class GridScaling:
     @property
     def name(self) -> str: ...
 
-
 class GridScalingFactory:
     def __init__(self) -> None: ...
     def set_scaling_factory(self, scaling_type) -> None: ...
-
 
 class NoSlipBC:
     __members__: ClassVar[dict] = ...  # read-only
@@ -202,7 +266,6 @@ class NoSlipBC:
     @property
     def name(self) -> str: ...
 
-
 class OutputVariable:
     __members__: ClassVar[dict] = ...  # read-only
     Distributions: ClassVar[OutputVariable] = ...
@@ -219,10 +282,11 @@ class OutputVariable:
     @property
     def name(self) -> str: ...
 
-
 class Parameter:
     @overload
-    def __init__(self, number_of_processes: int, my_ID: int, config_data: Optional[basics.ConfigurationFile]) -> None: ...
+    def __init__(
+        self, number_of_processes: int, my_ID: int, config_data: Optional[basics.ConfigurationFile]
+    ) -> None: ...
     @overload
     def __init__(self, number_of_processes: int, my_ID: int) -> None: ...
     @overload
@@ -249,7 +313,9 @@ class Parameter:
     def set_has_wall_model_monitor(self, has_wall_monitor: bool) -> None: ...
     def set_initial_condition(self, init_func: Callable[[float, float, float], List[float]]) -> None: ...
     def set_initial_condition_log_law(self, u_star: float, z0: float, velocity_ratio: float) -> None: ...
-    def set_initial_condition_perturbed_log_law(self, u_star: float, z0: float, length_x: float, length_z: float, height: float, velocity_ratio: float) -> None: ...
+    def set_initial_condition_perturbed_log_law(
+        self, u_star: float, z0: float, length_x: float, length_z: float, height: float, velocity_ratio: float
+    ) -> None: ...
     def set_initial_condition_uniform(self, velocity_x: float, velocity_y: float, velocity_z: float) -> None: ...
     def set_is_body_force(self, is_body_force: bool) -> None: ...
     def configure_main_kernel(self, kernel: str) -> None: ...
@@ -259,7 +325,9 @@ class Parameter:
     def set_output_path(self, o_path: str) -> None: ...
     def set_output_prefix(self, o_prefix: str) -> None: ...
     def set_print_files(self, print_files: bool) -> None: ...
-    def set_quadric_limiters(self, quadric_limiter_p: float, quadric_limiter_m: float, quadric_limiter_d: float) -> None: ...
+    def set_quadric_limiters(
+        self, quadric_limiter_p: float, quadric_limiter_m: float, quadric_limiter_d: float
+    ) -> None: ...
     def set_temperature_BC(self, temp_bc: float) -> None: ...
     def set_temperature_init(self, temp: float) -> None: ...
     def set_timestep_end(self, tend: int) -> None: ...
@@ -271,7 +339,6 @@ class Parameter:
     def set_velocity_ratio(self, velocity_ratio: float) -> None: ...
     def set_viscosity_LB(self, viscosity: float) -> None: ...
     def set_viscosity_ratio(self, viscosity_ratio: float) -> None: ...
-
 
 class PrecursorBC:
     __members__: ClassVar[dict] = ...  # read-only
@@ -290,10 +357,23 @@ class PrecursorBC:
     @property
     def name(self) -> str: ...
 
-
 class PrecursorWriter(Sampler):
-    def __init__(self, para: Parameter, cuda_memory_manager: CudaMemoryManager, output_path: str, filename: str, x_pos: float, y_min: float, y_max: float, z_min: float, z_max: float, t_start_out: int, t_save: int, output_variable: OutputVariable, max_timesteps_per_file: int) -> None: ...
-
+    def __init__(
+        self,
+        para: Parameter,
+        cuda_memory_manager: CudaMemoryManager,
+        output_path: str,
+        filename: str,
+        x_pos: float,
+        y_min: float,
+        y_max: float,
+        z_min: float,
+        z_max: float,
+        t_start_out: int,
+        t_save: int,
+        output_variable: OutputVariable,
+        max_timesteps_per_file: int,
+    ) -> None: ...
 
 class PressureBC:
     __members__: ClassVar[dict] = ...  # read-only
@@ -313,7 +393,6 @@ class PressureBC:
     def __setstate__(self, arg0: int) -> None: ...
     @property
     def name(self) -> str: ...
-
 
 class SideType:
     __members__: ClassVar[dict] = ...  # read-only
@@ -336,18 +415,40 @@ class SideType:
     @property
     def name(self) -> str: ...
 
-
 class Simulation:
     @overload
-    def __init__(self, parameter: Parameter, memoryManager: CudaMemoryManager, communicator, gridProvider: GridProvider, bcFactory: BoundaryConditionFactory, gridScalingFactory: GridScalingFactory) -> None: ...
+    def __init__(
+        self,
+        parameter: Parameter,
+        memoryManager: CudaMemoryManager,
+        communicator,
+        gridProvider: GridProvider,
+        bcFactory: BoundaryConditionFactory,
+        gridScalingFactory: GridScalingFactory,
+    ) -> None: ...
     @overload
-    def __init__(self, parameter: Parameter, memoryManager: CudaMemoryManager, communicator, gridProvider: GridProvider, bcFactory: BoundaryConditionFactory) -> None: ...
+    def __init__(
+        self,
+        parameter: Parameter,
+        memoryManager: CudaMemoryManager,
+        communicator,
+        gridProvider: GridProvider,
+        bcFactory: BoundaryConditionFactory,
+    ) -> None: ...
     @overload
-    def __init__(self, parameter: Parameter, memoryManager: CudaMemoryManager, communicator, gridProvider: GridProvider, bcFactory: BoundaryConditionFactory, tmFactory: TurbulenceModelFactory, gridScalingFactory: GridScalingFactory) -> None: ...
+    def __init__(
+        self,
+        parameter: Parameter,
+        memoryManager: CudaMemoryManager,
+        communicator,
+        gridProvider: GridProvider,
+        bcFactory: BoundaryConditionFactory,
+        tmFactory: TurbulenceModelFactory,
+        gridScalingFactory: GridScalingFactory,
+    ) -> None: ...
     def addEnstrophyAnalyzer(self, t_analyse: int) -> None: ...
     def addKineticEnergyAnalyzer(self, t_analyse: int) -> None: ...
     def run(self) -> None: ...
-
 
 class SlipBC:
     __members__: ClassVar[dict] = ...  # read-only
@@ -365,7 +466,6 @@ class SlipBC:
     def __setstate__(self, arg0: int) -> None: ...
     @property
     def name(self) -> str: ...
-
 
 class StressBC:
     __members__: ClassVar[dict] = ...  # read-only
@@ -385,7 +485,6 @@ class StressBC:
     @property
     def name(self) -> str: ...
 
-
 class TurbulenceModel:
     __members__: ClassVar[dict] = ...  # read-only
     AMD: ClassVar[TurbulenceModel] = ...
@@ -404,17 +503,14 @@ class TurbulenceModel:
     @property
     def name(self) -> str: ...
 
-
 class TurbulenceModelFactory:
     def __init__(self, para: Parameter) -> None: ...
     def read_config_file(self, config_data: basics.ConfigurationFile) -> None: ...
     def set_model_constant(self, model_constant: float) -> None: ...
     def set_turbulence_model(self, turbulence_model: TurbulenceModel) -> None: ...
 
-
 class VTKFileCollection(FileCollection):
     def __init__(self, prefix: str) -> None: ...
-
 
 class VelocityBC:
     __members__: ClassVar[dict] = ...  # read-only
@@ -434,6 +530,5 @@ class VelocityBC:
     def __setstate__(self, arg0: int) -> None: ...
     @property
     def name(self) -> str: ...
-
 
 def create_file_collection(prefix: str, type: TransientBCFileType) -> FileCollection: ...

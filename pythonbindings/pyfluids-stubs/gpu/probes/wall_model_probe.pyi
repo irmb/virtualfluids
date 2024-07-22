@@ -30,37 +30,25 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
+
 from __future__ import annotations
 
-from typing import overload
+import gpu
 
-from . import geometry3d as geometry3d
-
-class ConfigurationFile:
-    def __init__(self) -> None: ...
-    def contains(self, key: str) -> bool: ...
-    @overload
-    def get_bool_value(self, key: str) -> bool: ...
-    @overload
-    def get_bool_value(self, key: str, default_value: bool) -> bool: ...
-    @overload
-    def get_double_value(self, key: str) -> float: ...
-    @overload
-    def get_double_value(self, key: str, default_value: float) -> float: ...
-    @overload
-    def get_float_value(self, key: str) -> float: ...
-    @overload
-    def get_float_value(self, key: str, default_value: float) -> float: ...
-    @overload
-    def get_int_value(self, key: str) -> int: ...
-    @overload
-    def get_int_value(self, key: str, default_value: int) -> int: ...
-    @overload
-    def get_string_value(self, key: str) -> str: ...
-    @overload
-    def get_string_value(self, key: str, default_value: str) -> str: ...
-    @overload
-    def get_uint_value(self, key: str) -> int: ...
-    @overload
-    def get_uint_value(self, key: str, default_value: int) -> int: ...
-    def load(self, file: str) -> bool: ...
+class WallModelProbe(gpu.Sampler):
+    def __init__(
+        self,
+        para: gpu.Parameter,
+        cuda_memory_manager: gpu.CudaMemoryManager,
+        probe_name: str,
+        output_path: str,
+        t_start_avg: int,
+        t_start_tmp_avg: int,
+        t_avg: int,
+        t_start_out: int,
+        t_out: int,
+        average_every_timestep: bool,
+        compute_temporal_averages: bool,
+        output_stress: bool,
+        evaluate_pressure_gradient: bool,
+    ) -> None: ...
