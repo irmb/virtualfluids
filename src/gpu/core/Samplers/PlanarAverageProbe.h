@@ -51,14 +51,7 @@
 
 class Parameter;
 class CudaMemoryManager;
-struct PlanarAverageProbeLevelData
-{
-    unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
-    uint numberOfPlanes{}, numberOfPointsPerPlane{}, numberOfTimestepsInTimeAverage{};
-    std::vector<real> coordinateX, coordinateY, coordinateZ;
-    std::vector<std::vector<real>> instantaneous;
-    std::vector<std::vector<real>> timeAverages;
-};
+
 
 
 //! \brief Computes spatial statistics across x, y or z-normal planes defined by planeNormal.
@@ -73,6 +66,8 @@ public:
         Skewness,
         Flatness,
     };
+    struct LevelData;
+
 
 public:
     PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
@@ -94,25 +89,25 @@ public:
     void init() override;
     void sample(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
-    PlanarAverageProbeLevelData* getLevelData(int level)
+    LevelData* getLevelData(int level)
     {
         return &levelData[level];
     }
     void addAllAvailableStatistics()
     {
-        addStatistic(PlanarAverageProbe::Statistic::Means);
-        addStatistic(PlanarAverageProbe::Statistic::Covariances);
-        addStatistic(PlanarAverageProbe::Statistic::Skewness);
-        addStatistic(PlanarAverageProbe::Statistic::Flatness);
+        addStatistic(Statistic::Means);
+        addStatistic(Statistic::Covariances);
+        addStatistic(Statistic::Skewness);
+        addStatistic(Statistic::Flatness);
     }
-    void addStatistic(PlanarAverageProbe::Statistic statistic);
+    void addStatistic(Statistic statistic);
     void setFileNameToNOut()
     {
         nameFilesWithFileCount = true;
     }
 
 private:
-    std::vector<std::string> getVariableNames(PlanarAverageProbe::Statistic statistic, bool namesForTimeAverages);
+    std::vector<std::string> getVariableNames(Statistic statistic, bool namesForTimeAverages);
     void copyDataToNodedata(std::vector<std::vector<real>>& data, std::vector<std::vector<double>>& nodeData);
     void calculateQuantities(int level, bool doTimeAverages);
     std::vector<unsigned long long> findIndicesInPlane(int level);
@@ -131,12 +126,21 @@ private:
     uint tStartAveraging, tStartTemporalAveraging, tBetweenAverages, tStartWritingOutput, tBetweenWriting;
     bool computeTimeAverages, nameFilesWithFileCount = false;
     Axis planeNormal;
-    std::vector<PlanarAverageProbe::Statistic> statistics;
-    std::vector<PlanarAverageProbeLevelData> levelData;
+    std::vector<Statistic> statistics;
+    std::vector<LevelData> levelData;
     std::vector<std::string> fileNamesForCollectionFile;
 };
 
 bool isStatisticIn(PlanarAverageProbe::Statistic statistic, std::vector<PlanarAverageProbe::Statistic> statistics);
+
+struct PlanarAverageProbe::LevelData
+{
+    unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
+    uint numberOfPlanes{}, numberOfPointsPerPlane{}, numberOfTimestepsInTimeAverage{};
+    std::vector<real> coordinateX, coordinateY, coordinateZ;
+    std::vector<std::vector<real>> instantaneous;
+    std::vector<std::vector<real>> timeAverages;
+};
 
 #endif
 //! \}
