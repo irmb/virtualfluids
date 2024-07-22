@@ -165,7 +165,7 @@ std::string getName(std::string quantity, bool timeAverage)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-std::vector<std::string> PlanarAverageProbe::getVariableNames(PlanarAverageProbe::Statistic statistic,
+std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statistic,
                                                               bool namesForTimeAverages)
 {
 
@@ -206,7 +206,7 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(PlanarAverageProbe
     return variableNames;
 }
 
-void PlanarAverageProbe::addStatistic(PlanarAverageProbe::Statistic statistic)
+void PlanarAverageProbe::addStatistic(Statistic statistic)
 {
     if (!isStatisticIn(statistic, statistics))
         statistics.push_back(statistic);
@@ -418,7 +418,7 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
 
     std::vector<real> averages;
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Means, statistics))
+    if (!isStatisticIn(Statistic::Means, statistics))
         return averages;
 
     const real velocityRatio = para->getScaledVelocityRatio(level);
@@ -432,7 +432,7 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     if (para->getUseTurbulentViscosity())
         averages.push_back(computeMean(turbulentViscosity, invNPointsPerPlane) * viscosityRatio);
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Covariances, statistics))
+    if (!isStatisticIn(Statistic::Covariances, statistics))
         return averages;
 
     const auto covariances = computeCovariances(velocityX, velocityY, velocityZ, means, invNPointsPerPlane);
@@ -443,7 +443,7 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     averages.push_back(covariances.vxvz * stressRatio);
     averages.push_back(covariances.vyvz * stressRatio);
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Skewness, statistics))
+    if (!isStatisticIn(Statistic::Skewness, statistics))
         return averages;
 
     const auto skewnesses = computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, invNPointsPerPlane);
@@ -451,7 +451,7 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     averages.push_back(skewnesses.Sy);
     averages.push_back(skewnesses.Sz);
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Flatness, statistics))
+    if (!isStatisticIn(Statistic::Flatness, statistics))
         return averages;
 
     const auto flatnesses = computeFlatnesses(velocityX, velocityY, velocityZ, means, covariances, invNPointsPerPlane);
