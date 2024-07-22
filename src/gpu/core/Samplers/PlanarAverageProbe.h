@@ -42,7 +42,6 @@
 
 #include "Sampler.h"
 
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -51,8 +50,6 @@
 
 class Parameter;
 class CudaMemoryManager;
-
-
 
 //! \brief Computes spatial statistics across x, y or z-normal planes defined by planeNormal.
 //! The planes include all points of the domain at each respective position along that normal direction.
@@ -68,24 +65,11 @@ public:
     };
     struct LevelData;
 
-
 public:
     PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
                        const std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging,
-                       uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
-                       Axis planeNormal, bool computeTimeAverages, bool computeStatisticsOfConcentration)
-        : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tStartTemporalAveraging(tStartTemporalAveraging),
-          tBetweenAverages(tBetweenAverages), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
-          computeTimeAverages(computeTimeAverages), planeNormal(planeNormal), computeStatisticsOfConcentration(computeStatisticsOfConcentration),
-          Sampler(outputPath, probeName)
-    {
-        if (tStartTemporalAveraging < tStartAveraging && computeTimeAverages)
-            throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
-        if (tBetweenWriting == 0)
-            throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
-        if( computeStatisticsOfConcentration && !para->getDiffOn())
-            throw std::runtime_error("PlaneAverageProbe: Concentration statistics can only be computed if diff is on!");
-    }
+                       uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal,
+                       bool computeTimeAverages, bool computeStatisticsOfConcentration);
     ~PlanarAverageProbe();
 
     void init() override;
@@ -139,7 +123,7 @@ bool isStatisticIn(PlanarAverageProbe::Statistic statistic, std::vector<PlanarAv
 struct PlanarAverageProbe::LevelData
 {
     unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
-    uint numberOfPlanes{}, numberOfPointsPerPlane{}, numberOfTimestepsInTimeAverage{};
+    uint numberOfPlanes {}, numberOfPointsPerPlane {}, numberOfTimestepsInTimeAverage {};
     std::vector<real> coordinateX, coordinateY, coordinateZ;
     std::vector<std::vector<real>> instantaneous;
     std::vector<std::vector<real>> timeAverages;

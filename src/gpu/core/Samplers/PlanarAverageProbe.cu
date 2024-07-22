@@ -224,6 +224,24 @@ void PlanarAverageProbe::addStatistic(Statistic statistic)
         statistics.push_back(statistic);
 }
 
+PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
+                       const std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging,
+                       uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal,
+                       bool computeTimeAverages, bool computeStatisticsOfConcentration)
+        : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging),
+          tStartTemporalAveraging(tStartTemporalAveraging), tBetweenAverages(tBetweenAverages),
+          tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
+          computeTimeAverages(computeTimeAverages), planeNormal(planeNormal),
+          computeStatisticsOfConcentration(computeStatisticsOfConcentration), Sampler(outputPath, probeName)
+{
+    if (tStartTemporalAveraging < tStartAveraging && computeTimeAverages)
+        throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
+    if (tBetweenWriting == 0)
+        throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
+    if (computeStatisticsOfConcentration && !para->getDiffOn())
+        throw std::runtime_error("PlaneAverageProbe: Concentration statistics can only be computed if diff is on!");
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
 void PlanarAverageProbe::init()
 {
