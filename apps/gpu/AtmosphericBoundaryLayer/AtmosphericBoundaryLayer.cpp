@@ -337,7 +337,7 @@ void run(const vf::basics::ConfigurationFile& config)
     if (!usePrecursorInflow && (isFirstSubDomain || !isMultiGPU)) {
         const auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
             para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe", timeStepStartAveraging,
-            timeStepStartTemporalAveraging, timeStepAveraging, timeStepStartOutProbe, timeStepOutProbe, Axis::z, true);
+            timeStepStartTemporalAveraging, timeStepAveraging, timeStepStartOutProbe, timeStepOutProbe, Axis::z, true, false);
         planarAverageProbe->addAllAvailableStatistics();
         planarAverageProbe->setFileNameToNOut();
         para->addSampler(planarAverageProbe);
