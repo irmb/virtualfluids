@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import enum
-import gpu
-from basics.geometry3d import Axis
+from ... import gpu
+from ...basics.geometry3d import Axis
 
 class Statistic(enum.Enum):
-    Means: ...
-    Covariances: ...
-    Skewness: ...
-    Flatness: ...
+    Means: int
+    Covariances: int
+    Skewness: int
+    Flatness: int
 
 class PlanarAverageProbe(gpu.Sampler):
     def __init__(

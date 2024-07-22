@@ -35,6 +35,6 @@ from __future__ import annotations
 from enum import Enum
 
 class Axis(Enum):
-    x: ...
-    y: ...
-    z: ...
+    x: int
+    y: int
+    z: int

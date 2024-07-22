@@ -34,12 +34,12 @@ r"""
 from __future__ import annotations
 from enum import Enum
 
-import gpu
+from ... import gpu
 
 class Statistic(Enum):
-    Instantaneous: ...
-    Means: ...
-    Variances: ...
+    Instantaneous: int
+    Means: int
+    Variances: int
 
 class Probe(gpu.Sampler):
     def __init__(

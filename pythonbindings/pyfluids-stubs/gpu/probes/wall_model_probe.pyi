@@ -33,7 +33,7 @@ r"""
 
 from __future__ import annotations
 
-import gpu
+from ... import gpu
 
 class WallModelProbe(gpu.Sampler):
     def __init__(

@@ -35,7 +35,7 @@ from __future__ import annotations
 from typing import List
 
 from typing import overload
-import gpu
+from .. import gpu
 
 
 class BoundingBox:

@@ -37,8 +37,7 @@ from typing import Callable, ClassVar, List, Optional
 from typing import overload, Union
 import numpy as np
 import numpy.typing as npt
-import basics
-import parallel
+from .. import basics, parallel
 
 from . import grid_generator as grid_generator
 from . import probes as probes
