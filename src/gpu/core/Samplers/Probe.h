@@ -46,6 +46,8 @@
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
+#include <basics/geometry3d/GbObject3D.h>
+
 #include <logger/Logger.h>
 
 struct LBMSimulationParameter;
@@ -59,122 +61,43 @@ class Probe : public Sampler
 {
 public:
     enum class Statistic { Instantaneous, Means, Variances };
-
     Probe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
           uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting, bool outputTimeSeries,
-          bool averageEveryTimestep)
-        : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging),
-          tBetweenAverages(tBetweenAverages), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
-          outputTimeSeries(outputTimeSeries), averageEveryTimestep(averageEveryTimestep), Sampler(outputPath, probeName)
-    {
-        if (tStartWritingOutput < tStartAveraging)
-            throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartAveraging!");
-        if (averageEveryTimestep)
-            VF_LOG_INFO("Probe: averageEveryTimestep is true, ignoring tBetweenAverages");
-    }
-
+          bool averageEveryTimestep, bool sampleScalar=false);
     ~Probe();
 
-    void init() override;
-    void sample(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider* gridProvider) override;
-
-    void addProbePlane(real startX, real startY, real startZ, real length, real width, real height)
-    {
-        planes.emplace_back(Plane { startX, startY, startZ, length, width, height });
-    }
-
-    void addProbePoint(real x, real y, real z)
-    {
-        points.emplace_back(Point { x, y, z });
-    }
-
-    void addProbePointsFromList(std::vector<real> coordsX, std::vector<real> coordY, std::vector<real> coordZ)
-    {
-        if (coordsX.size() != coordY.size() || coordsX.size() != coordZ.size())
-            throw std::runtime_error("Probe: Point coordinates must have the same size!");
-        for (uint i = 0; i < coordsX.size(); i++)
-            addProbePoint(coordsX[i], coordY[i], coordZ[i]);
-    }
-
-    void addStatistic(Probe::Statistic variable);
+    void addProbePlane(real startX, real startY, real startZ, real length, real width, real height);
+    void addProbePoint(real x, real y, real z);
+    void addProbePointsFromList(std::vector<real> coordsX, std::vector<real> coordY, std::vector<real> coordZ);
+    void addProbeVolume(std::shared_ptr<GbObject3D> probeVolume);
+    void addStatistic(Statistic variable);
     void addAllAvailableStatistics()
     {
-        addStatistic(Probe::Statistic::Instantaneous);
-        addStatistic(Probe::Statistic::Means);
-        addStatistic(Probe::Statistic::Variances);
+        addStatistic(Statistic::Instantaneous);
+        addStatistic(Statistic::Means);
+        addStatistic(Statistic::Variances);
     }
 
     void setFileNameToNOut()
     {
         this->fileNameLU = false;
     }
+    void init() override;
+    void sample(int level, uint t) override;
+    void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
-    struct PostProcessingVariable
-    {
-        std::string name;
-        real conversionFactor;
-        PostProcessingVariable(std::string name, real conversionFactor) : name(name), conversionFactor(conversionFactor)
-        {
-        }
-    };
-
-    struct ProbeData
-    {
-        real *instantaneous, *means, *variances;
-        bool computeInstantaneous, computeMeans, computeVariances;
-        uint numberOfPoints, numberOfQuantities, numberOfTimesteps;
-        uint* indices;
-        __device__ __host__ ProbeData(bool computeInstantaneous, bool computeMeans, bool computeVariance,
-                                      uint numberOfPoints, uint numberOfQuantities, uint numberOfTimesteps)
-            : computeInstantaneous(computeInstantaneous), computeMeans(computeMeans), computeVariances(computeVariance),
-              numberOfPoints(numberOfPoints), numberOfQuantities(numberOfQuantities), numberOfTimesteps(numberOfTimesteps)
-        {
-        }
-    };
-
-    struct TimeseriesParams
-    {
-        uint currentTimestep {}, numberOfTimesteps {}, lastTimestepInOldTimeseries {};
-    };
-
-    struct LevelData
-    {
-        ProbeData probeDataH, probeDataD;
-        TimeseriesParams timeseriesParams;
-        std::vector<real> coordinatesX, coordinatesY, coordinatesZ;
-        uint numberOfAveragedValues {};
-        LevelData(ProbeData probeDataH, ProbeData probeDataD, std::vector<real> coordinatesX, std::vector<real> coordinatesY,
-                  std::vector<real> coordinatesZ)
-            : probeDataH(probeDataH), probeDataD(probeDataD), coordinatesX(coordinatesX), coordinatesY(coordinatesY),
-              coordinatesZ(coordinatesZ)
-        {
-        }
-    };
+    struct PostProcessingVariable;
+    struct ProbeData;
+    struct TimeseriesParams;
+    struct LevelData;
 
     LevelData* getLevelData(int level)
     {
         return &levelDatas[level];
     }
 
-    struct GridParams
-    {
-        real *velocityX, *velocityY, *velocityZ, *density;
-    };
-
+    struct GridParams;
     static GridParams getGridParams(LBMSimulationParameter* para);
-
-    struct Plane
-    {
-        real startX, startY, startZ;
-        real length, width, height;
-    };
-
-    struct Point
-    {
-        real x, y, z;
-    };
-
 
 private:
     void addLevelData(int level);
@@ -210,7 +133,7 @@ protected:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
     std::vector<LevelData> levelDatas;
-    bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {};
+    bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {}, sampleScalar{};
     //! flag initiating time series output.
     const bool outputTimeSeries, averageEveryTimestep;
     std::vector<std::string> fileNamesForCollectionFile;
@@ -223,8 +146,55 @@ protected:
     const uint tBetweenAverages;
     const uint tStartWritingOutput;
     const uint tBetweenWriting;
-    std::vector<Plane> planes;
-    std::vector<Point> points;
+    std::vector<std::shared_ptr<GbObject3D>> probeObjects;
+};
+
+
+struct Probe::PostProcessingVariable
+{
+    std::string name;
+    real conversionFactor;
+    PostProcessingVariable(std::string name, real conversionFactor) : name(name), conversionFactor(conversionFactor)
+    {
+    }
+};
+
+struct Probe::ProbeData
+{
+    real *instantaneous, *means, *variances;
+    bool computeInstantaneous, computeMeans, computeVariances;
+    uint numberOfPoints, numberOfQuantities, numberOfTimesteps;
+    uint* indices;
+    __device__ __host__ ProbeData(bool computeInstantaneous, bool computeMeans, bool computeVariance, uint numberOfPoints,
+                                  uint numberOfQuantities, uint numberOfTimesteps)
+        : computeInstantaneous(computeInstantaneous), computeMeans(computeMeans), computeVariances(computeVariance),
+          numberOfPoints(numberOfPoints), numberOfQuantities(numberOfQuantities), numberOfTimesteps(numberOfTimesteps)
+    {
+    }
+};
+
+struct Probe::TimeseriesParams
+{
+    uint currentTimestep {}, numberOfTimesteps {}, lastTimestepInOldTimeseries {};
+};
+
+struct Probe::LevelData
+{
+    ProbeData probeDataH, probeDataD;
+    TimeseriesParams timeseriesParams;
+    std::vector<real> coordinatesX, coordinatesY, coordinatesZ;
+    uint numberOfAveragedValues {};
+    LevelData(ProbeData probeDataH, ProbeData probeDataD, std::vector<real> coordinatesX, std::vector<real> coordinatesY,
+              std::vector<real> coordinatesZ)
+        : probeDataH(probeDataH), probeDataD(probeDataD), coordinatesX(coordinatesX), coordinatesY(coordinatesY),
+          coordinatesZ(coordinatesZ)
+    {
+    }
+};
+
+struct Probe::GridParams
+{
+    real *velocityX, *velocityY, *velocityZ, *density;
 };
 
 bool isValidProbePoint(unsigned long long pointIndex, Parameter* para, int level);
