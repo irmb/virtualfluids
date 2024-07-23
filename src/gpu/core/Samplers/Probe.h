@@ -48,8 +48,6 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/geometry3d/GbObject3D.h>
 
-#include <logger/Logger.h>
-
 struct LBMSimulationParameter;
 class Parameter;
 class CudaMemoryManager;
@@ -61,7 +59,7 @@ class Probe : public Sampler
 {
 public:
     enum class Statistic { Instantaneous, Means, Variances };
-    Probe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
+    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
           uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting, bool outputTimeSeries,
           bool averageEveryTimestep, bool sampleScalar=false);
     ~Probe();
@@ -162,12 +160,12 @@ struct Probe::PostProcessingVariable
 struct Probe::ProbeData
 {
     real *instantaneous, *means, *variances;
-    bool computeInstantaneous, computeMeans, computeVariances;
+    bool computeInstantaneous, computeMeans, computeVariances, sampleScalar;
     uint numberOfPoints, numberOfQuantities, numberOfTimesteps;
     uint* indices;
-    __device__ __host__ ProbeData(bool computeInstantaneous, bool computeMeans, bool computeVariance, uint numberOfPoints,
+    __device__ __host__ ProbeData(bool computeInstantaneous, bool computeMeans, bool computeVariance, bool sampleScalar, uint numberOfPoints,
                                   uint numberOfQuantities, uint numberOfTimesteps)
-        : computeInstantaneous(computeInstantaneous), computeMeans(computeMeans), computeVariances(computeVariance),
+        : computeInstantaneous(computeInstantaneous), computeMeans(computeMeans), computeVariances(computeVariance), sampleScalar(sampleScalar),
           numberOfPoints(numberOfPoints), numberOfQuantities(numberOfQuantities), numberOfTimesteps(numberOfTimesteps)
     {
     }
@@ -194,7 +192,7 @@ struct Probe::LevelData
 
 struct Probe::GridParams
 {
-    real *velocityX, *velocityY, *velocityZ, *density;
+    real *velocityX, *velocityY, *velocityZ, *density, *scalar;
 };
 
 bool isValidProbePoint(unsigned long long pointIndex, Parameter* para, int level);

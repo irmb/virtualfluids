@@ -35,14 +35,14 @@
 #include "Probe.h"
 
 #include <cmath>
+#include <memory>
 #include <stdexcept>
 #include <string>
-#include <memory>
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
-#include <basics/geometry3d/GbObject3D.h>
 #include <basics/geometry3d/GbCuboid3D.h>
+#include <basics/geometry3d/GbObject3D.h>
 #include <basics/geometry3d/GbPoint3D.h>
 
 #include <logger/Logger.h>
@@ -56,14 +56,14 @@
 #include "gpu/cuda_helper/CudaGrid.h"
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
-#include "Utilities.h"
 #include "Sampler.h"
+#include "Utilities.h"
 
 using namespace vf::basics::constant;
 
-Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
-             uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
-             bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar)
+Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
+             std::string probeName, uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput,
+             uint tBetweenWriting, bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar)
     : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tBetweenAverages(tBetweenAverages),
       tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), outputTimeSeries(outputTimeSeries),
       averageEveryTimestep(averageEveryTimestep), Sampler(outputPath, probeName)
@@ -78,7 +78,8 @@ Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager>
 
 void Probe::addProbePlane(real startX, real startY, real startZ, real length, real width, real height)
 {
-    probeObjects.emplace_back(std::make_shared<GbCuboid3D>(startX, startY, startZ, startX+length, startY+width, startZ+height));
+    probeObjects.emplace_back(
+        std::make_shared<GbCuboid3D>(startX, startY, startZ, startX + length, startY + width, startZ + height));
 }
 
 void Probe::addProbePoint(real x, real y, real z)
@@ -196,6 +197,10 @@ __global__ void calculateQuantitiesKernel(uint numberOfAveragedValues, Probe::Gr
     computeStatistics(numberOfAveragedValues, currentTimestep, lastTimestep, nPoints, nodeIndex,
                       probeData.computeInstantaneous, probeData.computeMeans, probeData.computeVariances, 3,
                       gridParams.density[gridNodeIndex], probeData, invCount);
+    if(probeData.sampleScalar)
+        computeStatistics(numberOfAveragedValues, currentTimestep, lastTimestep, nPoints, nodeIndex,
+                          probeData.computeInstantaneous, probeData.computeMeans, probeData.computeVariances, 4,
+                          gridParams.scalar[gridNodeIndex], probeData, invCount);
 }
 
 std::vector<Probe::PostProcessingVariable> Probe::getPostProcessingVariables(Statistic statistic, int level) const
@@ -210,18 +215,24 @@ std::vector<Probe::PostProcessingVariable> Probe::getPostProcessingVariables(Sta
             postProcessingVariables.emplace_back("vy", velocityRatio);
             postProcessingVariables.emplace_back("vz", velocityRatio);
             postProcessingVariables.emplace_back("rho", densityRatio);
+            if(sampleScalar)
+                postProcessingVariables.emplace_back("phi", c1o1);
             break;
         case Statistic::Means:
             postProcessingVariables.emplace_back("vx_mean", velocityRatio);
             postProcessingVariables.emplace_back("vy_mean", velocityRatio);
             postProcessingVariables.emplace_back("vz_mean", velocityRatio);
             postProcessingVariables.emplace_back("rho_mean", densityRatio);
+            if(sampleScalar)
+                postProcessingVariables.emplace_back("phi_mean", c1o1);
             break;
         case Statistic::Variances:
             postProcessingVariables.emplace_back("vx_var", stressRatio);
             postProcessingVariables.emplace_back("vy_var", stressRatio);
             postProcessingVariables.emplace_back("vz_var", stressRatio);
             postProcessingVariables.emplace_back("rho_var", densityRatio);
+            if(sampleScalar)
+                postProcessingVariables.emplace_back("phi_var", c1o1);
             break;
 
         default:
@@ -276,22 +287,20 @@ void Probe::addLevelData(int level)
     const real* nodeCoordinatesZ = para->getParH(level)->coordinateZ;
     const real deltaX = nodeCoordinatesX[para->getParH(level)->neighborX[1]] - nodeCoordinatesX[1];
     for (unsigned long long pos = 1; pos < para->getParH(level)->numberOfNodes; pos++) {
-        const real pointCoordX = nodeCoordinatesX[pos];
-        const real pointCoordY = nodeCoordinatesY[pos];
-        const real pointCoordZ = nodeCoordinatesZ[pos];
-        const real minX = pointCoordX;
-        const real minY = pointCoordY;
-        const real minZ = pointCoordZ;
-        const real maxX = pointCoordX + deltaX + c0p0000002;
-        const real maxY = pointCoordY + deltaX + c0p0000002;
-        const real maxZ = pointCoordZ + deltaX + c0p0000002;
+        const real nodeCoordX = nodeCoordinatesX[pos];
+        const real nodeCoordY = nodeCoordinatesY[pos];
+        const real nodeCoordZ = nodeCoordinatesZ[pos];
+        const real maxX = nodeCoordX + deltaX;
+        const real maxY = nodeCoordY + deltaX;
+        const real maxZ = nodeCoordZ + deltaX;
         for (auto object : probeObjects) {
-            if ((object->isInsideCell(minX, minY, minZ, maxX, maxY, maxZ) || object->isPointInGbObject3D(pointCoordX, pointCoordY, pointCoordZ))&&
+            if ((object->isInsideCell(nodeCoordX, nodeCoordY, nodeCoordZ, maxX, maxY, maxZ) ||
+                 object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ)) &&
                 isValidProbePoint(pos, para.get(), level)) {
                 indices.push_back(static_cast<uint>(pos));
-                coordinatesX.push_back(pointCoordX);
-                coordinatesY.push_back(pointCoordY);
-                coordinatesZ.push_back(pointCoordZ);
+                coordinatesX.push_back(nodeCoordX);
+                coordinatesY.push_back(nodeCoordY);
+                coordinatesZ.push_back(nodeCoordZ);
                 continue;
             }
         }
@@ -299,7 +308,7 @@ void Probe::addLevelData(int level)
 
     const uint numberOfQuantities = static_cast<uint>(getPostProcessingVariables(Statistic::Instantaneous, 0).size());
 
-    ProbeData probeData(enableComputationInstantaneous, enableComputationMeans, enableComputationVariances,
+    ProbeData probeData(enableComputationInstantaneous, enableComputationMeans, enableComputationVariances, sampleScalar,
                         static_cast<uint>(indices.size()), numberOfQuantities, getNumberOfTimestepsInTimeseries(level));
 
     const uint sizeData = probeData.numberOfPoints * probeData.numberOfTimesteps * numberOfQuantities;
@@ -554,6 +563,7 @@ Probe::GridParams Probe::getGridParams(LBMSimulationParameter* para)
         para->velocityY,
         para->velocityZ,
         para->rho,
+        para->concentration
     };
 }
 
