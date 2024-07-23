@@ -45,6 +45,8 @@
 #include <basics/geometry3d/GbCuboid3D.h>
 #include <basics/geometry3d/GbPoint3D.h>
 
+#include <logger/Logger.h>
+
 #include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
@@ -55,10 +57,11 @@
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
 #include "Utilities.h"
+#include "Sampler.h"
 
 using namespace vf::basics::constant;
 
-Probe::Probe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
+Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
              uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
              bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar)
     : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tBetweenAverages(tBetweenAverages),
@@ -276,14 +279,14 @@ void Probe::addLevelData(int level)
         const real pointCoordX = nodeCoordinatesX[pos];
         const real pointCoordY = nodeCoordinatesY[pos];
         const real pointCoordZ = nodeCoordinatesZ[pos];
-        const real minX = pointCoordX - c1o2 * deltaX;
-        const real minY = pointCoordY - c1o2 * deltaX;
-        const real minZ = pointCoordZ - c1o2 * deltaX;
-        const real maxX = pointCoordX + c1o2 * deltaX;
-        const real maxY = pointCoordY + c1o2 * deltaX;
-        const real maxZ = pointCoordZ + c1o2 * deltaX;
+        const real minX = pointCoordX;
+        const real minY = pointCoordY;
+        const real minZ = pointCoordZ;
+        const real maxX = pointCoordX + deltaX + c0p0000002;
+        const real maxY = pointCoordY + deltaX + c0p0000002;
+        const real maxZ = pointCoordZ + deltaX + c0p0000002;
         for (auto object : probeObjects) {
-            if (object->isInsideCell(minX, minY, minZ, maxX, maxY, maxZ) &&
+            if ((object->isInsideCell(minX, minY, minZ, maxX, maxY, maxZ) || object->isPointInGbObject3D(pointCoordX, pointCoordY, pointCoordZ))&&
                 isValidProbePoint(pos, para.get(), level)) {
                 indices.push_back(static_cast<uint>(pos));
                 coordinatesX.push_back(pointCoordX);
