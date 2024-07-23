@@ -66,10 +66,10 @@ public:
     struct LevelData;
 
 public:
-    PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
-                       const std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging,
-                       uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal,
-                       bool computeTimeAverages, bool computeStatisticsOfConcentration);
+    PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
+                       std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging, uint tBetweenAverages,
+                       uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
+                       bool sampleScalar);
     ~PlanarAverageProbe();
 
     void init() override;
@@ -110,7 +110,7 @@ private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
     uint tStartAveraging, tStartTemporalAveraging, tBetweenAverages, tStartWritingOutput, tBetweenWriting;
-    const bool computeTimeAverages, computeStatisticsOfConcentration;
+    const bool computeTimeAverages, sampleScalar;
     bool nameFilesWithFileCount = false;
     Axis planeNormal;
     std::vector<Statistic> statistics;
