@@ -39,7 +39,6 @@
 
 #include "Samplers/Sampler.h"
 
-#include <cuda.h>
 #include <functional>
 #include <stdexcept>
 #include <string>
