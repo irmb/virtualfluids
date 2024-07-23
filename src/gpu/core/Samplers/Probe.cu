@@ -37,9 +37,13 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
+#include <memory>
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/GbObject3D.h>
+#include <basics/geometry3d/GbCuboid3D.h>
+#include <basics/geometry3d/GbPoint3D.h>
 
 #include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
@@ -53,6 +57,43 @@
 #include "Utilities.h"
 
 using namespace vf::basics::constant;
+
+Probe::Probe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
+             uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
+             bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar)
+    : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tBetweenAverages(tBetweenAverages),
+      tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), outputTimeSeries(outputTimeSeries),
+      averageEveryTimestep(averageEveryTimestep), Sampler(outputPath, probeName)
+{
+    if (tStartWritingOutput < tStartAveraging)
+        throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartAveraging!");
+    if (averageEveryTimestep)
+        VF_LOG_INFO("Probe: averageEveryTimestep is true, ignoring tBetweenAverages");
+    if (sampleScalar && !para->getDiffOn())
+        throw std::runtime_error("Probe: can only sample scalar if diffusion is enabled in parameter");
+}
+
+void Probe::addProbePlane(real startX, real startY, real startZ, real length, real width, real height)
+{
+    probeObjects.emplace_back(std::make_shared<GbCuboid3D>(startX, startY, startZ, startX+length, startY+width, startZ+height));
+}
+
+void Probe::addProbePoint(real x, real y, real z)
+{
+    probeObjects.emplace_back(std::make_shared<GbPoint3D>(x, y, z));
+}
+void Probe::addProbeVolume(std::shared_ptr<GbObject3D> probeVolume)
+{
+    probeObjects.push_back(probeVolume);
+}
+
+void Probe::addProbePointsFromList(std::vector<real> coordsX, std::vector<real> coordY, std::vector<real> coordZ)
+{
+    if (coordsX.size() != coordY.size() || coordsX.size() != coordZ.size())
+        throw std::runtime_error("Probe: Point coordinates must have the same size!");
+    for (uint i = 0; i < coordsX.size(); i++)
+        addProbePoint(coordsX[i], coordY[i], coordZ[i]);
+}
 
 __host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int quantity)
 {
@@ -235,26 +276,15 @@ void Probe::addLevelData(int level)
         const real pointCoordX = nodeCoordinatesX[pos];
         const real pointCoordY = nodeCoordinatesY[pos];
         const real pointCoordZ = nodeCoordinatesZ[pos];
-        for (auto point : points) {
-            const real distX = point.x - pointCoordX;
-            const real distY = point.y - pointCoordY;
-            const real distZ = point.z - pointCoordZ;
-            if (distX <= deltaX && distY <= deltaX && distZ <= deltaX && distX > c0o1 && distY > c0o1 && distZ > c0o1 &&
+        const real minX = pointCoordX - c1o2 * deltaX;
+        const real minY = pointCoordY - c1o2 * deltaX;
+        const real minZ = pointCoordZ - c1o2 * deltaX;
+        const real maxX = pointCoordX + c1o2 * deltaX;
+        const real maxY = pointCoordY + c1o2 * deltaX;
+        const real maxZ = pointCoordZ + c1o2 * deltaX;
+        for (auto object : probeObjects) {
+            if (object->isInsideCell(minX, minY, minZ, maxX, maxY, maxZ) &&
                 isValidProbePoint(pos, para.get(), level)) {
-                indices.push_back(static_cast<uint>(pos));
-                coordinatesX.push_back(pointCoordX);
-                coordinatesY.push_back(pointCoordY);
-                coordinatesZ.push_back(pointCoordZ);
-                continue;
-            }
-        }
-        for (auto plane : planes) {
-            const real distanceX = pointCoordX - plane.startX;
-            const real distanceY = pointCoordY - plane.startY;
-            const real distanceZ = pointCoordZ - plane.startZ;
-
-            if (distanceX <= plane.length && distanceY <= plane.width && distanceZ <= plane.height && distanceX >= c0o1 &&
-                distanceY >= c0o1 && distanceZ >= c0o1 && isValidProbePoint(pos, para.get(), level)) {
                 indices.push_back(static_cast<uint>(pos));
                 coordinatesX.push_back(pointCoordX);
                 coordinatesY.push_back(pointCoordY);
