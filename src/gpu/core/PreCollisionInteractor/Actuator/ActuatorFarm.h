@@ -44,6 +44,8 @@ class ActuatorFarm : public PreCollisionInteractor
 {
 public:
     ActuatorFarm(
+        SPtr<Parameter> para,
+        SPtr<CudaMemoryManager> cudaMemoryManager,
         const real diameter,
         const std::vector<real> bladeRadii,
         const std::vector<real> turbinePositionsX,
@@ -70,7 +72,8 @@ public:
         useHostArrays(useHostArrays),
         deltaT(deltaT*exp2(-level)),
         deltaX(deltaX*exp2(-level)),
-        invDeltaX(c1o1/deltaX)
+        invDeltaX(c1o1/deltaX),
+        PreCollisionInteractor(para, cudaMemoryManager)
     {
         if(this->smearingWidth < this->deltaX)
             throw std::runtime_error("ActuatorFarm::ActuatorFarm: smearing width needs to be larger than dx!");
@@ -80,7 +83,7 @@ public:
     }
 
     ~ActuatorFarm();
-
+    void init() override;
     void interact(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
@@ -166,7 +169,6 @@ public:
     virtual void updateForcesAndCoordinates()=0;
 
 private:
-    void init() override;
     void initTurbineGeometries();
     void initBoundingSpheres();
     void initBladeCoords();

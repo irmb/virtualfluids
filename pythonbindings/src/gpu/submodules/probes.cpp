@@ -30,12 +30,10 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <gpu/core/PreCollisionInteractor/Probes/Probe.h>
-#include <gpu/core/PreCollisionInteractor/Probes/PointProbe.h>
-#include <gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h>
-#include <gpu/core/PreCollisionInteractor/Probes/WallModelProbe.h>
-#include <gpu/core/PreCollisionInteractor/Probes/PlanarAverageProbe.h>
-#include <gpu/core/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/core/Samplers/Probe.h>
+#include <gpu/core/Samplers/WallModelProbe.h>
+#include <gpu/core/Samplers/PlanarAverageProbe.h>
+#include <gpu/core/Samplers/Sampler.h>
 
 namespace probes
 {
@@ -45,61 +43,57 @@ namespace probes
     {
         py::module probeModule = parentModule.def_submodule("probes");
 
-        py::enum_<Statistic>(probeModule, "Statistic")
-        .value("Instantaneous", Statistic::Instantaneous)
-        .value("Means", Statistic::Means)
-        .value("Variances", Statistic::Variances)
-        .value("SpatialMeans", Statistic::SpatialMeans)
-        .value("SpatioTemporalMeans", Statistic::SpatioTemporalMeans)
-        .value("SpatialCovariances", Statistic::SpatialCovariances)
-        .value("SpatioTemporalCovariances", Statistic::SpatioTemporalCovariances)
-        .value("SpatialSkewness", Statistic::SpatialSkewness)
-        .value("SpatioTemporalSkewness", Statistic::SpatioTemporalSkewness)
-        .value("SpatialFlatness", Statistic::SpatialFlatness)
-        .value("SpatioTemporalFlatness", Statistic::SpatioTemporalFlatness);
+        py::module probeProbeModule = probeModule.def_submodule("Probe");
 
-        py::class_<Probe, PreCollisionInteractor, std::shared_ptr<Probe>>(probeModule, "Probe")
+        py::enum_<Probe::Statistic>(probeProbeModule, "Statistic")
+        .value("Instantaneous", Probe::Statistic::Instantaneous)
+        .value("Means", Probe::Statistic::Means)
+        .value("Variances", Probe::Statistic::Variances);
+
+        py::class_<Probe, Sampler, std::shared_ptr<Probe>>(probeProbeModule, "Probe")
+        .def(py::init<  SPtr<Parameter>,
+                        SPtr<CudaMemoryManager>,
+                        const std::string,
+                        const std::string,
+                        uint,
+                        uint, 
+                        uint,
+                        uint,
+                        bool,
+                        bool>(), 
+                        py::arg("para"),
+                        py::arg("cuda_memory_manager"),
+                        py::arg("probe_name"),
+                        py::arg("output_path"),
+                        py::arg("t_start_avg"),
+                        py::arg("t_avg"),
+                        py::arg("t_start_out"),
+                        py::arg("t_out"),
+                        py::arg("output_timeseries"),
+                        py::arg("average_every_timestep"))
         .def("add_statistic", &Probe::addStatistic, py::arg("variable"))
         .def("set_file_name_to_n_out", &Probe::setFileNameToNOut)
-        .def("add_all_available_statistics", &Probe::addAllAvailableStatistics);
+        .def("add_all_available_statistics", &Probe::addAllAvailableStatistics)
+        .def("add_probe_point", &Probe::addProbePoint, py::arg("point_coord_x"), py::arg("point_coord_y"), py::arg("point_coord_z"))
+        .def("add_probe_points_from_list", &Probe::addProbePointsFromList, py::arg("point_coords_x"), py::arg("point_coords_y"), py::arg("point_coords_z"))
+        .def("set_probe_plane", &Probe::addProbePlane, py::arg("pos_x"), py::arg("pos_y"), py::arg("pos_z"), py::arg("delta_x"), py::arg("delta_y"), py::arg("delta_z"));
 
-        py::class_<PointProbe, Probe, std::shared_ptr<PointProbe>>(probeModule, "PointProbe")
-        .def(py::init<
-                        const std::string,
-                        const std::string,
-                        uint,
-                        uint, 
-                        uint,
-                        uint,
-                        bool>(), 
-                        py::arg("probe_name"),
-                        py::arg("output_path"),
-                        py::arg("t_start_avg"),
-                        py::arg("t_avg"),
-                        py::arg("t_start_out"),
-                        py::arg("t_out"),
-                        py::arg("output_timeseries"))
-        .def("add_probe_point", &PointProbe::addProbePoint, py::arg("point_coord_x"), py::arg("point_coord_y"), py::arg("point_coord_z"))
-        .def("add_probe_points_from_list", &PointProbe::addProbePointsFromList, py::arg("point_coords_x"), py::arg("point_coords_y"), py::arg("point_coords_z"));
+        py::module planarAverageProbeModule = probeModule.def_submodule("PlanarAverageProbe");
 
-        py::class_<PlaneProbe, Probe, std::shared_ptr<PlaneProbe>>(probeModule, "PlaneProbe")
-        .def(py::init<
-                        const std::string,
-                        const std::string,
-                        uint,
-                        uint, 
-                        uint,
-                        uint>(), 
-                        py::arg("probe_name"),
-                        py::arg("output_path"),
-                        py::arg("t_start_avg"),
-                        py::arg("t_avg"),
-                        py::arg("t_start_out"),
-                        py::arg("t_out"))
-        .def("set_probe_plane", &PlaneProbe::setProbePlane, py::arg("pos_x"), py::arg("pos_y"), py::arg("pos_z"), py::arg("delta_x"), py::arg("delta_y"), py::arg("delta_z"));
+        py::enum_<PlanarAverageProbe::PlaneNormal>(planarAverageProbeModule, "PlaneNormal")
+        .value("x", PlanarAverageProbe::PlaneNormal::x)
+        .value("y", PlanarAverageProbe::PlaneNormal::y)
+        .value("z", PlanarAverageProbe::PlaneNormal::z);
 
-        py::class_<PlanarAverageProbe, Probe, std::shared_ptr<PlanarAverageProbe>>(probeModule, "PlanarAverageProbe")
-        .def(py::init<
+        py::enum_<PlanarAverageProbe::Statistic>(planarAverageProbeModule, "Statistic")
+        .value("Means", PlanarAverageProbe::Statistic::Means)
+        .value("Covariances", PlanarAverageProbe::Statistic::Covariances)
+        .value("Skewness", PlanarAverageProbe::Statistic::Skewness)
+        .value("Flatness", PlanarAverageProbe::Statistic::Flatness);
+
+        py::class_<PlanarAverageProbe, Sampler, std::shared_ptr<PlanarAverageProbe>>(planarAverageProbeModule, "PlanarAverageProbe")
+        .def(py::init<  SPtr<Parameter>,
+                        SPtr<CudaMemoryManager>,
                         const std::string,
                         const std::string,
                         uint,
@@ -107,7 +101,10 @@ namespace probes
                         uint,
                         uint,
                         uint,
-                        char>(),
+                        PlanarAverageProbe::PlaneNormal,
+                        bool>(),
+                        py::arg("para"),
+                        py::arg("cuda_memory_manager"),
                         py::arg("probe_name"),
                         py::arg("output_path"),
                         py::arg("t_start_avg"),
@@ -115,27 +112,37 @@ namespace probes
                         py::arg("t_avg"),
                         py::arg("t_start_out"),
                         py::arg("t_out"),
-                        py::arg("plane_normal"));
+                        py::arg("plane_normal"),
+                        py::arg("compute_time_averages"));
 
 
-        py::class_<WallModelProbe, Probe, std::shared_ptr<WallModelProbe>>(probeModule, "WallModelProbe")
-        .def(py::init<
+        py::class_<WallModelProbe, Sampler, std::shared_ptr<WallModelProbe>>(probeModule, "WallModelProbe")
+        .def(py::init<  SPtr<Parameter>,
+                        SPtr<CudaMemoryManager>,
                         const std::string,
                         const std::string,
                         uint,
                         uint, 
                         uint,
                         uint,
-                        uint>(), 
+                        uint,
+                        bool,
+                        bool,
+                        bool,
+                        bool>(),
+                        py::arg("para"),
+                        py::arg("cuda_memory_manager"),
                         py::arg("probe_name"),
                         py::arg("output_path"),
                         py::arg("t_start_avg"),
                         py::arg("t_start_tmp_avg"),
                         py::arg("t_avg"),
                         py::arg("t_start_out"),
-                        py::arg("t_out"))
-        .def("set_force_output_to_stress", &WallModelProbe::setForceOutputToStress, py::arg("output_stress"))
-        .def("set_evaluate_pressure_gradient", &WallModelProbe::setEvaluatePressureGradient, py::arg("eval_press_grad"));
+                        py::arg("t_out"),
+                        py::arg("average_every_timestep"),
+                        py::arg("compute_temporal_averages"),
+                        py::arg("output_stress"),
+                        py::arg("evaluate_pressure_gradient"));
 
         return probeModule;
     }

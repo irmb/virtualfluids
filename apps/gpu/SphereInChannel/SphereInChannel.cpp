@@ -51,8 +51,8 @@
 #include "gpu/core/GridScaling/GridScalingFactory.h"
 #include "gpu/core/Kernel/KernelTypes.h"
 #include "gpu/core/Parameter/Parameter.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PlaneProbe.h"
-#include "gpu/core/PreCollisionInteractor/Probes/PointProbe.h"
+#include "gpu/core/Samplers/Probe.h"
+#include "gpu/core/Cuda/CudaMemoryManager.h"
 
 void run(const vf::basics::ConfigurationFile& config)
 {
@@ -92,8 +92,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-    gridBuilder->addCoarseGrid(-3  * dSphere, -3 * dSphere, -3 * dSphere,
-                                10 * dSphere,  3 * dSphere,  3 * dSphere, deltaX);
+    gridBuilder->addCoarseGrid(-3 * dSphere, -3 * dSphere, -3 * dSphere, 10 * dSphere, 3 * dSphere, 3 * dSphere, deltaX);
 
     // add geometry: use primitive
     // auto sphere = std::make_shared<Sphere>(0.0, 0.0, 0.0, dSphere / 2.0);
@@ -160,27 +159,29 @@ void run(const vf::basics::ConfigurationFile& config)
     // setup probe(s)
     //////////////////////////////////////////////////////////////////////////
 
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+
     const uint tStartAveraging = 0;
     const uint tAveraging = 100;
     const uint tStartOutProbe = 0;
     const uint tOutProbe = para->getTimestepOut();
-    SPtr<PointProbe> pointProbe = std::make_shared<PointProbe>("pointProbe", para->getOutputPath(), tStartAveraging,
-                                                                tAveraging, tStartOutProbe, tOutProbe);
+    SPtr<Probe> pointProbe = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "pointProbe",
+                                                     tStartAveraging, tAveraging, tStartOutProbe, tOutProbe, false, false);
     std::vector<real> probeCoordsX = { 0.3, 0.5 };
     std::vector<real> probeCoordsY = { 0.0, 0.0 };
     std::vector<real> probeCoordsZ = { 0.0, 0.0 };
     pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
 
-    pointProbe->addStatistic(Statistic::Instantaneous);
-    pointProbe->addStatistic(Statistic::Means);
-    pointProbe->addStatistic(Statistic::Variances);
-    para->addProbe(pointProbe);
+    pointProbe->addStatistic(Probe::Statistic::Instantaneous);
+    pointProbe->addStatistic(Probe::Statistic::Means);
+    pointProbe->addStatistic(Probe::Statistic::Variances);
+    para->addSampler(pointProbe);
 
-    SPtr<PlaneProbe> planeProbe = std::make_shared<PlaneProbe>("planeProbe", para->getOutputPath(), tStartAveraging,
-                                                                tAveraging, tStartOutProbe, tOutProbe);
-    planeProbe->setProbePlane(0.4, 0, 0, 0.3, 0.01, 0.1);
-    planeProbe->addStatistic(Statistic::Instantaneous);
-    para->addProbe(planeProbe);
+    SPtr<Probe> planeProbe = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "planeProbe",
+                                                     tStartAveraging, tAveraging, tStartOutProbe, tOutProbe, false, false);
+    planeProbe->addProbePlane(0.4, 0, 0, 0.3, 0.01, 0.1);
+    planeProbe->addStatistic(Probe::Statistic::Instantaneous);
+    para->addSampler(planeProbe);
 
     //////////////////////////////////////////////////////////////////////////
     // initial state of the flow field
@@ -197,7 +198,7 @@ void run(const vf::basics::ConfigurationFile& config)
     // run simulation
     //////////////////////////////////////////////////////////////////////////
 
-    Simulation simulation(para, gridBuilder, &bcFactory, &scalingFactory);
+    Simulation simulation(para, cudaMemoryManager, gridBuilder, &bcFactory, &scalingFactory);
     simulation.run();
 }
 

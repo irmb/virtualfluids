@@ -43,6 +43,7 @@
 class Parameter;
 class ActuatorFarm;
 class Probe;
+class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
 
@@ -315,25 +316,14 @@ public:
     void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
     void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
     // Probes
-    void cudaAllocProbeDistances(Probe* probe, int level);
-    void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
-    void cudaCopyProbeDistancesDtoH(Probe* probe, int level);
-    void cudaFreeProbeDistances(Probe* probe, int level);
+    void cudaAllocProbeData(Probe* probe, int level);
+    void cudaCopyProbeDataHtoD(Probe* probe, int level);
+    void cudaCopyProbeDataDtoH(Probe* probe, int level);
+    void cudaFreeProbeData(Probe* probe, int level);
 
-    void cudaAllocProbeIndices(Probe* probe, int level);
-    void cudaCopyProbeIndicesHtoD(Probe* probe, int level);
-    void cudaCopyProbeIndicesDtoH(Probe* probe, int level);
-    void cudaFreeProbeIndices(Probe* probe, int level);
-
-    void cudaAllocProbeQuantityArray(Probe* probe, int level);
-    void cudaCopyProbeQuantityArrayHtoD(Probe* probe, int level);
-    void cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level);
-    void cudaFreeProbeQuantityArray(Probe* probe, int level);
-
-    void cudaAllocProbeQuantitiesAndOffsets(Probe* probe, int level);
-    void cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level);
-    void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
-    void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
+    void cudaAllocPlanarAverageProbeIndices(PlanarAverageProbe* planarAverageProbe, int level);
+    void cudaCopyPlanarAverageProbeIndicesHtoD(PlanarAverageProbe* planarAverageProbe, int level);
+    void cudaFreePlanarAverageProbeIndices(PlanarAverageProbe* planarAverageProbe, int level);
 
     // Precursor Writer
     void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);

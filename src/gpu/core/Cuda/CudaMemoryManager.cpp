@@ -45,8 +45,9 @@
 #include "Parameter/Parameter.h"
 #include "CudaStreamManager.h"
 #include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
-#include "PreCollisionInteractor/Probes/Probe.h"
-#include "PreCollisionInteractor/PrecursorWriter.h"
+#include "Samplers/Probe.h"
+#include "Samplers/PlanarAverageProbe.h"
+#include "Samplers/PrecursorWriter.h"
 
 void CudaMemoryManager::cudaCopyPrint(int lev)
 {
@@ -2320,134 +2321,126 @@ void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
 ////////////////////////////////////////////////////////////////////////////////////
 //  Probe
 ///////////////////////////////////////////////////////////////////////////////
-
-void CudaMemoryManager::cudaAllocProbeDistances(Probe* probe, int level)
+void CudaMemoryManager::cudaAllocProbeData(Probe* probe, int level)
 {
-    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
+    auto probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    const size_t sizeData = sizeof(real)*probeDataH->numberOfPoints*probeDataH->numberOfTimesteps*probeDataH->numberOfQuantities;
+    const size_t sizeIndices = sizeof(uint)*probeDataH->numberOfPoints;
+    size_t totalSize = sizeIndices;
 
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distXH, tmp) );
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distYH, tmp) );
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distZH, tmp) );
-
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distXD, tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distYD, tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distZD, tmp) );
-    setMemsizeGPU(3.f*tmp, false);
-}
-void CudaMemoryManager::cudaCopyProbeDistancesHtoD(Probe* probe, int level)
-{
-    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
-
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXD, probe->getProbeStruct(level)->distXH, tmp, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distYD, probe->getProbeStruct(level)->distYH, tmp, cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distZD, probe->getProbeStruct(level)->distZH, tmp, cudaMemcpyHostToDevice) );
-}
-void CudaMemoryManager::cudaCopyProbeDistancesDtoH(Probe* probe, int level)
-{
-    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
-
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXH, probe->getProbeStruct(level)->distXD, tmp, cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distYH, probe->getProbeStruct(level)->distXD, tmp, cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distZH, probe->getProbeStruct(level)->distXD, tmp, cudaMemcpyDeviceToHost) );
-}
-void CudaMemoryManager::cudaFreeProbeDistances(Probe* probe, int level)
-{
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->distXH) );
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->distYH) );
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->distZH) );
-
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->distXD) );
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->distYD) );
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->distZD) );
-}
-
-void CudaMemoryManager::cudaAllocProbeIndices(Probe* probe, int level)
-{
-    size_t tmp = sizeof(int)*probe->getProbeStruct(level)->nIndices;
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->pointIndicesH, tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->pointIndicesD, tmp) );
-    setMemsizeGPU(1.f*tmp, false);
-}
-
-void CudaMemoryManager::cudaCopyProbeIndicesHtoD(Probe* probe, int level)
-{
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesD, probe->getProbeStruct(level)->pointIndicesH, sizeof(int)*probe->getProbeStruct(level)->nIndices, cudaMemcpyHostToDevice) );
-}
-
-void CudaMemoryManager::cudaCopyProbeIndicesDtoH(Probe* probe, int level)
-{
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesH, probe->getProbeStruct(level)->pointIndicesD, sizeof(int)*probe->getProbeStruct(level)->nIndices, cudaMemcpyDeviceToHost) );
-}
-
-void CudaMemoryManager::cudaFreeProbeIndices(Probe* probe, int level)
-{
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->pointIndicesH) );
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->pointIndicesD) );
-}
-
-void CudaMemoryManager::cudaAllocProbeQuantityArray(Probe* probe, int level)
-{
-    auto probeStruct = probe->getProbeStruct(level);
-    size_t tmp = sizeof(real)*probeStruct->nArrays*probeStruct->nPoints*probeStruct->nTimesteps;
-
-    checkCudaErrors( cudaMallocHost((void**) &probeStruct->quantitiesArrayH, tmp) );
-    if(probe->getHasDeviceQuantityArray())
+    checkCudaErrors( cudaMallocHost((void**) &probeDataH->indices, sizeIndices) );
+    checkCudaErrors( cudaMalloc((void**) &probeDataD->indices, sizeIndices) );
+    
+    if(probeDataH->computeInstantaneous)
     {
-        checkCudaErrors( cudaMalloc    ((void**) &probeStruct->quantitiesArrayD, tmp) );
-        setMemsizeGPU(1.f*tmp, false);
+        checkCudaErrors( cudaMallocHost((void**) &probeDataH->instantaneous, sizeData) );
+        checkCudaErrors( cudaMalloc((void**) &probeDataD->instantaneous, sizeData) );
+        totalSize += sizeData;
+    }
+    if(probeDataH->computeMeans)
+    {
+        checkCudaErrors( cudaMallocHost((void**) &probeDataH->means, sizeData) );
+        checkCudaErrors( cudaMalloc((void**) &probeDataD->means, sizeData) );
+        totalSize += sizeData;
+    }
+    if(probeDataH->computeVariances)
+    {
+        checkCudaErrors( cudaMallocHost((void**) &probeDataH->variances, sizeData) );
+        checkCudaErrors( cudaMalloc((void**) &probeDataD->variances, sizeData) );
+        totalSize += sizeData;
+    }
+
+    setMemsizeGPU(static_cast<double>(totalSize), false);
+}
+
+void CudaMemoryManager::cudaCopyProbeDataHtoD(Probe* probe, int level)
+{
+    auto probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    const size_t sizeData = sizeof(real)*probeDataH->numberOfPoints*probeDataH->numberOfTimesteps*probeDataH->numberOfQuantities;
+    const size_t sizeIndices = sizeof(uint)*probeDataH->numberOfPoints;
+
+    checkCudaErrors( cudaMemcpy(probeDataD->indices, probeDataH->indices, sizeIndices, cudaMemcpyHostToDevice) );
+
+    if(probeDataH->computeInstantaneous)
+    {
+        checkCudaErrors( cudaMemcpy(probeDataD->instantaneous, probeDataH->instantaneous, sizeData, cudaMemcpyHostToDevice) );
+    }
+    if(probeDataH->computeMeans)
+    {
+        checkCudaErrors( cudaMemcpy(probeDataD->means, probeDataH->means, sizeData, cudaMemcpyHostToDevice) );
+    }
+    if(probeDataH->computeVariances)
+    {
+        checkCudaErrors( cudaMemcpy(probeDataD->variances, probeDataH->variances, sizeData, cudaMemcpyHostToDevice) );
     }
 }
 
-void CudaMemoryManager::cudaCopyProbeQuantityArrayHtoD(Probe* probe, int level)
+void CudaMemoryManager::cudaCopyProbeDataDtoH(Probe* probe, int level)
 {
-    auto probeStruct = probe->getProbeStruct(level);
-    size_t tmp = sizeof(real)*probeStruct->nArrays*probeStruct->nPoints*probeStruct->nTimesteps;
-    checkCudaErrors( cudaMemcpy(probeStruct->quantitiesArrayD, probeStruct->quantitiesArrayH, tmp, cudaMemcpyHostToDevice) );
-}
-void CudaMemoryManager::cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level)
-{
-    auto probeStruct = probe->getProbeStruct(level);
-    size_t tmp = sizeof(real)*probeStruct->nArrays*probeStruct->nPoints*probeStruct->nTimesteps;
-    checkCudaErrors( cudaMemcpy(probeStruct->quantitiesArrayH, probeStruct->quantitiesArrayD, tmp, cudaMemcpyDeviceToHost) );
-}
-
-void CudaMemoryManager::cudaFreeProbeQuantityArray(Probe* probe, int level)
-{
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesArrayH) );
-    if(probe->getHasDeviceQuantityArray())
-        checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesArrayD) );
-}
-
-void CudaMemoryManager::cudaAllocProbeQuantitiesAndOffsets(Probe* probe, int level)
-{
-    size_t tmpA = int(Statistic::LAST)*sizeof(int);
-    size_t tmpQ = int(Statistic::LAST)*sizeof(bool);
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesH, tmpQ) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesD, tmpQ) );
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->arrayOffsetsH, tmpA) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->arrayOffsetsD, tmpA) );
-    setMemsizeGPU(tmpA+tmpQ, false);
+    auto probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    const size_t sizeData = sizeof(real)*probeDataH->numberOfPoints*probeDataH->numberOfTimesteps*probeDataH->numberOfQuantities;
+    if(probeDataH->computeInstantaneous)
+    {
+        checkCudaErrors( cudaMemcpy(probeDataH->instantaneous, probeDataD->instantaneous, sizeData, cudaMemcpyDeviceToHost) );
+    }
+    if(probeDataH->computeMeans)
+    {
+        checkCudaErrors( cudaMemcpy(probeDataH->means, probeDataD->means, sizeData, cudaMemcpyDeviceToHost) );
+    }
+    if(probeDataH->computeVariances)
+    {
+        checkCudaErrors( cudaMemcpy(probeDataH->variances, probeDataD->variances, sizeData, cudaMemcpyDeviceToHost) );
+    }
 }
 
-void CudaMemoryManager::cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level)
+void CudaMemoryManager::cudaFreeProbeData(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesD, probe->getProbeStruct(level)->quantitiesH, int(Statistic::LAST)*sizeof(bool), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsD, probe->getProbeStruct(level)->arrayOffsetsH, int(Statistic::LAST)*sizeof(int), cudaMemcpyHostToDevice) );
+    auto probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    checkCudaErrors( cudaFreeHost(probeDataH->indices) );
+    checkCudaErrors( cudaFree(probeDataD->indices) );
+
+    if(probeDataH->computeInstantaneous)
+    {
+        checkCudaErrors( cudaFreeHost(probeDataH->instantaneous) );
+        checkCudaErrors( cudaFree(probeDataD->instantaneous) );
+    }
+    if(probeDataH->computeMeans)
+    {
+        checkCudaErrors( cudaFreeHost(probeDataH->means) );
+        checkCudaErrors( cudaFree(probeDataD->means) );
+    }
+    if(probeDataH->computeVariances)
+    {
+        checkCudaErrors( cudaFreeHost(probeDataH->variances) );
+        checkCudaErrors( cudaFree(probeDataD->variances) );
+    }
 }
 
-void CudaMemoryManager::cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level)
+void CudaMemoryManager::cudaAllocPlanarAverageProbeIndices(PlanarAverageProbe* planarAverageProbe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesH, probe->getProbeStruct(level)->quantitiesD, int(Statistic::LAST)*sizeof(bool), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsH, probe->getProbeStruct(level)->arrayOffsetsD, int(Statistic::LAST)*sizeof(int), cudaMemcpyDeviceToHost) );
+    const size_t size = sizeof(unsigned long long)*planarAverageProbe->getLevelData(level)->numberOfPointsPerPlane;
+    checkCudaErrors( cudaMallocHost((void**) &planarAverageProbe->getLevelData(level)->indicesOfFirstPlaneH, size) );
+    checkCudaErrors( cudaMalloc    ((void**) &planarAverageProbe->getLevelData(level)->indicesOfFirstPlaneD, size) );
+    setMemsizeGPU(size, false);
 }
 
-void CudaMemoryManager::cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level)
+void CudaMemoryManager::cudaCopyPlanarAverageProbeIndicesHtoD(PlanarAverageProbe* planarAverageProbe, int level)
 {
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesH) );
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->arrayOffsetsH) );
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesD) );
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->arrayOffsetsD) );
+    auto data = planarAverageProbe->getLevelData(level);
+    checkCudaErrors( cudaMemcpy(data->indicesOfFirstPlaneD, data->indicesOfFirstPlaneH, sizeof(unsigned long long)*data->numberOfPointsPerPlane, cudaMemcpyHostToDevice) );
 }
+
+void CudaMemoryManager::cudaFreePlanarAverageProbeIndices(PlanarAverageProbe* planarAverageProbe, int level)
+{
+    checkCudaErrors( cudaFreeHost(planarAverageProbe->getLevelData(level)->indicesOfFirstPlaneH) );
+    checkCudaErrors( cudaFree(planarAverageProbe->getLevelData(level)->indicesOfFirstPlaneD) );
+}
+
+
 
 void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int level)
 {
