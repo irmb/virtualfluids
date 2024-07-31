@@ -29,7 +29,7 @@
 //! \addtogroup cpu_SimulationObservers SimulationObservers
 //! \ingroup cpu_core core
 //! \{
-//! \author Sören Peters
+//! \author Sören Peters, Konstantin Kutscher, Martin Geier
 //=======================================================================================
 #include "ForceCalculator.h"
 #include "BCSet.h"
@@ -42,6 +42,8 @@
 #include "DataSet3D.h"
 #include "DistributionArray3D.h"
 #include "LBMKernel.h"
+#include "EsoTwist3D.h"
+#include <array>
 
 ForceCalculator::ForceCalculator(std::shared_ptr<vf::parallel::Communicator> comm)
     : comm(comm), forceX1global(0), forceX2global(0), forceX3global(0)
@@ -50,8 +52,37 @@ ForceCalculator::ForceCalculator(std::shared_ptr<vf::parallel::Communicator> com
 
 ForceCalculator::~ForceCalculator() = default;
 
-Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions,
-                                    SPtr<BoundaryConditions> bc, const Vector3D &boundaryVelocity) const
+//////////////////////////////////////////////////////////////////////////
+std::array<real, 3> ForceCalculator::getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc) const
+{
+    using namespace  vf::basics::constant;
+
+    real forceX1 = c0o1;
+    real forceX2 = c0o1;
+    real forceX3 = c0o1;
+
+    if (bc) {
+        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+
+        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+            if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
+                const int invDir = D3Q27System::INVDIR[fdir];
+                const real f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
+                const real fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+
+                forceX1 += (f + fnbr) * (real)D3Q27System::DX1[invDir];
+                forceX2 += (f + fnbr) * (real)D3Q27System::DX2[invDir];
+                forceX3 += (f + fnbr) * (real)D3Q27System::DX3[invDir];
+            }
+        }
+
+        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+    }
+
+    return std::array<real, 3> { forceX1, forceX2, forceX3 };
+}
+//////////////////////////////////////////////////////////////////////////
+std::array<real, 3> ForceCalculator::getForcesForDEM(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc, const std::array<real, 3>& boundaryVelocity) const
 {
     using namespace vf::basics::constant;
     
@@ -74,9 +105,6 @@ Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArr
                     correction[2]          = forceTerm * boundaryVelocity[2];
                 }
 
-                // UBLOG(logINFO, "c, c * bv(x,y,z): " << correction << ", " << correction * val<1>(boundaryVelocity) <<
-                // ", " << correction * val<2>(boundaryVelocity) << ", " << correction * val<3>(boundaryVelocity));
-
                 // force consists of the MEM part and the Galilean invariance correction including the boundary velocity
                 forceX1 += (f + fnbr) * D3Q27System::DX1[invDir] - correction[0];
                 forceX2 += (f + fnbr) * D3Q27System::DX2[invDir] - correction[1];
@@ -84,9 +112,47 @@ Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArr
             }
         }
     }
-    return Vector3D(forceX1, forceX2, forceX3);
+    return std::array<real, 3> { forceX1, forceX2, forceX3 };
 }
+//////////////////////////////////////////////////////////////////////////
+std::array<real, 3> ForceCalculator::getForcesGalileanInvariantMomentumExchange(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc) const
+{
+    using namespace vf::basics::constant;
 
+    real forceX1 = c0o1;
+    real forceX2 = c0o1;
+    real forceX3 = c0o1;
+
+    if (bc) {
+         dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+
+        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+            const int invDir = D3Q27System::INVDIR[fdir];
+            if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
+                real feq = c0o1, feqnbr = c0o1;
+                if (bc->hasVelocityBoundaryFlag(fdir)) {
+                    real vx1 = bc->getBoundaryVelocityX1();
+                    real vx2 = bc->getBoundaryVelocityX2();
+                    real vx3 = bc->getBoundaryVelocityX3();
+                    feq = D3Q27System::getIncompFeqForDirection(fdir, 0.0, vx1, vx2, vx3);
+                    feqnbr = D3Q27System::getIncompFeqForDirection(invDir, 0.0, vx1, vx2, vx3);
+                }
+
+                const real f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
+                const real fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+
+                forceX1 += (f + fnbr - feq - feqnbr) * (real)D3Q27System::DX1[invDir];
+                forceX2 += (f + fnbr - feq - feqnbr) * (real)D3Q27System::DX2[invDir];
+                forceX3 += (f + fnbr - feq - feqnbr) * (real)D3Q27System::DX3[invDir];
+            }
+        }
+
+        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+    }
+
+    return std::array<real, 3> { forceX1, forceX2, forceX3 };
+}
+//////////////////////////////////////////////////////////////////////////
 void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interactors)
 {
     using namespace vf::basics::constant;
@@ -115,7 +181,7 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor>> interac
 
                 if (kernel->isInsideOfDomain(x1, x2, x3) && bcArray->isFluid(x1, x2, x3)) {
                     SPtr<BoundaryConditions> bc = bcArray->getBC(x1, x2, x3);
-                    Vector3D forceVec           = getForces(x1, x2, x3, distributions, bc);
+                    std::array<real, 3> forceVec = getForces(x1, x2, x3, distributions, bc);
                     forceX1 += forceVec[0];
                     forceX2 += forceVec[1];
                     forceX3 += forceVec[2];
@@ -163,6 +229,9 @@ void ForceCalculator::gatherGlobalForces()
     }
 }
 
-Vector3D ForceCalculator::getGlobalForces() const { return Vector3D(forceX1global, forceX2global, forceX3global); }
+std::array<real, 3> ForceCalculator::getGlobalForces() const
+{
+    return std::array<real, 3> { forceX1global, forceX2global, forceX3global };
+}
 
 //! \}

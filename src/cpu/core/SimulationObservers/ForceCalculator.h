@@ -54,11 +54,11 @@ public:
     virtual ~ForceCalculator();
 
     void calculateForces(std::vector<std::shared_ptr<D3Q27Interactor>> interactors);
-    Vector3D getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions,
-                       std::shared_ptr<BoundaryConditions> bc,
-                       const Vector3D &boundaryVelocity = Vector3D(0.0, 0.0, 0.0)) const;
+    std::array<real, 3> getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc) const;
+    std::array<real, 3> getForcesForDEM(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc, const std::array<real, 3>& boundaryVelocity) const;
+    std::array<real, 3> getForcesGalileanInvariantMomentumExchange(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc) const;
 
-    Vector3D getGlobalForces() const;
+    std::array<real, 3> getGlobalForces() const;
 
 private:
     void gatherGlobalForces();
