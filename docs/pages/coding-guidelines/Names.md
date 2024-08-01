@@ -2,34 +2,34 @@
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Names
 
-In general, names should be self-explanatory and as short as possible. We are using CamelCase for naming variables and functions. The following table gives an overview of the naming conventions used in the code.
+In general, names should be self-explanatory and as short as possible. We are using camelCase for naming variables and functions. The following table gives an overview of the naming conventions used in the code.
 
 | Type | Spelling | Example |
 |------|----------|---------|
-| Subfolder | CamelCase | BoundaryCondition |
-| File | CamelCase | BoundaryCondition.h |
-| Class | CamelCase | Grid |
-| Variable | camelCase | velocity |
-| Namespace | camelCase | collisionKernel |
+| Subfolder | PascalCase | BoundaryCondition |
+| File | PascalCase | BoundaryCondition.h |
+| Class | PascalCase | GridBuilder |
+| Variable | camelCase | inflowVelocity |
+| Namespace | snake_case | collision_kernel |
 
 Below are some more detailed guidelines for naming.
 
-## Names representing types must be in mixed case starting with upper case (Pascal Casing).
+## Names representing types must be in mixed case starting with upper case (PascalCase).
 
 Example: Line, SavingsAccount
 
 Common practice in the C++ development community.
 
-## Variable names and attribute names must be in mixed case starting with lowercase (Camel Casing).
+## Variable names and attribute names must be in mixed case starting with lowercase (camelCase).
 
 Example:
 ```cpp
-line, savingsAccount
+line, inflowVelocity
 ```
 
 Common practice in the C++ development community. Makes variables easy to distinguish from types, and effectively resolves potential naming collision, as in the declaration `Line line`;
 
-## Names representing methods or functions must be verbs and written in mixed case starting with lower case (Camel Casing).
+## Names representing methods or functions must be verbs and written in mixed case starting with lower case (camelCase).
 
 Example: 
 ```cpp
@@ -38,11 +38,11 @@ getName(), computeTotalWidth()
 
 Common practice in the C++ development community. This is identical to variable names, but functions in C++ are already distinguishable from variables by their specific form.
 
-## Names representing namespaces should be all lowercase.
+## Names representing namespaces should be snake_case.
 
 Example: 
 ```cpp
-model::analyzer, io::iomanager, common::math::geometry
+model::analyzer, io::iomanager, common::math::geometry, vf::compare_nups
 ```
 
 Common practice in the C++ development community
