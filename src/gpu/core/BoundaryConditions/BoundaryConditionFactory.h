@@ -47,10 +47,11 @@
 struct LBMSimulationParameter;
 class Parameter;
 
-using boundaryCondition = std::function<void(LBMSimulationParameter *, QforBoundaryConditions *)>;
-using boundaryConditionDirectional = std::function<void(LBMSimulationParameter *, QforDirectionalBoundaryCondition *)>;
-using boundaryConditionWithParameter = std::function<void(Parameter *, QforBoundaryConditions *, const int level)>;
-using precursorBoundaryConditionFunc = std::function<void(LBMSimulationParameter *, QforPrecursorBoundaryConditions *, real timeRatio, real velocityRatio)>;
+using BoundaryConditionKernel = std::function<void(LBMSimulationParameter*, QforBoundaryConditions*)>;
+using DirectionalBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, QforDirectionalBoundaryCondition*)>;
+using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
+using PrecursorBoundaryConditionKernel =
+    std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real timeRatio, real velocityRatio)>;
 
 class BoundaryConditionFactory
 {
@@ -131,12 +132,12 @@ public:
         NotSpecified
     };
 
-    void setVelocityBoundaryCondition(const BoundaryConditionFactory::VelocityBC boundaryConditionType);
-    void setNoSlipBoundaryCondition(const BoundaryConditionFactory::NoSlipBC boundaryConditionType);
-    void setSlipBoundaryCondition(const BoundaryConditionFactory::SlipBC boundaryConditionType);
-    void setPressureBoundaryCondition(const BoundaryConditionFactory::PressureBC boundaryConditionType);
-    void setStressBoundaryCondition(const BoundaryConditionFactory::StressBC boundaryConditionType);
-    void setPrecursorBoundaryCondition(const BoundaryConditionFactory::PrecursorBC boundaryConditionType);
+    void setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC boundaryConditionType);
+    void setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC boundaryConditionType);
+    void setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC boundaryConditionType);
+    void setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC boundaryConditionType);
+    void setStressBoundaryCondition(BoundaryConditionFactory::StressBC boundaryConditionType);
+    void setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC boundaryConditionType);
     //! \brief set a boundary condition for the geometry
     //! param boundaryConditionType: a velocity, no-slip or slip boundary condition
     //! \details suggestions for boundaryConditionType:
@@ -146,18 +147,18 @@ public:
     //! - no-slip: NoSlipBounceBack, NoSlipIncompressible, NoSlipCompressible, NoSlip3rdMomentsCompressible
     //!
     //! - slip: only use a slip boundary condition which sets the normals
-    void setGeometryBoundaryCondition(const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
+    void setGeometryBoundaryCondition(std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
 
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
-    [[nodiscard]] virtual boundaryCondition getVelocityBoundaryConditionPost(bool isGeometryBC = false) const;
-    [[nodiscard]] boundaryCondition getNoSlipBoundaryConditionPost(bool isGeometryBC = false) const;
-    [[nodiscard]] boundaryCondition getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
-    [[nodiscard]] boundaryCondition getGeometryBoundaryConditionPost() const;
-    [[nodiscard]] virtual std::variant<boundaryCondition, boundaryConditionDirectional> getPressureBoundaryConditionPre() const;
-    [[nodiscard]] boundaryConditionWithParameter getStressBoundaryConditionPost() const;
-    [[nodiscard]] precursorBoundaryConditionFunc getPrecursorBoundaryConditionPost() const;
+    [[nodiscard]] virtual BoundaryConditionKernel getVelocityBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] BoundaryConditionKernel getNoSlipBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] BoundaryConditionKernel getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
+    [[nodiscard]] BoundaryConditionKernel getGeometryBoundaryConditionPost() const;
+    [[nodiscard]] virtual std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel> getPressureBoundaryConditionPre() const;
+    [[nodiscard]] BoundaryConditionWithParameterKernel getStressBoundaryConditionPost() const;
+    [[nodiscard]] PrecursorBoundaryConditionKernel getPrecursorBoundaryConditionPost() const;
 
     [[nodiscard]] virtual bool hasDirectionalPressureBoundaryCondition() const;
 

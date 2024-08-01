@@ -60,9 +60,10 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
     this->precursorBoundaryConditionPost = bcFactory->getPrecursorBoundaryConditionPost();
 
     if (bcFactory->hasDirectionalPressureBoundaryCondition())
-        this->directionalPressureBoundaryConditionPre = std::get<directionalBoundaryCondition>(bcFactory->getPressureBoundaryConditionPre());
+        this->directionalPressureBoundaryConditionPre =
+            std::get<DirectionalBoundaryConditionKernel>(bcFactory->getPressureBoundaryConditionPre());
     else
-        this->pressureBoundaryConditionPre = std::get<boundaryCondition>(bcFactory->getPressureBoundaryConditionPre());
+        this->pressureBoundaryConditionPre = std::get<BoundaryConditionKernel>(bcFactory->getPressureBoundaryConditionPre());
 
     checkBoundaryCondition(this->velocityBoundaryConditionPost, this->para->getParD(0)->velocityBC,
                            "velocityBoundaryConditionPost");
