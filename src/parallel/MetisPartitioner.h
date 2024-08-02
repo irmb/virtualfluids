@@ -26,8 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Parallel Parallel
-//! \ingroup cpu_core core
+//! \addtogroup parallel
 //! \{
 //! \author Konstantin Kutscher
 //=======================================================================================
@@ -40,7 +39,7 @@
 
 #include "basics/utilities/UbSystem.h"
 #include "metis.h"
-#include <PointerDefinitions.h>
+#include "PointerDefinitions.h"
 #include <string>
 #include <vector>
 

@@ -333,4 +333,101 @@ TEST(GeometryUtilsTest, inverseRotateAboutX3dWithOrigin)
     EXPECT_THAT(newPosY, RealNear(1.0, 10e-5));
     EXPECT_THAT(newPosZ, RealNear(1.0, 10e-5));
 }
+
+TEST(GeometryUtilsTest, trilinearInterpolationX)
+{
+    const real dx = 0.5;
+    const real dy = 0.0;
+    const real dz = 0.0;
+    const int kMMM = 0;
+    const int kMMP = 0;
+    const int kMPM = 0;
+    const int kMPP = 0;
+    const int kPMM = 1;
+    const int kPMP = 1;
+    const int kPPM = 1;
+    const int kPPP = 1;
+    const real quantity[2] = {0.0, 1.0};
+    const real result = trilinearInterpolation(dx, dy, dz, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, quantity);
+    EXPECT_THAT(result, RealNear(0.5, 10e-5));
+}
+
+TEST(GeometryUtilsTest, trilinearInterpolationY)
+{
+    const real dx = 0.0;
+    const real dy = 0.3;
+    const real dz = 0.0;
+    const int kMMM = 0;
+    const int kMMP = 0;
+    const int kMPM = 1;
+    const int kMPP = 1;
+    const int kPMM = 0;
+    const int kPMP = 0;
+    const int kPPM = 1;
+    const int kPPP = 1;
+    const real quantity[2] = {0.0, 1.0};
+    const real result = trilinearInterpolation(dx, dy, dz, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, quantity);
+    EXPECT_THAT(result, RealNear(0.3, 10e-5));
+}
+
+TEST(GeometryUtilsTest, trilinearInterpolationZ)
+{
+    const real dx = 0.0;
+    const real dy = 0.0;
+    const real dz = 0.7;
+    const int kMMM = 0;
+    const int kMMP = 1;
+    const int kMPM = 0;
+    const int kMPP = 1;
+    const int kPMM = 0;
+    const int kPMP = 1;
+    const int kPPM = 0;
+    const int kPPP = 1;
+    const real quantity[2] = {0.0, 2.0};
+    const real result = trilinearInterpolation(dx, dy, dz, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, quantity);
+    EXPECT_THAT(result, RealNear(1.4, 10e-5));
+}
+
+TEST(GeometryUtilsTest, trilinearInterpolationXYZ)
+{
+    const real dx = 0.5;
+    const real dy = 0.5;
+    const real dz = 0.5;
+    const int kMMM = 0;
+    const int kMMP = 1;
+    const int kMPM = 0;
+    const int kMPP = 1;
+    const int kPMM = 0;
+    const int kPMP = 1;
+    const int kPPM = 0;
+    const int kPPP = 1;
+    const real quantity[2] = {0.0, 1.0};
+    const real result = trilinearInterpolation(dx, dy, dz, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, quantity);
+    EXPECT_THAT(result, RealNear(0.5, 10e-5));
+}
+
+TEST(GeometryUtilsTest, getNeighborIndices)
+{
+    const uint kMMM = 0;
+    const uint neighborX[8] = {1, 100, 3, 100, 5, 100, 7, 100};
+    const uint neighborY[8] = {2, 3, 200, 200, 6, 7, 200, 200};
+    const uint neighborZ[8] = {4, 5, 6, 7, 300, 300, 300, 300};
+    uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
+    getNeighborIndicesOfBSW(kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, neighborX, neighborY, neighborZ);
+}
+
+TEST(GeometryUtilsTest, findNearestCell)
+{
+    const uint startIndex = 0;
+    const real coordsX[8] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+    const real coordsY[8] = {0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0};
+    const real coordsZ[8] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0};
+    const real posX = 0.5, posY = 0.5, posZ = 0.5;
+    const uint neighborX[8] = {1, 100, 3, 100, 5, 100, 7, 100};
+    const uint neighborY[8] = {2, 3, 200, 200, 6, 7, 200, 200};
+    const uint neighborZ[8] = {4, 5, 6, 7, 300, 300, 300, 300};
+    const uint neighborBSW[8] = {400, 400, 400, 400, 400, 400, 400, 0};
+    const uint result = findNearestCellBSW(startIndex, coordsX, coordsY, coordsZ, posX, posY, posZ, neighborX, neighborY, neighborZ, neighborBSW);
+    EXPECT_THAT(result, 0);
+}
 //! \}

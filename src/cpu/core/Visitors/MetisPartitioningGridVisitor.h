@@ -40,13 +40,12 @@
 #include <vector>
 
 #include "Grid3DVisitor.h"
-#include "MetisPartitioner.h"
+#include "parallel/MetisPartitioner.h"
 
 namespace vf::parallel {class Communicator;}
 
 ////////////////////////////////////////////////////////////////////////
 //! \brief The class implements domain decomposition with METIS library
-//! \author Kostyantyn Kucher
 //////////////////////////////////////////////////////////////////////////
 
 class Grid3D;

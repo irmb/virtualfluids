@@ -43,18 +43,15 @@ class CudaMemoryManager;
 class PreCollisionInteractor
 {
 public:
+    PreCollisionInteractor(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager)
+        : para(para), cudaMemoryManager(cudaMemoryManager) {}
     virtual ~PreCollisionInteractor() = default;
 
-    void initInteractor(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager) {
-        this->para = para;
-        this->cudaMemoryManager = cudaMemoryManager;
-        init();
-    }
+    virtual void init() = 0;
     virtual void interact(int level, uint t) = 0;
     virtual void getTaggedFluidNodes(GridProvider* gridProvider) = 0;
 
 protected:
-    virtual void init() = 0;
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
 };

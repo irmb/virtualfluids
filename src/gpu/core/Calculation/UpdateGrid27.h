@@ -91,8 +91,8 @@ private:
 
     void calcMacroscopicQuantities(int level);
     void calcTurbulentViscosity(int level);
-    void interactWithActuators(int level, unsigned int t);
-    void interactWithProbes(int level, unsigned int t);
+    void interact(int level, unsigned int t);
+    void sample(int level, unsigned int t);
 
 private:
     CollisionStrategy collision;

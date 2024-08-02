@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Parallel Parallel
+//! \addtogroup cpu_SimulationObservers SimulationObservers
 //! \ingroup cpu_core core
 //! \{
 //! \author Alena Karanchuk

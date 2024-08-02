@@ -1239,13 +1239,13 @@ void Parameter::setADKernel(std::string adKernel)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // add-methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Parameter::addActuator(SPtr<PreCollisionInteractor> actuator)
+void Parameter::addInteractor(SPtr<PreCollisionInteractor> interactor)
 {
-    actuators.push_back(actuator);
+    interactors.push_back(interactor);
 }
-void Parameter::addProbe(SPtr<PreCollisionInteractor> probe)
+void Parameter::addSampler(SPtr<Sampler> sampler)
 {
-    probes.push_back(probe);
+    samplers.push_back(sampler);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1803,13 +1803,13 @@ bool Parameter::getHasWallModelMonitor()
 {
     return this->hasWallModelMonitor;
 }
-std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getInteractors()
 {
-    return actuators;
+    return interactors;
 }
-std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
+std::vector<SPtr<Sampler>> Parameter::getSamplers()
 {
-    return probes;
+    return samplers;
 }
 bool Parameter::getUseInitNeq()
 {

@@ -40,6 +40,7 @@
 #include <cuda_runtime.h>
 
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
 constexpr void getNeighborIndicesOfBSW(uint k, // index of dMMM node
                                        uint& ke, uint& kn, uint& kt, uint& kne, uint& kte, uint& ktn, uint& ktne,
@@ -78,24 +79,16 @@ constexpr uint findNearestCellBSW(const uint index, const real* coordsX, const r
     return neighborsWSB[new_index];
 }
 
-constexpr void getInterpolationWeights(real& dW, real& dE, real& dN, real& dS, real& dT, real& dB, real tmpX, real tmpY,
-                                       real tmpZ)
+constexpr real trilinearInterpolation(real dXM, real dYM, real dZM, uint kMMM, uint kPMM, uint kMPM,
+                                                           uint kMMP, uint kPPM, uint kPMP, uint kMPP, uint kPPP,
+                                                           const real* quantity)
 {
-    dW = tmpX;
-    dE = 1.F - dW;
-    dS = tmpY;
-    dN = 1.F - dS;
-    dB = tmpZ;
-    dT = 1.F - dB;
-}
-
-constexpr real trilinearInterpolation(real dW, real dE, real dN, real dS, real dT, real dB, uint k, uint ke, uint kn,
-                                      uint kt, uint kne, uint kte, uint ktn, uint ktne, const real* quantity)
-{
-    return (  dE*dN*dT*quantity[k]    + dW*dN*dT*quantity[ke]
-            + dE*dS*dT*quantity[kn]   + dW*dS*dT*quantity[kne]
-            + dE*dN*dB*quantity[kt]   + dW*dN*dB*quantity[kte]
-            + dE*dS*dB*quantity[ktn]  + dW*dS*dB*quantity[ktne] );
+    const real dXP = vf::basics::constant::c1o1 - dXM;
+    const real dYP = vf::basics::constant::c1o1 - dYM;
+    const real dZP = vf::basics::constant::c1o1 - dZM;
+    return (dXP * dYP * dZP * quantity[kMMM] + dXM * dYP * dZP * quantity[kPMM] + dXP * dYM * dZP * quantity[kMPM] +
+            dXM * dYM * dZP * quantity[kPPM] + dXP * dYP * dZM * quantity[kMMP] + dXM * dYP * dZM * quantity[kPMP] +
+            dXP * dYM * dZM * quantity[kMPP] + dXM * dYM * dZM * quantity[kPPP]);
 }
 
 constexpr void translate2D(real posX, real posY, real& newPosX, real& newPosY, real translationX, real translationY)
@@ -139,14 +132,14 @@ constexpr void rotate2D(real angle, real posX, real posY, real& newPosX, real& n
     rotate2D(angle, newPosX, newPosY, tmpX, tmpY);
     translate2D(tmpX, tmpY, newPosX, newPosY, originX, originY);
 }
-
 constexpr void invRotate2D(real angle, real posX, real posY, real& newPosX, real& newPosY)
 {
-    newPosX =  posX * cos(angle) + posY * sin(angle);
+    newPosX = posX * cos(angle) + posY * sin(angle);
     newPosY = -posX * sin(angle) + posY * cos(angle);
 }
 
-constexpr void invRotate2D(real angle, real posX, real posY, real& newPosX, real& newPosY, real originX, real originY)
+constexpr void invRotate2D(real angle, real posX, real posY, real& newPosX, real& newPosY, real originX,
+                                                real originY)
 {
     real tmpX = 0, tmpY = 0;
     invTranslate2D(posX, posY, newPosX, newPosY, originX, originY);

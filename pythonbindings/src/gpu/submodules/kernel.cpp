@@ -38,7 +38,7 @@ namespace kernel
 
     void makeModule(py::module_ &parentModule)
     {
-        auto kernel_module = parentModule.def_submodule("Kernel", "Kernel types");
+        auto kernel_module = parentModule.def_submodule("kernel", "Kernel types");
         auto compressible = kernel_module.def_submodule("compressible", "Compressible Kernel types");
         auto incompressible = kernel_module.def_submodule("incompressible", "Incompressible Kernel types");
 

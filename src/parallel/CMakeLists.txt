@@ -32,7 +32,7 @@
 #! \author Soeren Peters
 #=======================================================================================
 
-vf_add_library(PUBLIC_LINK logger basics PRIVATE_LINK project_warnings project_options)
+vf_add_library(PUBLIC_LINK logger basics metis PRIVATE_LINK project_warnings project_options)
 
 if(MSVC)
     target_link_libraries(parallel PRIVATE ws2_32)
@@ -56,5 +56,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clan
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(parallel PRIVATE "/wd4100") # warning C4100: unreferenced formal paramete
+    target_compile_options(parallel PUBLIC "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/wd4100>")
+    target_compile_options(parallel PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:/wd4100>")
+
+    target_compile_options(parallel PUBLIC "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/wd4005>")
+    target_compile_options(parallel PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:/wd4005>")
 endif()

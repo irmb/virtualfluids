@@ -162,8 +162,8 @@ grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
-bc_factory.set_stress_boundary_condition(gpu.StressBC.StressPressureBounceBack)
-bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipCompressibleTurbulentViscosity) 
+bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackPressureCompressible)
+bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipTurbulentViscosityCompressible) 
 bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
 if read_precursor:
     bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
@@ -181,36 +181,37 @@ para.set_outflow_pressure_correction_factor(0.0)
 para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, velocity_ratio)
 
 #%%
+cuda_memory_manager = gpu.CudaMemoryManager(para)
 
 smearing_width = 1.5*dx
 blade_radius = 0.5*turbine_diameter
 hub_height_velocity = get_velocity(turbine_height, u_star, kappa, z0)
 rotor_speeds = np.ones(1)*tip_speed_ratio*hub_height_velocity/blade_radius
-alm = gpu.ActuatorFarmStandalone(turbine_diameter, n_blade_nodes, turbine_positions_x, turbine_positions_y, turbine_positions_z, rotor_speeds, density, smearing_width, level, dt, dx)
+alm = gpu.ActuatorFarmStandalone(para, cuda_memory_manager, turbine_diameter, n_blade_nodes, turbine_positions_x, turbine_positions_y, turbine_positions_z, rotor_speeds, density, smearing_width, level, dt, dx)
 alm.enable_output("ALM", int(t_start_out_probe/dt), int(t_out_probe/dt) )
-para.add_actuator(alm)
+para.add_interactor(alm)
 #%%
-planar_average_probe = gpu.probes.PlanarAverageProbe("horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')
+planar_average_probe = gpu.probes.PlanarAverageProbe(para, cuda_memory_manager, "horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')
 planar_average_probe.add_all_available_statistics()
 planar_average_probe.set_file_name_to_n_out()
-para.add_probe(planar_average_probe)
+para.add_sampler(planar_average_probe)
 #%%
-wall_model_probe = gpu.probes.WallModelProbe("wallModelProbe", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt/4), int(t_start_out_probe/dt), int(t_out_probe/dt))
+wall_model_probe = gpu.probes.WallModelProbe(para, cuda_memory_manager, "wallModelProbe", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt/4), int(t_start_out_probe/dt), int(t_out_probe/dt))
 wall_model_probe.add_all_available_statistics()
 wall_model_probe.set_file_name_to_n_out()
 wall_model_probe.set_force_output_to_stress(True)
 if para.get_is_body_force():
     wall_model_probe.set_evaluate_pressure_gradient(True)
-para.add_probe(wall_model_probe)
+para.add_sampler(wall_model_probe)
 
 plane_locs = [100,]
 if read_precursor: plane_locs.extend([1000, 1500, 2000, 2500, 0])
 
 for n_probe, probe_pos in enumerate(plane_locs):
-    plane_probe = gpu.probes.PlaneProbe(f"planeProbe_{n_probe+1}", para.get_output_path(), int(t_start_averaging/dt), 10, int(t_start_out_probe/dt), int(t_out_probe/dt))
+    plane_probe = gpu.probes.PlaneProbe(para, cuda_memory_manager, f"planeProbe_{n_probe+1}", para.get_output_path(), int(t_start_averaging/dt), 10, int(t_start_out_probe/dt), int(t_out_probe/dt))
     plane_probe.set_probe_plane(probe_pos, 0, 0, dx, length[1], length[2])
     plane_probe.add_all_available_statistics()
-    para.add_probe(plane_probe)
+    para.add_sampler(plane_probe)
 #%%
 sim = gpu.Simulation(para, grid_builder, bc_factory, tm_factory, grid_scaling_factory)
 #%%

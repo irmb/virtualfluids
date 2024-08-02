@@ -10,12 +10,16 @@
         <tab type="user" url="@ref getting-started-with-docker" visible="yes" title="Getting Started with Docker" intro=""/>
         <tab type="user" url="@ref getting-started-not-using-docker" visible="yes" title="Getting Started Not Using Docker" intro=""/>
         <tab type="user" url="@ref build-and-run" visible="yes" title="Build and Run" intro=""/>
-        <tab type="user" url="@ref how-to-document-code" visible="yes" title="How To Document Code" intro=""/>
         <tab type="user" url="@ref debugging-with-vscode" visible="yes" title="Debugging with VSCode" intro=""/>
         <tab type="user" url="@ref unit-tests" visible="yes" title="Unit Tests" intro=""/>
         <tab type="user" url="@ref regression-tests" visible="yes" title="Regression Tests" intro=""/>
         <tab type="user" url="@ref performance-tests" visible="yes" title="Performance Tests" intro=""/>
+        <tab type="user" url="@ref how-to-document-code" visible="yes" title="How To Document Code" intro=""/>
+        <tab type="user" url="@ref review-merge-request" visible="yes" title="Review Merge Request" intro=""/>
         <tab type="user" url="@ref release" visible="yes" title="Release" intro=""/>
+        <tab type="user" url="@ref how-to-license" visible="yes" title="How to License" intro=""/>
+        <tab type="user" url="@ref docker-virtualisation" visible="yes" title="Virtualisation" intro=""/>
+        <tab type="user" url="@ref gitlab-ci" visible="yes" title="GitLab CI" intro=""/>
         <tab type="usergroup" title="Coding Guidelines" url="@ref coding-guidelines">
             <tab type="user" url="@ref layout" visible="yes" title="Layout" intro=""/>
             <tab type="user" url="@ref names" visible="yes" title="Names" intro=""/>

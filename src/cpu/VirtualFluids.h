@@ -41,6 +41,7 @@
 #include <parallel/Communicator.h>
 #include <parallel/MPICommunicator.h>
 #include <parallel/NullCommunicator.h>
+#include <parallel/MetisPartitioner.h>
 #include <parallel/transmitter/TbTransmitter.h>
 #include <parallel/transmitter/TbTransmitterLocal.h>
 #include <parallel/transmitter/TbTransmitterMpiPool.h>
@@ -225,8 +226,6 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSAHSplit.h>
 #include <geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
-
-#include <cpu/core/Parallel/MetisPartitioner.h>
 
 #include <cpu/core/Utilities/ChangeRandomQs.hpp>
 #include <cpu/core/Utilities/CheckpointConverter.h>

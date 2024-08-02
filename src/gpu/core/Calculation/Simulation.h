@@ -74,7 +74,12 @@ class Simulation
 public:
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, const BoundaryConditionFactory* bcFactory,
                GridScalingFactory* scalingFactory = nullptr);
+    Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager, std::shared_ptr<GridBuilder> builder, const BoundaryConditionFactory* bcFactory,
+               GridScalingFactory* scalingFactory = nullptr);
+
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, const BoundaryConditionFactory* bcFactory,
+               SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory = nullptr);
+    Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager, std::shared_ptr<GridBuilder> builder, const BoundaryConditionFactory* bcFactory,
                SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory = nullptr);
 
     Simulation(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> memoryManager,

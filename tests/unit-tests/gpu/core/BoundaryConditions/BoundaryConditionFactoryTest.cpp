@@ -76,7 +76,7 @@ TEST(BoundaryConditionFactoryTest, defaultSlipBC)
 TEST(BoundaryConditionFactoryTest, defaultPressureBC)
 {
     auto bcFactory = BoundaryConditionFactory();
-    auto bc = std::get<boundaryCondition>(bcFactory.getPressureBoundaryConditionPre());
+    auto bc = std::get<BoundaryConditionKernel>(bcFactory.getPressureBoundaryConditionPre());
     EXPECT_THAT(bc, testing::Eq(nullptr));
     EXPECT_THROW(bc(nullptr, nullptr), std::bad_function_call);
 }
@@ -179,9 +179,9 @@ TEST(BoundaryConditionFactoryTest, slipBC)
 
 bcFunctionDirectional getDirectionalPressureBcTarget(BoundaryConditionFactory &bcFactory)
 {
-    auto bc = std::get<boundaryConditionDirectional>(bcFactory.getPressureBoundaryConditionPre());
-    void (*bcTarget)(LBMSimulationParameter *, QforDirectionalBoundaryCondition *) =
-        (*bc.target<void (*)(LBMSimulationParameter *, QforDirectionalBoundaryCondition *)>());
+    auto bc = std::get<DirectionalBoundaryConditionKernel>(bcFactory.getPressureBoundaryConditionPre());
+    void (*bcTarget)(LBMSimulationParameter*, QforDirectionalBoundaryCondition*) =
+        (*bc.target<void (*)(LBMSimulationParameter*, QforDirectionalBoundaryCondition*)>());
     return bcTarget;
 }
 
@@ -206,7 +206,7 @@ TEST(BoundaryConditionFactoryTest, pressureBC)
         << "The returned boundary condition is not the expected function OutflowNonReflectingPressureCorrection.";
 }
 
-bcFunction getGeometryBcTarget(BoundaryConditionFactory &bcFactory)
+bcFunction getGeometryBcTarget(BoundaryConditionFactory& bcFactory)
 {
     auto bc = bcFactory.getGeometryBoundaryConditionPost();
     void (*bcTarget)(LBMSimulationParameter *, QforBoundaryConditions *) =
