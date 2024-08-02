@@ -42,9 +42,9 @@
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
-constexpr void getNeighborIndicesOfBSW(uint k_MMM, uint& k_PMM, uint& k_MPM, uint& k_MMP, uint& k_PPM,
-                                                            uint& k_PMP, uint& k_MPP, uint& k_PPP, const uint* neighborX,
-                                                            const uint* neighborY, const uint* neighborZ)
+constexpr void getNeighborIndicesOfBSW(uint k_MMM, uint& k_PMM, uint& k_MPM, uint& k_MMP, uint& k_PPM, uint& k_PMP,
+                                       uint& k_MPP, uint& k_PPP, const uint* neighborX, const uint* neighborY,
+                                       const uint* neighborZ)
 {
     k_PMM = neighborX[k_MMM];
     k_MPM = neighborY[k_MMM];
@@ -79,9 +79,8 @@ constexpr uint findNearestCellBSW(const uint index, const real* coordsX, const r
     return neighborsWSB[new_index];
 }
 
-constexpr real trilinearInterpolation(real dXM, real dYM, real dZM, uint kMMM, uint kPMM, uint kMPM,
-                                                           uint kMMP, uint kPPM, uint kPMP, uint kMPP, uint kPPP,
-                                                           const real* quantity)
+constexpr real trilinearInterpolation(real dXM, real dYM, real dZM, uint kMMM, uint kPMM, uint kMPM, uint kMMP, uint kPPM,
+                                      uint kPMP, uint kMPP, uint kPPP, const real* quantity)
 {
     const real dXP = vf::basics::constant::c1o1 - dXM;
     const real dYP = vf::basics::constant::c1o1 - dYM;
