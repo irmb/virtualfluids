@@ -35,6 +35,13 @@
 #ifndef TURBULENT_VISCOSITY_INLINES_CUH_
 #define TURBULENT_VISCOSITY_INLINES_CUH_
 
+#ifndef __host__
+#define __host__
+#endif
+#ifndef __device__
+#define __device__
+#endif
+
 #include <algorithm>
 
 #include <basics/DataTypes.h>
@@ -58,7 +65,7 @@ enum class TurbulenceModel {
     None
 };
 
-constexpr real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
     return Cs * Cs * sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 }

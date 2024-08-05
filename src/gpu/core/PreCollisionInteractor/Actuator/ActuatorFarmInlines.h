@@ -78,43 +78,41 @@ constexpr TurbineNodeIndex calcTurbineBladeAndBladeNode(uint node, uint numberOf
     return { /*.turbine = */ turbine, /*.blade = */ blade, /*.bladeNode = */ bladeNode }; // Designated initializers are a C++ 20 feature
 }
 
-constexpr void rotateFromBladeToGlobal(
-                            real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF, 
-                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
-                            real azimuth)
+__host__ __device__ __inline__ void rotateFromBladeToGlobal(real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF,
+                                                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
+                                                            real azimuth)
 {
     rotateAboutX3D(azimuth, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF);
 }
 
-constexpr void rotateFromGlobalToBlade(
-                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
-                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
-                            real azimuth)
+__host__ __device__ __inline__ void rotateFromGlobalToBlade(real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF,
+                                                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
+                                                            real azimuth)
 {
-    invRotateAboutX3D(azimuth, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF);
+    invRotateAboutX3D(azimuth, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, bladeCoordX_BF, bladeCoordY_BF,
+                      bladeCoordZ_BF);
 }
 constexpr real distSqrd(real distX, real distY, real distZ)
 {
     return distX * distX + distY * distY + distZ * distZ;
 }
-
 constexpr real getBoundingSphereRadius(real diameter, real smearingWidth)
 {
     return c1o2 * diameter + c3o2 * smearingWidth;
 }
 
-constexpr bool inBoundingSphere(real distX, real distY, real distZ, real diameter, real smearingWidth)
+__host__ __device__ __inline__ bool inBoundingSphere(real distX, real distY, real distZ, real diameter, real smearingWidth)
 {
     const real boundingSphereRadius = getBoundingSphereRadius(diameter, smearingWidth);
     return distSqrd(distX, distY, distZ) < boundingSphereRadius * boundingSphereRadius;
 }
 
-constexpr real gaussianSmearing(real distX, real distY, real distZ, real epsilon, real factorGaussian)
+__host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real epsilon, real factorGaussian)
 {
     return factorGaussian * exp(-distSqrd(distX, distY, distZ) / (epsilon * epsilon));
 }
 
-__inline__ void swapArrays(real* &arr1, real* &arr2)
+__inline__ void swapArrays(real*& arr1, real*& arr2)
 {
     real* tmp = arr1;
     arr1 = arr2;
