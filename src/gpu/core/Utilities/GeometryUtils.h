@@ -127,7 +127,7 @@ __inline__ __host__ __device__ void rotate2D(real angle, real posX, real posY, r
 __inline__ __host__ __device__ void rotate2D(real angle, real posX, real posY, real& newPosX, real& newPosY, real originX,
                                              real originY)
 {
-    real tmpX = 0, tmpY = 0;
+    real tmpX, tmpY;
     invTranslate2D(posX, posY, newPosX, newPosY, originX, originY);
     rotate2D(angle, newPosX, newPosY, tmpX, tmpY);
     translate2D(tmpX, tmpY, newPosX, newPosY, originX, originY);
@@ -141,7 +141,7 @@ __inline__ __host__ __device__ void invRotate2D(real angle, real posX, real posY
 __inline__ __host__ __device__ void invRotate2D(real angle, real posX, real posY, real& newPosX, real& newPosY, real originX,
                                                 real originY)
 {
-    real tmpX = 0, tmpY = 0;
+    real tmpX, tmpY;
     invTranslate2D(posX, posY, newPosX, newPosY, originX, originY);
     invRotate2D(angle, newPosX, newPosY, tmpX, tmpY);
     translate2D(tmpX, tmpY, newPosX, newPosY, originX, originY);
