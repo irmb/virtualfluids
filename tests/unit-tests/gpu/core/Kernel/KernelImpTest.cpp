@@ -31,7 +31,6 @@
 //! \{
 
 #include "Kernel/KernelImp.h"
-#include "../Utilities/testUtilitiesGPU.h"
 #include "Kernel/Compressible/NavierStokes/K17/K17CompressibleNavierStokes.h"
 #include "Kernel/KernelFactory/KernelFactoryImp.h"
 #include "Parameter/Parameter.h"
