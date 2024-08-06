@@ -29,10 +29,8 @@
 //! \addtogroup gpu_Samplers Samplers
 //! \ingroup gpu_core core
 //! \{
-//! \author Henrik Asmuth
+//! \author Henrik Asmuth, Henry Korb
 //! \date 13/05/2022
-//!
-//!
 //=======================================================================================
 
 #ifndef WallModelProbe_H
@@ -50,7 +48,6 @@
 
 class Parameter;
 class CudaMemoryManager;
-
 
 //! \brief Probe computing statistics of all relevant wall model quantities used in the StressBC kernels
 //! Computes spatial statistics for all grid points of the StressBC
@@ -84,7 +81,7 @@ public:
 
     struct LevelData
     {
-        uint numberOfAveragedValues{}, numberOfFluidNodes{};
+        uint numberOfAveragedValues {}, numberOfFluidNodes {};
         std::string timeseriesFileName;
         std::vector<std::vector<real>> instantaneousData, averagedData;
         std::vector<real> timestepTime;

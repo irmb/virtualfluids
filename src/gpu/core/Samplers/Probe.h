@@ -31,7 +31,6 @@
 //! \{
 //! \author Henry Korb, Henrik Asmuth
 //! \date 13/05/2022
-
 //=======================================================================================
 
 #ifndef Probe_H
@@ -45,8 +44,8 @@
 
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
-#include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/geometry3d/GbObject3D.h>
+#include <basics/writer/WbWriterVtkXmlBinary.h>
 
 struct LBMSimulationParameter;
 class Parameter;
@@ -59,9 +58,9 @@ class Probe : public Sampler
 {
 public:
     enum class Statistic { Instantaneous, Means, Variances };
-    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath, std::string probeName,
-          uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting, bool outputTimeSeries,
-          bool averageEveryTimestep, bool sampleScalar=false);
+    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
+          std::string probeName, uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
+          bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar = false);
     ~Probe();
 
     void addProbePlane(real startX, real startY, real startZ, real length, real width, real height);
@@ -131,7 +130,7 @@ protected:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
     std::vector<LevelData> levelDatas;
-    bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {}, sampleScalar{};
+    bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {}, sampleScalar {};
     //! flag initiating time series output.
     const bool outputTimeSeries, averageEveryTimestep;
     std::vector<std::string> fileNamesForCollectionFile;
@@ -146,7 +145,6 @@ protected:
     const uint tBetweenWriting;
     std::vector<std::shared_ptr<GbObject3D>> probeObjects;
 };
-
 
 struct Probe::PostProcessingVariable
 {
@@ -163,10 +161,11 @@ struct Probe::ProbeData
     bool computeInstantaneous, computeMeans, computeVariances, sampleScalar;
     uint numberOfPoints, numberOfQuantities, numberOfTimesteps;
     uint* indices;
-    __device__ __host__ ProbeData(bool computeInstantaneous, bool computeMeans, bool computeVariance, bool sampleScalar, uint numberOfPoints,
-                                  uint numberOfQuantities, uint numberOfTimesteps)
-        : computeInstantaneous(computeInstantaneous), computeMeans(computeMeans), computeVariances(computeVariance), sampleScalar(sampleScalar),
-          numberOfPoints(numberOfPoints), numberOfQuantities(numberOfQuantities), numberOfTimesteps(numberOfTimesteps)
+    __device__ __host__ ProbeData(bool computeInstantaneous, bool computeMeans, bool computeVariance, bool sampleScalar,
+                                  uint numberOfPoints, uint numberOfQuantities, uint numberOfTimesteps)
+        : computeInstantaneous(computeInstantaneous), computeMeans(computeMeans), computeVariances(computeVariance),
+          sampleScalar(sampleScalar), numberOfPoints(numberOfPoints), numberOfQuantities(numberOfQuantities),
+          numberOfTimesteps(numberOfTimesteps)
     {
     }
 };

@@ -224,13 +224,11 @@ void PlanarAverageProbe::addStatistic(Statistic statistic)
 PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager,
                                        std::string outputPath, std::string probeName, uint tStartAveraging,
                                        uint tStartTemporalAveraging, uint tBetweenAverages, uint tStartWritingOutput,
-                                       uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
-                                       bool sampleScalar)
+                                       uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages, bool sampleScalar)
     : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging),
       tStartTemporalAveraging(tStartTemporalAveraging), tBetweenAverages(tBetweenAverages),
       tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), computeTimeAverages(computeTimeAverages),
-      planeNormal(planeNormal), sampleScalar(sampleScalar),
-      Sampler(outputPath, probeName)
+      planeNormal(planeNormal), sampleScalar(sampleScalar), Sampler(outputPath, probeName)
 {
     if (tStartTemporalAveraging < tStartAveraging && computeTimeAverages)
         throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
@@ -467,8 +465,7 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     const real viscosityRatio = para->getScaledViscosityRatio(level);
     const real stressRatio = para->getScaledStressRatio(level);
 
-    const auto means =
-        computeMeans(velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
+    const auto means = computeMeans(velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
     averages.push_back(means.vx * velocityRatio);
     averages.push_back(means.vy * velocityRatio);
     averages.push_back(means.vz * velocityRatio);
@@ -480,8 +477,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     if (!isStatisticIn(Statistic::Covariances, statistics))
         return averages;
 
-    const auto covariances = computeCovariances(velocityX, velocityY, velocityZ, phi, means, invNPointsPerPlane,
-                                                sampleScalar);
+    const auto covariances =
+        computeCovariances(velocityX, velocityY, velocityZ, phi, means, invNPointsPerPlane, sampleScalar);
     averages.push_back(covariances.vxvx * stressRatio);
     averages.push_back(covariances.vyvy * stressRatio);
     averages.push_back(covariances.vzvz * stressRatio);
@@ -499,8 +496,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     if (!isStatisticIn(Statistic::Skewness, statistics))
         return averages;
 
-    const auto skewnesses = computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, phi, invNPointsPerPlane,
-                                              sampleScalar);
+    const auto skewnesses =
+        computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
     averages.push_back(skewnesses.Sx);
     averages.push_back(skewnesses.Sy);
     averages.push_back(skewnesses.Sz);
@@ -510,8 +507,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     if (!isStatisticIn(Statistic::Flatness, statistics))
         return averages;
 
-    const auto flatnesses = computeFlatnesses(velocityX, velocityY, velocityZ, phi, means, covariances, invNPointsPerPlane,
-                                              sampleScalar);
+    const auto flatnesses =
+        computeFlatnesses(velocityX, velocityY, velocityZ, phi, means, covariances, invNPointsPerPlane, sampleScalar);
     averages.push_back(flatnesses.Fx);
     averages.push_back(flatnesses.Fy);
     averages.push_back(flatnesses.Fz);

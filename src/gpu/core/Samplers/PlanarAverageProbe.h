@@ -29,12 +29,8 @@
 //! \addtogroup gpu_Samplers Samplers
 //! \ingroup gpu_core core
 //! \{
-//! \author Henrik Asmuth
+//! \author Henrik Asmuth, Henry Korb
 //! \date 13/05/2022
-//! \brief Probe computing statistics across planes spanning the entire domain
-//!
-
-//!
 //=======================================================================================
 
 #ifndef PlanarAverageProbe_H

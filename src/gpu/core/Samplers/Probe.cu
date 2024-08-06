@@ -135,14 +135,14 @@ constexpr real computeAndSaveMean(real* quantityArray, real oldValue, uint index
     return newValue;
 }
 
-constexpr real computeVariance(real oldVariance, real oldMean, real newMean, real currentValue,
-                                         uint numberOfAveragedValues, real inverseCount)
+constexpr real computeVariance(real oldVariance, real oldMean, real newMean, real currentValue, uint numberOfAveragedValues,
+                               real inverseCount)
 {
     return (numberOfAveragedValues * oldVariance + (currentValue - oldMean) * (currentValue - newMean)) * inverseCount;
 }
 
-constexpr real computeAndSaveVariance(real* quantityArray, real oldVariance, uint indexNew, real currentValue,
-                                                real oldMean, real newMean, uint numberOfAveragedValues, real inverseCount)
+constexpr real computeAndSaveVariance(real* quantityArray, real oldVariance, uint indexNew, real currentValue, real oldMean,
+                                      real newMean, uint numberOfAveragedValues, real inverseCount)
 {
     const real newVariance =
         computeVariance(oldVariance, oldMean, newMean, currentValue, numberOfAveragedValues, inverseCount);
@@ -150,10 +150,9 @@ constexpr real computeAndSaveVariance(real* quantityArray, real oldVariance, uin
     return newVariance;
 }
 
-constexpr void computeStatistics(uint nAveragedValues, uint currentTimestep, uint lastTimestep,
-                                                  uint nPoints, uint nodeIndex, bool computeInstant, bool computeMean,
-                                                  bool computeVariance, uint iQuantity, real currentValue,
-                                                  const Probe::ProbeData& probeData, real invCount)
+constexpr void computeStatistics(uint nAveragedValues, uint currentTimestep, uint lastTimestep, uint nPoints, uint nodeIndex,
+                                 bool computeInstant, bool computeMean, bool computeVariance, uint iQuantity,
+                                 real currentValue, const Probe::ProbeData& probeData, real invCount)
 {
     const uint indexCurrent = calcArrayIndex(nodeIndex, nPoints, currentTimestep, probeData.numberOfTimesteps, iQuantity);
     const uint indexLast = calcArrayIndex(nodeIndex, nPoints, lastTimestep, probeData.numberOfTimesteps, iQuantity);
@@ -197,7 +196,7 @@ __global__ void calculateQuantitiesKernel(uint numberOfAveragedValues, Probe::Gr
     computeStatistics(numberOfAveragedValues, currentTimestep, lastTimestep, nPoints, nodeIndex,
                       probeData.computeInstantaneous, probeData.computeMeans, probeData.computeVariances, 3,
                       gridParams.density[gridNodeIndex], probeData, invCount);
-    if(probeData.sampleScalar)
+    if (probeData.sampleScalar)
         computeStatistics(numberOfAveragedValues, currentTimestep, lastTimestep, nPoints, nodeIndex,
                           probeData.computeInstantaneous, probeData.computeMeans, probeData.computeVariances, 4,
                           gridParams.scalar[gridNodeIndex], probeData, invCount);
@@ -215,7 +214,7 @@ std::vector<Probe::PostProcessingVariable> Probe::getPostProcessingVariables(Sta
             postProcessingVariables.emplace_back("vy", velocityRatio);
             postProcessingVariables.emplace_back("vz", velocityRatio);
             postProcessingVariables.emplace_back("rho", densityRatio);
-            if(sampleScalar)
+            if (sampleScalar)
                 postProcessingVariables.emplace_back("phi", c1o1);
             break;
         case Statistic::Means:
@@ -223,7 +222,7 @@ std::vector<Probe::PostProcessingVariable> Probe::getPostProcessingVariables(Sta
             postProcessingVariables.emplace_back("vy_mean", velocityRatio);
             postProcessingVariables.emplace_back("vz_mean", velocityRatio);
             postProcessingVariables.emplace_back("rho_mean", densityRatio);
-            if(sampleScalar)
+            if (sampleScalar)
                 postProcessingVariables.emplace_back("phi_mean", c1o1);
             break;
         case Statistic::Variances:
@@ -231,7 +230,7 @@ std::vector<Probe::PostProcessingVariable> Probe::getPostProcessingVariables(Sta
             postProcessingVariables.emplace_back("vy_var", stressRatio);
             postProcessingVariables.emplace_back("vz_var", stressRatio);
             postProcessingVariables.emplace_back("rho_var", densityRatio);
-            if(sampleScalar)
+            if (sampleScalar)
                 postProcessingVariables.emplace_back("phi_var", c1o1);
             break;
 
@@ -558,13 +557,7 @@ void Probe::getTaggedFluidNodes(GridProvider* gridProvider)
 
 Probe::GridParams Probe::getGridParams(LBMSimulationParameter* para)
 {
-    return {
-        para->velocityX,
-        para->velocityY,
-        para->velocityZ,
-        para->rho,
-        para->concentration
-    };
+    return { para->velocityX, para->velocityY, para->velocityZ, para->rho, para->concentration };
 }
 
 bool isCoarseInterpolationCell(unsigned long long pointIndex, Parameter* para, int level)
