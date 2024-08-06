@@ -33,6 +33,8 @@
 
 #include <functional>
 #include <vector>
+#include <string>
+#include <cstddef>
 
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
@@ -185,7 +187,7 @@ uint WallModelProbe::countFluidNodes(int level)
     return std::count(typePointer, typePointer + para->getParH(level)->numberOfNodes, GEO_FLUID);
 }
 
-void WallModelProbe::calculateQuantities(WallModelProbeLevelData* data, uint t, int level)
+void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t, int level)
 {
     const uint nPoints = para->getParD(level)->stressBC.numberOfBCnodes;
     if (nPoints < 1)

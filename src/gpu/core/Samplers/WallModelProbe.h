@@ -51,18 +51,6 @@
 class Parameter;
 class CudaMemoryManager;
 
-struct WallModelProbeLevelData
-{
-    uint numberOfAveragedValues, numberOfFluidNodes;
-    std::string timeseriesFileName;
-    std::vector<std::vector<real>> instantaneousData, averagedData;
-    std::vector<real> timestepTime;
-    bool firstWrite = true;
-    WallModelProbeLevelData(std::string fileName, uint numberOfFluidNodes)
-        : timeseriesFileName(fileName), numberOfFluidNodes(numberOfFluidNodes)
-    {
-    }
-};
 
 //! \brief Probe computing statistics of all relevant wall model quantities used in the StressBC kernels
 //! Computes spatial statistics for all grid points of the StressBC
@@ -94,13 +82,26 @@ public:
     void sample(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
 
+    struct LevelData
+    {
+        uint numberOfAveragedValues{}, numberOfFluidNodes{};
+        std::string timeseriesFileName;
+        std::vector<std::vector<real>> instantaneousData, averagedData;
+        std::vector<real> timestepTime;
+        bool firstWrite = true;
+        LevelData(std::string fileName, uint numberOfFluidNodes)
+            : timeseriesFileName(fileName), numberOfFluidNodes(numberOfFluidNodes)
+        {
+        }
+    };
+
 private:
     std::vector<std::string> getVariableNames();
-    int getNumberOfInstantaneousQuantities()
+    int getNumberOfInstantaneousQuantities() const
     {
         return evaluatePressureGradient ? 13 : 10;
     }
-    void calculateQuantities(WallModelProbeLevelData* levelData, uint t, int level);
+    void calculateQuantities(LevelData* levelData, uint t, int level);
     void write(int level);
     uint countFluidNodes(int level);
 
@@ -112,7 +113,7 @@ private:
     bool evaluatePressureGradient = false;
     bool computeTemporalAverages = false;
     bool averageEveryTimestep = false;
-    std::vector<WallModelProbeLevelData> levelData;
+    std::vector<LevelData> levelData;
 };
 
 #endif
