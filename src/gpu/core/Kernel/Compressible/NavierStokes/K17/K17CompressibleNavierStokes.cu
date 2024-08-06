@@ -145,14 +145,17 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
 }
 
 template <vf::lbm::TurbulenceModel turbulenceModel>
-K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level) : KernelImp(para, level)
+K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
+    : KernelImp(para, level,
+                /*recommended limit for viscosity*/ 0.001,
+                /*hard limit for viscosity (from DOI:10.1016/j.jcp.2017.05.040)*/ 1. / 42)
 {
     myPreProcessorTypes.push_back(InitNavierStokesCompressible);
 
     this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
     this->kernelUsesFluidNodeIndices = true;
 
-    VF_LOG_INFO("Using turbulence model: {}", turbulenceModel);
+    VF_LOG_INFO("Using turbulence model: {}", static_cast<int>(turbulenceModel));
 }
 
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::AMD>;

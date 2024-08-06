@@ -1063,7 +1063,7 @@ void logForFindCommunicationIndexData(real coordinate, real coordinateLimit,
                                       CommunicationDirections::CommunicationDirection direction, real delta)
 {
     VF_LOG_INFO("coordinate = {},\tcoordinateLimit = {},\tdirection = {} (isPositive: {}),\tdelta = {}", coordinate, coordinateLimit,
-                direction, CommunicationDirections::isPositive(direction), delta);
+                static_cast<int>(direction), CommunicationDirections::isPositive(direction), delta);
 }
 
 TEST(GridImpTest, findCommunicationIndex_MX)

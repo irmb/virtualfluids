@@ -29,30 +29,36 @@
 //! \addtogroup tests
 //! \ingroup basics
 //! \{
-//! \author Soeren Peters
+//! \author Anna Wellmann
 //=======================================================================================
-#ifndef TESTUTILITIES_H
-#define TESTUTILITIES_H
 
-#include <gmock/gmock.h>
-#include <string>
+#include <sstream>
 
-inline auto RealEq = [](auto value) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value);
-#else
-    return testing::FloatEq(value);
-#endif
+#include "spdlog/logger.h"
+#include "spdlog/spdlog.h"
+
+namespace testing::vf {
+
+class LogRedirector
+{
+public:
+    LogRedirector();
+    ~LogRedirector();
+    bool logContainsWarning();
+    std::string getLoggerOutput();
+
+private:
+    void redirectDefaultLoggerToString();
+    void redirectLoggerToString(std::shared_ptr<spdlog::logger> log, spdlog::level::level_enum newLevel);
+    void resetLogger();
+
+    std::ostringstream oss;
+
+    std::shared_ptr<spdlog::logger> logger;
+    spdlog::sink_ptr oldSink;
+    spdlog::level::level_enum oldLevel;
 };
 
-inline auto RealNear = [](auto value, auto max_abs_error) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleNear(value, max_abs_error);
-#else
-    return testing::FloatNear(value, max_abs_error);
-#endif
-};
-
-#endif
+}
 
 //! \}

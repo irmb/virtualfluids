@@ -417,30 +417,6 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
     }
-
-    checkParameterValidityCumulantK17();
-}
-
-void Parameter::checkParameterValidityCumulantK17() const
-{
-    if (this->mainKernel != vf::collisionKernel::compressible::K17CompressibleNavierStokes)
-        return;
-
-    const real viscosity = this->parH[maxlevel]->viscosity;
-    const real viscosityLimit = 1.0 / 42.0;
-    if (viscosity > viscosityLimit) {
-        VF_LOG_WARNING("The viscosity (in LB units) at level {} is {:1.3g}. It is recommended to keep it smaller than {:1.3g} "
-                       "for the CumulantK17 collision kernel.",
-                       maxlevel, viscosity, viscosityLimit);
-    }
-
-    const real velocity = this->u0;
-    const real velocityLimit = 0.1;
-    if (velocity > velocityLimit) {
-        VF_LOG_WARNING("The velocity (in LB units) is {:1.4g}. It is recommended to keep it smaller than {:1.4g} for the "
-                       "CumulantK17 collision kernel.",
-                       velocity, velocityLimit);
-    }
 }
 
 void Parameter::copyMeasurePointsArrayToVector(int lev)
