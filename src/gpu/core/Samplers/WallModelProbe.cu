@@ -31,10 +31,10 @@
 //! \{
 #include "WallModelProbe.h"
 
-#include <functional>
-#include <vector>
-#include <string>
 #include <cstddef>
+#include <functional>
+#include <string>
+#include <vector>
 
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
@@ -97,7 +97,7 @@ std::vector<std::string> WallModelProbe::getVariableNames()
 void WallModelProbe::init()
 {
 
-    std::vector<std::string> variableNames  = getVariableNames();
+    std::vector<std::string> variableNames = getVariableNames();
 
     const int numberOfQuantities = getNumberOfInstantaneousQuantities();
 
@@ -139,10 +139,11 @@ template <typename T>
 T computeMean(T* devicePointer, uint numberOfPoints, T conversionFactor)
 {
     thrust::device_ptr<T> thrustPointer = thrust::device_pointer_cast(devicePointer);
-    return  thrust::reduce(thrustPointer, thrustPointer + numberOfPoints) / real(numberOfPoints) * conversionFactor;
+    return thrust::reduce(thrustPointer, thrustPointer + numberOfPoints) / real(numberOfPoints) * conversionFactor;
 }
 
-struct isValidNode {
+struct isValidNode
+{
     constexpr real operator()(thrust::tuple<real, uint> x)
     {
         return thrust::get<1>(x) == GEO_FLUID ? thrust::get<0>(x) : c0o1;
@@ -150,7 +151,8 @@ struct isValidNode {
 };
 
 template <typename T>
-T computeIndexBasedMean(T* devicePointer, uint* typeOfGridNode, uint numberOfNodes, uint numberOfFluidNodes, T conversionFactor)
+T computeIndexBasedMean(T* devicePointer, uint* typeOfGridNode, uint numberOfNodes, uint numberOfFluidNodes,
+                        T conversionFactor)
 {
     thrust::device_ptr<T> thrustPointer = thrust::device_pointer_cast(devicePointer);
     thrust::device_ptr<uint> typePointer = thrust::device_pointer_cast(typeOfGridNode);
@@ -172,7 +174,8 @@ template <typename T>
 void computeAndSaveIndexBasedMean(T* devicePointer, uint* typeOfGridNode, uint numberOfNodes, uint numberOfFluidNodes,
                                   std::vector<real>& quantitiesArray, T conversionFactor)
 {
-    quantitiesArray.push_back(computeIndexBasedMean(devicePointer, typeOfGridNode, numberOfNodes, numberOfFluidNodes, conversionFactor));
+    quantitiesArray.push_back(
+        computeIndexBasedMean(devicePointer, typeOfGridNode, numberOfNodes, numberOfFluidNodes, conversionFactor));
 }
 
 template <typename T>
@@ -229,12 +232,12 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     }
 
     if (computeTemporalAverages) {
-        if(t > tStartTemporalAveraging){
+        if (t > tStartTemporalAveraging) {
             const real inverseNumberOfAveragedValues = c1o1 / real(data->numberOfAveragedValues + 1);
             std::vector<real>& oldAverages = data->averagedData.back();
             std::vector<real> newAverages;
             newAverages.reserve(numberOfQuantities);
-            for(int i=0; i<numberOfQuantities; i++)
+            for (int i = 0; i < numberOfQuantities; i++)
                 computeTemporalAverage(newAverages, oldAverages[i], newInstantaneous[i], inverseNumberOfAveragedValues);
             data->averagedData.push_back(newAverages);
             data->numberOfAveragedValues++;
@@ -249,18 +252,18 @@ void WallModelProbe::write(int level)
 {
     auto data = &levelData[level];
 
-    if(data->timestepTime.empty())
+    if (data->timestepTime.empty())
         return;
 
     std::vector<std::vector<real>> dataToWrite;
-    for(size_t i=0; i<data->timestepTime.size(); i++)
-    {
+    for (size_t i = 0; i < data->timestepTime.size(); i++) {
         std::vector<real> row;
-        row.reserve(data->instantaneousData[i].size() + (computeTemporalAverages ? data->averagedData[i+1].size() : 0) + 1);
+        row.reserve(data->instantaneousData[i].size() + (computeTemporalAverages ? data->averagedData[i + 1].size() : 0) +
+                    1);
         row.push_back(data->timestepTime[i]);
         std::copy(data->instantaneousData[i].begin(), data->instantaneousData[i].end(), std::back_inserter(row));
-        if(computeTemporalAverages)
-            std::copy(data->averagedData[i+1].begin(), data->averagedData[i+1].end(), std::back_inserter(row));
+        if (computeTemporalAverages)
+            std::copy(data->averagedData[i + 1].begin(), data->averagedData[i + 1].end(), std::back_inserter(row));
         dataToWrite.push_back(row);
     }
 
@@ -268,12 +271,11 @@ void WallModelProbe::write(int level)
 
     data->timestepTime.clear();
     data->instantaneousData.clear();
-    if(computeTemporalAverages){
+    if (computeTemporalAverages) {
         auto lastTimestep = data->averagedData.back();
         data->averagedData.clear();
         data->averagedData.push_back(lastTimestep);
     }
 }
-
 
 //! \}
