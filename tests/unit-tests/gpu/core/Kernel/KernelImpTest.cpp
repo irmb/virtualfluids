@@ -38,6 +38,8 @@
 #include <basics/tests/testUtilities.h>
 #include <logger/Logger.h>
 
+#include "tests/unit-tests/gpu/core/testUtilitiesGPU.h"
+
 using namespace vf::collisionKernel;
 
 class KernelImpTest : public testing::TestWithParam<std::string>
