@@ -26,33 +26,58 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup tests
-//! \ingroup basics
 //! \{
-//! \author Soeren Peters
 //=======================================================================================
-#ifndef TESTUTILITIES_H
-#define TESTUTILITIES_H
 
-#include <gmock/gmock.h>
-#include <string>
+#include "LogRedirector.h"
 
-inline auto RealEq = [](auto value) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value);
-#else
-    return testing::FloatEq(value);
-#endif
-};
+#include <spdlog/sinks/ostream_sink.h>
 
-inline auto RealNear = [](auto value, auto max_abs_error) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleNear(value, max_abs_error);
-#else
-    return testing::FloatNear(value, max_abs_error);
-#endif
-};
+#include <logger/Logger.h>
 
-#endif
+namespace testing::vf
+{
+    
+LogRedirector::LogRedirector()
+{
+    this->redirectDefaultLoggerToString();
+}
+
+LogRedirector::~LogRedirector()
+{
+    logger->sinks()[0] = std::move(oldSink);
+    logger->set_level(oldLevel);
+}
+
+void LogRedirector::redirectDefaultLoggerToString()
+{
+    redirectLoggerToString(spdlog::default_logger(), spdlog::default_logger()->level());
+}
+
+void LogRedirector::redirectLoggerToString(std::shared_ptr<spdlog::logger> logger, spdlog::level::level_enum newLevel)
+{
+    this->logger = logger;
+    oldLevel = logger->level();
+    std::vector<spdlog::sink_ptr>& sinks { logger->sinks() };
+    assert(sinks.size() == 1);
+
+    oldSink = std::move(sinks[0]);
+
+    sinks[0] = std::make_shared<spdlog::sinks::ostream_sink_st>(oss);
+    logger->set_pattern("[%l] %v");
+    logger->set_level(newLevel);
+}
+
+bool LogRedirector::logContainsWarning()
+{
+    return getLoggerOutput().find("warning") != std::string::npos;
+}
+
+std::string LogRedirector::getLoggerOutput()
+{
+    return oss.str();
+}
+
+} // namespace testing::vf
 
 //! \}

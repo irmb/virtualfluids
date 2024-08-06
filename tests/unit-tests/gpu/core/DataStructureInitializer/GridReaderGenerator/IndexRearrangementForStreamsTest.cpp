@@ -166,7 +166,7 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
         builder->setNumberOfSendIndices((uint)sendIndices.sendIndices.size());
 
-        para = testingVF::createParameterForLevel(sendIndices.level);
+        para = testing::vf::createParameterForLevel(sendIndices.level);
 
         para->getParH(sendIndices.level)->fineToCoarse.numberOfCells = sendIndices.numNodesFtoC;
         para->getParH(sendIndices.level)->fineToCoarse.coarseCellIndices = &(sendIndices.interpolationCellFineToCoarseCoarse.front());
@@ -258,7 +258,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = testingVF::createParameterForLevel(level);
+        para = testing::vf::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCX(level);
@@ -377,7 +377,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = testingVF::createParameterForLevel(level);
+        para = testing::vf::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCY(level);
@@ -496,7 +496,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = testingVF::createParameterForLevel(level);
+        para = testing::vf::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCZ(level);
@@ -640,7 +640,7 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
         builder->setNumberOfRecvIndices((uint)ri.recvIndices.size());
 
-        para = testingVF::createParameterForLevel(ri.level);
+        para = testing::vf::createParameterForLevel(ri.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
             IndexRearrangementForStreams(para, builder, communicator));

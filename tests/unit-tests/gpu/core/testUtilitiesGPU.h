@@ -36,7 +36,7 @@
 
 #include "Parameter/Parameter.h"
 
-namespace testingVF
+namespace testing::vf
 {
 
 inline SPtr<Parameter> createParameterForLevel(uint level)
@@ -49,7 +49,7 @@ inline SPtr<Parameter> createParameterForLevel(uint level)
     return para;
 }
 
-} // namespace testingVF
+} // namespace testing::vf
 
 #endif
 

@@ -57,6 +57,7 @@ void K15IncompressibleNavierStokes::run()
 }
 
 K15IncompressibleNavierStokes::K15IncompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
+    : KernelImp(para, level, c1o6)
 {
     this->para = para;
     this->level = level;

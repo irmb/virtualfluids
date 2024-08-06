@@ -44,9 +44,13 @@
 class Kernel
 {
 public:
-    virtual ~Kernel()  = default;
+    virtual ~Kernel() = default;
     virtual void run() = 0;
-    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIdx=CudaStreamIndex::Legacy) = 0;
+    virtual void runOnIndices(const unsigned int* indices, unsigned int size_indices, CollisionTemplate collisionTemplate,
+                              CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) = 0;
+
+    //! check if velocityLB and viscosityLB are not too high, as this can lead to inaccurate results or a crash of the kernel
+    virtual void checkKernelParameters(uint maxLevel, real velocityLB, real viscosityLBOnFinestLevel) const = 0;
 
     virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;
 };

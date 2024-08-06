@@ -136,7 +136,7 @@ private:
         grid->setFluidNodeIndicesBorder(cf.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
-        para = testingVF::createParameterForLevel(cf.level);
+        para = testing::vf::createParameterForLevel(cf.level);
         para->getParH(cf.level)->coarseToFine.coarseCellIndices = &(cf.intCtoFcoarse.front());
         para->getParH(cf.level)->coarseToFine.fineCellIndices = &(cf.fineCellIndices.front());
         para->getParH(cf.level)->neighborX = cf.neighborX;
@@ -230,7 +230,7 @@ private:
         grid->setFluidNodeIndicesBorder(fc.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
-        para = testingVF::createParameterForLevel(fc.level);
+        para = testing::vf::createParameterForLevel(fc.level);
         para->getParH(fc.level)->fineToCoarse.coarseCellIndices = &(fc.coarseCellIndices.front());
         para->getParH(fc.level)->fineToCoarse.fineCellIndices = &(fc.fineCellIndices.front());
         para->getParH(fc.level)->fineToCoarse.numberOfCells = fc.sizeOfIntFineToCoarse;
