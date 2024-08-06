@@ -79,18 +79,7 @@ public:
     void sample(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
 
-    struct LevelData
-    {
-        uint numberOfAveragedValues {}, numberOfFluidNodes {};
-        std::string timeseriesFileName;
-        std::vector<std::vector<real>> instantaneousData, averagedData;
-        std::vector<real> timestepTime;
-        bool firstWrite = true;
-        LevelData(std::string fileName, uint numberOfFluidNodes)
-            : timeseriesFileName(fileName), numberOfFluidNodes(numberOfFluidNodes)
-        {
-        }
-    };
+    struct LevelData;
 
 private:
     std::vector<std::string> getVariableNames();
@@ -111,6 +100,19 @@ private:
     bool computeTemporalAverages = false;
     bool averageEveryTimestep = false;
     std::vector<LevelData> levelData;
+};
+
+struct WallModelProbe::LevelData
+{
+    uint numberOfAveragedValues {}, numberOfFluidNodes {};
+    std::string timeseriesFileName;
+    std::vector<std::vector<real>> instantaneousData, averagedData;
+    std::vector<real> timestepTime;
+    bool firstWrite = true;
+    LevelData(std::string fileName, uint numberOfFluidNodes)
+        : timeseriesFileName(fileName), numberOfFluidNodes(numberOfFluidNodes)
+    {
+    }
 };
 
 #endif
