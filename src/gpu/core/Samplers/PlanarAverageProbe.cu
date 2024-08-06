@@ -79,7 +79,7 @@ iterPair getPermutationIterators(real* values, unsigned long long* indices, uint
 struct shiftIndex
 {
     const uint* neighborNormal;
-    __host__ __device__ unsigned long long operator()(unsigned long long& pointIndices) const
+    constexpr unsigned long long operator()(unsigned long long& pointIndices) const
     {
         return neighborNormal[pointIndices];
     }
@@ -93,7 +93,7 @@ struct covariance
     }
 
     template <typename Tuple>
-    __host__ __device__ real operator()(const Tuple& t) const
+    constexpr real operator()(const Tuple& t) const
     {
         return (thrust::get<0>(t) - mean_x) * (thrust::get<1>(t) - mean_y);
     }
@@ -105,7 +105,7 @@ struct skewness
     skewness(real mean) : mean(mean)
     {
     }
-    __host__ __device__ real operator()(const real& x) const
+    constexpr real operator()(const real& x) const
     {
         return (x - mean) * (x - mean) * (x - mean);
     }
@@ -117,7 +117,7 @@ struct flatness
     flatness(real mean) : mean(mean)
     {
     }
-    __host__ __device__ real operator()(const real& x) const
+    constexpr real operator()(const real& x) const
     {
         return (x - mean) * (x - mean) * (x - mean) * (x - mean);
     }

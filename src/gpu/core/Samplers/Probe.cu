@@ -99,7 +99,7 @@ void Probe::addProbePointsFromList(std::vector<real> coordsX, std::vector<real> 
         addProbePoint(coordsX[i], coordY[i], coordZ[i]);
 }
 
-__host__ __device__ int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int quantity)
+constexpr int calcArrayIndex(int node, int nNodes, int timestep, int nTimesteps, int quantity)
 {
     return node + nNodes * (timestep + nTimesteps * quantity);
 }
@@ -123,25 +123,25 @@ real* getStatisticArray(Probe::ProbeData probeData, Probe::Statistic statistic)
     }
 }
 
-__host__ __device__ real computeMean(real oldMean, real newValue, real inverseCount)
+constexpr real computeMean(real oldMean, real newValue, real inverseCount)
 {
     return oldMean + (newValue - oldMean) * inverseCount;
 }
 
-__host__ __device__ real computeAndSaveMean(real* quantityArray, real oldValue, uint index, real currentValue, real invCount)
+constexpr real computeAndSaveMean(real* quantityArray, real oldValue, uint index, real currentValue, real invCount)
 {
     const real newValue = computeMean(oldValue, currentValue, invCount);
     quantityArray[index] = newValue;
     return newValue;
 }
 
-__host__ __device__ real computeVariance(real oldVariance, real oldMean, real newMean, real currentValue,
+constexpr real computeVariance(real oldVariance, real oldMean, real newMean, real currentValue,
                                          uint numberOfAveragedValues, real inverseCount)
 {
     return (numberOfAveragedValues * oldVariance + (currentValue - oldMean) * (currentValue - newMean)) * inverseCount;
 }
 
-__host__ __device__ real computeAndSaveVariance(real* quantityArray, real oldVariance, uint indexNew, real currentValue,
+constexpr real computeAndSaveVariance(real* quantityArray, real oldVariance, uint indexNew, real currentValue,
                                                 real oldMean, real newMean, uint numberOfAveragedValues, real inverseCount)
 {
     const real newVariance =
@@ -150,7 +150,7 @@ __host__ __device__ real computeAndSaveVariance(real* quantityArray, real oldVar
     return newVariance;
 }
 
-__forceinline__ __device__ void computeStatistics(uint nAveragedValues, uint currentTimestep, uint lastTimestep,
+constexpr void computeStatistics(uint nAveragedValues, uint currentTimestep, uint lastTimestep,
                                                   uint nPoints, uint nodeIndex, bool computeInstant, bool computeMean,
                                                   bool computeVariance, uint iQuantity, real currentValue,
                                                   const Probe::ProbeData& probeData, real invCount)
