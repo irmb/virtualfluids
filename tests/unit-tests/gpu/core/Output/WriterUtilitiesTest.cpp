@@ -37,7 +37,7 @@
 
 #include <gpu/core/Output/WriterUtilities.h>
 
-#include "../Utilities/testUtilitiesGPU.h"
+#include "../testUtilitiesGPU.h"
 
 class WriterUtilitiesPeriodicCellTest : public testing::Test
 {

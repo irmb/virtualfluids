@@ -31,7 +31,7 @@
 include(FetchContent)
 
 # spdlog
-set(spdlog_version "v1.9.1")
+set(spdlog_version "v1.14.1")
 set(spdlog_url "https://github.com/gabime/spdlog")
 message(STATUS "Fetching spdlog: ${spdlog_version}")
 FetchContent_Declare(

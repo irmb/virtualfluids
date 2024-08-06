@@ -26,32 +26,30 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup tests
-//! \ingroup basics
+//! \addtogroup gpu_Utilities Utilities
+//! \ingroup gpu_core core
 //! \{
-//! \author Soeren Peters
+//! \author Martin Schoenherr
 //=======================================================================================
-#ifndef TESTUTILITIES_H
-#define TESTUTILITIES_H
+#ifndef TESTUTILITIESGPU_H
+#define TESTUTILITIESGPU_H
 
-#include <gmock/gmock.h>
-#include <string>
+#include "Parameter/Parameter.h"
 
-inline auto RealEq = [](auto value) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleEq(value);
-#else
-    return testing::FloatEq(value);
-#endif
-};
+namespace testing::vf
+{
 
-inline auto RealNear = [](auto value, auto max_abs_error) {
-#ifdef VF_DOUBLE_ACCURACY
-    return testing::DoubleNear(value, max_abs_error);
-#else
-    return testing::FloatNear(value, max_abs_error);
-#endif
-};
+inline SPtr<Parameter> createParameterForLevel(uint level)
+{
+    SPtr<Parameter> para = std::make_shared<Parameter>();
+    para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
+    para->parH[level] = std::make_shared<LBMSimulationParameter>();
+    para->parD[level] = std::make_shared<LBMSimulationParameter>();
+
+    return para;
+}
+
+} // namespace testing::vf
 
 #endif
 

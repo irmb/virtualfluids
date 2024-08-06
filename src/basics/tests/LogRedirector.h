@@ -26,31 +26,39 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_Utilities Utilities
-//! \ingroup gpu_core core
+//! \addtogroup tests
+//! \ingroup basics
 //! \{
-//! \author Martin Schoenherr
+//! \author Anna Wellmann
 //=======================================================================================
-#ifndef TESTUTILITIESGPU_H
-#define TESTUTILITIESGPU_H
 
-#include "Parameter/Parameter.h"
+#include <sstream>
 
-namespace testingVF
+#include "spdlog/logger.h"
+#include "spdlog/spdlog.h"
+
+namespace testing::vf {
+
+class LogRedirector
 {
+public:
+    LogRedirector();
+    ~LogRedirector();
+    bool logContainsWarning();
+    std::string getLoggerOutput();
 
-inline SPtr<Parameter> createParameterForLevel(uint level)
-{
-    SPtr<Parameter> para = std::make_shared<Parameter>();
-    para->setMaxLevel(level + 1); // setMaxLevel resizes parH and parD
-    para->parH[level] = std::make_shared<LBMSimulationParameter>();
-    para->parD[level] = std::make_shared<LBMSimulationParameter>();
+private:
+    void redirectDefaultLoggerToString();
+    void redirectLoggerToString(std::shared_ptr<spdlog::logger> log, spdlog::level::level_enum newLevel);
+    void resetLogger();
 
-    return para;
+    std::ostringstream oss;
+
+    std::shared_ptr<spdlog::logger> logger;
+    spdlog::sink_ptr oldSink;
+    spdlog::level::level_enum oldLevel;
+};
+
 }
-
-} // namespace testingVF
-
-#endif
 
 //! \}
