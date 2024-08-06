@@ -38,7 +38,7 @@
 #include <basics/tests/testUtilities.h>
 #include <logger/Logger.h>
 
-#include "../../testUtilitiesGPU.h"
+#include "../testUtilitiesGPU.h"
 
 using namespace vf::collisionKernel;
 
