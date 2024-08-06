@@ -143,7 +143,7 @@ T computeMean(T* devicePointer, uint numberOfPoints, T conversionFactor)
 }
 
 struct isValidNode {
-    constexpr real operator()(thrust::tuple<real, uint> x)
+    __host__ __device__ real operator()(thrust::tuple<real, uint> x)
     {
         return thrust::get<1>(x) == GEO_FLUID ? thrust::get<0>(x) : c0o1;
     }
