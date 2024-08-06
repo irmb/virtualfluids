@@ -42,6 +42,8 @@
 #define __device__
 #endif
 
+#include <algorithm>
+
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
@@ -63,19 +65,12 @@ enum class TurbulenceModel {
     None
 };
 
-inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz,
-                                                           real Dyz)
+inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
     return Cs * Cs * sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 }
 
-template <typename T>
-__host__ __device__ T max( T a, T b )
-{
-    return ( a > b ) ? a : b;
-}
-
-inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+constexpr real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
     // ! Verstappen's QR model
     //! Second invariant of the strain-rate tensor
@@ -83,16 +78,18 @@ inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real
     //! Third invariant of the strain-rate tensor (determinant)
     // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
     real R = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
-    return C * max(R, c0o1) / Q;
+
+    constexpr real zero = c0o1; // I Don't know why this is necessary, but it is apparently to pass it to std::max ...
+    return C * std::max(R, zero) / Q;
 }
 
-inline __host__ __device__ real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
+constexpr real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
 {
     return omega / (c1o1 + c3o1 * omega * turbulenceViscosity);
 }
 
 } // namespace vf::lbm
 
-#endif //TURBULENT_VISCOSITY_H
+#endif // TURBULENT_VISCOSITY_H
 
 //! \}

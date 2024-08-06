@@ -46,6 +46,7 @@
 //////////////////////////
 
 #include <basics/DataTypes.h>
+#include <lbm/constants/D3Q27.h>
 
 #include <string>
 #include <vector>
@@ -88,12 +89,14 @@ struct ICellNeigh
 
 using InterpolationCellNeighbor = ICellNeigh;
 
-struct  Distributions27
+struct Distributions27
 {
-   real* f[27];
+   real* f[27] = { nullptr };
+   constexpr Distributions27() = default;
 };
 
 using DistributionReferences27 = Distributions27;
+
 
 struct SubgridDistances27
 {
