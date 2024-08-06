@@ -197,6 +197,10 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_TRACE("make Kernels");
     kernels = kernelFactory->makeKernels(para);
+    for (const auto& kernel : kernels) {
+        kernel->checkKernelParameters(para->getMaxLevel(), para->getVelocity(),
+                                      para->getParH(para->getMaxLevel())->viscosity);
+    }
 
     if (para->getDiffOn()) {
         VF_LOG_TRACE("make AD Kernels");

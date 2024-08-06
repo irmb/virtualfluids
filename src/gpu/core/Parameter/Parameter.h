@@ -740,8 +740,6 @@ private:
 
     void setPathAndFilename(std::string fname);
 
-    void checkParameterValidityCumulantK17() const;
-
 private:
     real Re;
     real factorPressBC{ 1.0 };
