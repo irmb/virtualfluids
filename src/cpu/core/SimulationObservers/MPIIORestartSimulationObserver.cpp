@@ -178,7 +178,7 @@ void MPIIORestartSimulationObserver::writeDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::writeDataSet start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool multiPhase1 = false;
@@ -362,7 +362,7 @@ void MPIIORestartSimulationObserver::writeDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::writeDataSet start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // write to the file
@@ -522,7 +522,7 @@ void MPIIORestartSimulationObserver::write4DArray(int step, Arrays arrayType, st
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::writeAverageDensityArray start collect data to file = " << fname);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool firstBlock = true;
@@ -587,7 +587,7 @@ void MPIIORestartSimulationObserver::write4DArray(int step, Arrays arrayType, st
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::write4DArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // write to the file
@@ -673,7 +673,7 @@ void MPIIORestartSimulationObserver::write3DArray(int step, Arrays arrayType, st
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::write3DArray start collect data to file = " << fname);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool firstBlock = true;
@@ -735,7 +735,7 @@ void MPIIORestartSimulationObserver::write3DArray(int step, Arrays arrayType, st
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::write3DArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // write to the file
@@ -809,7 +809,7 @@ void MPIIORestartSimulationObserver::writeBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::writeBoundaryConds start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     int blocksCount          = 0; // quantity of blocks in the grid, max 2147483648 blocks!
@@ -942,7 +942,7 @@ void MPIIORestartSimulationObserver::writeBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::writeBoundaryConds start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -1027,7 +1027,7 @@ void MPIIORestartSimulationObserver::readDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readDataSet start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -1128,7 +1128,7 @@ void MPIIORestartSimulationObserver::readDataSet(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readDataSet time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readDataSet start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
     size_t index = 0;
@@ -1229,7 +1229,7 @@ void MPIIORestartSimulationObserver::readDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readDataSet end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     delete[] dataSetArray;
@@ -1283,7 +1283,7 @@ void MPIIORestartSimulationObserver::readArray(int step, Arrays arrType, std::st
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readArray start fname = " << fname);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     real start{ 0. };
@@ -1347,7 +1347,7 @@ void MPIIORestartSimulationObserver::readArray(int step, Arrays arrType, std::st
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readArray time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readArray start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     //----------------------------- restore data ---------------------------------
@@ -1422,7 +1422,7 @@ void MPIIORestartSimulationObserver::readArray(int step, Arrays arrType, std::st
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readArray end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     delete[] dataSetSmallArray;
@@ -1437,7 +1437,7 @@ void MPIIORestartSimulationObserver::readBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readBoundaryConds start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
     real start {0.};
@@ -1512,7 +1512,7 @@ void MPIIORestartSimulationObserver::readBoundaryConds(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readBoundaryConds time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readBoundaryConds start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     int index = 0, index1 = 0, index2 = 0;
@@ -1584,7 +1584,7 @@ void MPIIORestartSimulationObserver::readBoundaryConds(int step)
 
     if (comm->isRoot()) {
         UBLOG(logINFO, "MPIIORestartSimulationObserver::readBoundaryConds end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 }
 //////////////////////////////////////////////////////////////////////////

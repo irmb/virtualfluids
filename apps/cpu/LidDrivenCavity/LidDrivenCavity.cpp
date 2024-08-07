@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
         intHelper.selectBlocks();
 
         if (myid == 0)
-            VF_LOG_INFO("{}", Utilities::toString(grid, comm->getNumberOfProcesses()));
+            VF_LOG_INFO("{}", utilities::toString(grid, comm->getNumberOfProcesses()));
 
         // Generate grid
         SetKernelBlockVisitor kernelVisitor(kernel, viscosityLB);
@@ -204,10 +204,10 @@ int main(int argc, char* argv[])
 
         UBLOG(logINFO, "Preprocess - end");
 
-        UBLOG(logINFO, "Total Physical Memory (RAM): " << Utilities::getTotalPhysMem() / 1e9 << " GB");
-        UBLOG(logINFO, "Physical Memory currently used: " << Utilities::getPhysMemUsed() / 1e9 << " GB");
+        UBLOG(logINFO, "Total Physical Memory (RAM): " << utilities::getTotalPhysMem() / 1e9 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used: " << utilities::getPhysMemUsed() / 1e9 << " GB");
         UBLOG(logINFO,
-              "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1e9 << " GB");
+              "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1e9 << " GB");
 
         // Create coprocessor object for writing macroscopic quantities to VTK-file
         SPtr<UbScheduler> visSch(new UbScheduler(timeStepOut));

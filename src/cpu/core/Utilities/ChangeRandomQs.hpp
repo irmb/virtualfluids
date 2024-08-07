@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Utilities Utilities
+//! \addtogroup cpu_Utilities utilities
 //! \ingroup cpu_core core
 //! \{
 //! \author Konstantin Kutscher
@@ -41,7 +41,7 @@
 #include "BCArray3D.h"
 #include "BCSet.h"
 
-namespace Utilities
+namespace utilities
 {
    void ChangeRandomQs(SPtr<IntegrateValuesHelper> integrateValues)
    {

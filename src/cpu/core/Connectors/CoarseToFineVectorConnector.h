@@ -806,11 +806,11 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(const int &g
     if (dataDistribution)
         dCoef = 1;
 
-    if (Utilities::isOdd(gMax)) {
+    if (utilities::isOdd(gMax)) {
         halfEven = gMax / 2;
         halfOdd  = gMax / 2;
     }
-    if (Utilities::isEven(gMax)) {
+    if (utilities::isEven(gMax)) {
         halfEven = gMax / 2;
         halfOdd  = gMax / 2 - 1 + dCoef;
     }

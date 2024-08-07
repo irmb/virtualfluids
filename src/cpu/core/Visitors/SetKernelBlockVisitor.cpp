@@ -111,7 +111,7 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
 void SetKernelBlockVisitor::throwExceptionIfNotEnoughMemory(const SPtr<Grid3D> &grid)
 {
-    auto availableMemory = Utilities::getTotalPhysMem();
+    auto availableMemory = utilities::getTotalPhysMem();
     auto requiredMemory  = getRequiredPhysicalMemory(grid);
     if (requiredMemory > availableMemory)
         throw UbException(UB_EXARGS, "SetKernelBlockVisitor: Not enough memory!!! Rank = " + ub_system::toString(grid->getRank()));

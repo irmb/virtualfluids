@@ -126,7 +126,7 @@ void MPIIOSimulationObserver::writeBlocks(int step)
     if (comm->isRoot()) {
         UBLOG(logINFO, "MPIIOSimulationObserver::writeBlocksToFile start collect data rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
-                           << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+                           << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     int blocksCount  = 0; // quantity of all the blocks in the grid, max 2147483648 blocks!
@@ -222,7 +222,7 @@ void MPIIOSimulationObserver::writeBlocks(int step)
     if (comm->isRoot()) {
         UBLOG(logINFO, "MPIIOSimulationObserver::writeBlocksToFile start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
-                           << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+                           << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // write to the file
@@ -272,7 +272,7 @@ void MPIIOSimulationObserver::readBlocks(int step)
     if (comm->isRoot()) {
         UBLOG(logINFO, "MPIIOSimulationObserver::readBlocks start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
-                           << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+                           << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
     real start {0.};
@@ -312,7 +312,7 @@ void MPIIOSimulationObserver::readBlocks(int step)
         UBLOG(logINFO, "MPIIOSimulationObserver::readBlocks time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOSimulationObserver::readBlocks start of restore of data, rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
-                           << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+                           << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // clear the grid
@@ -394,7 +394,7 @@ void MPIIOSimulationObserver::readBlocks(int step)
     if (comm->isRoot()) {
         UBLOG(logINFO, "MPIIOSimulationObserver::readBlocks end of restore of data, rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
-                           << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+                           << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 }
 

@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_Utilities Utilities
+//! \addtogroup gpu_Utilities utilities
 //! \ingroup gpu_core core
 //! \{
 //! \author Martin Schoenherr, Anna Wellmann

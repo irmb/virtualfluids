@@ -845,7 +845,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_ty
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMaxCF(int gMax, int &lMin, int &lMax)
 {
-    if (Utilities::isOdd(gMax)) {
+    if (utilities::isOdd(gMax)) {
         if (connType == OddEvenSE || connType == OddOddNE) {
             lMin = 1;
             lMax = gMax;
@@ -1447,10 +1447,10 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::getLocalOffsets(const int &gMax, int &oMin)
 {
-    if (Utilities::isEven(gMax)) {
+    if (utilities::isEven(gMax)) {
         oMin = 0;
     }
-    if (Utilities::isOdd(gMax)) {
+    if (utilities::isOdd(gMax)) {
         oMin = -1;
     }
 }

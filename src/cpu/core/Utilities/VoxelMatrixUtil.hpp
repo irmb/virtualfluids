@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Utilities Utilities
+//! \addtogroup cpu_Utilities utilities
 //! \ingroup cpu_core core
 //! \{
 //! \author Konstantin Kutscher
@@ -43,7 +43,7 @@
 #include "Grid3D.h"
 
 
-namespace Utilities
+namespace utilities
 {
    void voxelMatrixDiscretisation(SPtr<GbVoxelMatrix3D> matrix, std::string& pathname, int myid, int fileCounter, SPtr<Grid3D> grid, int bounceBackOption, bool vmFile)
    {
