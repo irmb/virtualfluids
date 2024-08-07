@@ -47,7 +47,7 @@
 #include <cmath>
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class SAHSplit : public SplitAlgorithm<T>
@@ -111,7 +111,7 @@ public:
 
         for (std::size_t i = 0; i < srcTriFaces.size(); i++) {
             GbTriFaceMesh3D::TriFace &triFace = srcTriFaces[i];
-            Kd::project2Axis(triFace, srcNodes, candidate.axis, projection);
+            kd_tree::project2Axis(triFace, srcNodes, candidate.axis, projection);
 
             T &min = projection[0];
             T &max = projection[2];
@@ -177,7 +177,7 @@ private:
             GbTriFaceMesh3D::TriFace &triFace = srcTriFaces[i];
 
             // project object to axis
-            Kd::project2Axis(triFace, srcNodes, splitAxis, projection);
+            kd_tree::project2Axis(triFace, srcNodes, splitAxis, projection);
             // left point
             T &p1 = projection[0];
             // right point
@@ -283,7 +283,7 @@ template <typename T>
 const T SAHSplit<T>::Ct = 3.0; // traversal cost
 template <typename T>
 const T SAHSplit<T>::Ci = 4.0; // ray-patch-intersection-cost
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDSAHSPLIT_H
 

@@ -36,7 +36,7 @@
 
 #include <basics/utilities/UbMath.h>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class SplitCandidate
@@ -71,7 +71,7 @@ public:
     bool np_right{ false };
     bool isValid{ false };
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDSPLITCANDIDATE_H
 

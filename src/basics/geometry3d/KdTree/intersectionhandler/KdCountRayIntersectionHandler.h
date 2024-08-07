@@ -45,7 +45,7 @@
 
 #include <set>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class CountRayIntersectionHandler : public RayIntersectionHandler<T>
@@ -187,7 +187,7 @@ private:
         return counter;
     }
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDCOUNTRAYLINEINTERSECTIONHANDLER_H
 

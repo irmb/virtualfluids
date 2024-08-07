@@ -39,7 +39,7 @@
 
 #include <set>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class RayIntersectionHandler
@@ -49,7 +49,7 @@ public:
                              std::set<UbKeys::Key3<int>> &mailbox) const = 0;
     virtual ~RayIntersectionHandler()                                    = default;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDRAYINTERSECTIONHANDLER_H
 

@@ -46,7 +46,7 @@
 #include <cmath>
 #include <string>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Tree
@@ -131,7 +131,7 @@ public:
 private:
     Node<T> *rootNode;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDTREE_H
 

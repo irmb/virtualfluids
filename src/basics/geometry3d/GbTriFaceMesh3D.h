@@ -49,7 +49,7 @@
 
 #include "basics/constants/NumericConstants.h"
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Tree;
@@ -57,7 +57,7 @@ template <typename T>
 class SplitAlgorithm;
 template <typename T>
 class RayIntersectionHandler;
-} // namespace Kd
+} // namespace kd_tree
 
 class WbWriter;
 
@@ -388,7 +388,7 @@ public:
 
     void setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode);
     KDTREE_SPLITAGORITHM getKdTreeSplitAlgorithm() { return this->kdtreeSplitAlg; }
-    Kd::Tree<double> *getKdTree() { return this->kdTree; }
+    kd_tree::Tree<double> *getKdTree() { return this->kdTree; }
 
     virtual UbTuple<std::string, std::string> writeMesh(std::string filename, WbWriter *writer,
                                                         bool writeNormals                          = false,
@@ -431,7 +431,7 @@ protected:
     bool buildVertTriRelationMap{ false };
     std::multimap<Vertex *, TriFace *> relationVertTris;
 
-    Kd::Tree<double> *kdTree = nullptr;
+    kd_tree::Tree<double> *kdTree = nullptr;
 };
 
 #endif // GBTRIFACEMESH3D_H

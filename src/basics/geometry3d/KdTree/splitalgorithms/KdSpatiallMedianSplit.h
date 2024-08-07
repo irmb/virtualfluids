@@ -39,7 +39,7 @@
 
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class SpatialMedianSplit : public SplitAlgorithm<T>
@@ -77,7 +77,7 @@ class SpatialMedianSplit : public SplitAlgorithm<T>
 
         for (std::size_t i = 0; i < srcTriFaces.size(); i++) {
             GbTriFaceMesh3D::TriFace &triFace = srcTriFaces[i];
-            Kd::project2Axis(triFace, srcNodes, candidate.axis, projection);
+            kd_tree::project2Axis(triFace, srcNodes, candidate.axis, projection);
 
             T &min = projection[0];
             T &max = projection[2];
@@ -111,7 +111,7 @@ class SpatialMedianSplit : public SplitAlgorithm<T>
         node.deleteTriFaces();
     }
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // SPATIALLMEDIANSPLIT_H
 

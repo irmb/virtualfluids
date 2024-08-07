@@ -43,7 +43,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 struct Axis {
     static const int X; // = 0;
@@ -95,7 +95,7 @@ inline bool isPointOnTriangle(const T &px, const T &py, const T &pz, const T &pr
                               GbTriFaceMesh3D::Vertex &p2, GbTriFaceMesh3D::Vertex &p3,
                               GbTriFaceMesh3D::TriFace &triFace)
 {
-    if (Kd::isPointOnPlane(px, py, pz, precision, p1, triFace)) {
+    if (kd_tree::isPointOnPlane(px, py, pz, precision, p1, triFace)) {
         T a_x = p1.x - px;
         T a_y = p1.y - py;
         T a_z = p1.z - pz;
@@ -156,8 +156,8 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
     const T &n2Y = val<2>(n2);
     const T &n2Z = val<3>(n2);
 
-    // if(   Kd::isPointOnPlane(n1X, n1Y, n1Z, T(1.0E-6), p0, triFace)
-    //   && Kd::isPointOnPlane(n2X, n2Y, n2Z, T(1.0E-6), p0, triFace))
+    // if(   kd_tree::isPointOnPlane(n1X, n1Y, n1Z, T(1.0E-6), p0, triFace)
+    //   && kd_tree::isPointOnPlane(n2X, n2Y, n2Z, T(1.0E-6), p0, triFace))
     //{
     //   return true;
     //}
@@ -182,7 +182,7 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
             GbTriFaceMesh3D::Vertex &p1 = triFace.getNode(1, nodes);
             GbTriFaceMesh3D::Vertex &p2 = triFace.getNode(2, nodes);
 
-            return Kd::isPointOnTriangle(n1X + ((n2X - n1X) * mu) // intersectionPointX
+            return kd_tree::isPointOnTriangle(n1X + ((n2X - n1X) * mu) // intersectionPointX
                                          ,
                                          n1Y + ((n2Y - n1Y) * mu) // intersectionPointY
                                          ,
@@ -192,7 +192,7 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
         }
     }
 }
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDUTILIES_H
 

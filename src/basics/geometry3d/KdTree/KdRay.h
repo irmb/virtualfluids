@@ -37,7 +37,7 @@
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
 
-namespace Kd
+namespace kd_tree
 {
 /*
  * Ray class, for use with the optimized ray-box intersection test
@@ -101,7 +101,7 @@ public:
     int signY;
     int signZ;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDRAY_H
 

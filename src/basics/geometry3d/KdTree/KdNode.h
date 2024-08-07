@@ -52,7 +52,7 @@
 #include <string>
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Node
@@ -312,7 +312,7 @@ private:
     MbSmartPtr<std::vector<GbTriFaceMesh3D::TriFace>> triFaces;
     std::vector<GbTriFaceMesh3D::Vertex> *ptrNodes; // lediglich f�r Zugriff auf die Knoten!!!
 };
-} // namespace Kd
+} // namespace kd_tree
 #endif // KDNODE_H
 
 //! \}
