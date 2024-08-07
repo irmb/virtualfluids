@@ -48,7 +48,7 @@
 
 #include <parallel/NullCommunicator.h>
 
-namespace indexRearrangementTests
+namespace index_rearrangement_tests
 {
 template <typename T>
 bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
@@ -113,12 +113,12 @@ public:
     }
 };
 
-} // namespace indexRearrangementTests
+} // namespace index_rearrangement_tests
 
 //////////////////////////////////////////////////////////////////////////
 // Test reorderSendIndices
 //////////////////////////////////////////////////////////////////////////
-using namespace indexRearrangementTests;
+using namespace index_rearrangement_tests;
 
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
