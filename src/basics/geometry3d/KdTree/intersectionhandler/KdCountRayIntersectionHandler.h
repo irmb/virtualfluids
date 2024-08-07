@@ -52,7 +52,7 @@ class CountRayIntersectionHandler : public RayIntersectionHandler<T>
 {
 public:
     int intersectRay(const Ray<T> &ray, Node<T> &parent, Node<T> *&child1, Node<T> *&child2,
-                     std::set<UbKeys::Key3<int>> &mailbox) const override
+                     std::set<ub_keys::Key3<int>> &mailbox) const override
     {
         if (parent.intersectRayBoundingBox(ray) == Intersection::INTERSECTION) {
             if (parent.isLeaf()) {
@@ -84,7 +84,7 @@ public:
 private:
     int checkIntersectionWithTriFaces(const Ray<T> &ray, std::vector<GbTriFaceMesh3D::TriFace> &triFaces,
                                       std::vector<GbTriFaceMesh3D::Vertex> &nodes,
-                                      std::set<UbKeys::Key3<int>> &mailbox) const
+                                      std::set<ub_keys::Key3<int>> &mailbox) const
     {
         T e1x, e1y, e1z, e2x, e2y, e2z, px, py, pz, a, f, sx, sy, sz, u, qx, qy, qz, v, factor;
 
@@ -93,10 +93,10 @@ private:
         for (std::size_t i = 0; i < triFaces.size(); i++) {
             GbTriFaceMesh3D::TriFace &triFace = triFaces[i];
 
-            if (mailbox.find(UbKeys::Key3<int>(triFace.getIndexVertex1(), triFace.getIndexVertex2(),
+            if (mailbox.find(ub_keys::Key3<int>(triFace.getIndexVertex1(), triFace.getIndexVertex2(),
                                                triFace.getIndexVertex3())) == mailbox.end()) {
                 mailbox.insert(
-                    UbKeys::Key3<int>(triFace.getIndexVertex1(), triFace.getIndexVertex2(),
+                    ub_keys::Key3<int>(triFace.getIndexVertex1(), triFace.getIndexVertex2(),
                                       triFace.getIndexVertex3())); // schon hier rein, ansonsten muss man es unten bei
                                                                    // JEDEm continue und am ende des ifs machen
 

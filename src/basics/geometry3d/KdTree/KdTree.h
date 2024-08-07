@@ -73,7 +73,7 @@ public:
     // the IntersectionHandler specifies how to handle the intersection
     int intersectRay(const Ray<T> &ray, const RayIntersectionHandler<T> &iHandler)
     {
-        std::set<UbKeys::Key3<int>> mailbox;
+        std::set<ub_keys::Key3<int>> mailbox;
         return rootNode->intersectRay(ray, iHandler, mailbox);
     }
     /* ======================================================================================= */

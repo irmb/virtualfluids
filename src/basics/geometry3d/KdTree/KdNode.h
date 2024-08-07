@@ -226,7 +226,7 @@ public:
         return iHandler.intersectLine(n1, n2, *this, child1, child2);
     }
     /* ======================================================================================= */
-    int intersectRay(const Ray<T> &ray, const RayIntersectionHandler<T> &iHandler, std::set<UbKeys::Key3<int>> &mailbox)
+    int intersectRay(const Ray<T> &ray, const RayIntersectionHandler<T> &iHandler, std::set<ub_keys::Key3<int>> &mailbox)
     {
         return iHandler.intersectRay(ray, *this, child1, child2, mailbox);
     }

@@ -58,7 +58,7 @@ class Interactor3D;
 class Grid3D : public enableSharedFromThis<Grid3D>
 {
 public:
-    using Block3DKey      = UbKeys::Key3<int>;
+    using Block3DKey      = ub_keys::Key3<int>;
     using Block3DMap      = std::map<Block3DKey, SPtr<Block3D>>;
     using BlockIDMap      = std::map<int, SPtr<Block3D>>;
     using LevelSet        = std::vector<Block3DMap>;
