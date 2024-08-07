@@ -40,7 +40,7 @@
 
 #include <basics/utilities/UbMath.h>
 
-namespace GbMeshTools3D
+namespace gb_mesh_tools_3D
 {
 inline int planeBoxOverlap(float normal[3], float vert[3], float maxbox[3]) // -NJMP-
 {
@@ -314,7 +314,7 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
     return 1;     /* box and triangle overlaps */
 }
 
-} // namespace GbMeshTools3D
+} // namespace gb_mesh_tools_3D
 
 #endif
 
