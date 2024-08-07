@@ -608,7 +608,7 @@ void SimulationFileWriter::writeBoundaryShort(std::vector<real> boundary, int rb
     *valueStreams[rb] << "\n";
 }
 
-void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint side)
+void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<grid_generator::BoundaryCondition> boundaryCondition, uint side)
 {
     uint numberOfBoundaryNodes = (uint)boundaryCondition->indices.size();
 

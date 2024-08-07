@@ -42,7 +42,7 @@
 #include <cstddef>
 #include <vector>
 
-using namespace gg;
+using namespace grid_generator;
 
 std::array<real, 3> Side::getNormal() const
 {

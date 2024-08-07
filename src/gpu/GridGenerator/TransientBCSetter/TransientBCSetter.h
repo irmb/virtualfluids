@@ -44,7 +44,7 @@
 
 
 class Grid;
-namespace gg
+namespace grid_generator
 {
     class BoundaryCondition;
 }

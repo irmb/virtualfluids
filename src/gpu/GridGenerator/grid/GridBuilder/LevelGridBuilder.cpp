@@ -850,7 +850,7 @@ void LevelGridBuilder::writeArrows(std::string fileName) const
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
 
-SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
+SPtr<grid_generator::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
 {
     for (auto bc : this->boundaryConditions[level]->slipBoundaryConditions)
         if (bc->isSide(side))
