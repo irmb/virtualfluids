@@ -64,7 +64,7 @@ public:
     uint getCommunicationProcess(int direction) override
     {
         uint process = 0;
-        if (direction != CommunicationDirections::MX)
+        if (direction != communication_directions::MX)
             process = (uint)INVALID_INDEX;
         return process;
     }
@@ -134,7 +134,7 @@ protected:
     std::shared_ptr<LevelGridBuilderStub> builder;
 
     const uint level = 1;
-    const uint direction = CommunicationDirections::MX;
+    const uint direction = communication_directions::MX;
 
     SPtr<GridGenerator> gridGenerator;
 
@@ -171,7 +171,7 @@ TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenCommunicationInX_s
     builder->numberOfSendIndices = 1;
     act();
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(),
-                testing::Eq(1)); // one entry for CommunicationDirections::MX
+                testing::Eq(1)); // one entry for communication_directions::MX
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
 }

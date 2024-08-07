@@ -31,21 +31,21 @@
 //! \{
 #include "communication.h"
 
-using namespace CommunicationDirections;
+using namespace communication_directions;
 
-bool CommunicationDirections::isNegative(CommunicationDirection direction)
+bool communication_directions::isNegative(CommunicationDirection direction)
 {
     return direction == CommunicationDirection::MX || direction == CommunicationDirection::MY ||
            direction == CommunicationDirection::MZ;
 }
 
-bool CommunicationDirections::isPositive(CommunicationDirection direction)
+bool communication_directions::isPositive(CommunicationDirection direction)
 {
     return direction == CommunicationDirection::PX || direction == CommunicationDirection::PY ||
            direction == CommunicationDirection::PZ;
 }
 
-CommunicationDirection CommunicationDirections::getNegativeDirectionAlongAxis(Axis axis)
+CommunicationDirection communication_directions::getNegativeDirectionAlongAxis(Axis axis)
 {
     switch (axis) {
         case Axis::x:
@@ -62,7 +62,7 @@ CommunicationDirection CommunicationDirections::getNegativeDirectionAlongAxis(Ax
     }
 }
 
-CommunicationDirection CommunicationDirections::getPositiveDirectionAlongAxis(Axis axis)
+CommunicationDirection communication_directions::getPositiveDirectionAlongAxis(Axis axis)
 {
     switch (axis) {
         case Axis::x:

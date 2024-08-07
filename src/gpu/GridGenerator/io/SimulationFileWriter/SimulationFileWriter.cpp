@@ -157,19 +157,19 @@ void SimulationFileWriter::openFiles(SPtr<GridBuilder> builder)
         valueStreams.push_back(outV);
     }
 
-    if(builder->getCommunicationProcess(CommunicationDirections::MX) != INVALID_INDEX) sendFiles   [CommunicationDirections::MX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MX)) + "Xs.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::PX) != INVALID_INDEX) sendFiles   [CommunicationDirections::PX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PX)) + "Xs.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::MY) != INVALID_INDEX) sendFiles   [CommunicationDirections::MY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MY)) + "Ys.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::PY) != INVALID_INDEX) sendFiles   [CommunicationDirections::PY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PY)) + "Ys.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::MZ) != INVALID_INDEX) sendFiles   [CommunicationDirections::MZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MZ)) + "Zs.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::PZ) != INVALID_INDEX) sendFiles   [CommunicationDirections::PZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PZ)) + "Zs.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::MX) != INVALID_INDEX) sendFiles   [communication_directions::MX].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::MX)) + "Xs.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::PX) != INVALID_INDEX) sendFiles   [communication_directions::PX].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::PX)) + "Xs.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::MY) != INVALID_INDEX) sendFiles   [communication_directions::MY].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::MY)) + "Ys.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::PY) != INVALID_INDEX) sendFiles   [communication_directions::PY].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::PY)) + "Ys.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::MZ) != INVALID_INDEX) sendFiles   [communication_directions::MZ].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::MZ)) + "Zs.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::PZ) != INVALID_INDEX) sendFiles   [communication_directions::PZ].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::PZ)) + "Zs.dat").c_str() );
 
-    if(builder->getCommunicationProcess(CommunicationDirections::MX) != INVALID_INDEX) receiveFiles[CommunicationDirections::MX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MX)) + "Xr.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::PX) != INVALID_INDEX) receiveFiles[CommunicationDirections::PX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PX)) + "Xr.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::MY) != INVALID_INDEX) receiveFiles[CommunicationDirections::MY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MY)) + "Yr.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::PY) != INVALID_INDEX) receiveFiles[CommunicationDirections::PY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PY)) + "Yr.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::MZ) != INVALID_INDEX) receiveFiles[CommunicationDirections::MZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MZ)) + "Zr.dat").c_str() );
-    if(builder->getCommunicationProcess(CommunicationDirections::PZ) != INVALID_INDEX) receiveFiles[CommunicationDirections::PZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PZ)) + "Zr.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::MX) != INVALID_INDEX) receiveFiles[communication_directions::MX].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::MX)) + "Xr.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::PX) != INVALID_INDEX) receiveFiles[communication_directions::PX].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::PX)) + "Xr.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::MY) != INVALID_INDEX) receiveFiles[communication_directions::MY].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::MY)) + "Yr.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::PY) != INVALID_INDEX) receiveFiles[communication_directions::PY].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::PY)) + "Yr.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::MZ) != INVALID_INDEX) receiveFiles[communication_directions::MZ].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::MZ)) + "Zr.dat").c_str() );
+    if(builder->getCommunicationProcess(communication_directions::PZ) != INVALID_INDEX) receiveFiles[communication_directions::PZ].open( (path + std::to_string(builder->getCommunicationProcess(communication_directions::PZ)) + "Zr.dat").c_str() );
 
     numberNodes_File.open((path + simulationFileNames::numberNodes).c_str(), std::ios::out | std::ios::binary);
     LBMvsSI_File.open((path + simulationFileNames::LBMvsSI).c_str(), std::ios::out | std::ios::binary);
@@ -738,19 +738,19 @@ void SimulationFileWriter::closeFiles()
         valueStreams[rb]->close();
     }
 
-    sendFiles[CommunicationDirections::MX].close();
-    sendFiles[CommunicationDirections::PX].close();
-    sendFiles[CommunicationDirections::MY].close();
-    sendFiles[CommunicationDirections::PY].close();
-    sendFiles[CommunicationDirections::MZ].close();
-    sendFiles[CommunicationDirections::PZ].close();
+    sendFiles[communication_directions::MX].close();
+    sendFiles[communication_directions::PX].close();
+    sendFiles[communication_directions::MY].close();
+    sendFiles[communication_directions::PY].close();
+    sendFiles[communication_directions::MZ].close();
+    sendFiles[communication_directions::PZ].close();
     
-    receiveFiles[CommunicationDirections::MX].close();
-    receiveFiles[CommunicationDirections::PX].close();
-    receiveFiles[CommunicationDirections::MY].close();
-    receiveFiles[CommunicationDirections::PY].close();
-    receiveFiles[CommunicationDirections::MZ].close();
-    receiveFiles[CommunicationDirections::PZ].close();
+    receiveFiles[communication_directions::MX].close();
+    receiveFiles[communication_directions::PX].close();
+    receiveFiles[communication_directions::MY].close();
+    receiveFiles[communication_directions::PY].close();
+    receiveFiles[communication_directions::MZ].close();
+    receiveFiles[communication_directions::PZ].close();
 
     numberNodes_File.close();
     LBMvsSI_File.close();

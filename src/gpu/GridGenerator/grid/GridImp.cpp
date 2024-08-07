@@ -1737,27 +1737,27 @@ int GridImp::getShiftedCommunicationIndex(uint index, int direction)
 
     switch (direction)
     {
-    case CommunicationDirections::MX:
+    case communication_directions::MX:
         y = wrapCoord(y - (this->periodicShiftOnXinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         z = wrapCoord(z - (this->periodicShiftOnXinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::PX:
+    case communication_directions::PX:
         y = wrapCoord(y + (this->periodicShiftOnXinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         z = wrapCoord(z + (this->periodicShiftOnXinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::MY:
+    case communication_directions::MY:
         x = wrapCoord(x - (this->periodicShiftOnYinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         z = wrapCoord(z - (this->periodicShiftOnYinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::PY:
+    case communication_directions::PY:
         x = wrapCoord(x + (this->periodicShiftOnYinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         z = wrapCoord(z + (this->periodicShiftOnYinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::MZ:
+    case communication_directions::MZ:
         x = wrapCoord(x - (this->periodicShiftOnZinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         y = wrapCoord(y - (this->periodicShiftOnZinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         break;
-    case CommunicationDirections::PZ:
+    case communication_directions::PZ:
         x = wrapCoord(x + (this->periodicShiftOnZinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         y = wrapCoord(y + (this->periodicShiftOnZinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         break;
@@ -1788,12 +1788,12 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 
         switch(direction)
         {
-            case CommunicationDirections::MX: findCommunicationIndex( shiftedIndex, x, subDomainBox->minX, direction); break;
-            case CommunicationDirections::PX: findCommunicationIndex( shiftedIndex, x, subDomainBox->maxX, direction); break;
-            case CommunicationDirections::MY: findCommunicationIndex( shiftedIndex, y, subDomainBox->minY, direction); break;
-            case CommunicationDirections::PY: findCommunicationIndex( shiftedIndex, y, subDomainBox->maxY, direction); break;
-            case CommunicationDirections::MZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->minZ, direction); break;
-            case CommunicationDirections::PZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->maxZ, direction); break;
+            case communication_directions::MX: findCommunicationIndex( shiftedIndex, x, subDomainBox->minX, direction); break;
+            case communication_directions::PX: findCommunicationIndex( shiftedIndex, x, subDomainBox->maxX, direction); break;
+            case communication_directions::MY: findCommunicationIndex( shiftedIndex, y, subDomainBox->minY, direction); break;
+            case communication_directions::PY: findCommunicationIndex( shiftedIndex, y, subDomainBox->maxY, direction); break;
+            case communication_directions::MZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->minZ, direction); break;
+            case communication_directions::PZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->maxZ, direction); break;
         }
     }
 }

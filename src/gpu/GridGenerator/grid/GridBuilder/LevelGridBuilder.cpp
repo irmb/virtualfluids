@@ -65,12 +65,12 @@ using namespace vf::gpu;
 
 LevelGridBuilder::LevelGridBuilder()
 {
-    this->communicationProcesses[CommunicationDirections::MX] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::PX] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::MY] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::PY] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::MZ] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::PZ] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::MX] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::PX] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::MY] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::PY] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::MZ] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::PZ] = INVALID_INDEX;
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared()
