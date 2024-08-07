@@ -202,8 +202,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
 
-    real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaF = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -324,8 +324,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         D3Q27ICell icellF;
         real xoff, yoff, zoff;
 
-        real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaC = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaF = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -436,8 +436,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
 
-    real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaF = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -559,8 +559,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         D3Q27ICell icellF;
         real xoff, yoff, zoff;
 
-        real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaF = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaC = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 

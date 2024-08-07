@@ -352,11 +352,11 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
     int cBlockRank   = cBlock->getRank();
 
     real omegaF {0.0};
-    if(fBlockSW) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockSW->getLevel());
-    if(fBlockNW) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockNW->getLevel());
-    if(fBlockSE) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockSE->getLevel());
-    if(fBlockNE) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockNE->getLevel());
-    real omegaC = LBMSystem::calcCollisionFactor(nue, cBlock->getLevel());
+    if(fBlockSW) omegaF =lbm_system::calcCollisionFactor(nue, fBlockSW->getLevel());
+    if(fBlockNW) omegaF =lbm_system::calcCollisionFactor(nue, fBlockNW->getLevel());
+    if(fBlockSE) omegaF =lbm_system::calcCollisionFactor(nue, fBlockSE->getLevel());
+    if(fBlockNE) omegaF =lbm_system::calcCollisionFactor(nue, fBlockNE->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nue, cBlock->getLevel());
     iProcessor->setOmegas(omegaC, omegaF);
 
     InterpolationProcessorPtr cIProcessor(iProcessor->clone());

@@ -186,7 +186,7 @@ void CalculateForcesSimulationObserver::calculateForces()
             }
             // if we have got discretization with more level
             // deltaX is LBM deltaX and equal LBM deltaT
-            real deltaX = LBMSystem::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
+            real deltaX = lbm_system::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
             real deltaXquadrat = deltaX * deltaX;
             forceX1 *= deltaXquadrat;
             forceX2 *= deltaXquadrat;

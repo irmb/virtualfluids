@@ -43,7 +43,7 @@ ViscosityBlockVisitor::ViscosityBlockVisitor(real nu) : Block3DVisitor(0, d3q27_
 void ViscosityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
     if (block->getRank() == grid->getRank()) {
-        real collFactor = LBMSystem::calcCollisionFactor(nu, block->getLevel());
+        real collFactor = lbm_system::calcCollisionFactor(nu, block->getLevel());
         block->getKernel()->setCollisionFactor(collFactor);
     }
 }

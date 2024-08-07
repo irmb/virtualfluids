@@ -77,10 +77,10 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
         real maxX3 = val<3>(org) + val<3>(blockLengths);
 
         if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3)) {
-            real collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
+            real collFactor = lbm_system::calcCollisionFactor(nue, block->getLevel());
             kernel->setCollisionFactor(collFactor);
             kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
-            kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
+            kernel->setDeltaT(lbm_system::getDeltaT(block->getLevel()));
             kernel->setBlock(block);
             SPtr<LBMKernel> newKernel = kernel->clone();
 
