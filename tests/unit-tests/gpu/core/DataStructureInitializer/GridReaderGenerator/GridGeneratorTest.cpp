@@ -47,7 +47,7 @@
 
 #include <parallel/NullCommunicator.h>
 
-namespace GridGeneratorTest
+namespace grid_generator_test
 {
 
 class LevelGridBuilderStub : public LevelGridBuilder
@@ -117,9 +117,9 @@ public:
                                                           int direction) const override{};
 };
 
-} // namespace GridGeneratorTest
+} // namespace grid_generator_test
 
-using namespace GridGeneratorTest;
+using namespace grid_generator_test;
 
 class GridGeneratorTests_initalValuesDomainDecompostion : public testing::Test
 {
