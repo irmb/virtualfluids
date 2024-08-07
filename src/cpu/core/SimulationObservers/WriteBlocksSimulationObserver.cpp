@@ -171,7 +171,7 @@ void WriteBlocksSimulationObserver::collectData(real step)
         }
 
         filenames.push_back(writer->writeOctsWithCellData(
-            path + "/blocks/blocks_" + UbSystem::toString(grid->getRank()) + "_" + UbSystem::toString(istep), nodes,
+            path + "/blocks/blocks_" + ub_system::toString(grid->getRank()) + "_" + ub_system::toString(istep), nodes,
             cells, celldatanames, celldata));
 
         if (istep == SimulationObserver::scheduler->getMinBegin()) {

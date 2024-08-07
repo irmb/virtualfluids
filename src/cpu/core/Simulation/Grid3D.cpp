@@ -294,8 +294,8 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
 
     SPtr<Block3D> block = this->getBlock(ix1, ix2, ix3, level);
     if (!block)
-        throw UbException(UB_EXARGS, "block(x1=" + UbSystem::toString(ix1) + ", x2=" + UbSystem::toString(ix2) +
-                                         ", x3=" + UbSystem::toString(ix3) + ", l=" + UbSystem::toString(level) +
+        throw UbException(UB_EXARGS, "block(x1=" + ub_system::toString(ix1) + ", x2=" + ub_system::toString(ix2) +
+                                         ", x3=" + ub_system::toString(ix3) + ", l=" + ub_system::toString(level) +
                                          ") is not exist");
 
     // da bei periodic der eigentliche block andere indizes hat:
@@ -340,7 +340,7 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
 //////////////////////////////////////////////////////////////////////////
 SPtr<Block3D> Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, int levelDepth)
 {
-    using UbSystem::toString;
+    using ub_system::toString;
 
     SPtr<Block3D> fblock = this->getBlock(fix1, fix2, fix3, flevel);
     if (flevel < 1)
@@ -587,13 +587,13 @@ UbTupleDouble3 Grid3D::getBlockWorldCoordinates(int blockX1Index, int blockX2Ind
 void Grid3D::checkLevel(int level)
 {
     if (level < 0) {
-        throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string) ")<0");
+        throw UbException(UB_EXARGS, "l(" + ub_system::toString(level) + (string) ")<0");
     }
     if (level > d3q27_system::MAXLEVEL) {
-        throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string) ")>MAXLEVEL");
+        throw UbException(UB_EXARGS, "l(" + ub_system::toString(level) + (string) ")>MAXLEVEL");
     }
     if (this->levelSet[level].size() == 0) {
-        throw UbException(UB_EXARGS, "levelMap for level(" + UbSystem::toString(level) + (string) ")==NULL");
+        throw UbException(UB_EXARGS, "levelMap for level(" + ub_system::toString(level) + (string) ")==NULL");
     }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1186,7 +1186,7 @@ void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, i
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:
-            throw UbException(UB_EXARGS, "direction " + UbSystem::toString(dir) + " is not exist");
+            throw UbException(UB_EXARGS, "direction " + ub_system::toString(dir) + " is not exist");
     }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1354,7 +1354,7 @@ void Grid3D::getNeighborBlocksForDirectionWithREST(int dir, int ix1, int ix2, in
             this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:
-            throw UbException(UB_EXARGS, "direction " + UbSystem::toString(dir) + " is not exist");
+            throw UbException(UB_EXARGS, "direction " + ub_system::toString(dir) + " is not exist");
     }
 }
 //////////////////////////////////////////////////////////////////////////

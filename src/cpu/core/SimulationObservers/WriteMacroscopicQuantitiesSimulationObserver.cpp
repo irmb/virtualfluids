@@ -99,10 +99,10 @@ void WriteMacroscopicQuantitiesSimulationObserver::collectData(real step)
 
     std::string pfilePath, partPath, subfolder, cfilePath;
 
-    subfolder = "mq" + UbSystem::toString(istep);
+    subfolder = "mq" + ub_system::toString(istep);
     pfilePath = path + "/mq/" + subfolder;
     cfilePath = path + "/mq/mq_collection";
-    partPath = pfilePath + "/mq" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath = pfilePath + "/mq" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     std::string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
     size_t found = partName.find_last_of("/");
@@ -201,13 +201,13 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
                     calcMacros(f, rho, vx1, vx2, vx3);
 
                     if (ub_math::isNaN(rho) || ub_math::isInfinity(rho))
-                         UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+",node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                         UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+",node="+ub_system::toString(ix1)+","+ub_system::toString(ix2)+","+ub_system::toString(ix3)));
                     if (ub_math::isNaN(vx1) || ub_math::isInfinity(vx1))
-                         UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                         UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+ub_system::toString(ix1)+","+ub_system::toString(ix2)+","+ub_system::toString(ix3)));
                     if (ub_math::isNaN(vx2) || ub_math::isInfinity(vx2))
-                         UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                         UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+ub_system::toString(ix1)+","+ub_system::toString(ix2)+","+ub_system::toString(ix3)));
                     if (ub_math::isNaN(vx3) || ub_math::isInfinity(vx3))
-                         UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                         UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+ub_system::toString(ix1)+","+ub_system::toString(ix2)+","+ub_system::toString(ix3)));
 
                     data[index++].push_back(rho);
                     data[index++].push_back(vx1);

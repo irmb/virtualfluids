@@ -190,9 +190,9 @@ void LineTimeSeriesSimulationObserver::collectData()
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)

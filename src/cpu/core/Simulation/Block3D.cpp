@@ -292,18 +292,18 @@ int Block3D::getNumberOfRemoteConnectorsForSurfaces()
 }
 void Block3D::setCollectionOfInterpolationFlagCF(int flags) { interpolationFlagCF = flags; }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::setInterpolationFlagCF(int dir) { UbSystem::setBit(interpolationFlagCF, 1 << dir); }
+void Block3D::setInterpolationFlagCF(int dir) { ub_system::setBit(interpolationFlagCF, 1 << dir); }
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getCollectionOfInterpolationFlagCF() { return interpolationFlagCF; }
 //////////////////////////////////////////////////////////////////////////
-bool Block3D::hasInterpolationFlagCF(int dir) { return UbSystem::bitCheck(interpolationFlagCF, 1 << dir); }
+bool Block3D::hasInterpolationFlagCF(int dir) { return ub_system::bitCheck(interpolationFlagCF, 1 << dir); }
 void Block3D::setCollectionOfInterpolationFlagFC(int flags) { interpolationFlagFC = flags; }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::setInterpolationFlagFC(int dir) { UbSystem::setBit(interpolationFlagFC, 1 << dir); }
+void Block3D::setInterpolationFlagFC(int dir) { ub_system::setBit(interpolationFlagFC, 1 << dir); }
 //////////////////////////////////////////////////////////////////////////
 int Block3D::getCollectionOfInterpolationFlagFC() { return interpolationFlagFC; }
 //////////////////////////////////////////////////////////////////////////
-bool Block3D::hasInterpolationFlagFC(int dir) { return UbSystem::bitCheck(interpolationFlagFC, 1 << dir); }
+bool Block3D::hasInterpolationFlagFC(int dir) { return ub_system::bitCheck(interpolationFlagFC, 1 << dir); }
 //////////////////////////////////////////////////////////////////////////
 bool Block3D::hasInterpolationFlag() { return (interpolationFlagCF != 0 || interpolationFlagFC != 0); }
 //////////////////////////////////////////////////////////////////////////

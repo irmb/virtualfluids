@@ -67,13 +67,13 @@ public:
 
     virtual UbTupleDouble3 getForces();
 
-    void setSolid() { UbSystem::setBit(this->type, SOLID); }
-    void setMoveable() { UbSystem::setBit(this->type, MOVEABLE); }
+    void setSolid() { ub_system::setBit(this->type, SOLID); }
+    void setMoveable() { ub_system::setBit(this->type, MOVEABLE); }
 
-    bool isSolid() { return UbSystem::bitCheck(this->type, SOLID); }
-    bool isInverseSolid() { return UbSystem::bitCheck(this->type, INVERSESOLID); }
-    bool isTimeDependent() { return UbSystem::bitCheck(this->type, TIMEDEPENDENT); }
-    bool isMoveable() { return UbSystem::bitCheck(this->type, MOVEABLE); }
+    bool isSolid() { return ub_system::bitCheck(this->type, SOLID); }
+    bool isInverseSolid() { return ub_system::bitCheck(this->type, INVERSESOLID); }
+    bool isTimeDependent() { return ub_system::bitCheck(this->type, TIMEDEPENDENT); }
+    bool isMoveable() { return ub_system::bitCheck(this->type, MOVEABLE); }
 
     SPtr<Grid3D> getGrid3D() const { return grid.lock(); }
     void setGrid3D(SPtr<Grid3D> grid) { this->grid = grid; }
@@ -92,8 +92,8 @@ public:
     bool isActive();
 
 protected:
-    void setTimeDependent() { UbSystem::setBit(this->type, TIMEDEPENDENT); }
-    void unsetTimeDependent() { UbSystem::unsetBit(this->type, TIMEDEPENDENT); }
+    void setTimeDependent() { ub_system::setBit(this->type, TIMEDEPENDENT); }
+    void unsetTimeDependent() { ub_system::unsetBit(this->type, TIMEDEPENDENT); }
 
     //! detect that points are inside object
     //! \param min/max coordinates of bounding box

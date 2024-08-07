@@ -49,7 +49,7 @@ MPIIOSimulationObserver::MPIIOSimulationObserver(SPtr<Grid3D> grid, SPtr<UbSched
                                    std::shared_ptr<vf::parallel::Communicator> comm)
     : SimulationObserver(grid, s), path(path), comm(comm)
 {
-    UbSystem::makeDirectory(path + "/mpi_io_cp");
+    ub_system::makeDirectory(path + "/mpi_io_cp");
 
     //-------------------------   define MPI types  ---------------------------------
 
@@ -229,8 +229,8 @@ void MPIIOSimulationObserver::writeBlocks(int step)
     MPI_File file_handler;
     //   MPI_Info info = MPI_INFO_NULL;
 
-    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+    ub_system::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step));
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBlocks.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL,
                            &file_handler);
     if (rc != MPI_SUCCESS)
@@ -281,7 +281,7 @@ void MPIIOSimulationObserver::readBlocks(int step)
         start = MPI_Wtime();
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBlocks.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -404,9 +404,9 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_Info info       = MPI_INFO_NULL;
     MPI_Offset new_size = 0;
 
-    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+    ub_system::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step));
 
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBlocks.bin";
     int rc1 = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL,
                             &file_handler);
     if (rc1 != MPI_SUCCESS)
@@ -414,35 +414,35 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename21 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename21 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc21 = MPI_File_open(MPI_COMM_WORLD, filename21.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc21 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename21);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename22 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+    std::string filename22 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
     int rc22 = MPI_File_open(MPI_COMM_WORLD, filename22.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc22 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename22);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename23 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+    std::string filename23 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
     int rc23 = MPI_File_open(MPI_COMM_WORLD, filename23.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc23 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename23);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename3 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename3 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     int rc3 = MPI_File_open(MPI_COMM_WORLD, filename3.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc3 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename3);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename4 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageDensityArray.bin";
+    std::string filename4 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpAverageDensityArray.bin";
     // MPI_File_delete(filename4.c_str(), info);
     int rc4 = MPI_File_open(MPI_COMM_WORLD, filename4.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc4 != MPI_SUCCESS)
@@ -450,7 +450,7 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename5 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageVelocityArray.bin";
+    std::string filename5 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpAverageVelocityArray.bin";
     // MPI_File_delete(filename5.c_str(), info);
     int rc5 = MPI_File_open(MPI_COMM_WORLD, filename5.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc5 != MPI_SUCCESS)
@@ -458,7 +458,7 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename6 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
+    std::string filename6 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpAverageFluktuationsArray.bin";
     // MPI_File_delete(filename6.c_str(), info);
     int rc6 = MPI_File_open(MPI_COMM_WORLD, filename6.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc6 != MPI_SUCCESS)
@@ -466,7 +466,7 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename7 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageTripleArray.bin";
+    std::string filename7 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpAverageTripleArray.bin";
     // MPI_File_delete(filename7.c_str(), info);
     int rc7 = MPI_File_open(MPI_COMM_WORLD, filename7.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc7 != MPI_SUCCESS)
@@ -474,7 +474,7 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename8 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpShearStressValArray.bin";
+    std::string filename8 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpShearStressValArray.bin";
     // MPI_File_delete(filename8.c_str(), info);
     int rc8 = MPI_File_open(MPI_COMM_WORLD, filename8.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc8 != MPI_SUCCESS)
@@ -482,7 +482,7 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename9 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpRelaxationFactor.bin";
+    std::string filename9 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpRelaxationFactor.bin";
     // MPI_File_delete(filename9.c_str(), info);
     int rc9 = MPI_File_open(MPI_COMM_WORLD, filename9.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc9 != MPI_SUCCESS)
@@ -490,21 +490,21 @@ void MPIIOSimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPhaseField1.bin";
+    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpPhaseField1.bin";
     int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc10 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename10);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename11 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPhaseField2.bin";
+    std::string filename11 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpPhaseField2.bin";
     int rc11 = MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc11 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename11);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename12 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPressureField.bin";
+    std::string filename12 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpPressureField.bin";
     int rc12 = MPI_File_open(MPI_COMM_WORLD, filename12.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc12 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename12);

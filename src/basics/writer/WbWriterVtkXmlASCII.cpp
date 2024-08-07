@@ -48,9 +48,9 @@ std::string WbWriterVtkXmlASCII::writeCollection(const std::string &filename, co
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -58,7 +58,7 @@ std::string WbWriterVtkXmlASCII::writeCollection(const std::string &filename, co
     }
 
     std::string endian;
-    if (UbSystem::isLittleEndian())
+    if (ub_system::isLittleEndian())
         endian = "LittleEndian";
     else
         endian = "BigEndian";
@@ -118,9 +118,9 @@ std::string WbWriterVtkXmlASCII::writeParallelFile(const string &filename, vecto
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -164,9 +164,9 @@ std::string WbWriterVtkXmlASCII::writeQuads(const string &filename, vector<UbTup
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -236,9 +236,9 @@ std::string WbWriterVtkXmlASCII::writeQuadsWithNodeData(const string &filename, 
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -320,9 +320,9 @@ std::string WbWriterVtkXmlASCII::writeQuadsWithCellData(const string &filename, 
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -409,9 +409,9 @@ string WbWriterVtkXmlASCII::writeQuadsWithNodeAndCellData(const string &filename
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -505,9 +505,9 @@ std::string WbWriterVtkXmlASCII::writeLines(const string &filename, vector<UbTup
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -576,8 +576,8 @@ std::string WbWriterVtkXmlASCII::writeLines(const string &filename, vector<UbTup
 //   if(!out)
 //   {
 //      out.clear(); //flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-//      string path = UbSystem::getPathFromString(vtkfilename);
-//      if(path.size()>0){UbSystem::makeDirectory(path);out.open(vtkfilename.c_str());}
+//      string path = ub_system::getPathFromString(vtkfilename);
+//      if(path.size()>0){ub_system::makeDirectory(path);out.open(vtkfilename.c_str());}
 //      if(!out) throw UbException(UB_EXARGS,"couldn't open file "+vtkfilename);
 //   }
 //
@@ -653,9 +653,9 @@ std::string WbWriterVtkXmlASCII::writeTriangles(const string &filename, vector<U
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -726,9 +726,9 @@ std::string WbWriterVtkXmlASCII::writeTrianglesWithNodeData(const std::string &f
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -810,9 +810,9 @@ std::string WbWriterVtkXmlASCII::writeOctsWithCellData(const string &filename, v
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -897,9 +897,9 @@ std::string WbWriterVtkXmlASCII::writeOctsWithNodeData(const string &filename, v
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -985,9 +985,9 @@ std::string WbWriterVtkXmlASCII::writeOcts(const string &filename, vector<UbTupl
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -1055,9 +1055,9 @@ std::string WbWriterVtkXmlASCII::writeNodes(const std::string &filename, std::ve
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -1124,9 +1124,9 @@ std::string WbWriterVtkXmlASCII::writeNodesWithNodeData(const std::string &filen
     std::ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -1212,9 +1212,9 @@ std::string WbWriterVtkXmlASCII::writeNodesWithNodeDataDouble(const std::string 
     out.precision(std::numeric_limits<double>::digits10 + 1);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)

@@ -52,12 +52,12 @@ namespace Utilities
 
       if (vmFile)
       {
-         if (myid == 0) matrix->writeToVTKImageDataASCII(pathname + "/geo/vmatrix" + UbSystem::toString(fileCounter));
+         if (myid == 0) matrix->writeToVTKImageDataASCII(pathname + "/geo/vmatrix" + ub_system::toString(fileCounter));
       } 
       else
       {
          GbCuboid3DPtr vmBox(new GbCuboid3D(matrix->getX1Minimum(), matrix->getX2Minimum(), matrix->getX3Minimum(), matrix->getX1Maximum(), matrix->getX2Maximum(), matrix->getX3Maximum()));
-         if (myid == 0) gb_system_3d::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + UbSystem::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) gb_system_3d::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + ub_system::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
       }
 
       //GbCuboid3DPtr vmBox(new GbCuboid3D(matrix->getX1Minimum(), matrix->getX2Minimum(), matrix->getX3Minimum(), matrix->getX1Maximum(), matrix->getX2Maximum(), matrix->getX3Maximum()));

@@ -855,8 +855,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectorExt(SPtr<Dist
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellC, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {
-                        std::string err = "For " + block.lock()->toString() + " x1=" + UbSystem::toString(ix1) +
-                                          ", x2=" + UbSystem::toString(ix2) + ", x3=" + UbSystem::toString(ix3) +
+                        std::string err = "For " + block.lock()->toString() + " x1=" + ub_system::toString(ix1) +
+                                          ", x2=" + ub_system::toString(ix2) + ", x3=" + ub_system::toString(ix3) +
                                           " interpolation is not implemented for other direction" +
                                           " by using in: " + (std::string) typeid(*this).name() +
                                           " or maybe you have a solid on the block boundary";
@@ -2002,8 +2002,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellC, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {
-                        std::string err = "For " + block.lock()->toString() + " x1=" + UbSystem::toString(ix1) +
-                                          ", x2=" + UbSystem::toString(ix2) + ", x3=" + UbSystem::toString(ix3) +
+                        std::string err = "For " + block.lock()->toString() + " x1=" + ub_system::toString(ix1) +
+                                          ", x2=" + ub_system::toString(ix2) + ", x3=" + ub_system::toString(ix3) +
                                           " interpolation is not implemented for other direction" +
                                           " by using in: " + (std::string) typeid(*this).name() +
                                           " or maybe you have a solid on the block boundary";

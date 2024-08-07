@@ -104,9 +104,9 @@ void ASCIIRestartObject::serialize_internal(const std::string &filename)
 
     if (!stream) {
         stream.clear();
-        std::string path = UbSystem::getPathFromString(filename);
+        std::string path = ub_system::getPathFromString(filename);
         if (!path.empty()) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             stream.open(filename.c_str());
         }
 
@@ -157,9 +157,9 @@ void BinaryRestartObject::serialize_internal(const std::string &filename)
 
     if (!stream) {
         stream.clear();
-        std::string path = UbSystem::getPathFromString(filename);
+        std::string path = ub_system::getPathFromString(filename);
         if (!path.empty()) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             stream.open(filename.c_str());
         }
 

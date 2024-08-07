@@ -46,10 +46,10 @@ UbFileOutputBinary::UbFileOutputBinary(const string &filename, const bool &creat
     outfile.open(filename.c_str(), ios::out | ios::binary);
 
     if (!outfile && createPath) {
-        string path = UbSystem::getPathFromString(filename);
+        string path = ub_system::getPathFromString(filename);
         if (path.size() > 0) {
             outfile.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             outfile.open(filename.c_str(), ios::out | ios::binary);
         }
     }
@@ -66,10 +66,10 @@ UbFileOutputBinary::UbFileOutputBinary(const string &filename, UbFileOutput::CRE
     this->open(filename, opt);
 
     if (!this->open(filename, opt) && createPath) {
-        string path = UbSystem::getPathFromString(filename);
+        string path = ub_system::getPathFromString(filename);
         if (path.size() > 0) {
             outfile.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
 
             this->open(filename, opt);
         }

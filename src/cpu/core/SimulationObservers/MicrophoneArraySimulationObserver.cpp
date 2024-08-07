@@ -98,14 +98,14 @@ bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
 
                     strVector.push_back(SPtr<std::stringstream>(new std::stringstream));
 
-                    std::string fname = path + "/mic/mic_" + UbSystem::toString(micID) + ".csv";
+                    std::string fname = path + "/mic/mic_" + ub_system::toString(micID) + ".csv";
                     std::ofstream ostr;
                     ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
                     if (!ostr) {
                         ostr.clear();
-                        std::string path = UbSystem::getPathFromString(fname);
+                        std::string path = ub_system::getPathFromString(fname);
                         if (path.size() > 0) {
-                            UbSystem::makeDirectory(path);
+                            ub_system::makeDirectory(path);
                             ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
                         }
                         if (!ostr)
@@ -138,14 +138,14 @@ void MicrophoneArraySimulationObserver::collectData(real step)
 void MicrophoneArraySimulationObserver::writeFile(real /*step*/)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
-        std::string fname = path + "/mic/mic_" + UbSystem::toString(microphones[i]->id) + ".csv";
+        std::string fname = path + "/mic/mic_" + ub_system::toString(microphones[i]->id) + ".csv";
         std::ofstream ostr;
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)

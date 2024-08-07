@@ -131,9 +131,9 @@ void MPIIOMigrationSimulationObserver::clearAllFiles(int step)
 
     MPIIOSimulationObserver::clearAllFiles(step);
 
-    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+    ub_system::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step));
 
-    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc10 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename10);
@@ -367,7 +367,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
 
     // write to the file
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -392,7 +392,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     //-------------------------------- H1 ----------------------------------------------------
     if (multiPhase1)
     {
-        filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+        filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -412,7 +412,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     //-------------------------------- H2 ----------------------------------------------------
     if (multiPhase2)
     {
-        filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+        filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -441,7 +441,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     delete[] dataSetArray;
 
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler1);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -576,7 +576,7 @@ void MPIIOMigrationSimulationObserver::write4DArray(int step, Arrays arrayType, 
     MPI_Info info = MPI_INFO_NULL;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -703,7 +703,7 @@ void MPIIOMigrationSimulationObserver::write3DArray(int step, Arrays arrayType, 
     MPI_Info info = MPI_INFO_NULL;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -856,7 +856,7 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
     // MPI_Info_set(info,"striping_unit","4194304");
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -980,7 +980,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     DataSetMigration *dataSetArray = new DataSetMigration[blocksCount];
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1021,7 +1021,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     //----------------------------------------- H1 ----------------------------------------------------
     ic = 0;
     MPI_Offset fsize;
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1047,7 +1047,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     MPI_File_close(&file_handler);
     //----------------------------------------- H2 ----------------------------------------------------
     ic = 0;
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1193,7 +1193,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
 
     DSArraysPresence arrPresence;
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler1);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -1247,7 +1247,7 @@ void MPIIOMigrationSimulationObserver::readArray(int step, Arrays arrType, std::
         start = MPI_Wtime();
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1399,7 +1399,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
         start = MPI_Wtime();
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);

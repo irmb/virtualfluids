@@ -49,9 +49,9 @@ UbFileOutputASCII::UbFileOutputASCII(const string &filename, const bool &createP
 
     if (!outfile && createPath) {
         outfile.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(filename);
+        string path = ub_system::getPathFromString(filename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             outfile.open(filename.c_str(), ios::out);
         }
     }
@@ -69,9 +69,9 @@ UbFileOutputASCII::UbFileOutputASCII(const std::string &filename, CREATEOPTION o
 
     if (!this->open(filename, opt) && createPath) {
         outfile.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(filename);
+        string path = ub_system::getPathFromString(filename);
         if (path.size() > 0)
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
 
         this->open(filename, opt);
     }

@@ -649,9 +649,9 @@ void GbVoxelMatrix3D::writeToLegacyVTKASCII(const std::string &fileName)
     file = fopen(fn.c_str(), "w");
 
     if (file == NULL) {
-        std::string pathf = UbSystem::getPathFromString(fn);
+        std::string pathf = ub_system::getPathFromString(fn);
         if (fn.size() > 0) {
-            UbSystem::makeDirectory(pathf);
+            ub_system::makeDirectory(pathf);
             file = fopen(fn.c_str(), "w");
         }
         if (file == NULL)
@@ -699,9 +699,9 @@ void GbVoxelMatrix3D::writeToLegacyVTKBinary(const std::string &fileName)
     file = fopen(fn.c_str(), "w");
 
     if (file == NULL) {
-        std::string pathf = UbSystem::getPathFromString(fn);
+        std::string pathf = ub_system::getPathFromString(fn);
         if (fn.size() > 0) {
-            UbSystem::makeDirectory(pathf);
+            ub_system::makeDirectory(pathf);
             file = fopen(fn.c_str(), "w");
         }
         if (file == NULL)
@@ -730,12 +730,12 @@ void GbVoxelMatrix3D::writeToLegacyVTKBinary(const std::string &fileName)
 
     GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3);
 
-    if (UbSystem::isLittleEndian()) {
+    if (ub_system::isLittleEndian()) {
         for (int x3 = 0; x3 < nx3; x3++) {
             for (int x2 = 0; x2 < nx2; x2++) {
                 for (int x1 = 0; x1 < nx1; x1++) {
                     float tmp = this->voxelMatrix(x1, x2, x3);
-                    UbSystem::swapByteOrder((unsigned char *)(&(tmp)), sizeof(float));
+                    ub_system::swapByteOrder((unsigned char *)(&(tmp)), sizeof(float));
                     voxelMatrix_temp(x1, x2, x3) = tmp;
                 }
             }
@@ -763,9 +763,9 @@ void GbVoxelMatrix3D::writeToVTKImageDataASCII(const std::string &fileName)
     file = fopen(fn.c_str(), "w");
 
     if (file == NULL) {
-        std::string pathf = UbSystem::getPathFromString(fn);
+        std::string pathf = ub_system::getPathFromString(fn);
         if (fn.size() > 0) {
-            UbSystem::makeDirectory(pathf);
+            ub_system::makeDirectory(pathf);
             file = fopen(fn.c_str(), "w");
         }
         if (file == NULL)
@@ -814,9 +814,9 @@ void GbVoxelMatrix3D::writeToVTKImageDataAppended(const std::string &fileName)
     file = fopen(fn.c_str(), "w");
 
     if (file == NULL) {
-        std::string pathf = UbSystem::getPathFromString(fn);
+        std::string pathf = ub_system::getPathFromString(fn);
         if (fn.size() > 0) {
-            UbSystem::makeDirectory(pathf);
+            ub_system::makeDirectory(pathf);
             file = fopen(fn.c_str(), "w");
         }
         if (file == NULL)

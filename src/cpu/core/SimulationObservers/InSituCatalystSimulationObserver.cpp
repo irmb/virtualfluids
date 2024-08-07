@@ -161,32 +161,32 @@ void InSituCatalystSimulationObserver::addData(SPtr<Block3D> block)
                     if (ub_math::isNaN(rho) || ub_math::isInfinity(rho))
                         UB_THROW(UbException(
                             UB_EXARGS, "rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // rho=999.0;
                     if (ub_math::isNaN(press) || ub_math::isInfinity(press))
                         UB_THROW(UbException(
                             UB_EXARGS, "press is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // press=999.0;
                     if (ub_math::isNaN(vx1) || ub_math::isInfinity(vx1))
                         UB_THROW(UbException(
                             UB_EXARGS, "vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // vx1=999.0;
                     if (ub_math::isNaN(vx2) || ub_math::isInfinity(vx2))
                         UB_THROW(UbException(
                             UB_EXARGS, "vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // vx2=999.0;
                     if (ub_math::isNaN(vx3) || ub_math::isInfinity(vx3))
                         UB_THROW(UbException(
                             UB_EXARGS, "vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // vx3=999.0;
 
                     rhoArray[index] = rho;
@@ -306,32 +306,32 @@ void InSituCatalystSimulationObserver::addVTKGridData(SPtr<Block3D> block)
                     if (ub_math::isNaN(rho) || ub_math::isInfinity(rho))
                         UB_THROW(UbException(
                             UB_EXARGS, "rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // rho=999.0;
                     if (ub_math::isNaN(press) || ub_math::isInfinity(press))
                         UB_THROW(UbException(
                             UB_EXARGS, "press is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // press=999.0;
                     if (ub_math::isNaN(vx1) || ub_math::isInfinity(vx1))
                         UB_THROW(UbException(
                             UB_EXARGS, "vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // vx1=999.0;
                     if (ub_math::isNaN(vx2) || ub_math::isInfinity(vx2))
                         UB_THROW(UbException(
                             UB_EXARGS, "vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // vx2=999.0;
                     if (ub_math::isNaN(vx3) || ub_math::isInfinity(vx3))
                         UB_THROW(UbException(
                             UB_EXARGS, "vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                           block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                           UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                           block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                           ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                     // vx3=999.0;
 
                     arrays[0]->InsertNextValue(rho);

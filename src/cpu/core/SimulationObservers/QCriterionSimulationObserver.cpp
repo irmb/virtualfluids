@@ -86,7 +86,7 @@ void QCriterionSimulationObserver::collectData(real step)
     }
 
     std::string partName = writer->writeOctsWithNodeData(
-        path + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep), nodes, cells, datanames, data);
+        path + ub_system::toString(gridRank) + "_" + ub_system::toString(istep), nodes, cells, datanames, data);
     size_t found      = partName.find_last_of("//");
     std::string piece = partName.substr(found + 1);
 
@@ -96,7 +96,7 @@ void QCriterionSimulationObserver::collectData(real step)
     std::vector<std::string> pieces = comm->gather(piece); // comm: MPI-Wrapper
     if (comm->getProcessID() == comm->getRoot()) {
         std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(
-            path + "_" + UbSystem::toString(istep), pieces, datanames, cellDataNames);
+            path + "_" + ub_system::toString(istep), pieces, datanames, cellDataNames);
 
         std::vector<std::string> filenames;
         filenames.push_back(pname);

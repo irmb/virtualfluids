@@ -201,7 +201,7 @@ inline bool operator!=(const T &lhs, const UbInfinity &rhs)
 //////////////////////////////////////////////////////////////////////////
 namespace ub_math
 {
-// e.g. double x = UbSystem::inf;  float x = -ub_math::inf;
+// e.g. double x = ub_system::inf;  float x = -ub_math::inf;
 const UbInfinity inf;
 } // namespace ub_math
 

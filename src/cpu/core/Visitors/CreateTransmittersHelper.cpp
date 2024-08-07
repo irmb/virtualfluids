@@ -111,7 +111,7 @@ void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Blo
         // int myid = comm->getProcessID();
         // FILE * file;
         ////char * name = "d:/temp/sendPoolKey.csv";
-        // std::string name = "d:/temp/VectorKey" + UbSystem::toString(myid) + ".csv";
+        // std::string name = "d:/temp/VectorKey" + ub_system::toString(myid) + ".csv";
         // file = fopen(name.c_str(), "a");
         // fprintf(file, "%d;%d%;%d;%d;%d;%u;%d;%d%;%d;%d;%d;%u\n", sblock->getX1(), sblock->getX2(),
         // sblock->getX3()/*tgtID*/, dir, ib, keyOfSendCbVectorKey, tblock->getX1(), tblock->getX2(),
@@ -160,8 +160,8 @@ int CreateTransmittersHelper::generateMPITag(int srcLevel, int tgtLevel)
     } else {
         srcLevel++;
         tgtLevel++;
-        std::string str = UbSystem::toString<int>(srcLevel) + UbSystem::toString<int>(tgtLevel);
-        int r           = UbSystem::stringTo<int>(str);
+        std::string str = ub_system::toString<int>(srcLevel) + ub_system::toString<int>(tgtLevel);
+        int r           = ub_system::stringTo<int>(str);
         return r;
     }
 }
@@ -169,13 +169,13 @@ int CreateTransmittersHelper::generateMPITag(int srcLevel, int tgtLevel)
 string CreateTransmittersHelper::generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel)
 {
     std::string str;
-    str = UbSystem::toString<int>(srcLevel);
+    str = ub_system::toString<int>(srcLevel);
     str += "#";
-    str += UbSystem::toString<int>(tgtLevel);
+    str += ub_system::toString<int>(tgtLevel);
     str += "#";
-    str += UbSystem::toString<int>(srcRank);
+    str += ub_system::toString<int>(srcRank);
     str += "#";
-    str += UbSystem::toString<int>(tgtRank);
+    str += ub_system::toString<int>(tgtRank);
 
     return str;
 }
@@ -184,15 +184,15 @@ string CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3, int d
 {
     std::string str;
 
-    str += UbSystem::toString<int>(x1);
+    str += ub_system::toString<int>(x1);
     str += "#";
-    str += UbSystem::toString<int>(x2);
+    str += ub_system::toString<int>(x2);
     str += "#";
-    str += UbSystem::toString<int>(x3);
+    str += ub_system::toString<int>(x3);
     str += "#";
-    str += UbSystem::toString<int>(dir);
+    str += ub_system::toString<int>(dir);
     str += "#";
-    str += UbSystem::toString<int>(ib);
+    str += ub_system::toString<int>(ib);
 
     return str;
 }

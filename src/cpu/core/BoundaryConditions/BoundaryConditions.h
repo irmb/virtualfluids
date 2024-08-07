@@ -82,7 +82,7 @@ protected:
     void setFlagBits(long long &flag, const int &direction, const short &secOpt)
     {
         if ((secOpt + 1) > maxOptionVal)
-            throw UbException(UB_EXARGS, "error: option > " + UbSystem::toString(maxOptionVal - 1));
+            throw UbException(UB_EXARGS, "error: option > " + ub_system::toString(maxOptionVal - 1));
 
         // all digits at the respective positions to "0"
         flag &= ~(maxOptionVal << (direction * optionDigits));

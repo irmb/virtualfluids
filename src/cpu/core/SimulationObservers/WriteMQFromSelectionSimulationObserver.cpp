@@ -102,10 +102,10 @@ void WriteMQFromSelectionSimulationObserver::collectData(real step)
 
     std::string pfilePath, partPath, subfolder, cfilePath;
 
-    subfolder = "mqSelect" + UbSystem::toString(istep);
+    subfolder = "mqSelect" + ub_system::toString(istep);
     pfilePath = path + "/mqSelect/" + subfolder;
     cfilePath = path + "/mqSelect/mq_collection";
-    partPath  = pfilePath + "/mqSelect" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/mqSelect" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     std::string partName = writer->writeNodesWithNodeData(partPath, nodes, datanames, data);
     size_t found         = partName.find_last_of("/");
@@ -200,25 +200,25 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         if (ub_math::isNaN(rho) || ub_math::isInfinity(rho))
                             UB_THROW(UbException(
                                 UB_EXARGS, "rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                         if (ub_math::isNaN(vx1) || ub_math::isInfinity(vx1))
                             UB_THROW(UbException(
                                 UB_EXARGS, "vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                         // vx1=999.0;
                         if (ub_math::isNaN(vx2) || ub_math::isInfinity(vx2))
                             UB_THROW(UbException(
                                 UB_EXARGS, "vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                         // vx2=999.0;
                         if (ub_math::isNaN(vx3) || ub_math::isInfinity(vx3))
                             UB_THROW(UbException(
                                 UB_EXARGS, "vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
 
                         data[index++].push_back(rho);
                         data[index++].push_back(vx1);
