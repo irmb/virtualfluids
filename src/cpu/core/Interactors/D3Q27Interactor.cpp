@@ -329,7 +329,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
     if (geoObject3D->hasRaytracing() || (this->isInverseSolid() && geoObject3D->raytracingSupportsPointsInside())) {
         // if deltaX1==deltaX2==deltaX3 (must for LB!!)
-        if (!UbMath::zero(deltaX1 - deltaX2 + deltaX1 - deltaX3 + deltaX2 - deltaX3))
+        if (!ub_math::zero(deltaX1 - deltaX2 + deltaX1 - deltaX3 + deltaX2 - deltaX3))
             throw UbException(
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
@@ -401,9 +401,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
                             // assert(UbMath::lessEqual(q, c1o1));
 
-                            if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                            if (ub_math::inClosedInterval(q, c1o1, c1o1))
                                 q = c1o1;
-                            if (UbMath::greater(q, c0o1) && UbMath::lessEqual(q, c1o1)) {
+                            if (ub_math::greater(q, c0o1) && ub_math::lessEqual(q, c1o1)) {
                                 //#pragma omp critical (BC_CHANGE)
                                 {
                                     bc = bcArray->getBC(ix1, ix2, ix3);
@@ -506,7 +506,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                 if (!this->isInverseSolid()) // A is outside
                                 {
                                     real distanceAB = pointA.getDistance(&pointB); // pointA to B
-                                    real distanceAP = UbMath::min(pointA.getDistance(clippedLine->getPoint1()),
+                                    real distanceAP = ub_math::min(pointA.getDistance(clippedLine->getPoint1()),
                                                                     pointA.getDistance(clippedLine->getPoint2()));
                                     q                 = distanceAP / distanceAB;
                                 } else {
@@ -528,9 +528,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                     }
                                 }
 
-                                if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                if (ub_math::inClosedInterval(q, c1o1, c1o1))
                                     q = c1o1;
-                                if (UbMath::lessEqual(q, c1o1) && UbMath::greater(q, c0o1)) {
+                                if (ub_math::lessEqual(q, c1o1) && ub_math::greater(q, c0o1)) {
                                     {
                                         bc = bcArray->getBC(ix1, ix2, ix3);
                                         if (!bc) {

@@ -2052,13 +2052,13 @@ void Grid3D::getBlocksByCuboid(real minX1, real minX2, real minX3, real maxX1, r
     // Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden,
     // da beim Transformieren der "groessere" Index rauskommt
     int iMinX1 = (int)dMinX1;
-    if (UbMath::zero(dMinX1 - iMinX1))
+    if (ub_math::zero(dMinX1 - iMinX1))
         iMinX1 -= 1;
     int iMinX2 = (int)dMinX2;
-    if (UbMath::zero(dMinX2 - iMinX2))
+    if (ub_math::zero(dMinX2 - iMinX2))
         iMinX2 -= 1;
     int iMinX3 = (int)dMinX3;
-    if (UbMath::zero(dMinX3 - iMinX3))
+    if (ub_math::zero(dMinX3 - iMinX3))
         iMinX3 -= 1;
 
     // max (hier kann die Zusatzabfrage vernachlaessigt werden):
@@ -2107,13 +2107,13 @@ void Grid3D::getBlocksByCuboid(int level, real minX1, real minX2, real minX3, re
 
     // Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden:
     int iMinX1 = (int)dMinX1;
-    if (UbMath::zero(dMinX1 - iMinX1))
+    if (ub_math::zero(dMinX1 - iMinX1))
         iMinX1 -= 1;
     int iMinX2 = (int)dMinX2;
-    if (UbMath::zero(dMinX2 - iMinX2))
+    if (ub_math::zero(dMinX2 - iMinX2))
         iMinX2 -= 1;
     int iMinX3 = (int)dMinX3;
-    if (UbMath::zero(dMinX3 - iMinX3))
+    if (ub_math::zero(dMinX3 - iMinX3))
         iMinX3 -= 1;
 
     // max:
@@ -2155,13 +2155,13 @@ void Grid3D::getAllBlocksByCuboid(real minX1, real minX2, real minX3, real maxX1
     // Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden,
     // da beim Transformieren der "groessere" Index rauskommt
     int iMinX1 = (int)dMinX1;
-    if (UbMath::zero(dMinX1 - iMinX1))
+    if (ub_math::zero(dMinX1 - iMinX1))
         iMinX1 -= 1;
     int iMinX2 = (int)dMinX2;
-    if (UbMath::zero(dMinX2 - iMinX2))
+    if (ub_math::zero(dMinX2 - iMinX2))
         iMinX2 -= 1;
     int iMinX3 = (int)dMinX3;
-    if (UbMath::zero(dMinX3 - iMinX3))
+    if (ub_math::zero(dMinX3 - iMinX3))
         iMinX3 -= 1;
 
     // max (hier kann die Zusatzabfrage vernachlaessigt werden):

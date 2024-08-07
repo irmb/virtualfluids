@@ -123,17 +123,17 @@ inline bool isPointOnTriangle(const T &px, const T &py, const T &pz, const T &pr
         T Q_y = Q1_y + Q2_y + Q3_y;
         T Q_z = Q1_z + Q2_z + Q3_z;
 
-        if (UbMath::zero(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z))
+        if (ub_math::zero(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z))
             return true;
-        else if (UbMath::zero(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z))
+        else if (ub_math::zero(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z))
             return true;
-        else if (UbMath::zero(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z))
+        else if (ub_math::zero(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z))
             return true;
-        else if (UbMath::less(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z, T(0.0)))
+        else if (ub_math::less(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z, T(0.0)))
             return false;
-        else if (UbMath::less(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z, T(0.0)))
+        else if (ub_math::less(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z, T(0.0)))
             return false;
-        else if (UbMath::less(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z, T(0.0)))
+        else if (ub_math::less(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z, T(0.0)))
             return false;
 
         return true;
@@ -164,14 +164,14 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
 
     T denom = (n2X - n1X) * triFace.nx + (n2Y - n1Y) * triFace.ny + (n2Z - n1Z) * triFace.nz;
 
-    if (UbMath::zero(denom)) // line does not intersect the plane of the triangle !
+    if (ub_math::zero(denom)) // line does not intersect the plane of the triangle !
     {
         return false;
     } else {
         T d  = -triFace.nx * p0.x - triFace.ny * p0.y - triFace.nz * p0.z;
         T mu = T(-1.0 * (d + n1X * triFace.nx + n1Y * triFace.ny + n1Z * triFace.nz) / denom);
 
-        if (!UbMath::inClosedInterval(mu, T(0.0),
+        if (!ub_math::inClosedInterval(mu, T(0.0),
                                       T(1.0))) // Point of intersection of line and plane does not lie on the triangle
         {
             return false;

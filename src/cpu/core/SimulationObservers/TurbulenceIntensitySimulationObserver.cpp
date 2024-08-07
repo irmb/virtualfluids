@@ -178,7 +178,7 @@ void TurbulenceIntensitySimulationObserver::addData(const SPtr<Block3D> block)
 
                     real ti = sqrt(temp);
 
-                    if (UbMath::isNaN(ti))
+                    if (ub_math::isNaN(ti))
                         UB_THROW(
                             UbException(UB_EXARGS, "TI is not a number (nan or -1.#IND), sqrt(temp), where temp = " +
                                                        UbSystem::toString(temp) +

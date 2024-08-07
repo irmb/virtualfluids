@@ -62,8 +62,8 @@ public:
         friend class UbScheduler;
 
     public:
-        UbSchedule() : step(UbMath::inf), begin(UbMath::inf), end(UbMath::inf) {}
-        UbSchedule(const double &step, const double &begin = 0.0, const double &end = UbMath::inf)
+        UbSchedule() : step(ub_math::inf), begin(ub_math::inf), end(ub_math::inf) {}
+        UbSchedule(const double &step, const double &begin = 0.0, const double &end = ub_math::inf)
             : step(step), begin(begin), end(end)
         {
         }
@@ -93,7 +93,7 @@ public:
 public:
     UbScheduler() { this->initVals(); }
     /*==========================================================*/
-    UbScheduler(const double &step, const double &begin = 0, const double &end = UbMath::inf)
+    UbScheduler(const double &step, const double &begin = 0, const double &end = ub_math::inf)
     {
         this->initVals();
         this->addSchedule(step, begin, end);
@@ -114,19 +114,19 @@ public:
     /*==========================================================*/
     bool addSchedule(const double &step, const double &begin, double end)
     {
-        if (UbMath::zero(step) || begin > end) {
+        if (ub_math::zero(step) || begin > end) {
             std::cerr << "UbScheduler::addSchedule - invalid Schedule:\n\t" << UbSchedule(step, begin, end)
                       << std::endl;
             return false;
         }
 
-        if (UbMath::less(end, (double)UbMath::inf)) {
+        if (ub_math::less(end, (double)ub_math::inf)) {
             // es kann vorkommen, dass man mit dem intervall nicht genau auf den letzten wert kommt
             //(z.B. step=2; start=0; end=9; -> ende wird angepasst)
-            // also wenn end-begin>UbMath::inf ist, dann geht es halt nicht.. ein cast in long double half hier nichts
+            // also wenn end-begin>ub_math::inf ist, dann geht es halt nicht.. ein cast in long double half hier nichts
             double multiplier = 0.0;
             double fractpart  = modf((end - begin) / step, &multiplier);
-            if (!UbMath::zero(fractpart)) {
+            if (!ub_math::zero(fractpart)) {
                 // tmp-speicherung (fuer cerr)
                 fractpart = end;
                 // neues ende
@@ -169,9 +169,9 @@ public:
     bool isDue(const double &t)
     {
         lastUsedT = t;
-        if (UbMath::greaterEqual(t, nextDueTime)) {
+        if (ub_math::greaterEqual(t, nextDueTime)) {
             // groesser maxT is nicht
-            if (UbMath::greater(t, maxT))
+            if (ub_math::greater(t, maxT))
                 return false;
 
             // temp var
@@ -180,7 +180,7 @@ public:
             // um Suche nach nextDueTime bei "Zukunfts-t" zu optimieren, setzt man die "start"-suchzeit auf "t-1":
             nextDueTime = t - 1; // t-1 deshlab, damit falls z.B. while Schleife nicht durchlaufen wird
                                  // die folgende if Abfrage nicht faelschlicher Weise true ist!
-            while (UbMath::greaterEqual(t, nextDueTime) && !UbMath::equal(nextDueTime, maxT)) {
+            while (ub_math::greaterEqual(t, nextDueTime) && !ub_math::equal(nextDueTime, maxT)) {
                 double tmpNextDueTime = maxT, potentialDueTime = -1.0;
                 for (std::size_t i = 0; i < schedules.size(); i++) {
                     if (calcNextDueTimeForSchedule(schedules[i], nextDueTime, potentialDueTime) &&
@@ -196,12 +196,12 @@ public:
             // wenn t = der aktuuellen oder gar schon der naechstmoeglichen ist (hierbei wurde
             // zuvor actDueTime und nextDueTime ggf. angepasst)
             // Bsp.: nextDuTime war 5, aber fuer t=400 gilt andere schedule -> Bsp actDue=350 und nextDue 405
-            if (UbMath::equal(t, actDueTime) || UbMath::equal(t, nextDueTime)) {
+            if (ub_math::equal(t, actDueTime) || ub_math::equal(t, nextDueTime)) {
                 lastDueTime = t;
                 return true;
             }
-        } else if (UbMath::lessEqual(t, lastDueTime)) {
-            if (UbMath::equal(t, lastDueTime))
+        } else if (ub_math::lessEqual(t, lastDueTime)) {
+            if (ub_math::equal(t, lastDueTime))
                 return true; // braucht man, wenn man fuer dasselbe t isDue(t) aufruft
             else {
                 // Fall: Zeit liegt faktisch in der Vergangenheit -> neu initialsisieren
@@ -214,7 +214,7 @@ public:
                 }
                 nextDueTime = tmpNextDueTime;
 
-                return UbMath::equal(t, nextDueTime);
+                return ub_math::equal(t, nextDueTime);
             }
         }
 
@@ -224,7 +224,7 @@ public:
     inline double getMinBegin() const
     {
         if (schedules.empty())
-            return UbMath::inf;
+            return ub_math::inf;
         return std::min_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getBegin))
             ->getBegin();
     }
@@ -232,7 +232,7 @@ public:
     inline double getMaxBegin() const
     {
         if (schedules.empty())
-            return UbMath::inf;
+            return ub_math::inf;
         return std::max_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getBegin))
             ->getBegin();
     }
@@ -240,7 +240,7 @@ public:
     inline double getMinEnd() const
     {
         if (schedules.empty())
-            return UbMath::inf;
+            return ub_math::inf;
         return std::min_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getEnd))
             ->getEnd();
     }
@@ -248,7 +248,7 @@ public:
     inline double getMaxEnd() const
     {
         if (schedules.empty())
-            return UbMath::inf;
+            return ub_math::inf;
         return std::max_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getEnd))
             ->getEnd();
     }
@@ -256,7 +256,7 @@ public:
     inline double getMinStep() const
     {
         if (schedules.empty())
-            return UbMath::inf;
+            return ub_math::inf;
         return std::min_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getStep))
             ->getStep();
     }
@@ -264,7 +264,7 @@ public:
     inline double getMaxStep() const
     {
         if (schedules.empty())
-            return UbMath::inf;
+            return ub_math::inf;
         return std::max_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getStep))
             ->getStep();
     }
@@ -291,23 +291,23 @@ protected:
     /*==========================================================*/
     void initVals()
     {
-        lastUsedT   = -UbMath::inf;
-        lastDueTime = -UbMath::inf;
-        nextDueTime = UbMath::inf;
-        maxT        = -UbMath::inf;
+        lastUsedT   = -ub_math::inf;
+        lastDueTime = -ub_math::inf;
+        nextDueTime = ub_math::inf;
+        maxT        = -ub_math::inf;
     }
     /*==========================================================*/
     // calculates next due time for a schedule
     // with  nextDueTime > searchStart
     bool calcNextDueTimeForSchedule(const UbSchedule &schedule, const double &searchStart, double &nextDueTime)
     {
-        if (UbMath::greater(searchStart, schedule.end))
+        if (ub_math::greater(searchStart, schedule.end))
             return false;
-        else if (UbMath::less(searchStart, schedule.begin))
+        else if (ub_math::less(searchStart, schedule.begin))
             nextDueTime = schedule.begin;
         else {
             nextDueTime = schedule.begin + ((int)((searchStart - schedule.begin) / schedule.step) + 1) * schedule.step;
-            if (UbMath::less(nextDueTime, searchStart) || UbMath::greater(nextDueTime, schedule.end)) {
+            if (ub_math::less(nextDueTime, searchStart) || ub_math::greater(nextDueTime, schedule.end)) {
                 return false;
             }
         }

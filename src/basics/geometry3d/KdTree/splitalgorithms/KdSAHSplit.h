@@ -65,7 +65,7 @@ public:
         }
 
         SplitCandidate<T> bestSplitCandidate;
-        T minCN = UbMath::inf;
+        T minCN = ub_math::inf;
 
         for (int splitAxis = 0; splitAxis < 3; splitAxis++) {
             SplitCandidateManager<T> sc;
@@ -117,14 +117,14 @@ public:
             T &max = projection[2];
             // --------------------------------------------------- //
             // case 1 : object inside plane
-            if (UbMath::equal(min, max)) {
-                if (UbMath::equal(min, candidate.position)) {
+            if (ub_math::equal(min, max)) {
+                if (ub_math::equal(min, candidate.position)) {
                     if (candidate.np_left) {
                         triFacesForChild1.push_back(triFace);
                     } else if (candidate.np_right) {
                         triFacesForChild2.push_back(triFace);
                     }
-                } else if (UbMath::less(min, candidate.position)) {
+                } else if (ub_math::less(min, candidate.position)) {
                     triFacesForChild1.push_back(triFace);
                 } else // if( UbMath::greater(min, candidate.position)
                 {
@@ -133,11 +133,11 @@ public:
             } //
             // --------------------------------------------------- //
             // case 2 : object on left side of plane
-            else if (UbMath::lessEqual(max, candidate.position)) {
+            else if (ub_math::lessEqual(max, candidate.position)) {
                 triFacesForChild1.push_back(triFace);
             } // --------------------------------------------------- //
             // case 3 : object on right side of plane
-            else if (UbMath::greaterEqual(min, candidate.position)) {
+            else if (ub_math::greaterEqual(min, candidate.position)) {
                 triFacesForChild2.push_back(triFace);
             } //
             // --------------------------------------------------- //
@@ -186,8 +186,8 @@ private:
             // --------------------------------------------------- //
             // --------------------------------------------------- //
             // case 1 : object is fully inside the current node
-            if (UbMath::greaterEqual(p1, p1_node) && UbMath::lessEqual(p2, p2_node)) {
-                if (UbMath::equal(p1, p2)) {
+            if (ub_math::greaterEqual(p1, p1_node) && ub_math::lessEqual(p2, p2_node)) {
+                if (ub_math::equal(p1, p2)) {
                     // object is inside the plane
                     splitCandidateManager.add(p1, splitAxis, 0, 0, 1);
                 } else {
@@ -198,21 +198,21 @@ private:
             // --------------------------------------------------- //
             // --------------------------------------------------- //
             // case 2 : just the right point (p2) is inside the current node
-            else if (UbMath::less(p1, p1_node) && UbMath::lessEqual(p2, p2_node) && UbMath::greaterEqual(p2, p1_node)) {
+            else if (ub_math::less(p1, p1_node) && ub_math::lessEqual(p2, p2_node) && ub_math::greaterEqual(p2, p1_node)) {
                 splitCandidateManager.add(p2, splitAxis, 0, 1, 0);
                 splitCandidateManager.objects_starting_outside_left++;
             } //
             // --------------------------------------------------- //
             // --------------------------------------------------- //
             // case 3 : just the left point (p1) is inside the current node
-            else if (UbMath::greaterEqual(p1, p1_node) && UbMath::greater(p2, p2_node) &&
-                     UbMath::lessEqual(p1, p2_node)) {
+            else if (ub_math::greaterEqual(p1, p1_node) && ub_math::greater(p2, p2_node) &&
+                     ub_math::lessEqual(p1, p2_node)) {
                 splitCandidateManager.add(p1, splitAxis, 1, 0, 0);
             } //
             // --------------------------------------------------- //
             // --------------------------------------------------- //
             // case 4 : left and right point are outside the current node
-            else if (UbMath::less(p1, p1_node) && UbMath::greater(p2, p2_node)) {
+            else if (ub_math::less(p1, p1_node) && ub_math::greater(p2, p2_node)) {
                 splitCandidateManager.objects_fully_outside_node++;
             } //
               // --------------------------------------------------- //

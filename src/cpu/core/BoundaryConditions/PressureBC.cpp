@@ -75,8 +75,8 @@ void PressureBC::init()
     try // initilialization and validation of functions
     {
         for (size_t pos = 0; pos < densBCs.size(); ++pos) {
-            if (!(UbMath::equal(BCFunction::INFCONST, densBCs[pos].getEndTime()) &&
-                  UbMath::greaterEqual(this->timeStep, densBCs[pos].getStartTime()))) {
+            if (!(ub_math::equal(BCFunction::INFCONST, densBCs[pos].getEndTime()) &&
+                  ub_math::greaterEqual(this->timeStep, densBCs[pos].getStartTime()))) {
                 this->setTimeDependent();
             }
 
@@ -102,19 +102,19 @@ void PressureBC::init(const D3Q27Interactor *const & /*interactor*/, const real 
 {
     this->timeStep           = time;
     this->tmpDensityFunction = NULL;
-    real maxEndtime        = -UbMath::inf;
+    real maxEndtime        = -ub_math::inf;
 
     // aktuelle Densityfunction bestimmen
     for (size_t pos = 0; pos < densBCs.size(); ++pos) {
-        if (UbMath::equal(densBCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = UbMath::inf;
-        maxEndtime = UbMath::max(maxEndtime, densBCs[pos].getStartTime(),
+        if (ub_math::equal(densBCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
+            maxEndtime = ub_math::inf;
+        maxEndtime = ub_math::max(maxEndtime, densBCs[pos].getStartTime(),
                                  densBCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 
-        if (UbMath::greaterEqual(this->timeStep, densBCs[pos].getStartTime())) {
-            if (UbMath::lessEqual(this->timeStep, densBCs[pos].getEndTime()) ||
-                UbMath::equal(densBCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
-                UbMath::equal(densBCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
+        if (ub_math::greaterEqual(this->timeStep, densBCs[pos].getStartTime())) {
+            if (ub_math::lessEqual(this->timeStep, densBCs[pos].getEndTime()) ||
+                ub_math::equal(densBCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
+                ub_math::equal(densBCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
                 tmpDensityFunction = &densBCs[pos].getFunction();
                 break;
             }
@@ -123,7 +123,7 @@ void PressureBC::init(const D3Q27Interactor *const & /*interactor*/, const real 
 
     // wenn funktionen zweitlich konstant sind und bis t=unendlich gelten
     // kann man zeitabhaengigkeit deaktivieren
-    if (UbMath::greaterEqual(time, maxEndtime))
+    if (ub_math::greaterEqual(time, maxEndtime))
         this->unsetTimeDependent();
 
     UBLOG(logDEBUG4, "D3Q27DensityBC::init(time="

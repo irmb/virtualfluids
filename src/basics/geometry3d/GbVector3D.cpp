@@ -189,9 +189,9 @@ GbVector3D GbVector3D::operator/(const double &fScalar) const
         kQuot.m_afTuple[1] = fInvScalar * m_afTuple[1];
         kQuot.m_afTuple[2] = fInvScalar * m_afTuple[2];
     } else {
-        kQuot.m_afTuple[0] = UbMath::inf;
-        kQuot.m_afTuple[1] = UbMath::inf;
-        kQuot.m_afTuple[2] = UbMath::inf;
+        kQuot.m_afTuple[0] = ub_math::inf;
+        kQuot.m_afTuple[1] = ub_math::inf;
+        kQuot.m_afTuple[2] = ub_math::inf;
     }
 
     return kQuot;
@@ -236,9 +236,9 @@ GbVector3D &GbVector3D::operator/=(const double &fScalar)
         m_afTuple[1] *= fInvScalar;
         m_afTuple[2] *= fInvScalar;
     } else {
-        m_afTuple[0] = UbMath::inf;
-        m_afTuple[1] = UbMath::inf;
-        m_afTuple[2] = UbMath::inf;
+        m_afTuple[0] = ub_math::inf;
+        m_afTuple[1] = ub_math::inf;
+        m_afTuple[2] = ub_math::inf;
     }
 
     return *this;
@@ -273,7 +273,7 @@ double GbVector3D::Normalize()
 {
     double fLength = Length();
 
-    if (fLength > UbMath::Epsilon<double>::val()) {
+    if (fLength > ub_math::Epsilon<double>::val()) {
         double fInvLength = ((double)1.0) / fLength;
         m_afTuple[0] *= fInvLength;
         m_afTuple[1] *= fInvLength;
@@ -338,7 +338,7 @@ void GbVector3D::GetBarycentrics(const GbVector3D &rkV0, const GbVector3D &rkV1,
     GbVector3D kE1cE2 = akDiff[1].Cross(akDiff[2]);
     GbVector3D kE2cE0 = akDiff[2].Cross(akDiff[0]);
     GbVector3D kE0cE1 = akDiff[0].Cross(akDiff[1]);
-    if (std::fabs(fDet) > UbMath::Epsilon<double>::val()) {
+    if (std::fabs(fDet) > ub_math::Epsilon<double>::val()) {
         double fInvDet = ((double)1.0) / fDet;
         afBary[0]      = akDiff[3].Dot(kE1cE2) * fInvDet;
         afBary[1]      = akDiff[3].Dot(kE2cE0) * fInvDet;
@@ -369,7 +369,7 @@ void GbVector3D::GetBarycentrics(const GbVector3D &rkV0, const GbVector3D &rkV1,
             fMaxSqrArea = fSqrArea;
         }
 
-        if (fMaxSqrArea > UbMath::Epsilon<double>::val()) {
+        if (fMaxSqrArea > ub_math::Epsilon<double>::val()) {
             double fInvSqrArea = ((double)1.0) / fMaxSqrArea;
             GbVector3D kTmp;
             if (iMaxIndex == 0) {
@@ -435,7 +435,7 @@ void GbVector3D::GetBarycentrics(const GbVector3D &rkV0, const GbVector3D &rkV1,
                 fMaxSqrLength = fSqrLength;
             }
 
-            if (fMaxSqrLength > UbMath::Epsilon<double>::val()) {
+            if (fMaxSqrLength > ub_math::Epsilon<double>::val()) {
                 double fInvSqrLength = ((double)1.0) / fMaxSqrLength;
                 if (iMaxIndex == 0) {
                     // P-V3 = t*(V0-V3)
@@ -526,13 +526,13 @@ void GbVector3D::GenerateOrthonormalBasis(GbVector3D &rkU, GbVector3D &rkV, GbVe
 
     if (std::fabs(rkW.m_afTuple[0]) >= std::fabs(rkW.m_afTuple[1])) {
         // W.x or W.z is the largest magnitude component, swap them
-        fInvLength       = UbMath::invSqrt(rkW.m_afTuple[0] * rkW.m_afTuple[0] + rkW.m_afTuple[2] * rkW.m_afTuple[2]);
+        fInvLength       = ub_math::invSqrt(rkW.m_afTuple[0] * rkW.m_afTuple[0] + rkW.m_afTuple[2] * rkW.m_afTuple[2]);
         rkU.m_afTuple[0] = -rkW.m_afTuple[2] * fInvLength;
         rkU.m_afTuple[1] = (double)0.0;
         rkU.m_afTuple[2] = +rkW.m_afTuple[0] * fInvLength;
     } else {
         // W.y or W.z is the largest magnitude component, swap them
-        fInvLength       = UbMath::invSqrt(rkW.m_afTuple[1] * rkW.m_afTuple[1] + rkW.m_afTuple[2] * rkW.m_afTuple[2]);
+        fInvLength       = ub_math::invSqrt(rkW.m_afTuple[1] * rkW.m_afTuple[1] + rkW.m_afTuple[2] * rkW.m_afTuple[2]);
         rkU.m_afTuple[0] = (double)0.0;
         rkU.m_afTuple[1] = +rkW.m_afTuple[2] * fInvLength;
         rkU.m_afTuple[2] = -rkW.m_afTuple[1] * fInvLength;

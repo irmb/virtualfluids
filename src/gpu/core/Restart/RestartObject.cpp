@@ -64,7 +64,7 @@ void RestartObject::serialize(const std::string &filename, const std::shared_ptr
         fs.push_back(vec);
 
         for (size_t index2 = 0; index2 < (para->getD3Qxx() * para->getParH(index1)->numberOfNodes); index2++) {
-            if (UbMath::isNaN(para->getParH(index1)->distributions.f[0][index2])) {
+            if (ub_math::isNaN(para->getParH(index1)->distributions.f[0][index2])) {
                 fs[index1].push_back((real)0.0);
             } else {
                 fs[index1].push_back(para->getParH(index1)->distributions.f[0][index2]);

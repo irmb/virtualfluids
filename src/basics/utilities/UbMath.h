@@ -41,7 +41,7 @@
 #include <iostream>
 #include <limits>
 
-namespace UbMath
+namespace ub_math
 {
 extern const double PI;
 
@@ -83,7 +83,7 @@ inline T log(const T &z, const T &base)
     return ::log(z) / ::log(base);
 }
 /*=======================================================*/
-// double x = UbMath::getNegativeInfinity<double>();
+// double x = ub_math::getNegativeInfinity<double>();
 template <typename T>
 inline T getNegativeInfinity()
 {
@@ -92,7 +92,7 @@ inline T getNegativeInfinity()
     return -std::numeric_limits<T>::infinity();
 }
 /*=======================================================*/
-// double x = UbMath::getPositiveInfinity<double>();
+// double x = ub_math::getPositiveInfinity<double>();
 template <typename T>
 inline T getPositiveInfinity()
 {
@@ -101,7 +101,7 @@ inline T getPositiveInfinity()
     return std::numeric_limits<T>::infinity();
 }
 /*=======================================================*/
-// double x; bool b = UbMath::isInfinity(x);
+// double x; bool b = ub_math::isInfinity(x);
 template <typename T>
 inline bool isInfinity(const T &value)
 {
@@ -112,7 +112,7 @@ inline bool isInfinity(const T &value)
     return false;
 }
 /*=======================================================*/
-// double x = UbMath::getNaN<double>(x);
+// double x = ub_math::getNaN<double>(x);
 template <typename T>
 inline T getNaN()
 {
@@ -120,7 +120,7 @@ inline T getNaN()
     return std::numeric_limits<T>::quiet_NaN();
 }
 /*=======================================================*/
-// double x; bool b = UbMath::isNaN(x);
+// double x; bool b = ub_math::isNaN(x);
 // x!=x liefert bei #QNAN "true"!
 template <typename T>
 inline bool isNaN(const T &x)
@@ -139,7 +139,7 @@ template <typename T>
 inline bool zero(const T &value)
 {
     return std::fabs(value) < Epsilon<T>::val();
-    // return value >= -UbMath::EPSILON && value <= UbMath::EPSILON;
+    // return value >= -ub_math::EPSILON && value <= ub_math::EPSILON;
 }
 /*=======================================================*/
 // spezialisierung fuer ints
@@ -152,13 +152,13 @@ inline bool zero(const int &value)
 template <typename T1, typename T2>
 inline bool zero(const T1 &value1, const T2 &value2)
 {
-    return !(!UbMath::zero(value1) || !UbMath::zero(value2));
+    return !(!ub_math::zero(value1) || !ub_math::zero(value2));
 }
 /*=======================================================*/
 template <typename T1, typename T2, typename T3>
 inline bool zero(const T1 &value1, const T2 &value2, const T3 &value3)
 {
-    return !(!UbMath::zero(value1) || !UbMath::zero(value2, value3));
+    return !(!ub_math::zero(value1) || !ub_math::zero(value2, value3));
 }
 /*=======================================================*/
 template <typename T>
@@ -195,7 +195,7 @@ inline bool equal(const T1 &value, const T2 &reference)
 template <typename T1, typename T2, typename T3>
 inline bool equal(const T1 &val1, const T2 &val2, const T3 &val3)
 {
-    return (UbMath::equal(val1, val2) && UbMath::equal(val1, val3));
+    return (ub_math::equal(val1, val2) && ub_math::equal(val1, val3));
 }
 /*=======================================================*/
 template <typename T1, typename T2>
@@ -235,19 +235,19 @@ inline T round(const T &value, const int &decimalPlaces)
 template <typename T>
 inline int integerRounding(const T &value)
 {
-    return static_cast<int>(UbMath::zero(value) ? 0 : ((value < 0.0) ? (value - 0.5) : (value + 0.5)));
+    return static_cast<int>(ub_math::zero(value) ? 0 : ((value < 0.0) ? (value - 0.5) : (value + 0.5)));
 }
 /*=======================================================*/
 template <typename T>
 inline T getRad(const T &degrees)
 {
-    return degrees * static_cast<T>(UbMath::PI / 180.0);
+    return degrees * static_cast<T>(ub_math::PI / 180.0);
 }
 /*=======================================================*/
 template <typename T>
 inline T getDegrees(const T &rad)
 {
-    return rad * static_cast<T>(UbMath::PI / 180.0);
+    return rad * static_cast<T>(ub_math::PI / 180.0);
 }
 /*=======================================================*/
 // aus wildmagic
@@ -266,7 +266,7 @@ inline T ACos(const T &fValue)
 template <typename T>
 inline T ASin(const T &fValue)
 {
-    double HALF_PI = 0.5 * UbMath::PI;
+    double HALF_PI = 0.5 * ub_math::PI;
     if (-1.0 < fValue) {
         if (fValue < 1.0)
             return static_cast<T>(asin(fValue));
@@ -363,7 +363,7 @@ inline int calcGgt(int val1, int val2)
 // -------------------------------------------------------------------------------------------------
 // Funktion berechnet den groessten gemeinsamen Teiler von drei Zahlen (MK)
 // -------------------------------------------------------------------------------------------------
-inline int calcGgt(int val1, const int &val2, int val3) { return UbMath::calcGgt(UbMath::calcGgt(val1, val2), val3); }
+inline int calcGgt(int val1, const int &val2, int val3) { return ub_math::calcGgt(ub_math::calcGgt(val1, val2), val3); }
 /*=======================================================*/
 // returns the max of c2 values
 // to avoid errors at mixed argument-types use: double myMax = max<double>(2,2.3);
@@ -409,7 +409,7 @@ inline const T &min(const T &a1, const T &a2, const T &a3, const T &a4)
     //       return tmp;
 }
 
-} // namespace UbMath
+} // namespace ub_math
 
 #endif
 

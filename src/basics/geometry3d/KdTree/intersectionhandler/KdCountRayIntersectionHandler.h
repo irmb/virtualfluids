@@ -130,7 +130,7 @@ private:
                 // a = e1 dot p
                 a = e1x * px + e1y * py + e1z * pz;
                 // if( fabs(a)<1.E-10 ) continue;
-                if (fabs(a) < UbMath::Epsilon<T>::val())
+                if (fabs(a) < ub_math::Epsilon<T>::val())
                     continue;
                 f = T(1.0 / a);
 
@@ -143,7 +143,7 @@ private:
                 u = f * (sx * px + sy * py + sz * pz);
 
                 // u ist nur gueltig in [0;1]
-                if ((UbMath::less(u, T(0.0))) || (UbMath::greater(u, T(1.0)))) {
+                if ((ub_math::less(u, T(0.0))) || (ub_math::greater(u, T(1.0)))) {
                     continue;
                 }
 
@@ -156,7 +156,7 @@ private:
                 v = f * (ray.directionX * qx + ray.directionY * qy + ray.directionZ * qz);
 
                 // v ist nur gueltig in [0;1] da aber v bereits gueltig ist -> u+v darf nicht > 1.0 sein ;-)
-                if ((UbMath::less(v, T(0.0))) || (UbMath::greater(u + v, T(1.0)))) {
+                if ((ub_math::less(v, T(0.0))) || (ub_math::greater(u + v, T(1.0)))) {
                     continue;
                 }
 
@@ -165,7 +165,7 @@ private:
                 // Raytracing - end
                 //////////////////////////////////////////////////////////////////////////
 
-                if (UbMath::zero(factor)) {
+                if (ub_math::zero(factor)) {
                     return Intersection::ON_BOUNDARY; // ray.Org liegt direkt auf einem dreieck --> boundary
                 }
                 if (factor < 0.0) {
@@ -174,11 +174,11 @@ private:
 
                 // edge tests
                 // wenn u, v oder w ==0 -> Punkt liegt auf Kante bzw. Eckpunkt
-                if (UbMath::zero(u))
+                if (ub_math::zero(u))
                     return Intersection::INTERSECT_EDGE;
-                if (UbMath::zero(v))
+                if (ub_math::zero(v))
                     return Intersection::INTERSECT_EDGE;
-                if (UbMath::zero(T(1.0) - u - v))
+                if (ub_math::zero(T(1.0) - u - v))
                     return Intersection::INTERSECT_EDGE;
 
                 counter++;

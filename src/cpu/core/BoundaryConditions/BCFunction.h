@@ -48,7 +48,7 @@ public:
     static const real INFCONST;
 
 public:
-    BCFunction() : starttime(-UbMath::inf), endtime(-UbMath::inf) {}
+    BCFunction() : starttime(-ub_math::inf), endtime(-ub_math::inf) {}
     BCFunction(const mu::Parser &function, const real &starttime, const real &endtime)
         : function(function), starttime(starttime), endtime(endtime)
     {

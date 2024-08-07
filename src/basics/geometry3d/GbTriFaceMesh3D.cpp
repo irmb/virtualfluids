@@ -175,7 +175,7 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
             {
                 for (pos = vertexMap.begin(); pos != vertexMap.end(); pos++) {
                     Vertex rhs = pos->first;
-                    // if(UbMath::inClosedInterval(vert.z,0.01999, 0.02001))
+                    // if(ub_math::inClosedInterval(vert.z,0.01999, 0.02001))
                     if (fabs(vert.x - rhs.x) < 1.E-5 && fabs(vert.y - rhs.y) < 1.E-5 && fabs(vert.z - rhs.z) < 1.E-5) {
                         break;
                     }
@@ -207,15 +207,15 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
     //   Vertex& v2 = tris[t].getNode(1,*nodes);
     //   Vertex& v3 = tris[t].getNode(2,*nodes);
 
-    //   if(UbMath::greater(std::fabs(v1.x), 0.0634) && UbMath::inClosedInterval(v1.z, 0.01999, 0.02001))
+    //   if(ub_math::greater(std::fabs(v1.x), 0.0634) && ub_math::inClosedInterval(v1.z, 0.01999, 0.02001))
     //   {
     //      UBLOG2(logINFO,std::cout, "V1:"<<v1.x<<" "<<v1.y<<" "<<v1.z);
     //   }
-    //   if(UbMath::greater(std::fabs(v2.x), 0.0634) && UbMath::inClosedInterval(v2.z, 0.01999, 0.02001))
+    //   if(ub_math::greater(std::fabs(v2.x), 0.0634) && ub_math::inClosedInterval(v2.z, 0.01999, 0.02001))
     //   {
     //      UBLOG2(logINFO,std::cout, "V2:"<<v2.x<<" "<<v2.y<<" "<<v2.z);
     //   }
-    //   if(UbMath::greater(std::fabs(v3.x), 0.0634) && UbMath::inClosedInterval(v3.z, 0.01999, 0.02001))
+    //   if(ub_math::greater(std::fabs(v3.x), 0.0634) && ub_math::inClosedInterval(v3.z, 0.01999, 0.02001))
     //   {
     //      UBLOG2(logINFO,std::cout, "V3:"<<v3.x<<" "<<v3.y<<" "<<v3.z);
     //   }
@@ -471,13 +471,13 @@ void GbTriFaceMesh3D::calculateValues()
         for (size_t i = 1; i < this->nodes->size(); i++) {
             Vertex &v1 = (*nodes)[i];
 
-            x1min = UbMath::min<double>(x1min, v1.x);
-            x2min = UbMath::min<double>(x2min, v1.y);
-            x3min = UbMath::min<double>(x3min, v1.z);
+            x1min = ub_math::min<double>(x1min, v1.x);
+            x2min = ub_math::min<double>(x2min, v1.y);
+            x3min = ub_math::min<double>(x3min, v1.z);
 
-            x1max = UbMath::max<double>(x1max, v1.x);
-            x2max = UbMath::max<double>(x2max, v1.y);
-            x3max = UbMath::max<double>(x3max, v1.z);
+            x1max = ub_math::max<double>(x1max, v1.x);
+            x2max = ub_math::max<double>(x2max, v1.y);
+            x3max = ub_math::max<double>(x3max, v1.z);
         }
         x1center = 0.5 * (x1min + x1max);
         x2center = 0.5 * (x2min + x2max);
@@ -705,7 +705,7 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //      if( iSec1 == kd_tree::Intersection::INTERSECT_EDGE && iSec2 == kd_tree::Intersection::INTERSECT_EDGE)
 //      {
 //         UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-//         double eps = UbMath::getEqualityEpsilon<float>()*1000.0;
+//         double eps = ub_math::getEqualityEpsilon<float>()*1000.0;
 //         if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
 //         return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
 //      }
@@ -722,7 +722,7 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //         if((iSec1&1) != (iSec2&1))
 //         {
 //            UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-//            double eps = UbMath::getEqualityEpsilon<float>()*1000.0;
+//            double eps = ub_math::getEqualityEpsilon<float>()*1000.0;
 //            if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
 //            return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
 //         }
@@ -873,7 +873,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         //   if( iSec1 == kd_tree::Intersection::INTERSECT_EDGE && iSec2 == kd_tree::Intersection::INTERSECT_EDGE)
         //   {
         //      //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-        //      double eps = UbMath::getEqualityEpsilon<double>();
+        //      double eps = ub_math::getEqualityEpsilon<double>();
         //      if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
         //      return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
         //   }
@@ -890,7 +890,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         //      if((iSec1&1) != (iSec2&1))
         //      {
         //         UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-        //         double eps = UbMath::getEqualityEpsilon<double>();
+        //         double eps = ub_math::getEqualityEpsilon<double>();
         //         if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
         //         return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
         //      }

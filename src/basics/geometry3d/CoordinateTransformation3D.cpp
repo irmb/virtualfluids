@@ -102,7 +102,7 @@ void CoordinateTransformation3D::setTransformationValues(const double &originX1,
                                                          const double &dx3, const double &alpha, const double &beta,
                                                          const double &gamma)
 {
-    if (UbMath::zero(dx1) || UbMath::zero(dx2) || UbMath::zero(dx3))
+    if (ub_math::zero(dx1) || ub_math::zero(dx2) || ub_math::zero(dx3))
         throw UbException(UB_EXARGS, "error: at least one delta==0.0");
 
     this->Tx1   = originX1;
@@ -115,13 +115,13 @@ void CoordinateTransformation3D::setTransformationValues(const double &originX1,
     this->beta  = beta;
     this->gamma = gamma;
 
-    double ra   = UbMath::PI * alpha / 180.0;
+    double ra   = ub_math::PI * alpha / 180.0;
     double cosA = cos(ra);
     double sinA = sin(ra);
-    double rb   = UbMath::PI * beta / 180.0;
+    double rb   = ub_math::PI * beta / 180.0;
     double cosB = cos(rb);
     double sinB = sin(rb);
-    double rg   = UbMath::PI * gamma / 180.0;
+    double rg   = ub_math::PI * gamma / 180.0;
     double cosG = cos(rg);
     double sinG = sin(rg);
 

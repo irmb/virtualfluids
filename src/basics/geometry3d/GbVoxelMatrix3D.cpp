@@ -170,38 +170,38 @@ long GbVoxelMatrix3D::getNumberOfFluid() { return numberOfFluid; }
 double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double &x1, const double &x2, const double &x3,
                                                       const double &rx1, const double &rx2, const double &rx3)
 {
-    if (!((UbMath::equal(rx1, 0.0) || UbMath::equal(fabs(rx1), 1.0) ||
-           UbMath::equal(fabs(rx1), vf::basics::constant::c1oSqrt2) || UbMath::equal(fabs(rx1), vf::basics::constant::c1oSqrt3)) &&
-          (UbMath::equal(rx2, 0.0) || UbMath::equal(fabs(rx2), 1.0) ||
-           UbMath::equal(fabs(rx2), vf::basics::constant::c1oSqrt2) || UbMath::equal(fabs(rx2), vf::basics::constant::c1oSqrt3)) &&
-          (UbMath::equal(rx3, 0.0) || UbMath::equal(fabs(rx3), 1.0) ||
-           UbMath::equal(fabs(rx3), vf::basics::constant::c1oSqrt2) || UbMath::equal(fabs(rx3), vf::basics::constant::c1oSqrt3)))) {
+    if (!((ub_math::equal(rx1, 0.0) || ub_math::equal(fabs(rx1), 1.0) ||
+           ub_math::equal(fabs(rx1), vf::basics::constant::c1oSqrt2) || ub_math::equal(fabs(rx1), vf::basics::constant::c1oSqrt3)) &&
+          (ub_math::equal(rx2, 0.0) || ub_math::equal(fabs(rx2), 1.0) ||
+           ub_math::equal(fabs(rx2), vf::basics::constant::c1oSqrt2) || ub_math::equal(fabs(rx2), vf::basics::constant::c1oSqrt3)) &&
+          (ub_math::equal(rx3, 0.0) || ub_math::equal(fabs(rx3), 1.0) ||
+           ub_math::equal(fabs(rx3), vf::basics::constant::c1oSqrt2) || ub_math::equal(fabs(rx3), vf::basics::constant::c1oSqrt3)))) {
         throw UbException(UB_EXARGS, "nur fuer diskrete Boltzmannrichungen implementiert!!!");
     }
 
     // nachbarindex ermitteln
     int ndx1 = 0, ndx2 = 0, ndx3 = 0;
-    if (UbMath::greater(rx1, 0.0))
+    if (ub_math::greater(rx1, 0.0))
         ndx1 = 1;
-    else if (UbMath::less(rx1, 0.0))
+    else if (ub_math::less(rx1, 0.0))
         ndx1 = -1;
-    if (UbMath::greater(rx2, 0.0))
+    if (ub_math::greater(rx2, 0.0))
         ndx2 = 1;
-    else if (UbMath::less(rx2, 0.0))
+    else if (ub_math::less(rx2, 0.0))
         ndx2 = -1;
-    if (UbMath::greater(rx3, 0.0))
+    if (ub_math::greater(rx3, 0.0))
         ndx3 = 1;
-    else if (UbMath::less(rx3, 0.0))
+    else if (ub_math::less(rx3, 0.0))
         ndx3 = -1;
 
-    int nix1 = UbMath::integerRounding((x1 - minX1) / deltaX1) + ndx1;
-    int nix2 = UbMath::integerRounding((x2 - minX2) / deltaX2) + ndx2;
-    int nix3 = UbMath::integerRounding((x3 - minX3) / deltaX3) + ndx3;
+    int nix1 = ub_math::integerRounding((x1 - minX1) / deltaX1) + ndx1;
+    int nix2 = ub_math::integerRounding((x2 - minX2) / deltaX2) + ndx2;
+    int nix3 = ub_math::integerRounding((x3 - minX3) / deltaX3) + ndx3;
 
     // test ob nachbar solid
     if (nix1 >= 0 && nix2 >= 0 && nix3 >= 0 && nix1 < (int)voxelMatrix.getNX1() && nix2 < (int)voxelMatrix.getNX2() &&
         nix3 < (int)voxelMatrix.getNX3()) {
-        if (UbMath::equal(voxelMatrix(nix1, nix2, nix3), SOLID)) {
+        if (ub_math::equal(voxelMatrix(nix1, nix2, nix3), SOLID)) {
             // return halber abstand der beiden knoten
             return 0.5 * sqrt((ndx1 * deltaX1) * (ndx1 * deltaX1) + (ndx2 * deltaX2) * (ndx2 * deltaX2) +
                               (ndx3 * deltaX3) * (ndx3 * deltaX3));
@@ -213,13 +213,13 @@ double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double &x1, const do
 /*=======================================================*/
 bool GbVoxelMatrix3D::isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p)
 {
-    int ix1 = UbMath::integerRounding((x1p - minX1) / deltaX1);
-    int ix2 = UbMath::integerRounding((x2p - minX2) / deltaX2);
-    int ix3 = UbMath::integerRounding((x3p - minX3) / deltaX3);
+    int ix1 = ub_math::integerRounding((x1p - minX1) / deltaX1);
+    int ix2 = ub_math::integerRounding((x2p - minX2) / deltaX2);
+    int ix3 = ub_math::integerRounding((x3p - minX3) / deltaX3);
 
     if (ix1 >= 0 && ix2 >= 0 && ix3 >= 0 && ix1 < (int)voxelMatrix.getNX1() && ix2 < (int)voxelMatrix.getNX2() &&
         ix3 < (int)voxelMatrix.getNX3()) {
-        if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), SOLID))
+        if (ub_math::equal(voxelMatrix(ix1, ix2, ix3), SOLID))
             return true;
     }
     return false;
@@ -264,7 +264,7 @@ bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double & /*x1p1*/, const doub
     // for (int ix3 = startix3; ix3<=endix3; ix3++)
     //   for (int ix2 = startix2; ix2<=endix2; ix2++)
     //      for (int ix1 = startix1; ix1<=endix1; ix1++)
-    //         if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), FLUID))
+    //         if (ub_math::equal(voxelMatrix(ix1, ix2, ix3), FLUID))
     //            return false;
     // return true;
 }
@@ -303,13 +303,13 @@ bool GbVoxelMatrix3D::isCellInsideOrCuttingGbObject3D(const double &x1a, const d
     //                |<----------------- T --------------->|
     // ist |T| <= dxA + dxB -> overlap!
 
-    if (UbMath::lessEqual(std::fabs(this->getX1Centroid() - 0.5 * (x1b + x1a) /*Tx1*/),
+    if (ub_math::lessEqual(std::fabs(this->getX1Centroid() - 0.5 * (x1b + x1a) /*Tx1*/),
                           0.5 * (this->getLengthX1() + std::fabs(x1b - x1a) /*dx1A+dx1B*/))
 
-        && UbMath::lessEqual(std::fabs(this->getX2Centroid() - 0.5 * (x2b + x2a) /*Tx2*/),
+        && ub_math::lessEqual(std::fabs(this->getX2Centroid() - 0.5 * (x2b + x2a) /*Tx2*/),
                              0.5 * (this->getLengthX2() + std::fabs(x2b - x2a) /*dx2A+dx2B*/))
 
-        && UbMath::lessEqual(std::fabs(this->getX3Centroid() - 0.5 * (x3b + x3a) /*Tx3*/),
+        && ub_math::lessEqual(std::fabs(this->getX3Centroid() - 0.5 * (x3b + x3a) /*Tx3*/),
                              0.5 * (this->getLengthX3() + std::fabs(x3b - x3a) /*dx3A+dx3B*/))) {
         return true;
     }
@@ -363,8 +363,8 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
         for (int x2 = 0; x2 < nodesX2; x2++)
             for (int x1 = 0; x1 < nodesX1; x1++) {
                 val = in.readInteger();
-                // if( !UbMath::equal(val, 0.0f) )
-                // if( UbMath::greater(val, threshold) )
+                // if( !ub_math::equal(val, 0.0f) )
+                // if( ub_math::greater(val, threshold) )
                 if ((double)val >= lowerThreshold && (double)val <= upperThreshold) {
                     (voxelMatrix)(x1, x2, x3) = GbVoxelMatrix3D::SOLID;
                 }
@@ -595,9 +595,9 @@ void GbVoxelMatrix3D::rotateAroundY(double theta)
                     double nrcX1 = cos(theta) * rcX1 + sin(theta) * rcX3;
                     double nrcX3 = -sin(theta) * rcX1 + cos(theta) * rcX3;
 
-                    int newX1 = UbMath::integerRounding((nrcX1 - minX1) / deltaX1);
+                    int newX1 = ub_math::integerRounding((nrcX1 - minX1) / deltaX1);
                     int newX2 = x2;
-                    int newX3 = UbMath::integerRounding((nrcX3 - minX3) / deltaX3);
+                    int newX3 = ub_math::integerRounding((nrcX3 - minX3) / deltaX3);
 
                     if (newX1 > 0 && newX3 > 0 && newX1 < nx1 && newX3 < nx3) {
                         voxelMatrix_temp(newX1, newX2, newX3) = voxelMatrix(x1, x2, x3);

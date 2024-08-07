@@ -192,13 +192,13 @@ public:
         float &getV3y(std::vector<Vertex> &nodes) { return nodes[v3].y; }
         float &getV3z(std::vector<Vertex> &nodes) { return nodes[v3].z; }
 
-        float getMinX(std::vector<Vertex> &nodes) { return (float)UbMath::min(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
-        float getMinY(std::vector<Vertex> &nodes) { return (float)UbMath::min(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
-        float getMinZ(std::vector<Vertex> &nodes) { return (float)UbMath::min(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
+        float getMinX(std::vector<Vertex> &nodes) { return (float)ub_math::min(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
+        float getMinY(std::vector<Vertex> &nodes) { return (float)ub_math::min(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
+        float getMinZ(std::vector<Vertex> &nodes) { return (float)ub_math::min(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
 
-        float getMaxX(std::vector<Vertex> &nodes) { return (float)UbMath::max(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
-        float getMaxY(std::vector<Vertex> &nodes) { return (float)UbMath::max(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
-        float getMaxZ(std::vector<Vertex> &nodes) { return (float)UbMath::max(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
+        float getMaxX(std::vector<Vertex> &nodes) { return (float)ub_math::max(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
+        float getMaxY(std::vector<Vertex> &nodes) { return (float)ub_math::max(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
+        float getMaxZ(std::vector<Vertex> &nodes) { return (float)ub_math::max(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
 
         float getX1Centroid(std::vector<Vertex> &nodes)
         {
