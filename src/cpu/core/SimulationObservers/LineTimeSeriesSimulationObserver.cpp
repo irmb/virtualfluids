@@ -143,9 +143,9 @@ void LineTimeSeriesSimulationObserver::collectData()
                 SPtr<LBMKernel> kernel = block->getKernel();
                 calcMacros              = NULL;
                 if (kernel->getCompressible()) {
-                    calcMacros = &D3Q27System::calcCompMacroscopicValues;
+                    calcMacros = &d3q27_system::calcCompMacroscopicValues;
                 } else {
-                    calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+                    calcMacros = &d3q27_system::calcIncompMacroscopicValues;
                 }
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 

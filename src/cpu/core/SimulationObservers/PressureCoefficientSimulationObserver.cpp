@@ -75,7 +75,7 @@ void PressureCoefficientSimulationObserver::collectData(real step)
 //////////////////////////////////////////////////////////////////////////
 void PressureCoefficientSimulationObserver::calculateRho()
 {
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
     std::vector<real> values;
     std::vector<real> rvalues;
@@ -96,9 +96,9 @@ void PressureCoefficientSimulationObserver::calculateRho()
             real dx                 = grid->getDeltaX(block);
 
             if (kernel->getCompressible()) {
-                calcMacros = &D3Q27System::calcCompMacroscopicValues;
+                calcMacros = &d3q27_system::calcCompMacroscopicValues;
             } else {
-                calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+                calcMacros = &d3q27_system::calcIncompMacroscopicValues;
             }
 
             int ghostLayerWidth = kernel->getGhostLayerWidth();

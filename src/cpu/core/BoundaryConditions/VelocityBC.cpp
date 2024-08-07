@@ -295,7 +295,7 @@ void VelocityBC::adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPt
                                             const real & /*worldX3*/, const real &q, const int &fdirection,
                                             const real & /*time*/)
 {
-    bc->setVelocityBoundaryFlag(D3Q27System::INVDIR[fdirection], secondaryBcOption);
+    bc->setVelocityBoundaryFlag(d3q27_system::INVDIR[fdirection], secondaryBcOption);
     bc->setQ((real)q, fdirection);
 }
 /*==========================================================*/

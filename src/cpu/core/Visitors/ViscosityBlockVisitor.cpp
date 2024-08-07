@@ -38,7 +38,7 @@
 #include "LBMKernel.h"
 #include "LBMSystem.h"
 
-ViscosityBlockVisitor::ViscosityBlockVisitor(real nu) : Block3DVisitor(0, D3Q27System::MAXLEVEL), nu(nu) {}
+ViscosityBlockVisitor::ViscosityBlockVisitor(real nu) : Block3DVisitor(0, d3q27_system::MAXLEVEL), nu(nu) {}
 //////////////////////////////////////////////////////////////////////////
 void ViscosityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

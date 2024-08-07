@@ -48,7 +48,7 @@ using namespace std;
 
 SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, real nue,
                                                  int dir)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), boundingBox(boundingBox), kernel(kernel), nue(nue), dir(dir)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), boundingBox(boundingBox), kernel(kernel), nue(nue), dir(dir)
 {
 }
 //////////////////////////////////////////////////////////////////////////

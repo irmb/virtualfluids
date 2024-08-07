@@ -42,7 +42,7 @@
 #include "Interactor3D.h"
 
 SetSolidBlocksBlockVisitor::SetSolidBlocksBlockVisitor(SPtr<Interactor3D> interactor)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), interactor(std::move(interactor))
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), interactor(std::move(interactor))
 {
 }
 

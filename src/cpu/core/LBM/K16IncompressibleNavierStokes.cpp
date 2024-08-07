@@ -90,7 +90,7 @@ SPtr<LBMKernel> K16IncompressibleNavierStokes::clone()
 //////////////////////////////////////////////////////////////////////////
 void K16IncompressibleNavierStokes::calculate(int step)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace std;
    using namespace vf::lbm::dir;
 

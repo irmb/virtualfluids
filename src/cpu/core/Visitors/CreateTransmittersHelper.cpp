@@ -61,7 +61,7 @@ void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Blo
     int tgtLevel = tblock->getLevel();
     //   int tgtID    = tblock->getGlobalID();
 
-    int invDir = D3Q27System::INVDIR[dir];
+    int invDir = d3q27_system::INVDIR[dir];
 
     if (srcLevel != tgtLevel)
         invDir = dir;

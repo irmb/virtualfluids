@@ -35,7 +35,7 @@
 
 #include "lbm/MacroscopicQuantities.h"
 
-namespace D3Q27System
+namespace d3q27_system
 {
 //using namespace UbMath;
     using namespace vf::basics::constant;

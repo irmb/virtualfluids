@@ -227,7 +227,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::receiveVectors()
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::init()
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     bMaxX1 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX1();
@@ -290,7 +290,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::init()
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVectors()
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
@@ -837,7 +837,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, real *icellC)
 {
-    for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
+    for (int i = d3q27_system::STARTF; i < d3q27_system::ENDF + 1; i++) {
         data[index++] = icellC[i];
     }
 }
@@ -856,7 +856,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMaxCF(int gMax, 
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVectors()
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fTo = block.lock()->getKernel()->getDataSet()->getFdistributions();
@@ -1156,7 +1156,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::readICellFfromData(vector_t
 template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, real *inode)
 {
-    for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
+    for (int i = d3q27_system::STARTF; i < d3q27_system::ENDF + 1; i++) {
         inode[i] = data[index++];
     }
 }
@@ -1165,7 +1165,7 @@ template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1,
                                                                     int &maxX2, int &maxX3)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
     
     int TminX1 = minX1;
@@ -1308,7 +1308,7 @@ void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
                                                                     int &maxX2, int &maxX3,
                                                                     CFconnectorType /*connType*/)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     int TminX1 = minX1;
@@ -1459,7 +1459,7 @@ template <typename VectorTransmitter>
 void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, int &minX2, int &minX3, const int &oMinX1,
                                                                   const int &oMinX2, const int &oMinX3)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     switch (sendDir) {

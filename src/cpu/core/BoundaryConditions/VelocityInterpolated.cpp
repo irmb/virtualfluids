@@ -55,8 +55,8 @@ void VelocityInterpolated::addDistributions(SPtr<DistributionArray3D> distributi
 //////////////////////////////////////////////////////////////////////////
 void VelocityInterpolated::applyBC()
 {
-    real f[D3Q27System::ENDF + 1];
-    real feq[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
+    real feq[d3q27_system::ENDF + 1];
     distributions->getPostCollisionDistribution(f, x1, x2, x3);
     real rho, vx1, vx2, vx3, drho;
     calcMacrosFct(f, drho, vx1, vx2, vx3);
@@ -67,15 +67,15 @@ void VelocityInterpolated::applyBC()
 
     rho = vf::basics::constant::c1o1 + drho * compressibleFactor;
 
-    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+    for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
         if (bcPtr->hasVelocityBoundaryFlag(fdir)) {
-            const int invDir = D3Q27System::INVDIR[fdir];
+            const int invDir = d3q27_system::INVDIR[fdir];
             real q        = bcPtr->getQ(invDir);
             real velocity = bcPtr->getBoundaryVelocity(invDir);
             real fReturn = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * ((f[invDir] - feq[invDir]) / (vf::basics::constant::c1o1 - collFactor) + feq[invDir]) +
                               ((q * (f[invDir] + f[fdir]) - velocity * rho) / (vf::basics::constant::c1o1 + q));
-            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
-                                                       x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
+            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + d3q27_system::DX1[invDir],
+                                                       x2 + d3q27_system::DX2[invDir], x3 + d3q27_system::DX3[invDir],
                                                        fdir);
         }
     }

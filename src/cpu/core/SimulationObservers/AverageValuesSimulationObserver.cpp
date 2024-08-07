@@ -369,7 +369,7 @@ void AverageValuesSimulationObserver::addData(const SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::basics::constant;
 
     // Funktionszeiger
@@ -415,7 +415,7 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
                                 //////////////////////////////////////////////////////////////////////////
                                 real vx, vy, vz, rho;
                                 calcMacros(f, rho, vx, vy, vz);
-                                real press = D3Q27System::calcPress(f, rho, vx, vy, vz);
+                                real press = d3q27_system::calcPress(f, rho, vx, vy, vz);
 
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values

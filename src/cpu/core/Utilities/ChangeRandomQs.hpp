@@ -56,11 +56,11 @@ namespace Utilities
             SPtr<BoundaryConditions> bc = bcArray->getBC(val<1>(node), val<2>(node), val<3>(node));
             if (bc)
             {
-                for (int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
+                for (int fdir=d3q27_system::FSTARTDIR; fdir<=d3q27_system::FENDDIR; fdir++)
                 {
                   if (bc->hasNoSlipBoundaryFlag(fdir))
                   {
-                     const int invDir = D3Q27System::INVDIR[fdir];
+                     const int invDir = d3q27_system::INVDIR[fdir];
                      float q = bc->getQ(invDir);
                      //double r = (double)UbRandom::rand(-50, 50);
                      float r = (float)UbRandom::rand(-10, 10);

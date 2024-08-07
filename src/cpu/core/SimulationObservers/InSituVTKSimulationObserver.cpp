@@ -165,7 +165,7 @@ void InSituVTKSimulationObserver::addData(SPtr<Block3D> block)
     SPtr<LBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
 
     // knotennummerierung faengt immer bei 0 an!
@@ -178,9 +178,9 @@ void InSituVTKSimulationObserver::addData(SPtr<Block3D> block)
     CalcMacrosFct calcMacros = NULL;
 
     if (block->getKernel()->getCompressible()) {
-        calcMacros = &D3Q27System::calcCompMacroscopicValues;
+        calcMacros = &d3q27_system::calcCompMacroscopicValues;
     } else {
-        calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+        calcMacros = &d3q27_system::calcIncompMacroscopicValues;
     }
 
     int minX1 = 0;
@@ -226,7 +226,7 @@ void InSituVTKSimulationObserver::addData(SPtr<Block3D> block)
 
                     distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
-                    real press = D3Q27System::calcPress(f, rho, vx1, vx2, vx3);
+                    real press = d3q27_system::calcPress(f, rho, vx1, vx2, vx3);
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
                         UB_THROW(UbException(

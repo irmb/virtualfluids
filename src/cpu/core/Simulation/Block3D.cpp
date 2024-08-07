@@ -339,13 +339,13 @@ std::string Block3D::toString()
     for (std::size_t i = 0; i < connectors.size(); i++)
         if (connectors[i]) {
             if (connectors[i]->isLocalConnector())
-                ss << "l." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "l." << d3q27_system::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isRemoteConnector())
-                ss << "r." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "r." << d3q27_system::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isInterpolationConnectorCF())
-                ss << "cf." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "cf." << d3q27_system::getDirectionString(connectors[i]->getSendDir()) << ", ";
             if (connectors[i]->isInterpolationConnectorFC())
-                ss << "fc." << D3Q27System::getDirectionString(connectors[i]->getSendDir()) << ", ";
+                ss << "fc." << d3q27_system::getDirectionString(connectors[i]->getSendDir()) << ", ";
         }
     return ss.str();
 }

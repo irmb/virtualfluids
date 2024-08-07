@@ -215,7 +215,7 @@ void TurbulenceIntensitySimulationObserver::addData(const SPtr<Block3D> block)
 void TurbulenceIntensitySimulationObserver::calculateAverageValues(real timeStep)
 {
     using namespace vf::lbm::dir;
-    using namespace D3Q27System;
+    using namespace d3q27_system;
 
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
     int maxInitLevel = this->grid->getFinestInitializedLevel();

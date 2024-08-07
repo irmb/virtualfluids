@@ -100,7 +100,7 @@ SPtr<LBMKernel> K15CompressibleNavierStokes::clone()
 //////////////////////////////////////////////////////////////////////////
 void K15CompressibleNavierStokes::calculate(int step)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace std;
    using namespace vf::lbm::dir;
 

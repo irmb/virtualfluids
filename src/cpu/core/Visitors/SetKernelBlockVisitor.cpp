@@ -47,13 +47,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action)
 {
 }
 
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, int numberOfProcesses,
                                              SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), numberOfProcesses(numberOfProcesses)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), numberOfProcesses(numberOfProcesses)
 {
 }
 

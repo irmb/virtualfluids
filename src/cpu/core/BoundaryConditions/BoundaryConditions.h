@@ -52,9 +52,9 @@ public:
     BoundaryConditions()
     {
         UB_STATIC_ASSERT(sizeof(long long) >= 8);
-        UB_STATIC_ASSERT((sizeof(long long) * 8) >= (D3Q27System::FENDDIR + 1) * BoundaryConditions::optionDigits);
+        UB_STATIC_ASSERT((sizeof(long long) * 8) >= (d3q27_system::FENDDIR + 1) * BoundaryConditions::optionDigits);
 
-        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
+        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++)
             q[fdir] = -999.;
     }
     virtual ~BoundaryConditions() = default;
@@ -71,7 +71,7 @@ public:
 
     virtual bool hasBoundaryConditionFlag(const int &direction)
     {
-        assert(direction >= D3Q27System::FSTARTDIR && direction <= D3Q27System::FENDDIR);
+        assert(direction >= d3q27_system::FSTARTDIR && direction <= d3q27_system::FENDDIR);
 
         return (hasNoSlipBoundaryFlag(direction) || hasSlipBoundaryFlag(direction) ||
                 hasDensityBoundaryFlag(direction) || hasVelocityBoundaryFlag(direction) ||
@@ -320,7 +320,7 @@ public:
     static const long long maxOptionVal; // = ( 1<<optionDigits ) - 1; //2^3-1 -> 7
 
 protected:
-    float q[D3Q27System::FENDDIR + 1];
+    float q[d3q27_system::FENDDIR + 1];
 
     long long noslipBoundaryFlags{ 0 };
     long long slipBoundaryFlags{ 0 };

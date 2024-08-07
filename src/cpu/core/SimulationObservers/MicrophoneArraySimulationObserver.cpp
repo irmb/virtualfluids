@@ -86,9 +86,9 @@ bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
                 if (!bcarray->isUndefined(val<1>(nodes), val<2>(nodes), val<3>(nodes))) {
 
                     if (kernel->getCompressible()) {
-                        calcMacros = &D3Q27System::calcCompMacroscopicValues;
+                        calcMacros = &d3q27_system::calcCompMacroscopicValues;
                     } else {
-                        calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+                        calcMacros = &d3q27_system::calcIncompMacroscopicValues;
                     }
                     SPtr<Mic> mic(new Mic);
                     mic->id           = micID;
@@ -125,7 +125,7 @@ bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
 void MicrophoneArraySimulationObserver::collectData(real step)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
-        real f[D3Q27System::ENDF + 1];
+        real f[d3q27_system::ENDF + 1];
         microphones[i]->distridution->getPreCollisionDistribution(f, val<1>(microphones[i]->nodeIndexes),
                                                       val<2>(microphones[i]->nodeIndexes),
                                                       val<3>(microphones[i]->nodeIndexes));

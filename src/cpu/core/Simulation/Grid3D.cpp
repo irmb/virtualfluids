@@ -50,12 +50,12 @@
 
 using namespace std;
 
-Grid3D::Grid3D() { levelSet.resize(D3Q27System::MAXLEVEL + 1); }
+Grid3D::Grid3D() { levelSet.resize(d3q27_system::MAXLEVEL + 1); }
 //////////////////////////////////////////////////////////////////////////
 Grid3D::Grid3D(std::shared_ptr<vf::parallel::Communicator> comm)
 
 {
-    levelSet.resize(D3Q27System::MAXLEVEL + 1);
+    levelSet.resize(d3q27_system::MAXLEVEL + 1);
     bundle = comm->getBundleID();
     rank = comm->getProcessID();
 }
@@ -67,7 +67,7 @@ Grid3D::Grid3D(std::shared_ptr<vf::parallel::Communicator> comm, int blockNx1, i
 {
     using namespace vf::basics::constant;
 
-    levelSet.resize(D3Q27System::MAXLEVEL + 1);
+    levelSet.resize(d3q27_system::MAXLEVEL + 1);
     bundle = comm->getBundleID();
     rank  = comm->getProcessID();
     trafo = std::make_shared<CoordinateTransformation3D>(c0o1, c0o1, c0o1, (real)blockNx1, (real)blockNx2,
@@ -92,7 +92,7 @@ void Grid3D::accept(Block3DVisitor &blockVisitor)
     int startLevel = blockVisitor.getStartLevel();
     int stopLevel  = blockVisitor.getStopLevel();
 
-    if (startLevel < 0 || stopLevel < 0 || startLevel > D3Q27System::MAXLEVEL || stopLevel > D3Q27System::MAXLEVEL)
+    if (startLevel < 0 || stopLevel < 0 || startLevel > d3q27_system::MAXLEVEL || stopLevel > d3q27_system::MAXLEVEL)
         throw UbException(UB_EXARGS, "not valid level!");
 
     bool dir = startLevel < stopLevel;
@@ -162,8 +162,8 @@ bool Grid3D::deleteBlock(int ix1, int ix2, int ix3, int level)
 void Grid3D::deleteBlocks()
 {
     std::vector<std::vector<SPtr<Block3D>>> blocksVector(25);
-    int minInitLevel = D3Q27System::MINLEVEL;
-    int maxInitLevel = D3Q27System::MAXLEVEL;
+    int minInitLevel = d3q27_system::MINLEVEL;
+    int maxInitLevel = d3q27_system::MAXLEVEL;
     for (int level = minInitLevel; level < maxInitLevel; level++) {
         getBlocks(level, blocksVector[level]);
         for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
@@ -269,7 +269,7 @@ void Grid3D::getSubBlocks(int ix1, int ix2, int ix3, int level, int levelDepth, 
         return;
     if (level > 0 && !this->getSuperBlock(ix1, ix2, ix3, level))
         return;
-    if (level >= D3Q27System::MAXLEVEL)
+    if (level >= d3q27_system::MAXLEVEL)
         throw UbException(UB_EXARGS, "Level bigger then MAXLEVEL");
 
     int x1[] = { ix1 << 1, (ix1 << 1) + 1 };
@@ -304,7 +304,7 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
     ix3 = block->getX3();
 
     int l = level + 1;
-    if (l > D3Q27System::MAXLEVEL)
+    if (l > d3q27_system::MAXLEVEL)
         throw UbException(UB_EXARGS, "level > Grid3D::MAXLEVEL");
 
     int west   = ix1 << 1;
@@ -589,7 +589,7 @@ void Grid3D::checkLevel(int level)
     if (level < 0) {
         throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string) ")<0");
     }
-    if (level > D3Q27System::MAXLEVEL) {
+    if (level > d3q27_system::MAXLEVEL) {
         throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string) ")>MAXLEVEL");
     }
     if (this->levelSet[level].size() == 0) {
@@ -601,7 +601,7 @@ bool Grid3D::hasLevel(int level) const
 {
     if (level < 0)
         return false;
-    if (level > D3Q27System::MAXLEVEL)
+    if (level > d3q27_system::MAXLEVEL)
         return false;
     if (this->levelSet[level].size() == 0)
         return false;
@@ -621,7 +621,7 @@ UbTupleInt3 Grid3D::getBlockNX() const { return makeUbTuple(blockNx1, blockNx2, 
 
 SPtr<Block3D> Grid3D::getNeighborBlock(int dir, int ix1, int ix2, int ix3, int level) const
 {
-    return this->getBlock(ix1 + D3Q27System::DX1[dir], ix2 + D3Q27System::DX2[dir], ix3 + D3Q27System::DX3[dir],
+    return this->getBlock(ix1 + d3q27_system::DX1[dir], ix2 + d3q27_system::DX2[dir], ix3 + d3q27_system::DX3[dir],
                           level);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -637,7 +637,7 @@ SPtr<Block3D> Grid3D::getNeighborBlock(int dir, SPtr<Block3D> block) const
 void Grid3D::getAllNeighbors(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>> &blocks)
 {
    // for (int dir = D3Q27System::STARTDIR; dir <= D3Q27System::ENDDIR; dir++)FSTARTDIR
-   for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++)
+   for (int dir = d3q27_system::FSTARTDIR; dir <= d3q27_system::FENDDIR; dir++)
    {
         this->getNeighborBlocksForDirection(dir, ix1, ix2, ix3, level, levelDepth, blocks);
     }
@@ -1989,7 +1989,7 @@ void Grid3D::getBlocks(int level, int rank, bool active, std::vector<SPtr<Block3
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getFinestInitializedLevel()
 {
-    for (int i = D3Q27System::MAXLEVEL; i >= 0; i--)
+    for (int i = d3q27_system::MAXLEVEL; i >= 0; i--)
         if (this->levelSet[i].size() > 0)
             return (i);
     return (-1);
@@ -1997,7 +1997,7 @@ int Grid3D::getFinestInitializedLevel()
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getCoarsestInitializedLevel()
 {
-    for (int i = 0; i <= D3Q27System::MAXLEVEL; i++)
+    for (int i = 0; i <= d3q27_system::MAXLEVEL; i++)
         if (this->levelSet[i].size() > 0)
             return (i);
     return (-1);
@@ -2352,7 +2352,7 @@ void Grid3D::updateDistributedBlocks(std::shared_ptr<vf::parallel::Communicator>
             levelSet[l].clear();
         }
         this->levelSet.clear();
-        levelSet.resize(D3Q27System::MAXLEVEL + 1);
+        levelSet.resize(d3q27_system::MAXLEVEL + 1);
 
         int rsize = (int)blocks.size();
         for (int i = 0; i < rsize; i += 5) {

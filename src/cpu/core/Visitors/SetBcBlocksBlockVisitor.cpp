@@ -40,7 +40,7 @@
 #include "Interactor3D.h"
 
 SetBcBlocksBlockVisitor::SetBcBlocksBlockVisitor(SPtr<Interactor3D> interactor)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), interactor(interactor)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), interactor(interactor)
 {
 }
 

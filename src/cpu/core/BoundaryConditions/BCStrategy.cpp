@@ -60,14 +60,14 @@ void BCStrategy::setCompressible(bool c)
     compressible = c;
 
     if (this->compressible) {
-        calcFeqsForDirFct  = &D3Q27System::getCompFeqForDirection;
-        calcMacrosFct      = &D3Q27System::calcCompMacroscopicValues;
-        calcFeqFct         = &D3Q27System::calcCompFeq;
+        calcFeqsForDirFct  = &d3q27_system::getCompFeqForDirection;
+        calcMacrosFct      = &d3q27_system::calcCompMacroscopicValues;
+        calcFeqFct         = &d3q27_system::calcCompFeq;
         compressibleFactor = c1o1;
     } else {
-        calcFeqsForDirFct  = &D3Q27System::getIncompFeqForDirection;
-        calcMacrosFct      = &D3Q27System::calcIncompMacroscopicValues;
-        calcFeqFct         = &D3Q27System::calcIncompFeq;
+        calcFeqsForDirFct  = &d3q27_system::getIncompFeqForDirection;
+        calcMacrosFct      = &d3q27_system::calcIncompMacroscopicValues;
+        calcFeqFct         = &d3q27_system::calcIncompFeq;
         compressibleFactor = c0o1;
     }
 }

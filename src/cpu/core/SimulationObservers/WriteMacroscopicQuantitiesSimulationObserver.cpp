@@ -159,16 +159,16 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
     SPtr<LBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
 
     // Node numbering always starts at 0!
     int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
     if (block->getKernel()->getCompressible()) {
-        calcMacros = &D3Q27System::calcCompMacroscopicValues;
+        calcMacros = &d3q27_system::calcCompMacroscopicValues;
     } else {
-        calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+        calcMacros = &d3q27_system::calcIncompMacroscopicValues;
     }
 
     int minX1 = 0;

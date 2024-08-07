@@ -73,7 +73,7 @@ SPtr<LBMKernel> B92IncompressibleNavierStokes::clone()
 //////////////////////////////////////////////////////////////////////////
 void B92IncompressibleNavierStokes::calculate(int step)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
  //   using namespace UbMath;
    using namespace vf::basics::constant;
    using namespace vf::lbm::dir;
@@ -103,8 +103,8 @@ void B92IncompressibleNavierStokes::calculate(int step)
         std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
-    real f[D3Q27System::ENDF + 1];
-    real feq[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
+    real feq[d3q27_system::ENDF + 1];
     real drho, vx1, vx2, vx3;
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
     const int bcArrayMaxX2 = (int)bcArray->getNX2();

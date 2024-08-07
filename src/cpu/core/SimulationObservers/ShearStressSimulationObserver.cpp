@@ -158,7 +158,7 @@ void ShearStressSimulationObserver::clearData()
 void ShearStressSimulationObserver::calculateShearStress(real timeStep)
 {
     using namespace vf::lbm::dir;
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::basics::constant;
 
     real f[27];
@@ -646,7 +646,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                     if (!bcArray->isSolid(i, j, k)) {
                         SPtr<BoundaryConditions> bcPtrIn = bcArray->getBC(i, j, k);
                         if (bcPtrIn) {
-                            for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+                            for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                                 if (ii <= 2) {
                                     real q = bcPtrIn->getQ(fdir);
                                     if (q != 999.00000) {

@@ -333,7 +333,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
             throw UbException(
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
-        vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::basics::constant::cSqrt2 * deltaX1);
+        vector<real> distNeigh(d3q27_system::FENDDIR + 1, vf::basics::constant::cSqrt2 * deltaX1);
         distNeigh[dP00] = distNeigh[dM00] = distNeigh[d0P0] = deltaX1;
         distNeigh[d0M0] = distNeigh[d00P] = distNeigh[d00M] = deltaX1;
         distNeigh[dPP0] = distNeigh[dMP0] = distNeigh[dMM0] =
@@ -394,7 +394,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
                         gotQs = false;
 
-                        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+                        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                             q = geoObject3D->getIntersectionRaytraceFactor(internX1, internX2, internX3, rayX1[fdir],
                                                                            rayX2[fdir], rayX3[fdir]);
                             q /= distNeigh[fdir];
@@ -493,10 +493,10 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                         gotQs = false;
 
                         GbPoint3D pointA(internX1, internX2, internX3);
-                        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
-                            real x1B = internX1 + D3Q27System::DX1[fdir] * deltaX1;
-                            real x2B = internX2 + D3Q27System::DX2[fdir] * deltaX2;
-                            real x3B = internX3 + D3Q27System::DX3[fdir] * deltaX3;
+                        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
+                            real x1B = internX1 + d3q27_system::DX1[fdir] * deltaX1;
+                            real x2B = internX2 + d3q27_system::DX2[fdir] * deltaX2;
+                            real x3B = internX3 + d3q27_system::DX3[fdir] * deltaX3;
 
                             GbPoint3D pointB(x1B, x2B, x3B);
                             GbLine3D *clippedLine = this->geoObject3D->createClippedLine3D(pointA, pointB);
@@ -618,8 +618,8 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
                 nodes.push_back(makeUbTuple((float)x1a, (float)x2a, (float)x3a));
                 node1Index = nodes.size() - 1;
 
-                for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) {
-                    if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
+                for (int dir = d3q27_system::FSTARTDIR; dir <= d3q27_system::FENDDIR; dir++) {
+                    if (bc->hasBoundaryConditionFlag(d3q27_system::INVDIR[dir])) {
                         real x1b, x2b, x3b, q = bc->getQ(dir);
                         switch (dir) {
                             case dP00:
@@ -841,8 +841,8 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
                     pointpair.first.setX1(x1a);
                     pointpair.first.setX2(x2a);
                     pointpair.first.setX3(x3a);
-                    for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) {
-                        if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
+                    for (int dir = d3q27_system::FSTARTDIR; dir <= d3q27_system::FENDDIR; dir++) {
+                        if (bc->hasBoundaryConditionFlag(d3q27_system::INVDIR[dir])) {
                             real x1b, x2b, x3b, q = bc->getQ(dir);
                             switch (dir) {
                                 case dP00:

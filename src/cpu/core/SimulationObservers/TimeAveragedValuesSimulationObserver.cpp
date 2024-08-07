@@ -84,7 +84,7 @@ void TimeAveragedValuesSimulationObserver::init()
     numberOfSteps = (maxStep - minStep);
 
     // function pointer
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     calcMacros = NULL;
     if (compressible) {
         calcMacros = &calcCompMacroscopicValues;
@@ -300,7 +300,7 @@ void TimeAveragedValuesSimulationObserver::addData(const SPtr<Block3D> block)
     maxX2 -= 2;
     maxX3 -= 2;
 
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
 
     // D3Q27BoundaryConditionPtr bcPtr;

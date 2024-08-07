@@ -77,7 +77,7 @@ protected:
 
 template <class T1, class T2>
 SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), comm(comm)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), comm(comm)
 {
 }
 //////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
         int ix3   = block->getX3();
         int level = block->getLevel();
 
-        for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) { 
+        for (int dir = d3q27_system::FSTARTDIR; dir <= d3q27_system::FENDDIR; dir++) { 
             SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
 
             if (neighBlock) {

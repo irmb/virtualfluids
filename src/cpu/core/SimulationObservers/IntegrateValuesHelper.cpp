@@ -209,7 +209,7 @@ void IntegrateValuesHelper::calculateMQ()
 {
     using namespace vf::basics::constant;
 
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
     clearData();
 
@@ -225,9 +225,9 @@ void IntegrateValuesHelper::calculateMQ()
         real cellVolume      = dx * dx * dx;
 
         if (kernel->getCompressible()) {
-            calcMacros = &D3Q27System::calcCompMacroscopicValues;
+            calcMacros = &d3q27_system::calcCompMacroscopicValues;
         } else {
-            calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+            calcMacros = &d3q27_system::calcIncompMacroscopicValues;
         }
 
         SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();

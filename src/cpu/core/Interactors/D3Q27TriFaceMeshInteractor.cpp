@@ -225,11 +225,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
         real nodeDeltaX2 = cblockDeltaX2 / (double)(blocknx2 * (1 << (level - coarsestInitLevel)));
         real nodeDeltaX3 = cblockDeltaX3 / (double)(blocknx3 * (1 << (level - coarsestInitLevel)));
 
-        std::vector<real> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
-        D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDeltaX1, nodeDeltaX2, nodeDeltaX3);
+        std::vector<real> distNeigh(d3q27_system::FENDDIR + 1, 0.0);
+        d3q27_system::calcDistanceToNeighbors(distNeigh, nodeDeltaX1, nodeDeltaX2, nodeDeltaX3);
 
-        nodeDeltaToNeigh[level].resize(D3Q27System::ENDDIR + 1, 0.0);
-        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+        nodeDeltaToNeigh[level].resize(d3q27_system::ENDDIR + 1, 0.0);
+        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
             nodeDeltaToNeigh[level][fdir] = distNeigh[fdir];
         }
 
@@ -445,7 +445,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                             sx2 = internX2 - v1.y;
                             sx3 = internX3 - v1.z;
 
-                            for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+                            for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                                 // p = d x e2
                                 px1 = this->rayX2[fdir] * e2x3 - this->rayX3[fdir] * e2x2;
                                 px2 = this->rayX3[fdir] * e2x1 - this->rayX1[fdir] * e2x3;
@@ -551,14 +551,14 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                     // for accelerated rereading
                                     if (this->reinitWithStoredQsFlag) {
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)].resize(
-                                            D3Q27System::FENDDIR + 1 + 3, -1.0f);
+                                            d3q27_system::FENDDIR + 1 + 3, -1.0f);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)][fdir] = float(q);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)]
-                                                             [D3Q27System::FENDDIR + 1 + 0] = float(internX1);
+                                                             [d3q27_system::FENDDIR + 1 + 0] = float(internX1);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)]
-                                                             [D3Q27System::FENDDIR + 1 + 1] = float(internX2);
+                                                             [d3q27_system::FENDDIR + 1 + 1] = float(internX2);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)]
-                                                             [D3Q27System::FENDDIR + 1 + 2] = float(internX3);
+                                                             [d3q27_system::FENDDIR + 1 + 2] = float(internX3);
                                     }
                                 }
                             }
@@ -906,9 +906,9 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const real & /*timeStep*/)
                 bcMatrix->setBC(val<1>(pos), val<2>(pos), val<3>(pos), bc);
             }
 
-            double x1w = qs[D3Q27System::FENDDIR + 1 + 0];
-            double x2w = qs[D3Q27System::FENDDIR + 1 + 1];
-            double x3w = qs[D3Q27System::FENDDIR + 1 + 2];
+            double x1w = qs[d3q27_system::FENDDIR + 1 + 0];
+            double x2w = qs[d3q27_system::FENDDIR + 1 + 1];
+            double x3w = qs[d3q27_system::FENDDIR + 1 + 2];
 
             // TODO: HACK DOES NOT BELONG HERE!!! - begin
             // it is a static object and the propeller is there
@@ -920,7 +920,7 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const real & /*timeStep*/)
             // TODO: HACK DOES NOT BELONG HERE!!! - end
 
             bool gotQs = false;
-            for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+            for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                 if (UbMath::greater(qs[fdir], -1.0) && UbMath::less(qs[fdir], bc->getQ(fdir))) {
                     gotQs = true;
                     for (size_t index = 0; index < this->BCs.size(); index++)

@@ -386,13 +386,13 @@ void QCriterionSimulationObserver::computeVelocity(real *f, real *v, bool compre
     // compute x,y,z-velocity components from distribution
     //////////////////////////////////////////////////////////////////////////
     if (compressible) {
-        v[xdir] = D3Q27System::getCompVelocityX1(f);
-        v[ydir] = D3Q27System::getCompVelocityX2(f);
-        v[zdir] = D3Q27System::getCompVelocityX3(f);
+        v[xdir] = d3q27_system::getCompVelocityX1(f);
+        v[ydir] = d3q27_system::getCompVelocityX2(f);
+        v[zdir] = d3q27_system::getCompVelocityX3(f);
     } else {
-        v[xdir] = D3Q27System::getIncompVelocityX1(f);
-        v[ydir] = D3Q27System::getIncompVelocityX2(f);
-        v[zdir] = D3Q27System::getIncompVelocityX3(f);
+        v[xdir] = d3q27_system::getIncompVelocityX1(f);
+        v[ydir] = d3q27_system::getIncompVelocityX2(f);
+        v[zdir] = d3q27_system::getIncompVelocityX3(f);
     }
 }
 

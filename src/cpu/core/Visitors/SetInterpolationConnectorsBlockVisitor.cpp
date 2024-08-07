@@ -45,7 +45,7 @@
 #include "Interpolator.h"
 
 SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::parallel::Communicator> comm, real nue, SPtr<Interpolator> iProcessor) :
-Block3DVisitor(0, D3Q27System::MAXLEVEL), 
+Block3DVisitor(0, d3q27_system::MAXLEVEL), 
     comm(comm),
     nue(nue),
     iProcessor(iProcessor)
