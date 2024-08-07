@@ -37,7 +37,7 @@
 
 using namespace std;
 
-double GbSystem3D::getDistance(const GbPoint3D &p11, const GbPoint3D &p12)
+double gb_system_3d::getDistance(const GbPoint3D &p11, const GbPoint3D &p12)
 {
     double dx1 = p11.x1 - p12.x1;
     double dx2 = p11.x2 - p12.x2;
@@ -45,7 +45,7 @@ double GbSystem3D::getDistance(const GbPoint3D &p11, const GbPoint3D &p12)
     return std::sqrt(dx1 * dx1 + dx2 * dx2 + dx3 * dx3);
 }
 
-GbPoint3D *GbSystem3D::calculateIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22)
+GbPoint3D *gb_system_3d::calculateIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22)
 {
     if (UbMath::less2(p11.x1, p12.x1, p21.x1, p22.x1))
         return NULL;
@@ -107,7 +107,7 @@ GbPoint3D *GbSystem3D::calculateIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p
 }
 /*=================================================================*/
 // Line1: p11 -> p12 and Line2: p21 -> p22
-bool GbSystem3D::hasIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22)
+bool gb_system_3d::hasIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22)
 {
     if (UbMath::less2(p11.x1, p12.x1, p21.x1, p22.x1))
         return false;
@@ -172,7 +172,7 @@ bool GbSystem3D::hasIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3
 //   /*======================================================================*/
 //   /*  Private Methoden (Parallelism)                                      */
 //   /*                                                                      */
-bool GbSystem3D::isParallelIn3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22)
+bool gb_system_3d::isParallelIn3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22)
 {
     double a11 = p12.x1 - p11.x1; //..HOW PARAMETERS ARE USED.........
     double a12 = p12.x2 - p11.x2; //
@@ -200,7 +200,7 @@ bool GbSystem3D::isParallelIn3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, 
 /*======================================================================*/
 /*  Private Methoden (Clipping Lines)                                   */
 /*                                                                      */
-GbLine3D *GbSystem3D::createClipLine3D(GbPoint3D &pA, GbPoint3D &pB, double x1a, double x2a, double x3a, double x1b,
+GbLine3D *gb_system_3d::createClipLine3D(GbPoint3D &pA, GbPoint3D &pB, double x1a, double x2a, double x3a, double x1b,
                                        double x2b, double x3b)
 {
     GbPoint3D *p1 = new GbPoint3D(pA);
@@ -685,7 +685,7 @@ GbLine3D *GbSystem3D::createClipLine3D(GbPoint3D &pA, GbPoint3D &pB, double x1a,
 //
 //      return(polygon);
 //   }
-GbPolygon3D *GbSystem3D::clipPolygon3D(vector<GbPoint3D> points, double x11, double x12, double x13, double x21,
+GbPolygon3D *gb_system_3d::clipPolygon3D(vector<GbPoint3D> points, double x11, double x12, double x13, double x21,
                                        double x22, double x23)
 {
     GbPoint3D last;
@@ -978,7 +978,7 @@ GbPolygon3D *GbSystem3D::clipPolygon3D(vector<GbPoint3D> points, double x11, dou
     return new GbPolygon3D(points);
 }
 /*=========================================================================*/
-GbCuboid3D *GbSystem3D::clipRectangle3D(GbPoint3D &p1, GbPoint3D &p2, double x11, double x12, double x13, double x21,
+GbCuboid3D *gb_system_3d::clipRectangle3D(GbPoint3D &p1, GbPoint3D &p2, double x11, double x12, double x13, double x21,
                                         double x22, double x23)
 {
     double r11 = p1.x1;
@@ -1036,19 +1036,19 @@ GbCuboid3D *GbSystem3D::clipRectangle3D(GbPoint3D &p1, GbPoint3D &p2, double x11
 /*=========================================================================*/
 /*=========================================================================*/
 
-GbSystem3D::PointSet3::PointSet3(int n)
+gb_system_3d::PointSet3::PointSet3(int n)
 {
     this->init();
     this->points.reserve(n); // reserves n elements! but the size of the vector ist still "0"
 }
 /*=======================================================*/
-GbSystem3D::PointSet3::PointSet3(const vector<GbPoint3D> &points)
+gb_system_3d::PointSet3::PointSet3(const vector<GbPoint3D> &points)
 {
     this->init();
     this->add(points);
 }
 /*=======================================================*/
-void GbSystem3D::PointSet3::add(const GbPoint3D &point)
+void gb_system_3d::PointSet3::add(const GbPoint3D &point)
 {
     // is point equal to last point in points then return
     if (!this->points.empty() && point.equals(&this->points.back()))
@@ -1060,7 +1060,7 @@ void GbSystem3D::PointSet3::add(const GbPoint3D &point)
     this->consistent = false;
 }
 /*=======================================================*/
-void GbSystem3D::PointSet3::addUnequal(const GbPoint3D &point)
+void gb_system_3d::PointSet3::addUnequal(const GbPoint3D &point)
 {
     if (this->containsEqual(point) > 0)
         return;
@@ -1069,7 +1069,7 @@ void GbSystem3D::PointSet3::addUnequal(const GbPoint3D &point)
     this->consistent = false;
 }
 /*=======================================================*/
-void GbSystem3D::PointSet3::add(const vector<GbPoint3D> &pointVector)
+void gb_system_3d::PointSet3::add(const vector<GbPoint3D> &pointVector)
 {
     for (int pos = 0; pos < (int)pointVector.size(); pos++)
         this->points.push_back(pointVector[pos]);
@@ -1077,7 +1077,7 @@ void GbSystem3D::PointSet3::add(const vector<GbPoint3D> &pointVector)
     this->consistent = false;
 }
 /*=======================================================*/
-void GbSystem3D::PointSet3::insert(const GbPoint3D &point, int index)
+void gb_system_3d::PointSet3::insert(const GbPoint3D &point, int index)
 {
     if (index < 0 || index >= (int)this->points.size())
         throw UbException(UB_EXARGS, "index out of range");
@@ -1106,63 +1106,63 @@ void GbSystem3D::PointSet3::insert(const GbPoint3D &point, int index)
 //   this.size--;
 //}
 /*=======================================================*/
-void GbSystem3D::PointSet3::clear()
+void gb_system_3d::PointSet3::clear()
 {
     // clears points (size==0 but capacity is the old c1)
     this->points.clear();
     this->consistent = false;
 }
 /*=======================================================*/
-void GbSystem3D::PointSet3::clearAndTrim()
+void gb_system_3d::PointSet3::clearAndTrim()
 {
     // clears points (size==0 AND capacity==0)
     this->points.resize(0);
     this->consistent = false;
 }
 /*=======================================================*/
-double GbSystem3D::PointSet3::getX1Minimum()
+double gb_system_3d::PointSet3::getX1Minimum()
 {
     if (!this->consistent)
         this->calculateValues();
     return this->x1min;
 }
 /*=======================================================*/
-double GbSystem3D::PointSet3::getX1Maximum()
+double gb_system_3d::PointSet3::getX1Maximum()
 {
     if (!this->consistent)
         this->calculateValues();
     return this->x1max;
 }
 /*=======================================================*/
-double GbSystem3D::PointSet3::getX2Minimum()
+double gb_system_3d::PointSet3::getX2Minimum()
 {
     if (!this->consistent)
         this->calculateValues();
     return this->x2min;
 }
 /*=======================================================*/
-double GbSystem3D::PointSet3::getX2Maximum()
+double gb_system_3d::PointSet3::getX2Maximum()
 {
     if (!this->consistent)
         this->calculateValues();
     return this->x2max;
 }
 /*=======================================================*/
-double GbSystem3D::PointSet3::getX3Minimum()
+double gb_system_3d::PointSet3::getX3Minimum()
 {
     if (!this->consistent)
         this->calculateValues();
     return this->x3min;
 }
 /*=======================================================*/
-double GbSystem3D::PointSet3::getX3Maximum()
+double gb_system_3d::PointSet3::getX3Maximum()
 {
     if (!this->consistent)
         this->calculateValues();
     return this->x3max;
 }
 /*=======================================================*/
-int GbSystem3D::PointSet3::contains(GbPoint3D *point)
+int gb_system_3d::PointSet3::contains(GbPoint3D *point)
 {
     // returns number of points which has the same adress (this should be 0 or 1!!!)
     int n = 0;
@@ -1174,7 +1174,7 @@ int GbSystem3D::PointSet3::contains(GbPoint3D *point)
     return n;
 }
 /*=======================================================*/
-int GbSystem3D::PointSet3::containsEqual(const GbPoint3D &point)
+int gb_system_3d::PointSet3::containsEqual(const GbPoint3D &point)
 {
     // returns number of points which have the same coordinates with point (could be 0,1 or even more)
     int n = 0;
@@ -1186,7 +1186,7 @@ int GbSystem3D::PointSet3::containsEqual(const GbPoint3D &point)
     return n;
 }
 /*=======================================================*/
-bool GbSystem3D::PointSet3::containsLine(GbPoint3D *point1, GbPoint3D *point2)
+bool gb_system_3d::PointSet3::containsLine(GbPoint3D *point1, GbPoint3D *point2)
 {
     // returns true if pointset has c2 in "this->points"vector  neighboured points
     // wich have the same adress as point1 or point2
@@ -1205,7 +1205,7 @@ bool GbSystem3D::PointSet3::containsLine(GbPoint3D *point1, GbPoint3D *point2)
     return false;
 }
 /*=======================================================*/
-bool GbSystem3D::PointSet3::containsEqualLine(const GbPoint3D &point1, const GbPoint3D &point2)
+bool gb_system_3d::PointSet3::containsEqualLine(const GbPoint3D &point1, const GbPoint3D &point2)
 {
     // returns true if pointset has c2 in "this->points"vector  neighboured points
     // wich have the same coordinates as point1 or point2
@@ -1224,27 +1224,27 @@ bool GbSystem3D::PointSet3::containsEqualLine(const GbPoint3D &point1, const GbP
     return false;
 }
 /*=======================================================*/
-GbPoint3D *GbSystem3D::PointSet3::getPoint(int index)
+GbPoint3D *gb_system_3d::PointSet3::getPoint(int index)
 {
     if (index < 0 || index >= (int)this->points.size())
         throw UbException(UB_EXARGS, "index out of range");
     return &(this->points)[index];
 }
 /*=======================================================*/
-GbPoint3D *GbSystem3D::PointSet3::getFirstPoint() { return &(this->points.front()); }
+GbPoint3D *gb_system_3d::PointSet3::getFirstPoint() { return &(this->points.front()); }
 /*=======================================================*/
-GbPoint3D *GbSystem3D::PointSet3::getLastPoint() { return &(this->points.back()); }
+GbPoint3D *gb_system_3d::PointSet3::getLastPoint() { return &(this->points.back()); }
 /*=======================================================*/
-int GbSystem3D::PointSet3::size() { return (int)this->points.size(); }
+int gb_system_3d::PointSet3::size() { return (int)this->points.size(); }
 /*=======================================================*/
-vector<GbPoint3D> GbSystem3D::PointSet3::getPoints()
+vector<GbPoint3D> gb_system_3d::PointSet3::getPoints()
 {
     // is this right? it's another effect as at GbPoint3D* getNode(index)!!!
     // or do we want to have the next uncommented getPoints() funktion
     return this->points;
 }
 ///*=======================================================*/
-// vector<GbPoint3D*> GbSystem3D::PointSet3::getPoints()
+// vector<GbPoint3D*> gb_system_3d::PointSet3::getPoints()
 //{
 //   vector<GbPoint3D*> tmp;
 //   for(int pos=0; pos<(int)this->points.size();pos++) tmp.push_back(&this->points[pos]);
@@ -1252,7 +1252,7 @@ vector<GbPoint3D> GbSystem3D::PointSet3::getPoints()
 //   return tmp;
 //}
 /*=======================================================*/
-void GbSystem3D::PointSet3::calculateValues()
+void gb_system_3d::PointSet3::calculateValues()
 {
     if (this->points.empty()) {
         this->x1min = this->x2min = this->x3min = 0.0;

@@ -41,7 +41,7 @@ GbPolygon3D::GbPolygon3D()
 {
     init();
     counter++;
-    this->ps = new GbSystem3D::PointSet3(0);
+    this->ps = new gb_system_3d::PointSet3(0);
 }
 void GbPolygon3D::init()
 {
@@ -67,7 +67,7 @@ GbPolygon3D::GbPolygon3D(int capacity)
 {
     init();
     counter++;
-    this->ps = new GbSystem3D::PointSet3(capacity);
+    this->ps = new gb_system_3d::PointSet3(capacity);
     //     this.po = new PointObserver(this);
 }
 /**
@@ -78,7 +78,7 @@ GbPolygon3D::GbPolygon3D(vector<GbPoint3D> &points)
 {
     init();
     counter++;
-    this->ps = new GbSystem3D::PointSet3((int)points.size());
+    this->ps = new gb_system_3d::PointSet3((int)points.size());
     this->addPoints(points);
 }
 /**
@@ -89,7 +89,7 @@ GbPolygon3D::GbPolygon3D(GbPolygon3D *polygon)
 {
     this->init();
     counter++;
-    this->ps               = new GbSystem3D::PointSet3((int)polygon->size());
+    this->ps               = new gb_system_3d::PointSet3((int)polygon->size());
     vector<GbPoint3D> temp = polygon->getPoints();
     this->addPoints(temp);
 }
@@ -222,7 +222,7 @@ vector<GbPoint3D> GbPolygon3D::getPoints(const double &p1x1, const double &p1x2,
         x3max = p1x3;
     }
 
-    GbSystem3D::PointSet3 *pts = new GbSystem3D::PointSet3(1);
+    gb_system_3d::PointSet3 *pts = new gb_system_3d::PointSet3(1);
 
     if (!this->consistent)
         this->calculateValues();

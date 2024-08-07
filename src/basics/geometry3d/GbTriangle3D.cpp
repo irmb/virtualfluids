@@ -680,7 +680,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
     if (x1 < this->getX1Maximum() && x1 > getX1Minimum() && x2 < this->getX2Maximum() && x2 > getX2Minimum()) {
         GbPoint3D *dummy = NULL;
         // ueberpruefen, ob der Punkt innerhalb des Dreiecks liegt
-        dummy = GbSystem3D::calculateIntersectionPoint3D(p1, p2, dp1, dp2);
+        dummy = gb_system_3d::calculateIntersectionPoint3D(p1, p2, dp1, dp2);
         if (dummy != NULL) {
             if (dummy->getX1Coordinate() == p1.getX1Coordinate() && dummy->getX2Coordinate() == p1.getX2Coordinate()) {
                 delete dummy;
@@ -694,7 +694,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
         if (dummy)
             delete dummy;
 
-        dummy = GbSystem3D::calculateIntersectionPoint3D(p1, p2, dp2, dp3);
+        dummy = gb_system_3d::calculateIntersectionPoint3D(p1, p2, dp2, dp3);
         if (dummy != NULL) {
             if (dummy->getX1Coordinate() == p1.getX1Coordinate() && dummy->getX2Coordinate() == p1.getX2Coordinate()) {
                 if (dummy)
@@ -709,7 +709,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
         if (dummy)
             delete dummy;
 
-        dummy = GbSystem3D::calculateIntersectionPoint3D(p1, p2, dp3, dp1);
+        dummy = gb_system_3d::calculateIntersectionPoint3D(p1, p2, dp3, dp1);
         if (dummy != NULL) {
             if (dummy->getX1Coordinate() == p1.getX1Coordinate() && dummy->getX2Coordinate() == p1.getX2Coordinate()) {
                 if (dummy)
@@ -739,7 +739,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
 //*/
 GbPolygon3D *GbTriangle3D::createClippedPolygon3D(GbCuboid3D *cube)
 {
-    return (GbSystem3D::clipPolygon3D(this->getPoints(), cube->getPoint1()->getX1Coordinate(),
+    return (gb_system_3d::clipPolygon3D(this->getPoints(), cube->getPoint1()->getX1Coordinate(),
                                       cube->getPoint1()->getX2Coordinate(), cube->getPoint1()->getX3Coordinate(),
                                       cube->getPoint2()->getX1Coordinate(), cube->getPoint2()->getX2Coordinate(),
                                       cube->getPoint2()->getX3Coordinate()));
@@ -765,7 +765,7 @@ GbPolygon3D *GbTriangle3D::createClippedPolygon3D(GbCuboid3D *cube)
 GbPolygon3D *GbTriangle3D::createClippedPolygon3D(const double &p1x1, const double &p1x2, const double &p1x3,
                                                   const double &p2x1, const double &p2x2, const double &p2x3)
 {
-    return (GbSystem3D::clipPolygon3D(this->getPoints(), p1x1, p1x2, p1x3, p2x1, p2x2, p2x3));
+    return (gb_system_3d::clipPolygon3D(this->getPoints(), p1x1, p1x2, p1x3, p2x1, p2x2, p2x3));
 }
 
 /*

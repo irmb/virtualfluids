@@ -57,11 +57,11 @@ namespace Utilities
       else
       {
          GbCuboid3DPtr vmBox(new GbCuboid3D(matrix->getX1Minimum(), matrix->getX2Minimum(), matrix->getX3Minimum(), matrix->getX1Maximum(), matrix->getX2Maximum(), matrix->getX3Maximum()));
-         if (myid == 0) GbSystem3D::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + UbSystem::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) gb_system_3d::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + UbSystem::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
       }
 
       //GbCuboid3DPtr vmBox(new GbCuboid3D(matrix->getX1Minimum(), matrix->getX2Minimum(), matrix->getX3Minimum(), matrix->getX1Maximum(), matrix->getX2Maximum(), matrix->getX3Maximum()));
-      //if (myid == 0) GbSystem3D::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + UbSystem::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
+      //if (myid == 0) gb_system_3d::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + UbSystem::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
       //SPtr<D3Q27Interactor> vmBoxInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(vmBox, grid, noSlipPM, Interactor3D::SOLID));
       //SetSolidOrBoundaryBlockVisitor v1(vmBoxInt, SetSolidOrBoundaryBlockVisitor::SOLID);
       //grid->accept(v1);

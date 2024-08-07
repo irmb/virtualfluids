@@ -264,7 +264,7 @@ bool GbCuboid3D::isCellCuttingGbObject3D(const double &x1a, const double &x2a, c
 
     return false;
 
-    // GbCuboid3D* cube = GbSystem3D::clipRectangle3D(*this->p1, *this->p2, x1a,x2a,x3a,x1b,x2b,x3b);
+    // GbCuboid3D* cube = gb_system_3d::clipRectangle3D(*this->p1, *this->p2, x1a,x2a,x3a,x1b,x2b,x3b);
     // if(cube)
     //{
     //   cube->finalize();
@@ -410,7 +410,7 @@ GbPoint3D *GbCuboid3D::calculateInterSectionPoint3D(GbPoint3D & /*point1*/, GbPo
 /*=======================================================*/
 GbLine3D *GbCuboid3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2)
 {
-    return GbSystem3D::createClipLine3D(point1, point2, p1->getX1Coordinate(), p1->getX2Coordinate(),
+    return gb_system_3d::createClipLine3D(point1, point2, p1->getX1Coordinate(), p1->getX2Coordinate(),
                                         p1->getX3Coordinate(), p2->getX1Coordinate(), p2->getX2Coordinate(),
                                         p2->getX3Coordinate());
 }
@@ -479,7 +479,7 @@ double GbCuboid3D::getCellVolumeInsideGbObject3D(const double &x1a, const double
     if (!(this->isCellCuttingGbObject3D(x1a, x2a, x3a, x1b, x2b, x3b)))
         return 0.0;
 
-    GbCuboid3D *cube = GbSystem3D::clipRectangle3D(*this->p1, *this->p2, x1a, x2a, x3a, x1b, x2b, x3b);
+    GbCuboid3D *cube = gb_system_3d::clipRectangle3D(*this->p1, *this->p2, x1a, x2a, x3a, x1b, x2b, x3b);
 
     if (cube) {
         double eps;
