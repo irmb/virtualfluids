@@ -62,8 +62,8 @@ public:
         friend class UbScheduler;
 
     public:
-        UbSchedule() : step(Ub::inf), begin(Ub::inf), end(Ub::inf) {}
-        UbSchedule(const double &step, const double &begin = 0.0, const double &end = Ub::inf)
+        UbSchedule() : step(UbMath::inf), begin(UbMath::inf), end(UbMath::inf) {}
+        UbSchedule(const double &step, const double &begin = 0.0, const double &end = UbMath::inf)
             : step(step), begin(begin), end(end)
         {
         }
@@ -93,7 +93,7 @@ public:
 public:
     UbScheduler() { this->initVals(); }
     /*==========================================================*/
-    UbScheduler(const double &step, const double &begin = 0, const double &end = Ub::inf)
+    UbScheduler(const double &step, const double &begin = 0, const double &end = UbMath::inf)
     {
         this->initVals();
         this->addSchedule(step, begin, end);
@@ -120,10 +120,10 @@ public:
             return false;
         }
 
-        if (UbMath::less(end, (double)Ub::inf)) {
+        if (UbMath::less(end, (double)UbMath::inf)) {
             // es kann vorkommen, dass man mit dem intervall nicht genau auf den letzten wert kommt
             //(z.B. step=2; start=0; end=9; -> ende wird angepasst)
-            // also wenn end-begin>Ub::inf ist, dann geht es halt nicht.. ein cast in long double half hier nichts
+            // also wenn end-begin>UbMath::inf ist, dann geht es halt nicht.. ein cast in long double half hier nichts
             double multiplier = 0.0;
             double fractpart  = modf((end - begin) / step, &multiplier);
             if (!UbMath::zero(fractpart)) {
@@ -224,7 +224,7 @@ public:
     inline double getMinBegin() const
     {
         if (schedules.empty())
-            return Ub::inf;
+            return UbMath::inf;
         return std::min_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getBegin))
             ->getBegin();
     }
@@ -232,7 +232,7 @@ public:
     inline double getMaxBegin() const
     {
         if (schedules.empty())
-            return Ub::inf;
+            return UbMath::inf;
         return std::max_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getBegin))
             ->getBegin();
     }
@@ -240,7 +240,7 @@ public:
     inline double getMinEnd() const
     {
         if (schedules.empty())
-            return Ub::inf;
+            return UbMath::inf;
         return std::min_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getEnd))
             ->getEnd();
     }
@@ -248,7 +248,7 @@ public:
     inline double getMaxEnd() const
     {
         if (schedules.empty())
-            return Ub::inf;
+            return UbMath::inf;
         return std::max_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getEnd))
             ->getEnd();
     }
@@ -256,7 +256,7 @@ public:
     inline double getMinStep() const
     {
         if (schedules.empty())
-            return Ub::inf;
+            return UbMath::inf;
         return std::min_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getStep))
             ->getStep();
     }
@@ -264,7 +264,7 @@ public:
     inline double getMaxStep() const
     {
         if (schedules.empty())
-            return Ub::inf;
+            return UbMath::inf;
         return std::max_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getStep))
             ->getStep();
     }
@@ -291,10 +291,10 @@ protected:
     /*==========================================================*/
     void initVals()
     {
-        lastUsedT   = -Ub::inf;
-        lastDueTime = -Ub::inf;
-        nextDueTime = Ub::inf;
-        maxT        = -Ub::inf;
+        lastUsedT   = -UbMath::inf;
+        lastDueTime = -UbMath::inf;
+        nextDueTime = UbMath::inf;
+        maxT        = -UbMath::inf;
     }
     /*==========================================================*/
     // calculates next due time for a schedule

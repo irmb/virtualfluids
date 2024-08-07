@@ -102,12 +102,12 @@ void PressureBC::init(const D3Q27Interactor *const & /*interactor*/, const real 
 {
     this->timeStep           = time;
     this->tmpDensityFunction = NULL;
-    real maxEndtime        = -Ub::inf;
+    real maxEndtime        = -UbMath::inf;
 
     // aktuelle Densityfunction bestimmen
     for (size_t pos = 0; pos < densBCs.size(); ++pos) {
         if (UbMath::equal(densBCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
+            maxEndtime = UbMath::inf;
         maxEndtime = UbMath::max(maxEndtime, densBCs[pos].getStartTime(),
                                  densBCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 

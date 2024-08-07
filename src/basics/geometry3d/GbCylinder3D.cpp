@@ -1163,7 +1163,7 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
     D =   - dw / dc
     */
     double px1, px2, px3;
-    double d = Ub::inf; // Distance to Min or Max Plane of the Zylinder
+    double d = UbMath::inf; // Distance to Min or Max Plane of the Zylinder
                         // final distance should be less that d
 
     if (this->isParallelToX1Axis()) {
@@ -1185,9 +1185,9 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
 
                 if (UbMath::greater(mLine->getDistance(px1, px2, px3), mRad)) {
                     if (x1 < minX1 && rx1 > 0.0)
-                        d = Ub::inf; // punkt liegt "links" vom cylinder und strahl hat evtl weiteren SP auf oberflaeche
+                        d = UbMath::inf; // punkt liegt "links" vom cylinder und strahl hat evtl weiteren SP auf oberflaeche
                     else if (x1 > maxX1 && rx1 < 0.0)
-                        d = Ub::inf;
+                        d = UbMath::inf;
                     else
                         return -1.0;
                 } else
@@ -1217,10 +1217,10 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
 
                 if (UbMath::greater(mLine->getDistance(px1, px2, px3), mRad)) {
                     if (x2 < minX2 && rx2 > 0.0)
-                        d = Ub::inf; // punkt liegt "links oberhalb" vom cylinder und strahl mit pos x1 hat evtl
+                        d = UbMath::inf; // punkt liegt "links oberhalb" vom cylinder und strahl mit pos x1 hat evtl
                                      // weiteren SP auf oberflaeche
                     else if (x2 > maxX2 && rx2 < 0.0)
-                        d = Ub::inf;
+                        d = UbMath::inf;
                     else
                         return -1.0;
                 } else
@@ -1249,9 +1249,9 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
                 px1 = x1 + d * rx1;
                 if (UbMath::greater(mLine->getDistance(px1, px2, px3), mRad)) {
                     if (x3 < minX3 && rx3 > 0.0)
-                        d = Ub::inf;
+                        d = UbMath::inf;
                     else if (x3 > maxX3 && rx3 < 0.0)
-                        d = Ub::inf;
+                        d = UbMath::inf;
                     else
                         return -1.0;
                 } else

@@ -100,11 +100,11 @@ VelocityBC::VelocityBC(const BCFunction &velBC, bool x1Dir, bool x2Dir, bool x3D
 /*==========================================================*/
 VelocityBC::VelocityBC(const BCFunction &velVx1BC, const BCFunction &velVx2BC, const BCFunction &velVx3BC)
 {
-    if (velVx1BC.getEndTime() != -Ub::inf)
+    if (velVx1BC.getEndTime() != -UbMath::inf)
         this->vx1BCs.push_back(velVx1BC);
-    if (velVx2BC.getEndTime() != -Ub::inf)
+    if (velVx2BC.getEndTime() != -UbMath::inf)
         this->vx2BCs.push_back(velVx2BC);
-    if (velVx3BC.getEndTime() != -Ub::inf)
+    if (velVx3BC.getEndTime() != -UbMath::inf)
         this->vx3BCs.push_back(velVx3BC);
     this->init();
 }
@@ -205,11 +205,11 @@ void VelocityBC::init(const D3Q27Interactor *const &interactor, const real &time
     this->tmpVx1Function = this->tmpVx2Function = this->tmpVx3Function = NULL;
 
     // aktuelle velocityfunction bestimmen
-    real maxEndtime = -Ub::inf;
+    real maxEndtime = -UbMath::inf;
 
     for (size_t pos = 0; pos < vx1BCs.size(); ++pos) {
         if (UbMath::equal(vx1BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
+            maxEndtime = UbMath::inf;
         maxEndtime = UbMath::max(maxEndtime, vx1BCs[pos].getStartTime(),
                                  vx1BCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 
@@ -224,7 +224,7 @@ void VelocityBC::init(const D3Q27Interactor *const &interactor, const real &time
     }
     for (size_t pos = 0; pos < vx2BCs.size(); ++pos) {
         if (UbMath::equal(vx2BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
+            maxEndtime = UbMath::inf;
         maxEndtime = UbMath::max(maxEndtime, vx2BCs[pos].getStartTime(),
                                  vx2BCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 
@@ -239,7 +239,7 @@ void VelocityBC::init(const D3Q27Interactor *const &interactor, const real &time
     }
     for (size_t pos = 0; pos < vx3BCs.size(); ++pos) {
         if (UbMath::equal(vx3BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
+            maxEndtime = UbMath::inf;
         maxEndtime = UbMath::max(maxEndtime, vx3BCs[pos].getStartTime(),
                                  vx3BCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 

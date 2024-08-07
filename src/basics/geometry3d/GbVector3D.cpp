@@ -189,9 +189,9 @@ GbVector3D GbVector3D::operator/(const double &fScalar) const
         kQuot.m_afTuple[1] = fInvScalar * m_afTuple[1];
         kQuot.m_afTuple[2] = fInvScalar * m_afTuple[2];
     } else {
-        kQuot.m_afTuple[0] = Ub::inf;
-        kQuot.m_afTuple[1] = Ub::inf;
-        kQuot.m_afTuple[2] = Ub::inf;
+        kQuot.m_afTuple[0] = UbMath::inf;
+        kQuot.m_afTuple[1] = UbMath::inf;
+        kQuot.m_afTuple[2] = UbMath::inf;
     }
 
     return kQuot;
@@ -236,9 +236,9 @@ GbVector3D &GbVector3D::operator/=(const double &fScalar)
         m_afTuple[1] *= fInvScalar;
         m_afTuple[2] *= fInvScalar;
     } else {
-        m_afTuple[0] = Ub::inf;
-        m_afTuple[1] = Ub::inf;
-        m_afTuple[2] = Ub::inf;
+        m_afTuple[0] = UbMath::inf;
+        m_afTuple[1] = UbMath::inf;
+        m_afTuple[2] = UbMath::inf;
     }
 
     return *this;

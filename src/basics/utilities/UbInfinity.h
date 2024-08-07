@@ -199,11 +199,11 @@ inline bool operator!=(const T &lhs, const UbInfinity &rhs)
 //////////////////////////////////////////////////////////////////////////
 //  GLOBAL INFINITY VALUE
 //////////////////////////////////////////////////////////////////////////
-namespace Ub
+namespace UbMath
 {
-// e.g. double x = UbSystem::inf;  float x = -Ub::inf;
+// e.g. double x = UbSystem::inf;  float x = -UbMath::inf;
 const UbInfinity inf;
-} // namespace Ub
+} // namespace UbMath
 
 #endif // UB_INFINITY_H
 

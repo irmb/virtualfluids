@@ -65,7 +65,7 @@ public:
         }
 
         SplitCandidate<T> bestSplitCandidate;
-        T minCN = Ub::inf;
+        T minCN = UbMath::inf;
 
         for (int splitAxis = 0; splitAxis < 3; splitAxis++) {
             SplitCandidateManager<T> sc;

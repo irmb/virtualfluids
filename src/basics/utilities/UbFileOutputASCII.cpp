@@ -110,10 +110,10 @@ void UbFileOutputASCII::writeBool(const bool &value, const int &width)
 void UbFileOutputASCII::writeDouble(const double &value, const int &width)
 {
     outfile.width(width);
-    // Problem: Ub::inf wird gerundet
+    // Problem: UbMath::inf wird gerundet
     //         -> beim Einlesen ist der Wert evtl zu gross und es kommt murks raus
     //         -> max Laenge darstellen und gut ist
-    if (UbMath::equal(value, (double)Ub::inf)) {
+    if (UbMath::equal(value, (double)UbMath::inf)) {
         ios_base::fmtflags flags = outfile.flags();
         outfile << setprecision(std::numeric_limits<double>::digits10 + 2);
         outfile << value << " ";
@@ -126,10 +126,10 @@ void UbFileOutputASCII::writeDouble(const double &value, const int &width)
 void UbFileOutputASCII::writeFloat(const float &value, const int &width)
 {
     outfile.width(width);
-    // Problem: Ub::inf wird gerundet
+    // Problem: UbMath::inf wird gerundet
     //         -> beim Einlesen ist der Wert evtl zu gross und es kommt murks raus
     //         -> max Laenge darstellen und gut ist
-    if (UbMath::equal(value, (float)Ub::inf)) {
+    if (UbMath::equal(value, (float)UbMath::inf)) {
         ios_base::fmtflags flags = outfile.flags();
         outfile << setprecision(std::numeric_limits<float>::digits10 + 2);
         outfile << value << " ";
