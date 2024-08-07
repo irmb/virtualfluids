@@ -225,7 +225,7 @@ public:
     {
         if (schedules.empty())
             return UbMath::inf;
-        return std::min_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getBegin))
+        return std::min_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getBegin))
             ->getBegin();
     }
     /*==========================================================*/
@@ -233,7 +233,7 @@ public:
     {
         if (schedules.empty())
             return UbMath::inf;
-        return std::max_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getBegin))
+        return std::max_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getBegin))
             ->getBegin();
     }
     /*==========================================================*/
@@ -241,7 +241,7 @@ public:
     {
         if (schedules.empty())
             return UbMath::inf;
-        return std::min_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getEnd))
+        return std::min_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getEnd))
             ->getEnd();
     }
     /*==========================================================*/
@@ -249,7 +249,7 @@ public:
     {
         if (schedules.empty())
             return UbMath::inf;
-        return std::max_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getEnd))
+        return std::max_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getEnd))
             ->getEnd();
     }
     /*==========================================================*/
@@ -257,7 +257,7 @@ public:
     {
         if (schedules.empty())
             return UbMath::inf;
-        return std::min_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getStep))
+        return std::min_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getStep))
             ->getStep();
     }
     /*==========================================================*/
@@ -265,7 +265,7 @@ public:
     {
         if (schedules.empty())
             return UbMath::inf;
-        return std::max_element(schedules.begin(), schedules.end(), UbComparators::membercomp(&UbSchedule::getStep))
+        return std::max_element(schedules.begin(), schedules.end(), ub_comparators::membercomp(&UbSchedule::getStep))
             ->getStep();
     }
     /*==========================================================*/
