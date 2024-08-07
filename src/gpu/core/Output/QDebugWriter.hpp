@@ -48,7 +48,7 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-namespace QDebugWriter
+namespace q_debug_writer
 {
 
 void writeQValues(QforBoundaryConditions& Q, int* k, int kq, const std::string& name)
@@ -94,7 +94,7 @@ void writeQValues(QforBoundaryConditions& Q, int* k, int kq, const std::string& 
     outQ->close();
 }
 
-} // namespace QDebugWriter
+} // namespace q_debug_writer
 
 #endif
 
