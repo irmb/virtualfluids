@@ -50,22 +50,22 @@ MetaData::MetaData()
 {
     simulation.startDateTime = vf::basics::getCurrentTime();
 
-    buildInfo.git_commit_hash = buildInfo::gitCommitHash();
-    buildInfo.git_branch = buildInfo::gitBranch();
-    buildInfo.build_type = buildInfo::buildType();
-    buildInfo.compiler_flags = buildInfo::compilerFlags();
-    buildInfo.remote = buildInfo::buildMachine();
-    buildInfo.precision = buildInfo::precision();
-    buildInfo.compiler_definitions = buildInfo::compilerDefinitions();
-    buildInfo.compiler = buildInfo::compiler();
-    buildInfo.compiler_version = buildInfo::compiler_version();
+    buildInfo.git_commit_hash = build_info::gitCommitHash();
+    buildInfo.git_branch = build_info::gitBranch();
+    buildInfo.build_type = build_info::buildType();
+    buildInfo.compiler_flags = build_info::compilerFlags();
+    buildInfo.remote = build_info::buildMachine();
+    buildInfo.precision = build_info::precision();
+    buildInfo.compiler_definitions = build_info::compilerDefinitions();
+    buildInfo.compiler = build_info::compiler();
+    buildInfo.compiler_version = build_info::compiler_version();
 #ifdef VF_MPI
-    buildInfo.mpi_library = buildInfo::mpi_library();
-    buildInfo.mpi_version = buildInfo::mpi_version();
+    buildInfo.mpi_library = build_info::mpi_library();
+    buildInfo.mpi_version = build_info::mpi_version();
 #endif
 #ifdef VF_OPENMP
-    buildInfo.openmp_library = buildInfo::openmp_library();
-    buildInfo.openmp_version = buildInfo::openmp_version();
+    buildInfo.openmp_library = build_info::openmp_library();
+    buildInfo.openmp_version = build_info::openmp_version();
 #endif
 }
 
