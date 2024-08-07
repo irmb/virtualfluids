@@ -281,7 +281,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
         GbHalfSpace3D halfSpace(v1.x, v1.y, v1.z, triangle.nx, triangle.ny, triangle.nz);
 
         //////////////////////////////////////////////////////////////////////////
-        // for gb_mesh_tools_3D::triBoxOverlap
+        // for gb_mesh_tools_3d::triBoxOverlap
         //////////////////////////////////////////////////////////////////////////
         triPoints[0][0] = v1.x;
         triPoints[0][1] = v1.y;
@@ -355,7 +355,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                 halfBoxSize[2] = (float)(c1o2 * (blockMaxX[2] - blockMinX[2]));
 
                 // if triangle "enlarged cube" does not intersect/touch -> no BC possible -> continue
-                if (!gb_mesh_tools_3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
+                if (!gb_mesh_tools_3d::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
                     continue;
                 }
 
@@ -771,7 +771,7 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
                     triPoints[2][2] = v3_.z;
 
                     // if block triangle cuts, then it needs to be refined
-                    if (gb_mesh_tools_3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
+                    if (gb_mesh_tools_3d::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
                         bgrid->expandBlock(block->getX1(), block->getX2(), block->getX3(), block->getLevel());
                     }
                 }
