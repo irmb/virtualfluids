@@ -53,7 +53,7 @@
 #include <MemoryUtil.h>
 #include <UbSystem.h>
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : MPIIOSimulationObserver(grid, s, path, comm)

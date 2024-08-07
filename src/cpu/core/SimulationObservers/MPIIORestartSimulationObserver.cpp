@@ -56,7 +56,7 @@
 //! structures BoundaryCondition are being written in blocks containing each of them BLOCK_SIZE structures
 #define BLOCK_SIZE 1024
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 MPIIORestartSimulationObserver::MPIIORestartSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : MPIIOSimulationObserver(grid, s, path, comm)

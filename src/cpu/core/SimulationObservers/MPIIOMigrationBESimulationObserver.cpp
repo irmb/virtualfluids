@@ -53,7 +53,7 @@
 #include <MemoryUtil.h>
 #include <UbSystem.h>
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 #define MESSAGE_TAG 80
 #define SEND_BLOCK_SIZE 100000

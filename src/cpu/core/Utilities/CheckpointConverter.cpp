@@ -43,7 +43,7 @@
 
 #define BLOCK_SIZE 1024
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 CheckpointConverter::CheckpointConverter(SPtr<Grid3D> grid, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : grid(grid), path(path), comm(comm)

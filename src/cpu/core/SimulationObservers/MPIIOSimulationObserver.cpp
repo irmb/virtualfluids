@@ -43,7 +43,7 @@
 #include "UbLogger.h"
 #include "UbScheduler.h"
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 MPIIOSimulationObserver::MPIIOSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                    std::shared_ptr<vf::parallel::Communicator> comm)
