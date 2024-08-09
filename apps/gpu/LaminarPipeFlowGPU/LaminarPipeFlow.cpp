@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
     try {
         vf::logging::Logger::initializeLogger();
         vf::basics::ConfigurationFile config =
-            vf::basics::loadConfig(argc, argv, "../../../../apps/gpu/LaminarPipeFlowGPU/laminarpipeflow.cfg");
+            vf::basics::loadConfig(argc, argv, "./apps/gpu/LaminarPipeFlowGPU/laminarpipeflow.cfg");
         run(config);
     } catch (const std::exception& e) {
         VF_LOG_WARNING("{}", e.what());
