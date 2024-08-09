@@ -69,7 +69,7 @@ void run(const vf::basics::ConfigurationFile& config)
 {
     // simulation parameters
 
-    std::string path("D:/output/LaminarPipeFlow");
+    std::string path("./output/LaminarPipeFlow");
     std::string simulationName("LaminarPipeFlow");
 
     const std::array<real, 3> length = { 128, 64, 64 };
@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
     try {
         vf::logging::Logger::initializeLogger();
         vf::basics::ConfigurationFile config =
-            vf::basics::loadConfig(argc, argv, "../../../../apps/gpu/LaminarPipeFlowGPU/laminarpipeflow.cfg");
+            vf::basics::loadConfig(argc, argv, "./apps/gpu/LaminarPipeFlowGPU/laminarpipeflow.cfg");
         run(config);
     } catch (const std::exception& e) {
         VF_LOG_WARNING("{}", e.what());
