@@ -132,11 +132,11 @@ void run(const vf::basics::ConfigurationFile& config)
         real g_maxX3 = length[2] / 2.0;
 
         SPtr<GbObject3D> cylinder(new GbCylinder3D(g_minX1 - 2.0 * dx, 0.0, 0.0, g_maxX1 + 2.0 * dx, 0.0, 0.0, dLB / 2.0));
-        GbSystem3D::writeGeoObject(cylinder.get(), pathname + "/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
+        gb_system_3d::writeGeoObject(cylinder.get(), pathname + "/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
 
         SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+            gb_system_3d::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
         real blockLength = 3. * dx;
 
@@ -147,29 +147,29 @@ void run(const vf::basics::ConfigurationFile& config)
         grid->setPeriodicX3(false);
 
         if (myid == 0)
-            GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+            gb_system_3d::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
         GenBlocksGridVisitor genBlocks(gridCube);
         grid->accept(genBlocks);
 
         SPtr<GbObject3D> refineCube1_1(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_minX2 + blockLength, g_maxX3));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(refineCube1_1.get(), pathname + "/geo/refineCube1_1",
+            gb_system_3d::writeGeoObject(refineCube1_1.get(), pathname + "/geo/refineCube1_1",
                                        WbWriterVtkXmlBinary::getInstance());
 
         SPtr<GbObject3D> refineCube1_2(new GbCuboid3D(g_minX1, g_maxX2 - blockLength, g_minX3, g_maxX1, g_maxX2, g_maxX3));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(refineCube1_2.get(), pathname + "/geo/refineCube1_2",
+            gb_system_3d::writeGeoObject(refineCube1_2.get(), pathname + "/geo/refineCube1_2",
                                        WbWriterVtkXmlBinary::getInstance());
 
         SPtr<GbObject3D> refineCube1_3(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_minX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(refineCube1_3.get(), pathname + "/geo/refineCube1_3",
+            gb_system_3d::writeGeoObject(refineCube1_3.get(), pathname + "/geo/refineCube1_3",
                                        WbWriterVtkXmlBinary::getInstance());
 
         SPtr<GbObject3D> refineCube1_4(new GbCuboid3D(g_minX1, g_minX2, g_maxX3 - blockLength, g_maxX1, g_maxX2, g_maxX3));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(refineCube1_4.get(), pathname + "/geo/refineCube1_4",
+            gb_system_3d::writeGeoObject(refineCube1_4.get(), pathname + "/geo/refineCube1_4",
                                        WbWriterVtkXmlBinary::getInstance());
 
         if (refineLevel > 0) {
@@ -189,13 +189,13 @@ void run(const vf::basics::ConfigurationFile& config)
         GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1,
                                                g_maxX2 + blockLength, g_maxX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+            gb_system_3d::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
         // outflow
         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength,
                                                 g_maxX2 + blockLength, g_maxX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+            gb_system_3d::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
         SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBC, Interactor3D::INVERSESOLID));
 
@@ -221,7 +221,7 @@ void run(const vf::basics::ConfigurationFile& config)
         ppblocks.reset();
 
         if (myid == 0)
-            VF_LOG_INFO("{}", Utilities::toString(grid, comm->getNumberOfProcesses()));
+            VF_LOG_INFO("{}", utilities::toString(grid, comm->getNumberOfProcesses()));
 
         SetKernelBlockVisitor kernelVisitor(kernel, nuLB, comm->getNumberOfProcesses());
         grid->accept(kernelVisitor);

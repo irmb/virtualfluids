@@ -51,7 +51,7 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-namespace UnstructuredGridWriter
+namespace unstructured_grid_writer
 {
 
 void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::string& filenameVec2)

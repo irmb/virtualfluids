@@ -198,7 +198,7 @@ bool GbGyroidThirdOrderLong::isPointInGbObject3D(const double& x1, const double&
     //evaluateImplicitFunction(x1,x2,x3, 0., 0., 0.)
     double f1 = evaluateImplicitFunction(x1, x2, x3, 1.);
     double f2 = evaluateImplicitFunction(x1, x2, x3, -1.);
-    return UbMath::lessEqual(f1,0.) && UbMath::greaterEqual(f2,0.);
+    return ub_math::lessEqual(f1,0.) && ub_math::greaterEqual(f2,0.);
 }
 
 /*==========================================================*/

@@ -43,7 +43,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 struct Axis {
     static const int X; // = 0;
@@ -95,7 +95,7 @@ inline bool isPointOnTriangle(const T &px, const T &py, const T &pz, const T &pr
                               GbTriFaceMesh3D::Vertex &p2, GbTriFaceMesh3D::Vertex &p3,
                               GbTriFaceMesh3D::TriFace &triFace)
 {
-    if (Kd::isPointOnPlane(px, py, pz, precision, p1, triFace)) {
+    if (kd_tree::isPointOnPlane(px, py, pz, precision, p1, triFace)) {
         T a_x = p1.x - px;
         T a_y = p1.y - py;
         T a_z = p1.z - pz;
@@ -123,17 +123,17 @@ inline bool isPointOnTriangle(const T &px, const T &py, const T &pz, const T &pr
         T Q_y = Q1_y + Q2_y + Q3_y;
         T Q_z = Q1_z + Q2_z + Q3_z;
 
-        if (UbMath::zero(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z))
+        if (ub_math::zero(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z))
             return true;
-        else if (UbMath::zero(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z))
+        else if (ub_math::zero(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z))
             return true;
-        else if (UbMath::zero(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z))
+        else if (ub_math::zero(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z))
             return true;
-        else if (UbMath::less(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z, T(0.0)))
+        else if (ub_math::less(Q_x * Q1_x + Q_y * Q1_y + Q_z * Q1_z, T(0.0)))
             return false;
-        else if (UbMath::less(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z, T(0.0)))
+        else if (ub_math::less(Q_x * Q2_x + Q_y * Q2_y + Q_z * Q2_z, T(0.0)))
             return false;
-        else if (UbMath::less(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z, T(0.0)))
+        else if (ub_math::less(Q_x * Q3_x + Q_y * Q3_y + Q_z * Q3_z, T(0.0)))
             return false;
 
         return true;
@@ -156,22 +156,22 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
     const T &n2Y = val<2>(n2);
     const T &n2Z = val<3>(n2);
 
-    // if(   Kd::isPointOnPlane(n1X, n1Y, n1Z, T(1.0E-6), p0, triFace)
-    //   && Kd::isPointOnPlane(n2X, n2Y, n2Z, T(1.0E-6), p0, triFace))
+    // if(   kd_tree::isPointOnPlane(n1X, n1Y, n1Z, T(1.0E-6), p0, triFace)
+    //   && kd_tree::isPointOnPlane(n2X, n2Y, n2Z, T(1.0E-6), p0, triFace))
     //{
     //   return true;
     //}
 
     T denom = (n2X - n1X) * triFace.nx + (n2Y - n1Y) * triFace.ny + (n2Z - n1Z) * triFace.nz;
 
-    if (UbMath::zero(denom)) // line does not intersect the plane of the triangle !
+    if (ub_math::zero(denom)) // line does not intersect the plane of the triangle !
     {
         return false;
     } else {
         T d  = -triFace.nx * p0.x - triFace.ny * p0.y - triFace.nz * p0.z;
         T mu = T(-1.0 * (d + n1X * triFace.nx + n1Y * triFace.ny + n1Z * triFace.nz) / denom);
 
-        if (!UbMath::inClosedInterval(mu, T(0.0),
+        if (!ub_math::inClosedInterval(mu, T(0.0),
                                       T(1.0))) // Point of intersection of line and plane does not lie on the triangle
         {
             return false;
@@ -182,7 +182,7 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
             GbTriFaceMesh3D::Vertex &p1 = triFace.getNode(1, nodes);
             GbTriFaceMesh3D::Vertex &p2 = triFace.getNode(2, nodes);
 
-            return Kd::isPointOnTriangle(n1X + ((n2X - n1X) * mu) // intersectionPointX
+            return kd_tree::isPointOnTriangle(n1X + ((n2X - n1X) * mu) // intersectionPointX
                                          ,
                                          n1Y + ((n2Y - n1Y) * mu) // intersectionPointY
                                          ,
@@ -192,7 +192,7 @@ inline bool intersectLine(const UbTuple<T, T, T> &n1, const UbTuple<T, T, T> &n2
         }
     }
 }
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDUTILIES_H
 

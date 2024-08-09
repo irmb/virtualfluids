@@ -52,7 +52,7 @@
 #include <string>
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Node
@@ -173,10 +173,10 @@ public:
         const T &n2Y = val<2>(n2);
         const T &n2Z = val<3>(n2);
 
-        if (UbMath::greater(UbMath::max(((n1X <= n2X ? x[0] : x[1]) - n1X) / (n2X - n1X),
+        if (ub_math::greater(ub_math::max(((n1X <= n2X ? x[0] : x[1]) - n1X) / (n2X - n1X),
                                         ((n1Y <= n2Y ? y[0] : y[1]) - n1Y) / (n2Y - n1Y),
                                         ((n1Z <= n2Z ? z[0] : z[1]) - n1Z) / (n2Z - n1Z)),
-                            UbMath::min(((n1X > n2X ? x[0] : x[1]) - n1X) / (n2X - n1X),
+                            ub_math::min(((n1X > n2X ? x[0] : x[1]) - n1X) / (n2X - n1X),
                                         ((n1Y > n2Y ? y[0] : y[1]) - n1Y) / (n2Y - n1Y),
                                         ((n1Z > n2Z ? z[0] : z[1]) - n1Z) / (n2Z - n1Z)))) {
             return Intersection::NO_INTERSECTION;
@@ -204,7 +204,7 @@ public:
         T tzmin = (z[ray.signZ] - ray.originZ) * ray.inv_directionZ;
         T tzmax = (z[1 - ray.signZ] - ray.originZ) * ray.inv_directionZ;
 
-        // if( (UbMath::greater( tmin, tzmax) ) || ( UbMath::greater( tzmin, tmax) ) )
+        // if( (ub_math::greater( tmin, tzmax) ) || ( ub_math::greater( tzmin, tmax) ) )
         if ((tmin > tzmax) || (tzmin > tmax)) {
             return false;
         }
@@ -213,7 +213,7 @@ public:
             tmax = tzmax;
 
         // return ( (tmin =< t1) && (tmax >= t0) );
-        if (UbMath::greaterEqual(tmax, T(0.0))) {
+        if (ub_math::greaterEqual(tmax, T(0.0))) {
             return Intersection::INTERSECTION;
         } else {
             return Intersection::NO_INTERSECTION;
@@ -226,7 +226,7 @@ public:
         return iHandler.intersectLine(n1, n2, *this, child1, child2);
     }
     /* ======================================================================================= */
-    int intersectRay(const Ray<T> &ray, const RayIntersectionHandler<T> &iHandler, std::set<UbKeys::Key3<int>> &mailbox)
+    int intersectRay(const Ray<T> &ray, const RayIntersectionHandler<T> &iHandler, std::set<ub_keys::Key3<int>> &mailbox)
     {
         return iHandler.intersectRay(ray, *this, child1, child2, mailbox);
     }
@@ -312,7 +312,7 @@ private:
     MbSmartPtr<std::vector<GbTriFaceMesh3D::TriFace>> triFaces;
     std::vector<GbTriFaceMesh3D::Vertex> *ptrNodes; // lediglich f�r Zugriff auf die Knoten!!!
 };
-} // namespace Kd
+} // namespace kd_tree
 #endif // KDNODE_H
 
 //! \}

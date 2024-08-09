@@ -42,7 +42,7 @@
 #include "D3Q27System.h"
 #include "LBMKernel.h"
 
-InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
+InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() : Block3DVisitor(0, d3q27_system::MAXLEVEL)
 {
     using namespace vf::basics::constant;
     
@@ -102,31 +102,31 @@ void InitDistributionsBlockVisitor::setRho(const std::string &muParserString)
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx1(real vx1)
 {
-    this->muVx1.SetExpr(UbSystem::toString(vx1, realLim::digits10));
+    this->muVx1.SetExpr(ub_system::toString(vx1, realLim::digits10));
     this->checkFunction(muVx1);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx2(real vx2)
 {
-    this->muVx2.SetExpr(UbSystem::toString(vx2, realLim::digits10));
+    this->muVx2.SetExpr(ub_system::toString(vx2, realLim::digits10));
     this->checkFunction(muVx2);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx3(real vx3)
 {
-    this->muVx3.SetExpr(UbSystem::toString(vx3, realLim::digits10));
+    this->muVx3.SetExpr(ub_system::toString(vx3, realLim::digits10));
     this->checkFunction(muVx3);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setRho(real rho)
 {
-    this->muRho.SetExpr(UbSystem::toString(rho, realLim::digits10));
+    this->muRho.SetExpr(ub_system::toString(rho, realLim::digits10));
     this->checkFunction(muRho);
 }
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace vf::lbm::dir;
    using namespace vf::basics::constant;
 
@@ -157,16 +157,16 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
       if(kernel->getCompressible()) 
-         calcFeqsFct   = &D3Q27System::calcCompFeq; 
+         calcFeqsFct   = &d3q27_system::calcCompFeq; 
       else                                                        
-         calcFeqsFct   = &D3Q27System::calcIncompFeq; 
+         calcFeqsFct   = &d3q27_system::calcIncompFeq; 
 
       SPtr<BCArray3D> bcArray = kernel->getBCSet()->getBCArray();
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();  
 
       real o  = kernel->getCollisionFactor();
 
-      real f[D3Q27System::ENDF+1];
+      real f[d3q27_system::ENDF+1];
 
       for(std::size_t ix3=0; ix3<bcArray->getNX3(); ix3++)
          for(std::size_t ix2=0; ix2<bcArray->getNX2(); ix2++)

@@ -185,8 +185,8 @@ public:
     {
 #if !defined(VF_NO_RANGECHECK) && (defined(VF_DEBUG) || defined(VF_RANGECHECK))
         if (i >= dataSize)
-            UB_THROW(UbException(UB_EXARGS, "T=" + (std::string) typeid(*this).name() + UbSystem::toString(i) +
-                                                " out of range (size=" + UbSystem::toString(dataSize) + ")"));
+            UB_THROW(UbException(UB_EXARGS, "T=" + (std::string) typeid(*this).name() + ub_system::toString(i) +
+                                                " out of range (size=" + ub_system::toString(dataSize) + ")"));
 #endif // VF_DEBUG
 
         return ptrData[i];
@@ -196,8 +196,8 @@ public:
     {
 #if !defined(VF_NO_RANGECHECK) && (defined(VF_DEBUG) || defined(VF_RANGECHECK))
         if (i >= dataSize)
-            UB_THROW(UbException(UB_EXARGS, "T=" + (std::string) typeid(*this).name() + UbSystem::toString(i) +
-                                                " out of range (size=" + UbSystem::toString(dataSize) + ")"));
+            UB_THROW(UbException(UB_EXARGS, "T=" + (std::string) typeid(*this).name() + ub_system::toString(i) +
+                                                " out of range (size=" + ub_system::toString(dataSize) + ")"));
 #endif // VF_DEBUG
 
         return ptrData[i];

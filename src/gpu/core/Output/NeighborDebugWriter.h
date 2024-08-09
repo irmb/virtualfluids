@@ -43,7 +43,7 @@ class WbWriter;
 struct QforDirectionalBoundaryCondition;
 struct QforBoundaryConditions;
 
-namespace NeighborDebugWriter
+namespace neighbor_debug_writer
 {
 
 //! \brief Write the links to the neighbors as lines for all 27 directions.
@@ -59,7 +59,7 @@ void writeBoundaryConditionNeighbors(QforDirectionalBoundaryCondition* boundaryC
 void writeBoundaryConditionNeighbors(QforBoundaryConditions* boundaryCondition, LBMSimulationParameter* parH,
                                      std::string& filePathBase);
 
-} // namespace NeighborDebugWriter
+} // namespace neighbor_debug_writer
 
 #endif
 

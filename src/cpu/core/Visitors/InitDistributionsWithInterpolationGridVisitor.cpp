@@ -169,7 +169,7 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
         SPtr<LBMKernel> newKernel = newBlock->getKernel();
         if (!newKernel)
             throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: " + newBlock->toString() +
-                                             UbSystem::toString(newGridRank));
+                                             ub_system::toString(newGridRank));
 
         SPtr<EsoTwist3D> newDistributions =
             dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
@@ -202,8 +202,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
 
-    real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaF = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -250,9 +250,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
                                                       val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                       val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                         // std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -270,9 +270,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
                             icellF.TNE[i] = c0o1;
                         }
                         //                     std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -324,8 +324,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         D3Q27ICell icellF;
         real xoff, yoff, zoff;
 
-        real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaC = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaF = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -390,9 +390,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
                                                           bMaxX3, val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                           val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                             // std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";
@@ -410,9 +410,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
                                 icellF.TNE[i] = c0o1;
                             }
                             //                     std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";
@@ -436,8 +436,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
 
-    real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaF = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -485,9 +485,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
                                                       val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                       val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                         // std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -505,9 +505,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
                             icellF.TNE[i] = c0o1;
                         }
                         //                     std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -559,8 +559,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         D3Q27ICell icellF;
         real xoff, yoff, zoff;
 
-        real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaF = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaC = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -625,9 +625,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
                                                           bMaxX3, val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                           val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                             // std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";
@@ -645,9 +645,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
                                 icellF.TNE[i] = c0o1;
                             }
                             //                     std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";

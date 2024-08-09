@@ -46,9 +46,9 @@ std::string WbWriterX3D::writeTriangles(const string &filename, vector<UbTupleFl
     std::ofstream out(X3DFilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(X3DFilename);
+        string path = ub_system::getPathFromString(X3DFilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(X3DFilename.c_str());
         }
         if (!out)

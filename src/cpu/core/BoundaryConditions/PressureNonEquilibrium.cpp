@@ -58,7 +58,7 @@ void PressureNonEquilibrium::applyBC()
 {
     using namespace vf::lbm::dir;
 
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     distributions->getPostCollisionDistribution(f, x1, x2, x3);
     int nx1 = x1;
     int nx2 = x2;
@@ -87,7 +87,7 @@ void PressureNonEquilibrium::applyBC()
     // vx2=(fabs(vx2)>vlimit) ? vx2/fabs(vx2)*vlimit : vx2;
     // vx3=(fabs(vx3)>vlimit) ? vx3/fabs(vx3)*vlimit : vx3;
     real rhoBC = bcPtr->getBoundaryDensity();
-    for (int fdir = D3Q27System::STARTF; fdir <= D3Q27System::ENDF; fdir++) {
+    for (int fdir = d3q27_system::STARTF; fdir <= d3q27_system::ENDF; fdir++) {
         if (bcPtr->hasDensityBoundaryFlag(fdir)) {
             // Martins NEQ ADDON
             ////original: 15.2.2013:

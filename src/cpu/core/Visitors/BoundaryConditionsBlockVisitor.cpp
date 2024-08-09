@@ -46,7 +46,7 @@
 #include "BCArray3D.h"
 #include "LBMKernel.h"
 
-BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL)
+BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, d3q27_system::MAXLEVEL)
 {
 }
 //////////////////////////////////////////////////////////////////////////

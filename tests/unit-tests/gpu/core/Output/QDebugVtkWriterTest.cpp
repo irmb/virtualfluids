@@ -43,7 +43,7 @@ MATCHER(DoubleNear5, "") {
     return abs(std::get<0>(arg) - std::get<1>(arg)) < 0.00001;
 }
 
-using namespace QDebugVtkWriter;
+using namespace q_debug_vtk_writer;
 
 double calcVectorLength(const std::array<double, 3> coords, const std::array<double, 3> neighborCoords)
 {

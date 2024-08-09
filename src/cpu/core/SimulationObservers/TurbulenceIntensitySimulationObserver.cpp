@@ -96,7 +96,7 @@ void TurbulenceIntensitySimulationObserver::collectData(real step)
     }
 
     std::string partName = writer->writeOctsWithNodeData(
-        path + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep), nodes, cells, datanames, data);
+        path + ub_system::toString(gridRank) + "_" + ub_system::toString(istep), nodes, cells, datanames, data);
     size_t found      = partName.find_last_of("//");
     std::string piece = partName.substr(found + 1);
 
@@ -105,7 +105,7 @@ void TurbulenceIntensitySimulationObserver::collectData(real step)
     std::vector<std::string> pieces = comm->gather(piece);
     if (comm->getProcessID() == comm->getRoot()) {
         std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(
-            path + "_" + UbSystem::toString(istep), pieces, datanames, cellDataNames);
+            path + "_" + ub_system::toString(istep), pieces, datanames, cellDataNames);
 
         std::vector<std::string> filenames;
         filenames.push_back(pname);
@@ -178,13 +178,13 @@ void TurbulenceIntensitySimulationObserver::addData(const SPtr<Block3D> block)
 
                     real ti = sqrt(temp);
 
-                    if (UbMath::isNaN(ti))
+                    if (ub_math::isNaN(ti))
                         UB_THROW(
                             UbException(UB_EXARGS, "TI is not a number (nan or -1.#IND), sqrt(temp), where temp = " +
-                                                       UbSystem::toString(temp) +
-                                                       ", AvVx = " + UbSystem::toString((*av)(ix1, ix2, ix3, AvVx)) +
-                                                       " AvVy = " + UbSystem::toString((*av)(ix1, ix2, ix3, AvVy)) +
-                                                       " AvVz = " + UbSystem::toString((*av)(ix1, ix2, ix3, AvVz))));
+                                                       ub_system::toString(temp) +
+                                                       ", AvVx = " + ub_system::toString((*av)(ix1, ix2, ix3, AvVx)) +
+                                                       " AvVy = " + ub_system::toString((*av)(ix1, ix2, ix3, AvVy)) +
+                                                       " AvVz = " + ub_system::toString((*av)(ix1, ix2, ix3, AvVz))));
 
                     data[index++].push_back(ti);
                 }
@@ -215,7 +215,7 @@ void TurbulenceIntensitySimulationObserver::addData(const SPtr<Block3D> block)
 void TurbulenceIntensitySimulationObserver::calculateAverageValues(real timeStep)
 {
     using namespace vf::lbm::dir;
-    using namespace D3Q27System;
+    using namespace d3q27_system;
 
     int minInitLevel = this->grid->getCoarsestInitializedLevel();
     int maxInitLevel = this->grid->getFinestInitializedLevel();

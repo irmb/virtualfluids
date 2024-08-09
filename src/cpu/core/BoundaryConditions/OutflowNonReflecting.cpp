@@ -59,7 +59,7 @@ void OutflowNonReflecting::applyBC()
 {
     using namespace vf::lbm::dir;
 
-    using namespace D3Q27System;
+    using namespace d3q27_system;
  //   using namespace UbMath;
     using namespace vf::basics::constant;
 

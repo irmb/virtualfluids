@@ -45,7 +45,7 @@
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-namespace InterfaceDebugWriter
+namespace interface_debug_writer
 {
 
 void writeGridInterfaceLines(Parameter *para, int level, const uint *coarse, const uint *fine, uint numberOfNodes,
@@ -933,7 +933,7 @@ void writeRecvNodesStream(Parameter *para, int processID = 0)
     }
 }
 
-} // namespace InterfaceDebugWriter
+} // namespace interface_debug_writer
 #endif
 
 //! \}

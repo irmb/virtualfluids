@@ -69,7 +69,7 @@ private:
     std::vector<GbPoint3D> points;
     bool consistent;
 
-    GbSystem3D::PointSet3 *ps;
+    gb_system_3d::PointSet3 *ps;
     // private PointObserver     po         = null;
 
     void init();

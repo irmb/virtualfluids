@@ -89,9 +89,9 @@ bool GbObject3D::isCellInsideOrCuttingGbObject3D(const double &x1a, const double
 bool GbObject3D::isInsideCell(const double &minX1, const double &minX2, const double &minX3, const double &maxX1,
                               const double &maxX2, const double &maxX3)
 {
-    if (UbMath::greaterEqual(this->getX1Minimum(), minX1) && UbMath::greaterEqual(this->getX2Minimum(), minX2) &&
-        UbMath::greaterEqual(this->getX3Minimum(), minX3) && UbMath::lessEqual(this->getX1Maximum(), maxX1) &&
-        UbMath::lessEqual(this->getX2Maximum(), maxX2) && UbMath::lessEqual(this->getX2Maximum(), maxX3))
+    if (ub_math::greaterEqual(this->getX1Minimum(), minX1) && ub_math::greaterEqual(this->getX2Minimum(), minX2) &&
+        ub_math::greaterEqual(this->getX3Minimum(), minX3) && ub_math::lessEqual(this->getX1Maximum(), maxX1) &&
+        ub_math::lessEqual(this->getX2Maximum(), maxX2) && ub_math::lessEqual(this->getX2Maximum(), maxX3))
         return true;
 
     return false;

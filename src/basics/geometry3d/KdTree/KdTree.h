@@ -46,7 +46,7 @@
 #include <cmath>
 #include <string>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Tree
@@ -73,7 +73,7 @@ public:
     // the IntersectionHandler specifies how to handle the intersection
     int intersectRay(const Ray<T> &ray, const RayIntersectionHandler<T> &iHandler)
     {
-        std::set<UbKeys::Key3<int>> mailbox;
+        std::set<ub_keys::Key3<int>> mailbox;
         return rootNode->intersectRay(ray, iHandler, mailbox);
     }
     /* ======================================================================================= */
@@ -131,7 +131,7 @@ public:
 private:
     Node<T> *rootNode;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDTREE_H
 

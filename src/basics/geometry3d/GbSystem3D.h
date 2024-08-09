@@ -47,7 +47,7 @@ class GbPolygon3D;
 class GbCuboid3D;
 class GbLine3D;
 
-namespace GbSystem3D
+namespace gb_system_3d
 {
 extern double getDistance(const GbPoint3D &p11, const GbPoint3D &p12);
 extern GbPoint3D *calculateIntersectionPoint3D(GbPoint3D &p11, GbPoint3D &p12, GbPoint3D &p21, GbPoint3D &p22);
@@ -436,7 +436,7 @@ public:
     }
 };
 /*=================================================================*/
-} // namespace GbSystem3D
+} // namespace gb_system_3d
 
 #endif // GBSYSTEM3D_H
 

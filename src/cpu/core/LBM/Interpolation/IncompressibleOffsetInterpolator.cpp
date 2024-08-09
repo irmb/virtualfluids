@@ -95,7 +95,7 @@ void IncompressibleOffsetInterpolator::interpolateFineToCoarse(D3Q27ICell& icell
 void IncompressibleOffsetInterpolator::calcMoments(const real* const f, real omega, real& press, real& vx1, real& vx2, real& vx3, 
                                                     real& kxy, real& kyz, real& kxz, real& kxxMyy, real& kxxMzz)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace vf::lbm::dir;
    using namespace vf::basics::constant;
 
@@ -103,7 +103,7 @@ void IncompressibleOffsetInterpolator::calcMoments(const real* const f, real ome
    //UBLOG(logINFO,"BW  = " << BW);;
 
    real rho = c0o1;
-   D3Q27System::calcIncompMacroscopicValues(f,rho,vx1,vx2,vx3);
+   d3q27_system::calcIncompMacroscopicValues(f,rho,vx1,vx2,vx3);
    
    //////////////////////////////////////////////////////////////////////////
    //DRAFT
@@ -568,7 +568,7 @@ void IncompressibleOffsetInterpolator::calcInterpolatedCoefficiets(const D3Q27IC
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleOffsetInterpolator::calcInterpolatedNode(real* f, real  /*omega*/, real  /*x*/, real  /*y*/, real  /*z*/, real press, real xs, real ys, real zs)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace vf::lbm::dir;
    using namespace vf::basics::constant;
 
@@ -583,7 +583,7 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNode(real* f, real  /*ome
    //////////////////////////////////////////////////////////////////////////
 
    real feq[ENDF+1];
-   D3Q27System::calcIncompFeq(feq,rho,vx1,vx2,vx3);
+   d3q27_system::calcIncompFeq(feq,rho,vx1,vx2,vx3);
 
    f[dP00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[dP00];
    f[dM00]    = f_E    + xs*x_E    + ys*y_E    + zs*z_E    + xs*ys*xy_E    + xs*zs*xz_E    + ys*zs*yz_E    + feq[dM00];
@@ -737,7 +737,7 @@ real IncompressibleOffsetInterpolator::calcPressBNE()
 //Position C 0.0, 0.0, 0.0
 void IncompressibleOffsetInterpolator::calcInterpolatedNodeFC(real* f, real omega)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace vf::lbm::dir;
    using namespace vf::basics::constant;
 
@@ -761,7 +761,7 @@ void IncompressibleOffsetInterpolator::calcInterpolatedNodeFC(real* f, real omeg
    //////////////////////////////////////////////////////////////////////////
 
    real feq[ENDF+1];
-   D3Q27System::calcIncompFeq(feq,rho,vx1,vx2,vx3);
+   d3q27_system::calcIncompFeq(feq,rho,vx1,vx2,vx3);
 
    real eps_new = c2o1;
    real o  = omega;

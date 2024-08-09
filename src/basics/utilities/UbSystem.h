@@ -66,7 +66,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #else
-#error "UbSystem::UnknownMachine"
+#error "ub_system::UnknownMachine"
 #endif
 
 #if defined(__unix__) && defined(__CYGWIN__)
@@ -109,9 +109,9 @@
 // int const * const C4  -> C4 is constant pointer to a constant integer
 
 //////////////////////////////////////////////////////////////////////////
-// UbSystem
+// ub_system
 //////////////////////////////////////////////////////////////////////////
-namespace UbSystem
+namespace ub_system
 {
 template <bool>
 struct ub_static_assert; // deklaration (ub_xxx da static_assert in C++0x ein keyword werden wird)
@@ -131,7 +131,7 @@ inline void sleepMs(const unsigned int &msec)
 #elif defined(UBSYSTEM_CYGWIN)
     ::Sleep((msec == 0) ? 1 : msec);
 #else
-#error "UbSystem::sleepMSec - UnknownMachine"
+#error "ub_system::sleepMSec - UnknownMachine"
 #endif
 }
 /*==========================================================*/
@@ -142,7 +142,7 @@ inline void sleepS(const unsigned int &sec)
 #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX) && !defined(UBSYSTEM_CYGWIN)
     ::sleep(sec);
 #else
-#error "UbSystem::sleepS - UnknownMachine"
+#error "ub_system::sleepS - UnknownMachine"
 #endif
 }
 /*==========================================================*/
@@ -250,7 +250,7 @@ inline bool isDirectory(const std::string &dir, const unsigned & /*attemptions*/
     if (dir.empty())
         UB_THROW(UbException(UB_EXARGS, "dir is empty"));
 
-    std::string path = UbSystem::replaceInString(dir, "\\", "/");
+    std::string path = ub_system::replaceInString(dir, "\\", "/");
 
 #if defined UBSYSTEM_WINDOWS
 #ifndef _UNICODE
@@ -279,11 +279,11 @@ static boost::mutex mtx_makeDirectory;
 #endif
 inline bool makeDirectory(const std::string &dir)
 {
-    UBLOG(logDEBUG5, "UbSystem::makeDirectory - start, dir=" << dir);
+    UBLOG(logDEBUG5, "ub_system::makeDirectory - start, dir=" << dir);
 
     if (dir.empty())
         UB_THROW(UbException(UB_EXARGS, "dir is empty"));
-    std::string path = UbSystem::replaceInString(dir, "\\", "/");
+    std::string path = ub_system::replaceInString(dir, "\\", "/");
 
     bool dirCreated = true;
 
@@ -304,21 +304,21 @@ inline bool makeDirectory(const std::string &dir)
             _waccess(tmpdir.c_str(), 0) == -1 && _wmkdir(tmpdir.c_str()) == -1
 #endif
         ) {
-            UBLOG(logDEBUG5, "UbSystem::makeDirectory - dir=\"" << tmpdir << "\" - doesn't exist or makedir failed");
+            UBLOG(logDEBUG5, "ub_system::makeDirectory - dir=\"" << tmpdir << "\" - doesn't exist or makedir failed");
             dirCreated = false;
             break;
         }
 #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
         int status = mkdir(tmpdir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
         if (status == 0) {
-            UBLOG(logDEBUG5,"UbSystem::makeDirectory - dir=\"" << tmpdir << " - directory created successfully.");
+            UBLOG(logDEBUG5,"ub_system::makeDirectory - dir=\"" << tmpdir << " - directory created successfully.");
             dirCreated = true;
         } else {
-            UBLOG(logDEBUG5,"UbSystem::makeDirectory - dir=\"" << tmpdir << " - mkdir() failed" << " ERROR: " << strerror(errno));
+            UBLOG(logDEBUG5,"ub_system::makeDirectory - dir=\"" << tmpdir << " - mkdir() failed" << " ERROR: " << strerror(errno));
             dirCreated = false;
         }
 #else
-#error "UbSystem::makeDirectory - UnknownMachine"
+#error "ub_system::makeDirectory - UnknownMachine"
 #endif
     }
     return dirCreated;
@@ -344,7 +344,7 @@ inline int removeDirectory(const std::string &dir)
 // returns: ""
 inline std::string getPathFromString(const std::string &fileStringWithPath)
 {
-    std::string tmp  = UbSystem::replaceInString(fileStringWithPath, "\\", "/");
+    std::string tmp  = ub_system::replaceInString(fileStringWithPath, "\\", "/");
     std::size_t last = tmp.rfind("/");
     if (last != std::string::npos)
         tmp.resize(last);
@@ -361,7 +361,7 @@ inline std::string getPathFromString(const std::string &fileStringWithPath)
 // returns: ""
 inline std::string getFilenameFromString(const std::string &fileStringWithPath, bool withExtension = true)
 {
-    std::string tmp = UbSystem::replaceInString(fileStringWithPath, "\\", "/");
+    std::string tmp = ub_system::replaceInString(fileStringWithPath, "\\", "/");
 
     // remove path
     std::size_t last = tmp.rfind("/");
@@ -385,7 +385,7 @@ inline int getProcessID()
 #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
     return getpid();
 #else
-#error "int UbSystem::getProcessID() - UnknownMachine"
+#error "int ub_system::getProcessID() - UnknownMachine"
 #endif
 }
 /*==========================================================*/
@@ -402,7 +402,7 @@ inline unsigned long getCurrentThreadID()
 #elif defined(UBSYSTEM_AIX)
     return (unsigned long)getpid(); // WORKAROUND for IBM (for get thread id is another function necessary)
 #else
-#error "unsigned long UbSystem::getCurrentThreadID() - UnknownMachine"
+#error "unsigned long ub_system::getCurrentThreadID() - UnknownMachine"
 #endif
 }
 /*==========================================================*/
@@ -522,16 +522,16 @@ struct select2nd {
     const result_type &operator()(const argument_type &p) const { return p.second; }
 };
 
-} // namespace UbSystem
+} // namespace ub_system
 
-#define UB_STATIC_ASSERT(expr) static_cast<void>(sizeof(UbSystem::ub_static_assert<expr>));
+#define UB_STATIC_ASSERT(expr) static_cast<void>(sizeof(ub_system::ub_static_assert<expr>));
 // zum ueberpruefen von STATISCHEN ausdruecken waehrend der compile-zeit
 //--> Ausdruecke muessen schon ZUR compilerzeit auswertbar sein !!!
 // Anwendung z.B. zur Ueberpruefung von Funktionalitaeten, wie z.B. bei UbMath::getNegativeInfinity<double>();
 //
 // Grund fuer macro ist einfach, dass es besser anzuwenden ist in der praxis!
 // ansonsten wuerde es so aussehen:
-//     UbSystem::ub_static_assert< aaa == 1 > test();
+//     ub_system::ub_static_assert< aaa == 1 > test();
 //    da ist  UB_STATIC_ASSERT(aaa == 1); schoener
 //
 // um das zu vermeiden machtman hier diesen static_cast<void>(sizeof(...) )
@@ -541,7 +541,7 @@ struct select2nd {
 //  UB_STATIC_ASSERT( Test::m_const_bool == true );
 //  --> okay, assert bestanden
 //  UB_STATIC_ASSERT( Test::m_const_bool == false); //:
-//  --> assert nicht bestanden z.B. error C2027: use of undefined type 'UbSystem::ub_static_assert<__formal> with
+//  --> assert nicht bestanden z.B. error C2027: use of undefined type 'ub_system::ub_static_assert<__formal> with
 //  __formal = false --> funzt nicht. fehler im code UB_STATIC_ASSERT( Test::m_bool == true );
 //  --> nicht erlaubt, da m_bool nicht statisch und nicht const ist.
 //}

@@ -37,11 +37,11 @@
 
 #include "lbm/constants/D3Q27.h"
 
-namespace MPIIODataStructures
+namespace mpi_io_data_structures
 {
 //! \struct GridParam
 //! \brief Structure describes parameters of the grid
-//! \details The structure is nessasary to restore the grid correctly
+//! \details The structure is necessary to restore the grid correctly
 struct GridParam {
     double trafoParams[33]; // not float!!!
     double deltaX;          // not float!!!

@@ -45,7 +45,7 @@
 
 #include <set>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class CountLineIntersectionHandler : public LineIntersectionHandler<T>
@@ -62,7 +62,7 @@ public:
                 for (std::size_t i = 0; i < triFaces.size(); i++) {
                     GbTriFaceMesh3D::TriFace &triFace = triFaces[i];
 
-                    if (Kd::intersectLine(n1, n2, triFace, nodes))
+                    if (kd_tree::intersectLine(n1, n2, triFace, nodes))
                         return true;
                 }
                 return false;
@@ -81,7 +81,7 @@ public:
     }
     /* ======================================================================================= */
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDCOUNTLINEINTERSECTIONHANDLER_H
 

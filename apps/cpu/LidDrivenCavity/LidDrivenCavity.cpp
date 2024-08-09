@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 
         // Create simulation bounding box
         SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-        GbSystem3D::writeGeoObject(gridCube.get(), path + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+        gb_system_3d::writeGeoObject(gridCube.get(), path + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
         UBLOG(logINFO, "Lid Driven Cavity:");
         UBLOG(logINFO, "Domain size = " << nx << " x " << nx << " x " << nx);
@@ -143,19 +143,19 @@ int main(int argc, char* argv[])
 
         // Create boundary conditions geometry
         GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_minX3 - dx, g_minX1, g_maxX2 + dx, g_maxX3));
-        GbSystem3D::writeGeoObject(wallXmin.get(), path + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
+        gb_system_3d::writeGeoObject(wallXmin.get(), path + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
         GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - dx, g_minX3 - dx, g_maxX1 + dx, g_maxX2 + dx, g_maxX3));
-        GbSystem3D::writeGeoObject(wallXmax.get(), path + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
+        gb_system_3d::writeGeoObject(wallXmax.get(), path + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
         GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_minX3 - dx, g_maxX1 + dx, g_minX2, g_maxX3));
-        GbSystem3D::writeGeoObject(wallYmin.get(), path + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
+        gb_system_3d::writeGeoObject(wallYmin.get(), path + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
         GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - dx, g_maxX2, g_minX3 - dx, g_maxX1 + dx, g_maxX2 + dx, g_maxX3));
-        GbSystem3D::writeGeoObject(wallYmax.get(), path + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
+        gb_system_3d::writeGeoObject(wallYmax.get(), path + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
         GbCuboid3DPtr wallZmin(
             new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_minX3 - dx, g_maxX1 + dx, g_maxX2 + dx, g_minX3));
-        GbSystem3D::writeGeoObject(wallZmin.get(), path + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
+        gb_system_3d::writeGeoObject(wallZmin.get(), path + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
         GbCuboid3DPtr wallZmax(
             new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_maxX3, g_maxX1 + dx, g_maxX2 + dx, g_maxX3 + dx));
-        GbSystem3D::writeGeoObject(wallZmax.get(), path + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
+        gb_system_3d::writeGeoObject(wallZmax.get(), path + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
 
         // Add boundary conditions to grid generator
         SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBC, Interactor3D::SOLID));
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
         intHelper.selectBlocks();
 
         if (myid == 0)
-            VF_LOG_INFO("{}", Utilities::toString(grid, comm->getNumberOfProcesses()));
+            VF_LOG_INFO("{}", utilities::toString(grid, comm->getNumberOfProcesses()));
 
         // Generate grid
         SetKernelBlockVisitor kernelVisitor(kernel, viscosityLB);
@@ -204,10 +204,10 @@ int main(int argc, char* argv[])
 
         UBLOG(logINFO, "Preprocess - end");
 
-        UBLOG(logINFO, "Total Physical Memory (RAM): " << Utilities::getTotalPhysMem() / 1e9 << " GB");
-        UBLOG(logINFO, "Physical Memory currently used: " << Utilities::getPhysMemUsed() / 1e9 << " GB");
+        UBLOG(logINFO, "Total Physical Memory (RAM): " << utilities::getTotalPhysMem() / 1e9 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used: " << utilities::getPhysMemUsed() / 1e9 << " GB");
         UBLOG(logINFO,
-              "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1e9 << " GB");
+              "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1e9 << " GB");
 
         // Create coprocessor object for writing macroscopic quantities to VTK-file
         SPtr<UbScheduler> visSch(new UbScheduler(timeStepOut));

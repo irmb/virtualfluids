@@ -92,10 +92,10 @@ void WriteBoundaryConditionsSimulationObserver::collectData(real step)
 
     string pfilePath, partPath, subfolder, cfilePath;
 
-    subfolder = "bc" + UbSystem::toString(istep);
+    subfolder = "bc" + ub_system::toString(istep);
     pfilePath = path + "/bc/" + subfolder;
     cfilePath = path + "/bc/bc_collection";
-    partPath  = pfilePath + "/bc" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/bc" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
     size_t found    = partName.find_last_of("/");

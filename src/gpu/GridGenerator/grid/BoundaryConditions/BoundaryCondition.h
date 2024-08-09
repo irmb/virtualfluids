@@ -48,7 +48,7 @@ enum class SideType;
 
 class TransientBCInputFileReader;
 
-namespace gg
+namespace grid_generator
 {
 class BoundaryCondition
 {
@@ -74,7 +74,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class PressureBoundaryCondition : public gg::BoundaryCondition
+class PressureBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
     static SPtr<PressureBoundaryCondition> make(real rho)
@@ -103,7 +103,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class SlipBoundaryCondition : public gg::BoundaryCondition
+class SlipBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
     static SPtr<SlipBoundaryCondition> make(real normalX, real normalY, real normalZ)
@@ -143,7 +143,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class StressBoundaryCondition : public gg::BoundaryCondition
+class StressBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
     static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset, real z0)
@@ -214,7 +214,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-class VelocityBoundaryCondition : public gg ::BoundaryCondition
+class VelocityBoundaryCondition : public grid_generator ::BoundaryCondition
 {
 public:
     static SPtr<VelocityBoundaryCondition> make(real vx, real vy, real vz)
@@ -258,7 +258,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 
-class GeometryBoundaryCondition : public gg::BoundaryCondition
+class GeometryBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
     static SPtr<GeometryBoundaryCondition> make()
@@ -336,7 +336,7 @@ public:
     real getNormalz(uint index) { return this->normalZList[index]; }
 };
 
-class PrecursorBoundaryCondition : public gg::BoundaryCondition
+class PrecursorBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
     static SPtr<PrecursorBoundaryCondition> make(SPtr<TransientBCInputFileReader> reader, int timeStepsBetweenReads, real velocityX, real velocityY, real velocityZ)

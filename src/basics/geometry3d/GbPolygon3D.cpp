@@ -41,7 +41,7 @@ GbPolygon3D::GbPolygon3D()
 {
     init();
     counter++;
-    this->ps = new GbSystem3D::PointSet3(0);
+    this->ps = new gb_system_3d::PointSet3(0);
 }
 void GbPolygon3D::init()
 {
@@ -67,7 +67,7 @@ GbPolygon3D::GbPolygon3D(int capacity)
 {
     init();
     counter++;
-    this->ps = new GbSystem3D::PointSet3(capacity);
+    this->ps = new gb_system_3d::PointSet3(capacity);
     //     this.po = new PointObserver(this);
 }
 /**
@@ -78,7 +78,7 @@ GbPolygon3D::GbPolygon3D(vector<GbPoint3D> &points)
 {
     init();
     counter++;
-    this->ps = new GbSystem3D::PointSet3((int)points.size());
+    this->ps = new gb_system_3d::PointSet3((int)points.size());
     this->addPoints(points);
 }
 /**
@@ -89,7 +89,7 @@ GbPolygon3D::GbPolygon3D(GbPolygon3D *polygon)
 {
     this->init();
     counter++;
-    this->ps               = new GbSystem3D::PointSet3((int)polygon->size());
+    this->ps               = new gb_system_3d::PointSet3((int)polygon->size());
     vector<GbPoint3D> temp = polygon->getPoints();
     this->addPoints(temp);
 }
@@ -200,21 +200,21 @@ vector<GbPoint3D> GbPolygon3D::getPoints(const double &p1x1, const double &p1x2,
 {
     double x1min, x1max, x2min, x2max, x3min, x3max;
 
-    if (UbMath::less(p1x1, p2x1)) {
+    if (ub_math::less(p1x1, p2x1)) {
         x1min = p1x1;
         x1max = p2x1;
     } else {
         x1min = p2x1;
         x1max = p1x1;
     }
-    if (UbMath::less(p1x2, p2x2)) {
+    if (ub_math::less(p1x2, p2x2)) {
         x2min = p1x2;
         x2max = p2x2;
     } else {
         x2min = p2x2;
         x2max = p1x2;
     }
-    if (UbMath::less(p1x3, p2x3)) {
+    if (ub_math::less(p1x3, p2x3)) {
         x3min = p1x3;
         x3max = p2x3;
     } else {
@@ -222,14 +222,14 @@ vector<GbPoint3D> GbPolygon3D::getPoints(const double &p1x1, const double &p1x2,
         x3max = p1x3;
     }
 
-    GbSystem3D::PointSet3 *pts = new GbSystem3D::PointSet3(1);
+    gb_system_3d::PointSet3 *pts = new gb_system_3d::PointSet3(1);
 
     if (!this->consistent)
         this->calculateValues();
     for (int i = this->size() - 1; i >= 0; i--) {
-        if (UbMath::lessEqual(x1min, (this->points)[i].x1) && UbMath::greaterEqual(x1max, (this->points)[i].x1) &&
-            UbMath::lessEqual(x2min, (this->points)[i].x2) && UbMath::greaterEqual(x2max, (this->points)[i].x2) &&
-            UbMath::lessEqual(x3min, (this->points)[i].x3) && UbMath::greaterEqual(x3max, (this->points)[i].x3))
+        if (ub_math::lessEqual(x1min, (this->points)[i].x1) && ub_math::greaterEqual(x1max, (this->points)[i].x1) &&
+            ub_math::lessEqual(x2min, (this->points)[i].x2) && ub_math::greaterEqual(x2max, (this->points)[i].x2) &&
+            ub_math::lessEqual(x3min, (this->points)[i].x3) && ub_math::greaterEqual(x3max, (this->points)[i].x3))
             pts->add((this->points)[i]);
     }
     return (pts->getPoints());

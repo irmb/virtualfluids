@@ -30,6 +30,7 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include "basics/config/ConfigurationFile.h"
+#include "basics/DataTypes.h"
 
 namespace configuration
 {

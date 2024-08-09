@@ -49,7 +49,7 @@
 //using namespace vf::lbm::dir;
 
 //! \brief namespace for global system-functions
-namespace D3Q27System
+namespace d3q27_system
 {
 //////////////////////////////////////////////////////////////////////////
 // DIRECTION STUFF
@@ -367,20 +367,20 @@ static void calcCompVelocityX3(const real *const &f /*[27]*/, real &vx3)
 static void calcIncompMacroscopicValues(const real *const &f /*[27]*/, real &rho, real &vx1, real &vx2,
                                         real &vx3)
 {
-    D3Q27System::calcDensity(f, rho);
-    D3Q27System::calcIncompVelocityX1(f, vx1);
-    D3Q27System::calcIncompVelocityX2(f, vx2);
-    D3Q27System::calcIncompVelocityX3(f, vx3);
+    d3q27_system::calcDensity(f, rho);
+    d3q27_system::calcIncompVelocityX1(f, vx1);
+    d3q27_system::calcIncompVelocityX2(f, vx2);
+    d3q27_system::calcIncompVelocityX3(f, vx3);
 }
 
 /*=====================================================================*/
 static void calcCompMacroscopicValues(const real *const &f /*[27]*/, real &drho, real &vx1, real &vx2,
                                       real &vx3)
 {
-    D3Q27System::calcDensity(f, drho);
-    D3Q27System::calcIncompVelocityX1(f, vx1);
-    D3Q27System::calcIncompVelocityX2(f, vx2);
-    D3Q27System::calcIncompVelocityX3(f, vx3);
+    d3q27_system::calcDensity(f, drho);
+    d3q27_system::calcIncompVelocityX1(f, vx1);
+    d3q27_system::calcIncompVelocityX2(f, vx2);
+    d3q27_system::calcIncompVelocityX3(f, vx3);
     //real rho = drho + vf::basics::constant::one;
     real rho = drho + vf::basics::constant::c1o1;
     vx1 /= rho;

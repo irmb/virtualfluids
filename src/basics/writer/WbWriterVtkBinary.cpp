@@ -68,9 +68,9 @@ std::string WbWriterVtkBinary::writeQuads(const string &filename, vector<UbTuple
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -79,7 +79,7 @@ std::string WbWriterVtkBinary::writeQuads(const string &filename, vector<UbTuple
 
     // HEADER-SECTION
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -101,9 +101,9 @@ std::string WbWriterVtkBinary::writeQuads(const string &filename, vector<UbTuple
         float x3 = (float)val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -117,17 +117,17 @@ std::string WbWriterVtkBinary::writeQuads(const string &filename, vector<UbTuple
 
     int nodesPerCellDummy = 4; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int SW = val<1>(cells[c]);
         int SE = val<2>(cells[c]);
         int NE = val<3>(cells[c]);
         int NW = val<4>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&SW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&SE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -141,7 +141,7 @@ std::string WbWriterVtkBinary::writeQuads(const string &filename, vector<UbTuple
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 8;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 
@@ -162,9 +162,9 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeData(const string &filename, ve
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -172,7 +172,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeData(const string &filename, ve
     }
 
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -194,9 +194,9 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeData(const string &filename, ve
         float x3 = (float)val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -210,17 +210,17 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeData(const string &filename, ve
 
     int nodesPerCellDummy = 4; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int SW = val<1>(cells[c]);
         int SE = val<2>(cells[c]);
         int NE = val<3>(cells[c]);
         int NW = val<4>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&SW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&SE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -234,7 +234,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeData(const string &filename, ve
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 8;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 
@@ -250,7 +250,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeData(const string &filename, ve
         for (int d = 0; d < (int)nodedata[s].size(); d++) {
             float dummy = (float)nodedata[s][d];
             if (swapByte)
-                UbSystem::swapByteOrder((unsigned char *)&dummy, sizeof(float));
+                ub_system::swapByteOrder((unsigned char *)&dummy, sizeof(float));
             out.write((const char *)&dummy, sizeof(float));
         }
         out << endl;
@@ -272,9 +272,9 @@ std::string WbWriterVtkBinary::writeQuadsWithCellData(const string &filename, ve
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -282,7 +282,7 @@ std::string WbWriterVtkBinary::writeQuadsWithCellData(const string &filename, ve
     }
 
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -304,9 +304,9 @@ std::string WbWriterVtkBinary::writeQuadsWithCellData(const string &filename, ve
         float x3 = (float)val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -320,17 +320,17 @@ std::string WbWriterVtkBinary::writeQuadsWithCellData(const string &filename, ve
 
     int nodesPerCellDummy = 4; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int SW = val<1>(cells[c]);
         int SE = val<2>(cells[c]);
         int NE = val<3>(cells[c]);
         int NW = val<4>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&SW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&SE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -344,7 +344,7 @@ std::string WbWriterVtkBinary::writeQuadsWithCellData(const string &filename, ve
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 8;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 
@@ -360,7 +360,7 @@ std::string WbWriterVtkBinary::writeQuadsWithCellData(const string &filename, ve
         for (int d = 0; d < (int)celldata[s].size(); d++) {
             float dummy = (float)celldata[s][d];
             if (swapByte)
-                UbSystem::swapByteOrder((unsigned char *)&dummy, sizeof(float));
+                ub_system::swapByteOrder((unsigned char *)&dummy, sizeof(float));
             out.write((const char *)&dummy, sizeof(float));
         }
         out << endl;
@@ -383,9 +383,9 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -394,7 +394,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
 
     // HEADER-SECTION
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -416,9 +416,9 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
         float x3 = (float)val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -432,17 +432,17 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
 
     int nodesPerCellDummy = 4; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int SW = val<1>(cells[c]);
         int SE = val<2>(cells[c]);
         int NE = val<3>(cells[c]);
         int NW = val<4>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&SW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&SE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&NE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&SE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&NE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -456,7 +456,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 8;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 
@@ -472,7 +472,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
         for (int d = 0; d < (int)nodedata[s].size(); d++) {
             float dummy = (float)nodedata[s][d];
             if (swapByte)
-                UbSystem::swapByteOrder((unsigned char *)&dummy, sizeof(float));
+                ub_system::swapByteOrder((unsigned char *)&dummy, sizeof(float));
             out.write((const char *)&dummy, sizeof(float));
         }
         out << endl;
@@ -488,7 +488,7 @@ std::string WbWriterVtkBinary::writeQuadsWithNodeAndCellData(const string &filen
         for (int d = 0; d < (int)celldata[s].size(); d++) {
             float dummy = (float)celldata[s][d];
             if (swapByte)
-                UbSystem::swapByteOrder((unsigned char *)&dummy, sizeof(float));
+                ub_system::swapByteOrder((unsigned char *)&dummy, sizeof(float));
             out.write((const char *)&dummy, sizeof(float));
         }
         out << endl;
@@ -510,9 +510,9 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -521,7 +521,7 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
 
     // HEADER-SECTION
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -543,9 +543,9 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
         float x3 = (float)val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -559,7 +559,7 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
 
     int nodesPerCellDummy = 8; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int BSW = val<1>(cells[c]);
         int TSW = val<5>(cells[c]);
@@ -570,14 +570,14 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
         int BNE = val<4>(cells[c]);
         int TNE = val<8>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&BSW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BSE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BNW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BNE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TSW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TSE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TNW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TNE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BSW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BSE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BNW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BNE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TSW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TSE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TNW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TNE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -595,7 +595,7 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 11;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 
@@ -611,7 +611,7 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string &filename, vec
         for (int d = 0; d < (int)celldata[s].size(); d++) {
             float dummy = (float)celldata[s][d];
             if (swapByte)
-                UbSystem::swapByteOrder((unsigned char *)&dummy, sizeof(float));
+                ub_system::swapByteOrder((unsigned char *)&dummy, sizeof(float));
             out.write((const char *)&dummy, sizeof(float));
         }
         out << endl;
@@ -633,9 +633,9 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -643,7 +643,7 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
     }
 
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -665,9 +665,9 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
         float x3 = val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -681,7 +681,7 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
 
     int nodesPerCellDummy = 8; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int BSW = val<1>(cells[c]);
         int TSW = val<5>(cells[c]);
@@ -692,14 +692,14 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
         int BNE = val<4>(cells[c]);
         int TNE = val<8>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&BSW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BSE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BNW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BNE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TSW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TSE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TNW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TNE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BSW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BSE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BNW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BNE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TSW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TSE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TNW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TNE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -717,7 +717,7 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 11;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 
@@ -733,7 +733,7 @@ std::string WbWriterVtkBinary::writeOctsWithNodeData(const string &filename, vec
         for (int d = 0; d < (int)nodedata[s].size(); d++) {
             float dummy = (float)nodedata[s][d];
             if (swapByte)
-                UbSystem::swapByteOrder((unsigned char *)&dummy, sizeof(float));
+                ub_system::swapByteOrder((unsigned char *)&dummy, sizeof(float));
             out.write((const char *)&dummy, sizeof(float));
         }
         out << endl;
@@ -754,9 +754,9 @@ std::string WbWriterVtkBinary::writeOcts(const string &filename, vector<UbTupleF
     ofstream out(vtkfilename.c_str(), ofstream::out | ofstream::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -765,7 +765,7 @@ std::string WbWriterVtkBinary::writeOcts(const string &filename, vector<UbTupleF
 
     // HEADER-SECTION
     // WRITE BIGENDIAN VtkBinary FILE
-    bool swapByte = UbSystem::isLittleEndian();
+    bool swapByte = ub_system::isLittleEndian();
     int nofNodes  = (int)nodes.size();
     int nofCells  = (int)cells.size();
 
@@ -787,9 +787,9 @@ std::string WbWriterVtkBinary::writeOcts(const string &filename, vector<UbTupleF
         float x3 = val<3>(nodes[n]);
 
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&x1, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x2, sizeof(float));
-            UbSystem::swapByteOrder((unsigned char *)&x3, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x1, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x2, sizeof(float));
+            ub_system::swapByteOrder((unsigned char *)&x3, sizeof(float));
         }
 
         out.write((char *)&x1, sizeof(float));
@@ -803,7 +803,7 @@ std::string WbWriterVtkBinary::writeOcts(const string &filename, vector<UbTupleF
 
     int nodesPerCellDummy = 8; // nofNodesPerCell
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&nodesPerCellDummy, sizeof(int));
     for (int c = 0; c < (int)cells.size(); c++) {
         int BSW = val<1>(cells[c]);
         int TSW = val<5>(cells[c]);
@@ -814,14 +814,14 @@ std::string WbWriterVtkBinary::writeOcts(const string &filename, vector<UbTupleF
         int BNE = val<4>(cells[c]);
         int TNE = val<8>(cells[c]);
         if (swapByte) {
-            UbSystem::swapByteOrder((unsigned char *)&BSW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BSE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BNW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&BNE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TSW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TSE, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TNW, sizeof(int));
-            UbSystem::swapByteOrder((unsigned char *)&TNE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BSW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BSE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BNW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&BNE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TSW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TSE, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TNW, sizeof(int));
+            ub_system::swapByteOrder((unsigned char *)&TNE, sizeof(int));
         }
 
         out.write((char *)&nodesPerCellDummy, sizeof(int));
@@ -839,7 +839,7 @@ std::string WbWriterVtkBinary::writeOcts(const string &filename, vector<UbTupleF
     out << "CELL_TYPES " << (int)cells.size() << "\n";
     int celltype = 11;
     if (swapByte)
-        UbSystem::swapByteOrder((unsigned char *)&celltype, sizeof(int));
+        ub_system::swapByteOrder((unsigned char *)&celltype, sizeof(int));
     for (int c = 0; c < nofCells; c++)
         out.write((char *)&celltype, sizeof(int));
 

@@ -99,7 +99,7 @@ void CPUSimulation::addObject(const std::shared_ptr<GbObject3D> &object, const s
     this->interactors.push_back(lbmSystem->makeInteractor(object, this->grid, bcAdapter, state));
     if (communicator->getProcessID() != 0) return;
 
-    GbSystem3D::writeGeoObject(object, writerConfig.outputPath + folderPath, writerConfig.getWriter());
+    gb_system_3d::writeGeoObject(object, writerConfig.outputPath + folderPath, writerConfig.getWriter());
 }
 
 void CPUSimulation::addBCAdapter(const std::shared_ptr<BC> &bcAdapter)
@@ -271,7 +271,7 @@ std::shared_ptr<GbObject3D> CPUSimulation::makeSimulationBoundingBox()
     if (isMainProcess()) {
         VF_LOG_INFO("Bounding box dimensions = [({}},{}},{}}); ({}}, {}}, {}})]", box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2, box->maxX3);
 
-        GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
+        gb_system_3d::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
     }
 
     return gridCube;

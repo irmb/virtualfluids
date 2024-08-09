@@ -84,7 +84,7 @@ void TimeAveragedValuesSimulationObserver::init()
     numberOfSteps = (maxStep - minStep);
 
     // function pointer
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     calcMacros = NULL;
     if (compressible) {
         calcMacros = &calcCompMacroscopicValues;
@@ -195,9 +195,9 @@ void TimeAveragedValuesSimulationObserver::collectData(real step)
     }
 
     std::string pfilePath, partPath, subfolder, cfilePath;
-    subfolder = "tav" + UbSystem::toString(istep);
+    subfolder = "tav" + ub_system::toString(istep);
     pfilePath = path + "/tav/" + subfolder;
-    partPath  = pfilePath + "/tav" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/tav" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     std::string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
     size_t found         = partName.find_last_of("/");
@@ -300,7 +300,7 @@ void TimeAveragedValuesSimulationObserver::addData(const SPtr<Block3D> block)
     maxX2 -= 2;
     maxX3 -= 2;
 
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
 
     // D3Q27BoundaryConditionPtr bcPtr;
@@ -616,14 +616,14 @@ void TimeAveragedValuesSimulationObserver::planarAverage(real step)
 
     if (root) {
         int istep         = int(step);
-        std::string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
+        std::string fname = path + "/tav/" + "tav" + ub_system::toString(istep) + ".csv";
 
         ostr.open(fname.c_str(), std::ios_base::out);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out);
             }
             if (!ostr)

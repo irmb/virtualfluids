@@ -301,7 +301,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::receiveVectors()
 template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::init()
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     bMaxX1 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX1();
@@ -390,7 +390,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::init()
 template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectors()
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
@@ -806,11 +806,11 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(const int &g
     if (dataDistribution)
         dCoef = 1;
 
-    if (Utilities::isOdd(gMax)) {
+    if (utilities::isOdd(gMax)) {
         halfEven = gMax / 2;
         halfOdd  = gMax / 2;
     }
-    if (Utilities::isEven(gMax)) {
+    if (utilities::isEven(gMax)) {
         halfEven = gMax / 2;
         halfOdd  = gMax / 2 - 1 + dCoef;
     }
@@ -855,8 +855,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::fillSendVectorExt(SPtr<Dist
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellC, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {
-                        std::string err = "For " + block.lock()->toString() + " x1=" + UbSystem::toString(ix1) +
-                                          ", x2=" + UbSystem::toString(ix2) + ", x3=" + UbSystem::toString(ix3) +
+                        std::string err = "For " + block.lock()->toString() + " x1=" + ub_system::toString(ix1) +
+                                          ", x2=" + ub_system::toString(ix2) + ", x3=" + ub_system::toString(ix3) +
                                           " interpolation is not implemented for other direction" +
                                           " by using in: " + (std::string) typeid(*this).name() +
                                           " or maybe you have a solid on the block boundary";
@@ -888,7 +888,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::writeICellFtoData(vector_ty
 template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::writeNodeToVector(vector_type &data, int &index, real *inode)
 {
-    for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
+    for (int i = d3q27_system::STARTF; i < d3q27_system::ENDF + 1; i++) {
         data[index++] = inode[i];
     }
 }
@@ -896,7 +896,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::writeNodeToVector(vector_ty
 template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVectors()
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     SPtr<DistributionArray3D> fTo = block.lock()->getKernel()->getDataSet()->getFdistributions();
@@ -1626,7 +1626,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::distributeReceiveVector(SPt
 template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::readICellCfromData(vector_type &data, int &index, real *icellC)
 {
-    for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
+    for (int i = d3q27_system::STARTF; i < d3q27_system::ENDF + 1; i++) {
         icellC[i] = data[index++];
     }
 }
@@ -1635,7 +1635,7 @@ template <typename VectorTransmitter>
 void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1,
                                                                     int &maxX2, int &maxX3)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     int TminX1 = minX1;
@@ -1777,7 +1777,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
                                                                     int &maxX2, int &maxX3,
                                                                     CFconnectorType /*connType*/)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     int TminX1 = minX1;
@@ -1935,7 +1935,7 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes()
 
     int lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3;
 
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     if (block.lock()->hasInterpolationFlagCF(dM00)) {
@@ -2002,8 +2002,8 @@ void CoarseToFineVectorConnector<VectorTransmitter>::findCFnodes(SPtr<Distributi
                 } else {
                     if (!iprocessor->findNeighborICell(bcArray, fFrom, icellC, bMaxX1, bMaxX2, bMaxX3, ix1, ix2, ix3,
                                                        xoff, yoff, zoff)) {
-                        std::string err = "For " + block.lock()->toString() + " x1=" + UbSystem::toString(ix1) +
-                                          ", x2=" + UbSystem::toString(ix2) + ", x3=" + UbSystem::toString(ix3) +
+                        std::string err = "For " + block.lock()->toString() + " x1=" + ub_system::toString(ix1) +
+                                          ", x2=" + ub_system::toString(ix2) + ", x3=" + ub_system::toString(ix3) +
                                           " interpolation is not implemented for other direction" +
                                           " by using in: " + (std::string) typeid(*this).name() +
                                           " or maybe you have a solid on the block boundary";

@@ -55,7 +55,7 @@ void NoSlipInterpolated::addDistributions(SPtr<DistributionArray3D> distribution
 void NoSlipInterpolated::applyBC()
 {
     using namespace vf::basics::constant;
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     real f[ENDF + 1];
     real feq[ENDF + 1];
     distributions->getPostCollisionDistribution(f, x1, x2, x3);

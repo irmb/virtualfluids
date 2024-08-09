@@ -75,9 +75,9 @@ AdjustForcingSimulationObserver::AdjustForcingSimulationObserver(SPtr<Grid3D> gr
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string file_path = UbSystem::getPathFromString(fname);
+            std::string file_path = ub_system::getPathFromString(fname);
             if (file_path.size() > 0) {
-                UbSystem::makeDirectory(file_path);
+                ub_system::makeDirectory(file_path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)
@@ -118,9 +118,9 @@ void AdjustForcingSimulationObserver::collectData(real step)
         ostr2.open(fNameCfg.c_str(), std::ios_base::out);
         if (!ostr2) {
             ostr2.clear();
-            std::string path = UbSystem::getPathFromString(fNameCfg);
+            std::string path = ub_system::getPathFromString(fNameCfg);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr2.open(fNameCfg.c_str(), std::ios_base::out);
             }
             if (!ostr2)
@@ -174,14 +174,14 @@ void AdjustForcingSimulationObserver::collectData(real step)
         // UBLOG(logINFO, "D3Q27AdjustForcingSimulationObserver step: " << static_cast<int>(step));
         // UBLOG(logINFO, "new forcing is: " << forcing);
         std::string fname = path + "/forcing/forcing.csv";
-        // std::string fname = path + "/forcing/forcing_"+UbSystem::toString(comm->getProcessID())+".csv";
+        // std::string fname = path + "/forcing/forcing_"+ub_system::toString(comm->getProcessID())+".csv";
         std::ofstream ostr;
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)
