@@ -34,7 +34,7 @@
 #ifndef buildInfo_H
 #define buildInfo_H
 
-namespace build_info
+namespace buildInfo
 {
 
 const char* gitCommitHash();
