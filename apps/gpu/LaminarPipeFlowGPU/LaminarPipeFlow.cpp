@@ -69,7 +69,7 @@ void run(const vf::basics::ConfigurationFile& config)
 {
     // simulation parameters
 
-    std::string path("D:/output/LaminarPipeFlow");
+    std::string path("./output/LaminarPipeFlow");
     std::string simulationName("LaminarPipeFlow");
 
     const std::array<real, 3> length = { 128, 64, 64 };
