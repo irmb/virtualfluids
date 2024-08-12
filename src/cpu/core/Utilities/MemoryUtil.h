@@ -26,7 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Utilities Utilities
+//! \addtogroup cpu_Utilities utilities
 //! \ingroup cpu_core core
 //! \{
 //! \author Konstantin Kutscher
@@ -72,7 +72,7 @@
 //////////////////////////////////////////////////////////////////////////
 // MemoryUtil
 //////////////////////////////////////////////////////////////////////////
-namespace Utilities
+namespace utilities
 {
 //////////////////////////////////////////////////////////////////////////
 static long long getTotalPhysMem()
@@ -205,7 +205,7 @@ static std::string toString(SPtr<Grid3D> grid, int numberOfProcesses)
     return out.str();
 }
 
-} // namespace Utilities
+} // namespace utilities
 
 #endif
 

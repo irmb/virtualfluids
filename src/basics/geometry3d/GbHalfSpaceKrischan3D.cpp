@@ -124,7 +124,7 @@ double GbHalfSpaceKrischan3D::getCellVolumeInsideGbObject3D(const double &x1a, c
                 // if point is INSIDE the halfspace, distance is smaller than zero
                 // --> loop determines the minimum alpha...i.e. the alpha with maximum absolute value for all points
                 // INSIDE the halfspace
-                if (UbMath::lessEqual(this->getDistance(internX1, internX2, internX3), alpha))
+                if (ub_math::lessEqual(this->getDistance(internX1, internX2, internX3), alpha))
                     alpha = this->getDistance(internX1, internX2, internX3);
                 // cout<<zelltyp<<" "<<kugel->getDistance(internX1,internX2,internX3)<<" "<<alpha<<endl;
             } // end first for
@@ -153,27 +153,27 @@ double GbHalfSpaceKrischan3D::getCellVolumeInsideGbObject3D(const double &x1a, c
     n[1] /= normLength;
     n[2] /= normLength;
 
-    if (UbMath::less(n[0], 0.0))
+    if (ub_math::less(n[0], 0.0))
         n[0] = -n[0];
-    if (UbMath::less(n[1], 0.0))
+    if (ub_math::less(n[1], 0.0))
         n[1] = -n[1];
-    if (UbMath::less(n[2], 0.0))
+    if (ub_math::less(n[2], 0.0))
         n[2] = -n[2];
 
     // cout<<"Normals: "<<n[0]<<" "<<n[1]<<" "<<n[2]<<endl;
 
     double dummy;
-    if (UbMath::greater(n[0], n[1])) {
+    if (ub_math::greater(n[0], n[1])) {
         dummy = n[1];
         n[1]  = n[0];
         n[0]  = dummy;
     }
-    if (UbMath::greater(n[1], n[2])) {
+    if (ub_math::greater(n[1], n[2])) {
         dummy = n[2];
         n[2]  = n[1];
         n[1]  = dummy;
     }
-    if (UbMath::greater(n[0], n[1])) {
+    if (ub_math::greater(n[0], n[1])) {
         dummy = n[1];
         n[1]  = n[0];
         n[0]  = dummy;
@@ -189,21 +189,21 @@ double GbHalfSpaceKrischan3D::getCellVolumeInsideGbObject3D(const double &x1a, c
     double preresult = 0.0, result = 0.0;
 
     // 1D Check
-    if (UbMath::lessEqual(n1, 0.00001) && UbMath::lessEqual(n2, 0.00001)) {
+    if (ub_math::lessEqual(n1, 0.00001) && ub_math::lessEqual(n2, 0.00001)) {
         result = alpha * x1 * x2;
     }
     // 2D Check
-    else if (UbMath::lessEqual(n1, 0.00001)) {
+    else if (ub_math::lessEqual(n1, 0.00001)) {
         preresult = (2 * n2 * n3);
         result    = (alpha * alpha) / preresult;
 
-        if (UbMath::greater(alpha, n2 * x2)) {
+        if (ub_math::greater(alpha, n2 * x2)) {
             result += -(alpha - n2 * x2) * (alpha - n2 * x2) / preresult;
         }
-        if (UbMath::greater(alpha, n3 * x3)) {
+        if (ub_math::greater(alpha, n3 * x3)) {
             result += -(alpha - n3 * x3) * (alpha - n3 * x3) / preresult;
         }
-        if (UbMath::greater(alpha, n2 * x2 + n3 * x3)) {
+        if (ub_math::greater(alpha, n2 * x2 + n3 * x3)) {
             result += (alpha - n2 * x2 - n3 * x3) * (alpha - n2 * x2 - n3 * x3) / preresult;
         }
 
@@ -216,37 +216,37 @@ double GbHalfSpaceKrischan3D::getCellVolumeInsideGbObject3D(const double &x1a, c
 
         result = alpha * alpha * alpha / preresult;
 
-        if (UbMath::greater(alpha, n1 * x1)) {
+        if (ub_math::greater(alpha, n1 * x1)) {
             result += -((alpha - n1 * x1) * (alpha - n1 * x1) * (alpha - n1 * x1)) / preresult;
         }
-        if (UbMath::greater(alpha, n2 * x2)) {
+        if (ub_math::greater(alpha, n2 * x2)) {
             result += -((alpha - n2 * x2) * (alpha - n2 * x2) * (alpha - n2 * x2)) / preresult;
         }
-        if (UbMath::greater(alpha, n3 * x3)) {
+        if (ub_math::greater(alpha, n3 * x3)) {
             result += -((alpha - n3 * x3) * (alpha - n3 * x3) * (alpha - n3 * x3)) / preresult;
         }
-        if (UbMath::greater(alpha, (n1 * x1 + n2 * x2))) {
+        if (ub_math::greater(alpha, (n1 * x1 + n2 * x2))) {
             result += ((alpha - (n1 * x1 + n2 * x2)) * (alpha - (n1 * x1 + n2 * x2)) * (alpha - (n1 * x1 + n2 * x2))) /
                       preresult;
         }
-        if (UbMath::greater(alpha, (n1 * x1 + n3 * x3))) {
+        if (ub_math::greater(alpha, (n1 * x1 + n3 * x3))) {
             result += ((alpha - (n1 * x1 + n3 * x3)) * (alpha - (n1 * x1 + n3 * x3)) * (alpha - (n1 * x1 + n3 * x3))) /
                       preresult;
         }
-        if (UbMath::greater(alpha, (n2 * x2 + n3 * x3))) {
+        if (ub_math::greater(alpha, (n2 * x2 + n3 * x3))) {
             result += ((alpha - (n2 * x2 + n3 * x3)) * (alpha - (n2 * x2 + n3 * x3)) * (alpha - (n2 * x2 + n3 * x3))) /
                       preresult;
         }
 
         // NEW
-        if (UbMath::greater(alpha, (n1 * x1 + n2 * x2 + n3 * x3))) {
+        if (ub_math::greater(alpha, (n1 * x1 + n2 * x2 + n3 * x3))) {
             result += -((alpha - (n1 * x1 + n2 * x2 + n3 * x3)) * (alpha - (n1 * x1 + n2 * x2 + n3 * x3)) *
                         (alpha - (n1 * x1 + n2 * x2 + n3 * x3))) /
                       preresult;
         }
     }
 
-    if (!UbMath::inClosedInterval(result / (x1 * x2 * x3), -0.01, 1.01)) {
+    if (!ub_math::inClosedInterval(result / (x1 * x2 * x3), -0.01, 1.01)) {
         stringstream errMsg;
 
         errMsg << "Danger...Fuellstand " << result << " nicht im Interfall [0.0..1.0]" << endl;
@@ -260,35 +260,35 @@ double GbHalfSpaceKrischan3D::getCellVolumeInsideGbObject3D(const double &x1a, c
     return result;
 
     // double eps=0.0;
-    // if( UbMath::equal(n1,0.0) && UbMath::equal(n2,0.0) )
+    // if( ub_math::equal(n1,0.0) && ub_math::equal(n2,0.0) )
     //{
     //   eps = alpha/n3;
     //}
-    // else if( UbMath::equal(n1,0.0) )
+    // else if( ub_math::equal(n1,0.0) )
     //{
     //   double dim1,dim2;
     //   dim1 = alpha/n2;
     //   dim2 = alpha/n3;
 
     //   eps = 0.5*dim1*dim2;
-    //   if( UbMath::greater(dim1,1.0) )   eps -= 0.5*(dim1-1.0)*dim2/dim1*(dim1-1.0);
-    //   if( UbMath::greater(dim2,1.0) )   eps -= 0.5*(dim2-1.0)*dim1/dim2*(dim2-1.0);
+    //   if( ub_math::greater(dim1,1.0) )   eps -= 0.5*(dim1-1.0)*dim2/dim1*(dim1-1.0);
+    //   if( ub_math::greater(dim2,1.0) )   eps -= 0.5*(dim2-1.0)*dim1/dim2*(dim2-1.0);
     //}
     // else
     //{
     //   eps = alpha*alpha*alpha;
-    //   if( UbMath::greater(alpha,n1) )
+    //   if( ub_math::greater(alpha,n1) )
     //      eps -= (alpha-n1)*(alpha-n1)*(alpha-n1);
-    //   if( UbMath::greater(alpha,n2) )
+    //   if( ub_math::greater(alpha,n2) )
     //      eps -= (alpha-n2)*(alpha-n2)*(alpha-n2);
-    //   if( UbMath::greater(alpha,n3) )
+    //   if( ub_math::greater(alpha,n3) )
     //      eps -= (alpha-n3)*(alpha-n3)*(alpha-n3);
 
-    //   if( UbMath::greater(alpha,n1+n2) )
+    //   if( ub_math::greater(alpha,n1+n2) )
     //      eps += (alpha-n1-n2)*(alpha-n1-n2)*(alpha-n1-n2);
-    //   if( UbMath::greater(alpha,n1+n3) )
+    //   if( ub_math::greater(alpha,n1+n3) )
     //      eps += (alpha-n1-n3)*(alpha-n1-n3)*(alpha-n1-n3);
-    //   if( UbMath::greater(alpha,n2+n3) )
+    //   if( ub_math::greater(alpha,n2+n3) )
     //      eps += (alpha-n2-n3)*(alpha-n2-n3)*(alpha-n2-n3);
 
     //   //attention: use without delta_i

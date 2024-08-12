@@ -32,7 +32,7 @@
 
 int D3Q27LBMSystem::getNumberOfDirections()
 {
-    return D3Q27System::ENDDIR;
+    return d3q27_system::ENDDIR;
 }
 
 std::shared_ptr<Interactor3D> D3Q27LBMSystem::makeInteractor()

@@ -48,7 +48,7 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-namespace EdgeNodeDebugWriter
+namespace edge_node_debug_writer
 {
 
 void addCoordinatesToNodeVector(SPtr<LBMSimulationParameter> parH, std::vector<UbTupleFloat3>& nodesVec,
@@ -131,7 +131,7 @@ void writeEdgeNodesXZ_Recv(SPtr<Parameter> para, int processID = 0)
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
     }
 }
-} // namespace EdgeNodeDebugWriter
+} // namespace edge_node_debug_writer
 
 #endif
 

@@ -37,7 +37,7 @@
 #include "D3Q27System.h"
 
 OverlapBlockVisitor::OverlapBlockVisitor(int levelDepth /*shut be maxGridLevel*/, bool includeNotActiveBlocks)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), levelDepth(levelDepth), includeNotActiveBlocks(includeNotActiveBlocks)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), levelDepth(levelDepth), includeNotActiveBlocks(includeNotActiveBlocks)
 {
 }
 //////////////////////////////////////////////////////////////////////////

@@ -254,8 +254,8 @@ void GbVoxelMatrix3D::readMatrixFromRawFile(std::string filename, GbVoxelMatrix3
     unsigned long long nofn = (unsigned long long)nodesX1 * (unsigned long long)nodesX2 * (unsigned long long)nodesX3 *
                               (unsigned long long)sizeof(T);
     if (nofn != (unsigned long long)length) {
-        throw UbException(UB_EXARGS, "number of nodes(" + UbSystem::toString(nofn) + ") doesn't match file size(" +
-                                         UbSystem::toString((long)length) + ")");
+        throw UbException(UB_EXARGS, "number of nodes(" + ub_system::toString(nofn) + ") doesn't match file size(" +
+                                         ub_system::toString((long)length) + ")");
     }
 
     // UBLOG(logINFO,"  - create GbVoxelMatrix3D");
@@ -271,7 +271,7 @@ void GbVoxelMatrix3D::readMatrixFromRawFile(std::string filename, GbVoxelMatrix3
                 // in.read((char*)&val,sizeof(float));
                 in.read((char *)&val, sizeof(T));
                 if (endian == BigEndian)
-                    UbSystem::swapByteOrder((unsigned char *)(&(val)), sizeof(T));
+                    ub_system::swapByteOrder((unsigned char *)(&(val)), sizeof(T));
                 // if( UbMath::equal((double)val, threshold) )
                 // if( UbMath::greater((double)val, threshold) )
                 if ((double)val >= lowerThreshold && (double)val <= upperThreshold) {
@@ -307,8 +307,8 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
 
     unsigned long int nofn = (long)nodesX1 * (long)nodesX2 * (long)nodesX3 * (long)sizeof(T);
     if (nofn != length) {
-        // throw UbException(UB_EXARGS, "number of nodes("+UbSystem::toString(nofn)+") doesn't match file
-        // size("+UbSystem::toString(length)+")");
+        // throw UbException(UB_EXARGS, "number of nodes("+ub_system::toString(nofn)+") doesn't match file
+        // size("+ub_system::toString(length)+")");
     }
 
     UBLOG(logINFO, "  - create GbVoxelMatrix3D");
@@ -330,7 +330,7 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
                 val = readMatrix(x1, x2, x3);
 
                 if (endian == BigEndian) {
-                    UbSystem::swapByteOrder((unsigned char *)(&(val)), sizeof(T));
+                    ub_system::swapByteOrder((unsigned char *)(&(val)), sizeof(T));
                 }
 
                 if ((double)val >= lowerThreshold && (double)val <= upperThreshold) {

@@ -48,7 +48,7 @@
 
 #include <parallel/NullCommunicator.h>
 
-namespace indexRearrangementTests
+namespace index_rearrangement_tests
 {
 template <typename T>
 bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
@@ -113,18 +113,18 @@ public:
     }
 };
 
-} // namespace indexRearrangementTests
+} // namespace index_rearrangement_tests
 
 //////////////////////////////////////////////////////////////////////////
 // Test reorderSendIndices
 //////////////////////////////////////////////////////////////////////////
-using namespace indexRearrangementTests;
+using namespace index_rearrangement_tests;
 
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
     std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
     const int level = 0;
-    const int direction = CommunicationDirections::MX;
+    const int direction = communication_directions::MX;
     const int numberOfProcessNeighbors = 1;
     const int indexOfProcessNeighbor = 0;
 
@@ -596,7 +596,7 @@ struct RecvIndicesForCommAfterFtoC {
     std::vector<int> recvIndices = { 10, 11, 12, 13, 14, 15, 16 };
     std::vector<uint> sendIndicesForCommAfterFtoCPositions = {};
     const int level = 0;
-    const int direction = CommunicationDirections::MX;
+    const int direction = communication_directions::MX;
     const int numberOfProcessNeighbors = 1;
     const int indexOfProcessNeighbor = 0;
 

@@ -35,6 +35,6 @@
 #include <basics/utilities/UbMath.h>
 #include <cstring> //for memcmp
 
-const double UbMath::PI = 4.0 * std::atan(1.0); // 3.1415926535897932384626433832795
+const double ub_math::PI = 4.0 * std::atan(1.0); // 3.1415926535897932384626433832795
 
 //! \}

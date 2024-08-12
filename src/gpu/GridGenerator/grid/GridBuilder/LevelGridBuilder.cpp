@@ -65,12 +65,12 @@ using namespace vf::gpu;
 
 LevelGridBuilder::LevelGridBuilder()
 {
-    this->communicationProcesses[CommunicationDirections::MX] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::PX] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::MY] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::PY] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::MZ] = INVALID_INDEX;
-    this->communicationProcesses[CommunicationDirections::PZ] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::MX] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::PX] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::MY] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::PY] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::MZ] = INVALID_INDEX;
+    this->communicationProcesses[communication_directions::PZ] = INVALID_INDEX;
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared()
@@ -850,7 +850,7 @@ void LevelGridBuilder::writeArrows(std::string fileName) const
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
 
-SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
+SPtr<grid_generator::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
 {
     for (auto bc : this->boundaryConditions[level]->slipBoundaryConditions)
         if (bc->isSide(side))

@@ -47,9 +47,9 @@ std::string WbWriterSunflow::writeTriangles(const string &filename, vector<UbTup
     std::ofstream out(sunflowFilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(sunflowFilename);
+        string path = ub_system::getPathFromString(sunflowFilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(sunflowFilename.c_str());
         }
         if (!out)

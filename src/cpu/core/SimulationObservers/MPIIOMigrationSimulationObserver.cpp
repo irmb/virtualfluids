@@ -53,7 +53,7 @@
 #include <MemoryUtil.h>
 #include <UbSystem.h>
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 MPIIOMigrationSimulationObserver::MPIIOMigrationSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : MPIIOSimulationObserver(grid, s, path, comm)
@@ -131,9 +131,9 @@ void MPIIOMigrationSimulationObserver::clearAllFiles(int step)
 
     MPIIOSimulationObserver::clearAllFiles(step);
 
-    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+    ub_system::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step));
 
-    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc10 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename10);
@@ -173,7 +173,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::writeDataSet start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool multiPhase1 = false;
@@ -355,7 +355,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::writeDataSet start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     real start {0.};
@@ -367,7 +367,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
 
     // write to the file
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -392,7 +392,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     //-------------------------------- H1 ----------------------------------------------------
     if (multiPhase1)
     {
-        filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+        filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -412,7 +412,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     //-------------------------------- H2 ----------------------------------------------------
     if (multiPhase2)
     {
-        filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+        filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -441,7 +441,7 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     delete[] dataSetArray;
 
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler1);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -502,7 +502,7 @@ void MPIIOMigrationSimulationObserver::write4DArray(int step, Arrays arrayType, 
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::write4DArray start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool firstBlock           = true;
@@ -564,7 +564,7 @@ void MPIIOMigrationSimulationObserver::write4DArray(int step, Arrays arrayType, 
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::write4DArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -576,7 +576,7 @@ void MPIIOMigrationSimulationObserver::write4DArray(int step, Arrays arrayType, 
     MPI_Info info = MPI_INFO_NULL;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -632,7 +632,7 @@ void MPIIOMigrationSimulationObserver::write3DArray(int step, Arrays arrayType, 
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::write3DArray start collect data to file = " << fname);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool firstBlock           = true;
@@ -691,7 +691,7 @@ void MPIIOMigrationSimulationObserver::write3DArray(int step, Arrays arrayType, 
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::write3DArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -703,7 +703,7 @@ void MPIIOMigrationSimulationObserver::write3DArray(int step, Arrays arrayType, 
     MPI_Info info = MPI_INFO_NULL;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -744,7 +744,7 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::writeBoundaryConds start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     int blocksCount          = 0; // quantity of blocks, that belong to this process
@@ -840,7 +840,7 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::writeBoundaryConds start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: "<< Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: "<< utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -856,7 +856,7 @@ void MPIIOMigrationSimulationObserver::writeBoundaryConds(int step)
     // MPI_Info_set(info,"striping_unit","4194304");
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -954,7 +954,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readDataSet start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
     real start {0.};
@@ -980,7 +980,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     DataSetMigration *dataSetArray = new DataSetMigration[blocksCount];
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1021,7 +1021,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     //----------------------------------------- H1 ----------------------------------------------------
     ic = 0;
     MPI_Offset fsize;
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1047,7 +1047,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     MPI_File_close(&file_handler);
     //----------------------------------------- H2 ----------------------------------------------------
     ic = 0;
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1080,7 +1080,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readDataSet time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readDataSet start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     size_t index = 0;
@@ -1184,7 +1184,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readDataSet end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     delete[] dataSetArray;
@@ -1193,7 +1193,7 @@ void MPIIOMigrationSimulationObserver::readDataSet(int step)
 
     DSArraysPresence arrPresence;
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler1);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -1238,7 +1238,7 @@ void MPIIOMigrationSimulationObserver::readArray(int step, Arrays arrType, std::
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readArray start fname = " << fname);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
     real start {0.};
@@ -1247,7 +1247,7 @@ void MPIIOMigrationSimulationObserver::readArray(int step, Arrays arrType, std::
         start = MPI_Wtime();
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1300,7 +1300,7 @@ void MPIIOMigrationSimulationObserver::readArray(int step, Arrays arrType, std::
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readArray readArray: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readArray start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     //----------------------------- restore data ---------------------------------
@@ -1374,7 +1374,7 @@ void MPIIOMigrationSimulationObserver::readArray(int step, Arrays arrType, std::
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readArray end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     delete[] dataSetSmallArray;
@@ -1389,7 +1389,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readBoundaryConds start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -1399,7 +1399,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
         start = MPI_Wtime();
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1431,7 +1431,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readBoundaryConds time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readBoundaryConds start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     MPI_File_read_at(file_handler, (MPI_Offset)0, &boundCondParamStr, 1, boundCondParamType, MPI_STATUS_IGNORE);
@@ -1533,7 +1533,7 @@ void MPIIOMigrationSimulationObserver::readBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationSimulationObserver::readBoundaryConds end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 }
 

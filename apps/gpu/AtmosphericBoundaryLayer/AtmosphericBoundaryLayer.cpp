@@ -282,23 +282,23 @@ void run(const vf::basics::ConfigurationFile& config)
 
     if (numberOfProcesses > 1) {
         if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, processID + 1);
+            gridBuilder->findCommunicationIndices(communication_directions::PX);
+            gridBuilder->setCommunicationProcess(communication_directions::PX, processID + 1);
         }
 
         if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, true);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, processID - 1);
+            gridBuilder->findCommunicationIndices(communication_directions::MX, true);
+            gridBuilder->setCommunicationProcess(communication_directions::MX, processID - 1);
         }
 
         if (isFirstSubDomain && !usePrecursorInflow) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, numberOfProcesses - 1);
+            gridBuilder->findCommunicationIndices(communication_directions::MX);
+            gridBuilder->setCommunicationProcess(communication_directions::MX, numberOfProcesses - 1);
         }
 
         if (isLastSubDomain && !usePrecursorInflow) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+            gridBuilder->findCommunicationIndices(communication_directions::PX);
+            gridBuilder->setCommunicationProcess(communication_directions::PX, 0);
         }
     }
 

@@ -167,10 +167,10 @@ private:
     void addGeometriesToGridBuilder();
 
     //! \brief check whether a subdomain is the last one in a direction
-    bool isFinalSubdomainInDirection(CommunicationDirections::CommunicationDirection direction) const;
+    bool isFinalSubdomainInDirection(communication_directions::CommunicationDirection direction) const;
 
     //! \brief get 1D index of the final subdomain in a direction, in the other directions it has the same position as the current subdomain
-    uint getIndexOfFinalSubdomainInDirection(CommunicationDirections::CommunicationDirection direction) const;
+    uint getIndexOfFinalSubdomainInDirection(communication_directions::CommunicationDirection direction) const;
 
     //! \brief call the grid builder's setter for a boundary condition
     template <typename function>
@@ -182,7 +182,7 @@ private:
         }
 
         if (sideType == SideType::GEOMETRY ||
-            !hasNeighbors.at(static_cast<CommunicationDirections::CommunicationDirection>(static_cast<int>(sideType)))) {
+            !hasNeighbors.at(static_cast<communication_directions::CommunicationDirection>(static_cast<int>(sideType)))) {
             boundaryConditionFunction();
         }
     }
@@ -212,10 +212,10 @@ private:
 
     //! \brief hasNeighbors, indicates if the current subdomains has a neighbor in a specific direction (computed)
     //! \details use the enum CommunciationDirection to access the data
-    std::map<CommunicationDirections::CommunicationDirection, bool> hasNeighbors = {
-        { CommunicationDirections::MX, false }, { CommunicationDirections::PX, false },
-        { CommunicationDirections::MY, false }, { CommunicationDirections::PY, false },
-        { CommunicationDirections::MZ, false }, { CommunicationDirections::PZ, false }
+    std::map<communication_directions::CommunicationDirection, bool> hasNeighbors = {
+        { communication_directions::MX, false }, { communication_directions::PX, false },
+        { communication_directions::MY, false }, { communication_directions::PY, false },
+        { communication_directions::MZ, false }, { communication_directions::PZ, false }
     };
 
     //! \brief collects fineGrids: uint is the level, Object* the gridShape

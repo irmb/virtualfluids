@@ -42,7 +42,7 @@
 #include "LBMKernel.h"
 
 SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor(bool twoTypeOfConnectorsCheck)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck)
 {
 }
 //////////////////////////////////////////////////////////////////////////

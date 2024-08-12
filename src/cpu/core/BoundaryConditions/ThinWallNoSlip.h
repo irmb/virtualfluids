@@ -55,7 +55,7 @@ protected:
 
 private:
     int pass;
-    real fTemp[D3Q27System::ENDF + 1];
+    real fTemp[d3q27_system::ENDF + 1];
 };
 #endif // ThinWallNoSlipBCStrategy_h__
 

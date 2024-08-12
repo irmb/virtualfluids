@@ -44,7 +44,7 @@
 #include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"
 
-namespace NeighborDebugWriter
+namespace neighbor_debug_writer
 {
 
 void writeNeighborLinkLinesForDirection(LBMSimulationParameter* parH, int direction, const std::string& filePath, WbWriter* writer)
@@ -129,6 +129,6 @@ void writeBoundaryConditionNeighbors(QforBoundaryConditions* boundaryCondition, 
                                     filePathBase);
 }
 
-} // namespace NeighborDebugWriter
+} // namespace neighbor_debug_writer
 
 //! \}

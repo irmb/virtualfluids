@@ -40,7 +40,7 @@
 #include <map>
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class SplitCandidateManager
@@ -96,7 +96,7 @@ private:
     std::map<T, SplitCandidate<T>> splitCandidates;
     std::vector<SplitCandidate<T>> splitCandidatesVec;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDSPLITCANDIDATEMANAGER_H
 

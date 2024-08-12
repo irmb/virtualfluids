@@ -49,7 +49,7 @@
 
 #include "basics/constants/NumericConstants.h"
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Tree;
@@ -57,7 +57,7 @@ template <typename T>
 class SplitAlgorithm;
 template <typename T>
 class RayIntersectionHandler;
-} // namespace Kd
+} // namespace kd_tree
 
 class WbWriter;
 
@@ -192,13 +192,13 @@ public:
         float &getV3y(std::vector<Vertex> &nodes) { return nodes[v3].y; }
         float &getV3z(std::vector<Vertex> &nodes) { return nodes[v3].z; }
 
-        float getMinX(std::vector<Vertex> &nodes) { return (float)UbMath::min(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
-        float getMinY(std::vector<Vertex> &nodes) { return (float)UbMath::min(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
-        float getMinZ(std::vector<Vertex> &nodes) { return (float)UbMath::min(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
+        float getMinX(std::vector<Vertex> &nodes) { return (float)ub_math::min(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
+        float getMinY(std::vector<Vertex> &nodes) { return (float)ub_math::min(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
+        float getMinZ(std::vector<Vertex> &nodes) { return (float)ub_math::min(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
 
-        float getMaxX(std::vector<Vertex> &nodes) { return (float)UbMath::max(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
-        float getMaxY(std::vector<Vertex> &nodes) { return (float)UbMath::max(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
-        float getMaxZ(std::vector<Vertex> &nodes) { return (float)UbMath::max(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
+        float getMaxX(std::vector<Vertex> &nodes) { return (float)ub_math::max(nodes[v1].x, nodes[v2].x, nodes[v3].x); }
+        float getMaxY(std::vector<Vertex> &nodes) { return (float)ub_math::max(nodes[v1].y, nodes[v2].y, nodes[v3].y); }
+        float getMaxZ(std::vector<Vertex> &nodes) { return (float)ub_math::max(nodes[v1].z, nodes[v2].z, nodes[v3].z); }
 
         float getX1Centroid(std::vector<Vertex> &nodes)
         {
@@ -388,7 +388,7 @@ public:
 
     void setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode);
     KDTREE_SPLITAGORITHM getKdTreeSplitAlgorithm() { return this->kdtreeSplitAlg; }
-    Kd::Tree<double> *getKdTree() { return this->kdTree; }
+    kd_tree::Tree<double> *getKdTree() { return this->kdTree; }
 
     virtual UbTuple<std::string, std::string> writeMesh(std::string filename, WbWriter *writer,
                                                         bool writeNormals                          = false,
@@ -431,7 +431,7 @@ protected:
     bool buildVertTriRelationMap{ false };
     std::multimap<Vertex *, TriFace *> relationVertTris;
 
-    Kd::Tree<double> *kdTree = nullptr;
+    kd_tree::Tree<double> *kdTree = nullptr;
 };
 
 #endif // GBTRIFACEMESH3D_H

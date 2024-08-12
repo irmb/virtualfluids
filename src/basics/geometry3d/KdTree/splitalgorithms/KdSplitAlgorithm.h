@@ -40,7 +40,7 @@
 
 #include <vector>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Node;
@@ -55,7 +55,7 @@ public:
                                     std::vector<GbTriFaceMesh3D::TriFace> &triFacesForChild2, Node<T> &node) const = 0;
     virtual ~SplitAlgorithm() = default;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDSPLITALGORITHM_H
 

@@ -51,7 +51,7 @@ public:
                              const real & /*worldX1*/, const real & /*worldX2*/, const real & /*worldX3*/,
                              const real &q, const int &fdirection, const real & /*time*/ = 0) override
     {
-        bc->setNoSlipBoundaryFlag(D3Q27System::INVDIR[fdirection], secondaryBcOption);
+        bc->setNoSlipBoundaryFlag(d3q27_system::INVDIR[fdirection], secondaryBcOption);
         bc->setQ((real)q, fdirection);
     }
     void adaptBC(const D3Q27Interactor & /*interactor*/, SPtr<BoundaryConditions> bc, const real & /*worldX1*/,

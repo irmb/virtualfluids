@@ -38,7 +38,7 @@
 #include "grid/Grid.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
 
-bool gg::BoundaryCondition::isSide( SideType side ) const
+bool grid_generator::BoundaryCondition::isSide( SideType side ) const
 {
     return this->side->whoAmI() == side;
 }
