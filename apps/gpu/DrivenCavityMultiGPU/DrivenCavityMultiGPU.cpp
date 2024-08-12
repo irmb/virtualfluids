@@ -114,7 +114,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setOutputPrefix(simulationName);
     para->setPrintFiles(true);
 
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     vf::logging::Logger::changeLogPath(outPath + "vflog_process" + std::to_string(processID) );

@@ -833,7 +833,7 @@ private:
 
 
     // Kernel
-    std::string mainKernel{ vf::collisionKernel::compressible::K17CompressibleNavierStokes };
+    std::string mainKernel{ vf::collision_kernel::compressible::K17CompressibleNavierStokes };
     bool multiKernelOn{ false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;

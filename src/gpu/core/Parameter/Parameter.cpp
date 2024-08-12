@@ -1192,7 +1192,7 @@ void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, 
 void Parameter::configureMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel == vf::collisionKernel::compressible::K17CompressibleNavierStokes)
+    if (kernel == vf::collision_kernel::compressible::K17CompressibleNavierStokes)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
