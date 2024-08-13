@@ -113,10 +113,10 @@ private:
 private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    uint tStartSampling, tStartTemporalAveraging, tBetweenSamples, tStartWritingOutput, tBetweenWriting;
+    const uint tStartSampling, tStartTemporalAveraging, tBetweenSamples, tStartWritingOutput, tBetweenWriting;
     const bool computeTimeAverages, sampleScalar;
     bool nameFilesWithFileCount = false;
-    Axis planeNormal;
+    const Axis planeNormal;
     std::vector<Statistic> statistics;
     std::vector<LevelData> levelData;
     std::vector<std::string> fileNamesForCollectionFile;
