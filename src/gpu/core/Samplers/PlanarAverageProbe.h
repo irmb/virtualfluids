@@ -50,6 +50,7 @@ class CudaMemoryManager;
 //! \brief Computes spatial statistics across x, y or z-normal planes defined by planeNormal.
 //! The planes include all points of the domain at each respective position along that normal direction.
 //! The spatial statistics can additionally be averaged in time.
+//! The name phi is used to denote the scalar field.
 class PlanarAverageProbe : public Sampler
 {
 public:
