@@ -30,9 +30,12 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
+
 from __future__ import annotations
 
 from typing import overload
+
+from . import geometry3d as geometry3d
 
 class ConfigurationFile:
     def __init__(self) -> None: ...

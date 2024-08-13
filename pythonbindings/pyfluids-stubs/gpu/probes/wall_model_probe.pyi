@@ -33,14 +33,22 @@ r"""
 
 from __future__ import annotations
 
-class Logger:
-    @staticmethod
-    def change_log_path(path: str) -> None: ...
-    @staticmethod
-    def initialize_logger() -> None: ...
+from ... import gpu
 
-def vf_log_critical(message: str) -> None: ...
-def vf_log_debug(message: str) -> None: ...
-def vf_log_info(message: str) -> None: ...
-def vf_log_trace(message: str) -> None: ...
-def vf_log_warning(message: str) -> None: ...
+class WallModelProbe(gpu.Sampler):
+    def __init__(
+        self,
+        para: gpu.Parameter,
+        cuda_memory_manager: gpu.CudaMemoryManager,
+        probe_name: str,
+        output_path: str,
+        t_start_avg: int,
+        t_start_tmp_avg: int,
+        t_avg: int,
+        t_start_out: int,
+        t_out: int,
+        average_every_timestep: bool,
+        compute_temporal_averages: bool,
+        output_stress: bool,
+        evaluate_pressure_gradient: bool,
+    ) -> None: ...

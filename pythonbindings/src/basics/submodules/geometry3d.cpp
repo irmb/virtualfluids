@@ -29,16 +29,17 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
-#include "submodules/configuration_file.cpp"
-#include "submodules/geometry3d.cpp"
+#include <basics/geometry3d/Axis.h>
 
-namespace basics
-{
+namespace geometry3d {
     namespace py = pybind11;
 
-    PYBIND11_MODULE(basics, m)
+    void makeModule(py::module_ &parentModule)
     {
-        configuration::makeModule(m);
-        geometry3d::makeModule(m);
+        py::module geometry3dModule = parentModule.def_submodule("geometry3d");
+        py::enum_<Axis>(geometry3dModule, "Axis")
+        .value("x", Axis::x)
+        .value("y", Axis::y)
+        .value("z", Axis::z);
     }
 }

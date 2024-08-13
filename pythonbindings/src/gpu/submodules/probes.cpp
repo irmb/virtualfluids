@@ -30,6 +30,7 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <basics/geometry3d/Axis.h>
 #include <gpu/core/Samplers/Probe.h>
 #include <gpu/core/Samplers/WallModelProbe.h>
 #include <gpu/core/Samplers/PlanarAverageProbe.h>
@@ -43,7 +44,7 @@ namespace probes
     {
         py::module probeModule = parentModule.def_submodule("probes");
 
-        py::module probeProbeModule = probeModule.def_submodule("Probe");
+        py::module probeProbeModule = probeModule.def_submodule("probe");
 
         py::enum_<Probe::Statistic>(probeProbeModule, "Statistic")
         .value("Instantaneous", Probe::Statistic::Instantaneous)
@@ -78,12 +79,7 @@ namespace probes
         .def("add_probe_points_from_list", &Probe::addProbePointsFromList, py::arg("point_coords_x"), py::arg("point_coords_y"), py::arg("point_coords_z"))
         .def("set_probe_plane", &Probe::addProbePlane, py::arg("pos_x"), py::arg("pos_y"), py::arg("pos_z"), py::arg("delta_x"), py::arg("delta_y"), py::arg("delta_z"));
 
-        py::module planarAverageProbeModule = probeModule.def_submodule("PlanarAverageProbe");
-
-        py::enum_<PlanarAverageProbe::PlaneNormal>(planarAverageProbeModule, "PlaneNormal")
-        .value("x", PlanarAverageProbe::PlaneNormal::x)
-        .value("y", PlanarAverageProbe::PlaneNormal::y)
-        .value("z", PlanarAverageProbe::PlaneNormal::z);
+        py::module planarAverageProbeModule = probeModule.def_submodule("planar_average_probe");
 
         py::enum_<PlanarAverageProbe::Statistic>(planarAverageProbeModule, "Statistic")
         .value("Means", PlanarAverageProbe::Statistic::Means)
@@ -101,7 +97,8 @@ namespace probes
                         uint,
                         uint,
                         uint,
-                        PlanarAverageProbe::PlaneNormal,
+                        Axis,
+                        bool,
                         bool>(),
                         py::arg("para"),
                         py::arg("cuda_memory_manager"),
@@ -113,10 +110,16 @@ namespace probes
                         py::arg("t_start_out"),
                         py::arg("t_out"),
                         py::arg("plane_normal"),
-                        py::arg("compute_time_averages"));
+                        py::arg("compute_time_averages"),
+                        py::arg("compute_statistics_of_concentration"))
+        .def("add_statistic", &PlanarAverageProbe::addStatistic, py::arg("statistic"))
+        .def("add_all_available_statistics", &PlanarAverageProbe::addAllAvailableStatistics)
+        .def("set_file_name_to_n_out", &PlanarAverageProbe::setFileNameToNOut);
+
+        py::module wallModelProbeModule = probeModule.def_submodule("wall_model_probe");
 
 
-        py::class_<WallModelProbe, Sampler, std::shared_ptr<WallModelProbe>>(probeModule, "WallModelProbe")
+        py::class_<WallModelProbe, Sampler, std::shared_ptr<WallModelProbe>>(wallModelProbeModule, "WallModelProbe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
                         const std::string,

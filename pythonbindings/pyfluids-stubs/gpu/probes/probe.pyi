@@ -32,15 +32,36 @@ r"""
 """
 
 from __future__ import annotations
+from enum import Enum
 
-class Logger:
-    @staticmethod
-    def change_log_path(path: str) -> None: ...
-    @staticmethod
-    def initialize_logger() -> None: ...
+from ... import gpu
 
-def vf_log_critical(message: str) -> None: ...
-def vf_log_debug(message: str) -> None: ...
-def vf_log_info(message: str) -> None: ...
-def vf_log_trace(message: str) -> None: ...
-def vf_log_warning(message: str) -> None: ...
+class Statistic(Enum):
+    Instantaneous: int
+    Means: int
+    Variances: int
+
+class Probe(gpu.Sampler):
+    def __init__(
+        self,
+        para: gpu.Parameter,
+        cuda_memory_manager: gpu.CudaMemoryManager,
+        probe_name: str,
+        output_path: str,
+        t_start_avg: int,
+        t_start_tmp_avg: int,
+        t_avg: int,
+        t_start_out: int,
+        t_out: int,
+        output_timeseries: bool,
+        average_every_timestep: bool,
+    ) -> None: ...
+    def add_statistic(self, variable: Statistic) -> None: ...
+    def add_all_available_statistics(self) -> None: ...
+    def add_probe_point(self, point_coord_x: float, point_coord_y: float, point_coord_z: float) -> None: ...
+    def add_probe_points_from_list(
+        self, point_coords_x: list[float], point_coords_y: list[float], point_coords_z: list[float]
+    ) -> None: ...
+    def set_probe_plane(
+        self, pos_x: float, pos_y: float, pos_z: float, delta_x: float, delta_y: float, delta_z: float
+    ) -> None: ...

@@ -35,7 +35,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
-#include <tuple>
+#include <cstddef>
 
 #include <helper_cuda.h>
 
@@ -47,6 +47,7 @@
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/Axis.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
@@ -79,7 +80,7 @@ iterPair getPermutationIterators(real* values, unsigned long long* indices, uint
 struct shiftIndex
 {
     const uint* neighborNormal;
-    __host__ __device__ unsigned long long operator()(unsigned long long& pointIndices)
+    constexpr unsigned long long operator()(unsigned long long& pointIndices) const
     {
         return neighborNormal[pointIndices];
     }
@@ -93,7 +94,7 @@ struct covariance
     }
 
     template <typename Tuple>
-    __host__ __device__ real operator()(const Tuple& t) const
+    constexpr real operator()(const Tuple& t) const
     {
         return (thrust::get<0>(t) - mean_x) * (thrust::get<1>(t) - mean_y);
     }
@@ -105,7 +106,7 @@ struct skewness
     skewness(real mean) : mean(mean)
     {
     }
-    __host__ __device__ real operator()(const real& x) const
+    constexpr real operator()(const real& x) const
     {
         return (x - mean) * (x - mean) * (x - mean);
     }
@@ -117,7 +118,7 @@ struct flatness
     flatness(real mean) : mean(mean)
     {
     }
-    __host__ __device__ real operator()(const real& x) const
+    constexpr real operator()(const real& x) const
     {
         return (x - mean) * (x - mean) * (x - mean) * (x - mean);
     }
@@ -125,22 +126,23 @@ struct flatness
 
 struct Means
 {
-    real vx, vy, vz;
+    // phi is the scalar
+    real vx, vy, vz, phi;
 };
 
 struct Covariances
 {
-    real vxvx, vyvy, vzvz, vxvy, vxvz, vyvz;
+    real vxvx, vyvy, vzvz, vxvy, vxvz, vyvz, phiphi, vxphi, vyphi, vzphi;
 };
 
 struct Skewnesses
 {
-    real Sx, Sy, Sz;
+    real Sx, Sy, Sz, Sphi;
 };
 
 struct Flatnesses
 {
-    real Fx, Fy, Fz;
+    real Fx, Fy, Fz, Fphi;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -164,8 +166,7 @@ std::string getName(std::string quantity, bool timeAverage)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-std::vector<std::string> PlanarAverageProbe::getVariableNames(PlanarAverageProbe::Statistic statistic,
-                                                              bool namesForTimeAverages)
+std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statistic, bool namesForTimeAverages) const
 {
 
     std::vector<std::string> variableNames;
@@ -174,9 +175,10 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(PlanarAverageProbe
             variableNames.emplace_back(getName("vx", namesForTimeAverages));
             variableNames.emplace_back(getName("vy", namesForTimeAverages));
             variableNames.emplace_back(getName("vz", namesForTimeAverages));
-            if (para->getUseTurbulentViscosity()) {
+            if (para->getUseTurbulentViscosity())
                 variableNames.emplace_back(getName("EddyViscosity", namesForTimeAverages));
-            }
+            if (sampleScalar)
+                variableNames.emplace_back(getName("phi", namesForTimeAverages));
             break;
         case Statistic::Covariances:
             variableNames.emplace_back(getName("vxvx", namesForTimeAverages));
@@ -185,16 +187,26 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(PlanarAverageProbe
             variableNames.emplace_back(getName("vxvy", namesForTimeAverages));
             variableNames.emplace_back(getName("vxvz", namesForTimeAverages));
             variableNames.emplace_back(getName("vyvz", namesForTimeAverages));
+            if (sampleScalar) {
+                variableNames.emplace_back(getName("phiphi", namesForTimeAverages));
+                variableNames.emplace_back(getName("vxphi", namesForTimeAverages));
+                variableNames.emplace_back(getName("vyphi", namesForTimeAverages));
+                variableNames.emplace_back(getName("vzphi", namesForTimeAverages));
+            }
             break;
         case Statistic::Skewness:
             variableNames.emplace_back(getName("SkewnessX", namesForTimeAverages));
             variableNames.emplace_back(getName("SkewnessY", namesForTimeAverages));
             variableNames.emplace_back(getName("SkewnessZ", namesForTimeAverages));
+            if (sampleScalar)
+                variableNames.emplace_back(getName("SkewnessPhi", namesForTimeAverages));
             break;
         case Statistic::Flatness:
             variableNames.emplace_back(getName("FlatnessX", namesForTimeAverages));
             variableNames.emplace_back(getName("FlatnessY", namesForTimeAverages));
             variableNames.emplace_back(getName("FlatnessZ", namesForTimeAverages));
+            if (sampleScalar)
+                variableNames.emplace_back(getName("FlatnessPhi", namesForTimeAverages));
             break;
 
         default:
@@ -205,10 +217,27 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(PlanarAverageProbe
     return variableNames;
 }
 
-void PlanarAverageProbe::addStatistic(PlanarAverageProbe::Statistic statistic)
+void PlanarAverageProbe::addStatistic(Statistic statistic)
 {
     if (!isStatisticIn(statistic, statistics))
         statistics.push_back(statistic);
+}
+
+PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager,
+                                       std::string outputPath, std::string probeName, uint tStartSampling,
+                                       uint tStartTemporalAveraging, uint tBetweenSamples, uint tStartWritingOutput,
+                                       uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages, bool sampleScalar)
+    : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling),
+      tStartTemporalAveraging(tStartTemporalAveraging), tBetweenSamples(tBetweenSamples),
+      tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), computeTimeAverages(computeTimeAverages),
+      planeNormal(planeNormal), sampleScalar(sampleScalar), Sampler(outputPath, probeName)
+{
+    if (tStartTemporalAveraging < tStartSampling && computeTimeAverages)
+        throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartSampling!");
+    if (tBetweenWriting == 0)
+        throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
+    if (sampleScalar && !para->getDiffOn())
+        throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -237,16 +266,16 @@ void PlanarAverageProbe::init()
 
 void PlanarAverageProbe::sample(int level, uint t)
 {
-    if (t < tStartAveraging)
+    if (t < tStartSampling)
         return;
 
     const uint tLevel = para->getTimeStep(level, t, true);
     const uint levelFactor = exp2(level);
-    const uint tAfterStartAveraging = tLevel - tStartAveraging * levelFactor;
+    const uint tAfterStartAveraging = tLevel - tStartSampling * levelFactor;
     const uint tAfterStartWriting = tLevel - tStartWritingOutput * levelFactor;
     const bool doTimeAverages = computeTimeAverages && tLevel > (tStartTemporalAveraging * levelFactor);
 
-    if (tAfterStartAveraging % (tBetweenAverages * levelFactor) == 0) {
+    if (tAfterStartAveraging % (tBetweenSamples * levelFactor) == 0) {
         calculateQuantities(level, doTimeAverages);
     }
 
@@ -273,11 +302,11 @@ std::vector<unsigned long long> PlanarAverageProbe::findIndicesInPlane(int level
 
     const real* coordinatesPlaneNormal = [&] {
         switch (planeNormal) {
-            case PlaneNormal::x:
+            case Axis::x:
                 return param->coordinateX;
-            case PlaneNormal::y:
+            case Axis::y:
                 return param->coordinateY;
-            case PlaneNormal::z:
+            case Axis::z:
                 return param->coordinateZ;
             default:
                 throw std::runtime_error("PlaneNormal not defined!");
@@ -304,19 +333,19 @@ void PlanarAverageProbe::findCoordinatesForPlanes(int level, std::vector<real>& 
     unsigned long long nextIndex = startIndex;
     do {
         switch (planeNormal) {
-            case PlaneNormal::x:
+            case Axis::x:
                 coordinateX.push_back(para->getParH(level)->coordinateX[nextIndex]);
                 coordinateY.push_back(999999);
                 coordinateZ.push_back(999999);
                 nextIndex = para->getParH(level)->neighborX[nextIndex];
                 break;
-            case PlaneNormal::y:
+            case Axis::y:
                 coordinateX.push_back(999999);
                 coordinateY.push_back(para->getParH(level)->coordinateY[nextIndex]);
                 coordinateZ.push_back(999999);
                 nextIndex = para->getParH(level)->neighborY[nextIndex];
                 break;
-            case PlaneNormal::z:
+            case Axis::z:
                 coordinateX.push_back(999999);
                 coordinateY.push_back(999999);
                 coordinateZ.push_back(para->getParH(level)->coordinateZ[nextIndex]);
@@ -334,12 +363,14 @@ real computeMean(iterPair x, real invNPointsPerPlane)
     return sum * invNPointsPerPlane;
 }
 
-Means computeMeans(iterPair vx, iterPair vy, iterPair vz, real invNPointsPerPlane)
+Means computeMeans(iterPair vx, iterPair vy, iterPair vz, iterPair phi, real invNPointsPerPlane, bool sampleScalar)
 {
     Means means;
     means.vx = computeMean(vx, invNPointsPerPlane);
     means.vy = computeMean(vy, invNPointsPerPlane);
     means.vz = computeMean(vz, invNPointsPerPlane);
+    if (sampleScalar)
+        means.phi = computeMean(phi, invNPointsPerPlane);
     return means;
 }
 
@@ -350,7 +381,8 @@ real computeCovariance(iterPair x, iterPair y, real mean_x, real mean_y, real in
     return thrust::transform_reduce(begin, end, covariance(mean_x, mean_y), c0o1, thrust::plus<real>()) * invNPointsPerPlane;
 }
 
-Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, Means means, real invNPointsPerPlane)
+Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, real invNPointsPerPlane,
+                               bool sampleScalar)
 {
     Covariances covariances;
 
@@ -360,6 +392,12 @@ Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, Means mean
     covariances.vxvy = computeCovariance(vx, vy, means.vx, means.vy, invNPointsPerPlane);
     covariances.vxvz = computeCovariance(vx, vz, means.vx, means.vz, invNPointsPerPlane);
     covariances.vyvz = computeCovariance(vy, vz, means.vy, means.vz, invNPointsPerPlane);
+    if (sampleScalar) {
+        covariances.phiphi = computeCovariance(phi, phi, means.phi, means.phi, invNPointsPerPlane);
+        covariances.vxphi = computeCovariance(vx, phi, means.vx, means.phi, invNPointsPerPlane);
+        covariances.vyphi = computeCovariance(vy, phi, means.vy, means.phi, invNPointsPerPlane);
+        covariances.vzphi = computeCovariance(vz, phi, means.vz, means.phi, invNPointsPerPlane);
+    }
 
     return covariances;
 }
@@ -367,17 +405,19 @@ Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, Means mean
 real computeSkewness(iterPair x, real mean, real covariance, real invNPointsPerPlane)
 {
     return thrust::transform_reduce(x.first, x.second, skewness(mean), c0o1, thrust::plus<real>()) * invNPointsPerPlane *
-           pow(covariance, -1.5f);
+           std::pow(covariance, -c3o2);
 }
 
-Skewnesses computeSkewnesses(Means means, Covariances covariances, iterPair vx, iterPair vy, iterPair vz,
-                             real invNPointsPerPlane)
+Skewnesses computeSkewnesses(Means means, Covariances covariances, iterPair vx, iterPair vy, iterPair vz, iterPair phi,
+                             real invNPointsPerPlane, bool sampleScalar)
 {
     Skewnesses skewnesses;
 
     skewnesses.Sx = computeSkewness(vx, means.vx, covariances.vxvx, invNPointsPerPlane);
     skewnesses.Sy = computeSkewness(vy, means.vy, covariances.vyvy, invNPointsPerPlane);
     skewnesses.Sz = computeSkewness(vz, means.vz, covariances.vzvz, invNPointsPerPlane);
+    if (sampleScalar)
+        skewnesses.Sphi = computeSkewness(phi, means.phi, covariances.phiphi, invNPointsPerPlane);
 
     return skewnesses;
 }
@@ -388,15 +428,16 @@ real computeFlatness(iterPair x, real mean, real covariance, real invNPointsPerP
            pow(covariance, -c2o1);
 }
 
-Flatnesses computeFlatnesses(iterPair vx, iterPair vy, iterPair vz, Means means, Covariances covariances,
-                             real invNPointsPerPlane)
+Flatnesses computeFlatnesses(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, Covariances covariances,
+                             real invNPointsPerPlane, bool sampleScalar)
 {
     Flatnesses flatnesses;
 
     flatnesses.Fx = computeFlatness(vx, means.vx, covariances.vxvx, invNPointsPerPlane);
     flatnesses.Fy = computeFlatness(vy, means.vy, covariances.vyvy, invNPointsPerPlane);
     flatnesses.Fz = computeFlatness(vz, means.vz, covariances.vzvz, invNPointsPerPlane);
-
+    if (sampleScalar)
+        flatnesses.Fphi = computeFlatness(phi, means.phi, covariances.phiphi, invNPointsPerPlane);
     return flatnesses;
 }
 
@@ -414,27 +455,32 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         getPermutationIterators(parameter->velocityZ, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     const auto turbulentViscosity =
         getPermutationIterators(parameter->turbViscosity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
+    const auto phi =
+        getPermutationIterators(parameter->concentration, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
 
     std::vector<real> averages;
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Means, statistics))
+    if (!isStatisticIn(Statistic::Means, statistics))
         return averages;
 
     const real velocityRatio = para->getScaledVelocityRatio(level);
     const real viscosityRatio = para->getScaledViscosityRatio(level);
     const real stressRatio = para->getScaledStressRatio(level);
 
-    const auto means = computeMeans(velocityX, velocityY, velocityZ, invNPointsPerPlane);
+    const auto means = computeMeans(velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
     averages.push_back(means.vx * velocityRatio);
     averages.push_back(means.vy * velocityRatio);
     averages.push_back(means.vz * velocityRatio);
     if (para->getUseTurbulentViscosity())
         averages.push_back(computeMean(turbulentViscosity, invNPointsPerPlane) * viscosityRatio);
+    if (sampleScalar)
+        averages.push_back(means.phi);
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Covariances, statistics))
+    if (!isStatisticIn(Statistic::Covariances, statistics))
         return averages;
 
-    const auto covariances = computeCovariances(velocityX, velocityY, velocityZ, means, invNPointsPerPlane);
+    const auto covariances =
+        computeCovariances(velocityX, velocityY, velocityZ, phi, means, invNPointsPerPlane, sampleScalar);
     averages.push_back(covariances.vxvx * stressRatio);
     averages.push_back(covariances.vyvy * stressRatio);
     averages.push_back(covariances.vzvz * stressRatio);
@@ -442,21 +488,34 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     averages.push_back(covariances.vxvz * stressRatio);
     averages.push_back(covariances.vyvz * stressRatio);
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Skewness, statistics))
+    if (sampleScalar) {
+        averages.push_back(covariances.phiphi);
+        averages.push_back(covariances.vxphi);
+        averages.push_back(covariances.vyphi);
+        averages.push_back(covariances.vzphi);
+    }
+
+    if (!isStatisticIn(Statistic::Skewness, statistics))
         return averages;
 
-    const auto skewnesses = computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, invNPointsPerPlane);
+    const auto skewnesses =
+        computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
     averages.push_back(skewnesses.Sx);
     averages.push_back(skewnesses.Sy);
     averages.push_back(skewnesses.Sz);
+    if (sampleScalar)
+        averages.push_back(skewnesses.Sphi);
 
-    if (!isStatisticIn(PlanarAverageProbe::Statistic::Flatness, statistics))
+    if (!isStatisticIn(Statistic::Flatness, statistics))
         return averages;
 
-    const auto flatnesses = computeFlatnesses(velocityX, velocityY, velocityZ, means, covariances, invNPointsPerPlane);
+    const auto flatnesses =
+        computeFlatnesses(velocityX, velocityY, velocityZ, phi, means, covariances, invNPointsPerPlane, sampleScalar);
     averages.push_back(flatnesses.Fx);
     averages.push_back(flatnesses.Fy);
     averages.push_back(flatnesses.Fz);
+    if (sampleScalar)
+        averages.push_back(flatnesses.Fphi);
 
     return averages;
 }
@@ -495,6 +554,8 @@ void PlanarAverageProbe::calculateQuantities(int level, bool doTimeAverages)
 
         thrust::transform(indices, indices + data->numberOfPointsPerPlane, indices, shiftOp);
     }
+    if (doTimeAverages)
+        data->numberOfTimestepsInTimeAverage++;
     cudaMemoryManager->cudaCopyPlanarAverageProbeIndicesHtoD(this, level);
     getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }
@@ -502,11 +563,11 @@ void PlanarAverageProbe::calculateQuantities(int level, bool doTimeAverages)
 const uint* PlanarAverageProbe::getNeighborIndicesInPlaneNormal(int level)
 {
     switch (planeNormal) {
-        case PlaneNormal::x:
+        case Axis::x:
             return para->getParD(level)->neighborX;
-        case PlaneNormal::y:
+        case Axis::y:
             return para->getParD(level)->neighborY;
-        case PlaneNormal::z:
+        case Axis::z:
             return para->getParD(level)->neighborZ;
     };
 
