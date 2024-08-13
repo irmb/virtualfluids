@@ -62,16 +62,16 @@
 using namespace vf::basics::constant;
 
 Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-             std::string probeName, uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput,
-             uint tBetweenWriting, bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar)
-    : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tBetweenAverages(tBetweenAverages),
+             std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput,
+             uint tBetweenWriting, bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar)
+    : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling), tBetweenSamples(tBetweenSamples),
       tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), outputTimeSeries(outputTimeSeries),
-      averageEveryTimestep(averageEveryTimestep), Sampler(outputPath, probeName)
+      sampleEveryTimestep(sampleEveryTimestep), Sampler(outputPath, probeName)
 {
-    if (tStartWritingOutput < tStartAveraging)
-        throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartAveraging!");
-    if (averageEveryTimestep)
-        VF_LOG_INFO("Probe: averageEveryTimestep is true, ignoring tBetweenAverages");
+    if (tStartWritingOutput < tStartSampling)
+        throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartSampling!");
+    if (sampleEveryTimestep)
+        VF_LOG_INFO("Probe: sampleEveryTimestep is true, ignoring tBetweenSamples");
     if (sampleScalar && !para->getDiffOn())
         throw std::runtime_error("Probe: can only sample scalar if diffusion is enabled in parameter");
 }
@@ -86,6 +86,7 @@ void Probe::addProbePoint(real x, real y, real z)
 {
     probeObjects.emplace_back(std::make_shared<GbPoint3D>(x, y, z));
 }
+
 void Probe::addProbeVolume(std::shared_ptr<GbObject3D> probeVolume)
 {
     probeObjects.push_back(probeVolume);
@@ -335,15 +336,15 @@ void Probe::sample(int level, uint t)
         return;
     const uint tLevel = para->getTimeStep(level, t, false);
 
-    //! if averageEveryTimestep the probe will be evaluated in every sub-timestep of each respective level
-    //! else, the probe will only be evaluated in each synchronous time step tBetweenAverages
+    //! if sampleEveryTimestep the probe will be evaluated in every sub-timestep of each respective level
+    //! else, the probe will only be evaluated in each synchronous time step tBetweenSamples
 
     const uint levelFactor = exp2(level);
 
-    const uint tStartAvgLevel = this->tStartAveraging * levelFactor;
+    const uint tStartAvgLevel = this->tStartSampling * levelFactor;
     const uint tAfterStartAvg = tLevel - tStartAvgLevel;
-    const uint tAvgLevel = this->tBetweenAverages * levelFactor;
-    const bool averageThisTimestep = this->averageEveryTimestep || (tAfterStartAvg % tAvgLevel == 0);
+    const uint tAvgLevel = this->tBetweenSamples * levelFactor;
+    const bool averageThisTimestep = this->sampleEveryTimestep || (tAfterStartAvg % tAvgLevel == 0);
 
     const uint tStartOutLevel = this->tStartWritingOutput * levelFactor;
     const uint tAfterStartOut = tLevel - tStartOutLevel;
@@ -354,7 +355,7 @@ void Probe::sample(int level, uint t)
 
     const vf::cuda::CudaGrid grid(para->getParD(level)->numberofthreads, levelData->probeDataD.numberOfPoints);
 
-    if ((t > this->tStartAveraging) && averageThisTimestep) {
+    if ((t > this->tStartSampling) && averageThisTimestep) {
         if (outputTimeSeries) {
             const uint lastTimestep = calcOldTimestep(levelData->timeseriesParams.currentTimestep,
                                                       levelData->timeseriesParams.lastTimestepInOldTimeseries);
@@ -521,7 +522,7 @@ std::vector<real> Probe::getTimestepData(real time, int timestep, int level)
 
 void Probe::appendTimeseriesFile(int level, int t)
 {
-    const uint tAvg_level = this->tBetweenAverages == 1 ? this->tBetweenAverages : this->tBetweenAverages * exp2(-level);
+    const uint tAvg_level = this->tBetweenSamples == 1 ? this->tBetweenSamples : this->tBetweenSamples * exp2(-level);
     const real deltaT = para->getTimeRatio() * tAvg_level;
     auto levelData = levelDatas[level];
 

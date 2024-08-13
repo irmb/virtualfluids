@@ -53,14 +53,14 @@ class CudaMemoryManager;
 
 //! \brief Computes statistics of pointwise data. Data can be written to vtk-file or timeseries file.
 //! All points and planes are written to the same file. Use different probes to write to separate files.
-//! Data is sampled in synchronous timestep, unless averageEveryTimestep is set to true.
+//! Data is sampled in synchronous timestep, unless sampleEveryTimestep is set to true.
 class Probe : public Sampler
 {
 public:
     enum class Statistic { Instantaneous, Means, Variances };
     Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-          std::string probeName, uint tStartAveraging, uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
-          bool outputTimeSeries, bool averageEveryTimestep, bool sampleScalar = false);
+          std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput, uint tBetweenWriting,
+          bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar = false);
     ~Probe();
 
     void addProbePlane(real startX, real startY, real startZ, real length, real width, real height);
@@ -132,15 +132,15 @@ protected:
     std::vector<LevelData> levelDatas;
     bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {}, sampleScalar {};
     //! flag initiating time series output.
-    const bool outputTimeSeries, averageEveryTimestep;
+    const bool outputTimeSeries, sampleEveryTimestep;
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> timeseriesFileNames;
 
     //! if true, written file name contains time step in LU, else is the number of the written probe files
     bool fileNameLU = true;
 
-    const uint tStartAveraging;
-    const uint tBetweenAverages;
+    const uint tStartSampling;
+    const uint tBetweenSamples;
     const uint tStartWritingOutput;
     const uint tBetweenWriting;
     std::vector<std::shared_ptr<GbObject3D>> probeObjects;

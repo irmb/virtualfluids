@@ -35,6 +35,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
+#include <cstddef>
 
 #include <helper_cuda.h>
 
@@ -125,6 +126,7 @@ struct flatness
 
 struct Means
 {
+    // phi is the scalar
     real vx, vy, vz, phi;
 };
 
@@ -222,20 +224,20 @@ void PlanarAverageProbe::addStatistic(Statistic statistic)
 }
 
 PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager,
-                                       std::string outputPath, std::string probeName, uint tStartAveraging,
-                                       uint tStartTemporalAveraging, uint tBetweenAverages, uint tStartWritingOutput,
+                                       std::string outputPath, std::string probeName, uint tStartSampling,
+                                       uint tStartTemporalAveraging, uint tBetweenSamples, uint tStartWritingOutput,
                                        uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages, bool sampleScalar)
-    : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging),
-      tStartTemporalAveraging(tStartTemporalAveraging), tBetweenAverages(tBetweenAverages),
+    : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling),
+      tStartTemporalAveraging(tStartTemporalAveraging), tBetweenSamples(tBetweenSamples),
       tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), computeTimeAverages(computeTimeAverages),
       planeNormal(planeNormal), sampleScalar(sampleScalar), Sampler(outputPath, probeName)
 {
-    if (tStartTemporalAveraging < tStartAveraging && computeTimeAverages)
-        throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
+    if (tStartTemporalAveraging < tStartSampling && computeTimeAverages)
+        throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartSampling!");
     if (tBetweenWriting == 0)
         throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
     if (sampleScalar && !para->getDiffOn())
-        throw std::runtime_error("PlaneAverageProbe: Concentration statistics can only be computed if diff is on!");
+        throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -264,16 +266,16 @@ void PlanarAverageProbe::init()
 
 void PlanarAverageProbe::sample(int level, uint t)
 {
-    if (t < tStartAveraging)
+    if (t < tStartSampling)
         return;
 
     const uint tLevel = para->getTimeStep(level, t, true);
     const uint levelFactor = exp2(level);
-    const uint tAfterStartAveraging = tLevel - tStartAveraging * levelFactor;
+    const uint tAfterStartAveraging = tLevel - tStartSampling * levelFactor;
     const uint tAfterStartWriting = tLevel - tStartWritingOutput * levelFactor;
     const bool doTimeAverages = computeTimeAverages && tLevel > (tStartTemporalAveraging * levelFactor);
 
-    if (tAfterStartAveraging % (tBetweenAverages * levelFactor) == 0) {
+    if (tAfterStartAveraging % (tBetweenSamples * levelFactor) == 0) {
         calculateQuantities(level, doTimeAverages);
     }
 
@@ -361,13 +363,13 @@ real computeMean(iterPair x, real invNPointsPerPlane)
     return sum * invNPointsPerPlane;
 }
 
-Means computeMeans(iterPair vx, iterPair vy, iterPair vz, iterPair phi, real invNPointsPerPlane, bool computeConcentration)
+Means computeMeans(iterPair vx, iterPair vy, iterPair vz, iterPair phi, real invNPointsPerPlane, bool sampleScalar)
 {
     Means means;
     means.vx = computeMean(vx, invNPointsPerPlane);
     means.vy = computeMean(vy, invNPointsPerPlane);
     means.vz = computeMean(vz, invNPointsPerPlane);
-    if (computeConcentration)
+    if (sampleScalar)
         means.phi = computeMean(phi, invNPointsPerPlane);
     return means;
 }
@@ -380,7 +382,7 @@ real computeCovariance(iterPair x, iterPair y, real mean_x, real mean_y, real in
 }
 
 Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, real invNPointsPerPlane,
-                               bool computeConcentration)
+                               bool sampleScalar)
 {
     Covariances covariances;
 
@@ -390,7 +392,7 @@ Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, iterPair p
     covariances.vxvy = computeCovariance(vx, vy, means.vx, means.vy, invNPointsPerPlane);
     covariances.vxvz = computeCovariance(vx, vz, means.vx, means.vz, invNPointsPerPlane);
     covariances.vyvz = computeCovariance(vy, vz, means.vy, means.vz, invNPointsPerPlane);
-    if (computeConcentration) {
+    if (sampleScalar) {
         covariances.phiphi = computeCovariance(phi, phi, means.phi, means.phi, invNPointsPerPlane);
         covariances.vxphi = computeCovariance(vx, phi, means.vx, means.phi, invNPointsPerPlane);
         covariances.vyphi = computeCovariance(vy, phi, means.vy, means.phi, invNPointsPerPlane);
@@ -407,14 +409,14 @@ real computeSkewness(iterPair x, real mean, real covariance, real invNPointsPerP
 }
 
 Skewnesses computeSkewnesses(Means means, Covariances covariances, iterPair vx, iterPair vy, iterPair vz, iterPair phi,
-                             real invNPointsPerPlane, bool computeConcentration)
+                             real invNPointsPerPlane, bool sampleScalar)
 {
     Skewnesses skewnesses;
 
     skewnesses.Sx = computeSkewness(vx, means.vx, covariances.vxvx, invNPointsPerPlane);
     skewnesses.Sy = computeSkewness(vy, means.vy, covariances.vyvy, invNPointsPerPlane);
     skewnesses.Sz = computeSkewness(vz, means.vz, covariances.vzvz, invNPointsPerPlane);
-    if (computeConcentration)
+    if (sampleScalar)
         skewnesses.Sphi = computeSkewness(phi, means.phi, covariances.phiphi, invNPointsPerPlane);
 
     return skewnesses;
@@ -427,14 +429,14 @@ real computeFlatness(iterPair x, real mean, real covariance, real invNPointsPerP
 }
 
 Flatnesses computeFlatnesses(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, Covariances covariances,
-                             real invNPointsPerPlane, bool computeConcentration)
+                             real invNPointsPerPlane, bool sampleScalar)
 {
     Flatnesses flatnesses;
 
     flatnesses.Fx = computeFlatness(vx, means.vx, covariances.vxvx, invNPointsPerPlane);
     flatnesses.Fy = computeFlatness(vy, means.vy, covariances.vyvy, invNPointsPerPlane);
     flatnesses.Fz = computeFlatness(vz, means.vz, covariances.vzvz, invNPointsPerPlane);
-    if (computeConcentration)
+    if (sampleScalar)
         flatnesses.Fphi = computeFlatness(phi, means.phi, covariances.phiphi, invNPointsPerPlane);
     return flatnesses;
 }

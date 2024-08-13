@@ -62,8 +62,16 @@ public:
     struct LevelData;
 
 public:
+//! \param tStartSampling The first timestep at which the probe samples planar averages.
+//! \param tStartTemporalAveraging The first timestep at which temporal averaging starts.
+//! \param tBetweenSamples The number of timesteps between samples.
+//! \param tStartWritingOutput The first timestep at which the probe writes output.
+//! \param tBetweenWriting The number of timesteps between writing output.
+//! \param planeNormal The normal direction of the planes along which the probe samples.
+//! \param computeTimeAverages If true, the probe computes time averages.
+//! \param sampleScalar If true, the probe samples statistics related to the scalar.
     PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-                       std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging, uint tBetweenAverages,
+                       std::string probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
                        uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
                        bool sampleScalar);
     ~PlanarAverageProbe();
@@ -105,7 +113,7 @@ private:
 private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    uint tStartAveraging, tStartTemporalAveraging, tBetweenAverages, tStartWritingOutput, tBetweenWriting;
+    uint tStartSampling, tStartTemporalAveraging, tBetweenSamples, tStartWritingOutput, tBetweenWriting;
     const bool computeTimeAverages, sampleScalar;
     bool nameFilesWithFileCount = false;
     Axis planeNormal;
