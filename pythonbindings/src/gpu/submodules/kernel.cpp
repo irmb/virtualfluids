@@ -42,13 +42,13 @@ namespace kernel
         auto compressible = kernel_module.def_submodule("compressible", "Compressible Kernel types");
         auto incompressible = kernel_module.def_submodule("incompressible", "Incompressible Kernel types");
 
-        compressible.attr("BGK") = vf::collisionKernel::compressible::BGK;
-        compressible.attr("BGKPlus") = vf::collisionKernel::compressible::BGKPlus;
-        compressible.attr("K17CompressibleNavierStokes") = vf::collisionKernel::compressible::K17CompressibleNavierStokes;
-        compressible.attr("K15CompressibleNavierStokes") = vf::collisionKernel::compressible::K15CompressibleNavierStokes;
+        compressible.attr("BGK") = vf::collision_kernel::compressible::BGK;
+        compressible.attr("BGKPlus") = vf::collision_kernel::compressible::BGKPlus;
+        compressible.attr("K17CompressibleNavierStokes") = vf::collision_kernel::compressible::K17CompressibleNavierStokes;
+        compressible.attr("K15CompressibleNavierStokes") = vf::collision_kernel::compressible::K15CompressibleNavierStokes;
 
-        incompressible.attr("BGK") = vf::collisionKernel::incompressible::BGK;
-        incompressible.attr("BGKPlus") = vf::collisionKernel::incompressible::BGKPlus;
-        incompressible.attr("CumulantK15") = vf::collisionKernel::incompressible::CumulantK15;
+        incompressible.attr("BGK") = vf::collision_kernel::incompressible::BGK;
+        incompressible.attr("BGKPlus") = vf::collision_kernel::incompressible::BGKPlus;
+        incompressible.attr("CumulantK15") = vf::collision_kernel::incompressible::CumulantK15;
     }
 }

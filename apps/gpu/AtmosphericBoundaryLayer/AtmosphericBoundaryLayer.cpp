@@ -241,7 +241,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setDensityRatio(c1o1);
 
     para->setUseStreams(numberOfProcesses > 1);
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
     para->setTimestepStartOut(uint(timeStartOut / deltaT));
     para->setTimestepOut(uint(timeOut / deltaT));

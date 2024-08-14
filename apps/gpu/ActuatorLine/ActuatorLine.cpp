@@ -148,7 +148,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
     para->setViscosityRatio(deltaX * deltaX / deltaT);
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
         rho = (real)0.0;

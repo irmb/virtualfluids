@@ -94,11 +94,11 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     VF_LOG_INFO("Instantiating Kernel: {}", kernel);
     std::shared_ptr<KernelImp> newKernel;
 
-    if (kernel == collisionKernel::compressible::BGK) {
+    if (kernel == collision_kernel::compressible::BGK) {
         newKernel     = B92CompressibleNavierStokes::getNewInstance(para, level);               // compressible
-    } else if (kernel == collisionKernel::compressible::BGKPlus) {
+    } else if (kernel == collision_kernel::compressible::BGKPlus) {
         newKernel     = B15CompressibleNavierStokesBGKplus::getNewInstance(para, level);
-    } else if (kernel == collisionKernel::compressible::K17CompressibleNavierStokes){
+    } else if (kernel == collision_kernel::compressible::K17CompressibleNavierStokes){
         switch(para->getTurbulenceModel())
         {
             case lbm::TurbulenceModel::AMD:
@@ -117,14 +117,14 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
                 throw std::runtime_error("Unknown turbulence model!");
             break;
         }
-    } else if (kernel == collisionKernel::compressible::K15CompressibleNavierStokes) {
+    } else if (kernel == collision_kernel::compressible::K15CompressibleNavierStokes) {
         newKernel     = K15CompressibleNavierStokes::getNewInstance(para, level);
     }                                                                           //===============
-    else if (  kernel == collisionKernel::incompressible::BGK) {                // incompressible
+    else if (  kernel == collision_kernel::incompressible::BGK) {                // incompressible
         newKernel     = B92IncompressibleNavierStokes::getNewInstance(para, level);             //     ||
-    } else if (kernel == collisionKernel::incompressible::BGKPlus) {
+    } else if (kernel == collision_kernel::incompressible::BGKPlus) {
         newKernel     = B15IncompressibleNavierStokesBGKplus::getNewInstance(para, level);
-    } else if (kernel == collisionKernel::incompressible::CumulantK15) {          //     /\      //
+    } else if (kernel == collision_kernel::incompressible::CumulantK15) {          //     /\      //
         newKernel     = K15IncompressibleNavierStokes::getNewInstance(para, level);           //     ||
     }                                                                             //===============
     else {
