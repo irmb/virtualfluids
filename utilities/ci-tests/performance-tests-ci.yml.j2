@@ -23,7 +23,6 @@ stages:
     expire_in: 12 hrs
     paths:
       - output/
-    when: on_failure
 
 {% for performance_test in test_jobs %}
 run-performance-test-{{ performance_test[1] }}-{{ performance_test[0] }}:
