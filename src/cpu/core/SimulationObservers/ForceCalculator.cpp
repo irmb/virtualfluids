@@ -55,7 +55,8 @@ ForceCalculator::~ForceCalculator() = default;
 //////////////////////////////////////////////////////////////////////////
 std::array<real, 3> ForceCalculator::getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc) const
 {
-    using namespace  vf::basics::constant;
+    using namespace vf::basics::constant;
+    using namespace d3q27_system;
 
     real forceX1 = c0o1;
     real forceX2 = c0o1;
@@ -64,15 +65,15 @@ std::array<real, 3> ForceCalculator::getForces(int x1, int x2, int x3, std::shar
     if (bc) {
         dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
-        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+        for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
-                const int invDir = D3Q27System::INVDIR[fdir];
+                const int invDir = INVDIR[fdir];
                 const real f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
-                const real fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+                const real fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
 
-                forceX1 += (f + fnbr) * (real)D3Q27System::DX1[invDir];
-                forceX2 += (f + fnbr) * (real)D3Q27System::DX2[invDir];
-                forceX3 += (f + fnbr) * (real)D3Q27System::DX3[invDir];
+                forceX1 += (f + fnbr) * (real)DX1[invDir];
+                forceX2 += (f + fnbr) * (real)DX2[invDir];
+                forceX3 += (f + fnbr) * (real)DX3[invDir];
             }
         }
 
@@ -85,17 +86,18 @@ std::array<real, 3> ForceCalculator::getForces(int x1, int x2, int x3, std::shar
 std::array<real, 3> ForceCalculator::getForcesForDEM(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc, const std::array<real, 3>& boundaryVelocity) const
 {
     using namespace vf::basics::constant;
+    using namespace d3q27_system;
     
     real forceX1 = c0o1;
     real forceX2 = c0o1;
     real forceX3 = c0o1;
     if (bc) {
-        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
+        for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
-                const int invDir  = d3q27_system::INVDIR[fdir];
+                const int invDir  = INVDIR[fdir];
                 const real f    = distributions->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
                 const real fnbr = distributions->getPostCollisionDistributionForDirection(
-                    x1 + d3q27_system::DX1[invDir], x2 + d3q27_system::DX2[invDir], x3 + d3q27_system::DX3[invDir], fdir);
+                    x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
 
                 real correction[3] = { c0o1, c0o1, c0o1 };
                 if (bc->hasVelocityBoundaryFlag(fdir)) {
@@ -106,9 +108,9 @@ std::array<real, 3> ForceCalculator::getForcesForDEM(int x1, int x2, int x3, std
                 }
 
                 // force consists of the MEM part and the Galilean invariance correction including the boundary velocity
-                forceX1 += (f + fnbr) * d3q27_system::DX1[invDir] - correction[0];
-                forceX2 += (f + fnbr) * d3q27_system::DX2[invDir] - correction[1];
-                forceX3 += (f + fnbr) * d3q27_system::DX3[invDir] - correction[2];
+                forceX1 += (f + fnbr) * DX1[invDir] - correction[0];
+                forceX2 += (f + fnbr) * DX2[invDir] - correction[1];
+                forceX3 += (f + fnbr) * DX3[invDir] - correction[2];
             }
         }
     }
@@ -118,6 +120,7 @@ std::array<real, 3> ForceCalculator::getForcesForDEM(int x1, int x2, int x3, std
 std::array<real, 3> ForceCalculator::getForcesGalileanInvariantMomentumExchange(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc) const
 {
     using namespace vf::basics::constant;
+    using namespace d3q27_system;
 
     real forceX1 = c0o1;
     real forceX2 = c0o1;
@@ -126,24 +129,24 @@ std::array<real, 3> ForceCalculator::getForcesGalileanInvariantMomentumExchange(
     if (bc) {
          dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
-        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
-            const int invDir = D3Q27System::INVDIR[fdir];
+        for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
+            const int invDir = INVDIR[fdir];
             if (bc->hasNoSlipBoundaryFlag(fdir) || bc->hasVelocityBoundaryFlag(fdir)) {
                 real feq = c0o1, feqnbr = c0o1;
                 if (bc->hasVelocityBoundaryFlag(fdir)) {
                     real vx1 = bc->getBoundaryVelocityX1();
                     real vx2 = bc->getBoundaryVelocityX2();
                     real vx3 = bc->getBoundaryVelocityX3();
-                    feq = D3Q27System::getIncompFeqForDirection(fdir, 0.0, vx1, vx2, vx3);
-                    feqnbr = D3Q27System::getIncompFeqForDirection(invDir, 0.0, vx1, vx2, vx3);
+                    feq = getIncompFeqForDirection(fdir, 0.0, vx1, vx2, vx3);
+                    feqnbr = getIncompFeqForDirection(invDir, 0.0, vx1, vx2, vx3);
                 }
 
                 const real f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
-                const real fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
+                const real fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
 
-                forceX1 += (f + fnbr - feq - feqnbr) * (real)D3Q27System::DX1[invDir];
-                forceX2 += (f + fnbr - feq - feqnbr) * (real)D3Q27System::DX2[invDir];
-                forceX3 += (f + fnbr - feq - feqnbr) * (real)D3Q27System::DX3[invDir];
+                forceX1 += (f + fnbr - feq - feqnbr) * (real)DX1[invDir];
+                forceX2 += (f + fnbr - feq - feqnbr) * (real)DX2[invDir];
+                forceX3 += (f + fnbr - feq - feqnbr) * (real)DX3[invDir];
             }
         }
 
