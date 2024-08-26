@@ -237,17 +237,17 @@ void GbCylinder3D::setPoint2(const double &x1, const double &x2, const double &x
 bool GbCylinder3D::isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p)
 {
     // true, wenn 'in Object' oder 'auf Boundary'!
-    if (this->isParallelToX1Axis() && (UbMath::less(x1p, minX1) || UbMath::greater(x1p, maxX1)))
+    if (this->isParallelToX1Axis() && (ub_math::less(x1p, minX1) || ub_math::greater(x1p, maxX1)))
         return false;
-    else if (this->isParallelToX2Axis() && (UbMath::less(x2p, minX2) || UbMath::greater(x2p, maxX2)))
+    else if (this->isParallelToX2Axis() && (ub_math::less(x2p, minX2) || ub_math::greater(x2p, maxX2)))
         return false;
-    else if (this->isParallelToX3Axis() && (UbMath::less(x3p, minX3) || UbMath::greater(x3p, maxX3)))
+    else if (this->isParallelToX3Axis() && (ub_math::less(x3p, minX3) || ub_math::greater(x3p, maxX3)))
         return false;
     else if (this->isNotParallelToAxis())
         throw UbException(UB_EXARGS,
                           "derzeit nur zu Achsen orthogonale Zylinder erlaubt... isPointInObject3D funzt sonst ned");
 
-    return UbMath::lessEqual(fabs(mLine->getDistance(x1p, x2p, x3p)), fabs(mRad));
+    return ub_math::lessEqual(fabs(mLine->getDistance(x1p, x2p, x3p)), fabs(mRad));
 }
 /*==========================================================*/
 bool GbCylinder3D::isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p, bool &pointIsOnBoundary)
@@ -255,11 +255,11 @@ bool GbCylinder3D::isPointInGbObject3D(const double &x1p, const double &x2p, con
     // funzt derzeit nur bei achsparallelen cylindern
     pointIsOnBoundary = false;
 
-    if (this->isParallelToX1Axis() && (UbMath::less(x1p, minX1) || UbMath::greater(x1p, maxX1)))
+    if (this->isParallelToX1Axis() && (ub_math::less(x1p, minX1) || ub_math::greater(x1p, maxX1)))
         return false;
-    else if (this->isParallelToX2Axis() && (UbMath::less(x2p, minX2) || UbMath::greater(x2p, maxX2)))
+    else if (this->isParallelToX2Axis() && (ub_math::less(x2p, minX2) || ub_math::greater(x2p, maxX2)))
         return false;
-    else if (this->isParallelToX3Axis() && (UbMath::less(x3p, minX3) || UbMath::greater(x3p, maxX3)))
+    else if (this->isParallelToX3Axis() && (ub_math::less(x3p, minX3) || ub_math::greater(x3p, maxX3)))
         return false;
     else if (this->isNotParallelToAxis())
         throw UbException(UB_EXARGS,
@@ -269,17 +269,17 @@ bool GbCylinder3D::isPointInGbObject3D(const double &x1p, const double &x2p, con
 
     double dis = mLine->getDistance(x1p, x2p, x3p);
 
-    if (UbMath::equal(dis, mRad))
+    if (ub_math::equal(dis, mRad))
         pointIsOnBoundary = true;
 
-    if (this->isParallelToX1Axis() && (UbMath::equal(x1p, minX1) || UbMath::equal(x1p, maxX1)))
+    if (this->isParallelToX1Axis() && (ub_math::equal(x1p, minX1) || ub_math::equal(x1p, maxX1)))
         pointIsOnBoundary = true;
-    else if (this->isParallelToX2Axis() && (UbMath::equal(x2p, minX2) || UbMath::equal(x2p, maxX2)))
+    else if (this->isParallelToX2Axis() && (ub_math::equal(x2p, minX2) || ub_math::equal(x2p, maxX2)))
         pointIsOnBoundary = true;
-    else if (this->isParallelToX3Axis() && (UbMath::equal(x3p, minX3) || UbMath::equal(x3p, maxX3)))
+    else if (this->isParallelToX3Axis() && (ub_math::equal(x3p, minX3) || ub_math::equal(x3p, maxX3)))
         pointIsOnBoundary = true;
 
-    return UbMath::lessEqual(dis, mRad);
+    return ub_math::lessEqual(dis, mRad);
 }
 /*==========================================================*/
 string GbCylinder3D::toString()
@@ -336,66 +336,66 @@ bool GbCylinder3D::isCellInsideOrCuttingGbObject3D(const double &x1a, const doub
 
     if (this->isParallelToX1Axis()) {
         // check liegt Cell komplett !x1-ausserhalb"?
-        if (UbMath::less(x1a, minX1) && UbMath::less(x1b, minX1))
+        if (ub_math::less(x1a, minX1) && ub_math::less(x1b, minX1))
             return false;
-        if (UbMath::greater(x1a, maxX1) && UbMath::greater(x1b, maxX1))
+        if (ub_math::greater(x1a, maxX1) && ub_math::greater(x1b, maxX1))
             return false;
 
         // mittelpunkt kreis-querschnitt
         double &midX2 = mLine->getPoint1()->x2;
         double &midX3 = mLine->getPoint1()->x3;
-        if (UbMath::less(midX2, x2a))
+        if (ub_math::less(midX2, x2a))
             dmin += std::pow(midX2 - x2a, 2.0);
-        else if (UbMath::greater(midX2, x2b))
+        else if (ub_math::greater(midX2, x2b))
             dmin += std::pow(midX2 - x2b, 2.0);
-        if (UbMath::less(midX3, x3a))
+        if (ub_math::less(midX3, x3a))
             dmin += std::pow(midX3 - x3a, 2.0);
-        else if (UbMath::greater(midX3, x3b))
+        else if (ub_math::greater(midX3, x3b))
             dmin += std::pow(midX3 - x3b, 2.0);
-        if (UbMath::lessEqual(dmin, mRad * mRad))
+        if (ub_math::lessEqual(dmin, mRad * mRad))
             return true;
 
         return false;
     } else if (this->isParallelToX2Axis()) {
         // check liegt Cell komplett !x2-ausserhalb"?
-        if (UbMath::less(x2a, minX2) && UbMath::less(x2b, minX2))
+        if (ub_math::less(x2a, minX2) && ub_math::less(x2b, minX2))
             return false;
-        if (UbMath::greater(x2a, maxX2) && UbMath::greater(x2b, maxX2))
+        if (ub_math::greater(x2a, maxX2) && ub_math::greater(x2b, maxX2))
             return false;
 
         // mittelpunkt kreis-querschnitt
         double &midX1 = mLine->getPoint1()->x1;
         double &midX3 = mLine->getPoint1()->x3;
-        if (UbMath::less(midX1, x1a))
+        if (ub_math::less(midX1, x1a))
             dmin += std::pow(midX1 - x1a, 2.0);
-        else if (UbMath::greater(midX1, x1b))
+        else if (ub_math::greater(midX1, x1b))
             dmin += std::pow(midX1 - x1b, 2.0);
-        if (UbMath::less(midX3, x3a))
+        if (ub_math::less(midX3, x3a))
             dmin += std::pow(midX3 - x3a, 2.0);
-        else if (UbMath::greater(midX3, x3b))
+        else if (ub_math::greater(midX3, x3b))
             dmin += std::pow(midX3 - x3b, 2.0);
-        if (UbMath::lessEqual(dmin, mRad * mRad))
+        if (ub_math::lessEqual(dmin, mRad * mRad))
             return true;
 
     } else if (this->isParallelToX3Axis()) {
         // check liegt Cell komplett !x3-ausserhalb"?
-        if (UbMath::less(x3a, minX3) && UbMath::less(x3b, minX3))
+        if (ub_math::less(x3a, minX3) && ub_math::less(x3b, minX3))
             return false;
-        if (UbMath::greater(x3a, maxX3) && UbMath::greater(x3b, maxX3))
+        if (ub_math::greater(x3a, maxX3) && ub_math::greater(x3b, maxX3))
             return false;
 
         // mittelpunkt kreis-querschnitt
         double &midX1 = mLine->getPoint1()->x1;
         double &midX2 = mLine->getPoint1()->x2;
-        if (UbMath::less(midX1, x1a))
+        if (ub_math::less(midX1, x1a))
             dmin += std::pow(midX1 - x1a, 2.0);
-        else if (UbMath::greater(midX1, x1b))
+        else if (ub_math::greater(midX1, x1b))
             dmin += std::pow(midX1 - x1b, 2.0);
-        if (UbMath::less(midX2, x2a))
+        if (ub_math::less(midX2, x2a))
             dmin += std::pow(midX2 - x2a, 2.0);
-        else if (UbMath::greater(midX2, x2b))
+        else if (ub_math::greater(midX2, x2b))
             dmin += std::pow(midX2 - x2b, 2.0);
-        if (UbMath::lessEqual(dmin, mRad * mRad))
+        if (ub_math::lessEqual(dmin, mRad * mRad))
             return true;
     }
 
@@ -465,18 +465,18 @@ GbLine3D *GbCylinder3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2
     double nenner  = -2.0 * (ya * yb + xa * xb) + xa2 + xb2 + ya2 + yb2;
     double zaehler = 2.0 * (-xa * xm + xb * xm - ya * ym + yb * ym) + xa2 - xb2 + ya2 - yb2;
 
-    if (UbMath::greaterEqual(wurzel, 0.0) && !UbMath::zero(nenner)) // fabs(nenner)>1.E-13)
+    if (ub_math::greaterEqual(wurzel, 0.0) && !ub_math::zero(nenner)) // fabs(nenner)>1.E-13)
     {
         t1 = (zaehler + 2.0 * sqrt(wurzel)) / nenner;
         t2 = (zaehler - 2.0 * sqrt(wurzel)) / nenner;
 
-        if (UbMath::inClosedInterval(t1, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
+        if (ub_math::inClosedInterval(t1, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
         {
             double x = xa * (0.5 - 0.5 * t1) + xb * (0.5 + 0.5 * t1);
             double y = ya * (0.5 - 0.5 * t1) + yb * (0.5 + 0.5 * t1);
             double z = za * (0.5 - 0.5 * t1) + zb * (0.5 + 0.5 * t1);
 
-            if (UbMath::inClosedInterval(z, zStart, zEnd)) // zWert muss sich innerhal der cylinderlaenge befinden
+            if (ub_math::inClosedInterval(z, zStart, zEnd)) // zWert muss sich innerhal der cylinderlaenge befinden
             {
                 if (this->isParallelToX1Axis())
                     schnittpunkte.push_back(new GbPoint3D(z, x, y));
@@ -486,13 +486,13 @@ GbLine3D *GbCylinder3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2
                     schnittpunkte.push_back(new GbPoint3D(x, y, z));
             }
         }
-        if (fabs(t2 - t1) > 1.E-13 && UbMath::inClosedInterval(t2, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
+        if (fabs(t2 - t1) > 1.E-13 && ub_math::inClosedInterval(t2, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
         {
             double x = xa * (0.5 - 0.5 * t2) + xb * (0.5 + 0.5 * t2);
             double y = ya * (0.5 - 0.5 * t2) + yb * (0.5 + 0.5 * t2);
             double z = za * (0.5 - 0.5 * t2) + zb * (0.5 + 0.5 * t2);
 
-            if (UbMath::inClosedInterval(z, zStart, zEnd)) // zWert muss sich innerhal der cylinderlaenge befinden
+            if (ub_math::inClosedInterval(z, zStart, zEnd)) // zWert muss sich innerhal der cylinderlaenge befinden
             {
                 if (this->isParallelToX1Axis())
                     schnittpunkte.push_back(new GbPoint3D(z, x, y));
@@ -595,7 +595,7 @@ GbLine3D *GbCylinder3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2
         // double tStrecke =
         // -(-x1a*y2a+x1a*y2b+2.0*y2a*x2b+y1a*x2a-2.0*x2a*y2b-y1a*x2b+y1b*x2a-y1b*x2b-x1b*y2a+x1b*y2b)/nenner2; wenn -1
         // <= t2 <= +1 -> SP mit strecke
-        if (UbMath::inClosedInterval(t1ab, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
+        if (ub_math::inClosedInterval(t1ab, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
         {
             double x, y, z, abstand_ist;
             if (this->isParallelToX1Axis()) {
@@ -618,7 +618,7 @@ GbLine3D *GbCylinder3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2
 
             // pruefen, ob Punkt Element von Kreisflaeche
             // double abstand_ist=sqrt((y2m-y)*(y2m-y)+(z2m-z)*(z2m-z));
-            if (UbMath::lessEqual(abstand_ist, mRad)) // Punkt ist Schnittpunkt
+            if (ub_math::lessEqual(abstand_ist, mRad)) // Punkt ist Schnittpunkt
             {
                 bool exists = false;
                 for (int pos = 0; pos < (int)schnittpunkte.size(); ++pos) {
@@ -643,7 +643,7 @@ GbLine3D *GbCylinder3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2
                        x1b * y3a - y1b * x3a + y1b * x3b) /
                       nenner1ab;
 
-        if (UbMath::inClosedInterval(t1ab, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
+        if (ub_math::inClosedInterval(t1ab, -1.0, 1.0)) // Schnittpunkt innerhalb der Strecke
         {
             double x, y, z, abstand_ist;
             if (this->isParallelToX1Axis()) {
@@ -667,7 +667,7 @@ GbLine3D *GbCylinder3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2
             // pruefen, ob Punkt Element von Kreisflaeche
             // double abstand_ist=sqrt((y2m-y)*(y2m-y)+(z2m-z)*(z2m-z));
 
-            if (UbMath::lessEqual(abstand_ist, mRad)) // Punkt ist Schnittpunkt
+            if (ub_math::lessEqual(abstand_ist, mRad)) // Punkt ist Schnittpunkt
             {
                 bool exists = false;
                 for (int pos = 0; pos < (int)schnittpunkte.size(); ++pos) {
@@ -728,7 +728,7 @@ vector<GbTriangle3D *> GbCylinder3D::getSurfaceTriangleSet()
     vector<GbTriangle3D *> triangles;
 
     int segmentsCircle = 20;
-    double deltaPhi    = UbMath::PI / (double)segmentsCircle;
+    double deltaPhi    = ub_math::PI / (double)segmentsCircle;
 
     double phiX1a, phiX1b;
     double x1a, x2a, x3a, x1b, x2b, x3b, x1c, x2c, x3c, x1d, x2d, x3d;
@@ -739,7 +739,7 @@ vector<GbTriangle3D *> GbCylinder3D::getSurfaceTriangleSet()
         x1a = x1d = x1ma + segCyl * dXCylinder;
         x1b = x1c = x1a + dXCylinder;
 
-        for (phiX1a = 2.0 * UbMath::PI; phiX1a > 0; phiX1a -= deltaPhi) {
+        for (phiX1a = 2.0 * ub_math::PI; phiX1a > 0; phiX1a -= deltaPhi) {
             phiX1b = phiX1a + deltaPhi;
 
             x2a = x2m + mRad * std::sin(phiX1a);
@@ -774,7 +774,7 @@ vector<GbTriangle3D *> GbCylinder3D::getSurfaceTriangleSet()
         if (segCyl == segmentsSide - 1)
             radius1 = mRad;
 
-        for (phiX1a = 2.0 * UbMath::PI; phiX1a > 0; phiX1a -= deltaPhi) {
+        for (phiX1a = 2.0 * ub_math::PI; phiX1a > 0; phiX1a -= deltaPhi) {
             phiX1b = phiX1a + deltaPhi;
 
             x2a = x2m + radius0 * std::sin(phiX1a);
@@ -842,7 +842,7 @@ void GbCylinder3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &nodes, vector<Ub
         throw UbException(UB_EXARGS, "cylinder not axis prallel");
 
     int segmentsCircle = 20;
-    double deltaPhi    = UbMath::PI / (double)segmentsCircle;
+    double deltaPhi    = ub_math::PI / (double)segmentsCircle;
 
     double phiX1a, phiX1b;
     float x1a, x2a, x3a, x1b, x2b, x3b, x1c, x2c, x3c, x1d, x2d, x3d;
@@ -854,7 +854,7 @@ void GbCylinder3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &nodes, vector<Ub
         x1a = x1d = (float)(x1ma + segCyl * dXCylinder);
         x1b = x1c = (float)(x1a + dXCylinder);
 
-        for (phiX1a = 2.0 * UbMath::PI; phiX1a > 0; phiX1a -= deltaPhi) {
+        for (phiX1a = 2.0 * ub_math::PI; phiX1a > 0; phiX1a -= deltaPhi) {
             phiX1b = phiX1a + deltaPhi;
 
             x2a = (float)(x2m + mRad * std::sin(phiX1a));
@@ -899,7 +899,7 @@ void GbCylinder3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &nodes, vector<Ub
         if (segCyl == segmentsSide - 1)
             radius1 = mRad;
 
-        for (phiX1a = 2.0 * UbMath::PI; phiX1a > 0; phiX1a -= deltaPhi) {
+        for (phiX1a = 2.0 * ub_math::PI; phiX1a > 0; phiX1a -= deltaPhi) {
             phiX1b = phiX1a + deltaPhi;
 
             x2a = x2m + (float)(radius0 * std::sin(phiX1a));
@@ -987,7 +987,7 @@ void GbCylinder3D::addSurfaceTriangleSetSegments(vector<UbTupleFloat3> &nodes, v
         throw UbException(UB_EXARGS, "cylinder not axis prallel");
 
     int segmentsCircle = segmentsRound;
-    double deltaPhi    = UbMath::PI / (double)segmentsCircle;
+    double deltaPhi    = ub_math::PI / (double)segmentsCircle;
 
     double phiX1a, phiX1b;
     float x1a, x2a, x3a, x1b, x2b, x3b, x1c, x2c, x3c, x1d, x2d, x3d;
@@ -999,8 +999,8 @@ void GbCylinder3D::addSurfaceTriangleSetSegments(vector<UbTupleFloat3> &nodes, v
         x1a = x1d = (float)(x1ma + segCyl * dXCylinder);
         x1b = x1c = (float)(x1a + dXCylinder);
 
-        // for(phiX1a=2.0*UbMath::PI; phiX1a>0.0; phiX1a-=deltaPhi)
-        for (phiX1a = 0.0; phiX1a < 2.0 * UbMath::PI - 0.5 * deltaPhi; phiX1a += deltaPhi) {
+        // for(phiX1a=2.0*ub_math::PI; phiX1a>0.0; phiX1a-=deltaPhi)
+        for (phiX1a = 0.0; phiX1a < 2.0 * ub_math::PI - 0.5 * deltaPhi; phiX1a += deltaPhi) {
             phiX1b = phiX1a + deltaPhi;
 
             x2a = (float)(x2m + mRad * std::sin(phiX1a));
@@ -1045,8 +1045,8 @@ void GbCylinder3D::addSurfaceTriangleSetSegments(vector<UbTupleFloat3> &nodes, v
         if (segCyl == segmentsSide - 1)
             radius1 = mRad;
 
-        // for(phiX1a=2.0*UbMath::PI; phiX1a>0.0; phiX1a-=deltaPhi)
-        for (phiX1a = 0.0; phiX1a < 2.0 * UbMath::PI - 0.5 * deltaPhi; phiX1a += deltaPhi) {
+        // for(phiX1a=2.0*ub_math::PI; phiX1a>0.0; phiX1a-=deltaPhi)
+        for (phiX1a = 0.0; phiX1a < 2.0 * ub_math::PI - 0.5 * deltaPhi; phiX1a += deltaPhi) {
             phiX1b = phiX1a + deltaPhi;
 
             x2a = x2m + (float)(radius0 * std::sin(phiX1a));
@@ -1134,15 +1134,15 @@ void GbCylinder3D::objectWillBeDeleted(UbObservable *objectForDeletion)
 void GbCylinder3D::scale(const double &sx1, const double &sx2, const double &sx3)
 {
     if (this->isParallelToX1Axis()) {
-        if (!UbMath::equal(sx2, sx3))
+        if (!ub_math::equal(sx2, sx3))
             throw UbException(UB_EXARGS, "|| to x1 -> different scaling sx2 and sx3 not possible");
         this->mRad *= sx2;
     } else if (this->isParallelToX2Axis()) {
-        if (!UbMath::equal(sx1, sx3))
+        if (!ub_math::equal(sx1, sx3))
             throw UbException(UB_EXARGS, "|| to x2 -> different scaling sx1 and sx3 not possible");
         this->mRad *= sx1;
     } else if (this->isParallelToX3Axis()) {
-        if (!UbMath::equal(sx1, sx2))
+        if (!ub_math::equal(sx1, sx2))
             throw UbException(UB_EXARGS, "|| to x3 -> different scaling sx1 and sx2 not possible");
         this->mRad *= sx1;
     } else
@@ -1163,13 +1163,13 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
     D =   - dw / dc
     */
     double px1, px2, px3;
-    double d = Ub::inf; // Distance to Min or Max Plane of the Zylinder
+    double d = ub_math::inf; // Distance to Min or Max Plane of the Zylinder
                         // final distance should be less that d
 
     if (this->isParallelToX1Axis()) {
-        if (UbMath::equal(x1, minX1) && UbMath::negative(rx1))
+        if (ub_math::equal(x1, minX1) && ub_math::negative(rx1))
             return -1.0;
-        else if (UbMath::equal(x1, maxX1) && UbMath::positive(rx1))
+        else if (ub_math::equal(x1, maxX1) && ub_math::positive(rx1))
             return -1.0;
 
         // falls die Linie nicht parallel zu den Seitenflaechen ist
@@ -1177,17 +1177,17 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
         {
             px1 = (x1 < minX1 ? minX1 : maxX1);
             // falls die Linie nicht parallel zu den Seitenflaechen ist
-            if (!UbMath::zero(rx1)) {
+            if (!ub_math::zero(rx1)) {
                 // Plane a= 0, b= 1, c=0 d= -1*px2
                 d   = -1.0 * (x1 - px1) / rx1;
                 px2 = x2 + d * rx2;
                 px3 = x3 + d * rx3;
 
-                if (UbMath::greater(mLine->getDistance(px1, px2, px3), mRad)) {
+                if (ub_math::greater(mLine->getDistance(px1, px2, px3), mRad)) {
                     if (x1 < minX1 && rx1 > 0.0)
-                        d = Ub::inf; // punkt liegt "links" vom cylinder und strahl hat evtl weiteren SP auf oberflaeche
+                        d = ub_math::inf; // punkt liegt "links" vom cylinder und strahl hat evtl weiteren SP auf oberflaeche
                     else if (x1 > maxX1 && rx1 < 0.0)
-                        d = Ub::inf;
+                        d = ub_math::inf;
                     else
                         return -1.0;
                 } else
@@ -1195,32 +1195,32 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
             } else
                 return -1.0;
         } else {
-            if (UbMath::negative(rx1))
+            if (ub_math::negative(rx1))
                 d = -1.0 * (x1 - minX1) / rx1;
-            else if (UbMath::positive(rx1))
+            else if (ub_math::positive(rx1))
                 d = -1.0 * (x1 - maxX1) / rx1;
         }
     } else if (this->isParallelToX2Axis()) {
-        if (UbMath::equal(x2, minX2) && UbMath::negative(rx2))
+        if (ub_math::equal(x2, minX2) && ub_math::negative(rx2))
             return -1;
-        else if (UbMath::equal(x2, maxX2) && UbMath::positive(rx2))
+        else if (ub_math::equal(x2, maxX2) && ub_math::positive(rx2))
             return -1;
 
         if (minX2 > x2 || x2 > maxX2) {
             px2 = (x2 < minX2 ? minX2 : maxX2);
             // falls die Linie nicht parallel zu den Seitenflaechen ist
-            if (!UbMath::zero(rx2)) {
+            if (!ub_math::zero(rx2)) {
                 // Plane a= 0, b= 1, c=0 d= -1*px2
                 d   = -1 * (x2 - px2) / rx2;
                 px1 = x1 + d * rx1;
                 px3 = x3 + d * rx3;
 
-                if (UbMath::greater(mLine->getDistance(px1, px2, px3), mRad)) {
+                if (ub_math::greater(mLine->getDistance(px1, px2, px3), mRad)) {
                     if (x2 < minX2 && rx2 > 0.0)
-                        d = Ub::inf; // punkt liegt "links oberhalb" vom cylinder und strahl mit pos x1 hat evtl
+                        d = ub_math::inf; // punkt liegt "links oberhalb" vom cylinder und strahl mit pos x1 hat evtl
                                      // weiteren SP auf oberflaeche
                     else if (x2 > maxX2 && rx2 < 0.0)
-                        d = Ub::inf;
+                        d = ub_math::inf;
                     else
                         return -1.0;
                 } else
@@ -1228,30 +1228,30 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
             } else
                 return -1.0;
         } else {
-            if (UbMath::negative(rx2))
+            if (ub_math::negative(rx2))
                 d = -1.0 * (x2 - minX2) / rx2;
-            else if (UbMath::positive(rx2))
+            else if (ub_math::positive(rx2))
                 d = -1.0 * (x2 - maxX2) / rx2;
         }
     } else if (this->isParallelToX3Axis()) {
-        if (UbMath::equal(x3, minX3) && UbMath::negative(rx3))
+        if (ub_math::equal(x3, minX3) && ub_math::negative(rx3))
             return -1.0;
-        else if (UbMath::equal(x3, maxX3) && UbMath::positive(rx3))
+        else if (ub_math::equal(x3, maxX3) && ub_math::positive(rx3))
             return -1.0;
 
         if (minX3 > x3 || x3 > maxX3) {
             px3 = (x3 < minX3 ? minX3 : maxX3);
             // falls die Linie nicht parallel zu den Seitenflaechen ist
-            if (!UbMath::zero(rx3)) {
+            if (!ub_math::zero(rx3)) {
                 // Plane a= 0, b= 0, c=1 d= -1*px3
                 d   = -1.0 * (x3 - px3) / rx3;
                 px2 = x2 + d * rx2;
                 px1 = x1 + d * rx1;
-                if (UbMath::greater(mLine->getDistance(px1, px2, px3), mRad)) {
+                if (ub_math::greater(mLine->getDistance(px1, px2, px3), mRad)) {
                     if (x3 < minX3 && rx3 > 0.0)
-                        d = Ub::inf;
+                        d = ub_math::inf;
                     else if (x3 > maxX3 && rx3 < 0.0)
-                        d = Ub::inf;
+                        d = ub_math::inf;
                     else
                         return -1.0;
                 } else
@@ -1259,9 +1259,9 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
             } else
                 return -1.0;
         } else {
-            if (UbMath::negative(rx3))
+            if (ub_math::negative(rx3))
                 d = -1.0 * (x3 - minX3) / rx3;
-            else if (UbMath::positive(rx3))
+            else if (ub_math::positive(rx3))
                 d = -1.0 * (x3 - maxX3) / rx3;
         }
     } else
@@ -1286,13 +1286,13 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
     double nLength = nx1 * nx1 + nx2 * nx2 + nx3 * nx3;
 
     double abs;
-    if (UbMath::zero(nLength)) { /* ray parallel to cyl  */
+    if (ub_math::zero(nLength)) { /* ray parallel to cyl  */
         // abs = RC dot axis
         double tmpabs = RCx1 * axisX1 + RCx2 * axisX2 + RCx3 * axisX3;
         double dx1    = RCx1 - tmpabs * axisX1;
         double dx2    = RCx2 - tmpabs * axisX2;
         double dx3    = RCx3 - tmpabs * axisX3;
-        if (UbMath::greater(dx1 * dx1 + dx2 * dx2 + dx3 * dx3, mRad * mRad))
+        if (ub_math::greater(dx1 * dx1 + dx2 * dx2 + dx3 * dx3, mRad * mRad))
             return -1.0;
     }
 
@@ -1306,7 +1306,7 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
     // shortest distance  = fabs( RC dot n )
     abs = std::fabs(RCx1 * nx1 + RCx2 * nx2 + RCx3 * nx3);
 
-    if (UbMath::lessEqual(abs, mRad)) { /* if ray hits cylinder */
+    if (ub_math::lessEqual(abs, mRad)) { /* if ray hits cylinder */
         // Ox1 = RC x axis
         double Ox1 = RCx2 * axisX3 - RCx3 * axisX2;
         double Ox2 = RCx3 * axisX1 - RCx1 * axisX3;
@@ -1334,9 +1334,9 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
         //    (s is always positive)
 
         if (t > s) {
-            return UbMath::min(t - s, d);
+            return ub_math::min(t - s, d);
         } else if ((t + s) > 0) {
-            return UbMath::min(t + s, d);
+            return ub_math::min(t + s, d);
         }
     }
 

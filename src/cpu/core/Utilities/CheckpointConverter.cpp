@@ -43,12 +43,12 @@
 
 #define BLOCK_SIZE 1024
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 CheckpointConverter::CheckpointConverter(SPtr<Grid3D> grid, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm)
     : grid(grid), path(path), comm(comm)
 {
-    UbSystem::makeDirectory(path + "/mpi_io_cp");
+    ub_system::makeDirectory(path + "/mpi_io_cp");
 
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
 
@@ -173,15 +173,15 @@ void CheckpointConverter::convertBlocks(int step, int procCount)
 
     // file to read from
     MPI_File file_handlerR;
-    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBlocks.bin";
     int rcR = MPI_File_open(MPI_COMM_WORLD, filenameR.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handlerR);
     if (rcR != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameR);
 
     // file to write to
     MPI_File file_handlerW;
-    UbSystem::makeDirectory(path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
-    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+    ub_system::makeDirectory(path + "/mig/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step));
+    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBlocks.bin";
     int rcW = MPI_File_open(MPI_COMM_WORLD, filenameW.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL,
                             &file_handlerW);
     if (rcW != MPI_SUCCESS)
@@ -317,14 +317,14 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
 {
     // file to read from
     MPI_File file_handlerR;
-    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
+    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSet.bin";
     int rcR = MPI_File_open(MPI_COMM_WORLD, filenameR.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handlerR);
     if (rcR != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameR);
 
     // file to write to
     MPI_File file_handlerW;
-    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
+    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSet.bin";
     int rcW = MPI_File_open(MPI_COMM_WORLD, filenameW.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL,
                             &file_handlerW);
     if (rcW != MPI_SUCCESS)
@@ -416,7 +416,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
 
     DSArraysPresence arrPresence;
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler1);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -424,7 +424,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
     MPI_File_close(&file_handler1);
 
     MPI_File file_handler2;
-    std::string filename2 = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename2 = path + "/mig/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     int rc2 = MPI_File_open(MPI_COMM_WORLD, filename2.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL,
                             &file_handler2);
     if (rc2 != MPI_SUCCESS)
@@ -433,8 +433,8 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
     MPI_File_sync(file_handler2);
     MPI_File_close(&file_handler2);
 
-    std::string filenameRR = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step);
-    std::string filenameWW = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step);
+    std::string filenameRR = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step);
+    std::string filenameWW = path + "/mig/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step);
 
     if (arrPresence.isAverageDensityArrayPresent)
         convert___Array(step, procCount, filenameRR + "/cpAverageDensityArray.bin",
@@ -549,14 +549,14 @@ void CheckpointConverter::convertBC(int step, int procCount)
 {
     // file to read from
     MPI_File file_handlerR;
-    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rcR = MPI_File_open(MPI_COMM_WORLD, filenameR.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handlerR);
     if (rcR != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameR);
 
     // file to write to
     MPI_File file_handlerW;
-    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC.bin";
     int rcW = MPI_File_open(MPI_COMM_WORLD, filenameW.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL,
                             &file_handlerW);
     if (rcW != MPI_SUCCESS)

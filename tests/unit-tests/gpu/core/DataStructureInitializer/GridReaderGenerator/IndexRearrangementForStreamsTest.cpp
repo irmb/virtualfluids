@@ -37,7 +37,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../Utilities/testUtilitiesGPU.h"
+#include "../../testUtilitiesGPU.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
@@ -48,7 +48,7 @@
 
 #include <parallel/NullCommunicator.h>
 
-namespace indexRearrangementTests
+namespace index_rearrangement_tests
 {
 template <typename T>
 bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
@@ -113,18 +113,18 @@ public:
     }
 };
 
-} // namespace indexRearrangementTests
+} // namespace index_rearrangement_tests
 
 //////////////////////////////////////////////////////////////////////////
 // Test reorderSendIndices
 //////////////////////////////////////////////////////////////////////////
-using namespace indexRearrangementTests;
+using namespace index_rearrangement_tests;
 
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
     std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
     const int level = 0;
-    const int direction = CommunicationDirections::MX;
+    const int direction = communication_directions::MX;
     const int numberOfProcessNeighbors = 1;
     const int indexOfProcessNeighbor = 0;
 
@@ -166,7 +166,7 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
         builder->setNumberOfSendIndices((uint)sendIndices.sendIndices.size());
 
-        para = testingVF::createParameterForLevel(sendIndices.level);
+        para = testing::vf::createParameterForLevel(sendIndices.level);
 
         para->getParH(sendIndices.level)->fineToCoarse.numberOfCells = sendIndices.numNodesFtoC;
         para->getParH(sendIndices.level)->fineToCoarse.coarseCellIndices = &(sendIndices.interpolationCellFineToCoarseCoarse.front());
@@ -258,7 +258,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = testingVF::createParameterForLevel(level);
+        para = testing::vf::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCX(level);
@@ -377,7 +377,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = testingVF::createParameterForLevel(level);
+        para = testing::vf::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCY(level);
@@ -496,7 +496,7 @@ protected:
 private:
     void SetUp() override
     {
-        para = testingVF::createParameterForLevel(level);
+        para = testing::vf::createParameterForLevel(level);
 
         para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "send");
         para->initProcessNeighborsAfterFtoCZ(level);
@@ -596,7 +596,7 @@ struct RecvIndicesForCommAfterFtoC {
     std::vector<int> recvIndices = { 10, 11, 12, 13, 14, 15, 16 };
     std::vector<uint> sendIndicesForCommAfterFtoCPositions = {};
     const int level = 0;
-    const int direction = CommunicationDirections::MX;
+    const int direction = communication_directions::MX;
     const int numberOfProcessNeighbors = 1;
     const int indexOfProcessNeighbor = 0;
 
@@ -640,7 +640,7 @@ private:
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
         builder->setNumberOfRecvIndices((uint)ri.recvIndices.size());
 
-        para = testingVF::createParameterForLevel(ri.level);
+        para = testing::vf::createParameterForLevel(ri.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
             IndexRearrangementForStreams(para, builder, communicator));

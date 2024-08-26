@@ -81,7 +81,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
         if (myid == 0) {
             stringstream logFilename;
-            logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
+            logFilename << pathname + "/logfile" + ub_system::toString(ub_system::getTimeStamp()) + ".txt";
             UbLog::output_policy::setStream(logFilename.str());
         }
     }
@@ -150,14 +150,14 @@ void run(const vf::basics::ConfigurationFile& config)
 
         SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube",
+            gb_system_3d::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube",
                                         WbWriterVtkXmlBinary::getInstance());
 
             
         SPtr<GbCuboid3D> spongecube(new GbCuboid3D(TPMSOrigin[0] + TPMSL[0], g_minX2 - dx, g_minX3 - dx,
                                                     g_maxX1 + dx, g_maxX2 + dx, g_maxX3 + dx));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(spongecube.get(), pathname + "/geo/spongecube",
+            gb_system_3d::writeGeoObject(spongecube.get(), pathname + "/geo/spongecube",
                                         WbWriterVtkXmlBinary::getInstance());
         if (myid == 0) {
             // UBLOG(logINFO,"rho = " << rhoLB );
@@ -189,13 +189,13 @@ void run(const vf::basics::ConfigurationFile& config)
         GbCuboid3DPtr zMax(new GbCuboid3D(g_minX1 - dx, g_minX2 - dx, g_maxX3, g_maxX1 + dx, g_maxX2 + dx, g_maxX3 + dx));
 
         if (myid == 0)
-            GbSystem3D::writeGeoObject(xMin.get(), pathname + "/geo/xMin", WbWriterVtkXmlBinary::getInstance());
+            gb_system_3d::writeGeoObject(xMin.get(), pathname + "/geo/xMin", WbWriterVtkXmlBinary::getInstance());
         if (myid == 0)
-            GbSystem3D::writeGeoObject(xMax.get(), pathname + "/geo/xMax", WbWriterVtkXmlBinary::getInstance());
+            gb_system_3d::writeGeoObject(xMax.get(), pathname + "/geo/xMax", WbWriterVtkXmlBinary::getInstance());
         if (myid == 0)
-            GbSystem3D::writeGeoObject(zMin.get(), pathname + "/geo/zMin", WbWriterVtkXmlBinary::getInstance());
+            gb_system_3d::writeGeoObject(zMin.get(), pathname + "/geo/zMin", WbWriterVtkXmlBinary::getInstance());
         if (myid == 0)
-            GbSystem3D::writeGeoObject(zMax.get(), pathname + "/geo/zMax", WbWriterVtkXmlBinary::getInstance());
+            gb_system_3d::writeGeoObject(zMax.get(), pathname + "/geo/zMax", WbWriterVtkXmlBinary::getInstance());
 
         SPtr<D3Q27Interactor> tpmsInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(tpms, grid, tpmsNoslipAdapter, Interactor3D::SOLID, Interactor3D::POINTS));
         SPtr<D3Q27Interactor> xMinInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(xMin, grid, xMinApr, Interactor3D::SOLID, Interactor3D::POINTS));

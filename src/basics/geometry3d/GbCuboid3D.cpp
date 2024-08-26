@@ -177,17 +177,17 @@ double GbCuboid3D::getLengthX3() { return (this->getX3Maximum() - this->getX3Min
 bool GbCuboid3D::isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p)
 {
     // true, wenn 'in Object' oder 'auf Boundary'!
-    if (UbMath::less(x1p, this->getX1Minimum()))
+    if (ub_math::less(x1p, this->getX1Minimum()))
         return false;
-    else if (UbMath::less(x2p, this->getX2Minimum()))
+    else if (ub_math::less(x2p, this->getX2Minimum()))
         return false;
-    else if (UbMath::less(x3p, this->getX3Minimum()))
+    else if (ub_math::less(x3p, this->getX3Minimum()))
         return false;
-    else if (UbMath::greater(x1p, this->getX1Maximum()))
+    else if (ub_math::greater(x1p, this->getX1Maximum()))
         return false;
-    else if (UbMath::greater(x2p, this->getX2Maximum()))
+    else if (ub_math::greater(x2p, this->getX2Maximum()))
         return false;
-    else if (UbMath::greater(x3p, this->getX3Maximum()))
+    else if (ub_math::greater(x3p, this->getX3Maximum()))
         return false;
 
     return true;
@@ -198,30 +198,30 @@ bool GbCuboid3D::isPointInGbObject3D(const double &x1p, const double &x2p, const
     pointIsOnBoundary = false;
 
     // true, wenn 'in Object' oder 'auf Boundary'!
-    if (UbMath::less(x1p, this->getX1Minimum()))
+    if (ub_math::less(x1p, this->getX1Minimum()))
         return false;
-    else if (UbMath::less(x2p, this->getX2Minimum()))
+    else if (ub_math::less(x2p, this->getX2Minimum()))
         return false;
-    else if (UbMath::less(x3p, this->getX3Minimum()))
+    else if (ub_math::less(x3p, this->getX3Minimum()))
         return false;
-    else if (UbMath::greater(x1p, this->getX1Maximum()))
+    else if (ub_math::greater(x1p, this->getX1Maximum()))
         return false;
-    else if (UbMath::greater(x2p, this->getX2Maximum()))
+    else if (ub_math::greater(x2p, this->getX2Maximum()))
         return false;
-    else if (UbMath::greater(x3p, this->getX3Maximum()))
+    else if (ub_math::greater(x3p, this->getX3Maximum()))
         return false;
 
-    if (UbMath::equal(x1p, this->getX1Minimum()))
+    if (ub_math::equal(x1p, this->getX1Minimum()))
         pointIsOnBoundary = true;
-    else if (UbMath::equal(x2p, this->getX2Minimum()))
+    else if (ub_math::equal(x2p, this->getX2Minimum()))
         pointIsOnBoundary = true;
-    else if (UbMath::equal(x3p, this->getX3Minimum()))
+    else if (ub_math::equal(x3p, this->getX3Minimum()))
         pointIsOnBoundary = true;
-    else if (UbMath::equal(x1p, this->getX1Maximum()))
+    else if (ub_math::equal(x1p, this->getX1Maximum()))
         pointIsOnBoundary = true;
-    else if (UbMath::equal(x2p, this->getX2Maximum()))
+    else if (ub_math::equal(x2p, this->getX2Maximum()))
         pointIsOnBoundary = true;
-    else if (UbMath::equal(x3p, this->getX3Maximum()))
+    else if (ub_math::equal(x3p, this->getX3Maximum()))
         pointIsOnBoundary = true;
 
     return true;
@@ -230,17 +230,17 @@ bool GbCuboid3D::isPointInGbObject3D(const double &x1p, const double &x2p, const
 bool GbCuboid3D::isCellInsideGbObject3D(const double &x1p1, const double &x2p1, const double &x3p1, const double &x1p2,
                                         const double &x2p2, const double &x3p2)
 {
-    if (UbMath::less(x1p1, this->getX1Minimum()))
+    if (ub_math::less(x1p1, this->getX1Minimum()))
         return false;
-    else if (UbMath::less(x2p1, this->getX2Minimum()))
+    else if (ub_math::less(x2p1, this->getX2Minimum()))
         return false;
-    else if (UbMath::less(x3p1, this->getX3Minimum()))
+    else if (ub_math::less(x3p1, this->getX3Minimum()))
         return false;
-    else if (UbMath::greater(x1p2, this->getX1Maximum()))
+    else if (ub_math::greater(x1p2, this->getX1Maximum()))
         return false;
-    else if (UbMath::greater(x2p2, this->getX2Maximum()))
+    else if (ub_math::greater(x2p2, this->getX2Maximum()))
         return false;
-    else if (UbMath::greater(x3p2, this->getX3Maximum()))
+    else if (ub_math::greater(x3p2, this->getX3Maximum()))
         return false;
 
     return true;
@@ -264,7 +264,7 @@ bool GbCuboid3D::isCellCuttingGbObject3D(const double &x1a, const double &x2a, c
 
     return false;
 
-    // GbCuboid3D* cube = GbSystem3D::clipRectangle3D(*this->p1, *this->p2, x1a,x2a,x3a,x1b,x2b,x3b);
+    // GbCuboid3D* cube = gb_system_3d::clipRectangle3D(*this->p1, *this->p2, x1a,x2a,x3a,x1b,x2b,x3b);
     // if(cube)
     //{
     //   cube->finalize();
@@ -290,13 +290,13 @@ bool GbCuboid3D::isCellInsideOrCuttingGbObject3D(const double &x1a, const double
     //                |<----------------- T --------------->|
     // ist |T| <= dxA + dxB -> overlap!
 
-    if (UbMath::lessEqual(std::fabs(this->getX1Centroid() - 0.5 * (x1b + x1a) /*Tx1*/),
+    if (ub_math::lessEqual(std::fabs(this->getX1Centroid() - 0.5 * (x1b + x1a) /*Tx1*/),
                           0.5 * (this->getLengthX1() + std::fabs(x1b - x1a) /*dx1A+dx1B*/))
 
-        && UbMath::lessEqual(std::fabs(this->getX2Centroid() - 0.5 * (x2b + x2a) /*Tx2*/),
+        && ub_math::lessEqual(std::fabs(this->getX2Centroid() - 0.5 * (x2b + x2a) /*Tx2*/),
                              0.5 * (this->getLengthX2() + std::fabs(x2b - x2a) /*dx2A+dx2B*/))
 
-        && UbMath::lessEqual(std::fabs(this->getX3Centroid() - 0.5 * (x3b + x3a) /*Tx3*/),
+        && ub_math::lessEqual(std::fabs(this->getX3Centroid() - 0.5 * (x3b + x3a) /*Tx3*/),
                              0.5 * (this->getLengthX3() + std::fabs(x3b - x3a) /*dx3A+dx3B*/))) {
         return true;
     }
@@ -410,7 +410,7 @@ GbPoint3D *GbCuboid3D::calculateInterSectionPoint3D(GbPoint3D & /*point1*/, GbPo
 /*=======================================================*/
 GbLine3D *GbCuboid3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2)
 {
-    return GbSystem3D::createClipLine3D(point1, point2, p1->getX1Coordinate(), p1->getX2Coordinate(),
+    return gb_system_3d::createClipLine3D(point1, point2, p1->getX1Coordinate(), p1->getX2Coordinate(),
                                         p1->getX3Coordinate(), p2->getX1Coordinate(), p2->getX2Coordinate(),
                                         p2->getX3Coordinate());
 }
@@ -479,7 +479,7 @@ double GbCuboid3D::getCellVolumeInsideGbObject3D(const double &x1a, const double
     if (!(this->isCellCuttingGbObject3D(x1a, x2a, x3a, x1b, x2b, x3b)))
         return 0.0;
 
-    GbCuboid3D *cube = GbSystem3D::clipRectangle3D(*this->p1, *this->p2, x1a, x2a, x3a, x1b, x2b, x3b);
+    GbCuboid3D *cube = gb_system_3d::clipRectangle3D(*this->p1, *this->p2, x1a, x2a, x3a, x1b, x2b, x3b);
 
     if (cube) {
         double eps;

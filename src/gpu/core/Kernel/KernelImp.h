@@ -32,29 +32,45 @@
 #ifndef KERNEL_IMP_H
 #define KERNEL_IMP_H
 
-#include "Calculation/Calculation.h" 
-
-#include "Kernel.h"
-
 #include <memory>
+#include <optional>
 
-#include <cuda_helper/CudaGrid.h>
+#include <constants/NumericConstants.h>
+
+#include "Calculation/Calculation.h"
+#include "Kernel.h"
+#include "cuda_helper/CudaGrid.h"
 
 class Parameter;
-class CudaStreamManager; 
+class CudaStreamManager;
+
 class KernelImp : public Kernel
 {
 public:
-    virtual void run() = 0;
-    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
+    void runOnIndices(const unsigned int* indices, unsigned int sizeIndices, CollisionTemplate collisionTemplate,
+                      CudaStreamIndex streamIndex = CudaStreamIndex::Legacy) override;
 
-    std::vector<PreProcessorType> getPreProcessorTypes();
+    void checkKernelParameters(uint maxLevel, real velocityLB, real viscosityLBOnFinestLevel) const override;
 
-    bool getKernelUsesFluidNodeIndices();
+    std::vector<PreProcessorType> getPreProcessorTypes() override;
+
+    bool getKernelUsesFluidNodeIndices() const;
 
 protected:
     KernelImp(std::shared_ptr<Parameter> para, int level);
-    KernelImp();
+    //! \param viscosityMaximumRecommended in LB units
+    KernelImp(std::shared_ptr<Parameter> para, int level, real viscosityMaximumRecommended);
+    //! \param viscosityMaximumRecommended and \param viscosityMaximumHard are in LB units
+    KernelImp(std::shared_ptr<Parameter> para, int level, real viscosityMaximumRecommended, real viscosityMaximumHard);
+    KernelImp() = default;
+
+    // the limit of the velocity in LB units is the same for all kernels
+    const real velocityMaximumHard = 1 - std::sqrt(vf::basics::constant::c1o3);
+    const real velocityMaximumRecommended = 0.1;
+
+    // the limit of the viscosity in LB units depends on the kernel, and may not be defined for some kernels
+    const std::optional<real> viscosityMaximumHard = std::nullopt;
+    const std::optional<real> viscosityMaximumRecommended = std::nullopt;
 
     std::shared_ptr<Parameter> para;
     int level;
@@ -62,6 +78,22 @@ protected:
     vf::cuda::CudaGrid cudaGrid;
 
     bool kernelUsesFluidNodeIndices = false;
+
+private:
+    void checkViscosity(real viscosityLBOnFinestLevel, uint maxLevel) const;
+    void checkVelocity(real velocityLB) const;
+
+    static std::string realToString(real kernelParameter);
+
+    static std::string composeWarningForMaximumKernelParameterHardLimit(const std::string& kernelParameterName,
+                                                                        real kernelParameter, real maximumHard);
+    static std::string composeWarningForMaximumKernelParameterRecommendation(const std::string& kernelParameterName,
+                                                                             real kernelParameter, real maximumRecommended);
+
+    static std::string composeRecommendationForMaximumKernelParameter(const std::string& kernelParameterName,
+                                                                      real maximumRecommended);
+    static std::string composeInfoOnHardLimitForMaximumKernelParameter(const std::string& kernelParameterName,
+                                                                       real maximumHard);
 };
 
 #endif

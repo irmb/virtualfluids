@@ -39,7 +39,7 @@
 #include "grid/BoundaryConditions/Side.h"
 
 // has to have the same order as SideType in Side.h
-namespace CommunicationDirections
+namespace communication_directions
 {
 enum CommunicationDirection {
     MX = static_cast<int>(SideType::MX),

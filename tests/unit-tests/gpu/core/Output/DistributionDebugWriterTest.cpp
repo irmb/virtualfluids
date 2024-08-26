@@ -36,11 +36,11 @@
 #include <gpu/core/Cuda/CudaMemoryManager.h>
 #include <gpu/core/Output/DistributionDebugWriter.h>
 
-#include "../Utilities/testUtilitiesGPU.h"
+#include "../testUtilitiesGPU.h"
 
 TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_CopyDistributions_ShouldThrow)
 {
-    const auto para = testingVF::createParameterForLevel(0);
+    const auto para = testing::vf::createParameterForLevel(0);
     const CudaMemoryManager cudaMemoryManager(para);
 
     EXPECT_THROW(DistributionDebugWriter::copyDistributionsToHost(*para, cudaMemoryManager), std::runtime_error);
@@ -48,7 +48,7 @@ TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_CopyDistributions
 
 TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_WriteDistributions_ShouldThrow)
 {
-    const auto para = testingVF::createParameterForLevel(0);
+    const auto para = testing::vf::createParameterForLevel(0);
     const CudaMemoryManager cudaMemoryManager(para);
 
     EXPECT_THROW(DistributionDebugWriter::writeDistributions(*para, 0), std::runtime_error);

@@ -47,9 +47,9 @@ string WbWriterVtkXmlImageBinary::writeCollection(const string &filename, const 
     ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -57,7 +57,7 @@ string WbWriterVtkXmlImageBinary::writeCollection(const string &filename, const 
     }
 
     string endian;
-    if (UbSystem::isLittleEndian())
+    if (ub_system::isLittleEndian())
         endian = "LittleEndian";
     else
         endian = "BigEndian";
@@ -118,9 +118,9 @@ string WbWriterVtkXmlImageBinary::writeParallelFile(const string &filename, cons
     ofstream out(vtkfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str());
         }
         if (!out)
@@ -266,9 +266,9 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename, vector<stri
 
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(vtkfilename);
+        string path = ub_system::getPathFromString(vtkfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(vtkfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)

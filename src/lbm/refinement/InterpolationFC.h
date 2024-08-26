@@ -33,13 +33,6 @@
 #ifndef LBM_INTERPOLATION_FC_H
 #define LBM_INTERPOLATION_FC_H
 
-#ifndef __host__
-#define __host__
-#endif
-#ifndef __device__
-#define __device__
-#endif
-
 #include <basics/constants/NumericConstants.h>
 
 #include "lbm/constants/D3Q27.h"
@@ -53,15 +46,8 @@ using namespace vf::lbm::dir;
 namespace vf::lbm
 {
 
-inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
+constexpr void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
 {
-
-    const real kxyAverage    = c0o1;
-    const real kyzAverage    = c0o1;
-    const real kxzAverage    = c0o1;
-    const real kxxMyyAverage = c0o1;
-    const real kxxMzzAverage = c0o1;
-
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Set all moments to zero
     //!
@@ -124,36 +110,36 @@ inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, 
     real& fPMM = m200;
     real& fMMM = m000;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Declare local variables for destination nodes
-    //!
-    real vvx, vvy, vvz, vxsq, vysq, vzsq;
-    real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
-    real press;
+    constexpr real useNEQ = c1o1;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set macroscopic values on destination node (zeroth and first order moments)
     //!
-    press = coefficients.d000 - c2o1 * coefficients.LaplaceRho * c1o8;
-    vvx   = coefficients.a000;
-    vvy   = coefficients.b000;
-    vvz   = coefficients.c000;
+    const real press = coefficients.d000 - c2o1 * coefficients.LaplaceRho * c1o8;
+    const real vvx = coefficients.a000;
+    const real vvy = coefficients.b000;
+    const real vvz = coefficients.c000;
 
     m000 = press; // m000 is press, if drho is interpolated directly
 
-    vxsq = vvx * vvx;
-    vysq = vvy * vvy;
-    vzsq = vvz * vvz;
+    const real vxsq = vvx * vvx;
+    const real vysq = vvy * vvy;
+    const real vzsq = vvz * vvz;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set moments (second to sixth order) on destination node
     //!
     // linear combinations for second order moments
-    mxxPyyPzz = m000;
+    const real mxxPyyPzz = m000;
 
-    mxxMyy = -c2o3 * ((coefficients.a100 - coefficients.b010) + kxxMyyAverage) * epsnew / omegaC * (c1o1 + press);
-    mxxMzz = -c2o3 * ((coefficients.a100 - coefficients.c001) + kxxMzzAverage) * epsnew / omegaC * (c1o1 + press);
+    constexpr real kxyAverage = c0o1;
+    constexpr real kyzAverage = c0o1;
+    constexpr real kxzAverage = c0o1;
+    constexpr real kxxMyyAverage = c0o1;
+    constexpr real kxxMzzAverage = c0o1;
+
+    const real mxxMyy = -c2o3 * ((coefficients.a100 - coefficients.b010) + kxxMyyAverage) * epsnew / omegaC * (c1o1 + press);
+    const real mxxMzz = -c2o3 * ((coefficients.a100 - coefficients.c001) + kxxMzzAverage) * epsnew / omegaC * (c1o1 + press);
 
     m011 = -c1o3 * ((coefficients.b001 + coefficients.c010) + kyzAverage) * epsnew / omegaC * (c1o1 + press);
     m101 = -c1o3 * ((coefficients.a001 + coefficients.c100) + kxzAverage) * epsnew / omegaC * (c1o1 + press);
@@ -166,12 +152,12 @@ inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, 
     // linear combinations for third order moments
     m111 = c0o1;
 
-    mxxyPyzz = c0o1;
-    mxxyMyzz = c0o1;
-    mxxzPyyz = c0o1;
-    mxxzMyyz = c0o1;
-    mxyyPxzz = c0o1;
-    mxyyMxzz = c0o1;
+    constexpr real mxxyPyzz = c0o1;
+    constexpr real mxxyMyzz = c0o1;
+    constexpr real mxxzPyyz = c0o1;
+    constexpr real mxxzMyyz = c0o1;
+    constexpr real mxyyPxzz = c0o1;
+    constexpr real mxyyMxzz = c0o1;
 
     m210 = ( mxxyMyzz + mxxyPyzz) * c1o2;
     m012 = (-mxxyMyzz + mxxyPyzz) * c1o2;

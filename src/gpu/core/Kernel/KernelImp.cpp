@@ -31,24 +31,129 @@
 //! \{
 #include "KernelImp.h"
 
-#include "Calculation/Calculation.h" 
+#include <spdlog/fmt/fmt.h>
 
+#include "Calculation/Calculation.h"
+#include "logger/Logger.h"
 
-void KernelImp::runOnIndices(const unsigned int *indices, unsigned int size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex)
+void KernelImp::runOnIndices(const unsigned int *indices, unsigned int sizeIndices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex)
 {
     printf("Method not implemented for this Kernel \n");
 }
 
-std::vector<PreProcessorType> KernelImp::getPreProcessorTypes() 
-{ 
+std::vector<PreProcessorType> KernelImp::getPreProcessorTypes()
+{
     return myPreProcessorTypes;
 }
 
-bool KernelImp::getKernelUsesFluidNodeIndices(){
+bool KernelImp::getKernelUsesFluidNodeIndices() const
+{
     return this->kernelUsesFluidNodeIndices;
 }
 
-KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level) : para(para), level(level) {}
+std::string KernelImp::realToString(real kernelParameter)
+{
+    // use fmt library to control the formatting of the number
+    return fmt::format("{:1.4g}", kernelParameter);
+}
 
-KernelImp::KernelImp() {}
+std::string KernelImp::composeWarningForMaximumKernelParameterHardLimit(const std::string& kernelParameterName,
+                                                                        real kernelParameter, real maximumHard)
+{
+    return "The " + kernelParameterName + " (in LB units) is too high. It was set to " + realToString(kernelParameter) +
+           " but should be smaller than " + realToString(maximumHard) + " (hard limit).";
+}
+
+std::string KernelImp::composeWarningForMaximumKernelParameterRecommendation(const std::string& kernelParameterName,
+                                                                             real kernelParameter, real maximumRecommended)
+{
+    return "The " + kernelParameterName + " is " + realToString(kernelParameter) +
+           ", which is larger than the recommended value of " + realToString(maximumRecommended) + ".";
+}
+
+std::string KernelImp::composeRecommendationForMaximumKernelParameter(const std::string& kernelParameterName,
+                                                                      real maximumRecommended)
+{
+    return "A " + kernelParameterName + " smaller than " + realToString(maximumRecommended) + " is recommended.";
+}
+
+std::string KernelImp::composeInfoOnHardLimitForMaximumKernelParameter(const std::string& kernelParameterName,
+                                                                       real maximumHard)
+{
+    return "The hard limit for the " + kernelParameterName + " is " + realToString(maximumHard) + ".";
+}
+
+void KernelImp::checkViscosity(real viscosityLBOnFinestLevel, uint maxLevel) const
+{
+    const std::string kernelParameterName = "viscosity";
+    std::string message = "At level " + std::to_string(maxLevel) + ": ";
+
+    if (!viscosityMaximumHard.has_value() && !viscosityMaximumRecommended.has_value()) {
+        VF_LOG_INFO("There is no viscosity maximum defined for this kernel.");
+        return;
+    }
+
+    if (viscosityMaximumHard.has_value() && viscosityLBOnFinestLevel > viscosityMaximumHard) {
+        message += composeWarningForMaximumKernelParameterHardLimit(kernelParameterName, viscosityLBOnFinestLevel,
+                                                                    viscosityMaximumHard.value());
+        if (viscosityMaximumRecommended.has_value()) {
+            message += "\n" + composeRecommendationForMaximumKernelParameter(kernelParameterName,
+                                                                             viscosityMaximumRecommended.value());
+        }
+        VF_LOG_CRITICAL(message);
+        return;
+    }
+
+    if (viscosityMaximumRecommended.has_value() && viscosityLBOnFinestLevel > viscosityMaximumRecommended.value()) {
+        message += composeWarningForMaximumKernelParameterRecommendation(kernelParameterName, viscosityLBOnFinestLevel,
+                                                                         viscosityMaximumRecommended.value());
+        if (viscosityMaximumHard.has_value()) {
+            message +=
+                "\n" + composeInfoOnHardLimitForMaximumKernelParameter(kernelParameterName, viscosityMaximumHard.value());
+        }
+        VF_LOG_WARNING(message);
+    }
+}
+
+void KernelImp::checkVelocity(real velocityLB) const
+{
+    const std::string kernelParameterName = "velocity";
+    std::string message;
+
+    if (velocityLB > velocityMaximumHard) {
+        VF_LOG_CRITICAL(
+            composeWarningForMaximumKernelParameterHardLimit(kernelParameterName, velocityLB, velocityMaximumHard) + "\n" +
+            composeRecommendationForMaximumKernelParameter(kernelParameterName, velocityMaximumRecommended));
+        return;
+    }
+
+    if (velocityLB > velocityMaximumRecommended) {
+        VF_LOG_WARNING(composeWarningForMaximumKernelParameterRecommendation(kernelParameterName, velocityLB,
+                                                                             velocityMaximumRecommended) +
+                       "\n" + composeInfoOnHardLimitForMaximumKernelParameter(kernelParameterName, velocityMaximumHard));
+        return;
+    }
+}
+
+void KernelImp::checkKernelParameters(uint maxLevel, real velocityLB, real viscosityLBOnFinestLevel) const
+{
+    checkVelocity(velocityLB);
+    checkViscosity(viscosityLBOnFinestLevel, maxLevel);
+}
+
+KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level) : para(std::move(para)), level(level)
+{
+}
+
+KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level, real viscosityMaximumRecommended, real viscosityMaximumHard)
+    : para(std::move(para)), level(level), viscosityMaximumRecommended(viscosityMaximumRecommended),
+      viscosityMaximumHard(viscosityMaximumHard)
+{
+}
+
+KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level, real viscosityMaximumRecommended)
+    : para(std::move(para)), level(level), viscosityMaximumRecommended(viscosityMaximumRecommended)
+{
+}
+
 //! \}

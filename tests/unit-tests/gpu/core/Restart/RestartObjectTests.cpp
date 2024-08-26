@@ -31,7 +31,7 @@
 //! \{
 //! \author Martin Schoenherr
 //=======================================================================================
-#include "tests/testUtilities.h"
+#include "tests/LogRedirector.h"
 #include <gmock/gmock.h>
 
 #include <gpu/core/Restart/RestartObject.h>
@@ -70,9 +70,9 @@ template <typename Type>
 void failToDeleteRestartFile()
 {
     std::shared_ptr<RestartObject> write_object = std::make_shared<Type>();
-    testingVF::captureStdOut();
+    testing::vf::LogRedirector logRedirector;
     write_object->delete_restart_file("does_not_exist");
-    EXPECT_TRUE(testingVF::stdoutContainsWarning());
+    EXPECT_TRUE(logRedirector.logContainsWarning()) << "recorded log: " << logRedirector.getLoggerOutput();
 }
 
 TEST(RestartObjectTests, noAsciiRestartFile_tryDeleteRestartFile_displaysWarning)

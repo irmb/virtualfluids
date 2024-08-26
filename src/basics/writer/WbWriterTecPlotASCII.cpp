@@ -47,9 +47,9 @@ string WbWriterTecPlotASCII::writeOctsWithNodeData(const string &filename, vecto
     ofstream out(tecplotfilename.c_str());
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-        string path = UbSystem::getPathFromString(tecplotfilename);
+        string path = ub_system::getPathFromString(tecplotfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(tecplotfilename.c_str());
         }
         if (!out)
@@ -59,7 +59,7 @@ string WbWriterTecPlotASCII::writeOctsWithNodeData(const string &filename, vecto
     int nofNodes = (int)nodes.size();
     int nofCells = (int)cells.size();
 
-    out << "TITLE = VirtualFluids OctGrid from " << UbSystem::getTimeStamp() << endl;
+    out << "TITLE = VirtualFluids OctGrid from " << ub_system::getTimeStamp() << endl;
 
     out << "VARIABLES = \"X\", \"Y\", \"Z\"";
     for (size_t d = 0; d < datanames.size(); d++)

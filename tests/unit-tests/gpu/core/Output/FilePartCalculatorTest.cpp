@@ -35,7 +35,7 @@
 
 #include <gpu/core/Output/FilePartCalculator.h>
 
-#include "../Utilities/testUtilitiesGPU.h"
+#include "../testUtilitiesGPU.h"
 
 TEST(FilePartCalculatorTest, calculateNumberOfParts)
 {

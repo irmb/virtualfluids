@@ -45,18 +45,12 @@
 
 #include "CollisionParameter.h"
 
-#ifndef __host__
-#define __host__
-#endif
-#ifndef __device__
-#define __device__
-#endif
 
 #ifdef __CUDACC__
 #define KERNEL_ABS abs
 #else
 #include <cmath>
-#define KERNEL_ABS std::abs
+#define KERNEL_ABS std::abs // constexpr since C++23, so if switching to C++23, std::abs can be used directly also in cuda code
 #endif
 
 using namespace vf::basics::constant;
@@ -85,7 +79,7 @@ namespace vf::lbm
 //! DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 ////////////////////////////////////////////////////////////////////////////////
 template <TurbulenceModel turbulenceModel>
-__host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
+constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
 {
     auto& distribution = parameter.distribution;
 
@@ -153,7 +147,7 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
-    real drho, oneOverRho, vvx, vvy, vvz;
+    real drho = 0.0, oneOverRho = 0.0, vvx = 0.0, vvy = 0.0, vvz = 0.0;
     getCompressibleMacroscopicValues(distribution, drho, oneOverRho, vvx, vvy, vvz);
 
     ////////////////////////////////////////////////////////////////////////////////////

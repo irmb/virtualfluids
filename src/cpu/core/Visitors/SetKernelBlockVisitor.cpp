@@ -47,13 +47,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action)
 {
 }
 
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, real nue, int numberOfProcesses,
                                              SetKernelBlockVisitor::Action action)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), numberOfProcesses(numberOfProcesses)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), numberOfProcesses(numberOfProcesses)
 {
 }
 
@@ -63,10 +63,10 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
     throwExceptionIfNotEnoughMemory(grid);
 
     if (kernel && (block->getRank() == grid->getRank())) {
-        real collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
+        real collFactor = lbm_system::calcCollisionFactor(nue, block->getLevel());
         kernel->setCollisionFactor(collFactor);
         kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
-        kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
+        kernel->setDeltaT(lbm_system::getDeltaT(block->getLevel()));
         kernel->setBlock(block);
         UbTupleInt3 blockNX = grid->getBlockNX();
         kernel->setNX(std::array<int, 3>{ { val<1>(blockNX), val<2>(blockNX), val<3>(blockNX) } });
@@ -111,10 +111,10 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
 void SetKernelBlockVisitor::throwExceptionIfNotEnoughMemory(const SPtr<Grid3D> &grid)
 {
-    auto availableMemory = Utilities::getTotalPhysMem();
+    auto availableMemory = utilities::getTotalPhysMem();
     auto requiredMemory  = getRequiredPhysicalMemory(grid);
     if (requiredMemory > availableMemory)
-        throw UbException(UB_EXARGS, "SetKernelBlockVisitor: Not enough memory!!! Rank = " + UbSystem::toString(grid->getRank()));
+        throw UbException(UB_EXARGS, "SetKernelBlockVisitor: Not enough memory!!! Rank = " + ub_system::toString(grid->getRank()));
 }
 
 real SetKernelBlockVisitor::getRequiredPhysicalMemory(const SPtr<Grid3D> &grid) const

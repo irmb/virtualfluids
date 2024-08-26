@@ -117,7 +117,7 @@ private:
     MPI_Datatype dataSetType, dataSetSmallType, dataSetDoubleType;
     MPI_Datatype boundCondParamType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
 
-    MPIIODataStructures::boundCondParam boundCondParamStr;
+    mpi_io_data_structures::boundCondParam boundCondParamStr;
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCSet> bcSet;
 

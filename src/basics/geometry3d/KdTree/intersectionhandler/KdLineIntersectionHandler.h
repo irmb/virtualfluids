@@ -42,7 +42,7 @@
 // #ifdef CAB_RCF
 // #  include <3rdParty/rcf/RcfSerializationIncludes.h>
 // #end
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class Node;
@@ -55,11 +55,11 @@ public:
                                Node<T> *&child1, Node<T> *&child2) const = 0;
     virtual ~LineIntersectionHandler()                                   = default;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 // #if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-//    SF_NO_CTOR(Kd::LineIntersectionHandler<float>);
-//    SF_NO_CTOR(Kd::LineIntersectionHandler<double>);
+//    SF_NO_CTOR(kd_tree::LineIntersectionHandler<float>);
+//    SF_NO_CTOR(kd_tree::LineIntersectionHandler<double>);
 // #endif //RCF_USE_SF_SERIALIZATI
 #endif // KDLINEINTERSECTIONHANDLER_H
 

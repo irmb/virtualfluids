@@ -62,7 +62,7 @@ class Grid;
 
 enum class SideType;
 
-namespace gg
+namespace grid_generator
 {
 class BoundaryCondition;
 }
@@ -137,7 +137,7 @@ public:
     virtual bool hasGeometryValues() const                                        = 0;
     virtual void getGeometryValues(real *vx, real *vy, real *vz, int level) const = 0;
 
-    virtual SPtr<gg::BoundaryCondition> getBoundaryCondition(SideType side, uint level) const = 0;
+    virtual SPtr<grid_generator::BoundaryCondition> getBoundaryCondition(SideType side, uint level) const = 0;
 
     virtual SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const = 0;
 

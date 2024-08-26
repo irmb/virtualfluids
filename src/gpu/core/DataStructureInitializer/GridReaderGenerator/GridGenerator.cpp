@@ -563,7 +563,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                 continue;
 
             for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-                if (direction == CommunicationDirections::MX || direction == CommunicationDirections::PX) {
+                if (direction == communication_directions::MX || direction == communication_directions::PX) {
                     int tempSend = builder->getNumberOfSendIndices(direction, level);
                     int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
 
@@ -630,7 +630,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     }
                 }
 
-                if (direction == CommunicationDirections::MY || direction == CommunicationDirections::PY) {
+                if (direction == communication_directions::MY || direction == communication_directions::PY) {
                     int tempSend = builder->getNumberOfSendIndices(direction, level);
                     int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
 
@@ -697,7 +697,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     }
                 }
 
-                if (direction == CommunicationDirections::MZ || direction == CommunicationDirections::PZ) {
+                if (direction == communication_directions::MZ || direction == communication_directions::PZ) {
                     int tempSend = builder->getNumberOfSendIndices(direction, level);
                     int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
 

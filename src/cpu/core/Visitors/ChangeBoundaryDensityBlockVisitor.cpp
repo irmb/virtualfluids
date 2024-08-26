@@ -41,7 +41,7 @@
 #include "LBMKernel.h"
 
 ChangeBoundaryDensityBlockVisitor::ChangeBoundaryDensityBlockVisitor(real oldBoundaryDensity, real newBoundaryDensity)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), oldBoundaryDensity(oldBoundaryDensity),
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), oldBoundaryDensity(oldBoundaryDensity),
       newBoundaryDensity(newBoundaryDensity)
 {
 }

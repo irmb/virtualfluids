@@ -60,7 +60,7 @@ public:
    void setRelaxationParameter(Parameter p);
 protected:
    virtual void initDataSet();
-   real f[D3Q27System::ENDF+1];
+   real f[d3q27_system::ENDF+1];
 
    vf::basics::Timer timer;
 

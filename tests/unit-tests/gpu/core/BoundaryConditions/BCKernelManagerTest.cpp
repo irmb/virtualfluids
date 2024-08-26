@@ -156,27 +156,26 @@ public:
     mutable uint numberOfCalls = 0;
     mutable uint numberOfCallsToDirectionalBC = 0;
 
-    std::variant<boundaryCondition, boundaryConditionDirectional> pressureBoundaryConditionFunction;
-    boundaryCondition pressBCWithoutDirection = [this](LBMSimulationParameter*, QforBoundaryConditions*) {
+    std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel> pressureBoundaryConditionFunction;
+    BoundaryConditionKernel pressBCWithoutDirection = [this](LBMSimulationParameter*, QforBoundaryConditions*) {
         numberOfCalls++;
     };
-    boundaryConditionDirectional pressBCDirectional = [this](LBMSimulationParameter*, QforDirectionalBoundaryCondition*) {
-        this->numberOfCallsToDirectionalBC++;
-    };
+    DirectionalBoundaryConditionKernel pressBCDirectional =
+        [this](LBMSimulationParameter*, QforDirectionalBoundaryCondition*) { this->numberOfCallsToDirectionalBC++; };
 
-    [[nodiscard]] boundaryCondition getVelocityBoundaryConditionPost(bool /*isGeometryBC*/) const override
+    [[nodiscard]] BoundaryConditionKernel getVelocityBoundaryConditionPost(bool /*isGeometryBC*/) const override
     {
         return [this](LBMSimulationParameter*, QforBoundaryConditions*) { numberOfCalls++; };
     }
 
-    std::variant<boundaryCondition, boundaryConditionDirectional> getPressureBoundaryConditionPre() const override
+    std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel> getPressureBoundaryConditionPre() const override
     {
         return pressureBoundaryConditionFunction;
     }
 
     [[nodiscard]] bool hasDirectionalPressureBoundaryCondition() const override
     {
-        return std::holds_alternative<boundaryConditionDirectional>(pressureBoundaryConditionFunction);
+        return std::holds_alternative<DirectionalBoundaryConditionKernel>(pressureBoundaryConditionFunction);
     }
 };
 
@@ -209,11 +208,11 @@ TEST_F(BoundaryConditionKernelManagerTest_runBCs, runVelocityBCKernelPost_noBoun
 
 TEST_F(BoundaryConditionKernelManagerTest_runBCs, runPressureBCKernelPre_hasDirectionalBC_callsKernel)
 {
-    bcFactory.pressureBoundaryConditionFunction=bcFactory.pressBCDirectional;
+    bcFactory.pressureBoundaryConditionFunction = bcFactory.pressBCDirectional;
     sut = std::make_unique<BoundaryConditionKernelManager>(
         para, &bcFactory); // reinitialize sut, as the directional BC needs to be set before calling the constructor of
                            // BoundaryConditionKernelManager
-    para->getParD(0)->pressureBCDirectional = {QforDirectionalBoundaryCondition()};
+    para->getParD(0)->pressureBCDirectional = { QforDirectionalBoundaryCondition() };
     sut->runPressureBCKernelPre(0);
     EXPECT_THAT(bcFactory.numberOfCallsToDirectionalBC, testing::Eq(1));
 }

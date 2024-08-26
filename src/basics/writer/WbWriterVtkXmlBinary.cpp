@@ -45,9 +45,9 @@ ofstream createFileStream(const std::string &vtkFilename)
     ofstream outputFileStream(vtkFilename.c_str(), ios::out | ios::binary);
     if (!outputFileStream) {
         outputFileStream.clear();
-        const std::string path = UbSystem::getPathFromString(vtkFilename);
+        const std::string path = ub_system::getPathFromString(vtkFilename);
         if (!path.empty()) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             outputFileStream.open(vtkFilename.c_str(), ios::out | ios::binary);
         }
         if (!outputFileStream) throw UbException(UB_EXARGS, "couldn't open file " + vtkFilename);
@@ -57,7 +57,7 @@ ofstream createFileStream(const std::string &vtkFilename)
 
 void addCollectionHeader(std::ofstream &outputFileStream)
 {
-    std::string endian = UbSystem::isLittleEndian() ? "LittleEndian" : "BigEndian";
+    std::string endian = ub_system::isLittleEndian() ? "LittleEndian" : "BigEndian";
     outputFileStream << "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"" << endian << "\" >" << endl;
     outputFileStream << "   <Collection>" << endl;
 }
@@ -406,8 +406,8 @@ string WbWriterVtkXmlBinary::writeLinesWithLineData(const string &filename, vect
 //   if(!out)
 //   {
 //      out.clear(); //flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-//      string path = UbSystem::getPathFromString(vtkfilename);
-//      if(path.size()>0){ UbSystem::makeDirectory(path); out.open(vtkfilename.c_str(),ios::out | ios::binary);}
+//      string path = ub_system::getPathFromString(vtkfilename);
+//      if(path.size()>0){ ub_system::makeDirectory(path); out.open(vtkfilename.c_str(),ios::out | ios::binary);}
 //      if(!out) throw UbException(UB_EXARGS,"couldn't open file "+vtkfilename);
 //   }
 //

@@ -56,9 +56,9 @@ CalculateForcesSimulationObserver::CalculateForcesSimulationObserver(SPtr<Grid3D
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string file_path = UbSystem::getPathFromString(fname);
+            std::string file_path = ub_system::getPathFromString(fname);
             if (file_path.size() > 0) {
-                UbSystem::makeDirectory(file_path);
+                ub_system::makeDirectory(file_path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)
@@ -109,9 +109,9 @@ void CalculateForcesSimulationObserver::collectData(real step)
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)
@@ -186,7 +186,7 @@ void CalculateForcesSimulationObserver::calculateForces()
             }
             // if we have got discretization with more level
             // deltaX is LBM deltaX and equal LBM deltaT
-            real deltaX = LBMSystem::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
+            real deltaX = lbm_system::getDeltaT(block->getLevel()); // grid->getDeltaT(block);
             real deltaXquadrat = deltaX * deltaX;
             forceX1 *= deltaXquadrat;
             forceX2 *= deltaXquadrat;
@@ -235,18 +235,18 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
 
         dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
-        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir)) {
-                const int invDir = D3Q27System::INVDIR[fdir];
+                const int invDir = d3q27_system::INVDIR[fdir];
                 f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
                 fnbr =
                     dynamicPointerCast<EsoTwist3D>(distributions)
-                        ->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir],
-                                                         x3 + D3Q27System::DX3[invDir], fdir);
+                        ->getPostCollisionDistributionForDirection(x1 + d3q27_system::DX1[invDir], x2 + d3q27_system::DX2[invDir],
+                                                         x3 + d3q27_system::DX3[invDir], fdir);
 
-                forceX1 += (f + fnbr) * D3Q27System::DX1[invDir];
-                forceX2 += (f + fnbr) * D3Q27System::DX2[invDir];
-                forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];
+                forceX1 += (f + fnbr) * d3q27_system::DX1[invDir];
+                forceX2 += (f + fnbr) * d3q27_system::DX2[invDir];
+                forceX3 += (f + fnbr) * d3q27_system::DX3[invDir];
             }
         }
         dynamicPointerCast<EsoTwist3D>(distributions)->swap();

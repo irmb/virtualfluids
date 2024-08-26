@@ -37,7 +37,7 @@
 #include "D3Q27System.h"
 
 RatioBlockVisitor::RatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), maxLevelRatio(1), expandBlocks(true), levelDepth(levelDepth),
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), maxLevelRatio(1), expandBlocks(true), levelDepth(levelDepth),
       includeNotActiveBlocks(includeNotActiveBlocks)
 {
 }

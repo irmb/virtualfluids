@@ -36,7 +36,7 @@
 
 #include <functional>
 
-namespace UbComparators
+namespace ub_comparators
 {
 // type_traits
 template <typename T>
@@ -171,15 +171,15 @@ struct compareMember {
 //   l.sort( compareConstMethods<Klasse, double,  &Klasse::getVal1 >() );
 //}
 
-} // namespace UbComparators
+} // namespace ub_comparators
 
 #endif // UBCOMPARATOR_H
 
 // example
-// #include <basics/utilities/UbComparators.h"
+// #include <basics/utilities/ub_comparators.h"
 // #include <list>
 // using namespace std;
-// using namespace UbComparators;
+// using namespace ub_comparators;
 //
 // struct S {
 //    S(int i) :x(i) {}
@@ -212,21 +212,21 @@ struct compareMember {
 //    list<S> sList;
 //    sList.push_back(a);
 //    sList.push_back(b);
-//    sList.sort(UbComparators::membercomp(&S::x,intComp()));  //calls overload (1)
-//    sList.sort(UbComparators::membercomp<intComp>(&S::x));   //same
-//    sList.sort(UbComparators::membercomp(&S::x));            //calls overload (5)
-//    sList.sort(UbComparators::membercomp<genComp>(&S::x));   //calls overload(3)
-//    sList.sort(UbComparators::membercomp(&S::x, genComp<int>())); //calls overload(1)
+//    sList.sort(ub_comparators::membercomp(&S::x,intComp()));  //calls overload (1)
+//    sList.sort(ub_comparators::membercomp<intComp>(&S::x));   //same
+//    sList.sort(ub_comparators::membercomp(&S::x));            //calls overload (5)
+//    sList.sort(ub_comparators::membercomp<genComp>(&S::x));   //calls overload(3)
+//    sList.sort(ub_comparators::membercomp(&S::x, genComp<int>())); //calls overload(1)
 //    //same for nonconst function
-//    sList.sort(UbComparators::membercomp(&S::f, dblComp())); //overload(2)
-//    sList.sort(UbComparators::membercomp<dblComp>(&S::f));   //same
-//    sList.sort(UbComparators::membercomp(&S::f));            //overload(6)
-//    sList.sort(UbComparators::membercomp<genComp>(&S::f));   //overload(4)
+//    sList.sort(ub_comparators::membercomp(&S::f, dblComp())); //overload(2)
+//    sList.sort(ub_comparators::membercomp<dblComp>(&S::f));   //same
+//    sList.sort(ub_comparators::membercomp(&S::f));            //overload(6)
+//    sList.sort(ub_comparators::membercomp<genComp>(&S::f));   //overload(4)
 //    //same for const function
-//    sList.sort(UbComparators::membercomp(&S::g, dblComp())); //overload(2)
-//    sList.sort(UbComparators::membercomp<dblComp>(&S::g));   //same
-//    sList.sort(UbComparators::membercomp(&S::g));            //overload(6)
-//    sList.sort(UbComparators::membercomp<genComp>(&S::g));   //overload(4)
+//    sList.sort(ub_comparators::membercomp(&S::g, dblComp())); //overload(2)
+//    sList.sort(ub_comparators::membercomp<dblComp>(&S::g));   //same
+//    sList.sort(ub_comparators::membercomp(&S::g));            //overload(6)
+//    sList.sort(ub_comparators::membercomp<genComp>(&S::g));   //overload(4)
 // }
 
 //! \}

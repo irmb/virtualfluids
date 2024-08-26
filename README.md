@@ -20,7 +20,7 @@ The pages contain information about the installation, usage and development of V
 VirtualFluids is licensed under the terms and conditions of the GNU General Public License (GPL) version 3 or - at your choice - any later.
 
 See the file [COPYING.txt](COPYING.txt) for copying permissions. 
-For a full list of contributors see <!-- DOXYGEN_MAKE_REF -->[AUTHORS](authors). If you notice that a contributor is missing on the list, please contact us or open a merge request to add the name.
+For a full list of contributors see <!-- DOXYGEN_MAKE_REF -->[AUTHORS](AUTHORS.md). If you notice that a contributor is missing on the list, please contact us or open a merge request to add the name.
 
 ### How to cite
 VirtualFluids is research software developed at research institutions.
@@ -28,7 +28,7 @@ You can cite specific releases via Zenodo: [![DOI](https://zenodo.org/badge/DOI/
 
 ### Get in touch
 You can find our main repository, where the development takes place [here](https://git.rz.tu-bs.de/irmb/VirtualFluids).
-Contributions are highly welcome. Please review the <!-- DOXYGEN_MAKE_REF -->[contribution guidelines](contributing) before opening issues and merge requests.
+Contributions are highly welcome. Please review the <!-- DOXYGEN_MAKE_REF -->[contribution guidelines](Contributing.md) before opening issues and merge requests.
 
 If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new).
 

@@ -162,7 +162,7 @@ public:
 
     void writeArrows(std::string fileName) const override;
 
-    SPtr<gg::BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
+    SPtr<grid_generator::BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
     SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;
 
 protected:

@@ -36,6 +36,7 @@
 #include <basics/DataTypes.h>
 #include <basics/config/ConfigurationFile.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/Axis.h>
 
 #include <logger/Logger.h>
 
@@ -240,7 +241,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setDensityRatio(c1o1);
 
     para->setUseStreams(numberOfProcesses > 1);
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
     para->setTimestepStartOut(uint(timeStartOut / deltaT));
     para->setTimestepOut(uint(timeOut / deltaT));
@@ -281,23 +282,23 @@ void run(const vf::basics::ConfigurationFile& config)
 
     if (numberOfProcesses > 1) {
         if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, processID + 1);
+            gridBuilder->findCommunicationIndices(communication_directions::PX);
+            gridBuilder->setCommunicationProcess(communication_directions::PX, processID + 1);
         }
 
         if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX, true);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, processID - 1);
+            gridBuilder->findCommunicationIndices(communication_directions::MX, true);
+            gridBuilder->setCommunicationProcess(communication_directions::MX, processID - 1);
         }
 
         if (isFirstSubDomain && !usePrecursorInflow) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, numberOfProcesses - 1);
+            gridBuilder->findCommunicationIndices(communication_directions::MX);
+            gridBuilder->setCommunicationProcess(communication_directions::MX, numberOfProcesses - 1);
         }
 
         if (isLastSubDomain && !usePrecursorInflow) {
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 0);
+            gridBuilder->findCommunicationIndices(communication_directions::PX);
+            gridBuilder->setCommunicationProcess(communication_directions::PX, 0);
         }
     }
 
@@ -336,7 +337,7 @@ void run(const vf::basics::ConfigurationFile& config)
     if (!usePrecursorInflow && (isFirstSubDomain || !isMultiGPU)) {
         const auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
             para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe", timeStepStartAveraging,
-            timeStepStartTemporalAveraging, timeStepAveraging, timeStepStartOutProbe, timeStepOutProbe, PlanarAverageProbe::PlaneNormal::z, true);
+            timeStepStartTemporalAveraging, timeStepAveraging, timeStepStartOutProbe, timeStepOutProbe, Axis::z, true, false);
         planarAverageProbe->addAllAvailableStatistics();
         planarAverageProbe->setFileNameToNOut();
         para->addSampler(planarAverageProbe);

@@ -211,10 +211,10 @@ void AverageValuesSimulationObserver::collectData(real step)
     }
 
     string pfilePath, partPath, subfolder, cfilePath;
-    subfolder = "av" + UbSystem::toString(istep);
+    subfolder = "av" + ub_system::toString(istep);
     pfilePath = path + "/av/" + subfolder;
     cfilePath = path + "/av/av_collection";
-    partPath  = pfilePath + "/av" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/av" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
     size_t found    = partName.find_last_of("/");
@@ -369,7 +369,7 @@ void AverageValuesSimulationObserver::addData(const SPtr<Block3D> block)
 //////////////////////////////////////////////////////////////////////////
 void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::basics::constant;
 
     // Funktionszeiger
@@ -415,7 +415,7 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
                                 //////////////////////////////////////////////////////////////////////////
                                 real vx, vy, vz, rho;
                                 calcMacros(f, rho, vx, vy, vz);
-                                real press = D3Q27System::calcPress(f, rho, vx, vy, vz);
+                                real press = d3q27_system::calcPress(f, rho, vx, vy, vz);
 
                                 //////////////////////////////////////////////////////////////////////////
                                 // compute average values
@@ -490,13 +490,13 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 //    if (comm->getProcessID() == comm->getRoot())
 //    {
 //        std::ofstream ostr;
-//        string fname = path + "_PlotData_" + UbSystem::toString(step) + ".txt";
+//        string fname = path + "_PlotData_" + ub_system::toString(step) + ".txt";
 //        ostr.open(fname.c_str(), std::ios_base::out);
 //        if(!ostr)
 //        {
 //            ostr.clear();
-//            string path = UbSystem::getPathFromString(fname);
-//            if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out);}
+//            string path = ub_system::getPathFromString(fname);
+//            if(path.size()>0){ ub_system::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out);}
 //            if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
 //        }
 //        ostr << "Time"<< "\t" <<"Ref.Time"<<"\t"<< "Z_Coor"<< "\t" << "Pore fraction" << "\t";
@@ -565,8 +565,8 @@ void AverageValuesSimulationObserver::calculateAverageValues(real timeStep)
 //                    if(!ostr)
 //                    {
 //                        ostr.clear();
-//                        string path = UbSystem::getPathFromString(fname);
-//                        if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out |
+//                        string path = ub_system::getPathFromString(fname);
+//                        if(path.size()>0){ ub_system::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out |
 //std::ios_base::app);}                         if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
 //                    }
 //                    ostr << istep << "\t" << resetStep << "\t" << hi+0.5*dx << "\t" << nn1/(nn1+ns1)*100.0 << "%\t";

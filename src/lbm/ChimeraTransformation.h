@@ -33,13 +33,6 @@
 #ifndef LBM_CHIMERA_H
 #define LBM_CHIMERA_H
 
-#ifndef __host__
-#define __host__
-#endif
-#ifndef __device__
-#define __device__
-#endif
-
 #include <basics/DataTypes.h>
 
 #include <basics/constants/NumericConstants.h>
@@ -55,8 +48,7 @@ namespace vf::lbm
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline __host__ __device__ void forwardInverseChimeraWithK(real &mfa, real &mfb, real &mfc, real vv,
-                                       real v2, real Kinverse, real K)
+constexpr void forwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K)
 {
     const real m2 = mfa + mfc;
     const real m1 = mfc - mfa;
@@ -75,8 +67,7 @@ inline __host__ __device__ void forwardInverseChimeraWithK(real &mfa, real &mfb,
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! ] Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline __host__ __device__ void backwardInverseChimeraWithK(real &mfa, real &mfb, real &mfc, real vv,
-                                        real v2, real Kinverse, real K)
+constexpr void backwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K)
 {
     const real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 - vv) * c1o2) * K;
     const real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (-v2)) * K;
@@ -93,7 +84,7 @@ inline __host__ __device__ void backwardInverseChimeraWithK(real &mfa, real &mfb
 //! for \f$ K_{abc}=0 \f$. This is to avoid unnecessary floating point operations.
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline __host__ __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
+constexpr void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
 {
     const real m1 = (mfa + mfc) + mfb;
     const real m2 = mfc - mfa;
@@ -110,7 +101,7 @@ inline __host__ __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, 
 //! for \f$ K_{abc}=0 \f$. This is to avoid unnessary floating point operations.
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-inline __host__ __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
+constexpr void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
 {
     const real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
     const real mb = ((mfa - mfc) - mfa * v2) - c2o1 * mfb * vv;
@@ -120,8 +111,7 @@ inline __host__ __device__ void backwardChimera(real &mfa, real &mfb, real &mfc,
     mfa = ma;
 }
 
-
-inline __host__ __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K) 
+constexpr void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K)
 {
 
     const real m2 = mfa + mfc;
@@ -136,8 +126,7 @@ inline __host__ __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &
     //mfc = m2 - two*    m1 * vv + v2 * m0;
 }
 
-
-inline __host__ __device__ void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K) 
+constexpr void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K)
 {
     const real  m0 = (mfc - mfb)* c1o2 + mfb * (vv)+(mfa + K) * (v2 - vv) * c1o2;
     const real m1 = (mfa - mfc) - c2o1* mfb * vv + (mfa + K) * (-v2);

@@ -37,13 +37,13 @@
 
 #include <GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
 
-#include "BoundaryConditions/Outflow/Outflow.h"
-#include "BoundaryConditions/Pressure/Pressure.h"
 #include "BoundaryConditions/NoSlip/NoSlip.h"
-#include "BoundaryConditions/Velocity/Velocity.h"
+#include "BoundaryConditions/Outflow/Outflow.h"
+#include "BoundaryConditions/Precursor/Precursor.h"
+#include "BoundaryConditions/Pressure/Pressure.h"
 #include "BoundaryConditions/Slip/Slip.h"
 #include "BoundaryConditions/Stress/Stress.h"
-#include "BoundaryConditions/Precursor/Precursor.h"
+#include "BoundaryConditions/Velocity/Velocity.h"
 #include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
@@ -51,40 +51,39 @@ void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryC
     this->velocityBoundaryCondition = boundaryConditionType;
 }
 
-void BoundaryConditionFactory::setNoSlipBoundaryCondition(const NoSlipBC boundaryConditionType)
+void BoundaryConditionFactory::setNoSlipBoundaryCondition(NoSlipBC boundaryConditionType)
 {
     this->noSlipBoundaryCondition = boundaryConditionType;
 }
 
-void BoundaryConditionFactory::setSlipBoundaryCondition(const SlipBC boundaryConditionType)
+void BoundaryConditionFactory::setSlipBoundaryCondition(SlipBC boundaryConditionType)
 {
     this->slipBoundaryCondition = boundaryConditionType;
 }
 
-void BoundaryConditionFactory::setPressureBoundaryCondition(const PressureBC boundaryConditionType)
+void BoundaryConditionFactory::setPressureBoundaryCondition(PressureBC boundaryConditionType)
 {
     this->pressureBoundaryCondition = boundaryConditionType;
 }
 
-void BoundaryConditionFactory::setGeometryBoundaryCondition(
-    const std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType)
+void BoundaryConditionFactory::setGeometryBoundaryCondition(std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType)
 {
     this->geometryBoundaryCondition = boundaryConditionType;
 }
 
-void BoundaryConditionFactory::setStressBoundaryCondition(const StressBC boundaryConditionType)
+void BoundaryConditionFactory::setStressBoundaryCondition(StressBC boundaryConditionType)
 {
     this->stressBoundaryCondition = boundaryConditionType;
 }
 
-void BoundaryConditionFactory::setPrecursorBoundaryCondition(const PrecursorBC boundaryConditionType)
+void BoundaryConditionFactory::setPrecursorBoundaryCondition(PrecursorBC boundaryConditionType)
 {
     this->precursorBoundaryCondition = boundaryConditionType;
 }
 
-boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
+BoundaryConditionKernel BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
-    const VelocityBC &boundaryCondition =
+    const VelocityBC& boundaryCondition =
         isGeometryBC ? std::get<VelocityBC>(this->geometryBoundaryCondition) : this->velocityBoundaryCondition;
 
     // for descriptions of the boundary conditions refer to the header
@@ -106,15 +105,15 @@ boundaryCondition BoundaryConditionFactory::getVelocityBoundaryConditionPost(boo
     }
 }
 
-boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool isGeometryBC) const
+BoundaryConditionKernel BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool isGeometryBC) const
 {
-    const NoSlipBC &boundaryCondition =
+    const NoSlipBC& boundaryCondition =
         isGeometryBC ? std::get<NoSlipBC>(this->geometryBoundaryCondition) : this->noSlipBoundaryCondition;
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
         case NoSlipBC::NoSlipDelayBounceBack:
-            return [](LBMSimulationParameter *, QforBoundaryConditions *) {};
+            return [](LBMSimulationParameter*, QforBoundaryConditions*) {};
             break;
         case NoSlipBC::NoSlipBounceBack:
             return NoSlipBounceBack;
@@ -130,9 +129,9 @@ boundaryCondition BoundaryConditionFactory::getNoSlipBoundaryConditionPost(bool 
     }
 }
 
-boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool isGeometryBC) const
+BoundaryConditionKernel BoundaryConditionFactory::getSlipBoundaryConditionPost(bool isGeometryBC) const
 {
-    const SlipBC &boundaryCondition =
+    const SlipBC& boundaryCondition =
         isGeometryBC ? std::get<SlipBC>(this->geometryBoundaryCondition) : this->slipBoundaryCondition;
 
     // for descriptions of the boundary conditions refer to the header
@@ -148,33 +147,33 @@ boundaryCondition BoundaryConditionFactory::getSlipBoundaryConditionPost(bool is
     }
 }
 
-std::variant<boundaryCondition, boundaryConditionDirectional>
+std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel>
 BoundaryConditionFactory::getPressureBoundaryConditionPre() const
 {
     // for descriptions of the boundary conditions refer to the header
     switch (this->pressureBoundaryCondition) {
         case PressureBC::PressureNonEquilibriumIncompressible:
-            return (boundaryConditionDirectional)PressureNonEquilibriumIncompressible;
+            return (DirectionalBoundaryConditionKernel)PressureNonEquilibriumIncompressible;
             break;
         case PressureBC::PressureNonEquilibriumCompressible:
-            return (boundaryConditionDirectional)PressureNonEquilibriumCompressible;
+            return (DirectionalBoundaryConditionKernel)PressureNonEquilibriumCompressible;
             break;
         case PressureBC::OutflowNonReflective:
-            return (boundaryConditionDirectional)OutflowNonReflecting;
+            return (DirectionalBoundaryConditionKernel)OutflowNonReflecting;
             break;
         case PressureBC::OutflowNonReflectivePressureCorrection:
-            return (boundaryConditionDirectional)OutflowNonReflectingPressureCorrection;
+            return (DirectionalBoundaryConditionKernel)OutflowNonReflectingPressureCorrection;
         default:
-            return (boundaryCondition) nullptr;
+            return (BoundaryConditionKernel) nullptr;
     }
 }
 
 bool BoundaryConditionFactory::hasDirectionalPressureBoundaryCondition() const
 {
-    return std::holds_alternative<boundaryConditionDirectional>(getPressureBoundaryConditionPre());
+    return std::holds_alternative<DirectionalBoundaryConditionKernel>(getPressureBoundaryConditionPre());
 }
 
-precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryConditionPost() const
+PrecursorBoundaryConditionKernel BoundaryConditionFactory::getPrecursorBoundaryConditionPost() const
 {
     switch (this->precursorBoundaryCondition) {
         case PrecursorBC::PrecursorNonReflectiveCompressible:
@@ -188,7 +187,7 @@ precursorBoundaryConditionFunc BoundaryConditionFactory::getPrecursorBoundaryCon
     }
 }
 
-boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryConditionPost() const
+BoundaryConditionWithParameterKernel BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
         case StressBC::StressBounceBackCompressible:
@@ -205,13 +204,13 @@ boundaryConditionWithParameter BoundaryConditionFactory::getStressBoundaryCondit
     }
 }
 
-boundaryCondition BoundaryConditionFactory::getGeometryBoundaryConditionPost() const
+BoundaryConditionKernel BoundaryConditionFactory::getGeometryBoundaryConditionPost() const
 {
     if (std::holds_alternative<VelocityBC>(this->geometryBoundaryCondition))
         return this->getVelocityBoundaryConditionPost(true);
-    else if (std::holds_alternative<NoSlipBC>(this->geometryBoundaryCondition))
+    if (std::holds_alternative<NoSlipBC>(this->geometryBoundaryCondition))
         return this->getNoSlipBoundaryConditionPost(true);
-    else if (std::holds_alternative<SlipBC>(this->geometryBoundaryCondition))
+    if (std::holds_alternative<SlipBC>(this->geometryBoundaryCondition))
         return this->getSlipBoundaryConditionPost(true);
     return nullptr;
 }

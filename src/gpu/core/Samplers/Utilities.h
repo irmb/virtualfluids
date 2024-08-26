@@ -63,7 +63,7 @@ inline std::string makeTimeseriesFileName(const std::string& probeName, int leve
 }
 
 template <typename T>
-__host__ __device__ inline T computeNewTimeAverage(T oldAverage, T newValue, real inverseNumberOfTimesteps)
+constexpr inline T computeNewTimeAverage(T oldAverage, T newValue, real inverseNumberOfTimesteps)
 {
     return oldAverage + (newValue - oldAverage) * inverseNumberOfTimesteps;
 }

@@ -126,11 +126,11 @@ public:
 
         // falls punkt innerhalt ist: minimalen abstand ausrechnen
         if (this->isPointInGbObject3D(x1p, x2p, x3p)) {
-            double x1Dist = UbMath::min(std::abs(x1p - this->getX1Minimum()), std::abs(x1p - this->getX1Maximum()));
-            double x2Dist = UbMath::min(std::abs(x2p - this->getX2Minimum()), std::abs(x2p - this->getX2Maximum()));
-            double x3Dist = UbMath::min(std::abs(x3p - this->getX3Minimum()), std::abs(x3p - this->getX3Maximum()));
+            double x1Dist = ub_math::min(std::abs(x1p - this->getX1Minimum()), std::abs(x1p - this->getX1Maximum()));
+            double x2Dist = ub_math::min(std::abs(x2p - this->getX2Minimum()), std::abs(x2p - this->getX2Maximum()));
+            double x3Dist = ub_math::min(std::abs(x3p - this->getX3Minimum()), std::abs(x3p - this->getX3Maximum()));
 
-            return UbMath::min(x1Dist, x2Dist, x3Dist);
+            return ub_math::min(x1Dist, x2Dist, x3Dist);
         } else {
         }
     }

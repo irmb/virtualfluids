@@ -44,7 +44,7 @@
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 #include "grid/GridDimensions.h"
 
-using namespace CommunicationDirections;
+using namespace communication_directions;
 
 MultipleGridBuilderFacade::MultipleGridBuilderFacade(SPtr<MultipleGridBuilder> gridBuilder,
                                                      SPtr<GridDimensions> gridDimensions,
@@ -168,12 +168,12 @@ void MultipleGridBuilderFacade::configureSubDomainGrids()
     real zMaxCoarseGrid = zValues[index.at(Axis::z) + 1];
 
     // add overlap
-    xMinCoarseGrid -= (hasNeighbors[CommunicationDirections::MX]) ? overlapOfSubdomains.value() : 0;
-    yMinCoarseGrid -= (hasNeighbors[CommunicationDirections::MY]) ? overlapOfSubdomains.value() : 0;
-    zMinCoarseGrid -= (hasNeighbors[CommunicationDirections::MZ]) ? overlapOfSubdomains.value() : 0;
-    xMaxCoarseGrid += (hasNeighbors[CommunicationDirections::PX]) ? overlapOfSubdomains.value() : 0;
-    yMaxCoarseGrid += (hasNeighbors[CommunicationDirections::PY]) ? overlapOfSubdomains.value() : 0;
-    zMaxCoarseGrid += (hasNeighbors[CommunicationDirections::PZ]) ? overlapOfSubdomains.value() : 0;
+    xMinCoarseGrid -= (hasNeighbors[communication_directions::MX]) ? overlapOfSubdomains.value() : 0;
+    yMinCoarseGrid -= (hasNeighbors[communication_directions::MY]) ? overlapOfSubdomains.value() : 0;
+    zMinCoarseGrid -= (hasNeighbors[communication_directions::MZ]) ? overlapOfSubdomains.value() : 0;
+    xMaxCoarseGrid += (hasNeighbors[communication_directions::PX]) ? overlapOfSubdomains.value() : 0;
+    yMaxCoarseGrid += (hasNeighbors[communication_directions::PY]) ? overlapOfSubdomains.value() : 0;
+    zMaxCoarseGrid += (hasNeighbors[communication_directions::PZ]) ? overlapOfSubdomains.value() : 0;
 
     // add coarse grid
     gridBuilder->addCoarseGrid(xMinCoarseGrid, yMinCoarseGrid, zMinCoarseGrid, xMaxCoarseGrid, yMaxCoarseGrid,
@@ -204,27 +204,27 @@ void MultipleGridBuilderFacade::setUpCommunicationNeighbors()
             gridBuilder->findCommunicationIndices(direction);
 
             switch (direction) {
-                case CommunicationDirections::MX:
+                case communication_directions::MX:
                     gridBuilder->setCommunicationProcess(
                         direction, getIndex1D(index.at(Axis::x) - 1, index.at(Axis::y), index.at(Axis::z)));
                     break;
-                case CommunicationDirections::MY:
+                case communication_directions::MY:
                     gridBuilder->setCommunicationProcess(
                         direction, getIndex1D(index.at(Axis::x), index.at(Axis::y) - 1, index.at(Axis::z)));
                     break;
-                case CommunicationDirections::MZ:
+                case communication_directions::MZ:
                     gridBuilder->setCommunicationProcess(
                         direction, getIndex1D(index.at(Axis::x), index.at(Axis::y), index.at(Axis::z) - 1));
                     break;
-                case CommunicationDirections::PX:
+                case communication_directions::PX:
                     gridBuilder->setCommunicationProcess(
                         direction, getIndex1D(index.at(Axis::x) + 1, index.at(Axis::y), index.at(Axis::z)));
                     break;
-                case CommunicationDirections::PY:
+                case communication_directions::PY:
                     gridBuilder->setCommunicationProcess(
                         direction, getIndex1D(index.at(Axis::x), index.at(Axis::y) + 1, index.at(Axis::z)));
                     break;
-                case CommunicationDirections::PZ:
+                case communication_directions::PZ:
                     gridBuilder->setCommunicationProcess(
                         direction, getIndex1D(index.at(Axis::x), index.at(Axis::y), index.at(Axis::z) + 1));
                     break;
@@ -235,12 +235,12 @@ void MultipleGridBuilderFacade::setUpCommunicationNeighbors()
 
 void MultipleGridBuilderFacade::checkForNeighbors()
 {
-    hasNeighbors[CommunicationDirections::MX] = (index.at(Axis::x) > 0);
-    hasNeighbors[CommunicationDirections::MY] = (index.at(Axis::y) > 0);
-    hasNeighbors[CommunicationDirections::MZ] = (index.at(Axis::z) > 0);
-    hasNeighbors[CommunicationDirections::PX] = (index.at(Axis::x) < numberOfSubdomains[Axis::x] - 1);
-    hasNeighbors[CommunicationDirections::PY] = (index.at(Axis::y) < numberOfSubdomains[Axis::y] - 1);
-    hasNeighbors[CommunicationDirections::PZ] = (index.at(Axis::z) < numberOfSubdomains[Axis::z] - 1);
+    hasNeighbors[communication_directions::MX] = (index.at(Axis::x) > 0);
+    hasNeighbors[communication_directions::MY] = (index.at(Axis::y) > 0);
+    hasNeighbors[communication_directions::MZ] = (index.at(Axis::z) > 0);
+    hasNeighbors[communication_directions::PX] = (index.at(Axis::x) < numberOfSubdomains[Axis::x] - 1);
+    hasNeighbors[communication_directions::PY] = (index.at(Axis::y) < numberOfSubdomains[Axis::y] - 1);
+    hasNeighbors[communication_directions::PZ] = (index.at(Axis::z) < numberOfSubdomains[Axis::z] - 1);
 }
 
 void MultipleGridBuilderFacade::addFineGridsToGridBuilder()

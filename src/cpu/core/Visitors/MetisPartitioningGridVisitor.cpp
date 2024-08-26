@@ -292,7 +292,7 @@ void MetisPartitioningGridVisitor::clear()
 //////////////////////////////////////////////////////////////////////////
 int MetisPartitioningGridVisitor::getEdgeWeight(int dir)
 {
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::lbm::dir;
 
     if (dir <= (int)d00M) {

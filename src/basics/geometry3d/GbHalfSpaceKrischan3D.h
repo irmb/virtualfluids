@@ -72,16 +72,16 @@ public:
     /*=============================================*/
     bool ptInside(const double &x, const double &y, const double &z)
     {
-        return UbMath::lessEqual(Normal[0] * x + Normal[1] * y + Normal[2] * z, this->d);
+        return ub_math::lessEqual(Normal[0] * x + Normal[1] * y + Normal[2] * z, this->d);
     }
     /*=============================================*/
     bool ptInside(GbPoint3D *PointX)
     {
         GbVector3D X(PointX->x1, PointX->x2, PointX->x3);
-        return UbMath::lessEqual(this->Normal.Dot(X), this->d);
+        return ub_math::lessEqual(this->Normal.Dot(X), this->d);
     }
     /*=============================================*/
-    bool ptInside(GbVector3D &X) { return UbMath::lessEqual(this->Normal.Dot(X), this->d); }
+    bool ptInside(GbVector3D &X) { return ub_math::lessEqual(this->Normal.Dot(X), this->d); }
 
     /*=====================================================*/
     // true, wenn 'in Object' oder 'auf Boundary'!
@@ -127,7 +127,7 @@ public:
                 return NULL;
 
             // distance ausrechnen (groesser null)
-            if (UbMath::less(dist1, 0.0))
+            if (ub_math::less(dist1, 0.0))
                 throw UbException(UB_EXARGS, "Punkt ausserhalb, aber Distanz kleiner null???");
 
             p1->x1 = p1->x1 + dist1 / totalDist * p1p2[0];
@@ -140,7 +140,7 @@ public:
                 return NULL;
 
             // distance ausrechnen (groesser null)
-            if (UbMath::less(dist2, 0.0))
+            if (ub_math::less(dist2, 0.0))
                 throw UbException(UB_EXARGS, "Punkt ausserhalb, aber Distanz kleiner null???");
 
             p2->x1 = p2->x1 - dist2 / totalDist * p1p2[0];

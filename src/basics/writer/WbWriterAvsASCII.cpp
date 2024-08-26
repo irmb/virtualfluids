@@ -47,9 +47,9 @@ std::string WbWriterAvsASCII::writeQuads(const std::string &filename, std::vecto
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -132,9 +132,9 @@ std::string WbWriterAvsASCII::writeOcts(const std::string &filename, std::vector
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -227,9 +227,9 @@ std::string WbWriterAvsASCII::writeQuadsWithNodeData(const string &filename, vec
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -359,9 +359,9 @@ std::string WbWriterAvsASCII::writeQuadsWithCellData(const string &filename, vec
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -496,9 +496,9 @@ std::string WbWriterAvsASCII::writeQuadsWithNodeAndCellData(const string &filena
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -675,9 +675,9 @@ std::string WbWriterAvsASCII::writeLines(const string &filename, vector<UbTupleF
     ofstream out(avsfilename.c_str(), ios::out);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out);
         }
         if (!out)
@@ -711,9 +711,9 @@ std::string WbWriterAvsASCII::writeTriangles(const string &filename, vector<UbTu
     ofstream out(avsfilename.c_str(), ios::out);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out);
         }
         if (!out)
@@ -750,9 +750,9 @@ std::string WbWriterAvsASCII::writeTrianglesWithNodeData(const std::string &file
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -882,9 +882,9 @@ std::string WbWriterAvsASCII::writeOctsWithCellData(const string &filename, vect
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)
@@ -1023,9 +1023,9 @@ std::string WbWriterAvsASCII::writeOctsWithNodeData(const string &filename, vect
     ofstream out(avsfilename.c_str(), ios::out | ios::binary);
     if (!out) {
         out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!outfile) weiterhin true!!!
-        string path = UbSystem::getPathFromString(avsfilename);
+        string path = ub_system::getPathFromString(avsfilename);
         if (path.size() > 0) {
-            UbSystem::makeDirectory(path);
+            ub_system::makeDirectory(path);
             out.open(avsfilename.c_str(), ios::out | ios::binary);
         }
         if (!out)

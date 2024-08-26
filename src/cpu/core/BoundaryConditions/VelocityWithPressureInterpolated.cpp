@@ -58,7 +58,7 @@ void VelocityWithPressureInterpolated::applyBC()
     using namespace vf::basics::constant;
 
    //velocity bc for non reflecting pressure bc
-   real f[D3Q27System::ENDF+1];
+   real f[d3q27_system::ENDF+1];
    //real feq[D3Q27System::ENDF+1];
    distributions->getPostCollisionDistribution(f, x1, x2, x3);
    real rho, vx1, vx2, vx3, drho;
@@ -67,11 +67,11 @@ void VelocityWithPressureInterpolated::applyBC()
    
    rho = c1o1+drho*compressibleFactor;
 
-   for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
+   for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++)
    {
-        int nX1 = x1 + D3Q27System::DX1[fdir];
-        int nX2 = x2 + D3Q27System::DX2[fdir];
-        int nX3 = x3 + D3Q27System::DX3[fdir];
+        int nX1 = x1 + d3q27_system::DX1[fdir];
+        int nX2 = x2 + d3q27_system::DX2[fdir];
+        int nX3 = x3 + d3q27_system::DX3[fdir];
 
         int minX1 = 0;
         int minX2 = 0;
@@ -83,7 +83,7 @@ void VelocityWithPressureInterpolated::applyBC()
 
         if (minX1 <= nX1 && maxX1 > nX1 && minX2 <= nX2 && maxX2 > nX2 && minX3 <= nX3 && maxX3 > nX3) {
             if (bcArray->isSolid(nX1, nX2, nX3)) {
-                const int invDir = D3Q27System::INVDIR[fdir];
+                const int invDir = d3q27_system::INVDIR[fdir];
                 //real q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
                 real velocity = bcPtr->getBoundaryVelocity(fdir);
                 
@@ -94,7 +94,7 @@ void VelocityWithPressureInterpolated::applyBC()
                 // if q=1
                 // real fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 +
                 // q))-drho*D3Q27System::WEIGTH[invDir];
-                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / vf::basics::constant::c2o1 - drho * D3Q27System::WEIGTH[invDir];
+                real fReturn = (f[fdir] + f[invDir] - velocity * rho) / vf::basics::constant::c2o1 - drho * d3q27_system::WEIGTH[invDir];
 
                 distributions->setPostCollisionDistributionForDirection(fReturn, nX1, nX2, nX3, invDir);
             }

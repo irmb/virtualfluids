@@ -52,8 +52,8 @@ SPtr<BCStrategy> ThinWallNoSlip::clone()
 //////////////////////////////////////////////////////////////////////////
 void ThinWallNoSlip::applyBC()
 {
-    real f[D3Q27System::ENDF + 1];
-    real feq[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
+    real feq[d3q27_system::ENDF + 1];
     distributions->getPostCollisionDistribution(f, x1, x2, x3);
     real rho, vx1, vx2, vx3;
     calcMacrosFct(f, rho, vx1, vx2, vx3);
@@ -61,9 +61,9 @@ void ThinWallNoSlip::applyBC()
 
     real fReturn;
 
-    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+    for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
         if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
-            const int invDir = D3Q27System::INVDIR[fdir];
+            const int invDir = d3q27_system::INVDIR[fdir];
             if (pass == 1) {
                 real q = bcPtr->getQ(invDir);
                 fReturn   = ((vf::basics::constant::c1o1 - q) / (vf::basics::constant::c1o1 + q)) * vf::basics::constant::c1o2 *
@@ -77,8 +77,8 @@ void ThinWallNoSlip::applyBC()
                 // fReturn = distributionsTemp->getPostCollisionDistributionForDirection(x1 + D3Q27System::DX1[invDir], x2 +
                 // D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], fdir);
                 fReturn = fTemp[fdir];
-                distributions->setPostCollisionDistributionForDirection(fReturn, x1 + D3Q27System::DX1[invDir],
-                                                           x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir],
+                distributions->setPostCollisionDistributionForDirection(fReturn, x1 + d3q27_system::DX1[invDir],
+                                                           x2 + d3q27_system::DX2[invDir], x3 + d3q27_system::DX3[invDir],
                                                            fdir);
             }
         }

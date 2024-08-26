@@ -71,10 +71,10 @@ void WriteGbObjectsSimulationObserver::collectData(real step)
 
     std::string pfilePath, partPath, subfolder, cfilePath;
 
-    subfolder = "gob" + UbSystem::toString(istep);
+    subfolder = "gob" + ub_system::toString(istep);
     pfilePath = path + "/gob/" + subfolder;
     cfilePath = path + "/gob/gob_collection";
-    partPath  = pfilePath + "/gob" + UbSystem::toString(comm->getProcessID()) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/gob" + ub_system::toString(comm->getProcessID()) + "_" + ub_system::toString(istep);
 
     std::string partName = writer->writeTriangles(partPath, nodes, triangles);
 
