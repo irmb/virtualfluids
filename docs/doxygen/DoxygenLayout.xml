@@ -20,7 +20,7 @@
             <tab type="user" url="@ref regression-tests" visible="yes" title="Regression Tests" intro=""/>
             <tab type="user" url="@ref performance-tests" visible="yes" title="Performance Tests" intro=""/>
         </tab>
-        <tab type="usergroup" title="Development" url="@ref project-structure">
+        <tab type="usergroup" title="Maintenance" url="@ref review-merge-request">
             <tab type="user" url="@ref review-merge-request" visible="yes" title="Review Merge Request" intro=""/>
             <tab type="user" url="@ref how-to-license" visible="yes" title="How to License" intro=""/>
             <tab type="user" url="@ref release" visible="yes" title="Release" intro=""/>
