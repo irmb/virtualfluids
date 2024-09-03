@@ -637,7 +637,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
         for (int i = x; i <= x + 1; i++) {
             for (int j = y; j <= y + 1; j++) {
                 for (int k = z; k <= z + 1; k++) {
-                    Vector3D pointplane1 = grid->getNodeCoordinates(block, i, j, k);
+                    GbVector3D pointplane1 = grid->getNodeCoordinates(block, i, j, k);
 
                     real iph = pointplane1[0];
                     real jph = pointplane1[1];
@@ -950,7 +950,7 @@ void ShearStressSimulationObserver::initDistance()
                     //////get normal and distance//////
                     real A, B, C, D, ii = c0o1;
                     findPlane(ix1, ix2, ix3, grid, block, A, B, C, D, ii);
-                    Vector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     real ix1ph         = pointplane1[0];
                     real ix2ph         = pointplane1[1];
                     real ix3ph         = pointplane1[2];

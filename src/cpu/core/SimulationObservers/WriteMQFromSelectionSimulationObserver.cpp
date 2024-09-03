@@ -186,7 +186,7 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
-                    Vector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     if (gbObject->isPointInGbObject3D(worldCoordinates[0], worldCoordinates[1], worldCoordinates[2])) {
                         int index                  = 0;
                         nodeNumbers(ix1, ix2, ix3) = nr++;

@@ -193,7 +193,7 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
                     int index                  = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
-                    Vector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     nodes.push_back(UbTupleFloat3(real(worldCoordinates[0]), real(worldCoordinates[1]),
                                                   real(worldCoordinates[2])));
 

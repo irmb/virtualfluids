@@ -88,7 +88,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
                 }
             } else {
                 int newlevel    = newBlock->getLevel();
-                Vector3D coords = newGrid->getNodeCoordinates(newBlock, 1, 1, 1);
+                GbVector3D coords = newGrid->getNodeCoordinates(newBlock, 1, 1, 1);
 
                 UbTupleInt3 oldGridBlockIndexes =
                     oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel - 1);
@@ -236,7 +236,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
     for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
         for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
             for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                 UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
                 int howManySolids           = iProcessor->iCellHowManySolids(bcArrayOldBlock, val<1>(oldGridIndexMin),
                                                                    val<2>(oldGridIndexMin), val<3>(oldGridIndexMin));
@@ -375,7 +375,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
             for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
                 for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                    Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                    GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                     UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
 
                     int howManySolids = iProcessor->iCellHowManySolids(
@@ -470,7 +470,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
     for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
         for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
             for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                 UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
 
                 int howManySolids = iProcessor->iCellHowManySolids(bcArrayOldBlock, val<1>(oldGridIndexMin),
@@ -610,7 +610,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
             for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
                 for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                    Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                    GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                     UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
 
                     int howManySolids = iProcessor->iCellHowManySolids(

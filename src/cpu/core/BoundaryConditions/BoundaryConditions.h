@@ -38,14 +38,15 @@
 #include <vector>
 
 #include "D3Q27System.h"
-#include "UbException.h"
-#include "UbSystem.h"
-#include "UbTuple.h"
-#include "Vector3D.h"
-#include <PointerDefinitions.h>
-#include "basics/constants/NumericConstants.h"
 
-//! Difenition of baundary conditions in grid generation
+#include <basics/PointerDefinitions.h>
+#include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/GbVector3D.h>
+#include <basics/utilities/UbException.h>
+#include <basics/utilities/UbSystem.h>
+#include <basics/utilities/UbTuple.h>
+
+//! Definition of boundary conditions in grid generation
 class BoundaryConditions
 {
 public:
@@ -180,7 +181,7 @@ public:
         return (short)(((velocityBoundaryFlags >> (optionDigits * direction)) & maxOptionVal) - 1);
     }
 
-    void setBoundaryVelocity(const Vector3D &vx)
+    void setBoundaryVelocity(const GbVector3D &vx)
     {
         setBoundaryVelocityX1((float)vx[0]);
         setBoundaryVelocityX2((float)vx[1]);
