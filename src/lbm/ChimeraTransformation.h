@@ -43,36 +43,36 @@ namespace vf::lbm
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-//! \brief forward chimera transformation \ref forwardInverseChimeraWithK 
+//! \brief forward chimera transformation \ref forwardChimeraWithInverseK 
 //! Transformation from distributions to central moments according to Eq. (6)-(14) in
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-constexpr void forwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K)
+constexpr void forwardChimeraWithInverseK(real& mfa, real& mfb, real& mfc, real vv, real v2, real inverseK, real K)
 {
     const real m2 = mfa + mfc;
     const real m1 = mfc - mfa;
     real m0 = m2 + mfb;
 
     mfa = m0;
-    m0 *= Kinverse;
+    m0 *= inverseK;
     m0 += c1o1;
-    mfb = (m1 * Kinverse - m0 * vv) * K;
-    mfc = ((m2 - c2o1 * m1 * vv) * Kinverse + v2 * m0) * K;
+    mfb = (m1 * inverseK - m0 * vv) * K;
+    mfc = ((m2 - c2o1 * m1 * vv) * inverseK + v2 * m0) * K;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! \brief backward chimera transformation \ref backwardInverseChimeraWithK
+//! \brief backward chimera transformation \ref backwardChimeraWithInverseK
 //! Transformation from central moments to distributions according to Eq. (57)-(65) in
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! ] Modified for lower round-off errors.
 ////////////////////////////////////////////////////////////////////////////////
-constexpr void backwardInverseChimeraWithK(real& mfa, real& mfb, real& mfc, real vv, real v2, real Kinverse, real K)
+constexpr void backwardChimeraWithInverseK(real& mfa, real& mfb, real& mfc, real vv, real v2, real inverseK, real K)
 {
-    const real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 - vv) * c1o2) * K;
-    const real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (-v2)) * K;
+    const real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * inverseK + (mfa * inverseK + c1o1) * (v2 - vv) * c1o2) * K;
+    const real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * inverseK + (mfa * inverseK + c1o1) * (-v2)) * K;
 
-    mfc = (((mfc + mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + c1o1) * (v2 + vv) * c1o2) * K;
+    mfc = (((mfc + mfb) * c1o2 + mfb * vv) * inverseK + (mfa * inverseK + c1o1) * (v2 + vv) * c1o2) * K;
     mfa = m0;
     mfb = m1;
 }
@@ -119,8 +119,8 @@ constexpr void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, rea
     const real m0 = m2 + mfb;
     mfa = m0;
     //m0     += K;
-    mfb = (m1 - K*vv) - m0 * vv;
-    mfc = ((m2 - c2o1*    m1 * vv) + v2*K) + v2 * m0;
+    mfb = (m1 - K * vv) - m0 * vv;
+    mfc = ((m2 - c2o1*    m1 * vv) + v2 * K) + v2 * m0;
     //m0 += K;
     //mfb = m1 - m0 * vv;
     //mfc = m2 - two*    m1 * vv + v2 * m0;
