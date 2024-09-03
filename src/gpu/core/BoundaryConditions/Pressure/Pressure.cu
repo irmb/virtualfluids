@@ -37,15 +37,21 @@
 #include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
-#include "BoundaryConditions/Pressure/Pressure_Device.cuh"
+#include "PressureNonEquilibrium.cuh"
 #include "Parameter/Parameter.h"
+
+#include <lbm/MacroscopicQuantities.h>
 
 void PressureNonEquilibriumIncompressible(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition)
 {
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+    dim3 grid = vf::cuda::getCudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+    dim3 threads(parameterDevice->numberofthreads, 1, 1);
 
-    PressureNonEquilibriumIncompressible_Device<<< grid, threads >>> (
+    auto macroscopic = [] __device__(const real *const &f /*[27]*/, real &rho, real &vx1, real &vx2, real &vx3) {
+        vf::lbm::getIncompressibleMacroscopicValues(f, rho, vx1, vx2, vx3);
+    };
+
+    PressureNonEquilibrium_Device<decltype(macroscopic)><<< grid, threads >>> (
         boundaryCondition->RhoBC,
         parameterDevice->distributions.f[0],
         boundaryCondition->k,
@@ -56,16 +62,21 @@ void PressureNonEquilibriumIncompressible(LBMSimulationParameter* parameterDevic
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        static_cast<int>(boundaryCondition->direction));
+        static_cast<int>(boundaryCondition->direction),
+        macroscopic);
     getLastCudaError("PressureNonEquilibriumIncompressible_Device execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 void PressureNonEquilibriumCompressible(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition)
 {
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+    dim3 grid = vf::cuda::getCudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+    dim3 threads(parameterDevice->numberofthreads, 1, 1);
 
-    PressureNonEquilibriumCompressible_Device<<< grid, threads >>> (
+    auto macroscopic = [] __device__(const real *const &f /*[27]*/, real &rho, real &vx1, real &vx2, real &vx3) {
+        vf::lbm::getCompressibleMacroscopicValues(f, rho, vx1, vx2, vx3);
+    };
+
+    PressureNonEquilibrium_Device<decltype(macroscopic)><<< grid, threads >>> (
         boundaryCondition->RhoBC,
         parameterDevice->distributions.f[0],
         boundaryCondition->k,
@@ -76,7 +87,8 @@ void PressureNonEquilibriumCompressible(LBMSimulationParameter* parameterDevice,
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        static_cast<int>(boundaryCondition->direction));
+        static_cast<int>(boundaryCondition->direction),
+        macroscopic);
     getLastCudaError("PressureNonEquilibriumCompressible_Device execution failed");
 }
 
