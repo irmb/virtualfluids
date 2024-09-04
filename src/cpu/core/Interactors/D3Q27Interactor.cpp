@@ -265,7 +265,7 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
             int x1          = (*setPos)[0];
             int x2          = (*setPos)[1];
             int x3          = (*setPos)[2];
-            Vector3D coords = grid.lock()->getNodeCoordinates(block, x1, x2, x3);
+            GbVector3D coords = grid.lock()->getNodeCoordinates(block, x1, x2, x3);
             real worldX1  = coords[0];
             real worldX2  = coords[1];
             real worldX3  = coords[2];
@@ -359,7 +359,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                     if (bcArray->isUndefined(ix1, ix2, ix3))
                         continue;
 
-                    Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                     internX1        = coords[0];
                     internX2        = coords[1];
                     internX3        = coords[2];
@@ -465,7 +465,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                     if (bcArray->isSolid(ix1, ix2, ix3) || bcArray->isUndefined(ix1, ix2, ix3))
                         continue;
 
-                    Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                     internX1        = coords[0];
                     internX2        = coords[1];
                     internX3        = coords[2];

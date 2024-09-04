@@ -43,7 +43,7 @@
 /*
 * InverseChimeraWithK
 */
-TEST(ChimeraTest, forwardInverseChimeraWithK)
+TEST(ChimeraTest, forwardChimeraWithInverseK)
 {
     real mfa = 1;
     real mfb = 1;
@@ -53,9 +53,9 @@ TEST(ChimeraTest, forwardInverseChimeraWithK)
     const real v2 = 1.;
 
     const real K = 1.;
-    const real Kinverse = 1 / K;
+    const real inverseK = 1 / K;
 
-    vf::lbm::forwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
+    vf::lbm::forwardChimeraWithInverseK(mfa, mfb, mfc, vv, v2, K, inverseK);
 
     EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
     EXPECT_THAT(mfb, REAL_EQ(-4.)); // -(mfa + mfb + mfc + 1)
@@ -63,7 +63,7 @@ TEST(ChimeraTest, forwardInverseChimeraWithK)
 }
 
 
-TEST(ChimeraTest, backwardInverseChimeraWithK)
+TEST(ChimeraTest, backwardChimeraWithInverseK)
 {
     // starting with the result values from the test above.
     real mfa = 3.;
@@ -74,9 +74,9 @@ TEST(ChimeraTest, backwardInverseChimeraWithK)
     const real v2 = 1.;
 
     const real K = 1.;
-    const real Kinverse = 1 / K;
+    const real inverseK = 1 / K;
 
-    vf::lbm::backwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
+    vf::lbm::backwardChimeraWithInverseK(mfa, mfb, mfc, vv, v2, K, inverseK);
 
     // resulting in the start values from the test above.
     EXPECT_THAT(mfa, REAL_EQ(1.));

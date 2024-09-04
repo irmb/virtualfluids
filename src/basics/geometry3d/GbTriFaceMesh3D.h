@@ -39,15 +39,12 @@
 #include <sstream>
 #include <vector>
 
+#include "basics/constants/NumericConstants.h"
+#include <basics/PointerDefinitions.h>
+#include <basics/geometry3d/GbPoint3D.h>
+#include <basics/geometry3d/GbVector3D.h>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
-#include <basics/utilities/Vector3D.h>
-
-#include <geometry3d/GbPoint3D.h>
-
-#include <PointerDefinitions.h>
-
-#include "basics/constants/NumericConstants.h"
 
 namespace kd_tree
 {
@@ -218,21 +215,15 @@ public:
 
         double getArea(std::vector<Vertex> &nodes)
         {
-            // GbVector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
-            // GbVector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
-            // GbVector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
-            // GbVector3D AB = B-A;
-            // GbVector3D AC = C-A;
-            // GbVector3D N = AB.Cross(AC);
-            // return 0.5*N.Length();
-            Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
-            Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
-            Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
-            Vector3D AB = B - A;
-            Vector3D AC = C - A;
-            Vector3D N  = AB.Cross(AC);
+            GbVector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
+            GbVector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
+            GbVector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
+            GbVector3D AB = B - A;
+            GbVector3D AC = C - A;
+            GbVector3D N = AB.Cross(AC);
             return 0.5 * N.Length();
         }
+
         void calculateNormal(std::vector<Vertex> &nodes)
         {
             const float &v1x = nodes[v1].x;

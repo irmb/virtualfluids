@@ -74,13 +74,13 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline void OneDistributionFullDirectConnector::updatePointers()
 {
-    localDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getLocalDistributions();
-    nonLocalDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getNonLocalDistributions();
-    zeroDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getZeroDistributions();
+    localDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplitA();
+    nonLocalDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplitB();
+    zeroDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplit0();
 
-    localDistributionsTo = dynamicPointerCast<EsoSplit>(this->fTo)->getLocalDistributions();
-    nonLocalDistributionsTo = dynamicPointerCast<EsoSplit>(this->fTo)->getNonLocalDistributions();
-    zeroDistributionsTo     = dynamicPointerCast<EsoSplit>(this->fTo)->getZeroDistributions();
+    localDistributionsTo = dynamicPointerCast<EsoSplit>(this->fTo)->getSplitA();
+    nonLocalDistributionsTo = dynamicPointerCast<EsoSplit>(this->fTo)->getSplitB();
+    zeroDistributionsTo     = dynamicPointerCast<EsoSplit>(this->fTo)->getSplit0();
 }
 //////////////////////////////////////////////////////////////////////////
 inline void OneDistributionFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)

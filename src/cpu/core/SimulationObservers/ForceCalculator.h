@@ -32,15 +32,13 @@
 //! \author Sören Peters
 //=======================================================================================
 
-#include "lbm/constants/D3Q27.h"
- 
 #ifndef ForceCalculator_H
 #define ForceCalculator_H
 
 #include <memory>
 #include <vector>
 
-#include "Vector3D.h"
+#include <lbm/constants/D3Q27.h>
 
 class D3Q27Interactor;
 namespace vf::parallel {class Communicator;}

@@ -124,7 +124,7 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
     for (int ix3 = startIX3; ix3 < stopIX3; ix3++) {
         for (int ix2 = startIX2; ix2 < stopIX2; ix2++) {
             for (int ix1 = startIX1; ix1 < stopIX1; ix1++) {
-                Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                GbVector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                 internX1        = coords[0];
                 internX2        = coords[1];
                 internX3        = coords[2];
@@ -388,7 +388,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                 for (int ix3 = indexMinX3; ix3 < indexMaxX3; ix3++) {
                     for (int ix2 = indexMinX2; ix2 < indexMaxX2; ix2++) {
                         for (int ix1 = indexMinX1; ix1 < indexMaxX1; ix1++) {
-                            Vector3D pointplane1 = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                            GbVector3D pointplane1 = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                             double internX1      = pointplane1[0];
                             double internX2      = pointplane1[1];
                             double internX3      = pointplane1[2];

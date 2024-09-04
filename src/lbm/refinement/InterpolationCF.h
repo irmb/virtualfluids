@@ -235,39 +235,39 @@ constexpr void interpolateCF(real* const f, const real& omegaF, const real& epsn
 
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
-    backwardInverseChimeraWithK(m000, m100, m200, vvx, vxsq, c1o1, c1o1);
+    backwardChimeraWithInverseK(m000, m100, m200, vvx, vxsq, c1o1, c1o1);
     backwardChimera(            m010, m110, m210, vvx, vxsq);
-    backwardInverseChimeraWithK(m020, m120, m220, vvx, vxsq, c3o1, c1o3);
+    backwardChimeraWithInverseK(m020, m120, m220, vvx, vxsq, c3o1, c1o3);
     backwardChimera(            m001, m101, m201, vvx, vxsq);
     backwardChimera(            m011, m111, m211, vvx, vxsq);
     backwardChimera(            m021, m121, m221, vvx, vxsq);
-    backwardInverseChimeraWithK(m002, m102, m202, vvx, vxsq, c3o1, c1o3);
+    backwardChimeraWithInverseK(m002, m102, m202, vvx, vxsq, c3o1, c1o3);
     backwardChimera(            m012, m112, m212, vvx, vxsq);
-    backwardInverseChimeraWithK(m022, m122, m222, vvx, vxsq, c9o1, c1o9);
+    backwardChimeraWithInverseK(m022, m122, m222, vvx, vxsq, c9o1, c1o9);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Y - Dir
-    backwardInverseChimeraWithK(m000, m010, m020, vvy, vysq, c6o1, c1o6);
+    backwardChimeraWithInverseK(m000, m010, m020, vvy, vysq, c6o1, c1o6);
     backwardChimera(            m001, m011, m021, vvy, vysq);
-    backwardInverseChimeraWithK(m002, m012, m022, vvy, vysq, c18o1, c1o18);
-    backwardInverseChimeraWithK(m100, m110, m120, vvy, vysq, c3o2, c2o3);
+    backwardChimeraWithInverseK(m002, m012, m022, vvy, vysq, c18o1, c1o18);
+    backwardChimeraWithInverseK(m100, m110, m120, vvy, vysq, c3o2, c2o3);
     backwardChimera(            m101, m111, m121, vvy, vysq);
-    backwardInverseChimeraWithK(m102, m112, m122, vvy, vysq, c9o2, c2o9);
-    backwardInverseChimeraWithK(m200, m210, m220, vvy, vysq, c6o1, c1o6);
+    backwardChimeraWithInverseK(m102, m112, m122, vvy, vysq, c9o2, c2o9);
+    backwardChimeraWithInverseK(m200, m210, m220, vvy, vysq, c6o1, c1o6);
     backwardChimera(            m201, m211, m221, vvy, vysq);
-    backwardInverseChimeraWithK(m202, m212, m222, vvy, vysq, c18o1, c1o18);
+    backwardChimeraWithInverseK(m202, m212, m222, vvy, vysq, c18o1, c1o18);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Z - Dir
-    backwardInverseChimeraWithK(m000, m001, m002, vvz, vzsq, c36o1, c1o36);
-    backwardInverseChimeraWithK(m010, m011, m012, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m020, m021, m022, vvz, vzsq, c36o1, c1o36);
-    backwardInverseChimeraWithK(m100, m101, m102, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m110, m111, m112, vvz, vzsq, c9o4,  c4o9);
-    backwardInverseChimeraWithK(m120, m121, m122, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m200, m201, m202, vvz, vzsq, c36o1, c1o36);
-    backwardInverseChimeraWithK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m000, m001, m002, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m010, m011, m012, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m020, m021, m022, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m100, m101, m102, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m110, m111, m112, vvz, vzsq, c9o4,  c4o9);
+    backwardChimeraWithInverseK(m120, m121, m122, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m200, m201, m202, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
 
     f[dir::d000] = f000;
     f[dP00] = fP00;
