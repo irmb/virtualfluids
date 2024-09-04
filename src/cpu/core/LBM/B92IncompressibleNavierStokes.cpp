@@ -95,12 +95,12 @@ void B92IncompressibleNavierStokes::calculate(int step)
     }
     /////////////////////////////////////
 
-    localDistributions =
-        std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getLocalDistributions();
-    nonLocalDistributions = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())
-                                ->getNonLocalDistributions();
-    zeroDistributions =
-        std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
+    splitA =
+        std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getSplitA();
+    splitB = std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())
+                                ->getSplitB();
+    split0 =
+        std::dynamic_pointer_cast<EsoSplit>(dataSet->getFdistributions())->getSplit0();
 
     SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
     real f[d3q27_system::ENDF + 1];
@@ -130,35 +130,35 @@ void B92IncompressibleNavierStokes::calculate(int step)
                 //////////////////////////////////////////////////////////////////////////
                 // read distribution
                 ////////////////////////////////////////////////////////////////////////////
-                f[d000] = (*this->zeroDistributions)(x1, x2, x3);
+                f[d000] = (*this->split0)(x1, x2, x3);
 
-                f[dP00]   = (*this->localDistributions)(eP00, x1, x2, x3);
-                f[d0P0]   = (*this->localDistributions)(e0P0, x1, x2, x3);
-                f[d00P]   = (*this->localDistributions)(e00P, x1, x2, x3);
-                f[dPP0]  = (*this->localDistributions)(ePP0, x1, x2, x3);
-                f[dMP0]  = (*this->localDistributions)(eMP0, x1p, x2, x3);
-                f[dP0P]  = (*this->localDistributions)(eP0P, x1, x2, x3);
-                f[dM0P]  = (*this->localDistributions)(eM0P, x1p, x2, x3);
-                f[d0PP]  = (*this->localDistributions)(e0PP, x1, x2, x3);
-                f[d0MP]  = (*this->localDistributions)(e0MP, x1, x2p, x3);
-                f[dPPP] = (*this->localDistributions)(ePPP, x1, x2, x3);
-                f[dMPP] = (*this->localDistributions)(eMPP, x1p, x2, x3);
-                f[dPMP] = (*this->localDistributions)(ePMP, x1, x2p, x3);
-                f[dMMP] = (*this->localDistributions)(eMMP, x1p, x2p, x3);
+                f[dP00]   = (*this->splitA)(eP00, x1, x2, x3);
+                f[d0P0]   = (*this->splitA)(e0P0, x1, x2, x3);
+                f[d00P]   = (*this->splitA)(e00P, x1, x2, x3);
+                f[dPP0]  = (*this->splitA)(ePP0, x1, x2, x3);
+                f[dMP0]  = (*this->splitA)(eMP0, x1p, x2, x3);
+                f[dP0P]  = (*this->splitA)(eP0P, x1, x2, x3);
+                f[dM0P]  = (*this->splitA)(eM0P, x1p, x2, x3);
+                f[d0PP]  = (*this->splitA)(e0PP, x1, x2, x3);
+                f[d0MP]  = (*this->splitA)(e0MP, x1, x2p, x3);
+                f[dPPP] = (*this->splitA)(ePPP, x1, x2, x3);
+                f[dMPP] = (*this->splitA)(eMPP, x1p, x2, x3);
+                f[dPMP] = (*this->splitA)(ePMP, x1, x2p, x3);
+                f[dMMP] = (*this->splitA)(eMMP, x1p, x2p, x3);
 
-                f[dM00]   = (*this->nonLocalDistributions)(eM00, x1p, x2, x3);
-                f[d0M0]   = (*this->nonLocalDistributions)(e0M0, x1, x2p, x3);
-                f[d00M]   = (*this->nonLocalDistributions)(e00M, x1, x2, x3p);
-                f[dMM0]  = (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3);
-                f[dPM0]  = (*this->nonLocalDistributions)(ePM0, x1, x2p, x3);
-                f[dM0M]  = (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p);
-                f[dP0M]  = (*this->nonLocalDistributions)(eP0M, x1, x2, x3p);
-                f[d0MM]  = (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p);
-                f[d0PM]  = (*this->nonLocalDistributions)(e0PM, x1, x2, x3p);
-                f[dMMM] = (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p);
-                f[dPMM] = (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p);
-                f[dMPM] = (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p);
-                f[dPPM] = (*this->nonLocalDistributions)(ePPM, x1, x2, x3p);
+                f[dM00]   = (*this->splitB)(eM00, x1p, x2, x3);
+                f[d0M0]   = (*this->splitB)(e0M0, x1, x2p, x3);
+                f[d00M]   = (*this->splitB)(e00M, x1, x2, x3p);
+                f[dMM0]  = (*this->splitB)(eMM0, x1p, x2p, x3);
+                f[dPM0]  = (*this->splitB)(ePM0, x1, x2p, x3);
+                f[dM0M]  = (*this->splitB)(eM0M, x1p, x2, x3p);
+                f[dP0M]  = (*this->splitB)(eP0M, x1, x2, x3p);
+                f[d0MM]  = (*this->splitB)(e0MM, x1, x2p, x3p);
+                f[d0PM]  = (*this->splitB)(e0PM, x1, x2, x3p);
+                f[dMMM] = (*this->splitB)(eMMM, x1p, x2p, x3p);
+                f[dPMM] = (*this->splitB)(ePMM, x1, x2p, x3p);
+                f[dMPM] = (*this->splitB)(eMPM, x1p, x2, x3p);
+                f[dPPM] = (*this->splitB)(ePPM, x1, x2, x3p);
                 //////////////////////////////////////////////////////////////////////////
 
                 drho = f[d000] + f[dP00] + f[dM00] + f[d0P0] + f[d0M0] + f[d00P] + f[d00M] + f[dPP0] + f[dMM0] + f[dPM0] + f[dMP0] + f[dP0P] +
@@ -302,35 +302,35 @@ void B92IncompressibleNavierStokes::calculate(int step)
                 //////////////////////////////////////////////////////////////////////////
                 // write distribution
                 //////////////////////////////////////////////////////////////////////////
-                (*this->localDistributions)(eP00, x1, x2, x3)     = f[iP00];
-                (*this->localDistributions)(e0P0, x1, x2, x3)     = f[i0P0];
-                (*this->localDistributions)(e00P, x1, x2, x3)     = f[i00P];
-                (*this->localDistributions)(ePP0, x1, x2, x3)    = f[iPP0];
-                (*this->localDistributions)(eMP0, x1p, x2, x3)   = f[iMP0];
-                (*this->localDistributions)(eP0P, x1, x2, x3)    = f[iP0P];
-                (*this->localDistributions)(eM0P, x1p, x2, x3)   = f[iM0P];
-                (*this->localDistributions)(e0PP, x1, x2, x3)    = f[i0PP];
-                (*this->localDistributions)(e0MP, x1, x2p, x3)   = f[i0MP];
-                (*this->localDistributions)(ePPP, x1, x2, x3)   = f[iPPP];
-                (*this->localDistributions)(eMPP, x1p, x2, x3)  = f[iMPP];
-                (*this->localDistributions)(ePMP, x1, x2p, x3)  = f[iPMP];
-                (*this->localDistributions)(eMMP, x1p, x2p, x3) = f[iMMP];
+                (*this->splitA)(eP00, x1, x2, x3)     = f[iP00];
+                (*this->splitA)(e0P0, x1, x2, x3)     = f[i0P0];
+                (*this->splitA)(e00P, x1, x2, x3)     = f[i00P];
+                (*this->splitA)(ePP0, x1, x2, x3)    = f[iPP0];
+                (*this->splitA)(eMP0, x1p, x2, x3)   = f[iMP0];
+                (*this->splitA)(eP0P, x1, x2, x3)    = f[iP0P];
+                (*this->splitA)(eM0P, x1p, x2, x3)   = f[iM0P];
+                (*this->splitA)(e0PP, x1, x2, x3)    = f[i0PP];
+                (*this->splitA)(e0MP, x1, x2p, x3)   = f[i0MP];
+                (*this->splitA)(ePPP, x1, x2, x3)   = f[iPPP];
+                (*this->splitA)(eMPP, x1p, x2, x3)  = f[iMPP];
+                (*this->splitA)(ePMP, x1, x2p, x3)  = f[iPMP];
+                (*this->splitA)(eMMP, x1p, x2p, x3) = f[iMMP];
 
-                (*this->nonLocalDistributions)(eM00, x1p, x2, x3)     = f[iM00];
-                (*this->nonLocalDistributions)(e0M0, x1, x2p, x3)     = f[i0M0];
-                (*this->nonLocalDistributions)(e00M, x1, x2, x3p)     = f[i00M];
-                (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3)   = f[iMM0];
-                (*this->nonLocalDistributions)(ePM0, x1, x2p, x3)    = f[iPM0];
-                (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p)   = f[iM0M];
-                (*this->nonLocalDistributions)(eP0M, x1, x2, x3p)    = f[iP0M];
-                (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p)   = f[i0MM];
-                (*this->nonLocalDistributions)(e0PM, x1, x2, x3p)    = f[i0PM];
-                (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p) = f[iMMM];
-                (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p)  = f[iPMM];
-                (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p)  = f[iMPM];
-                (*this->nonLocalDistributions)(ePPM, x1, x2, x3p)   = f[iPPM];
+                (*this->splitB)(eM00, x1p, x2, x3)     = f[iM00];
+                (*this->splitB)(e0M0, x1, x2p, x3)     = f[i0M0];
+                (*this->splitB)(e00M, x1, x2, x3p)     = f[i00M];
+                (*this->splitB)(eMM0, x1p, x2p, x3)   = f[iMM0];
+                (*this->splitB)(ePM0, x1, x2p, x3)    = f[iPM0];
+                (*this->splitB)(eM0M, x1p, x2, x3p)   = f[iM0M];
+                (*this->splitB)(eP0M, x1, x2, x3p)    = f[iP0M];
+                (*this->splitB)(e0MM, x1, x2p, x3p)   = f[i0MM];
+                (*this->splitB)(e0PM, x1, x2, x3p)    = f[i0PM];
+                (*this->splitB)(eMMM, x1p, x2p, x3p) = f[iMMM];
+                (*this->splitB)(ePMM, x1, x2p, x3p)  = f[iPMM];
+                (*this->splitB)(eMPM, x1p, x2, x3p)  = f[iMPM];
+                (*this->splitB)(ePPM, x1, x2, x3p)   = f[iPPM];
 
-                (*this->zeroDistributions)(x1, x2, x3) = f[d000];
+                (*this->split0)(x1, x2, x3) = f[d000];
                 //////////////////////////////////////////////////////////////////////////
             }
         }

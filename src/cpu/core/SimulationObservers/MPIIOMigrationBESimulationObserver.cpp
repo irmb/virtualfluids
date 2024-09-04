@@ -173,26 +173,26 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
         for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
             D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getFdistributions());
-            localDistributionsF    = D3Q27EsoTwist3DSplittedVectorPtrF->getLocalDistributions();
-            nonLocalDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getNonLocalDistributions();
-            zeroDistributionsF     = D3Q27EsoTwist3DSplittedVectorPtrF->getZeroDistributions();
+            localDistributionsF    = D3Q27EsoTwist3DSplittedVectorPtrF->getSplitA();
+            nonLocalDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getSplitB();
+            zeroDistributionsF     = D3Q27EsoTwist3DSplittedVectorPtrF->getSplit0();
  
             D3Q27EsoTwist3DSplittedVectorPtrH1 = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getHdistributions());
             if (D3Q27EsoTwist3DSplittedVectorPtrH1 != 0)
             {
                 multiPhase1 = true;
-                localDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getLocalDistributions();
-                nonLocalDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getNonLocalDistributions();
-                zeroDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getZeroDistributions();
+                localDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getSplitA();
+                nonLocalDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getSplitB();
+                zeroDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getSplit0();
             }
 
             D3Q27EsoTwist3DSplittedVectorPtrH2 = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getH2distributions());
             if (D3Q27EsoTwist3DSplittedVectorPtrH2 != 0)
             {
                 multiPhase2 = true;
-                localDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getLocalDistributions();
-                nonLocalDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getNonLocalDistributions();
-                zeroDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getZeroDistributions();
+                localDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getSplitA();
+                nonLocalDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getSplitB();
+                zeroDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getSplit0();
             }
 
 
@@ -1199,11 +1199,11 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             index += vectorSize3;
 
             SPtr<DistributionArray3D> mFdistributions(new EsoSplit());
-            dynamicPointerCast<EsoSplit>(mFdistributions)->setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+            dynamicPointerCast<EsoSplit>(mFdistributions)->setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesF1, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-            dynamicPointerCast<EsoSplit>(mFdistributions)->setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+            dynamicPointerCast<EsoSplit>(mFdistributions)->setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesF2, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-            dynamicPointerCast<EsoSplit>(mFdistributions)->setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
+            dynamicPointerCast<EsoSplit>(mFdistributions)->setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
                         vectorsOfValuesF3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
             dynamicPointerCast<EsoSplit>(mFdistributions)->setNX1(dataSetParamStr1.nx1);
@@ -1213,11 +1213,11 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             SPtr<DistributionArray3D> mH1distributions(new EsoSplit());
             if (multiPhase1)
             {
-                dynamicPointerCast<EsoSplit>(mH1distributions)->setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH1distributions)->setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH11, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH1distributions)->setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH1distributions)->setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH12, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH1distributions)->setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
+                dynamicPointerCast<EsoSplit>(mH1distributions)->setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
                     vectorsOfValuesH13, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
                 dynamicPointerCast<EsoSplit>(mH1distributions)->setNX1(dataSetParamStr1.nx1);
@@ -1228,11 +1228,11 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             SPtr<DistributionArray3D> mH2distributions(new EsoSplit());
             if (multiPhase2)
             {
-                dynamicPointerCast<EsoSplit>(mH2distributions)->setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH2distributions)->setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH21, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH2distributions)->setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH2distributions)->setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                         new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH22, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH2distributions)->setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
+                dynamicPointerCast<EsoSplit>(mH2distributions)->setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
                         vectorsOfValuesH23, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
                 dynamicPointerCast<EsoSplit>(mH2distributions)->setNX1(dataSetParamStr1.nx1);

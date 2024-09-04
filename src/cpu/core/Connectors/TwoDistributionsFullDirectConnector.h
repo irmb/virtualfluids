@@ -83,21 +83,21 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline void TwoDistributionsFullDirectConnector::updatePointers()
 {
-    localDistributionsFromf = dynamicPointerCast<EsoSplit>(this->fFrom)->getLocalDistributions();
-    nonLocalDistributionsFromf = dynamicPointerCast<EsoSplit>(this->fFrom)->getNonLocalDistributions();
-    zeroDistributionsFromf = dynamicPointerCast<EsoSplit>(this->fFrom)->getZeroDistributions();
+    localDistributionsFromf = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplitA();
+    nonLocalDistributionsFromf = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplitB();
+    zeroDistributionsFromf = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplit0();
 
-    localDistributionsTof    = dynamicPointerCast<EsoSplit>(this->fTo)->getLocalDistributions();
-    nonLocalDistributionsTof = dynamicPointerCast<EsoSplit>(this->fTo)->getNonLocalDistributions();
-    zeroDistributionsTof     = dynamicPointerCast<EsoSplit>(this->fTo)->getZeroDistributions();
+    localDistributionsTof    = dynamicPointerCast<EsoSplit>(this->fTo)->getSplitA();
+    nonLocalDistributionsTof = dynamicPointerCast<EsoSplit>(this->fTo)->getSplitB();
+    zeroDistributionsTof     = dynamicPointerCast<EsoSplit>(this->fTo)->getSplit0();
 
-    localDistributionsFromh = dynamicPointerCast<EsoSplit>(this->hFrom)->getLocalDistributions();
-    nonLocalDistributionsFromh = dynamicPointerCast<EsoSplit>(this->hFrom)->getNonLocalDistributions();
-    zeroDistributionsFromh = dynamicPointerCast<EsoSplit>(this->hFrom)->getZeroDistributions();
+    localDistributionsFromh = dynamicPointerCast<EsoSplit>(this->hFrom)->getSplitA();
+    nonLocalDistributionsFromh = dynamicPointerCast<EsoSplit>(this->hFrom)->getSplitB();
+    zeroDistributionsFromh = dynamicPointerCast<EsoSplit>(this->hFrom)->getSplit0();
 
-    localDistributionsToh    = dynamicPointerCast<EsoSplit>(this->hTo)->getLocalDistributions();
-    nonLocalDistributionsToh = dynamicPointerCast<EsoSplit>(this->hTo)->getNonLocalDistributions();
-    zeroDistributionsToh     = dynamicPointerCast<EsoSplit>(this->hTo)->getZeroDistributions();
+    localDistributionsToh    = dynamicPointerCast<EsoSplit>(this->hTo)->getSplitA();
+    nonLocalDistributionsToh = dynamicPointerCast<EsoSplit>(this->hTo)->getSplitB();
+    zeroDistributionsToh     = dynamicPointerCast<EsoSplit>(this->hTo)->getSplit0();
 }
 //////////////////////////////////////////////////////////////////////////
 inline void TwoDistributionsFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
