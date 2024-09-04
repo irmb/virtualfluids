@@ -152,19 +152,19 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
     } else if (newBlockRank == newGridRank && newBlock->isActive()) {
         SPtr<LBMKernel> newKernel = newBlock->getKernel();
         if (!newKernel)
@@ -174,21 +174,21 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
         SPtr<EsoTwist3D> newDistributions =
             dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(newDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(newDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(newDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(newDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(newDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(newDistributions)->getSplit0();
 
-        MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
     }
 }
@@ -302,19 +302,19 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
         SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
@@ -350,21 +350,21 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 
         SPtr<EsoTwist3D> oldDistributions(new EsoSplit(bMaxX1, bMaxX2, bMaxX3, 0));
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
 
         SPtr<BCArray3D> bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
@@ -537,19 +537,19 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
         SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
@@ -585,21 +585,21 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
 
         SPtr<EsoTwist3D> oldDistributions(new EsoSplit(bMaxX1, bMaxX2, bMaxX3, 0));
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
 
         SPtr<BCArray3D> bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));

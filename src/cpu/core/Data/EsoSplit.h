@@ -85,23 +85,23 @@ public:
     //////////////////////////////////////////////////////////////////////////
     size_t getNX3() const override;
     //////////////////////////////////////////////////////////////////////////
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr getLocalDistributions();
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr getSplitA();
     //////////////////////////////////////////////////////////////////////////
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr getNonLocalDistributions();
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr getSplitB();
     //////////////////////////////////////////////////////////////////////////
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr getZeroDistributions();
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr getSplit0();
     //////////////////////////////////////////////////////////////////////////
     void setNX1(size_t newNX1);
     void setNX2(size_t newNX2);
     void setNX3(size_t newNX3);
-    void setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array);
-    void setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array);
-    void setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr array);
+    void setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array);
+    void setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr array);
+    void setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr array);
 
 protected:
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0;
     size_t NX1, NX2, NX3;
 
     friend class MPIIORestartSimulationObserver;

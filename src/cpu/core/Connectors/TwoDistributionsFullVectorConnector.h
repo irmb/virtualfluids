@@ -71,9 +71,9 @@ protected:
    inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) override;
 
 private:
-   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
+   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr splitA;
+   CbArray4D <real, IndexerX4X3X2X1>::CbArray4DPtr splitB;
+   CbArray3D <real, IndexerX3X2X1>::CbArray3DPtr   split0;
 
    SPtr<EsoTwist3D>  fDis;
 
@@ -88,48 +88,48 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline void TwoDistributionsFullVectorConnector::updatePointers()
 {
-    localDistributions    = dynamicPointerCast<EsoSplit>(this->fDis)->getLocalDistributions();
-    nonLocalDistributions = dynamicPointerCast<EsoSplit>(this->fDis)->getNonLocalDistributions();
-    zeroDistributions     = dynamicPointerCast<EsoSplit>(this->fDis)->getZeroDistributions();
+    splitA    = dynamicPointerCast<EsoSplit>(this->fDis)->getSplitA();
+    splitB = dynamicPointerCast<EsoSplit>(this->fDis)->getSplitB();
+    split0     = dynamicPointerCast<EsoSplit>(this->fDis)->getSplit0();
 
-    localHdistributions    = dynamicPointerCast<EsoSplit>(this->hDis)->getLocalDistributions();
-    nonLocalHdistributions = dynamicPointerCast<EsoSplit>(this->hDis)->getNonLocalDistributions();
-    zeroHdistributions     = dynamicPointerCast<EsoSplit>(this->hDis)->getZeroDistributions();
+    localHdistributions    = dynamicPointerCast<EsoSplit>(this->hDis)->getSplitA();
+    nonLocalHdistributions = dynamicPointerCast<EsoSplit>(this->hDis)->getSplitB();
+    zeroHdistributions     = dynamicPointerCast<EsoSplit>(this->hDis)->getSplit0();
 }
 //////////////////////////////////////////////////////////////////////////
 inline void TwoDistributionsFullVectorConnector::fillData(vector_type& sdata, int& index, int x1, int x2, int x3)
 {
    using namespace vf::lbm::dir;
 
-   sdata[index++] = (*this->localDistributions)(eP00, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(e0P0, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(e00P, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(ePP0, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(eMP0, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(eP0P, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(eM0P, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(e0PP, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(e0MP, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localDistributions)(ePPP, x1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(eMPP, x1 + 1, x2, x3);
-   sdata[index++] = (*this->localDistributions)(ePMP, x1, x2 + 1, x3);
-   sdata[index++] = (*this->localDistributions)(eMMP, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->splitA)(eP00, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(e0P0, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(e00P, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(ePP0, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(eMP0, x1 + 1, x2, x3);
+   sdata[index++] = (*this->splitA)(eP0P, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(eM0P, x1 + 1, x2, x3);
+   sdata[index++] = (*this->splitA)(e0PP, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(e0MP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->splitA)(ePPP, x1, x2, x3);
+   sdata[index++] = (*this->splitA)(eMPP, x1 + 1, x2, x3);
+   sdata[index++] = (*this->splitA)(ePMP, x1, x2 + 1, x3);
+   sdata[index++] = (*this->splitA)(eMMP, x1 + 1, x2 + 1, x3);
 
-   sdata[index++] = (*this->nonLocalDistributions)(eM00, x1 + 1, x2, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(e0M0, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(e00M, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(eMM0, x1 + 1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(ePM0, x1, x2 + 1, x3);
-   sdata[index++] = (*this->nonLocalDistributions)(eM0M, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(eP0M, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(e0MM, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(e0PM, x1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(eMMM, x1 + 1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(ePMM, x1, x2 + 1, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(eMPM, x1 + 1, x2, x3 + 1);
-   sdata[index++] = (*this->nonLocalDistributions)(ePPM, x1, x2, x3 + 1);
+   sdata[index++] = (*this->splitB)(eM00, x1 + 1, x2, x3);
+   sdata[index++] = (*this->splitB)(e0M0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->splitB)(e00M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->splitB)(eMM0, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->splitB)(ePM0, x1, x2 + 1, x3);
+   sdata[index++] = (*this->splitB)(eM0M, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->splitB)(eP0M, x1, x2, x3 + 1);
+   sdata[index++] = (*this->splitB)(e0MM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->splitB)(e0PM, x1, x2, x3 + 1);
+   sdata[index++] = (*this->splitB)(eMMM, x1 + 1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->splitB)(ePMM, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->splitB)(eMPM, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->splitB)(ePPM, x1, x2, x3 + 1);
 
-   sdata[index++] = (*this->zeroDistributions)(x1, x2, x3);
+   sdata[index++] = (*this->split0)(x1, x2, x3);
 
 
    sdata[index++] = (*this->localHdistributions)(eP00, x1, x2, x3);
@@ -168,35 +168,35 @@ inline void TwoDistributionsFullVectorConnector::distributeData(vector_type& rda
 {
    using namespace vf::lbm::dir;
 
-   (*this->localDistributions)(eP00, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(e0P0, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(e00P, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(ePP0, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(eMP0, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(eP0P, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(eM0P, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(e0PP, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(e0MP, x1, x2 + 1, x3) = rdata[index++];
-   (*this->localDistributions)(ePPP, x1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(eMPP, x1 + 1, x2, x3) = rdata[index++];
-   (*this->localDistributions)(ePMP, x1, x2 + 1, x3) = rdata[index++];
-   (*this->localDistributions)(eMMP, x1 + 1, x2 + 1, x3) = rdata[index++];
+   (*this->splitA)(eP00, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(e0P0, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(e00P, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(ePP0, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(eMP0, x1 + 1, x2, x3) = rdata[index++];
+   (*this->splitA)(eP0P, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(eM0P, x1 + 1, x2, x3) = rdata[index++];
+   (*this->splitA)(e0PP, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(e0MP, x1, x2 + 1, x3) = rdata[index++];
+   (*this->splitA)(ePPP, x1, x2, x3) = rdata[index++];
+   (*this->splitA)(eMPP, x1 + 1, x2, x3) = rdata[index++];
+   (*this->splitA)(ePMP, x1, x2 + 1, x3) = rdata[index++];
+   (*this->splitA)(eMMP, x1 + 1, x2 + 1, x3) = rdata[index++];
 
-   (*this->nonLocalDistributions)(eM00, x1 + 1, x2, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(e0M0, x1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(e00M, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(eMM0, x1 + 1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(ePM0, x1, x2 + 1, x3) = rdata[index++];
-   (*this->nonLocalDistributions)(eM0M, x1 + 1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(eP0M, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(e0MM, x1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(e0PM, x1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(eMMM, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(ePMM, x1, x2 + 1, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(eMPM, x1 + 1, x2, x3 + 1) = rdata[index++];
-   (*this->nonLocalDistributions)(ePPM, x1, x2, x3 + 1) = rdata[index++];
+   (*this->splitB)(eM00, x1 + 1, x2, x3) = rdata[index++];
+   (*this->splitB)(e0M0, x1, x2 + 1, x3) = rdata[index++];
+   (*this->splitB)(e00M, x1, x2, x3 + 1) = rdata[index++];
+   (*this->splitB)(eMM0, x1 + 1, x2 + 1, x3) = rdata[index++];
+   (*this->splitB)(ePM0, x1, x2 + 1, x3) = rdata[index++];
+   (*this->splitB)(eM0M, x1 + 1, x2, x3 + 1) = rdata[index++];
+   (*this->splitB)(eP0M, x1, x2, x3 + 1) = rdata[index++];
+   (*this->splitB)(e0MM, x1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->splitB)(e0PM, x1, x2, x3 + 1) = rdata[index++];
+   (*this->splitB)(eMMM, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->splitB)(ePMM, x1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->splitB)(eMPM, x1 + 1, x2, x3 + 1) = rdata[index++];
+   (*this->splitB)(ePPM, x1, x2, x3 + 1) = rdata[index++];
 
-   (*this->zeroDistributions)(x1, x2, x3) = rdata[index++];
+   (*this->split0)(x1, x2, x3) = rdata[index++];
 
    
    (*this->localHdistributions)(eP00, x1, x2, x3) = rdata[index++];

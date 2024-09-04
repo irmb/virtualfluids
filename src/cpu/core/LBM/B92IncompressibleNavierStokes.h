@@ -50,9 +50,9 @@ public:
 private:
     void initDataSet();
 
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0;
 
     mu::value_type muX1, muX2, muX3;
     real forcingX1 { 0 };
