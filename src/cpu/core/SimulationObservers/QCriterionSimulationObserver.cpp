@@ -270,7 +270,7 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
     //////get neighbor nodes, if existent
     if ((ix1 == 0 && offx == 1) || (ix2 == 0 && offy == 1) || (ix3 == 0 && offz == 1)) {
         int RankNeighborW;
-        Vector3D orgNodeRW = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+        GbVector3D orgNodeRW = grid->getNodeCoordinates(block, ix1, ix2, ix3);
         real xp000       = orgNodeRW[0];
         real yp000       = orgNodeRW[1];
         real zp000       = orgNodeRW[2];

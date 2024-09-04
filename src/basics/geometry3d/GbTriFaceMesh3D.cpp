@@ -34,20 +34,18 @@
 #include <geometry3d/GbTriFaceMesh3D.h>
 
 #include <basics/Timer/Timer.h>
+#include <basics/geometry3d/CoordinateTransformation3D.h>
+#include <basics/geometry3d/GbCuboid3D.h>
+#include <basics/geometry3d/GbHalfSpace3D.h>
+#include <basics/geometry3d/KdTree/KdTree.h>
+#include <basics/geometry3d/KdTree/intersectionhandler/KdCountLineIntersectionHandler.h>
+#include <basics/geometry3d/KdTree/intersectionhandler/KdCountRayIntersectionHandler.h>
+#include <basics/geometry3d/KdTree/splitalgorithms/KdSAHSplit.h>
+#include <basics/geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 #include <basics/utilities/UbFileInputASCII.h>
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/writer/WbWriter.h>
-
-#include <geometry3d/CoordinateTransformation3D.h>
-#include <geometry3d/GbCuboid3D.h>
-#include <geometry3d/GbHalfSpace3D.h>
-
-#include <geometry3d/KdTree/KdTree.h>
-#include <geometry3d/KdTree/intersectionhandler/KdCountLineIntersectionHandler.h>
-#include <geometry3d/KdTree/intersectionhandler/KdCountRayIntersectionHandler.h>
-#include <geometry3d/KdTree/splitalgorithms/KdSAHSplit.h>
-#include <geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 
 #define MAX_ITER 10
 

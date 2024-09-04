@@ -42,7 +42,6 @@
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "UbScheduler.h"
-#include "Vector3D.h"
 #include <sstream>
 
 MicrophoneArraySimulationObserver::MicrophoneArraySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
@@ -67,7 +66,7 @@ void MicrophoneArraySimulationObserver::update(real step)
     UBLOG(logDEBUG3, "MicrophoneArraySimulationObserver::update:" << step);
 }
 
-bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
+bool MicrophoneArraySimulationObserver::addMicrophone(GbVector3D coords)
 {
     micID++;
     //   UbTupleInt3 blockIndexes = grid->getBlockIndexes(coords[0], coords[1], coords[2]);

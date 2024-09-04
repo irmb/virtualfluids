@@ -509,7 +509,7 @@ UbTupleDouble3 Grid3D::getNodeOffset(SPtr<Block3D> block) const
     return makeUbTuple((double)offset * delta, (double)offset * delta, (double)offset * delta);
 }
 ////////////////////////////////////////////////////////////////////////////
-Vector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const
+GbVector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const
 {
     UbTupleDouble3 org        = this->getBlockWorldCoordinates(block);
     UbTupleDouble3 nodeOffset = this->getNodeOffset(block);
@@ -519,7 +519,7 @@ Vector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int i
     real x2 = val<2>(org) - val<2>(nodeOffset) + (real)ix2 * deltaX;
     real x3 = val<3>(org) - val<3>(nodeOffset) + (real)ix3 * deltaX;
 
-    return Vector3D(x1, x2, x3);
+    return GbVector3D(x1, x2, x3);
 }
 ////////////////////////////////////////////////////////////////////////////
 UbTupleInt3 Grid3D::getNodeIndexes(SPtr<Block3D> block, real nodeX1Coord, real nodeX2Coord,

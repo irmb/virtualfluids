@@ -35,15 +35,15 @@
 
 #include <cmath>
 
-#include <basics/utilities/Vector3D.h>
+#include <basics/geometry3d/GbVector3D.h>
 
 using namespace testing;
 
 class Vector3DTest : public Test
 {
 public:
-    Vector3D vec1;
-    Vector3D vec2;
+    GbVector3D vec1;
+    GbVector3D vec2;
 
     void SetUp() override
     {
@@ -56,12 +56,12 @@ public:
 
 TEST_F(Vector3DTest, overloadMinusOperator)
 {
-    Vector3D vec3;
+    GbVector3D vec3;
     vec3[0] = vec2[0] - vec1[0];
     vec3[1] = vec2[1] - vec1[1];
     vec3[2] = vec2[2] - vec1[2];
 
-    Vector3D v4 = vec2 - vec1;
+    GbVector3D v4 = vec2 - vec1;
     ASSERT_THAT((double)v4[0], DoubleEq(vec3[0]));
     ASSERT_THAT((double)v4[1], DoubleEq(vec3[1]));
     ASSERT_THAT((double)v4[2], DoubleEq(vec3[2]));
@@ -69,12 +69,12 @@ TEST_F(Vector3DTest, overloadMinusOperator)
 
 TEST_F(Vector3DTest, overloadPlusOperator)
 {
-    Vector3D vec3;
+    GbVector3D vec3;
     vec3[0] = vec2[0] + vec1[0];
     vec3[1] = vec2[1] + vec1[1];
     vec3[2] = vec2[2] + vec1[2];
 
-    Vector3D v4 = vec2 + vec1;
+    GbVector3D v4 = vec2 + vec1;
     ASSERT_THAT((double)v4[0], DoubleEq(vec3[0]));
     ASSERT_THAT((double)v4[1], DoubleEq(vec3[1]));
     ASSERT_THAT((double)v4[2], DoubleEq(vec3[2]));
@@ -89,12 +89,12 @@ TEST_F(Vector3DTest, overloadTimesOperatorWithSkalarProduct)
 TEST_F(Vector3DTest, overloadTimesOperatorWithSkalarMultiplication)
 {
     double skalar = 1.0f / 3.0f;
-    Vector3D vec3;
+    GbVector3D vec3;
     vec3[0] = skalar * vec1[0];
     vec3[1] = skalar * vec1[1];
     vec3[2] = skalar * vec1[2];
 
-    Vector3D v4 = vec1 * skalar;
+    GbVector3D v4 = vec1 * skalar;
 
     ASSERT_THAT((double)v4[0], DoubleEq(vec3[0]));
     ASSERT_THAT((double)v4[1], DoubleEq(vec3[1]));
@@ -103,7 +103,7 @@ TEST_F(Vector3DTest, overloadTimesOperatorWithSkalarMultiplication)
 
 TEST_F(Vector3DTest, getLengthFromVector)
 {
-    Vector3D v;
+    GbVector3D v;
     v[0] = 4.0;
     v[1] = 3.0;
     v[2] = -1.0;
@@ -114,7 +114,7 @@ TEST_F(Vector3DTest, getLengthFromVector)
 
 TEST_F(Vector3DTest, compareTwoVectors)
 {
-    Vector3D v;
+    GbVector3D v;
     v[0] = vec1[0];
     v[1] = vec1[1];
     v[2] = vec1[2];
@@ -179,11 +179,11 @@ TEST_F(Vector3DTest, compareTwoVectors)
 
 TEST_F(Vector3DTest, crossProductBetweenTwoVectors)
 {
-    Vector3D v1 = Vector3D(-5.0, -5.0, 0.0);
-    Vector3D v2 = Vector3D(5.0, 0.0, 10);
+    GbVector3D v1 = GbVector3D(-5.0, -5.0, 0.0);
+    GbVector3D v2 = GbVector3D(5.0, 0.0, 10);
 
-    Vector3D crossProd        = Vector3D(-50.0, 50.0, 25.0);
-    Vector3D testCrossProduct = v1.Cross(v2);
+    GbVector3D crossProd        = GbVector3D(-50.0, 50.0, 25.0);
+    GbVector3D testCrossProduct = v1.Cross(v2);
 
     EXPECT_THAT(testCrossProduct[0], DoubleEq(crossProd[0]));
     EXPECT_THAT(testCrossProduct[1], DoubleEq(crossProd[1]));

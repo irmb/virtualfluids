@@ -41,10 +41,11 @@
 #include <string>
 #include <vector>
 
+#include <basics/geometry3d/GbVector3D.h>
+
 namespace vf::parallel {class Communicator;}
 class Grid3D;
 class UbScheduler;
-class Vector3D;
 class DistributionArray3D;
 
 //! \brief     Class implements microphone array.
@@ -63,7 +64,7 @@ public:
     void update(real step) override;
 
     //! add microphone
-    bool addMicrophone(Vector3D coords);
+    bool addMicrophone(GbVector3D coords);
 
 protected:
     void collectData(real step);
