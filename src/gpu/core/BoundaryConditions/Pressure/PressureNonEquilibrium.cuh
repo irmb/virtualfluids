@@ -42,7 +42,8 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
-__global__ void PressureNonEquilibriumCompressible_Device(
+template <typename MacroscopicQuantityFunctor>
+__global__ void PressureNonEquilibrium_Device(
     real* rhoBC,
     real* distributions,
     int* bcNodeIndices,
@@ -53,7 +54,8 @@ __global__ void PressureNonEquilibriumCompressible_Device(
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep,
-    size_t direction)
+    size_t direction,
+    MacroscopicQuantityFunctor macroscopicQuantityFunctor)
 {
    ////////////////////////////////////////////////////////////////////////////////
    //! The pressure boundary condition is executed in the following steps
@@ -99,7 +101,7 @@ __global__ void PressureNonEquilibriumCompressible_Device(
       real vx1;
       real vx2;
       real vx3;
-      vf::lbm::getCompressibleMacroscopicValues(f_Neighbor, drho1, vx1, vx2, vx3);
+      macroscopicQuantityFunctor(f_Neighbor, drho1, vx1, vx2, vx3);
       real cusq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3);
 
       ////////////////////////////////////////////////////////////////////////////////
