@@ -183,10 +183,10 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
     bool firstBlock           = true;
     size_t doubleCountInBlock = 0;
     int ic                    = 0;
-    SPtr<EsoSplit> D3Q27EsoTwist3DSplittedVectorPtrF = 0, D3Q27EsoTwist3DSplittedVectorPtrH1 = 0, D3Q27EsoTwist3DSplittedVectorPtrH2 = 0;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF = 0, localDistributionsH1 = 0, localDistributionsH2 = 0;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF = 0, nonLocalDistributionsH1 = 0, nonLocalDistributionsH2 = 0;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsF = 0, zeroDistributionsH1 = 0, zeroDistributionsH2 = 0;
+    SPtr<EsoSplit> fEsoSplitPtr = 0, h1EsoSplitPtr = 0, h2EsoSplitPtr = 0;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitA = 0, h1SplitA = 0, h2SplitA = 0;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitB = 0, h1SplitB = 0, h2SplitB = 0;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr fSplit0 = 0, h1Split0 = 0, h2Split0 = 0;
 
     SPtr<LBMKernel> kernel;
 
@@ -203,51 +203,51 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
             dataSetArray[ic].compressible = kernel->getCompressible();
             dataSetArray[ic].withForcing = kernel->getWithForcing();
 
-            D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getFdistributions());
-            localDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getSplitA();
-            nonLocalDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getSplitB();
-            zeroDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getSplit0();
+            fEsoSplitPtr = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getFdistributions());
+            fSplitA = fEsoSplitPtr->getSplitA();
+            fSplitB = fEsoSplitPtr->getSplitB();
+            fSplit0 = fEsoSplitPtr->getSplit0();
 
-            D3Q27EsoTwist3DSplittedVectorPtrH1 = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getHdistributions());
-            if (D3Q27EsoTwist3DSplittedVectorPtrH1 != 0)
+            h1EsoSplitPtr = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getHdistributions());
+            if (h1EsoSplitPtr != 0)
             {
                 multiPhase1 = true;
-                localDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getSplitA();
-                nonLocalDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getSplitB();
-                zeroDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getSplit0();
+                h1SplitA = h1EsoSplitPtr->getSplitA();
+                h1SplitB = h1EsoSplitPtr->getSplitB();
+                h1Split0 = h1EsoSplitPtr->getSplit0();
             }
 
-            D3Q27EsoTwist3DSplittedVectorPtrH2 = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getH2distributions());
-            if (D3Q27EsoTwist3DSplittedVectorPtrH2 != 0)
+            h2EsoSplitPtr = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getH2distributions());
+            if (h2EsoSplitPtr != 0)
             {
                 multiPhase2 = true;
-                localDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getSplitA();
-                nonLocalDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getSplitB();
-                zeroDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getSplit0();
+                h2SplitA = h2EsoSplitPtr->getSplitA();
+                h2SplitB = h2EsoSplitPtr->getSplitB();
+                h2Split0 = h2EsoSplitPtr->getSplit0();
             }
 
             if (firstBlock) // && block->getKernel()) // when first (any) valid block...
             {
-                if (localDistributionsF)
+                if (fSplitA)
                 {
-                    dataSetParamStr1.nx[0] = static_cast<int>(localDistributionsF->getNX1());
-                    dataSetParamStr1.nx[1] = static_cast<int>(localDistributionsF->getNX2());
-                    dataSetParamStr1.nx[2] = static_cast<int>(localDistributionsF->getNX3());
-                    dataSetParamStr1.nx[3] = static_cast<int>(localDistributionsF->getNX4());
+                    dataSetParamStr1.nx[0] = static_cast<int>(fSplitA->getNX1());
+                    dataSetParamStr1.nx[1] = static_cast<int>(fSplitA->getNX2());
+                    dataSetParamStr1.nx[2] = static_cast<int>(fSplitA->getNX3());
+                    dataSetParamStr1.nx[3] = static_cast<int>(fSplitA->getNX4());
                 }
 
-                if (nonLocalDistributionsF)
+                if (fSplitB)
                 {
-                    dataSetParamStr2.nx[0] = static_cast<int>(nonLocalDistributionsF->getNX1());
-                    dataSetParamStr2.nx[1] = static_cast<int>(nonLocalDistributionsF->getNX2());
-                    dataSetParamStr2.nx[2] = static_cast<int>(nonLocalDistributionsF->getNX3());
-                    dataSetParamStr2.nx[3] = static_cast<int>(nonLocalDistributionsF->getNX4());
+                    dataSetParamStr2.nx[0] = static_cast<int>(fSplitB->getNX1());
+                    dataSetParamStr2.nx[1] = static_cast<int>(fSplitB->getNX2());
+                    dataSetParamStr2.nx[2] = static_cast<int>(fSplitB->getNX3());
+                    dataSetParamStr2.nx[3] = static_cast<int>(fSplitB->getNX4());
                 }
-                if (zeroDistributionsF)
+                if (fSplit0)
                 {
-                    dataSetParamStr3.nx[0] = static_cast<int>(zeroDistributionsF->getNX1());
-                    dataSetParamStr3.nx[1] = static_cast<int>(zeroDistributionsF->getNX2());
-                    dataSetParamStr3.nx[2] = static_cast<int>(zeroDistributionsF->getNX3());
+                    dataSetParamStr3.nx[0] = static_cast<int>(fSplit0->getNX1());
+                    dataSetParamStr3.nx[1] = static_cast<int>(fSplit0->getNX2());
+                    dataSetParamStr3.nx[2] = static_cast<int>(fSplit0->getNX3());
                     dataSetParamStr3.nx[3] = 1;
                 }
 
@@ -317,31 +317,31 @@ void MPIIOMigrationSimulationObserver::writeDataSet(int step)
                 firstBlock = false;
             }
 
-            if (localDistributionsF && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                doubleValuesArrayF.insert(doubleValuesArrayF.end(), localDistributionsF->getDataVector().begin(), localDistributionsF->getDataVector().end());
-            if (nonLocalDistributionsF && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                doubleValuesArrayF.insert(doubleValuesArrayF.end(), nonLocalDistributionsF->getDataVector().begin(), nonLocalDistributionsF->getDataVector().end());
-            if (zeroDistributionsF && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
-                doubleValuesArrayF.insert(doubleValuesArrayF.end(), zeroDistributionsF->getDataVector().begin(), zeroDistributionsF->getDataVector().end());
+            if (fSplitA && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                doubleValuesArrayF.insert(doubleValuesArrayF.end(), fSplitA->getDataVector().begin(), fSplitA->getDataVector().end());
+            if (fSplitB && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                doubleValuesArrayF.insert(doubleValuesArrayF.end(), fSplitB->getDataVector().begin(), fSplitB->getDataVector().end());
+            if (fSplit0 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                doubleValuesArrayF.insert(doubleValuesArrayF.end(), fSplit0->getDataVector().begin(), fSplit0->getDataVector().end());
 
             if (multiPhase1)
             {
-                if (localDistributionsH1 && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), localDistributionsH1->getDataVector().begin(), localDistributionsH1->getDataVector().end());
-                if (nonLocalDistributionsH1 && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), nonLocalDistributionsH1->getDataVector().begin(), nonLocalDistributionsH1->getDataVector().end());
-                if (zeroDistributionsH1 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
-                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), zeroDistributionsH1->getDataVector().begin(), zeroDistributionsH1->getDataVector().end());
+                if (h1SplitA && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), h1SplitA->getDataVector().begin(), h1SplitA->getDataVector().end());
+                if (h1SplitB && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), h1SplitB->getDataVector().begin(), h1SplitB->getDataVector().end());
+                if (h1Split0 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), h1Split0->getDataVector().begin(), h1Split0->getDataVector().end());
             }
 
             if (multiPhase2)
             {
-                if (localDistributionsH2 && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                    doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), localDistributionsH2->getDataVector().begin(), localDistributionsH2->getDataVector().end());
-                if (nonLocalDistributionsH2 && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                    doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), nonLocalDistributionsH2->getDataVector().begin(), nonLocalDistributionsH2->getDataVector().end());
-                if (zeroDistributionsH2 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
-                    doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), zeroDistributionsH2->getDataVector().begin(), zeroDistributionsH2->getDataVector().end());
+                if (h2SplitA && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                    doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), h2SplitA->getDataVector().begin(), h2SplitA->getDataVector().end());
+                if (h2SplitB && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                    doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), h2SplitB->getDataVector().begin(), h2SplitB->getDataVector().end());
+                if (h2Split0 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                    doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), h2Split0->getDataVector().begin(), h2Split0->getDataVector().end());
             }
             
             ic++;
