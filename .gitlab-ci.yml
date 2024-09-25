@@ -389,6 +389,7 @@ nvidia_env_test:
 
   script:
   - echo NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+  - uname -r
   - nvidia-smi
 
 ###############################################################################
