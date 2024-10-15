@@ -304,7 +304,7 @@ trigger-performance-tests:
 
 ###############################################################################
 regression_test_4gpu:
-  image: python:latest
+  image: python:3.10
   stage: test
   needs: []
 
@@ -317,6 +317,7 @@ regression_test_4gpu:
   before_script:
     - pip install hpc-rocket==0.6.0
     - pip install "fieldcompare[all]"
+    - fieldcompare --version
     - apt-get update && apt-get install -y git-lfs
 
   script:
@@ -353,6 +354,7 @@ regression_test_8gpu:
   before_script:
     - pip install hpc-rocket==0.6.0
     - pip install "fieldcompare[all]"
+    - fieldcompare --version
     - apt-get update && apt-get install -y git-lfs
 
   script:
