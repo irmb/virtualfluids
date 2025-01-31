@@ -120,10 +120,10 @@ void run(string configname)
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityWithPressureInterpolated()));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
 
       SPtr<BC> denBC(new PressureBC(rhoLB));
-      denBC->setBCStrategy(SPtr<BCStrategy>(new OutflowNonReflecting()));
+      denBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
       
       BoundaryConditionsBlockVisitor bcVisitor;
 
@@ -307,7 +307,7 @@ void run(string configname)
       real area = (2.0*radius*H)/(dx*dx);
       real v    = 4.0*uLB/9.0;
       SPtr<UbScheduler> forceSch(new UbScheduler(1000));
-      SPtr<CalculateForcesSimulationObserver> fp = make_shared<CalculateForcesSimulationObserver>(grid, forceSch, pathOut + "/results/forces.txt", comm, v, area);
+      SPtr<CalculateForcesSimulationObserver> fp = make_shared<CalculateForcesSimulationObserver>(grid, forceSch, pathOut + "/forces/forces.csv", comm, v, area);
       fp->addInteractor(cylinderInt);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));

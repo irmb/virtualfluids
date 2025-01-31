@@ -56,8 +56,7 @@ public:
     //! Constructor
     //! \param v - velocity of fluid in LB units
     //! \param a - area of object in LB units
-    CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm,
-                               real v, real a);
+    CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm, real v, real a);
     ~CalculateForcesSimulationObserver() override;
     void update(real step) override;
     void addInteractor(SPtr<D3Q27Interactor> interactor);
@@ -65,10 +64,8 @@ public:
 protected:
     void collectData(real step);
     void calculateForces();
-    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions,
-                             SPtr<BoundaryConditions> bc);
+    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
     void calculateCoefficients();
-    void write(std::ofstream *fileObject, real value, char *separator);
 
 private:
     std::string path;
