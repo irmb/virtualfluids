@@ -134,6 +134,12 @@ constexpr real getPressure(const real *const &f27, const real& rho, const real& 
                basics::constant::c1o2 +
            rho; // times zero for incompressible case // Attention: op defined directly to op = 1 ; ^^^^(1.0/op-0.5)=0.5
 }
+
+constexpr real computeRelaxationFrequency(real viscosity)
+{
+    using namespace vf::basics::constant;
+    return c1o1 / (c3o1 * viscosity + c1o2);
+}
 }
 
 #endif

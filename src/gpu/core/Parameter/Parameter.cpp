@@ -32,6 +32,7 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Parameter.h"
+#include "lbm/MacroscopicQuantities.h"
 #include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 
 #include <cmath>
@@ -403,9 +404,9 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->gridNY           = getGridY().at(i);
         parH[i]->gridNZ           = getGridZ().at(i);
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
-        parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
+        parH[i]->diffusivity      = this->Diffusivity * std::pow((real)2.0, (real)i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
-        parH[i]->omegaDiffusivity = c1o1 / (c3o1 * parH[i]->diffusivity + c1o2);
+        parH[i]->omegaDiffusivity = vf::lbm::computeRelaxationFrequency(parH[i]->diffusivity);
     }
 
     // device
