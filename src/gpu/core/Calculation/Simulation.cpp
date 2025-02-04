@@ -54,6 +54,7 @@
 #include "Calculation/Calculation.h"
 #include "Calculation/UpdateGrid27.h"
 #include "Communication/ExchangeData27.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Cuda/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GridScaling/GridScalingFactory.h"
@@ -204,7 +205,7 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
 
     if (para->getDiffOn()) {
         VF_LOG_TRACE("make AD Kernels");
-        adKernels = kernelFactory->makeAdvDifKernels(para);
+        adKernels = kernelFactory->makeAdvectionDiffusionKernels(para);
         std::vector<PreProcessorType> preProADTypes = adKernels.at(0)->getPreProcessorTypes();
         preProcessorAD = preProcessorFactory->makePreProcessor(preProADTypes, para);
     }
@@ -771,11 +772,11 @@ Simulation::~Simulation()
     // Temp
     if (para->getDiffOn()) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.k));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.k));
+            cudaMemoryManager->cudaFreeConcentration(lev);
+            cudaMemoryManager->cudaFreeConcentrationNoSlipBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
+            if(para->getUseTurbulentDiffusivity())
+                cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
         }
     }
 
