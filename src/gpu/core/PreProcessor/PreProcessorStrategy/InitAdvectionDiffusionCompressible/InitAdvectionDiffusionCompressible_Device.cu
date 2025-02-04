@@ -36,6 +36,7 @@
 #include <gpu/cuda_helper/CudaIndexCalculation.h>
 #include "Utilities/KernelUtilities.h"
 #include <basics/constants/NumericConstants.h>
+#include <lbm/advectionDiffusion/Equilibrium.h>
 
 using namespace vf::basics::constant;
 using namespace vf::lbm;
@@ -76,33 +77,33 @@ __global__ void InitAdvectionDiffusionCompressible_Device(
     //!
     const real cu_sq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
 
-    (distAD.f[d000])[indices.k_000] = c8o27  * conc * (c1o1 - cu_sq);
-    (distAD.f[dP00])[indices.k_000] = c2o27  * conc * (c1o1 + c3o1 * ( vx1            ) + c9o2 * ( vx1            ) * ( vx1            ) - cu_sq);
-    (distAD.f[dM00])[indices.k_M00] = c2o27  * conc * (c1o1 + c3o1 * (-vx1            ) + c9o2 * (-vx1            ) * (-vx1            ) - cu_sq);
-    (distAD.f[d0P0])[indices.k_000] = c2o27  * conc * (c1o1 + c3o1 * (       vx2      ) + c9o2 * (       vx2      ) * (       vx2      ) - cu_sq);
-    (distAD.f[d0M0])[indices.k_0M0] = c2o27  * conc * (c1o1 + c3o1 * (     - vx2      ) + c9o2 * (     - vx2      ) * (     - vx2      ) - cu_sq);
-    (distAD.f[d00P])[indices.k_000] = c2o27  * conc * (c1o1 + c3o1 * (             vx3) + c9o2 * (             vx3) * (             vx3) - cu_sq);
-    (distAD.f[d00M])[indices.k_00M] = c2o27  * conc * (c1o1 + c3o1 * (           - vx3) + c9o2 * (           - vx3) * (           - vx3) - cu_sq);
-    (distAD.f[dPP0])[indices.k_000] = c1o54  * conc * (c1o1 + c3o1 * ( vx1 + vx2      ) + c9o2 * ( vx1 + vx2      ) * ( vx1 + vx2      ) - cu_sq);
-    (distAD.f[dMM0])[indices.k_MM0] = c1o54  * conc * (c1o1 + c3o1 * (-vx1 - vx2      ) + c9o2 * (-vx1 - vx2      ) * (-vx1 - vx2      ) - cu_sq);
-    (distAD.f[dPM0])[indices.k_0M0] = c1o54  * conc * (c1o1 + c3o1 * ( vx1 - vx2      ) + c9o2 * ( vx1 - vx2      ) * ( vx1 - vx2      ) - cu_sq);
-    (distAD.f[dMP0])[indices.k_M00] = c1o54  * conc * (c1o1 + c3o1 * (-vx1 + vx2      ) + c9o2 * (-vx1 + vx2      ) * (-vx1 + vx2      ) - cu_sq);
-    (distAD.f[dP0P])[indices.k_000] = c1o54  * conc * (c1o1 + c3o1 * ( vx1       + vx3) + c9o2 * ( vx1       + vx3) * ( vx1       + vx3) - cu_sq);
-    (distAD.f[dM0M])[indices.k_M0M] = c1o54  * conc * (c1o1 + c3o1 * (-vx1       - vx3) + c9o2 * (-vx1       - vx3) * (-vx1       - vx3) - cu_sq);
-    (distAD.f[dP0M])[indices.k_00M] = c1o54  * conc * (c1o1 + c3o1 * ( vx1       - vx3) + c9o2 * ( vx1       - vx3) * ( vx1       - vx3) - cu_sq);
-    (distAD.f[dM0P])[indices.k_M00] = c1o54  * conc * (c1o1 + c3o1 * (-vx1       + vx3) + c9o2 * (-vx1       + vx3) * (-vx1       + vx3) - cu_sq);
-    (distAD.f[d0PP])[indices.k_000] = c1o54  * conc * (c1o1 + c3o1 * (       vx2 + vx3) + c9o2 * (       vx2 + vx3) * (       vx2 + vx3) - cu_sq);
-    (distAD.f[d0MM])[indices.k_0MM] = c1o54  * conc * (c1o1 + c3o1 * (     - vx2 - vx3) + c9o2 * (     - vx2 - vx3) * (     - vx2 - vx3) - cu_sq);
-    (distAD.f[d0PM])[indices.k_00M] = c1o54  * conc * (c1o1 + c3o1 * (       vx2 - vx3) + c9o2 * (       vx2 - vx3) * (       vx2 - vx3) - cu_sq);
-    (distAD.f[d0MP])[indices.k_0M0] = c1o54  * conc * (c1o1 + c3o1 * (     - vx2 + vx3) + c9o2 * (     - vx2 + vx3) * (     - vx2 + vx3) - cu_sq);
-    (distAD.f[dPPP])[indices.k_000] = c1o216 * conc * (c1o1 + c3o1 * ( vx1 + vx2 + vx3) + c9o2 * ( vx1 + vx2 + vx3) * ( vx1 + vx2 + vx3) - cu_sq);
-    (distAD.f[dMMM])[indices.k_MMM] = c1o216 * conc * (c1o1 + c3o1 * (-vx1 - vx2 - vx3) + c9o2 * (-vx1 - vx2 - vx3) * (-vx1 - vx2 - vx3) - cu_sq);
-    (distAD.f[dPPM])[indices.k_00M] = c1o216 * conc * (c1o1 + c3o1 * ( vx1 + vx2 - vx3) + c9o2 * ( vx1 + vx2 - vx3) * ( vx1 + vx2 - vx3) - cu_sq);
-    (distAD.f[dMMP])[indices.k_MM0] = c1o216 * conc * (c1o1 + c3o1 * (-vx1 - vx2 + vx3) + c9o2 * (-vx1 - vx2 + vx3) * (-vx1 - vx2 + vx3) - cu_sq);
-    (distAD.f[dPMP])[indices.k_0M0] = c1o216 * conc * (c1o1 + c3o1 * ( vx1 - vx2 + vx3) + c9o2 * ( vx1 - vx2 + vx3) * ( vx1 - vx2 + vx3) - cu_sq);
-    (distAD.f[dMPM])[indices.k_M0M] = c1o216 * conc * (c1o1 + c3o1 * (-vx1 + vx2 - vx3) + c9o2 * (-vx1 + vx2 - vx3) * (-vx1 + vx2 - vx3) - cu_sq);
-    (distAD.f[dPMM])[indices.k_0MM] = c1o216 * conc * (c1o1 + c3o1 * ( vx1 - vx2 - vx3) + c9o2 * ( vx1 - vx2 - vx3) * ( vx1 - vx2 - vx3) - cu_sq);
-    (distAD.f[dMPP])[indices.k_M00] = c1o216 * conc * (c1o1 + c3o1 * (-vx1 + vx2 + vx3) + c9o2 * (-vx1 + vx2 + vx3) * (-vx1 + vx2 + vx3) - cu_sq);
+    (distAD.f[d000])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c8o27 ,conc, c0o1, cu_sq);
+    (distAD.f[dP00])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c2o27 ,conc,  vx1            , cu_sq);
+    (distAD.f[dM00])[indices.k_M00] = vf::lbm::advection_diffusion::equilibrium(c2o27 ,conc, -vx1            , cu_sq);
+    (distAD.f[d0P0])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c2o27 ,conc,        vx2      , cu_sq);
+    (distAD.f[d0M0])[indices.k_0M0] = vf::lbm::advection_diffusion::equilibrium(c2o27 ,conc,      - vx2      , cu_sq);
+    (distAD.f[d00P])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c2o27 ,conc,              vx3, cu_sq);
+    (distAD.f[d00M])[indices.k_00M] = vf::lbm::advection_diffusion::equilibrium(c2o27 ,conc,            - vx3, cu_sq);
+    (distAD.f[dPP0])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,  vx1 + vx2      , cu_sq);
+    (distAD.f[dMM0])[indices.k_MM0] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc, -vx1 - vx2      , cu_sq);
+    (distAD.f[dPM0])[indices.k_0M0] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,  vx1 - vx2      , cu_sq);
+    (distAD.f[dMP0])[indices.k_M00] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc, -vx1 + vx2      , cu_sq);
+    (distAD.f[dP0P])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,  vx1       + vx3, cu_sq);
+    (distAD.f[dM0M])[indices.k_M0M] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc, -vx1       - vx3, cu_sq);
+    (distAD.f[dP0M])[indices.k_00M] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,  vx1       - vx3, cu_sq);
+    (distAD.f[dM0P])[indices.k_M00] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc, -vx1       + vx3, cu_sq);
+    (distAD.f[d0PP])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,        vx2 + vx3, cu_sq);
+    (distAD.f[d0MM])[indices.k_0MM] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,      - vx2 - vx3, cu_sq);
+    (distAD.f[d0PM])[indices.k_00M] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,        vx2 - vx3, cu_sq);
+    (distAD.f[d0MP])[indices.k_0M0] = vf::lbm::advection_diffusion::equilibrium(c1o54 ,conc,      - vx2 + vx3, cu_sq);
+    (distAD.f[dPPP])[indices.k_000] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc,  vx1 + vx2 + vx3, cu_sq);
+    (distAD.f[dMMM])[indices.k_MMM] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc, -vx1 - vx2 - vx3, cu_sq);
+    (distAD.f[dPPM])[indices.k_00M] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc,  vx1 + vx2 - vx3, cu_sq);
+    (distAD.f[dMMP])[indices.k_MM0] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc, -vx1 - vx2 + vx3, cu_sq);
+    (distAD.f[dPMP])[indices.k_0M0] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc,  vx1 - vx2 + vx3, cu_sq);
+    (distAD.f[dMPM])[indices.k_M0M] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc, -vx1 + vx2 - vx3, cu_sq);
+    (distAD.f[dPMM])[indices.k_0MM] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc,  vx1 - vx2 - vx3, cu_sq);
+    (distAD.f[dMPP])[indices.k_M00] = vf::lbm::advection_diffusion::equilibrium(c1o216,conc, -vx1 + vx2 + vx3, cu_sq);
 
 }
 
