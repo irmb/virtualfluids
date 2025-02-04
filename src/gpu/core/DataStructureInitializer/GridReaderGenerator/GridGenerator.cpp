@@ -380,7 +380,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // advection - diffusion stuff
-            if (para->getDiffOn()==true){
+            if (para->getDiffOn()){
                 //////////////////////////////////////////////////////////////////////////
                 para->getParH(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes = para->getParH(level)->velocityBC.numberOfBCnodes;
                 //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
@@ -440,7 +440,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
             para->getParD(level)->precursorBC.velocityY = para->getParH(level)->precursorBC.velocityY;
             para->getParD(level)->precursorBC.velocityZ = para->getParH(level)->precursorBC.velocityZ;
 
-            for(auto reader : para->getParH(level)->transientBCInputFileReader)
+            for(auto& reader : para->getParH(level)->transientBCInputFileReader)
             {
                 if(reader->getNumberOfQuantities() != para->getParD(level)->precursorBC.numberOfQuantities)
                     throw std::runtime_error(
@@ -453,7 +453,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
             
 
             // read first timestep of precursor into next and copy to next on device
-            for(auto reader : para->getParH(level)->transientBCInputFileReader)
+            for(auto& reader : para->getParH(level)->transientBCInputFileReader)
             {
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 0);
             }
@@ -467,7 +467,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
 
             //read second timestep of precursor into next and copy next to device
             real nextTime = para->getParD(level)->precursorBC.timeStepsBetweenReads*pow(2,-((real)level))*para->getTimeRatio();
-            for(auto reader : para->getParH(level)->transientBCInputFileReader)
+            for(auto& reader : para->getParH(level)->transientBCInputFileReader)
             {
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
             }
@@ -483,7 +483,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
             para->getParD(level)->precursorBC.next = tmp;
 
             //start usual cycle of loading, i.e. read velocities of timestep after current and copy asynchronously to device
-            for(auto reader : para->getParH(level)->transientBCInputFileReader)
+            for(auto& reader : para->getParH(level)->transientBCInputFileReader)
             {
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, 2*nextTime);
             }
@@ -491,12 +491,11 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
             cudaMemoryManager->cudaCopyPrecursorData(level);
 
             para->getParD(level)->precursorBC.nPrecursorReads = 2;
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // advection - diffusion stuff
-        if (para->getDiffOn()==true){
-            throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // advection - diffusion stuff
+            if (para->getDiffOn())
+                throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
+            
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
