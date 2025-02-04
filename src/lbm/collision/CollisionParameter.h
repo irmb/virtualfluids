@@ -63,6 +63,13 @@ struct MacroscopicValues
     real rho { 0. };
 };
 
+struct ADCollisionParameter
+{
+    real distributions[27];
+    real velocityX, velocityY, velocityZ, omega;
+    real concentration;
+};
+
 } // namespace vf::lbm
 
 #endif

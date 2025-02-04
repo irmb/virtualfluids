@@ -31,44 +31,59 @@
 //! \{
 #include "F16CompressibleAdvectionDiffusion.h"
 
-#include "F16CompressibleAdvectionDiffusion_Device.cuh"
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
+#include <gpu/core/Utilities/RunAdvectionDiffusionCollision.cuh>
+#include <lbm/collision/F16AdvectionDiffusion.h>
 
-std::shared_ptr<F16CompressibleAdvectionDiffusion> F16CompressibleAdvectionDiffusion::getNewInstance(std::shared_ptr<Parameter> para, int level)
+template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
+std::shared_ptr<F16CompressibleAdvectionDiffusion<turbulenceModel>>
+F16CompressibleAdvectionDiffusion<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
     return std::shared_ptr<F16CompressibleAdvectionDiffusion>(new F16CompressibleAdvectionDiffusion(para, level));
 }
 
-void F16CompressibleAdvectionDiffusion::run()
+template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
+void F16CompressibleAdvectionDiffusion<turbulenceModel>::run()
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
-
-    F16CompressibleAdvectionDiffusion_Device<<< grid.grid, grid.threads >>>(
-        para->getParD(level)->diffusivity,
-        para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->distributions.f[0],
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level)->numberOfNodes, 
-        para->getParD(level)->forcing,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("F16CompressibleAdvectionDiffusion_Device execution failed");
+    runOnIndicesAD(para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
+                 para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 }
 
-F16CompressibleAdvectionDiffusion::F16CompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para, int level)
+template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
+void F16CompressibleAdvectionDiffusion<turbulenceModel>::runOnIndicesAD(const uint* indices, uint size_indices,
+                                                                      CudaStreamIndex streamIdx)
+{
+    const auto parameter =
+        vf::gpu::getCollisionParameter(para->getParD(level).get(), para->getTurbulentPrandtlNumber(), indices, size_indices);
+
+    auto collision = [] __device__(ADCollisionParameter & parameters) {
+        return runF16AdvectionDiffusion(parameters);
+    };
+
+    cudaStream_t stream = para->getStreamManager()->getStream(streamIdx);
+    const vf::cuda::CudaGrid grid(para->getParD(level)->numberofthreads, parameter.numberOfFluidNodes);
+
+    vf::gpu::runCollisionAdvectionDiffusion<decltype(collision), turbulenceModel>
+        <<<grid.grid, grid.threads, 0, stream>>>(collision, parameter);
+    getLastCudaError("F16CompressibleAdvectionDiffusion execution failed");
+}
+
+template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
+F16CompressibleAdvectionDiffusion<turbulenceModel>::F16CompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para,
+                                                                                      int level)
 {
     this->para = para;
     this->level = level;
+    this->kernelUsesFluidNodeIndices = true;
 
     myPreProcessorTypes.push_back(InitAdvectionDiffusionCompressible);
-
 }
 
-F16CompressibleAdvectionDiffusion::F16CompressibleAdvectionDiffusion()
-{
-}
+template class F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::None>;
+template class F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Default>;
+template class F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Moeng>;
+template class F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified>;
 
 //! \}
