@@ -405,6 +405,7 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
         parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
+        parH[i]->omegaDiffusivity = c1o1 / (c3o1 * parH[i]->diffusivity + c1o2);
     }
 
     // device
@@ -417,6 +418,7 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
+        parD[i]->omegaDiffusivity = parH[i]->omegaDiffusivity;
     }
 }
 
