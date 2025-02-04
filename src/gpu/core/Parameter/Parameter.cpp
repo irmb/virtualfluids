@@ -699,7 +699,7 @@ void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     this->turbulenceModel = turbulenceModel;
 }
-void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel)
+void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel)
 {
     this->advectionDiffusionTurbulenceModel = turbulenceModel;
 }
@@ -1780,7 +1780,7 @@ vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {
     return this->turbulenceModel;
 }
-vf::lbm::advectionDiffusion::TurbulenceModel Parameter::getADTurbulenceModel()
+vf::lbm::advection_diffusion::TurbulenceModel Parameter::getADTurbulenceModel()
 {
     return this->advectionDiffusionTurbulenceModel;
 }
@@ -1790,7 +1790,7 @@ bool Parameter::getUseTurbulentViscosity()
 }
 bool Parameter::getUseTurbulentDiffusivity()
 {
-    return this->advectionDiffusionTurbulenceModel != vf::lbm::advectionDiffusion::TurbulenceModel::None;
+    return this->advectionDiffusionTurbulenceModel != vf::lbm::advection_diffusion::TurbulenceModel::None;
 }
 real Parameter::getSGSConstant()
 {

@@ -42,12 +42,14 @@
 
 #include "CollisionParameter.h"
 
-using namespace vf::basics::constant;
-using namespace vf::lbm;
-using namespace vf::lbm::dir;
+
+namespace vf::lbm::advection_diffusion
+{
 
 constexpr void runF16AdvectionDiffusion(ADCollisionParameter& parameters)
 {
+    using namespace vf::basics::constant;
+    using namespace dir;
     auto& distribution = parameters.distributions;
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -250,4 +252,5 @@ constexpr void runF16AdvectionDiffusion(ADCollisionParameter& parameters)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
+}
 //! \}

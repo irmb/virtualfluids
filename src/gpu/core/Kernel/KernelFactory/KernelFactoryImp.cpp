@@ -141,25 +141,25 @@ std::shared_ptr<AdvectionDiffusionKernel> KernelFactoryImp::makeAdvectionDiffusi
 
     if (kernel == advectionDiffusionKernel::compressible::F16)
     {
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::None)
-            return F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::None>::getNewInstance(para, level);
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::Default)
-            return F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Default>::getNewInstance(para, level);
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::Moeng)
-            return F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Moeng>::getNewInstance(para, level);
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified)
-            return F16CompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::None)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::None>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Default)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Default>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Moeng)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Moeng>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
     }
     if (kernel == advectionDiffusionKernel::incompressible::F16)
     {
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::None)
-            return F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::None>::getNewInstance(para, level);
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::Default)
-            return F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Default>::getNewInstance(para, level);
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::Moeng)
-            return F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Moeng>::getNewInstance(para, level);
-        if(para->getADTurbulenceModel() == vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified)
-            return F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::None)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::None>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Default)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Default>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Moeng)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Moeng>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
     }
 
     

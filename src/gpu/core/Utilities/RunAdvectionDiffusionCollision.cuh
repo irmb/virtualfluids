@@ -33,7 +33,7 @@
 //=======================================================================================
 #include <basics/DataTypes.h>
 
-#include <lbm/collision/CollisionParameter.h>
+#include <lbm/advectionDiffusion/collision/CollisionParameter.h>
 #include <lbm/collision/TurbulentViscosity.h>
 #include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 
@@ -42,10 +42,10 @@
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 #include "core/Parameter/Parameter.h"
 
-namespace vf::gpu
+namespace vf::gpu::advection_diffusion
 {
 
-struct GPUCollisionParametersAD
+struct GPUCollisionParameters
 {
     unsigned long long numberOfLBnodes;
     bool isEvenTimestep;
@@ -62,7 +62,7 @@ struct GPUCollisionParametersAD
     uint numberOfFluidNodes;
 };
 
-inline vf::gpu::GPUCollisionParametersAD getCollisionParameter(LBMSimulationParameter* parD, real turbulentPrandtlNumber,
+inline GPUCollisionParameters getCollisionParameter(LBMSimulationParameter* parD, real turbulentPrandtlNumber,
                                                         const uint* indices, uint sizeIndices)
 {
     return { parD->numberOfNodes,
@@ -84,9 +84,10 @@ inline vf::gpu::GPUCollisionParametersAD getCollisionParameter(LBMSimulationPara
              sizeIndices };
 }
 
-template <typename CollisionFunctor, vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
-__global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCollisionParametersAD collisionParameter)
+template <typename CollisionFunctor, vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel>
+__global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCollisionParameters collisionParameter)
 {
+    using namespace vf::lbm::advection_diffusion;
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
     if (nodeIndex >= collisionParameter.numberOfFluidNodes)
@@ -104,22 +105,22 @@ __global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCo
     const ListIndices listIndices(k_000, collisionParameter.neighborX, collisionParameter.neighborY,
                                   collisionParameter.neighborZ);
 
-    vf::lbm::ADCollisionParameter para;
+    ADCollisionParameter para;
     getPreCollisionDistribution(para.distributions, distAD, listIndices);
 
     switch (turbulenceModel) {
-        case vf::lbm::advectionDiffusion::TurbulenceModel::None:
+        case TurbulenceModel::None:
             para.omega = collisionParameter.relaxationFrequency;
             break;
-        case vf::lbm::advectionDiffusion::TurbulenceModel::Default: {
-            const real turbulentDiffusivity = vf::lbm::advectionDiffusion::calcTurbulentDiffusivityDefault(
+        case TurbulenceModel::Default: {
+            const real turbulentDiffusivity = calcTurbulentDiffusivityDefault(
                 collisionParameter.turbulentViscosity[k_000], collisionParameter.turbulentPrandtlNumber);
             para.omega =
                 vf::lbm::calculateOmegaWithturbulentViscosity(collisionParameter.relaxationFrequency, turbulentDiffusivity);
             collisionParameter.turbulentDiffusivity[k_000] = turbulentDiffusivity;
         } break;
-        case vf::lbm::advectionDiffusion::TurbulenceModel::Moeng:
-        case vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified:
+        case TurbulenceModel::Moeng:
+        case TurbulenceModel::AMDStratified:
             para.omega = vf::lbm::calculateOmegaWithturbulentViscosity(collisionParameter.relaxationFrequency,
                                                                        collisionParameter.turbulentDiffusivity[k_000]);
             break;

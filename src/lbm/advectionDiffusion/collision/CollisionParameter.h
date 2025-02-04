@@ -26,26 +26,25 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_Kernel Kernel
-//! \ingroup gpu_core core
+//! \addtogroup collision
+//! \ingroup lbm
 //! \{
-#ifndef F16CompressibleAdvectionDiffusion_H
-#define F16CompressibleAdvectionDiffusion_H
+//! \author Henry Korb
+//=======================================================================================
+#ifndef LBM_KERNEL_PARAMETER_ADVECTION_DIFFUSION_H
+#define LBM_KERNEL_PARAMETER_ADVECTION_DIFFUSION_H
 
-#include "Kernel/AdvectionDiffusionKernel.h"
-#include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
+#include <basics/DataTypes.h>
 
-template <vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel>
-class F16CompressibleAdvectionDiffusion : public AdvectionDiffusionKernel
+namespace vf::lbm::advection_diffusion
 {
-public:
-    static std::shared_ptr<F16CompressibleAdvectionDiffusion> getNewInstance(std::shared_ptr<Parameter> para, int level);
-    void run() override;
-    void runOnIndicesAD(const uint* indices, uint size_indices, CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) override;
 
-private:
-    F16CompressibleAdvectionDiffusion() = default;
-    F16CompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para, int level);
+struct ADCollisionParameter
+{
+    real distributions[27];
+    real velocityX, velocityY, velocityZ, omega;
+    real concentration;
 };
+} // namespace vf::lbm::advection_diffusion
 #endif
 //! \}

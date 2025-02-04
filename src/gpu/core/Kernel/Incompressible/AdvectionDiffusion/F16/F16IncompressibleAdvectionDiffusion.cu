@@ -35,44 +35,39 @@
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
 #include <gpu/core/Utilities/RunAdvectionDiffusionCollision.cuh>
-#include <lbm/collision/F16AdvectionDiffusion.h>
+#include <lbm/advectionDiffusion/collision/F16AdvectionDiffusion.h>
 
-template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
-std::shared_ptr<F16IncompressibleAdvectionDiffusion<turbulenceModel>>
-F16IncompressibleAdvectionDiffusion<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
+using namespace vf::lbm::advection_diffusion;
+using namespace vf::gpu::advection_diffusion;
+
+template <TurbulenceModel turbulenceModel>
+std::shared_ptr<F16IncompressibleAdvectionDiffusion<turbulenceModel>> F16IncompressibleAdvectionDiffusion<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
     return std::shared_ptr<F16IncompressibleAdvectionDiffusion>(new F16IncompressibleAdvectionDiffusion(para, level));
 }
 
-template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
+template <TurbulenceModel turbulenceModel>
 void F16IncompressibleAdvectionDiffusion<turbulenceModel>::run()
 {
-    runOnIndicesAD(para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
-                 para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
+    runOnIndicesAD(para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default], para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 }
 
-template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
-void F16IncompressibleAdvectionDiffusion<turbulenceModel>::runOnIndicesAD(const uint* indices, uint size_indices,
-                                                                      CudaStreamIndex streamIdx)
+template <TurbulenceModel turbulenceModel>
+void F16IncompressibleAdvectionDiffusion<turbulenceModel>::runOnIndicesAD(const uint* indices, uint size_indices, CudaStreamIndex streamIdx)
 {
-    const auto parameter =
-        vf::gpu::getCollisionParameter(para->getParD(level).get(), para->getTurbulentPrandtlNumber(), indices, size_indices);
+    const auto parameter = getCollisionParameter(para->getParD(level).get(), para->getTurbulentPrandtlNumber(), indices, size_indices);
 
-    auto collision = [] __device__(ADCollisionParameter & parameters) {
-        return runF16AdvectionDiffusion(parameters);
-    };
+    auto collision = [] __device__(ADCollisionParameter & parameters) { return runF16AdvectionDiffusion(parameters); };
 
     cudaStream_t stream = para->getStreamManager()->getStream(streamIdx);
     const vf::cuda::CudaGrid grid(para->getParD(level)->numberofthreads, parameter.numberOfFluidNodes);
 
-    vf::gpu::runCollisionAdvectionDiffusion<decltype(collision), turbulenceModel>
-        <<<grid.grid, grid.threads, 0, stream>>>(collision, parameter);
+    runCollisionAdvectionDiffusion<decltype(collision), turbulenceModel><<<grid.grid, grid.threads, 0, stream>>>(collision, parameter);
     getLastCudaError("F16IncompressibleAdvectionDiffusion execution failed");
 }
 
-template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
-F16IncompressibleAdvectionDiffusion<turbulenceModel>::F16IncompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para,
-                                                                                      int level)
+template <TurbulenceModel turbulenceModel>
+F16IncompressibleAdvectionDiffusion<turbulenceModel>::F16IncompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para, int level)
 {
     this->para = para;
     this->level = level;
@@ -81,9 +76,9 @@ F16IncompressibleAdvectionDiffusion<turbulenceModel>::F16IncompressibleAdvection
     myPreProcessorTypes.push_back(InitAdvectionDiffusionIncompressible);
 }
 
-template class F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::None>;
-template class F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Default>;
-template class F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::Moeng>;
-template class F16IncompressibleAdvectionDiffusion<vf::lbm::advectionDiffusion::TurbulenceModel::AMDStratified>;
+template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::None>;
+template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::Default>;
+template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::Moeng>;
+template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::AMDStratified>;
 
 //! \}

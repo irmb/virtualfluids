@@ -35,7 +35,7 @@
 #include "Kernel/AdvectionDiffusionKernel.h"
 #include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 
-template <vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel>
+template <vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel>
 class F16IncompressibleAdvectionDiffusion : public AdvectionDiffusionKernel
 {
 public:

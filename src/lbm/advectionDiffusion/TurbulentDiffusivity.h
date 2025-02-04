@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace vf::lbm::advectionDiffusion
+namespace vf::lbm::advection_diffusion
 {
 
 //! \brief An enumeration for selecting a template of the advection-diffusion turbulence model
@@ -90,6 +90,6 @@ constexpr real calcTurbulentDiffusivityAMD(real SGSConstant, real dvxdx, real dv
     constexpr real upperLimit = c1o100;
     return std::clamp(SGSConstant * numerator / denominator, zero, upperLimit);
 }
-} // namespace vf::lbm::advectionDiffusion
+} // namespace vf::lbm::advection_diffusion
 #endif
 //! \}

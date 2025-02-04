@@ -459,7 +459,7 @@ public:
     void setIsCp(bool isCp);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
-    void setAdvectionDiffusionTurbulenceModel(vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel);
+    void setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
@@ -686,7 +686,7 @@ public:
     bool getCalcHighOrderMoments();
     bool getUseMeasurePoints();
     vf::lbm::TurbulenceModel getTurbulenceModel();
-    vf::lbm::advectionDiffusion::TurbulenceModel getADTurbulenceModel();
+    vf::lbm::advection_diffusion::TurbulenceModel getADTurbulenceModel();
     bool getUseTurbulentViscosity();
     bool getUseTurbulentDiffusivity();
     real getSGSConstant();
@@ -837,7 +837,7 @@ private:
     std::string concentration;
     
     vf::lbm::TurbulenceModel turbulenceModel{ vf::lbm::TurbulenceModel::None };
-    vf::lbm::advectionDiffusion::TurbulenceModel advectionDiffusionTurbulenceModel { vf::lbm::advectionDiffusion::TurbulenceModel::None };
+    vf::lbm::advection_diffusion::TurbulenceModel advectionDiffusionTurbulenceModel { vf::lbm::advection_diffusion::TurbulenceModel::None };
 
 
     // Kernel
