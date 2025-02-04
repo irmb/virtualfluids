@@ -110,9 +110,9 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
     if(useDiffusionVelocity)
-        gridBuilder->addCoarseGrid(-c2o1*c10o1 * sigma0, -c2o1*c10o1 * sigma0, -c2o1*c10o1 * sigma0, c2o1*c10o1 * sigma0, c2o1*c10o1 * sigma0, c2o1*c10o1 * sigma0, deltaX);
+        gridBuilder->addCoarseGrid(-c10o1 * sigma0, -c10o1 * sigma0, -c10o1 * sigma0, c10o1 * sigma0, c10o1 * sigma0, c10o1 * sigma0, deltaX);
     else
-        gridBuilder->addCoarseGrid(-c6o1*sigma0, -c6o1*sigma0, -c6o1*sigma0, (c6o1+transports)*sigma0, (c6o1+transports)*sigma0, (c6o1+transports)*sigma0, deltaX);
+        gridBuilder->addCoarseGrid(-c6o1*sigma0, -c6o1*sigma0, -c6o1*sigma0, c10o1*sigma0, c10o1*sigma0, c10o1*sigma0, deltaX);
     
     gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
