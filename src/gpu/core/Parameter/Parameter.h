@@ -40,6 +40,7 @@
 #include <vector>
 #include <optional>
 
+#include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 #include "lbm/constants/D3Q27.h"
 #include "Calculation/Calculation.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
@@ -314,7 +315,7 @@ struct LBMSimulationParameter {
     // Turbulent Viscosity/Intensity
     //////////////////////////////////////////////////////////////////////////
     //! \brief store the turbulent viscosity
-    real* turbViscosity;
+    real* turbulentViscosity, *turbulentDiffusivity;
     //! \brief store the turbulent intensity and related values
     real *vx_mean, *vy_mean, *vz_mean;       // means
     real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
@@ -452,11 +453,13 @@ public:
     void setRealX(real RealX);
     void setRealY(real RealY);
     void setRe(real Re);
+    void setTurbulentPrandtlNumber(real turbulentPrandtlNumber);
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
     void setIsCp(bool isCp);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
+    void setAdvectionDiffusionTurbulenceModel(vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
@@ -648,6 +651,7 @@ public:
     real getRealX();
     real getRealY();
     real getRe() const;
+    real getTurbulentPrandtlNumber() const;
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices() const;
@@ -682,7 +686,9 @@ public:
     bool getCalcHighOrderMoments();
     bool getUseMeasurePoints();
     vf::lbm::TurbulenceModel getTurbulenceModel();
+    vf::lbm::advectionDiffusion::TurbulenceModel getADTurbulenceModel();
     bool getUseTurbulentViscosity();
+    bool getUseTurbulentDiffusivity();
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();
@@ -757,6 +763,7 @@ private:
     real delta_press{ 1.0 };
     real SGSConstant{ 0.0 };
     real outflowPressureCorrectionFactor{ 0.0 };
+    real turbulentPrandtlNumber{ 0.0 };
 
     bool diffOn{ false };
     bool calcDragLift{ false };
@@ -830,6 +837,7 @@ private:
     std::string concentration;
     
     vf::lbm::TurbulenceModel turbulenceModel{ vf::lbm::TurbulenceModel::None };
+    vf::lbm::advectionDiffusion::TurbulenceModel advectionDiffusionTurbulenceModel { vf::lbm::advectionDiffusion::TurbulenceModel::None };
 
 
     // Kernel

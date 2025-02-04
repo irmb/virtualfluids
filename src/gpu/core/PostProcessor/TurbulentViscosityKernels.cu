@@ -116,7 +116,7 @@ void calcTurbulentViscosityAMD(Parameter* para, int level)
         para->getParD(level)->velocityX,
         para->getParD(level)->velocityY,
         para->getParD(level)->velocityZ,
-        para->getParD(level)->turbViscosity,
+        para->getParD(level)->turbulentViscosity,
         para->getParD(level)->neighborX,
         para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ,

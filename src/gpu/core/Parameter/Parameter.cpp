@@ -32,6 +32,7 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Parameter.h"
+#include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 
 #include <cmath>
 #include <cstdio>
@@ -666,6 +667,10 @@ void Parameter::setRe(real Re)
 {
     this->Re = Re;
 }
+void Parameter::setTurbulentPrandtlNumber(real turbulentPrandtlNumber)
+{
+    this->turbulentPrandtlNumber = turbulentPrandtlNumber;
+}
 void Parameter::setFactorPressBC(real factorPressBC)
 {
     this->factorPressBC = factorPressBC;
@@ -693,6 +698,10 @@ void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     this->turbulenceModel = turbulenceModel;
+}
+void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advectionDiffusion::TurbulenceModel turbulenceModel)
+{
+    this->advectionDiffusionTurbulenceModel = turbulenceModel;
 }
 void Parameter::setSGSConstant(real SGSConstant)
 {
@@ -1439,6 +1448,10 @@ real Parameter::getRe() const
 {
     return this->Re;
 }
+real Parameter::getTurbulentPrandtlNumber() const 
+{
+    return this->turbulentPrandtlNumber;
+}
 real Parameter::getFactorPressBC()
 {
     return this->factorPressBC;
@@ -1767,9 +1780,17 @@ vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {
     return this->turbulenceModel;
 }
+vf::lbm::advectionDiffusion::TurbulenceModel Parameter::getADTurbulenceModel()
+{
+    return this->advectionDiffusionTurbulenceModel;
+}
 bool Parameter::getUseTurbulentViscosity()
 {
     return this->isTurbulentViscosity;
+}
+bool Parameter::getUseTurbulentDiffusivity()
+{
+    return this->advectionDiffusionTurbulenceModel != vf::lbm::advectionDiffusion::TurbulenceModel::None;
 }
 real Parameter::getSGSConstant()
 {

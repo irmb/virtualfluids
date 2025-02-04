@@ -110,8 +110,27 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
             para->getParH(level)->forceZ_SP[pos] = 0.0f;
         }
     }
+}
 
+void GridProvider::setInitialNodeValuesAD(uint numberOfNodes, int level) const
+{
+    for (uint index = 1; index <= numberOfNodes; index++) {
 
+        real scalar;
+        if (para->getInitialConditionAD()) {
+            para->getInitialConditionAD()(  para->getParH(level)->coordinateX[index],
+                                            para->getParH(level)->coordinateY[index],
+                                            para->getParH(level)->coordinateZ[index], 
+                                            scalar);
+        } else {
+            scalar = c0o1;
+        }
+
+        para->getParH(level)->concentration[index] = scalar;
+        if(para->getUseTurbulentDiffusivity())
+            para->getParH(level)->turbulentDiffusivity[index] = c0o1;
+    }
+    
 }
 
 

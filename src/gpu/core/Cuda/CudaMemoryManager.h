@@ -251,7 +251,10 @@ public:
     void cudaFreeConcentration(int lev);
 
     void cudaAllocConcentrationFs(int lev);
-
+    void cudaAllocTurbulentDiffusivity(int lev);
+    void cudaCopyTurbulentDiffusivityHostToDevice(int lev);
+    void cudaCopyTurbulentDiffusivityDeviceToHost(int lev);
+    void cudaFreeTurbulentDiffusivity(int lev);
     void cudaAllocConcentrationDirichletBC(int lev);
     void cudaCopyConcentrationDirichletBCHostToDevice(int lev);
     void cudaFreeConcentrationDirichletBC(int lev);

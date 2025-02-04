@@ -114,6 +114,13 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaAllocBodyForce(level);
 
+        if(para->getDiffOn())
+        {
+            cudaMemoryManager->cudaAllocConcentration(level);
+            cudaMemoryManager->cudaAllocConcentrationFs(level);
+            if(para->getUseTurbulentDiffusivity())
+                cudaMemoryManager->cudaAllocTurbulentDiffusivity(level);
+        }
         builder->getNodeValues(
             para->getParH(level)->coordinateX,
             para->getParH(level)->coordinateY,
@@ -127,11 +134,20 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 
         setInitialNodeValues(numberOfNodesPerLevel, level);
 
+        if(para->getDiffOn())
+            setInitialNodeValuesAD(numberOfNodesPerLevel, level);
+
         cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
         if(para->getIsBodyForce())
             cudaMemoryManager->cudaCopyBodyForce(level);
+        if(para->getDiffOn())
+        {
+            cudaMemoryManager->cudaCopyConcentrationHostToDevice(level);
+            if(para->getUseTurbulentDiffusivity())
+                cudaMemoryManager->cudaCopyTurbulentDiffusivityHostToDevice(level);
+        }
     }
 
     for (int i = 0; i <= para->getMaxLevel(); i++) {

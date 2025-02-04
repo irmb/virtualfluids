@@ -83,6 +83,7 @@ protected:
     void setNumberOfNodes(uint numberOfNodes, int level) const;
     void setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemplate tag, int level) const;
     virtual void setInitialNodeValues(uint numberOfNodes, int level) const;
+    void setInitialNodeValuesAD(uint numberOfNodes, int level) const;
 
     void setPressSizePerLevel(int level, int sizePerLevel) const;
     void setVelocitySizePerLevel(int level, int sizePerLevel) const;

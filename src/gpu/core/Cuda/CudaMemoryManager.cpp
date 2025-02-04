@@ -66,7 +66,7 @@ void CudaMemoryManager::cudaCopyPrint(int lev)
 
     if(parameter->getUseTurbulentViscosity())
     {
-        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->turbViscosity   , parameter->getParD(lev)->turbViscosity   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
+        checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->turbulentViscosity   , parameter->getParD(lev)->turbulentViscosity   , parameter->getParH(lev)->memSizeRealLBnodes , cudaMemcpyDeviceToHost));
     }
 }
 void CudaMemoryManager::cudaCopyMeanPrint(int lev)
@@ -784,10 +784,10 @@ void CudaMemoryManager::cudaFreeNeighborWSB(int lev)
 void CudaMemoryManager::cudaAllocTurbulentViscosity(int lev)
 {
     //Host
-    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->turbViscosity), parameter->getParH(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->turbulentViscosity), parameter->getParH(lev)->memSizeRealLBnodes));
 
     //Device
-    checkCudaErrors(cudaMalloc((void**) &(parameter->getParD(lev)->turbViscosity), parameter->getParD(lev)->memSizeRealLBnodes));
+    checkCudaErrors(cudaMalloc((void**) &(parameter->getParD(lev)->turbulentViscosity), parameter->getParD(lev)->memSizeRealLBnodes));
 
     //////////////////////////////////////////////////////////////////////////
     double tmp = (double)parameter->getParH(lev)->memSizeRealLBnodes;
@@ -796,16 +796,16 @@ void CudaMemoryManager::cudaAllocTurbulentViscosity(int lev)
 void CudaMemoryManager::cudaCopyTurbulentViscosityHD(int lev)
 {
     //copy host to device
-    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->turbViscosity, parameter->getParH(lev)->turbViscosity, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->turbulentViscosity, parameter->getParH(lev)->turbulentViscosity, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaCopyTurbulentViscosityDH(int lev)
 {
     //copy device to host
-    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->turbViscosity, parameter->getParD(lev)->turbViscosity, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->turbulentViscosity, parameter->getParD(lev)->turbulentViscosity, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
 }
 void CudaMemoryManager::cudaFreeTurbulentViscosity(int lev)
 {
-    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->turbViscosity));
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->turbulentViscosity));
 }
 //turbulence intensity
 void CudaMemoryManager::cudaAllocTurbulenceIntensity(int lev, uint size)
@@ -1811,6 +1811,28 @@ void CudaMemoryManager::cudaAllocConcentrationFs(int lev)
     setMemsizeGPU(tmp, false);
 }
 //////////////////////////////////////////////////////////////////////////
+void CudaMemoryManager::cudaAllocTurbulentDiffusivity(int lev)
+{
+    const uint size = parameter->getParH(lev)->memSizeRealLBnodes;
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->turbulentDiffusivity), size));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->turbulentDiffusivity), size));
+    setMemsizeGPU((double)size, false);
+}
+
+void CudaMemoryManager::cudaCopyTurbulentDiffusivityHostToDevice(int lev)
+{
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->turbulentDiffusivity, parameter->getParH(lev)->turbulentDiffusivity, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaCopyTurbulentDiffusivityDeviceToHost(int lev)
+{
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->turbulentDiffusivity, parameter->getParD(lev)->turbulentDiffusivity, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
+}
+
+void CudaMemoryManager::cudaFreeTurbulentDiffusivity(int lev){
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->turbulentDiffusivity));
+    checkCudaErrors(cudaFree(parameter->getParD(lev)->turbulentDiffusivity));
+}
 void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
 {
     unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
