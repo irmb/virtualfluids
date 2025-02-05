@@ -638,6 +638,11 @@ real Parameter::getScaledStressRatio(int level)
 {
     return this->getVelocityRatio()*this->getVelocityRatio();
 }
+real Parameter::getScaledBuoyancyFactor(int level) const
+{
+    return this->getBuoyancyFactor()*std::pow(c2o1,-static_cast<real>(level));
+}
+
 void Parameter::setRealX(real RealX)
 {
     this->RealX = RealX;
@@ -674,6 +679,10 @@ void Parameter::setTurbulentPrandtlNumber(real turbulentPrandtlNumber)
 {
     this->turbulentPrandtlNumber = turbulentPrandtlNumber;
 }
+void Parameter::setBuoyancyFactor(real buoyancyFactor)
+{
+    this->buoyancyFactor = buoyancyFactor;
+}
 void Parameter::setFactorPressBC(real factorPressBC)
 {
     this->factorPressBC = factorPressBC;
@@ -696,11 +705,15 @@ void Parameter::setUseInitNeq(bool useInitNeq)
 }
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 {
-    this->isTurbulentViscosity = useTurbulentViscosity;
+    this->turbulentViscosityEnabled = useTurbulentViscosity;
 }
 void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     this->turbulenceModel = turbulenceModel;
+}
+void Parameter::setUseTurbulentDiffusivity(bool useTurbulentDiffusivity)
+{
+    this->turbulentDiffusivityEnabled = useTurbulentDiffusivity;
 }
 void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel)
 {
@@ -1455,6 +1468,10 @@ real Parameter::getTurbulentPrandtlNumber() const
 {
     return this->turbulentPrandtlNumber;
 }
+real Parameter::getBuoyancyFactor() const
+{
+    return this->buoyancyFactor;
+}
 real Parameter::getFactorPressBC()
 {
     return this->factorPressBC;
@@ -1789,11 +1806,11 @@ vf::lbm::advection_diffusion::TurbulenceModel Parameter::getADTurbulenceModel()
 }
 bool Parameter::getUseTurbulentViscosity()
 {
-    return this->isTurbulentViscosity;
+    return this->turbulentViscosityEnabled;
 }
 bool Parameter::getUseTurbulentDiffusivity()
 {
-    return this->advectionDiffusionTurbulenceModel != vf::lbm::advection_diffusion::TurbulenceModel::None;
+    return this->turbulentDiffusivityEnabled;
 }
 real Parameter::getSGSConstant()
 {

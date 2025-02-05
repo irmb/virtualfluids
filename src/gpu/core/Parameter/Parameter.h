@@ -454,6 +454,7 @@ public:
     void setRealY(real RealY);
     void setRe(real Re);
     void setTurbulentPrandtlNumber(real turbulentPrandtlNumber);
+    void setBuoyancyFactor(real buoyancyFactor);
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
     void setIsCp(bool isCp);
@@ -461,6 +462,7 @@ public:
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
     void setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
+    void setUseTurbulentDiffusivity(bool useTurbulentDiffusivity);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
@@ -652,6 +654,8 @@ public:
     real getRealY();
     real getRe() const;
     real getTurbulentPrandtlNumber() const;
+    real getBuoyancyFactor() const;
+    real getScaledBuoyancyFactor(int level) const;
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices() const;
@@ -764,7 +768,7 @@ private:
     real SGSConstant{ 0.0 };
     real outflowPressureCorrectionFactor{ 0.0 };
     real turbulentPrandtlNumber{ 0.0 };
-
+    real buoyancyFactor{ 0.0 };
     bool diffOn{ false };
     bool calcDragLift{ false };
     bool calcCp{ false };
@@ -781,7 +785,8 @@ private:
     bool is3rdOrderMoments{ false };
     bool isHighOrderMoments{ false };
     bool calcMean{ false };
-    bool isTurbulentViscosity{ false };
+    bool turbulentViscosityEnabled{ false };
+    bool turbulentDiffusivityEnabled{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
     bool hasWallModelMonitor{ false };
