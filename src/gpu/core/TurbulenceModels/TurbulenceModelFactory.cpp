@@ -72,6 +72,9 @@ void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel turbule
 
     if (turbulenceModel == vf::lbm::TurbulenceModel::AMD)
         this->turbulenceModelKernel = calculateTurbulentViscosityAMD;
+
+    if (turbulenceModel == vf::lbm::TurbulenceModel::AMDStratified)
+        this->turbulenceModelKernel = calculateTurbulentViscosityAndDiffusivityAMDStratified;
 }
 
 void TurbulenceModelFactory::setModelConstant(real modelConstant)
@@ -97,9 +100,8 @@ void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string tu
 
 void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel turbulenceModel)
 {
-    if (!para->getUseTurbulentViscosity() && turbulenceModel != ADTurbulenceModel::None)
-        throw std::runtime_error(
-            "TurbulenceModelFactory: Turbulent viscosity must be enabled to use an advection diffusion turbulence model!");
+    if (turbulenceModel != ADTurbulenceModel::None)
+        para->setUseTurbulentDiffusivity(true);
 
     if (turbulenceModel == ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() == c0o1)
         throw std::runtime_error(
