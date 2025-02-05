@@ -127,9 +127,9 @@ void run(const vf::basics::ConfigurationFile& config)
         vy = advectionVelocityLB;
         vz = advectionVelocityLB;
     });
-    para->setInitialConditionAD([&](real coordX, real coordY, real coordZ, real& scalar) {
+    para->setInitialConditionAD([&](real coordX, real coordY, real coordZ) {
         const real distSquared = coordX * coordX + coordY * coordY + coordZ * coordZ;
-        scalar = C0 * std::exp(-c1o2 * distSquared / (sigma0 * sigma0));
+        return C0 * std::exp(-c1o2 * distSquared / (sigma0 * sigma0));
     });
 
     para->setOutputPrefix(simulationName);
