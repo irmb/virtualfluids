@@ -48,83 +48,170 @@
 
 using namespace vf::basics::constant;
 
-__host__ __device__ __forceinline__ void calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* vx, real* vy, real* vz, real& dvx, real& dvy, real& dvz)
+constexpr real derivative(const real* quantity, uint node, uint neighborP, uint neighborM, bool neighborPisFluid, bool neighborMisFluid)
 {
-    bool fluidP = (typeOfGridNode[kP] == GEO_FLUID);
-    bool fluidM = (typeOfGridNode[kM] == GEO_FLUID);
-    real div = (fluidM & fluidP) ? c1o2 : c1o1;
-
-    dvx = ((fluidP ? vx[kP] : vx[k])-(fluidM ? vx[kM] : vx[k]))*div;
-    dvy = ((fluidP ? vy[kP] : vy[k])-(fluidM ? vy[kM] : vy[k]))*div;
-    dvz = ((fluidP ? vz[kP] : vz[k])-(fluidM ? vz[kM] : vz[k]))*div;
+    if (neighborPisFluid && neighborMisFluid)
+        return c1o2 * (quantity[neighborP] - quantity[neighborM]);
+    if (neighborPisFluid)
+        return quantity[neighborP] - quantity[node];
+    if (neighborMisFluid)
+        return quantity[node] - quantity[neighborM];
+    return NAN;
 }
 
-__global__ void calcAMD(
-    real* vx,
-    real* vy,
-    real* vz,
-    real* turbulentViscosity,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    uint* neighborWSB,
-    uint* typeOfGridNode,
-    unsigned long long numberOfLBnodes,
-    real SGSConstant)
+
+__global__ void calcTurbulentViscosityAMDKernel(const real* vx, const real* vy, const real* vz, real* turbulentViscosity,
+                                                const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                                const uint* neighborMMM, const uint* typeOfGridNode,
+                                                unsigned long long numberOfLBnodes, real SGSConstant)
 {
     ////////////////////////////////////////////////////////////////////////////////
     //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
     //!
-    const unsigned nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
-    if(nodeIndex >= numberOfLBnodes) return;
-    if(typeOfGridNode[nodeIndex] != GEO_FLUID) return;
+    if (nodeIndex >= numberOfLBnodes)
+        return;
+    if (typeOfGridNode[nodeIndex] != GEO_FLUID)
+        return;
 
-    uint kPx = neighborX[nodeIndex];
-    uint kPy = neighborY[nodeIndex];
-    uint kPz = neighborZ[nodeIndex];
-    uint kMxyz = neighborWSB[nodeIndex];
-    uint kMx = neighborZ[neighborY[kMxyz]];
-    uint kMy = neighborZ[neighborX[kMxyz]];
-    uint kMz = neighborY[neighborX[kMxyz]];
+    const uint kP00 = neighborX[nodeIndex];
+    const uint k0P0 = neighborY[nodeIndex];
+    const uint k00P = neighborZ[nodeIndex];
+    const uint kMMM = neighborMMM[nodeIndex];
+    const uint kM00 = neighborZ[neighborY[kMMM]];
+    const uint k0M0 = neighborZ[neighborX[kMMM]];
+    const uint k00M = neighborY[neighborX[kMMM]];
 
-    real dvxdx, dvxdy, dvxdz,
-         dvydx, dvydy, dvydz,
-         dvzdx, dvzdy, dvzdz;
+    const bool fluidP00 = typeOfGridNode[kP00] == GEO_FLUID;
+    const bool fluidM00 = typeOfGridNode[kM00] == GEO_FLUID;
+    const bool fluid0P0 = typeOfGridNode[k0P0] == GEO_FLUID;
+    const bool fluid0M0 = typeOfGridNode[k0M0] == GEO_FLUID;
+    const bool fluid00P = typeOfGridNode[k00P] == GEO_FLUID;
+    const bool fluid00M = typeOfGridNode[k00M] == GEO_FLUID;
 
-    calcDerivatives(nodeIndex, kMx, kPx, typeOfGridNode, vx, vy, vz, dvxdx, dvydx, dvzdx);
-    calcDerivatives(nodeIndex, kMy, kPy, typeOfGridNode, vx, vy, vz, dvxdy, dvydy, dvzdy);
-    calcDerivatives(nodeIndex, kMz, kPz, typeOfGridNode, vx, vy, vz, dvxdz, dvydz, dvzdz);
+    const real dvxdx = derivative(vx, nodeIndex, kP00, kM00, fluidP00, fluidM00);
+    const real dvydx = derivative(vy, nodeIndex, kP00, kM00, fluidP00, fluidM00);
+    const real dvzdx = derivative(vz, nodeIndex, kP00, kM00, fluidP00, fluidM00);
 
-    real denominator =  dvxdx*dvxdx + dvydx*dvydx + dvzdx*dvzdx + 
-                        dvxdy*dvxdy + dvydy*dvydy + dvzdy*dvzdy +
-                        dvxdz*dvxdz + dvydz*dvydz + dvzdz*dvzdz;
-    real enumerator =   (dvxdx*dvxdx + dvxdy*dvxdy + dvxdz*dvxdz) * dvxdx + 
-                        (dvydx*dvydx + dvydy*dvydy + dvydz*dvydz) * dvydy + 
-                        (dvzdx*dvzdx + dvzdy*dvzdy + dvzdz*dvzdz) * dvzdz +
-                        (dvxdx*dvydx + dvxdy*dvydy + dvxdz*dvydz) * (dvxdy+dvydx) +
-                        (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
-                        (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
+    const real dvxdy = derivative(vx, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
+    const real dvydy = derivative(vy, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
+    const real dvzdy = derivative(vz, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
 
-    turbulentViscosity[nodeIndex] = denominator != c0o1 ? max(c0o1,-SGSConstant*enumerator)/denominator : c0o1;
+    const real dvxdz = derivative(vx, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+    const real dvydz = derivative(vy, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+    const real dvzdz = derivative(vz, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+
+    turbulentViscosity[nodeIndex] =
+        vf::lbm::calcTurbulentViscosityAMD(SGSConstant, dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
 }
 
-void calcTurbulentViscosityAMD(Parameter* para, int level)
+void calculateTurbulentViscosityAMD(Parameter* para, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->numberOfNodes);
-    calcAMD<<<grid.grid, grid.threads>>>(
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityZ,
-        para->getParD(level)->turbulentViscosity,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->neighborInverse,
-        para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->numberOfNodes,
-        para->getSGSConstant()
-    );
+    calcTurbulentViscosityAMDKernel<<<grid.grid, grid.threads>>>(
+        para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,
+        para->getParD(level)->turbulentViscosity, para->getParD(level)->neighborX, para->getParD(level)->neighborY,
+        para->getParD(level)->neighborZ, para->getParD(level)->neighborInverse, para->getParD(level)->typeOfGridNode,
+        para->getParD(level)->numberOfNodes, para->getSGSConstant());
     getLastCudaError("calcAMD execution failed");
+}
+
+__global__ void calcTurbulentViscosityAndDiffusivityAMDStratifiedKernel(
+    const real* vx, const real* vy, const real* vz, const real* temperature, const real* referenceTemperature, unsigned long long numberOfLBnodes,
+    const uint* typeOfGridNode, const uint* neighborX, const uint* neighborY, const uint* neighborZ, const uint* neighborMMM,
+    real buoyancyParameter, real SGSConstant, real* turbulentViscosity, real* turbulentDiffusivity)
+{
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+
+    if (nodeIndex >= numberOfLBnodes)
+        return;
+    if (typeOfGridNode[nodeIndex] != GEO_FLUID)
+        return;
+
+    const uint kP00 = neighborX[nodeIndex];
+    const uint k0P0 = neighborY[nodeIndex];
+    const uint k00P = neighborZ[nodeIndex];
+    const uint kMMM = neighborMMM[nodeIndex];
+    const uint kM00 = neighborZ[neighborY[kMMM]];
+    const uint k0M0 = neighborZ[neighborX[kMMM]];
+    const uint k00M = neighborY[neighborX[kMMM]];
+
+    const bool fluidP00 = typeOfGridNode[kP00] == GEO_FLUID;
+    const bool fluidM00 = typeOfGridNode[kM00] == GEO_FLUID;
+    const bool fluid0P0 = typeOfGridNode[k0P0] == GEO_FLUID;
+    const bool fluid0M0 = typeOfGridNode[k0M0] == GEO_FLUID;
+    const bool fluid00P = typeOfGridNode[k00P] == GEO_FLUID;
+    const bool fluid00M = typeOfGridNode[k00M] == GEO_FLUID;
+
+    const real dvxdx = derivative(vx, nodeIndex, kP00, kM00, fluidP00, fluidM00);
+    const real dvydx = derivative(vy, nodeIndex, kP00, kM00, fluidP00, fluidM00);
+    const real dvzdx = derivative(vz, nodeIndex, kP00, kM00, fluidP00, fluidM00);
+    const real dthetadx = derivative(temperature, nodeIndex, kP00, kM00, fluidP00, fluidM00);
+
+    const real dvxdy = derivative(vx, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
+    const real dvydy = derivative(vy, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
+    const real dvzdy = derivative(vz, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
+    const real dthetady = derivative(temperature, nodeIndex, k0P0, k0M0, fluid0P0, fluid0M0);
+
+    const real dvxdz = derivative(vx, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+    const real dvydz = derivative(vy, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+    const real dvzdz = derivative(vz, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+    const real dthetadz = derivative(temperature, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+    const real dthetaRefdz = derivative(referenceTemperature, nodeIndex, k00P, k00M, fluid00P, fluid00M);
+
+    turbulentViscosity[nodeIndex] =
+        vf::lbm::calcTurbulentViscosityAMDStratified(SGSConstant, dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy,
+                                                     dvzdz, buoyancyParameter, dthetadx, dthetady, dthetadz - dthetaRefdz);
+    turbulentDiffusivity[nodeIndex] = vf::lbm::advection_diffusion::calcTurbulentDiffusivityAMD(
+        SGSConstant, dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz, dthetadx, dthetady, dthetadz);
+}
+
+void calculateTurbulentViscosityAndDiffusivityAMDStratified(Parameter* para, int level)
+{
+    auto& parD = para->getParDeviceAsReference(level);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parD.numberofthreads, parD.numberOfNodes);
+    calcTurbulentViscosityAndDiffusivityAMDStratifiedKernel<<<grid.grid, grid.threads>>>(
+        parD.velocityX, parD.velocityY, parD.velocityZ, parD.concentration, parD.localReferenceTemperature,
+        parD.numberOfNodes, parD.typeOfGridNode, parD.neighborX, parD.neighborY, parD.neighborZ, parD.neighborInverse,
+        para->getScaledBuoyancyFactor(level), para->getSGSConstant(), parD.turbulentViscosity, parD.turbulentDiffusivity);
+    getLastCudaError("calcAMDStratified failed");
+}
+
+__global__ void calcTurbulentDiffusivityMoengKernel(const real* temperature, real* turbulentDiffusivity, const real* turbulentViscosity,
+                                                    const uint* neighborX, const uint* neighborY, const uint* neighborZ, const uint* neighborMMM,
+                                                    const uint* typeOfGridNode, unsigned long long numberOfLBnodes,
+                                                    real buoyancyParameter)
+{
+    using namespace vf::lbm::advection_diffusion;
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+
+    if (nodeIndex >= numberOfLBnodes)
+        return;
+    if (typeOfGridNode[nodeIndex] != GEO_FLUID)
+        return;
+    const uint neighborP = neighborZ[nodeIndex];
+    const uint neighborM = neighborX[neighborY[neighborMMM[nodeIndex]]];
+
+    const bool fluidP = typeOfGridNode[neighborP] == GEO_FLUID;
+    const bool fluidM = typeOfGridNode[neighborM] == GEO_FLUID;
+
+    const real temperatureGradient = derivative(temperature, nodeIndex, neighborP, neighborM, fluidP, fluidM);
+
+    const real turbulentViscosityNode = turbulentViscosity[nodeIndex];
+
+    turbulentDiffusivity[nodeIndex] =
+        calcTurbulentDiffusivityMoeng(temperatureGradient, turbulentViscosityNode, buoyancyParameter);
+}
+
+void calculateTurbulentDiffusivityMoeng(Parameter* para, int level)
+{
+    vf::cuda::CudaGrid grid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
+    calcTurbulentDiffusivityMoengKernel<<<grid.grid, grid.threads>>>(
+        para->getParD(level)->concentration, para->getParD(level)->turbulentDiffusivity, para->getParD(level)->turbulentViscosity,
+        para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
+        para->getParD(level)->neighborInverse, para->getParD(level)->typeOfGridNode, para->getParD(level)->numberOfNodes,
+        para->getScaledBuoyancyFactor(level));
+    getLastCudaError("calcTurbulentDiffusivityMoeng execution failed");
 }
 //! \}

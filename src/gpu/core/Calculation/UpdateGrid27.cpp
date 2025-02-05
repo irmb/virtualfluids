@@ -336,6 +336,8 @@ void  UpdateGrid27::sample(int level, unsigned int t)
 void  UpdateGrid27::calcTurbulentViscosity(int level)
 {
     this->tmFactory->runTurbulenceModelKernel(level);
+    if(para->getDiffOn())
+        this->tmFactory->runTurbulenceModelADKernel(level);
 }
 
 void UpdateGrid27::exchangeData(int level)

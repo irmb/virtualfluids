@@ -34,29 +34,44 @@
 
 #include "TurbulenceModelFactory.h"
 
-#include <variant>
-
 #include <basics/config/ConfigurationFile.h>
 
 #include <logger/Logger.h>
 
-#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 #include "PostProcessor/TurbulentViscosityKernels.h"
 
-void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel)
-{
-    this->turbulenceModel = _turbulenceModel;
-    para->setTurbulenceModel(_turbulenceModel);
-    if(this->turbulenceModel != vf::lbm::TurbulenceModel::None) para->setUseTurbulentViscosity(true);
+using ADTurbulenceModel = vf::lbm::advection_diffusion::TurbulenceModel;
 
-    switch (this->turbulenceModel) {
-        case vf::lbm::TurbulenceModel::AMD:
-            this->turbulenceModelKernel = calcTurbulentViscosityAMD;
-            break;
-        default:
-            this->turbulenceModelKernel = nullptr;
-    }
+
+void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
+{
+    if (turbulenceModel == "Smagorinsky")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::Smagorinsky);
+    else if (turbulenceModel == "AMD")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::AMD);
+    else if (turbulenceModel == "QR")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::QR);
+    else if (turbulenceModel == "None")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::None);
+    else
+        throw std::runtime_error("TurbulenceModelFactory: Invalid turbulence model! Model name found: " + turbulenceModel);
+
+    VF_LOG_INFO("Turbulence model: {}", turbulenceModel);
+}
+
+void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
+{
+    para->setTurbulenceModel(turbulenceModel);
+
+    if (turbulenceModel != vf::lbm::TurbulenceModel::None && para->getSGSConstant() == c0o1)
+        throw std::runtime_error("Turbulence Model requires SGS constant!");
+
+    if (turbulenceModel != vf::lbm::TurbulenceModel::None)
+        para->setUseTurbulentViscosity(true);
+
+    if (turbulenceModel == vf::lbm::TurbulenceModel::AMD)
+        this->turbulenceModelKernel = calculateTurbulentViscosityAMD;
 }
 
 void TurbulenceModelFactory::setModelConstant(real modelConstant)
@@ -64,31 +79,76 @@ void TurbulenceModelFactory::setModelConstant(real modelConstant)
     para->setSGSConstant(modelConstant);
 }
 
+void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string turbulenceModel)
+{
+    VF_LOG_INFO("Turbulence Model Advection Diffuision {}", turbulenceModel);
+    if (turbulenceModel == "Default") {
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Default);
+        VF_LOG_INFO("Turbulent Prandtl Number: {}", para->getTurbulentPrandtlNumber());
+    } else if (turbulenceModel == "Moeng")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Moeng);
+    else if (turbulenceModel == "AMDStratified")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::AMDStratified);
+    else if (turbulenceModel == "None")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::None);
+    else
+        throw std::runtime_error("TurbulenceModelFactory: Invalid advection diffusion turbulence model!");
+}
+
+void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel turbulenceModel)
+{
+    if (!para->getUseTurbulentViscosity() && turbulenceModel != ADTurbulenceModel::None)
+        throw std::runtime_error(
+            "TurbulenceModelFactory: Turbulent viscosity must be enabled to use an advection diffusion turbulence model!");
+
+    if (turbulenceModel == ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() == c0o1)
+        throw std::runtime_error(
+            "TurbulenceModelFactory: Prandtl number must be set to use the default advection diffusion turbulence model!");
+        
+    if((turbulenceModel == ADTurbulenceModel::AMDStratified) == (para->getTurbulenceModel() != vf::lbm::TurbulenceModel::AMDStratified))
+        throw std::runtime_error("TurbulenceModelFactory: Can only use AMDstratified for turbulent viscosity and diffusivity together!");
+
+    if(turbulenceModel != ADTurbulenceModel::None && turbulenceModel != ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() != c0o1)
+        VF_LOG_INFO("Turbulent Prandtl Number is set but AD Turbulence Model does not use turbulent Prandtl Number");
+    
+    para->setAdvectionDiffusionTurbulenceModel(turbulenceModel);
+    if (turbulenceModel != ADTurbulenceModel::None)
+        para->setUseTurbulentDiffusivity(true);
+    if (turbulenceModel == ADTurbulenceModel::Moeng)
+        this->turbulenceModelADKernel = calculateTurbulentDiffusivityMoeng;
+}
+
 void TurbulenceModelFactory::readConfigFile(const vf::basics::ConfigurationFile& configData)
 {
-    if (configData.contains("TurbulenceModel")) {
-        std::string config = configData.getValue<std::string>("TurbulenceModel");
-
-        if      (config == "Smagorinsky") this->setTurbulenceModel( vf::lbm::TurbulenceModel::Smagorinsky );
-        else if (config == "AMD")         this->setTurbulenceModel( vf::lbm::TurbulenceModel::AMD );
-        else if (config == "QR" )         this->setTurbulenceModel( vf::lbm::TurbulenceModel::QR );
-        else if (config == "None")        this->setTurbulenceModel( vf::lbm::TurbulenceModel::None );
-        else    std::runtime_error("TurbulenceModelFactory: Invalid turbulence model!");
-
-        VF_LOG_INFO("Turbulence model: {}", config);
-        
+    const std::string SGSkey = "SGSconstant";
+    const std::string turbulenceModelKey = "TurbulenceModel";
+    const std::string ADTurbulenceModelKey = "TurbulenceModelAdvectionDiffusion";
+    if (configData.contains(SGSkey)) {
+        para->setSGSConstant(configData.getValue<real>(SGSkey));
+        VF_LOG_INFO("SGS constant: {}", para->getSGSConstant());
     }
 
-    if (configData.contains("SGSconstant")) {
-        para->setSGSConstant(configData.getValue<real>("SGSconstant"));
-        VF_LOG_INFO("SGS constant: {}", para->getSGSConstant());
+    if (configData.contains(turbulenceModelKey)) {
+        const std::string config = configData.getValue<std::string>(turbulenceModelKey);
+        setTurbulenceModel(config);
+    }
+
+    if (configData.contains(ADTurbulenceModelKey)) {
+        const std::string config = configData.getValue<std::string>(ADTurbulenceModelKey);
+        setAdvectionDiffusionTurbulenceModel(config);
     }
 }
 
-void TurbulenceModelFactory::runTurbulenceModelKernel(const int level) const
+void TurbulenceModelFactory::runTurbulenceModelKernel(int level) const
 {
-    if (this->turbulenceModelKernel)
-        this->turbulenceModelKernel(para.get(), level);
+    if (this->turbulenceModelKernel.has_value())
+        this->turbulenceModelKernel.value()(para.get(), level);
+}
+
+void TurbulenceModelFactory::runTurbulenceModelADKernel(int level) const
+{
+    if (this->turbulenceModelADKernel.has_value())
+        this->turbulenceModelADKernel.value()(para.get(), level);
 }
 
 //! \}
