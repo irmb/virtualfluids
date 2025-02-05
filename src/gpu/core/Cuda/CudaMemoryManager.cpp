@@ -1833,6 +1833,27 @@ void CudaMemoryManager::cudaFreeTurbulentDiffusivity(int lev){
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->turbulentDiffusivity));
     checkCudaErrors(cudaFree(parameter->getParD(lev)->turbulentDiffusivity));
 }
+
+void CudaMemoryManager::cudaAllocLocalReferenceTemperature(int lev)
+{
+    const size_t size = parameter->getParH(lev)->memSizeRealLBnodes;
+    checkCudaErrors(cudaMallocHost((void**) &(parameter->getParH(lev)->localReferenceTemperature), size));
+    checkCudaErrors(cudaMalloc((void**) &(parameter->getParD(lev)->localReferenceTemperature), size));
+}
+void CudaMemoryManager::cudaCopyLocalReferenceTemperatureDeviceToHost(int lev)
+{
+    checkCudaErrors(cudaMemcpy(parameter->getParH(lev)->localReferenceTemperature, parameter->getParD(lev)->localReferenceTemperature, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyDeviceToHost));
+}
+void CudaMemoryManager::cudaCopyLocalReferenceTemperatureHostToDevice(int lev)
+{
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->localReferenceTemperature, parameter->getParH(lev)->localReferenceTemperature, parameter->getParH(lev)->memSizeRealLBnodes, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeLocalReferenceTemperature(int lev)
+{
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->localReferenceTemperature));
+    checkCudaErrors(cudaFree(parameter->getParD(lev)->localReferenceTemperature));
+}
+
 void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
 {
     unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;

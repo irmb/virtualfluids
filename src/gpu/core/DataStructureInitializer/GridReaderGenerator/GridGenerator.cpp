@@ -120,6 +120,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             cudaMemoryManager->cudaAllocConcentrationFs(level);
             if(para->getUseTurbulentDiffusivity())
                 cudaMemoryManager->cudaAllocTurbulentDiffusivity(level);
+            if(para->getBuoyancyEnabled())
+                cudaMemoryManager->cudaAllocLocalReferenceTemperature(level);
         }
         builder->getNodeValues(
             para->getParH(level)->coordinateX,
@@ -147,6 +149,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
             cudaMemoryManager->cudaCopyConcentrationHostToDevice(level);
             if(para->getUseTurbulentDiffusivity())
                 cudaMemoryManager->cudaCopyTurbulentDiffusivityHostToDevice(level);
+            if(para->getBuoyancyEnabled())
+                cudaMemoryManager->cudaCopyLocalReferenceTemperatureHostToDevice(level);
         }
     }
 

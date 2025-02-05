@@ -263,6 +263,11 @@ public:
     void cudaCopyConcentrationNoSlipBCHD(int lev);
     void cudaFreeConcentrationNoSlipBC(int lev);
 
+    void cudaAllocLocalReferenceTemperature(int lev);
+    void cudaCopyLocalReferenceTemperatureDeviceToHost(int lev);
+    void cudaCopyLocalReferenceTemperatureHostToDevice(int lev);
+    void cudaFreeLocalReferenceTemperature(int lev);
+
     void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor);

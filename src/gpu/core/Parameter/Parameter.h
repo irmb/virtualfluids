@@ -172,6 +172,8 @@ struct LBMSimulationParameter {
     real omegaDiffusivity;
     //! \brief stores a field of concentration values
     real *concentration;
+    //! \brief stores a field of local reference temperature when using buoyancy
+    real *localReferenceTemperature;
     //! \brief store all distribution functions for the D3Q27 advection diffusion field
     Distributions27 distributionsAD;
     //////////////////////////////////////////////////////////////////////////
@@ -367,6 +369,7 @@ public:
     void setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD);
     void setStepEnsight(unsigned int step);
     void setDiffOn(bool isDiff);
+    void setBuoyancyEnabled(bool buoyancyEnabled);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
     void setMaxLevel(int numberOfLevels);
@@ -532,6 +535,7 @@ public:
     unsigned int getStepEnsight();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
+    bool getBuoyancyEnabled() const;
     bool getPrintFiles();
     bool getReadGeo();
     bool getCalcTurbulenceIntensity();
@@ -732,9 +736,10 @@ public:
     std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
 
     // initial condition concentration
-    void setInitialConditionAD(std::function<void(real, real, real, real &)> initialConditionAD);
-    std::function<void(real, real, real, real &)> &getInitialConditionAD();
-
+    void setInitialConditionAD(std::function<real(real, real, real)> initialConditionAD);
+    std::function<real(real, real, real)> &getInitialConditionAD();
+    void setInitialLocalReferenceTemperature(std::function<real(real, real, real)> initialReferenceTemperature);
+    std::function<real(real, real, real)>& getInitialLocalReferenceTemperature();
     ////////////////////////////////////////////////////////////////////////////
 
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
@@ -770,6 +775,7 @@ private:
     real turbulentPrandtlNumber{ 0.0 };
     real buoyancyFactor{ 0.0 };
     bool diffOn{ false };
+    bool buoyancyEnabled { false };
     bool calcDragLift{ false };
     bool calcCp{ false };
     bool calcVelocityAndFluctuations{ false };
@@ -875,7 +881,8 @@ private:
     //! \brief initial condition fluid
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
     //! \brief initial condition concentration
-    std::function<void(real, real, real, real &)> initialConditionAD;
+    std::function<real(real, real, real)> initialConditionAD;
+    std::function<real(real, real, real)> initialLocalReferenceTemperature;
 
     ////////////////////////////////////////////////////////////////////////////
     // cuda streams

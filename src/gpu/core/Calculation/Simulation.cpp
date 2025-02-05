@@ -777,6 +777,8 @@ Simulation::~Simulation()
             cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
             if(para->getUseTurbulentDiffusivity())
                 cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
+            if(para->getBuoyancyEnabled())
+                cudaMemoryManager->cudaFreeLocalReferenceTemperature(lev);
         }
     }
 

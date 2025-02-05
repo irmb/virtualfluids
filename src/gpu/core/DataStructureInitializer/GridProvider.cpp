@@ -114,19 +114,16 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
 
 void GridProvider::setInitialNodeValuesAD(uint numberOfNodes, int level) const
 {
+    auto parH = para->getParH(level);
     for (uint index = 1; index <= numberOfNodes; index++) {
-        const real coordX =  para->getParH(level)->coordinateX[index];
-        const real coordY = para->getParH(level)->coordinateY[index];
-        const real coordZ = para->getParH(level)->coordinateZ[index];
-        real scalar;
-        if (para->getInitialConditionAD())
-            para->getInitialConditionAD()(coordX, coordY, coordZ, scalar);
-        else 
-            scalar = c0o1;
-
-        para->getParH(level)->concentration[index] = scalar;
-        if(para->getUseTurbulentDiffusivity())
-            para->getParH(level)->turbulentDiffusivity[index] = c0o1;
+        const real coordX = parH->coordinateX[index];
+        const real coordY = parH->coordinateY[index];
+        const real coordZ = parH->coordinateZ[index];
+        parH->concentration[index] = para->getInitialConditionAD() ? para->getInitialConditionAD()(coordX, coordY, coordZ) : c0o1;
+        if (para->getUseTurbulentDiffusivity())
+            parH->turbulentDiffusivity[index] = c0o1;
+        if(para->getBuoyancyEnabled())
+            parH->localReferenceTemperature[index] = para->getInitialLocalReferenceTemperature() ? para->getInitialLocalReferenceTemperature()(coordX, coordY, coordZ) : c0o1;
     }
 }
 

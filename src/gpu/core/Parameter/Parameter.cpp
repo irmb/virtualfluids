@@ -460,6 +460,10 @@ void Parameter::setDiffOn(bool isDiff)
 {
     diffOn = isDiff;
 }
+void Parameter::setBuoyancyEnabled(bool buoyancyEnabled)
+{
+    this->buoyancyEnabled = buoyancyEnabled;
+}
 void Parameter::setD3Qxx(int d3qxx)
 {
     this->D3Qxx = d3qxx;
@@ -1324,6 +1328,10 @@ bool Parameter::getDiffOn()
 {
     return diffOn;
 }
+bool Parameter::getBuoyancyEnabled() const
+{
+    return buoyancyEnabled;
+}
 int Parameter::getFactorNZ()
 {
     return factor_gridNZ;
@@ -1973,14 +1981,23 @@ std::function<void(real, real, real, real &, real &, real &, real &)> &Parameter
 }
 
 // initial condition concentration
-void Parameter::setInitialConditionAD(std::function<void(real, real, real, real&)> initialConditionAD)
+void Parameter::setInitialConditionAD(std::function<real(real, real, real)> initialConditionAD)
 {
-    this->initialConditionAD = initialConditionAD;
+    this->initialConditionAD = std::move(initialConditionAD);
 }
 
-std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
+std::function<real(real, real, real)>& Parameter::getInitialConditionAD()
 {
     return this->initialConditionAD;
+}
+
+void Parameter::setInitialLocalReferenceTemperature(std::function<real(real, real, real)> initialReferenceTemperature)
+{
+    this->initialLocalReferenceTemperature = std::move(initialReferenceTemperature);
+}
+std::function<real(real, real, real)>& Parameter::getInitialLocalReferenceTemperature()
+{
+    return initialLocalReferenceTemperature;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
