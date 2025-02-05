@@ -40,6 +40,7 @@
 
 #include "Parameter/Parameter.h"
 #include "PostProcessor/TurbulentViscosityKernels.h"
+#include "lbm/collision/TurbulentViscosity.h"
 
 using ADTurbulenceModel = vf::lbm::advection_diffusion::TurbulenceModel;
 
@@ -50,6 +51,8 @@ void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
         this->setTurbulenceModel(vf::lbm::TurbulenceModel::Smagorinsky);
     else if (turbulenceModel == "AMD")
         this->setTurbulenceModel(vf::lbm::TurbulenceModel::AMD);
+    else if (turbulenceModel == "AMDStratified")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::AMDStratified);
     else if (turbulenceModel == "QR")
         this->setTurbulenceModel(vf::lbm::TurbulenceModel::QR);
     else if (turbulenceModel == "None")
@@ -100,8 +103,9 @@ void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string tu
 
 void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel turbulenceModel)
 {
-    if (turbulenceModel != ADTurbulenceModel::None)
-        para->setUseTurbulentDiffusivity(true);
+    if (!para->getUseTurbulentViscosity() && turbulenceModel != ADTurbulenceModel::None)
+        throw std::runtime_error(
+            "TurbulenceModelFactory: Turbulent viscosity must be enabled to use an advection diffusion turbulence model!");
 
     if (turbulenceModel == ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() == c0o1)
         throw std::runtime_error(
