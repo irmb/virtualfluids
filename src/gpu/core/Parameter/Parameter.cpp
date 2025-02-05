@@ -404,7 +404,7 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->gridNY           = getGridY().at(i);
         parH[i]->gridNZ           = getGridZ().at(i);
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
-        parH[i]->diffusivity      = this->Diffusivity * std::pow((real)2.0, (real)i);
+        parH[i]->diffusivity      = this->Diffusivity * std::exp2((real)i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
         parH[i]->omegaDiffusivity = vf::lbm::computeRelaxationFrequency(parH[i]->diffusivity);
     }
@@ -578,7 +578,7 @@ void Parameter::setPressRatio(real PressRatio)
 {
     this->delta_press = PressRatio;
 }
-real Parameter::getViscosityRatio()
+real Parameter::getViscosityRatio() const
 {
     return this->vis_ratio;
 }
@@ -586,55 +586,55 @@ real Parameter::getVelocityRatio() const
 {
     return this->u0_ratio;
 }
-real Parameter::getDensityRatio()
+real Parameter::getDensityRatio() const
 {
     return this->delta_rho;
 }
-real Parameter::getPressureRatio()
+real Parameter::getPressureRatio() const
 {
     return this->delta_press;
 }
-real Parameter::getTimeRatio()
+real Parameter::getTimeRatio() const
 {
     return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
 }
-real Parameter::getLengthRatio()
+real Parameter::getLengthRatio() const
 {
     return this->getViscosityRatio() / this->getVelocityRatio();
 }
-real Parameter::getForceRatio()
+real Parameter::getForceRatio() const
 {
-    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
+    return (this->getDensityRatio()+c1o1) * this->getVelocityRatio()/this->getTimeRatio();
 }
-real Parameter::getScaledViscosityRatio(int level)
+real Parameter::getScaledViscosityRatio(int level) const
 {
-    return this->getViscosityRatio()/(level+1);
+    return this->getViscosityRatio() * std::exp2(static_cast<real>(level));
 }
-real Parameter::getScaledVelocityRatio(int level)
+real Parameter::getScaledVelocityRatio(int /*level*/) const
 {
     return this->getVelocityRatio();
 }
-real Parameter::getScaledDensityRatio(int level)
+real Parameter::getScaledDensityRatio(int /*level*/) const
 {
     return this->getDensityRatio();
 }
-real Parameter::getScaledPressureRatio(int level)
+real Parameter::getScaledPressureRatio(int /*level*/) const
 {
     return this->getPressureRatio();
 }
-real Parameter::getScaledTimeRatio(int level)
+real Parameter::getScaledTimeRatio(int level) const
 {
-    return this->getTimeRatio()/(level+1);
+    return this->getTimeRatio() * std::exp2(-static_cast<real>(level));
 }
-real Parameter::getScaledLengthRatio(int level)
+real Parameter::getScaledLengthRatio(int level) const
 {
-    return this->getLengthRatio()/(level+1);
+    return this->getLengthRatio() * std::exp2(-static_cast<real>(level));
 }
-real Parameter::getScaledForceRatio(int level)
+real Parameter::getScaledForceRatio(int level) const
 {
-    return this->getForceRatio()*(level+1);
+    return this->getForceRatio() * std::exp2(-static_cast<real>(level));
 }
-real Parameter::getScaledStressRatio(int level)
+real Parameter::getScaledStressRatio(int /*level*/) const
 {
     return this->getVelocityRatio()*this->getVelocityRatio();
 }

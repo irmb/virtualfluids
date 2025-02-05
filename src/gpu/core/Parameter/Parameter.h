@@ -621,35 +621,35 @@ public:
     real getViscosity() const;
     real getVelocity() const;
     //! \returns the viscosity ratio in SI/LB units
-    real getViscosityRatio();
+    real getViscosityRatio() const;
     //! \returns the velocity ratio in SI/LB units
     real getVelocityRatio() const;
     //! \returns the density ratio in SI/LB units
-    real getDensityRatio();
+    real getDensityRatio() const;
     //! \returns the pressure ratio in SI/LB units
-    real getPressureRatio();
+    real getPressureRatio() const;
     //! \returns the time ratio in SI/LB units
-    real getTimeRatio();
+    real getTimeRatio() const;
     //! \returns the length ratio in SI/LB units
-    real getLengthRatio();
+    real getLengthRatio() const;
     //! \returns the force ratio in SI/LB units
-    real getForceRatio();
+    real getForceRatio() const;
     //! \returns the viscosity ratio in SI/LB units scaled to the respective level
-    real getScaledViscosityRatio(int level);
+    real getScaledViscosityRatio(int level) const;
     //! \returns the velocity ratio in SI/LB units scaled to the respective level
-    real getScaledVelocityRatio(int level);
+    real getScaledVelocityRatio(int level) const;
     //! \returns the density ratio in SI/LB units scaled to the respective level
-    real getScaledDensityRatio(int level);
+    real getScaledDensityRatio(int level) const;
     //! \returns the pressure ratio in SI/LB units scaled to the respective level
-    real getScaledPressureRatio(int level);
+    real getScaledPressureRatio(int level) const;
     //! \returns the stress ratio in SI/LB units scaled to the respective level
-    real getScaledStressRatio(int level);
+    real getScaledStressRatio(int level) const;
     //! \returns the time ratio in SI/LB units scaled to the respective level
-    real getScaledTimeRatio(int level);
+    real getScaledTimeRatio(int level) const;
     //! \returns the length ratio in SI/LB units scaled to the respective level
-    real getScaledLengthRatio(int level);
+    real getScaledLengthRatio(int level) const;
     //! \returns the force ratio in SI/LB units scaled to the respective level
-    real getScaledForceRatio(int level);
+    real getScaledForceRatio(int level) const;
     real getRealX();
     real getRealY();
     real getRe() const;
