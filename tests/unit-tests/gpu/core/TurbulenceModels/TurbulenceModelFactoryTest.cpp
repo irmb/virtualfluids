@@ -104,7 +104,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, set_amd)
     tmFactory->setTurbulenceModel(vf::lbm::TurbulenceModel::AMD);
     EXPECT_EQ(para->getTurbulenceModel(), vf::lbm::TurbulenceModel::AMD);
     EXPECT_EQ(para->getUseTurbulentViscosity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAMD);
+    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), calculateTurbulentViscosityAMD);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, set_qr)
@@ -139,7 +139,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, set_amd_str)
     tmFactory->setTurbulenceModel("AMD");
     EXPECT_EQ(para->getTurbulenceModel(), vf::lbm::TurbulenceModel::AMD);
     EXPECT_EQ(para->getUseTurbulentViscosity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAMD);
+    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), calculateTurbulentViscosityAMD);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, set_qr_str)
@@ -190,7 +190,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, read_amd)
     tmFactory->readConfigFile(config);
     EXPECT_EQ(para->getTurbulenceModel(), vf::lbm::TurbulenceModel::AMD);
     EXPECT_EQ(para->getUseTurbulentViscosity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAMD);
+    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), calculateTurbulentViscosityAMD);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, read_qr)
