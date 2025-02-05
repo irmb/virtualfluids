@@ -43,10 +43,10 @@ namespace turbulence_model
     {
         py::class_<TurbulenceModelFactory, std::shared_ptr<TurbulenceModelFactory>>(parentModule, "TurbulenceModelFactory")
         .def(py::init< std::shared_ptr<Parameter>>(), py::arg("para"))
-        .def("set_turbulence_model", static_cast<void (TurbulenceModelFactory::*)(std::string)>(&TurbulenceModelFactory::setTurbulenceModel), py::arg("turbulence_model"))
-        .def("set_turbulence_model", static_cast<void (TurbulenceModelFactory::*)(TurbulenceModel)>(&TurbulenceModelFactory::setTurbulenceModel), py::arg("turbulence_model"))
-        .def("set_turbulence_model_advection_diffusion", static_cast<void (TurbulenceModelFactory::*)(std::string)>(&TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel), py::arg("turbulence_model"))
-        .def("set_turbulence_model_advection_diffusion", static_cast<void (TurbulenceModelFactory::*)(advection_diffusion::TurbulenceModel)>(&TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel), py::arg("turbulence_model"))
+        .def("set_turbulence_model", py::overload_cast<std::string>(&TurbulenceModelFactory::setTurbulenceModel), py::arg("turbulence_model"))
+        .def("set_turbulence_model", py::overload_cast<TurbulenceModel>(&TurbulenceModelFactory::setTurbulenceModel), py::arg("turbulence_model"))
+        .def("set_turbulence_model_advection_diffusion", py::overload_cast<std::string>(&TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel), py::arg("turbulence_model"))
+        .def("set_turbulence_model_advection_diffusion", py::overload_cast<advection_diffusion::TurbulenceModel>(&TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel), py::arg("turbulence_model"))
         .def("set_model_constant", &TurbulenceModelFactory::setModelConstant, py::arg("model_constant"))
         .def("read_config_file", &TurbulenceModelFactory::readConfigFile, py::arg("config_data"));
     }
