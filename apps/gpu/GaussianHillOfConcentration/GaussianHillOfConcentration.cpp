@@ -61,7 +61,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace vf::basics::constant;
 
-const std::string defaultConfigPath("gaussianHill.cfg");
+const std::string defaultConfigPath("gaussian_hill.cfg");
 const std::string simulationName("GaussianHillOfConcentration");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,6 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const real deltaX = c1o1;
     const real deltaT = c1o100;
-    const real C0 = c1o1;
 
     const real pecletNumber = config.getValue<real>("PecletNumber");
     const real nodesPerSigma0 = config.getValue<real>("NodesPerSigma0");
@@ -112,24 +111,24 @@ void run(const vf::basics::ConfigurationFile& config)
     if(useDiffusionVelocity)
         gridBuilder->addCoarseGrid(-c10o1 * sigma0, -c10o1 * sigma0, -c10o1 * sigma0, c10o1 * sigma0, c10o1 * sigma0, c10o1 * sigma0, deltaX);
     else
-        gridBuilder->addCoarseGrid(-c6o1*sigma0, -c6o1*sigma0, -c6o1*sigma0, c10o1*sigma0, c10o1*sigma0, c10o1*sigma0, deltaX);
+        gridBuilder->addCoarseGrid(-c6o1*sigma0, -c6o1*sigma0, -c6o1*sigma0, c8o1*sigma0, c8o1*sigma0, c8o1*sigma0, deltaX);
     
     gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
-    gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(true);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     SPtr<Parameter> para = std::make_shared<Parameter>(&config);
 
     para->setInitialCondition([&](real, real, real, real& rho, real& vx, real& vy, real& vz) {
-        rho = (real)0.0;
+        rho = c0o1;
         vx = advectionVelocityLB;
         vy = advectionVelocityLB;
         vz = advectionVelocityLB;
     });
-    para->setInitialConditionAD([&](real coordX, real coordY, real coordZ) {
+    para->setInitialConditionAD([&](real coordX, real coordY, real coordZ) -> real {
         const real distSquared = coordX * coordX + coordY * coordY + coordZ * coordZ;
-        return C0 * std::exp(-c1o2 * distSquared / (sigma0 * sigma0));
+        return std::exp(-c1o2 * distSquared / (sigma0 * sigma0));
     });
 
     para->setOutputPrefix(simulationName);
@@ -140,7 +139,6 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
     para->setViscosityRatio(deltaX * deltaX / deltaT);
-    para->setDensityRatio(1.0);
 
     para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
