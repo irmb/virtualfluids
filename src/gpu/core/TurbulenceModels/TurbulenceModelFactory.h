@@ -50,7 +50,6 @@ class ConfigurationFile;
 
 class Parameter;
 
-using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
 
 class TurbulenceModelFactory
 {

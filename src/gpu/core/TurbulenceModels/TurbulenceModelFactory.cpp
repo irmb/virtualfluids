@@ -44,7 +44,6 @@
 
 using ADTurbulenceModel = vf::lbm::advection_diffusion::TurbulenceModel;
 
-
 void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
 {
     if (turbulenceModel == "Smagorinsky")
@@ -61,6 +60,22 @@ void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
         throw std::runtime_error("TurbulenceModelFactory: Invalid turbulence model! Model name found: " + turbulenceModel);
 
     VF_LOG_INFO("Turbulence model: {}", turbulenceModel);
+}
+void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string turbulenceModel)
+{
+    if (turbulenceModel == "Default") {
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Default);
+        VF_LOG_INFO("Turbulent Prandtl Number: {}", para->getTurbulentPrandtlNumber());
+    } else if (turbulenceModel == "Moeng")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Moeng);
+    else if (turbulenceModel == "AMDStratified")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::AMDStratified);
+    else if (turbulenceModel == "None")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::None);
+    else
+        throw std::runtime_error("TurbulenceModelFactory: Invalid advection diffusion turbulence model! Model name found: " + turbulenceModel);
+
+    VF_LOG_INFO("Turbulence Model Advection Diffuision {}", turbulenceModel);
 }
 
 void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
@@ -85,38 +100,20 @@ void TurbulenceModelFactory::setModelConstant(real modelConstant)
     para->setSGSConstant(modelConstant);
 }
 
-void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string turbulenceModel)
-{
-    VF_LOG_INFO("Turbulence Model Advection Diffuision {}", turbulenceModel);
-    if (turbulenceModel == "Default") {
-        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Default);
-        VF_LOG_INFO("Turbulent Prandtl Number: {}", para->getTurbulentPrandtlNumber());
-    } else if (turbulenceModel == "Moeng")
-        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Moeng);
-    else if (turbulenceModel == "AMDStratified")
-        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::AMDStratified);
-    else if (turbulenceModel == "None")
-        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::None);
-    else
-        throw std::runtime_error("TurbulenceModelFactory: Invalid advection diffusion turbulence model!");
-}
-
 void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel turbulenceModel)
 {
     if (!para->getUseTurbulentViscosity() && turbulenceModel != ADTurbulenceModel::None)
-        throw std::runtime_error(
-            "TurbulenceModelFactory: Turbulent viscosity must be enabled to use an advection diffusion turbulence model!");
+        throw std::runtime_error("TurbulenceModelFactory: Turbulent viscosity must be enabled to use an advection diffusion turbulence model!");
 
     if (turbulenceModel == ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() == c0o1)
-        throw std::runtime_error(
-            "TurbulenceModelFactory: Prandtl number must be set to use the default advection diffusion turbulence model!");
-        
-    if((turbulenceModel == ADTurbulenceModel::AMDStratified) == (para->getTurbulenceModel() != vf::lbm::TurbulenceModel::AMDStratified))
+        throw std::runtime_error("TurbulenceModelFactory: Prandtl number must be set to use the default advection diffusion turbulence model!");
+
+    if ((turbulenceModel == ADTurbulenceModel::AMDStratified) == (para->getTurbulenceModel() != vf::lbm::TurbulenceModel::AMDStratified))
         throw std::runtime_error("TurbulenceModelFactory: Can only use AMDstratified for turbulent viscosity and diffusivity together!");
 
-    if(turbulenceModel != ADTurbulenceModel::None && turbulenceModel != ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() != c0o1)
+    if (turbulenceModel != ADTurbulenceModel::None && turbulenceModel != ADTurbulenceModel::Default && para->getTurbulentPrandtlNumber() != c0o1)
         VF_LOG_INFO("Turbulent Prandtl Number is set but AD Turbulence Model does not use turbulent Prandtl Number");
-    
+
     para->setAdvectionDiffusionTurbulenceModel(turbulenceModel);
     if (turbulenceModel != ADTurbulenceModel::None)
         para->setUseTurbulentDiffusivity(true);
