@@ -664,20 +664,8 @@ void Simulation::readAndWriteFiles(uint timestep)
         if (this->enstrophyAnalyzer)
             this->enstrophyAnalyzer->writeToFile(fname);
         //////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn()) {
-               CalcConcentration27(
-                              para->getParD(lev)->numberofthreads,
-                              para->getParD(lev)->concentration,
-                              para->getParD(lev)->typeOfGridNode,
-                              para->getParD(lev)->neighborX,
-                              para->getParD(lev)->neighborY,
-                              para->getParD(lev)->neighborZ,
-                              para->getParD(lev)->numberOfNodes,
-                              para->getParD(lev)->distributionsAD.f[0],
-                              para->getParD(lev)->isEvenTimestep);
+        if (para->getDiffOn())
             cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
-            //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
-        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////print cp
         //if ((para->getParH(lev)->cpTop.size() > 0) && (t > para->getTStartOut()))
