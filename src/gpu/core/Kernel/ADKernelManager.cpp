@@ -37,7 +37,6 @@
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
 #include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"
-#include "PostProcessor/Concentration.cuh"
 
 ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(std::move(parameter)), adkernels(adkernels){}
 
@@ -108,23 +107,6 @@ void ADKernelManager::runADDirichletBCKernel(int level) const{
                 para->getParD(level)->isEvenTimestep);
 
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::printAD(int level, const SPtr<CudaMemoryManager>& cudaMemoryManager) const
-{
-    CalcConcentration27(
-        para->getParD(level)->numberofthreads,
-        para->getParD(level)->concentration,
-        para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level)->isEvenTimestep);
-
-    cudaMemoryManager->cudaCopyConcentrationDeviceToHost(level);
 }
 
 //! \}

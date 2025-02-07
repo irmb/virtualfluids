@@ -67,10 +67,6 @@ public:
     //! \brief calls the device function of the slip boundary condition for advection diffusion
     void runADslipBCKernel(int level) const;
 
-    //! \brief copy the concentration from device to host and writes VTK file with concentration
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void printAD(int level, const SPtr<CudaMemoryManager>& cudaMemoryManager) const;
-
 private:
     SPtr<Parameter> para;
     std::vector<SPtr<AdvectionDiffusionKernel>> adkernels;

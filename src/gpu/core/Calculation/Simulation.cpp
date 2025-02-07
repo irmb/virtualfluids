@@ -76,7 +76,6 @@
 #include "PostProcessor/Calc2ndMoments.h"
 #include "PostProcessor/CalcMean.h"
 #include "PostProcessor/CalcTurbulenceIntensity.h"
-#include "PostProcessor/Concentration.cuh"
 #include "PostProcessor/Cp.h"
 #include "PostProcessor/DragLift.h"
 #include "PostProcessor/EnstrophyAnalyzer.h"
