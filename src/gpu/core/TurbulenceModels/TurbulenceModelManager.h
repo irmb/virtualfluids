@@ -29,57 +29,35 @@
 //! \addtogroup gpu_TurbulenceModels TurbulenceModels
 //! \ingroup gpu_core core
 //! \{
-//! \author Henrik Asmuth
+//! \author Henry Korb
 //=======================================================================================
-#ifndef TurbulenceModelFactory_H
-#define TurbulenceModelFactory_H
-
+#ifndef TurbulenceModelManager_H
+#define TurbulenceModelManager_H
 #include <functional>
-#include <memory>
 #include <optional>
-#include <string>
-
-namespace vf::basics
-{
-class ConfigurationFile;
-}
-
-#include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
-#include <lbm/collision/TurbulentViscosity.h>
+#include <memory>
+#include "TurbulenceModelFactory.h"
 
 class Parameter;
+class TurbulenceModelFactory;
 
-class TurbulenceModelFactory
+class TurbulenceModelManager
 {
 public:
-    TurbulenceModelFactory(std::shared_ptr<Parameter> parameter) : para(std::move(parameter))
+    TurbulenceModelManager(std::shared_ptr<Parameter> para, const std::shared_ptr<TurbulenceModelFactory>& factory) : para(std::move(para))
     {
-    }
+        turbulenceModelKernel = factory->getTurbulenceModelKernel();
+        turbulenceModelADKernel = factory->getTurbulenceModelADKernel();
 
-    void setTurbulenceModel(std::string turbulenceModel);
-    void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
+    };
 
-    void setAdvectionDiffusionTurbulenceModel(std::string turbulenceModel);
-    void setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel);
-
-    void setModelConstant(real modelConstant);
-
-    void readConfigFile(const vf::basics::ConfigurationFile& configData);
-    std::optional<std::function<void(Parameter*, int)>> getTurbulenceModelKernel()
-    {
-        return turbulenceModelKernel;
-    }
-    std::optional<std::function<void(Parameter*, int)>> getTurbulenceModelADKernel()
-    {
-        return turbulenceModelADKernel;
-    }
+    void runTurbulenceModelKernel(int level) const;
+    void runTurbulenceModelADKernel(int level) const;
 
 private:
-    std::optional<std::function<void(Parameter*, int)>> turbulenceModelKernel = std::nullopt;
-    std::optional<std::function<void(Parameter*, int)>> turbulenceModelADKernel = std::nullopt;
     std::shared_ptr<Parameter> para;
+    std::optional<std::function<void(Parameter*, int)>> turbulenceModelKernel;
+    std::optional<std::function<void(Parameter*, int)>> turbulenceModelADKernel;
 };
-
 #endif
-
 //! \}

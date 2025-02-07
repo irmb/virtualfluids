@@ -50,6 +50,7 @@
 #include "Kernel/Kernel.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
+#include "TurbulenceModels/TurbulenceModelManager.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
@@ -335,9 +336,9 @@ void  UpdateGrid27::sample(int level, unsigned int t)
 
 void  UpdateGrid27::calcTurbulentViscosity(int level)
 {
-    this->tmFactory->runTurbulenceModelKernel(level);
+    this->tmManager->runTurbulenceModelKernel(level);
     if(para->getDiffOn())
-        this->tmFactory->runTurbulenceModelADKernel(level);
+        this->tmManager->runTurbulenceModelADKernel(level);
 }
 
 void UpdateGrid27::exchangeData(int level)
@@ -349,7 +350,7 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
                            std::vector<SPtr<Kernel>>& kernels,
                            std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, const BoundaryConditionFactory* bcFactory,
                            SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
-    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), kernels(kernels), tmFactory(tmFactory)
+    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), kernels(kernels)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
@@ -357,6 +358,7 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     this->bcKernelManager = std::make_shared<BoundaryConditionKernelManager>(para, bcFactory);
     this->adKernelManager = std::make_shared<ADKernelManager>(para, adkernels);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
+    this->tmManager = std::make_shared<TurbulenceModelManager>(para, tmFactory);
 }
 
 //! \}
