@@ -35,6 +35,7 @@
 
 #include <basics/config/ConfigurationFile.h>
 #include <gpu/core/TurbulenceModels/TurbulenceModelFactory.h>
+#include <gtest/gtest.h>
 #include <stdexcept>
 
 #include "../testUtilitiesGPU.h"
@@ -139,7 +140,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, set_amd_str)
     tmFactory->setTurbulenceModel("AMD");
     EXPECT_EQ(para->getTurbulenceModel(), vf::lbm::TurbulenceModel::AMD);
     EXPECT_EQ(para->getUseTurbulentViscosity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAMD);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()) == calculateTurbulentViscosityAMD);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, set_qr_str)
@@ -190,7 +191,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, read_amd)
     tmFactory->readConfigFile(config);
     EXPECT_EQ(para->getTurbulenceModel(), vf::lbm::TurbulenceModel::AMD);
     EXPECT_EQ(para->getUseTurbulentViscosity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAMD);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()) == calculateTurbulentViscosityAMD);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, read_qr)
@@ -247,7 +248,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, set_AD_moeng)
     tmFactory->setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel::Moeng);
     EXPECT_EQ(para->getADTurbulenceModel(), vf::lbm::advection_diffusion::TurbulenceModel::Moeng);
     EXPECT_EQ(para->getUseTurbulentDiffusivity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()), *calculateTurbulentDiffusivityMoeng);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel())  == calculateTurbulentDiffusivityMoeng);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, set_AMD_Stratified_OnlyViscosity)
@@ -272,7 +273,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, set_AMD_Stratified)
     tmFactory->setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified);
     EXPECT_EQ(para->getADTurbulenceModel(), vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified);
     EXPECT_EQ(para->getUseTurbulentDiffusivity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAndDiffusivityAMDStratified);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()) == calculateTurbulentViscosityAndDiffusivityAMDStratified);
     EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()), nullptr);
 }
 
@@ -300,7 +301,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, set_AD_moeng_Str)
     tmFactory->setAdvectionDiffusionTurbulenceModel("Moeng");
     EXPECT_EQ(para->getADTurbulenceModel(), vf::lbm::advection_diffusion::TurbulenceModel::Moeng);
     EXPECT_EQ(para->getUseTurbulentDiffusivity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()), *calculateTurbulentDiffusivityMoeng);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()) == calculateTurbulentDiffusivityMoeng);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, read_AD_none)
@@ -333,7 +334,7 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, read_AD_moeng)
     tmFactory->readConfigFile(config);
     EXPECT_EQ(para->getADTurbulenceModel(), vf::lbm::advection_diffusion::TurbulenceModel::Moeng);
     EXPECT_EQ(para->getUseTurbulentDiffusivity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()), *calculateTurbulentDiffusivityMoeng);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()) == calculateTurbulentDiffusivityMoeng);
 }
 
 TEST_F(TurbulenceModelFactoryTest_Initialization, read_amd_stratified)
@@ -347,6 +348,6 @@ TEST_F(TurbulenceModelFactoryTest_Initialization, read_amd_stratified)
     EXPECT_EQ(para->getTurbulenceModel(), vf::lbm::TurbulenceModel::AMDStratified);
     EXPECT_EQ(para->getUseTurbulentDiffusivity(), true);
     EXPECT_EQ(para->getUseTurbulentViscosity(), true);
-    EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()), *calculateTurbulentViscosityAndDiffusivityAMDStratified);
+    EXPECT_TRUE(getTurbulenceModelKernel(tmFactory->getTurbulenceModelKernel()) == calculateTurbulentViscosityAndDiffusivityAMDStratified);
     EXPECT_EQ(getTurbulenceModelKernel(tmFactory->getTurbulenceModelADKernel()), nullptr);
 }
