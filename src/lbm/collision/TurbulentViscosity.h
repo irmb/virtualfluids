@@ -78,10 +78,7 @@ inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real
     // ! Verstappen's QR model
     //! Second invariant of the strain-rate tensor
     const real secondInvariant = c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + c1o4 * (Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
-    if (secondInvariant == c0o1)
-        return c0o1;
     //! Third invariant of the strain-rate tensor (determinant)
-    // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
     const real thirdInvariant = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
 
     constexpr real zero = c0o1; // I Don't know why this is necessary, but it is apparently to pass it to std::max ...
