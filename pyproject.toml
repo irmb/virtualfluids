@@ -46,6 +46,8 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
 ]
+
+[project.urls]
 url = "https://git.rz.tu-bs.de/irmb/virtualfluids"
 
 [tool.cmake]
