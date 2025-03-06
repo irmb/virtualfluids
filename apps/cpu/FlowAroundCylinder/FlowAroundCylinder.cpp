@@ -51,7 +51,7 @@ void run(string configname)
    {
       vf::basics::ConfigurationFile   config;
       config.load(configname);
-
+      string        stlFile = config.getValue<string>("stlFile");
       string        pathOut = config.getValue<string>("pathOut");
       real          uLB = config.getValue<real>("uLB");
       real          restartStep = config.getValue<real>("restartStep");
@@ -143,10 +143,21 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
 
       ////cylinder
-      SPtr<GbObject3D> cylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius));
+      // generate cylinder
+      //SPtr<GbObject3D> cylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius));
+      
+      // read cylinder from stl file
+      SPtr<GbTriFaceMesh3D> cylinder = std::make_shared<GbTriFaceMesh3D>();
+      cylinder->readMeshFromSTLFileBinary(stlFile, false);
+      
+      // write cylinder to VTK-file     
       gb_system_3d::writeGeoObject(cylinder.get(), pathOut+"/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
       
-      SPtr<D3Q27Interactor> cylinderInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder, grid, noSlipAdapter, Interactor3D::SOLID));
+      // create interactor for generated cylinder
+      //SPtr<D3Q27Interactor> cylinderInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder, grid, noSlipAdapter, Interactor3D::SOLID));
+
+      // create interactor for cylinder from stl file
+      SPtr<D3Q27Interactor> cylinderInt = std::make_shared<D3Q27TriFaceMeshInteractor>(cylinder, grid, noSlipAdapter, Interactor3D::SOLID, Interactor3D::POINTS);
 
       if (newStart)
       {
