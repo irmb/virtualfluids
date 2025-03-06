@@ -337,7 +337,7 @@ protected:
 
     float nx1{ vf::basics::constant::c0o1 }, nx2{ vf::basics::constant::c0o1 }, nx3{ vf::basics::constant::c0o1 };
 
-    char bcStrategyKey { -1 };
+    char bcStrategyKey { 0 };
 
 private:
     friend class MPIIORestartSimulationObserver;
