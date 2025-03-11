@@ -38,12 +38,14 @@
 #include <string>
 #include <utility>
 
+#include <basics/constants/NumericConstants.h>
 #include "MultipleGridBuilderFacade.h"
 #include "geometries/BoundingBox/BoundingBox.h"
 #include "geometries/Object.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 #include "grid/GridDimensions.h"
 
+using namespace vf::basics::constant;
 using namespace communication_directions;
 
 MultipleGridBuilderFacade::MultipleGridBuilderFacade(SPtr<MultipleGridBuilder> gridBuilder,
@@ -93,6 +95,8 @@ void MultipleGridBuilderFacade::createGrids(uint generatePart)
     gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
 
     this->setUpCommunicationNeighbors();
+
+    this->setGlobalPeriodicity();
 }
 
 void MultipleGridBuilderFacade::calculateNumberOfSubdomains()
@@ -167,13 +171,25 @@ void MultipleGridBuilderFacade::configureSubDomainGrids()
     real yMaxCoarseGrid = yValues[index.at(Axis::y) + 1];
     real zMaxCoarseGrid = zValues[index.at(Axis::z) + 1];
 
+    std::array localPeriodicity { false, false, false };
+    std::array globalPeriodicity { false, false, false };
+    for (const auto coordDirection : axis::allAxes) {
+        if (!periodicity[coordDirection])
+            continue;
+
+        if (numberOfSubdomains[coordDirection] == 1)
+            localPeriodicity[coordDirection] = true;
+        else
+            globalPeriodicity[coordDirection] = true;
+    }
+
     // add overlap
-    xMinCoarseGrid -= (hasNeighbors[communication_directions::MX]) ? overlapOfSubdomains.value() : 0;
-    yMinCoarseGrid -= (hasNeighbors[communication_directions::MY]) ? overlapOfSubdomains.value() : 0;
-    zMinCoarseGrid -= (hasNeighbors[communication_directions::MZ]) ? overlapOfSubdomains.value() : 0;
-    xMaxCoarseGrid += (hasNeighbors[communication_directions::PX]) ? overlapOfSubdomains.value() : 0;
-    yMaxCoarseGrid += (hasNeighbors[communication_directions::PY]) ? overlapOfSubdomains.value() : 0;
-    zMaxCoarseGrid += (hasNeighbors[communication_directions::PZ]) ? overlapOfSubdomains.value() : 0;
+    xMinCoarseGrid -= (hasNeighbors[communication_directions::MX] || globalPeriodicity[Axis::x]) ? overlapOfSubdomains.value() : 0;
+    yMinCoarseGrid -= (hasNeighbors[communication_directions::MY] || globalPeriodicity[Axis::y]) ? overlapOfSubdomains.value() : 0;
+    zMinCoarseGrid -= (hasNeighbors[communication_directions::MZ] || globalPeriodicity[Axis::z]) ? overlapOfSubdomains.value() : 0;
+    xMaxCoarseGrid += (hasNeighbors[communication_directions::PX] || globalPeriodicity[Axis::x]) ? overlapOfSubdomains.value() : 0;
+    yMaxCoarseGrid += (hasNeighbors[communication_directions::PY] || globalPeriodicity[Axis::y]) ? overlapOfSubdomains.value() : 0;
+    zMaxCoarseGrid += (hasNeighbors[communication_directions::PZ] || globalPeriodicity[Axis::z]) ? overlapOfSubdomains.value() : 0;
 
     // add coarse grid
     gridBuilder->addCoarseGrid(xMinCoarseGrid, yMinCoarseGrid, zMinCoarseGrid, xMaxCoarseGrid, yMaxCoarseGrid,
@@ -189,6 +205,8 @@ void MultipleGridBuilderFacade::configureSubDomainGrids()
                                                                    yValues[index.at(Axis::y)], yValues[index.at(Axis::y) + 1],
                                                                    zValues[index.at(Axis::z)], zValues[index.at(Axis::z) + 1]));
     }
+
+    setLocalPeriodicity(localPeriodicity[Axis::x], localPeriodicity[Axis::y], localPeriodicity[Axis::z]);
 }
 
 void MultipleGridBuilderFacade::setUpCommunicationNeighbors()
@@ -395,26 +413,77 @@ uint MultipleGridBuilderFacade::getIndexOfFinalSubdomainInDirection(Communicatio
     return UINT_MAX;
 }
 
-void MultipleGridBuilderFacade::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z) const
+void MultipleGridBuilderFacade::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z)
 {
     setPeriodicBoundaryCondition({ periodic_X, periodic_Y, periodic_Z });
 }
 
-void MultipleGridBuilderFacade::setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity) const
+void MultipleGridBuilderFacade::setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity)
 {
+    if(createGridsHasBeenCalled)
+        throw std::runtime_error("MultipleGridBuilderFacade::setPeriodicBoundaryCondition() should be called before createGrids().");
+    this->periodicity = periodicity;
+}
 
-    std::array<bool, 3> localPeriodicity = { false, false, false };
+void MultipleGridBuilderFacade::setPeriodicShiftOnXBoundaryInYDirection(real shift)
+{
+    if (createGridsHasBeenCalled)
+        throw std::runtime_error("Periodic shift has to be set before createGrids() is called");
+    shiftOnXInY = shift;
+}
+void MultipleGridBuilderFacade::setPeriodicShiftOnXBoundaryInZDirection(real shift)
+{
+    if (createGridsHasBeenCalled)
+        throw std::runtime_error("Periodic shift has to be set before createGrids() is called");
+    shiftOnXInZ = shift;
+}
+void MultipleGridBuilderFacade::setPeriodicShiftOnYBoundaryInXDirection(real shift)
+{
+    if (createGridsHasBeenCalled)
+        throw std::runtime_error("Periodic shift has to be set before createGrids() is called");
+    shiftOnYInX = shift;
+}
+void MultipleGridBuilderFacade::setPeriodicShiftOnYBoundaryInZDirection(real shift)
+{
+    if (createGridsHasBeenCalled)
+        throw std::runtime_error("Periodic shift has to be set before createGrids() is called");
+    shiftOnYInZ = shift;
+}
+void MultipleGridBuilderFacade::setPeriodicShiftOnZBoundaryInXDirection(real shift)
+{
+    if (createGridsHasBeenCalled)
+        throw std::runtime_error("Periodic shift has to be set before createGrids() is called");
+    shiftOnZInX = shift;
+}
+void MultipleGridBuilderFacade::setPeriodicShiftOnZBoundaryInYDirection(real shift)
+{
+    if (createGridsHasBeenCalled)
+        throw std::runtime_error("Periodic shift has to be set before createGrids() is called");
+    shiftOnZInY = shift;
+}
 
+void MultipleGridBuilderFacade::setLocalPeriodicity(bool periodicX, bool periodicY, bool periodicZ)
+{
+    gridBuilder->setPeriodicBoundaryCondition(periodicX, periodicY, periodicZ);
+    if(shiftOnXInY != c0o1)
+        gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(shiftOnXInY);
+    if(shiftOnXInZ != c0o1)
+        gridBuilder->setPeriodicShiftOnXBoundaryInZDirection(shiftOnXInZ);
+    if(shiftOnYInX != c0o1)
+        gridBuilder->setPeriodicShiftOnYBoundaryInXDirection(shiftOnYInX);
+    if(shiftOnYInZ != c0o1)
+        gridBuilder->setPeriodicShiftOnYBoundaryInZDirection(shiftOnYInZ);
+    if(shiftOnZInX != c0o1)
+        gridBuilder->setPeriodicShiftOnZBoundaryInXDirection(shiftOnZInX);
+    if(shiftOnZInY != c0o1)
+        gridBuilder->setPeriodicShiftOnZBoundaryInYDirection(shiftOnZInY);
+}
+
+void MultipleGridBuilderFacade::setGlobalPeriodicity()
+{
     for (const auto coordDirection : axis::allAxes) {
-        if (!periodicity[coordDirection]) {
+        if (!periodicity[coordDirection] || numberOfSubdomains[coordDirection] == 1)
             continue;
-        }
-
-        // only one grid in direction --> set local periodicity
-        if (numberOfSubdomains[coordDirection] == 1) {
-            localPeriodicity[coordDirection] = true;
-            continue;
-        }
 
         // non-local periodicity --> set communication neighbors
         const CommunicationDirection negativeDirection = getNegativeDirectionAlongAxis(coordDirection);
@@ -426,13 +495,10 @@ void MultipleGridBuilderFacade::setPeriodicBoundaryCondition(const std::array<bo
             gridBuilder->setCommunicationProcess(negativeDirection, getIndexOfFinalSubdomainInDirection(positiveDirection));
         } else if (isFinalSubdomainInDirection(positiveDirection)) {
             // set final grid in negative direction as communication neighbor
-            gridBuilder->findCommunicationIndices(positiveDirection);
+            gridBuilder->findCommunicationIndices(positiveDirection, true);
             gridBuilder->setCommunicationProcess(positiveDirection, getIndexOfFinalSubdomainInDirection(negativeDirection));
         }
     }
-
-    gridBuilder->setPeriodicBoundaryCondition(localPeriodicity[Axis::x], localPeriodicity[Axis::y],
-                                              localPeriodicity[Axis::z]);
 }
 
 SPtr<MultipleGridBuilder> MultipleGridBuilderFacade::getGridBuilder() const
