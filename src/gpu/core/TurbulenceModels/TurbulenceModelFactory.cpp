@@ -46,16 +46,16 @@ using ADTurbulenceModel = vf::lbm::advection_diffusion::TurbulenceModel;
 
 void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
 {
-    if (turbulenceModel == "Smagorinsky")
+    if (turbulenceModel == "None")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::None);
+    else if (turbulenceModel == "Smagorinsky")
         this->setTurbulenceModel(vf::lbm::TurbulenceModel::Smagorinsky);
+    else if (turbulenceModel == "QR")
+        this->setTurbulenceModel(vf::lbm::TurbulenceModel::QR);
     else if (turbulenceModel == "AMD")
         this->setTurbulenceModel(vf::lbm::TurbulenceModel::AMD);
     else if (turbulenceModel == "AMDStratified")
         this->setTurbulenceModel(vf::lbm::TurbulenceModel::AMDStratified);
-    else if (turbulenceModel == "QR")
-        this->setTurbulenceModel(vf::lbm::TurbulenceModel::QR);
-    else if (turbulenceModel == "None")
-        this->setTurbulenceModel(vf::lbm::TurbulenceModel::None);
     else
         throw std::runtime_error("TurbulenceModelFactory: Invalid turbulence model! Model name found: " + turbulenceModel);
 
@@ -63,15 +63,15 @@ void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
 }
 void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string turbulenceModel)
 {
-    if (turbulenceModel == "Default") {
+    if (turbulenceModel == "None")
+        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::None);
+    else if (turbulenceModel == "Default") {
         this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Default);
         VF_LOG_INFO("Turbulent Prandtl Number: {}", para->getTurbulentPrandtlNumber());
     } else if (turbulenceModel == "Moeng")
         this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::Moeng);
     else if (turbulenceModel == "AMDStratified")
         this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::AMDStratified);
-    else if (turbulenceModel == "None")
-        this->setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel::None);
     else
         throw std::runtime_error("TurbulenceModelFactory: Invalid advection diffusion turbulence model! Model name found: " + turbulenceModel);
 
