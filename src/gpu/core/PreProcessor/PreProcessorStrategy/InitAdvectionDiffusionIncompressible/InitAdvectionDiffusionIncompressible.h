@@ -44,8 +44,8 @@ class InitAdvectionDiffusionIncompressible : public PreProcessorStrategy
 {
 public:
     static std::shared_ptr<PreProcessorStrategy> getNewInstance(std::shared_ptr< Parameter> para);
-    void init(int level);
-    bool checkParameter();
+    void init(int level) override;
+    bool checkParameter() override;
 
 private:
     InitAdvectionDiffusionIncompressible();

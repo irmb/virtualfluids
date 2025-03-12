@@ -53,7 +53,7 @@ void StressCompressible(Parameter *para,  QforBoundaryConditions* boundaryCondit
         boundaryCondition->q27[0],
         boundaryCondition->numberOfBCnodes,
         para->getParD(level)->omega,
-        para->getParD(level)->turbViscosity,
+        para->getParD(level)->turbulentViscosity,
         para->getParD(level)->velocityX,
         para->getParD(level)->velocityY,
         para->getParD(level)->velocityY,

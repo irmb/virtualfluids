@@ -66,7 +66,7 @@ vf::gpu::GPUCollisionParameter getCollisionParameter(const std::shared_ptr<Param
                                                         para->getParD(level)->velocityX,
                                                         para->getParD(level)->velocityY,
                                                         para->getParD(level)->velocityZ,
-                                                        para->getParD(level)->turbViscosity,
+                                                        para->getParD(level)->turbulentViscosity,
                                                         para->getSGSConstant(),
                                                         (int)para->getParD(level)->numberOfNodes,
                                                         vf::gpu::getForceFactor(level),

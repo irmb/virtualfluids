@@ -251,7 +251,10 @@ public:
     void cudaFreeConcentration(int lev);
 
     void cudaAllocConcentrationFs(int lev);
-
+    void cudaAllocTurbulentDiffusivity(int lev);
+    void cudaCopyTurbulentDiffusivityHostToDevice(int lev);
+    void cudaCopyTurbulentDiffusivityDeviceToHost(int lev);
+    void cudaFreeTurbulentDiffusivity(int lev);
     void cudaAllocConcentrationDirichletBC(int lev);
     void cudaCopyConcentrationDirichletBCHostToDevice(int lev);
     void cudaFreeConcentrationDirichletBC(int lev);
@@ -259,6 +262,11 @@ public:
     void cudaAllocConcentrationNoSlipBC(int lev);
     void cudaCopyConcentrationNoSlipBCHD(int lev);
     void cudaFreeConcentrationNoSlipBC(int lev);
+
+    void cudaAllocLocalReferenceTemperature(int lev);
+    void cudaCopyLocalReferenceTemperatureDeviceToHost(int lev);
+    void cudaCopyLocalReferenceTemperatureHostToDevice(int lev);
+    void cudaFreeLocalReferenceTemperature(int lev);
 
     void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);

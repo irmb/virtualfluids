@@ -26,30 +26,26 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
+//! \addtogroup gpu_TurbulenceModels TurbulenceModels
+//! \ingroup gpu_core core
+//! \{
 //! \author Henry Korb
 //=======================================================================================
-#include <pybind11/pybind11.h>
-#include <lbm/collision/TurbulentViscosity.h>
-#include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 
-namespace lbm_bindings
+#include "TurbulenceModelManager.h"
+#include "Parameter/Parameter.h"
+#include <memory>
+
+
+void TurbulenceModelManager::runTurbulenceModelKernel(int level) const
 {
-    namespace py = pybind11;
-
-    PYBIND11_MODULE(lbm, m)
-    {
-
-        py::enum_<vf::lbm::TurbulenceModel>(m, "TurbulenceModel")
-        .value("None", vf::lbm::TurbulenceModel::None)
-        .value("Smagorinsky", vf::lbm::TurbulenceModel::Smagorinsky)
-        .value("QR", vf::lbm::TurbulenceModel::QR)
-        .value("AMD", vf::lbm::TurbulenceModel::AMD)
-        .value("AMDStratified", vf::lbm::TurbulenceModel::AMDStratified);
-
-        py::enum_<vf::lbm::advection_diffusion::TurbulenceModel>(m, "TurbulenceModelAdvectionDiffusion")
-        .value("None", vf::lbm::advection_diffusion::TurbulenceModel::None)
-        .value("Default", vf::lbm::advection_diffusion::TurbulenceModel::Default)
-        .value("Moeng", vf::lbm::advection_diffusion::TurbulenceModel::Moeng)
-        .value("AMDStratified", vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified);
-    }
+    if (this->turbulenceModelKernel.has_value())
+        this->turbulenceModelKernel.value()(para.get(), level);
 }
+
+void TurbulenceModelManager::runTurbulenceModelADKernel(int level) const
+{
+    if (this->turbulenceModelADKernel.has_value())
+        this->turbulenceModelADKernel.value()(para.get(), level);
+}
+//! \}

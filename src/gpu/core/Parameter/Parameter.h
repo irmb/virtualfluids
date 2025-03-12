@@ -40,6 +40,7 @@
 #include <vector>
 #include <optional>
 
+#include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 #include "lbm/constants/D3Q27.h"
 #include "Calculation/Calculation.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
@@ -171,6 +172,8 @@ struct LBMSimulationParameter {
     real omegaDiffusivity;
     //! \brief stores a field of concentration values
     real *concentration;
+    //! \brief stores a field of local reference temperature when using buoyancy
+    real *localReferenceTemperature;
     //! \brief store all distribution functions for the D3Q27 advection diffusion field
     Distributions27 distributionsAD;
     //////////////////////////////////////////////////////////////////////////
@@ -314,7 +317,7 @@ struct LBMSimulationParameter {
     // Turbulent Viscosity/Intensity
     //////////////////////////////////////////////////////////////////////////
     //! \brief store the turbulent viscosity
-    real* turbViscosity;
+    real* turbulentViscosity, *turbulentDiffusivity;
     //! \brief store the turbulent intensity and related values
     real *vx_mean, *vy_mean, *vz_mean;       // means
     real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
@@ -366,6 +369,7 @@ public:
     void setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD);
     void setStepEnsight(unsigned int step);
     void setDiffOn(bool isDiff);
+    void setBuoyancyEnabled(bool buoyancyEnabled);
     void setDiffusivity(real Diffusivity);
     void setD3Qxx(int d3qxx);
     void setMaxLevel(int numberOfLevels);
@@ -452,12 +456,16 @@ public:
     void setRealX(real RealX);
     void setRealY(real RealY);
     void setRe(real Re);
+    void setTurbulentPrandtlNumber(real turbulentPrandtlNumber);
+    void setBuoyancyFactor(real buoyancyFactor);
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
     void setIsCp(bool isCp);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
+    void setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel);
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
+    void setUseTurbulentDiffusivity(bool useTurbulentDiffusivity);
     void setSGSConstant(real SGSConstant);
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
@@ -527,6 +535,7 @@ public:
     unsigned int getStepEnsight();
     bool getEvenOrOdd(int level);
     bool getDiffOn();
+    bool getBuoyancyEnabled() const;
     bool getPrintFiles();
     bool getReadGeo();
     bool getCalcTurbulenceIntensity();
@@ -616,38 +625,41 @@ public:
     real getViscosity() const;
     real getVelocity() const;
     //! \returns the viscosity ratio in SI/LB units
-    real getViscosityRatio();
+    real getViscosityRatio() const;
     //! \returns the velocity ratio in SI/LB units
     real getVelocityRatio() const;
     //! \returns the density ratio in SI/LB units
-    real getDensityRatio();
+    real getDensityRatio() const;
     //! \returns the pressure ratio in SI/LB units
-    real getPressureRatio();
+    real getPressureRatio() const;
     //! \returns the time ratio in SI/LB units
-    real getTimeRatio();
+    real getTimeRatio() const;
     //! \returns the length ratio in SI/LB units
-    real getLengthRatio();
+    real getLengthRatio() const;
     //! \returns the force ratio in SI/LB units
-    real getForceRatio();
+    real getForceRatio() const;
     //! \returns the viscosity ratio in SI/LB units scaled to the respective level
-    real getScaledViscosityRatio(int level);
+    real getScaledViscosityRatio(int level) const;
     //! \returns the velocity ratio in SI/LB units scaled to the respective level
-    real getScaledVelocityRatio(int level);
+    real getScaledVelocityRatio(int level) const;
     //! \returns the density ratio in SI/LB units scaled to the respective level
-    real getScaledDensityRatio(int level);
+    real getScaledDensityRatio(int level) const;
     //! \returns the pressure ratio in SI/LB units scaled to the respective level
-    real getScaledPressureRatio(int level);
+    real getScaledPressureRatio(int level) const;
     //! \returns the stress ratio in SI/LB units scaled to the respective level
-    real getScaledStressRatio(int level);
+    real getScaledStressRatio(int level) const;
     //! \returns the time ratio in SI/LB units scaled to the respective level
-    real getScaledTimeRatio(int level);
+    real getScaledTimeRatio(int level) const;
     //! \returns the length ratio in SI/LB units scaled to the respective level
-    real getScaledLengthRatio(int level);
+    real getScaledLengthRatio(int level) const;
     //! \returns the force ratio in SI/LB units scaled to the respective level
-    real getScaledForceRatio(int level);
+    real getScaledForceRatio(int level) const;
     real getRealX();
     real getRealY();
     real getRe() const;
+    real getTurbulentPrandtlNumber() const;
+    real getBuoyancyFactor() const;
+    real getScaledBuoyancyFactor(int level) const;
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices() const;
@@ -682,7 +694,9 @@ public:
     bool getCalcHighOrderMoments();
     bool getUseMeasurePoints();
     vf::lbm::TurbulenceModel getTurbulenceModel();
+    vf::lbm::advection_diffusion::TurbulenceModel getADTurbulenceModel();
     bool getUseTurbulentViscosity();
+    bool getUseTurbulentDiffusivity();
     real getSGSConstant();
     bool getHasWallModelMonitor();
     bool getUseInitNeq();
@@ -719,12 +733,13 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     // initial condition fluid
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
-    std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
+    std::function<void(real, real, real, real &, real &, real &, real &)>& getInitialCondition();
 
     // initial condition concentration
-    void setInitialConditionAD(std::function<void(real, real, real, real &)> initialConditionAD);
-    std::function<void(real, real, real, real &)> &getInitialConditionAD();
-
+    void setInitialConditionAD(std::function<real(real, real, real)> initialConditionAD);
+    std::function<real(real, real, real)>& getInitialConditionAD();
+    void setInitialLocalReferenceTemperature(std::function<real(real, real, real)> initialReferenceTemperature);
+    std::function<real(real, real, real)>& getInitialLocalReferenceTemperature();
     ////////////////////////////////////////////////////////////////////////////
 
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
@@ -757,8 +772,10 @@ private:
     real delta_press{ 1.0 };
     real SGSConstant{ 0.0 };
     real outflowPressureCorrectionFactor{ 0.0 };
-
+    real turbulentPrandtlNumber{ 0.0 };
+    real buoyancyFactor{ 0.0 };
     bool diffOn{ false };
+    bool buoyancyEnabled { false };
     bool calcDragLift{ false };
     bool calcCp{ false };
     bool calcVelocityAndFluctuations{ false };
@@ -774,7 +791,8 @@ private:
     bool is3rdOrderMoments{ false };
     bool isHighOrderMoments{ false };
     bool calcMean{ false };
-    bool isTurbulentViscosity{ false };
+    bool turbulentViscosityEnabled{ false };
+    bool turbulentDiffusivityEnabled{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
     bool hasWallModelMonitor{ false };
@@ -830,6 +848,7 @@ private:
     std::string concentration;
     
     vf::lbm::TurbulenceModel turbulenceModel{ vf::lbm::TurbulenceModel::None };
+    vf::lbm::advection_diffusion::TurbulenceModel advectionDiffusionTurbulenceModel { vf::lbm::advection_diffusion::TurbulenceModel::None };
 
 
     // Kernel
@@ -862,7 +881,8 @@ private:
     //! \brief initial condition fluid
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
     //! \brief initial condition concentration
-    std::function<void(real, real, real, real &)> initialConditionAD;
+    std::function<real(real, real, real)> initialConditionAD;
+    std::function<real(real, real, real)> initialLocalReferenceTemperature;
 
     ////////////////////////////////////////////////////////////////////////////
     // cuda streams
