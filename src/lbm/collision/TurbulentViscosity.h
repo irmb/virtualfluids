@@ -68,12 +68,12 @@ enum class TurbulenceModel {
     AMDStratified
 };
 
-inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real SGSConstant, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
-    return Cs * Cs * sqrtf(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
+    return SGSConstant * SGSConstant * sqrtf(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 }
 
-inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+inline __host__ __device__ real calcTurbulentViscosityQR(real SGSConstant, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
     // ! Verstappen's QR model
     //! Second invariant of the strain-rate tensor
@@ -82,7 +82,7 @@ inline __host__ __device__ real calcTurbulentViscosityQR(real C, real dxux, real
     const real thirdInvariant = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
 
     constexpr real zero = c0o1; // I Don't know why this is necessary, but it is apparently to pass it to std::max ...
-    return C * std::max(thirdInvariant, zero) / secondInvariant;
+    return SGSConstant * std::max(thirdInvariant, zero) / secondInvariant;
 }
 
 constexpr real calcDenominatorAMD(real dvxdx, real dvxdy, real dvxdz, real dvydx, real dvydy, real dvydz, real dvzdx,
