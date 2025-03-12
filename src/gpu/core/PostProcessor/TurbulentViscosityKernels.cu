@@ -60,7 +60,7 @@ constexpr real derivative(const real* quantity, uint node, uint neighborP, uint 
 }
 
 
-__global__ void calcTurbulentViscosityAMDKernel(const real* vx, const real* vy, const real* vz, real* turbulentViscosity,
+__global__ void calculateTurbulentViscosityAMDKernel(const real* vx, const real* vy, const real* vz, real* turbulentViscosity,
                                                 const uint* neighborX, const uint* neighborY, const uint* neighborZ,
                                                 const uint* neighborMMM, const uint* typeOfGridNode,
                                                 unsigned long long numberOfLBnodes, real SGSConstant)
@@ -109,7 +109,7 @@ __global__ void calcTurbulentViscosityAMDKernel(const real* vx, const real* vy, 
 void calculateTurbulentViscosityAMD(Parameter* para, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, para->getParH(level)->numberOfNodes);
-    calcTurbulentViscosityAMDKernel<<<grid.grid, grid.threads>>>(
+    calculateTurbulentViscosityAMDKernel<<<grid.grid, grid.threads>>>(
         para->getParD(level)->velocityX, para->getParD(level)->velocityY, para->getParD(level)->velocityZ,
         para->getParD(level)->turbulentViscosity, para->getParD(level)->neighborX, para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ, para->getParD(level)->neighborInverse, para->getParD(level)->typeOfGridNode,
@@ -117,7 +117,7 @@ void calculateTurbulentViscosityAMD(Parameter* para, int level)
     getLastCudaError("calcAMD execution failed");
 }
 
-__global__ void calcTurbulentViscosityAndDiffusivityAMDStratifiedKernel(
+__global__ void calculateTurbulentViscosityAndDiffusivityAMDStratifiedKernel(
     const real* vx, const real* vy, const real* vz, const real* temperature, const real* referenceTemperature, unsigned long long numberOfLBnodes,
     const uint* typeOfGridNode, const uint* neighborX, const uint* neighborY, const uint* neighborZ, const uint* neighborMMM,
     real buoyancyParameter, real SGSConstant, real* turbulentViscosity, real* turbulentDiffusivity)
@@ -171,14 +171,14 @@ void calculateTurbulentViscosityAndDiffusivityAMDStratified(Parameter* para, int
 {
     auto& parD = para->getParDeviceAsReference(level);
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parD.numberofthreads, parD.numberOfNodes);
-    calcTurbulentViscosityAndDiffusivityAMDStratifiedKernel<<<grid.grid, grid.threads>>>(
+    calculateTurbulentViscosityAndDiffusivityAMDStratifiedKernel<<<grid.grid, grid.threads>>>(
         parD.velocityX, parD.velocityY, parD.velocityZ, parD.concentration, parD.localReferenceTemperature,
         parD.numberOfNodes, parD.typeOfGridNode, parD.neighborX, parD.neighborY, parD.neighborZ, parD.neighborInverse,
         para->getScaledBuoyancyFactor(level), para->getSGSConstant(), parD.turbulentViscosity, parD.turbulentDiffusivity);
     getLastCudaError("calcAMDStratified failed");
 }
 
-__global__ void calcTurbulentDiffusivityMoengKernel(const real* temperature, real* turbulentDiffusivity, const real* turbulentViscosity,
+__global__ void calculateTurbulentDiffusivityMoengKernel(const real* temperature, real* turbulentDiffusivity, const real* turbulentViscosity,
                                                     const uint* neighborX, const uint* neighborY, const uint* neighborZ, const uint* neighborMMM,
                                                     const uint* typeOfGridNode, unsigned long long numberOfLBnodes,
                                                     real buoyancyParameter)
@@ -207,7 +207,7 @@ __global__ void calcTurbulentDiffusivityMoengKernel(const real* temperature, rea
 void calculateTurbulentDiffusivityMoeng(Parameter* para, int level)
 {
     vf::cuda::CudaGrid grid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
-    calcTurbulentDiffusivityMoengKernel<<<grid.grid, grid.threads>>>(
+    calculateTurbulentDiffusivityMoengKernel<<<grid.grid, grid.threads>>>(
         para->getParD(level)->concentration, para->getParD(level)->turbulentDiffusivity, para->getParD(level)->turbulentViscosity,
         para->getParD(level)->neighborX, para->getParD(level)->neighborY, para->getParD(level)->neighborZ,
         para->getParD(level)->neighborInverse, para->getParD(level)->typeOfGridNode, para->getParD(level)->numberOfNodes,
