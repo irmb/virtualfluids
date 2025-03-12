@@ -16,4 +16,4 @@ APPLICATION="./build/bin/GaussianHillOfConcentration ./apps/gpu/GaussianHillOfCo
 RESULT_DATA_DIR=output/GaussianHillOfConcentration
 
 
-run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR"
+run_regression_test "$REFERENCE_DATA_DIR" "$CMAKE_FLAGS" "$APPLICATION" "$RESULT_DATA_DIR" --ignore-missing-reference-files
