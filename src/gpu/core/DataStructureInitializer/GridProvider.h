@@ -82,7 +82,7 @@ public:
 protected:
     void setNumberOfNodes(uint numberOfNodes, int level) const;
     void setNumberOfTaggedFluidNodes(uint numberOfNodes, CollisionTemplate tag, int level) const;
-    virtual void setInitialNodeValues(uint numberOfNodes, int level) const;
+    virtual void setInitialNodeValues(uint numberOfNodes, int level) const; // needs to be virtual for tests
     void setInitialNodeValuesAD(uint numberOfNodes, int level) const;
 
     void setPressSizePerLevel(int level, int sizePerLevel) const;
