@@ -41,7 +41,7 @@ namespace vf::lbm::advection_diffusion
 
 struct ADCollisionParameter
 {
-    real distributions[27];
+    real distribution[27];
     real velocityX, velocityY, velocityZ, omega;
     real concentration;
 };

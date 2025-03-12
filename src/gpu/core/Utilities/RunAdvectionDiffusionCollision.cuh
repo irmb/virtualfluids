@@ -106,7 +106,7 @@ __global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCo
                                   collisionParameter.neighborZ);
 
     ADCollisionParameter para;
-    getPreCollisionDistribution(para.distributions, distAD, listIndices);
+    getPreCollisionDistribution(para.distribution, distAD, listIndices);
 
     switch (turbulenceModel) {
         case TurbulenceModel::None:
@@ -132,7 +132,7 @@ __global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCo
 
     collision(para);
 
-    setPostCollisionDistribution(distAD, listIndices, para.distributions);
+    setPostCollisionDistribution(distAD, listIndices, para.distribution);
 
     collisionParameter.concentration[k_000] = para.concentration;
 }
