@@ -733,11 +733,11 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     // initial condition fluid
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
-    std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
+    std::function<void(real, real, real, real &, real &, real &, real &)>& getInitialCondition();
 
     // initial condition concentration
     void setInitialConditionAD(std::function<real(real, real, real)> initialConditionAD);
-    std::function<real(real, real, real)> &getInitialConditionAD();
+    std::function<real(real, real, real)>& getInitialConditionAD();
     void setInitialLocalReferenceTemperature(std::function<real(real, real, real)> initialReferenceTemperature);
     std::function<real(real, real, real)>& getInitialLocalReferenceTemperature();
     ////////////////////////////////////////////////////////////////////////////
