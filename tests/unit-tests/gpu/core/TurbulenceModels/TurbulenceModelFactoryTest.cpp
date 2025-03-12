@@ -36,6 +36,7 @@
 #include <basics/config/ConfigurationFile.h>
 #include <gpu/core/TurbulenceModels/TurbulenceModelFactory.h>
 #include <gtest/gtest.h>
+#include <memory>
 #include <stdexcept>
 
 #include "../testUtilitiesGPU.h"
@@ -49,12 +50,12 @@
 class TurbulenceModelFactoryTest_Initialization : public testing::Test
 {
 protected:
-    TurbulenceModelFactory* tmFactory = nullptr;
+    std::unique_ptr<TurbulenceModelFactory> tmFactory = nullptr;
     SPtr<Parameter> para = std::make_shared<Parameter>();
 
     void SetUp() override
     {
-        tmFactory = new TurbulenceModelFactory(para);
+        tmFactory = std::make_unique<TurbulenceModelFactory>(para);
     }
 };
 
