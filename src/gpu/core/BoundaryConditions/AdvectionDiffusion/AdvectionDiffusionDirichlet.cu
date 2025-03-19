@@ -55,7 +55,7 @@
 template <BoundaryConditionFactory::AdvectionDiffusionDirichletBC bcType>
 __global__ void AdvectionDiffusionDirichlet_Device(real* distributionsConcentration,
                                                    AdvectionDiffusionDirichletBoundaryConditions bcParameters,
-                                                   uint* neighborX, uint* neighborY, uint* neighborZ, const real* density,
+                                                   const uint* neighborX, const uint* neighborY, const uint* neighborZ,
                                                    const real* velocityX, const real* velocityY, const real* velocityZ,
                                                    unsigned long long numberOfLBnodes, real relaxationFrequency,
                                                    bool isEvenTimestep)
