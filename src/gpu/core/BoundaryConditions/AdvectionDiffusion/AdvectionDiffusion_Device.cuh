@@ -34,39 +34,38 @@
 #ifndef AdvectionDiffusion_Device_H
 #define AdvectionDiffusion_Device_H
 
-#include "Calculation/Calculation.h"
 #include "BoundaryConditions/BoundaryConditionFactory.h"
+#include "Calculation/Calculation.h"
 
 //////////////////////////////////////////////////////////////////////////
-//! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
-__global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
-    real * normalX,
-    real * normalY,
-    real * normalZ,
-    real * distributions,
-    real * distributionsAD,
-    int* QindexArray,
-    real * Qarrays,
-    uint numberOfBCnodes,
-    real omegaDiffusivity,
-    uint * neighborX,
-    uint * neighborY,
-    uint * neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+
+template <BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC bcType>
+__global__ void
+AdvectionDiffusionSlipVelocity_Device(real* distributions, AdvectionDiffusionSlipVelocityBoundaryConditions bcParameters,
+                                      const real* density, const real* velocityX, const real* velocityY,
+                                      const real* velocityZ, const real* turbulentDiffusivity, real diffusivity,
+                                      real omegaDiffusivity, const uint* neighborX, const uint* neighborY,
+                                      const uint* neighborZ, unsigned long long numberOfLBnodes, bool isEvenTimestep);
 
 template <BoundaryConditionFactory::AdvectionDiffusionDirichletBC bcType>
 __global__ void AdvectionDiffusionDirichlet_Device(real* distributionsConcentration,
                                                    AdvectionDiffusionDirichletBoundaryConditions bcParameters,
-                                                   uint* neighborX, uint* neighborY, uint* neighborZ, const real* density,
+                                                   const uint* neighborX, const uint* neighborY, const uint* neighborZ,
                                                    const real* velocityX, const real* velocityY, const real* velocityZ,
                                                    unsigned long long numberOfLBnodes, real relaxationFrequency,
                                                    bool isEvenTimestep);
 
-__global__ void AdvectionDiffusionBounceBack_Device(
-    real* distributions, AdvectionDiffusionNoSlipBoundaryConditions bcParameters, const uint* neighborX, const uint* neighborY,
-    const uint* neighborZ, unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+template <BoundaryConditionFactory::AdvectionDiffusionNeumannBC bcType>
+__global__ void
+AdvectionDiffusionNeumann_Device(real* distributionsConcentration, AdvectionDiffusionNeumannBoundaryConditions bcParameters,
+                                 const uint* neighborX, const uint* neighborY, const uint* neighborZ, const real* velocityX,
+                                 const real* velocityY, const real* velocityZ, unsigned long long numberOfLBnodes,
+                                 real relaxationFrequency, bool isEvenTimestep);
+
+__global__ void AdvectionDiffusionBounceBack_Device(real* distributions,
+                                                    AdvectionDiffusionNoSlipBoundaryConditions bcParameters,
+                                                    const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                                    unsigned long long numberOfLBnodes, bool isEvenTimestep);
 
 #endif
 
